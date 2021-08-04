@@ -21,6 +21,8 @@ NONE
 ```
 This staus of a deal cid
 
+**Authentification required**
+
 **Response is cached for:**
 10 minutes
 
@@ -43,7 +45,7 @@ Available statuses:
 [POST] /api/v1/upload
 ```
 This endpoint upload file to fileswan payment gateway server
-
+**Authentification required**
 **HTTP hearders:**
 ***Content-Type***
 ***Content-Length***
@@ -55,7 +57,6 @@ file's data in bytes
 ```
 
 **Response:**
-
 
 Available statuses:
 * `Status 200`

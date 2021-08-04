@@ -19,7 +19,7 @@ NONE
 ```
 [GET] /api/v1/public/status/:cid
 ```
-This endpoint retrieves a 24-hour pricing of per GB storage cost
+This staus of a deal cid
 
 **Response is cached for:**
 10 minutes

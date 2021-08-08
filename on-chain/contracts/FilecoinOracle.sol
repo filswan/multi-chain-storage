@@ -15,8 +15,8 @@ contract FilecoinOracle {
     address[] private  _daoUsers;
     mapping(string => mapping(address => TxOracleStatus)) statusMap;
 
-    constructor() {
-        console.log("Deploying Filecoin Oracle contract");
+    constructor(address owner) {
+        _owner = owner;
     }
 
     /**
@@ -32,8 +32,8 @@ contract FilecoinOracle {
      */
     modifier onlyDAOUser() {
         bool found = false;
-         for(uint8 i = 0; i < daoUsers.length; i++){
-            if(daoUsers[i] == msg.sender){
+         for(uint8 i = 0; i < _daoUsers.length; i++){
+            if(_daoUsers[i] == msg.sender){
                 found = true;
                 break;
             }
@@ -42,7 +42,7 @@ contract FilecoinOracle {
         _;
     }
 
-    function setDAOUsers(address[] daoUsers) public
+    function setDAOUsers(address[] calldata daoUsers) public
         onlyOwner
         returns (bool){
             _daoUsers =  daoUsers;
@@ -59,30 +59,29 @@ contract FilecoinOracle {
     function getPaymentInfo(string calldata txId)
         public
         view
-        override
         returns (uint256 actualPaid)
     {
         // default value is 0
-        mapping(address => TxOracleStatus) memory status = txMap[txId];
-        for(uint8 i = 0; i < daoUsers.length; i++){
-            if(status[daoUsers[i]].actualPaid == 0){
+        mapping(address => TxOracleStatus) storage status = statusMap[txId];
+        for(uint8 i = 0; i < _daoUsers.length; i++){
+            if(status[_daoUsers[i]].actualPaid == 0){
                 return 0;
             }
         }
-        return status[daoUsers[0]].actualPaid;
+        return status[_daoUsers[0]].actualPaid;
     }
 
     // todo: add only DAO group users
     function updatePaymentInfo(string calldata txId, uint256 actualPaid)
         public
-        onlyDAO
+        onlyDAOUser
         returns (bool)
     {
         // default value is 0
-        if(txMap[txId][msg.sender].timestamp == 0)
+        if(statusMap[txId][msg.sender].timestamp == 0)
         {
-            txMap[txId][msg.sender].timestamp = block.timestamp;
-            txMap[txId][msg.sender].actualPaid = actualPaid;
+            statusMap[txId][msg.sender].timestamp = block.timestamp;
+            statusMap[txId][msg.sender].actualPaid = actualPaid;
         }
     }
 

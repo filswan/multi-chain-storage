@@ -7,12 +7,21 @@ import "./FilecoinOracle.sol";
 
 contract SwanPayment is IPaymentMinimal {
 
+    address private _owner; 
     address _oracle;
     uint256 lockTime = 1 days;
     mapping(string => TxInfo) txMap;
 
-    constructor() {
-        console.log("Deploying swan payment contract");
+    constructor(address owner) public{
+         _owner = owner;
+    }
+
+    /**
+     * @dev Throws if called by any account other than the owner.
+     */
+    modifier onlyOwner() {
+        require(_owner == msg.sender, "Caller is not the owner");
+        _;
     }
 
     function setOracle(address oracle) public
@@ -77,7 +86,7 @@ contract SwanPayment is IPaymentMinimal {
         if (block.timestamp > t.deadline) {
             payable(address(t.owner)).transfer(t.lockedFee);
         } else {
-            uint256 actualFee = FilecoinOracle(oralce).getPaymentInfo(txId);
+            uint256 actualFee = FilecoinOracle(_oracle).getPaymentInfo(txId);
             require(actualFee > 0, "Transaction is not completed");
 
             if (actualFee < t.minPayment) {

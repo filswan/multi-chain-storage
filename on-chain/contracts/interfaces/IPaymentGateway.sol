@@ -28,7 +28,7 @@ interface IPaymentMinimal {
     /// @notice Returns the current allowance given to a spender by an owner
     /// @param txId transaction id
     /// @return Returns true for a successful payment, false for an unsuccessful payment
-    function unlockPayment(string calldata txId, uint256 actualFee) external returns (bool);
+    function unlockPayment(string calldata txId) external returns (bool);
 
     //function updateTxStatus((bytes calldata txId, uint256 cost, uint8 status) external returns (bool);
 }

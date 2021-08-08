@@ -6,16 +6,26 @@ describe("Payment gateway", function () {
 
   let paymentInstance;
   let accounts;
+  let oracleInstance;
   before('deploy payment gateway contract', async()=>{
     accounts = await ethers.getSigners();
 
+    console.log('deploy payment instance')
     const contract = await ethers.getContractFactory("SwanPayment");
-    paymentInstance = await contract.deploy();
-    await paymentInstance.deployed();
+    paymentInstance = await contract.deploy(accounts[0].address);
+    await paymentInstance.deployed(); // have to wait block to include this transaction
+
+    console.log('deploy oracle instance')
+    const oracleContract = await ethers.getContractFactory("FilecoinOracle");
+    oracleInstance = await oracleContract.deploy(accounts[0].address);
+    await oracleInstance.deployed();
+
+    console.log('set oracle')
+    await paymentInstance.setOracle(oracleInstance.address);
 
     const tx = {
       to: wethAddress,
-      value: ethers.utils.parseEther("0.1")
+      value: ethers.utils.parseEther("0.5")
     };
   
     await accounts[0].sendTransaction(tx);

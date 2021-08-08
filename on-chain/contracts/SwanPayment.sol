@@ -3,13 +3,22 @@ pragma solidity ^0.8.4;
 
 import "hardhat/console.sol";
 import "./interfaces/IPaymentGateway.sol";
+import "./FilecoinOracle.sol";
 
 contract SwanPayment is IPaymentMinimal {
+
+    address _oracle;
     uint256 lockTime = 1 days;
     mapping(string => TxInfo) txMap;
 
     constructor() {
         console.log("Deploying swan payment contract");
+    }
+
+    function setOracle(address oracle) public
+        onlyOwner
+        returns (bool){
+            _oracle = oracle;
     }
 
     // /**
@@ -39,6 +48,7 @@ contract SwanPayment is IPaymentMinimal {
         override
         returns (bool)
     {
+        console.log(msg.value);
         require(param.minPayment > 0 && msg.value > param.minPayment);
         TxInfo storage t = txMap[param.id];
         t.owner = msg.sender;
@@ -52,7 +62,7 @@ contract SwanPayment is IPaymentMinimal {
     /// @notice Returns the current allowance given to a spender by an owner
     /// @param txId transaction id
     /// @return Returns true for a successful payment, false for an unsuccessful payment
-    function unlockPayment(string calldata txId, uint256 actualFee)
+    function unlockPayment(string calldata txId)
         public
         override
         returns (bool)
@@ -67,6 +77,9 @@ contract SwanPayment is IPaymentMinimal {
         if (block.timestamp > t.deadline) {
             payable(address(t.owner)).transfer(t.lockedFee);
         } else {
+            uint256 actualFee = FilecoinOracle(oralce).getPaymentInfo(txId);
+            require(actualFee > 0, "Transaction is not completed");
+
             if (actualFee < t.minPayment) {
                 actualFee = t.minPayment;
             }

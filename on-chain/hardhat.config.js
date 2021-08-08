@@ -16,8 +16,10 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
 /**
  * @type import('hardhat/config').HardhatUserConfig
  */
+
+ 
  module.exports = {
-  defaultNetwork: "localhost",
+  defaultNetwork: "hardhat",
   networks: {
     hardhat: {
       forking:{
@@ -25,6 +27,14 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
         blockNumber: 12840313
       }
     },
+
+    // hardhat: {
+    //   forking:{
+    //     url: "https://polygon-mumbai.g.alchemy.com/v2/shs801xBZD6sqSpQMf7-UE_35ZicdRyL",
+    //     blockNumber: 17357506
+    //   }
+    // },
+
     localhost: {
       url: "http://localhost:8545",
       accounts:[

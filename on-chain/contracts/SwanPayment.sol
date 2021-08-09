@@ -28,6 +28,7 @@ contract SwanPayment is IPaymentMinimal {
         onlyOwner
         returns (bool){
             _oracle = oracle;
+            return true;
     }
 
     // /**
@@ -51,21 +52,23 @@ contract SwanPayment is IPaymentMinimal {
     /// @notice Deposits the amount of token for specific transaction
     /// @param param The transaction information for which to deposit balance
     /// @return Returns true for a successful deposit, false for an unsuccessful deposit
-    function lockPayment(TxInfo calldata param)
+    function lockPayment(lockPaymentParam calldata param)
         public
         payable
         override
         returns (bool)
     {
         console.log(msg.value);
-        require(param.minPayment > 0 && msg.value > param.minPayment);
+        require(param.minPayment > 0 && msg.value > param.minPayment, "");
         TxInfo storage t = txMap[param.id];
         t.owner = msg.sender;
         t.minPayment = param.minPayment;
         t.recipient = param.recipient;
-        t.deadline = block.timestamp + lockTime;
+        t.deadline = block.timestamp + param.lockTime;
         t.lockedFee = msg.value;
         t._isExisted = true;
+
+        return true;
     }
 
     /// @notice Returns the current allowance given to a spender by an owner
@@ -101,6 +104,7 @@ contract SwanPayment is IPaymentMinimal {
         // check status, if not complete, return
 
         txMap[txId]._isExisted= false;
+        
         return true;
         // real fee is greater than tx.fee, take tx.fee
         // real fee is less than tx.minPayment, take minPayment, return tx.fee - minPayment to tx.owner

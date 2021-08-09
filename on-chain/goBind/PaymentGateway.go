@@ -28,16 +28,25 @@ var (
 
 // IPaymentMinimalTxInfo is an auto generated low-level Go binding around an user-defined struct.
 type IPaymentMinimalTxInfo struct {
-	Id         []byte
+	Id         string
 	MinPayment *big.Int
-	Fee        *big.Int
+	LockedFee  *big.Int
 	Owner      common.Address
 	Recipient  common.Address
 	Deadline   *big.Int
+	IsExisted  bool
+}
+
+// IPaymentMinimallockPaymentParam is an auto generated low-level Go binding around an user-defined struct.
+type IPaymentMinimallockPaymentParam struct {
+	Id         string
+	MinPayment *big.Int
+	LockTime   *big.Int
+	Recipient  common.Address
 }
 
 // PaymentGatewayABI is the input ABI used to generate the binding from.
-const PaymentGatewayABI = "[{\"inputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[{\"internalType\":\"bytes\",\"name\":\"txId\",\"type\":\"bytes\"}],\"name\":\"getLockedPaymentInfo\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"deadline\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"bytes\",\"name\":\"id\",\"type\":\"bytes\"},{\"internalType\":\"uint256\",\"name\":\"minPayment\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"fee\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"deadline\",\"type\":\"uint256\"}],\"internalType\":\"structIPaymentMinimal.TxInfo\",\"name\":\"txInfo\",\"type\":\"tuple\"}],\"name\":\"lockPayment\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes\",\"name\":\"txId\",\"type\":\"bytes\"}],\"name\":\"unlockPayment\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
+const PaymentGatewayABI = "[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"txId\",\"type\":\"string\"}],\"name\":\"getLockedPaymentInfo\",\"outputs\":[{\"components\":[{\"internalType\":\"string\",\"name\":\"id\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"minPayment\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"lockedFee\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"deadline\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"_isExisted\",\"type\":\"bool\"}],\"internalType\":\"structIPaymentMinimal.TxInfo\",\"name\":\"tx\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"string\",\"name\":\"id\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"minPayment\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"lockTime\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"}],\"internalType\":\"structIPaymentMinimal.lockPaymentParam\",\"name\":\"param\",\"type\":\"tuple\"}],\"name\":\"lockPayment\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"oracle\",\"type\":\"address\"}],\"name\":\"setOracle\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"txId\",\"type\":\"string\"}],\"name\":\"unlockPayment\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
 
 // PaymentGateway is an auto generated Go binding around an Ethereum contract.
 type PaymentGateway struct {
@@ -181,89 +190,96 @@ func (_PaymentGateway *PaymentGatewayTransactorRaw) Transact(opts *bind.Transact
 	return _PaymentGateway.Contract.contract.Transact(opts, method, params...)
 }
 
-// GetLockedPaymentInfo is a free data retrieval call binding the contract method 0x55874fae.
+// GetLockedPaymentInfo is a free data retrieval call binding the contract method 0xe063922b.
 //
-// Solidity: function getLockedPaymentInfo(bytes txId) view returns(uint256 deadline, uint256 amount)
-func (_PaymentGateway *PaymentGatewayCaller) GetLockedPaymentInfo(opts *bind.CallOpts, txId []byte) (struct {
-	Deadline *big.Int
-	Amount   *big.Int
-}, error) {
+// Solidity: function getLockedPaymentInfo(string txId) view returns((string,uint256,uint256,address,address,uint256,bool) tx)
+func (_PaymentGateway *PaymentGatewayCaller) GetLockedPaymentInfo(opts *bind.CallOpts, txId string) (IPaymentMinimalTxInfo, error) {
 	var out []interface{}
 	err := _PaymentGateway.contract.Call(opts, &out, "getLockedPaymentInfo", txId)
 
-	outstruct := new(struct {
-		Deadline *big.Int
-		Amount   *big.Int
-	})
 	if err != nil {
-		return *outstruct, err
+		return *new(IPaymentMinimalTxInfo), err
 	}
 
-	outstruct.Deadline = *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
-	outstruct.Amount = *abi.ConvertType(out[1], new(*big.Int)).(**big.Int)
+	out0 := *abi.ConvertType(out[0], new(IPaymentMinimalTxInfo)).(*IPaymentMinimalTxInfo)
 
-	return *outstruct, err
+	return out0, err
 
 }
 
-// GetLockedPaymentInfo is a free data retrieval call binding the contract method 0x55874fae.
+// GetLockedPaymentInfo is a free data retrieval call binding the contract method 0xe063922b.
 //
-// Solidity: function getLockedPaymentInfo(bytes txId) view returns(uint256 deadline, uint256 amount)
-func (_PaymentGateway *PaymentGatewaySession) GetLockedPaymentInfo(txId []byte) (struct {
-	Deadline *big.Int
-	Amount   *big.Int
-}, error) {
+// Solidity: function getLockedPaymentInfo(string txId) view returns((string,uint256,uint256,address,address,uint256,bool) tx)
+func (_PaymentGateway *PaymentGatewaySession) GetLockedPaymentInfo(txId string) (IPaymentMinimalTxInfo, error) {
 	return _PaymentGateway.Contract.GetLockedPaymentInfo(&_PaymentGateway.CallOpts, txId)
 }
 
-// GetLockedPaymentInfo is a free data retrieval call binding the contract method 0x55874fae.
+// GetLockedPaymentInfo is a free data retrieval call binding the contract method 0xe063922b.
 //
-// Solidity: function getLockedPaymentInfo(bytes txId) view returns(uint256 deadline, uint256 amount)
-func (_PaymentGateway *PaymentGatewayCallerSession) GetLockedPaymentInfo(txId []byte) (struct {
-	Deadline *big.Int
-	Amount   *big.Int
-}, error) {
+// Solidity: function getLockedPaymentInfo(string txId) view returns((string,uint256,uint256,address,address,uint256,bool) tx)
+func (_PaymentGateway *PaymentGatewayCallerSession) GetLockedPaymentInfo(txId string) (IPaymentMinimalTxInfo, error) {
 	return _PaymentGateway.Contract.GetLockedPaymentInfo(&_PaymentGateway.CallOpts, txId)
 }
 
-// LockPayment is a paid mutator transaction binding the contract method 0x6c7518e6.
+// LockPayment is a paid mutator transaction binding the contract method 0x0fe4b536.
 //
-// Solidity: function lockPayment((bytes,uint256,uint256,address,address,uint256) txInfo) returns(bool)
-func (_PaymentGateway *PaymentGatewayTransactor) LockPayment(opts *bind.TransactOpts, txInfo IPaymentMinimalTxInfo) (*types.Transaction, error) {
-	return _PaymentGateway.contract.Transact(opts, "lockPayment", txInfo)
+// Solidity: function lockPayment((string,uint256,uint256,address) param) payable returns(bool)
+func (_PaymentGateway *PaymentGatewayTransactor) LockPayment(opts *bind.TransactOpts, param IPaymentMinimallockPaymentParam) (*types.Transaction, error) {
+	return _PaymentGateway.contract.Transact(opts, "lockPayment", param)
 }
 
-// LockPayment is a paid mutator transaction binding the contract method 0x6c7518e6.
+// LockPayment is a paid mutator transaction binding the contract method 0x0fe4b536.
 //
-// Solidity: function lockPayment((bytes,uint256,uint256,address,address,uint256) txInfo) returns(bool)
-func (_PaymentGateway *PaymentGatewaySession) LockPayment(txInfo IPaymentMinimalTxInfo) (*types.Transaction, error) {
-	return _PaymentGateway.Contract.LockPayment(&_PaymentGateway.TransactOpts, txInfo)
+// Solidity: function lockPayment((string,uint256,uint256,address) param) payable returns(bool)
+func (_PaymentGateway *PaymentGatewaySession) LockPayment(param IPaymentMinimallockPaymentParam) (*types.Transaction, error) {
+	return _PaymentGateway.Contract.LockPayment(&_PaymentGateway.TransactOpts, param)
 }
 
-// LockPayment is a paid mutator transaction binding the contract method 0x6c7518e6.
+// LockPayment is a paid mutator transaction binding the contract method 0x0fe4b536.
 //
-// Solidity: function lockPayment((bytes,uint256,uint256,address,address,uint256) txInfo) returns(bool)
-func (_PaymentGateway *PaymentGatewayTransactorSession) LockPayment(txInfo IPaymentMinimalTxInfo) (*types.Transaction, error) {
-	return _PaymentGateway.Contract.LockPayment(&_PaymentGateway.TransactOpts, txInfo)
+// Solidity: function lockPayment((string,uint256,uint256,address) param) payable returns(bool)
+func (_PaymentGateway *PaymentGatewayTransactorSession) LockPayment(param IPaymentMinimallockPaymentParam) (*types.Transaction, error) {
+	return _PaymentGateway.Contract.LockPayment(&_PaymentGateway.TransactOpts, param)
 }
 
-// UnlockPayment is a paid mutator transaction binding the contract method 0xaf67f7b4.
+// SetOracle is a paid mutator transaction binding the contract method 0x7adbf973.
 //
-// Solidity: function unlockPayment(bytes txId) returns(bool)
-func (_PaymentGateway *PaymentGatewayTransactor) UnlockPayment(opts *bind.TransactOpts, txId []byte) (*types.Transaction, error) {
+// Solidity: function setOracle(address oracle) returns(bool)
+func (_PaymentGateway *PaymentGatewayTransactor) SetOracle(opts *bind.TransactOpts, oracle common.Address) (*types.Transaction, error) {
+	return _PaymentGateway.contract.Transact(opts, "setOracle", oracle)
+}
+
+// SetOracle is a paid mutator transaction binding the contract method 0x7adbf973.
+//
+// Solidity: function setOracle(address oracle) returns(bool)
+func (_PaymentGateway *PaymentGatewaySession) SetOracle(oracle common.Address) (*types.Transaction, error) {
+	return _PaymentGateway.Contract.SetOracle(&_PaymentGateway.TransactOpts, oracle)
+}
+
+// SetOracle is a paid mutator transaction binding the contract method 0x7adbf973.
+//
+// Solidity: function setOracle(address oracle) returns(bool)
+func (_PaymentGateway *PaymentGatewayTransactorSession) SetOracle(oracle common.Address) (*types.Transaction, error) {
+	return _PaymentGateway.Contract.SetOracle(&_PaymentGateway.TransactOpts, oracle)
+}
+
+// UnlockPayment is a paid mutator transaction binding the contract method 0xe01d7646.
+//
+// Solidity: function unlockPayment(string txId) returns(bool)
+func (_PaymentGateway *PaymentGatewayTransactor) UnlockPayment(opts *bind.TransactOpts, txId string) (*types.Transaction, error) {
 	return _PaymentGateway.contract.Transact(opts, "unlockPayment", txId)
 }
 
-// UnlockPayment is a paid mutator transaction binding the contract method 0xaf67f7b4.
+// UnlockPayment is a paid mutator transaction binding the contract method 0xe01d7646.
 //
-// Solidity: function unlockPayment(bytes txId) returns(bool)
-func (_PaymentGateway *PaymentGatewaySession) UnlockPayment(txId []byte) (*types.Transaction, error) {
+// Solidity: function unlockPayment(string txId) returns(bool)
+func (_PaymentGateway *PaymentGatewaySession) UnlockPayment(txId string) (*types.Transaction, error) {
 	return _PaymentGateway.Contract.UnlockPayment(&_PaymentGateway.TransactOpts, txId)
 }
 
-// UnlockPayment is a paid mutator transaction binding the contract method 0xaf67f7b4.
+// UnlockPayment is a paid mutator transaction binding the contract method 0xe01d7646.
 //
-// Solidity: function unlockPayment(bytes txId) returns(bool)
-func (_PaymentGateway *PaymentGatewayTransactorSession) UnlockPayment(txId []byte) (*types.Transaction, error) {
+// Solidity: function unlockPayment(string txId) returns(bool)
+func (_PaymentGateway *PaymentGatewayTransactorSession) UnlockPayment(txId string) (*types.Transaction, error) {
 	return _PaymentGateway.Contract.UnlockPayment(&_PaymentGateway.TransactOpts, txId)
 }

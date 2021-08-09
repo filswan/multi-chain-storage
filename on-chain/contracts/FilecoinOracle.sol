@@ -46,6 +46,7 @@ contract FilecoinOracle {
         onlyOwner
         returns (bool){
             _daoUsers =  daoUsers;
+            return true;
     }
 
     // /**
@@ -83,6 +84,7 @@ contract FilecoinOracle {
             statusMap[txId][msg.sender].timestamp = block.timestamp;
             statusMap[txId][msg.sender].actualPaid = actualPaid;
         }
+        return true;
     }
 
     

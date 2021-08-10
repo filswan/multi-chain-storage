@@ -6,14 +6,15 @@ import "./interfaces/IPaymentGateway.sol";
 import "./FilecoinOracle.sol";
 
 contract SwanPayment is IPaymentMinimal {
-
-    address private _owner; 
+    address private _owner;
     address _oracle;
     uint256 lockTime = 1 days;
     mapping(string => TxInfo) txMap;
 
-    constructor(address owner) public{
-         _owner = owner;
+    
+
+    constructor(address owner) public {
+        _owner = owner;
     }
 
     /**
@@ -24,11 +25,9 @@ contract SwanPayment is IPaymentMinimal {
         _;
     }
 
-    function setOracle(address oracle) public
-        onlyOwner
-        returns (bool){
-            _oracle = oracle;
-            return true;
+    function setOracle(address oracle) public onlyOwner returns (bool) {
+        _oracle = oracle;
+        return true;
     }
 
     // /**
@@ -49,6 +48,15 @@ contract SwanPayment is IPaymentMinimal {
         return txMap[txId];
     }
 
+
+    event LockPayment(
+        string id,
+        uint256 lockedFee,
+        uint256 minPayment,
+        address recipient,
+        uint256 deadline
+    );
+
     /// @notice Deposits the amount of token for specific transaction
     /// @param param The transaction information for which to deposit balance
     /// @return Returns true for a successful deposit, false for an unsuccessful deposit
@@ -58,7 +66,6 @@ contract SwanPayment is IPaymentMinimal {
         override
         returns (bool)
     {
-        console.log(msg.value);
         require(param.minPayment > 0 && msg.value > param.minPayment, "");
         TxInfo storage t = txMap[param.id];
         t.owner = msg.sender;
@@ -68,6 +75,13 @@ contract SwanPayment is IPaymentMinimal {
         t.lockedFee = msg.value;
         t._isExisted = true;
 
+        emit LockPayment(
+            param.id,
+            t.lockedFee,
+            param.minPayment,
+            param.recipient,
+            t.deadline
+        );
         return true;
     }
 
@@ -83,10 +97,11 @@ contract SwanPayment is IPaymentMinimal {
         require(t._isExisted, "Transaction does not exist");
         require(
             t.owner == msg.sender || t.recipient == msg.sender,
-            "Transaction has no connection wtih caller"
+            "Invalid caller"
         );
         // if passed deadline, return payback to user
         if (block.timestamp > t.deadline) {
+            require(t.owner == msg.sender, "Tx passed deadline, only owner can get locked tokens");
             payable(address(t.owner)).transfer(t.lockedFee);
         } else {
             uint256 actualFee = FilecoinOracle(_oracle).getPaymentInfo(txId);
@@ -103,8 +118,8 @@ contract SwanPayment is IPaymentMinimal {
         // todo: get status from oralce/other contract, status include status, real fee
         // check status, if not complete, return
 
-        txMap[txId]._isExisted= false;
-        
+        txMap[txId]._isExisted = false;
+
         return true;
         // real fee is greater than tx.fee, take tx.fee
         // real fee is less than tx.minPayment, take minPayment, return tx.fee - minPayment to tx.owner

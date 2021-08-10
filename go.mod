@@ -14,9 +14,8 @@ require (
 	github.com/gin-gonic/gin v1.3.0 // indirect
 	github.com/itsjamie/gin-cors v0.0.0-20160420130702-97b4a9da7933
 	github.com/rifflock/lfshook v0.0.0-20180920164130-b9218ef580f5
-	github.com/rs/cors v1.7.0
+	github.com/nebulaai/nbai-node v0.0.1
 	github.com/sirupsen/logrus v1.2.0
-	github.com/ugorji/go v1.2.6 // indirect
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 	gopkg.in/go-playground/validator.v8 v8.18.2 // indirect
 )

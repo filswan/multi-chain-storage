@@ -72,14 +72,14 @@ describe("Payment gateway", function () {
 
     it("Test Lock payment", async function () {
       const cid = "bafykbzaceafdasngafrordoboczbmp4enweo7omqelfgcjf3cty6tnlpjqw72";
-      const minPay10Native = ethers.BigNumber.from("10000000000000000000");
+      const minPay10Native = ethers.utils.parseEther("0.32");
 
       const payer = accounts[3];
       const fileswanRecipient = accounts[4];
 
       const fee = {
         // To convert Ether to Wei:
-        value: ethers.utils.parseEther("89.0")     // ether in this case MUST be a string
+        value: ethers.utils.parseEther("0.72")     // ether in this case MUST be a string
 
         // Or you can use Wei directly if you have that:
         // value: someBigNumber

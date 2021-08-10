@@ -13,13 +13,32 @@ async function main() {
   // manually to make sure everything is compiled
   // await hre.run('compile');
 
-  // We get the contract to deploy
-  const Greeter = await hre.ethers.getContractFactory("Greeter");
-  const greeter = await Greeter.deploy("Hello, Hardhat!");
+  const recipientAddress = "0xEC9Ee466a7372A4D49f64AAF4d348dBE9b5DE02A";
+  const gatewayContractAddress = "0xad8cE271beE7b917F2a1870C8b64EDfF6aAF3342";
 
-  await greeter.deployed();
+  const cid = "bafykbzaceafdasngafrordoboczbmp4enweo7omqelfgcjf3cty6tnlpjqw72";
 
-  console.log("Greeter deployed to:", greeter.address);
+  const minPay10Native = ethers.utils.parseEther("0.011");
+
+  const [payer] = await ethers.getSigners();
+
+  const fee = {
+    // To convert Ether to Wei:
+    value: ethers.utils.parseEther("0.021")     // ether in this case MUST be a string
+  };
+
+  const contract = await hre.ethers.getContractFactory("SwanPayment");
+  const paymentInstance = await contract.attach(gatewayContractAddress);
+
+  const tx = await paymentInstance.connect(payer).lockPayment({
+    id: cid,
+    minPayment: minPay10Native,
+    lockTime: 86400, // one day
+    recipient: recipientAddress, //todo:
+  }, fee);
+
+  await tx.wait();
+
 }
 
 // We recommend this pattern to be able to use async/await everywhere

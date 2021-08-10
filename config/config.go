@@ -23,8 +23,9 @@ type database struct {
 }
 
 type mainnetNode struct {
-	RpcHost string
-	RpcPort string
+	RpcHost           string
+	RpcPort           string
+	ContractEventPort string
 }
 
 var config *Configuration

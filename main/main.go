@@ -6,6 +6,8 @@ import (
 	"payment-bridge/config"
 	"payment-bridge/database"
 	"payment-bridge/logs"
+	"payment-bridge/scan/browsersync"
+	"payment-bridge/scan/eth"
 	"time"
 )
 
@@ -13,8 +15,12 @@ func main() {
 
 	config.InitConfig("")
 
+	eth.ClientInit()
+
 	// init database
 	db := database.Init()
+
+	go browsersync.BlockBrowserSync()
 
 	defer func() {
 		err := db.Close()

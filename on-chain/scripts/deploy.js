@@ -6,9 +6,20 @@ async function main() {
     console.log("Account balance:", (await deployer.getBalance()).toString());
   
     const contract = await ethers.getContractFactory("SwanPayment");
-    const paymentInstance = await contract.deploy();
-    console.log("Token address:", token.address);
+    const paymentInstance = await contract.deploy(deployer.address);
+    console.log("paymentInstance address:", paymentInstance.address);
     await paymentInstance.deployed();
+
+    console.log('deploy oracle instance')
+    const oracleContract = await ethers.getContractFactory("FilecoinOracle");
+    oracleInstance = await oracleContract.deploy(deployer.address);
+    await oracleInstance.deployed();
+    console.log("oracleInstance address:", oracleInstance.address);
+    await oracleInstance.setDAOUsers([deployer.address]);
+
+    console.log('set oracle')
+    await paymentInstance.setOracle(oracleInstance.address);
+
   }
   
   main()

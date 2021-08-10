@@ -13,6 +13,8 @@ add event emitter
 returns err code of unlock payment call
 
 goerli payment contract address:
+0xad8cE271beE7b917F2a1870C8b64EDfF6aAF3342
+
 https://goerli.etherscan.io/address/0xad8cE271beE7b917F2a1870C8b64EDfF6aAF3342
 
 oracle contract address:

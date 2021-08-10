@@ -2,7 +2,7 @@ package models
 
 import (
 	"errors"
-	"payment-bridge/database"
+	"payment-bridge/off-chain/database"
 	"strconv"
 	"strings"
 )

@@ -7,10 +7,10 @@ import (
 	"github.com/nebulaai/nbai-node/common"
 	"github.com/nebulaai/nbai-node/core/types"
 	"math/big"
-	"payment-bridge/database"
-	"payment-bridge/logs"
-	"payment-bridge/models"
-	"payment-bridge/scan/eth"
+	"payment-bridge/off-chain/database"
+	"payment-bridge/off-chain/logs"
+	models2 "payment-bridge/off-chain/models"
+	"payment-bridge/off-chain/scan/eth"
 	"sort"
 	"strconv"
 	"time"
@@ -24,8 +24,8 @@ func GetRewardPerBlock() *big.Int {
 }
 
 func UpdateContractAddress() {
-	transactions := []models.Transaction{}
-	_, err := models.FindMultipleTransactions(&transactions, models.Transaction{TTo: " "})
+	transactions := []models2.Transaction{}
+	_, err := models2.FindMultipleTransactions(&transactions, models2.Transaction{TTo: " "})
 	if err != nil {
 		logs.GetLogger().Error(err)
 	}
@@ -50,7 +50,7 @@ func ScanWallet() { //THIS STEP SHOULD ALSO BE USED FOR CONTRACT CODE DETECTION!
 		} else {
 			startId = firstId
 		}
-		transaction := models.Transaction{}
+		transaction := models2.Transaction{}
 		_, err := transaction.FindLastTxId()
 		if err != nil {
 			logs.GetLogger().Error(err)
@@ -62,25 +62,25 @@ func ScanWallet() { //THIS STEP SHOULD ALSO BE USED FOR CONTRACT CODE DETECTION!
 		} else {
 			endId = secondId
 		}
-		transactions := []models.Transaction{}
-		_, err = models.FindTransactionsById(&transactions, startId, endId)
+		transactions := []models2.Transaction{}
+		_, err = models2.FindTransactionsById(&transactions, startId, endId)
 		if err != nil {
 			logs.GetLogger().Error(err)
 		}
 		for _, element := range transactions {
-			wallet := models.Wallet{WalletAddress: element.TFrom}
+			wallet := models2.Wallet{WalletAddress: element.TFrom}
 			_wallet, _ := wallet.FindOneWallet(&wallet)
 			if _wallet.ID == 0 {
-				record := models.Wallet{WalletAddress: element.TFrom, FirstTxID: strconv.FormatInt(element.ID, 10)}
+				record := models2.Wallet{WalletAddress: element.TFrom, FirstTxID: strconv.FormatInt(element.ID, 10)}
 				err := database.GetDB().Save(&record).Error
 				if err != nil {
 					logs.GetLogger().Error(err)
 				}
 			}
-			wallet2 := models.Wallet{WalletAddress: element.TTo}
+			wallet2 := models2.Wallet{WalletAddress: element.TTo}
 			_wallet2, _ := wallet2.FindOneWallet(&wallet2)
 			if _wallet2.ID == 0 {
-				record := models.Wallet{WalletAddress: element.TTo, FirstTxID: strconv.FormatInt(element.ID, 10)}
+				record := models2.Wallet{WalletAddress: element.TTo, FirstTxID: strconv.FormatInt(element.ID, 10)}
 				database.GetDB().Save(&record)
 				err := database.GetDB().Save(&record).Error
 				if err != nil {
@@ -94,13 +94,13 @@ func ScanWallet() { //THIS STEP SHOULD ALSO BE USED FOR CONTRACT CODE DETECTION!
 }
 
 func UpdateAndSortWallet() {
-	var wallets []models.Wallet
-	_, err := models.FindWalletAddresseses(&wallets)
+	var wallets []models2.Wallet
+	_, err := models2.FindWalletAddresseses(&wallets)
 	if err != nil {
 		logs.GetLogger().Error(err)
 	}
 	totalBalance := new(big.Int).SetUint64(0)
-	models.GetSecondSlice().WalletWithBalances = make([]*models.WalletWithBalance, 0, len(wallets))
+	models2.GetSecondSlice().WalletWithBalances = make([]*models2.WalletWithBalance, 0, len(wallets))
 	for _, wallet := range wallets {
 		balance, err := getBalance(wallet.WalletAddress)
 		if err != nil {
@@ -108,16 +108,16 @@ func UpdateAndSortWallet() {
 			return
 		}
 		totalBalance = new(big.Int).Add(totalBalance, balance)
-		models.GetSecondSlice().StoreArray(models.WalletWithBalance{WalletAddress: wallet.WalletAddress, Balance: balance})
+		models2.GetSecondSlice().StoreArray(models2.WalletWithBalance{WalletAddress: wallet.WalletAddress, Balance: balance})
 	}
 	totalBalanceFloat := new(big.Float).Quo(new(big.Float).SetInt(totalBalance), new(big.Float).SetUint64(100))
-	sort.Sort(models.ByBalance(models.GetSecondSlice().WalletWithBalances))
-	for _, element := range models.GetSecondSlice().WalletWithBalances {
+	sort.Sort(models2.ByBalance(models2.GetSecondSlice().WalletWithBalances))
+	for _, element := range models2.GetSecondSlice().WalletWithBalances {
 		element.Percentage = new(big.Float).Quo(new(big.Float).SetInt(element.Balance), totalBalanceFloat).String()
 	}
 
-	models.GetFirstSlice().WalletWithBalances = make([]*models.WalletWithBalance, 0, len(wallets))
-	models.GetFirstSlice().WalletWithBalances = models.GetSecondSlice().WalletWithBalances
+	models2.GetFirstSlice().WalletWithBalances = make([]*models2.WalletWithBalance, 0, len(wallets))
+	models2.GetFirstSlice().WalletWithBalances = models2.GetSecondSlice().WalletWithBalances
 }
 
 func getBalance(address string) (*big.Int, error) {
@@ -133,7 +133,7 @@ func BlockBrowserSync() {
 
 	for {
 
-		block := models.Block{}
+		block := models2.Block{}
 
 		_blockDB, err := block.FindLatestBlock()
 
@@ -187,7 +187,7 @@ func UpdateFromLastToCurrent(lastBlockNo, currentBlockNo int64) {
 			reward := calculateUncleReward(nextBlock, uncle)
 			//fmt.Println("Reward =" + reward)
 
-			uncleBlock := models.UncleBlock{
+			uncleBlock := models2.UncleBlock{
 
 				Number:               uncle.Number.Int64(),
 				Author:               "",
@@ -237,7 +237,7 @@ func UpdateFromLastToCurrent(lastBlockNo, currentBlockNo int64) {
 }
 
 func SaveBlock(block *types.Block) error {
-	browserBlock := &models.Block{}
+	browserBlock := &models2.Block{}
 	browserBlock.Number = block.Number().Int64()
 	browserBlock.Hash = block.Hash().String()
 	browserBlock.ParentHash = block.ParentHash().String()
@@ -258,7 +258,7 @@ func SaveBlock(block *types.Block) error {
 	return nil
 }
 
-func SaveUncleBlock(UncleBlock *models.UncleBlock) error {
+func SaveUncleBlock(UncleBlock *models2.UncleBlock) error {
 
 	_findblock, _ := UncleBlock.FindOneUncleBlock(UncleBlock)
 	if _findblock.ID == 0 {
@@ -278,7 +278,7 @@ func SaveTransaction(block *types.Block) error {
 	}
 
 	for i, tx := range block.Transactions() {
-		browserTx := &models.Transaction{}
+		browserTx := &models2.Transaction{}
 
 		txMsg, err := tx.AsMessage(types.NewEIP155Signer(chainID))
 		if err != nil {

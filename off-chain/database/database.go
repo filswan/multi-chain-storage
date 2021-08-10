@@ -4,8 +4,8 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
-	"payment-bridge/config"
-	"payment-bridge/logs"
+	"payment-bridge/off-chain/config"
+	"payment-bridge/off-chain/logs"
 )
 
 type Database struct {

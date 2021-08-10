@@ -2,8 +2,8 @@ package eth
 
 import (
 	"github.com/nebulaai/nbai-node/ethclient"
-	"payment-bridge/config"
-	"payment-bridge/logs"
+	"payment-bridge/off-chain/config"
+	"payment-bridge/off-chain/logs"
 	"time"
 )
 
@@ -23,7 +23,7 @@ var WebConn = new(ConnSetup)
 func ClientInit() {
 
 	for {
-		rpcUrl := config.GetConfig().MainnetNode.RpcHost+":"+config.GetConfig().MainnetNode.RpcPort
+		rpcUrl := config.GetConfig().MainnetNode.RpcHost + ":" + config.GetConfig().MainnetNode.RpcPort
 		client, err := ethclient.Dial(rpcUrl)
 		if err != nil {
 			logs.GetLogger().Error("Try to reconnect block chain node" + rpcUrl + " ...")

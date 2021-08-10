@@ -3,7 +3,7 @@ package models
 import (
 	"github.com/nebulaai/nbai-node/common"
 	"math/big"
-	"payment-bridge/database"
+	"payment-bridge/off-chain/database"
 	"regexp"
 )
 

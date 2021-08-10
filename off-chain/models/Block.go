@@ -3,8 +3,7 @@ package models
 import (
 	"fmt"
 	"math/big"
-	"payment-bridge/database"
-	//"navigator-api/models"
+	"payment-bridge/off-chain/database"
 	"strconv"
 )
 

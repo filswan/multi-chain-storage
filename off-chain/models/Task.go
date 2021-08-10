@@ -1,7 +1,7 @@
 package models
 
 import (
-	"payment-bridge/database"
+	"payment-bridge/off-chain/database"
 )
 
 type Task struct {

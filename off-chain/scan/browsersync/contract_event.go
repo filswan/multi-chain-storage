@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
-	"payment-bridge/config"
-	"payment-bridge/logs"
-	"payment-bridge/models"
+	"payment-bridge/off-chain/config"
+	"payment-bridge/off-chain/logs"
+	"payment-bridge/off-chain/models"
 )
 
 /**

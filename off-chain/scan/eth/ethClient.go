@@ -5,7 +5,7 @@ import (
 	"github.com/nebulaai/nbai-node/common"
 	"github.com/nebulaai/nbai-node/core/types"
 	"math/big"
-	"payment-bridge/logs"
+	"payment-bridge/off-chain/logs"
 )
 
 /**

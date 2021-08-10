@@ -3,11 +3,11 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	cors "github.com/itsjamie/gin-cors"
-	"payment-bridge/config"
-	"payment-bridge/database"
-	"payment-bridge/logs"
-	"payment-bridge/scan/browsersync"
-	"payment-bridge/scan/eth"
+	"payment-bridge/off-chain/config"
+	"payment-bridge/off-chain/database"
+	"payment-bridge/off-chain/logs"
+	"payment-bridge/off-chain/scan/browsersync"
+	"payment-bridge/off-chain/scan/eth"
 	"time"
 )
 

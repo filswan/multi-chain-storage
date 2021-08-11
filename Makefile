@@ -47,9 +47,11 @@ endif
 	@rm -rf ./vendor/github.com/karalabe/hid
 	@govendor fetch -tree  github.com/nebulaai/nbai-node/crypto/secp256k1
 	@govendor fetch -tree  github.com/karalabe/hid
-	@go mod tidy
+
 
 build: ## Build the binary file
+	@go mod download
+	@go mod tidy
 	@go build -o off-chain/build/bin/payment-bridge main/main.go
 	@mkdir -p ./off-chain/build/bin/off-chain/config
 	@mkdir -p ./off-chain/build/bin/on-chain/contracts/abi

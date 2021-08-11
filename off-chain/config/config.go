@@ -23,8 +23,7 @@ type database struct {
 }
 
 type mainnetNode struct {
-	RpcHost           string
-	RpcPort           string
+	RpcUrl            string
 	ContractEventPort string
 }
 
@@ -44,7 +43,7 @@ func InitConfig(configFile string) {
 }
 
 func (c *Configuration) GetMainnetNode() string {
-	return c.MainnetNode.RpcHost + ":" + c.MainnetNode.RpcPort
+	return c.MainnetNode.RpcUrl
 }
 
 func GetConfig() Configuration {
@@ -71,8 +70,7 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 		{"DataBase", "dbUsername"},
 		{"DataBase", "dbPwd"},
 
-		{"MainnetNode", "rpcHost"},
-		{"MainnetNode", "rpcPort"},
+		{"MainnetNode", "rpcUrl"},
 	}
 
 	for _, v := range requiredFields {

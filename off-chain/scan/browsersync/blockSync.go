@@ -4,8 +4,8 @@ import (
 	"context"
 	"encoding/hex"
 	"fmt"
-	"github.com/nebulaai/nbai-node/common"
-	"github.com/nebulaai/nbai-node/core/types"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 	"math/big"
 	"payment-bridge/off-chain/database"
 	"payment-bridge/off-chain/logs"
@@ -202,7 +202,7 @@ func UpdateFromLastToCurrent(lastBlockNo, currentBlockNo int64) {
 				Nonce:                strconv.FormatUint(uncle.Nonce.Uint64(), 10),
 				ParentHash:           uncle.ParentHash.String(),
 				Size:                 uncle.Size().String(),
-				Timestamp:            uncle.Time.String(),
+				Timestamp:            string(uncle.Time),
 				CanonicalBlockNumber: nextBlock.Number().Int64(),
 				UncleBlockReward:     reward,
 			}
@@ -247,7 +247,7 @@ func SaveBlock(block *types.Block) error {
 	browserBlock.GasLimit = strconv.FormatUint(block.GasLimit(), 10)
 	browserBlock.GasUsed = strconv.FormatUint(block.GasUsed(), 10)
 	browserBlock.Nonce = strconv.FormatUint(block.Nonce(), 10)
-	browserBlock.Timestamp = block.Time().String()
+	browserBlock.Timestamp = string(block.Time())
 	browserBlock.Difficulty = block.Difficulty().String()
 
 	_findblock, _ := browserBlock.FindOneBlock(browserBlock)
@@ -280,7 +280,7 @@ func SaveTransaction(block *types.Block) error {
 	for i, tx := range block.Transactions() {
 		browserTx := &models2.Transaction{}
 
-		txMsg, err := tx.AsMessage(types.NewEIP155Signer(chainID))
+		txMsg, err := tx.AsMessage(types.NewEIP155Signer(chainID), nil)
 		if err != nil {
 			logs.GetLogger().Error(err)
 		}
@@ -291,7 +291,7 @@ func SaveTransaction(block *types.Block) error {
 		browserTx.TransactionIndex = strconv.Itoa(int(i))
 		browserTx.TFrom = txMsg.From().String()
 
-		browserTx.Timestamp = block.Time().String()
+		browserTx.Timestamp = string(block.Time())
 
 		if txMsg.To() != nil { //if this is a contract creation
 			browserTx.TTo = txMsg.To().String()

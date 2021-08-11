@@ -2,8 +2,8 @@ package eth
 
 import (
 	"context"
-	"github.com/nebulaai/nbai-node/common"
-	"github.com/nebulaai/nbai-node/core/types"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 	"math/big"
 	"payment-bridge/off-chain/logs"
 )

@@ -14,6 +14,10 @@ type Event struct {
 	Data            string `json:"data"`
 	ContractName    string `json:"contract_name"`
 	ContractAddress string `json:"contract_address"`
+	LockedFee       string `json:"locked_fee"`
+	Deadline        string `json:"deadline"`
+	DataCid         string `json:"data_cid""`
+	BlockNo         uint64 `json:"block_no"`
 }
 
 func (self *Event) FindOneEvent(condition interface{}) (*Event, error) {

@@ -11,6 +11,5 @@ dbPwd="123456"
 dbArgs="charset=utf8mb4&parseTime=True&loc=Local"
 
 [MainnetNode]
-rpcHost="http://192.168.88.217"
-rpcPort="8545"
+rpcUrl="https://goerli.infura.io/v3/48f20ab65d0142c58e8e73658940a533"
 contractEventPort="8080"

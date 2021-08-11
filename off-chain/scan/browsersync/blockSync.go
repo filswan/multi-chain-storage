@@ -149,15 +149,15 @@ func BlockBrowserSyncAndEventLogsSync() {
 			continue
 		}
 
-		UpdateFromLastToCurrent(blockNoDB, blockNoCurrent.Int64())
-		if err != nil {
-			logs.GetLogger().Error(err)
-		}
-
 		err = ScanEventFromChainAndSaveEventLogData(blockNoDB, blockNoCurrent.Int64())
 		if err != nil {
 			logs.GetLogger().Error(err)
 			continue
+		}
+
+		UpdateFromLastToCurrent(blockNoDB, blockNoCurrent.Int64())
+		if err != nil {
+			logs.GetLogger().Error(err)
 		}
 
 		time.Sleep(time.Second * 5)

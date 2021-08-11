@@ -37,4 +37,6 @@ func TestGateway(t *testing.T) {
 
 	info, _ := paymentGateway.GetLockedPaymentInfo(nil, cid)
 
+	result, _ := paymentGateway.unlockPayment(nil, cid)
+	// info.LockedFee
 }

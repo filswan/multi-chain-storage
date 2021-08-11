@@ -66,7 +66,8 @@ contract SwanPayment is IPaymentMinimal {
         override
         returns (bool)
     {
-        require(param.minPayment > 0 && msg.value > param.minPayment, "");
+        require(!t._isExisted, "Payment of transaction is already locked");
+        require(param.minPayment > 0 && msg.value > param.minPayment, "payment should greater than min payment");
         TxInfo storage t = txMap[param.id];
         t.owner = msg.sender;
         t.minPayment = param.minPayment;

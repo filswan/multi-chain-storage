@@ -83,9 +83,16 @@ func ScanEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) error {
 			deadLine := dataList[4].(*big.Int)
 			event.Deadline = deadLine.String()
 
-			err = database.SaveOne(event)
+			eventList, err := models.FindEvents(&models.Event{TxHash: event.TxHash, BlockNo: event.BlockNo}, "id desc", "10", "0")
 			if err != nil {
 				logs.GetLogger().Error(err)
+				continue
+			}
+			if len(eventList) <= 0 {
+				err = database.SaveOne(event)
+				if err != nil {
+					logs.GetLogger().Error(err)
+				}
 			}
 		}
 	}

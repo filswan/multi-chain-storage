@@ -12,12 +12,14 @@ require (
 require (
 	github.com/btcsuite/btcd v0.22.0-beta // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
-	github.com/gin-gonic/gin v1.3.0 // indirect
+	github.com/gin-gonic/gin v1.3.0
 	github.com/itsjamie/gin-cors v0.0.0-20160420130702-97b4a9da7933
+	github.com/joho/godotenv v1.3.0
 	github.com/nebulaai/nbai-node v0.0.1
 	github.com/rifflock/lfshook v0.0.0-20180920164130-b9218ef580f5
+	github.com/rs/zerolog v1.23.0
 	github.com/sirupsen/logrus v1.2.0
-	github.com/ugorji/go/codec v1.2.6 // indirect
+	github.com/ugorji/go v1.2.6 // indirect
 	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97 // indirect
 	golang.org/x/sys v0.0.0-20210809222454-d867a43fc93e // indirect
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect

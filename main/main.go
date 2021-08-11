@@ -20,9 +20,7 @@ func main() {
 	// init database
 	db := database.Init()
 
-	browsersync.GetAbi()
-
-	go browsersync.BlockBrowserSync()
+	go browsersync.BlockBrowserSyncAndEventLogsSync()
 
 	defer func() {
 		err := db.Close()

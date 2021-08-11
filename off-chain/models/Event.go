@@ -11,7 +11,6 @@ type Event struct {
 	TxHash          string `json:"tx_hash"`
 	EventName       string `json:"event_name"`
 	IndexedData     string `json:"indexed_data"`
-	Data            string `json:"data"`
 	ContractName    string `json:"contract_name"`
 	ContractAddress string `json:"contract_address"`
 	LockedFee       string `json:"locked_fee"`

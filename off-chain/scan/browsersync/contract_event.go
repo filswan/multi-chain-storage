@@ -25,17 +25,24 @@ import (
 
 const SwanPaymentAbiJson = "on-chain/contracts/abi/SwanPayment.json"
 
-func GetAbi() {
+// EventLogSave Find the event that executed the contract and save to db
+func ScanEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) error {
+	//read contract api json file
 	paymentAbiString, err := ReadContractAbiJsonFile()
 	if err != nil {
 		logs.GetLogger().Error(err)
+		return err
 	}
 
+	//SwanPayment contract address
 	contractAddress := common.HexToAddress(constants.PAYMENT_CONTRACT_ADDRESS)
+	//SwanPayment contract function signature
 	contractFunctionSignature := constants.CONTRACT_FUNCTION_SIGNATURE
+
+	//test block no. is : 5297224
 	query := ethereum.FilterQuery{
-		FromBlock: big.NewInt(5297224),
-		ToBlock:   big.NewInt(5297224),
+		FromBlock: big.NewInt(blockNoFrom),
+		ToBlock:   big.NewInt(blockNoTo),
 		Addresses: []common.Address{
 			contractAddress,
 		},
@@ -45,11 +52,13 @@ func GetAbi() {
 	logsInChain, err := eth.WebConn.ConnWeb.FilterLogs(context.Background(), query)
 	if err != nil {
 		logs.GetLogger().Fatal(err)
+		return err
 	}
 
 	contractAbi, err := abi.JSON(strings.NewReader(paymentAbiString))
 	if err != nil {
 		logs.GetLogger().Fatal(err)
+		return err
 	}
 
 	for _, vLog := range logsInChain {
@@ -80,6 +89,7 @@ func GetAbi() {
 			}
 		}
 	}
+	return nil
 }
 
 func ReadContractAbiJsonFile() (string, error) {
@@ -98,12 +108,4 @@ func ReadContractAbiJsonFile() (string, error) {
 		return "", err
 	}
 	return string(byteValue), nil
-}
-
-type event struct {
-	ID         string
-	lockedFee  *big.Int
-	minPayment *big.Int
-	recipient  *big.Int
-	deadline   *big.Int
 }

@@ -129,7 +129,7 @@ func getBalance(address string) (*big.Int, error) {
 	return balance, err
 }
 
-func BlockBrowserSync() {
+func BlockBrowserSyncAndEventLogsSync() {
 
 	for {
 
@@ -154,6 +154,12 @@ func BlockBrowserSync() {
 			logs.GetLogger().Error(err)
 		}
 
+		err = ScanEventFromChainAndSaveEventLogData(blockNoDB, blockNoCurrent.Int64())
+		if err != nil {
+			logs.GetLogger().Error(err)
+			continue
+		}
+
 		time.Sleep(time.Second * 5)
 	}
 }
@@ -170,14 +176,6 @@ func UpdateFromLastToCurrent(lastBlockNo, currentBlockNo int64) {
 		err = SaveBlock(nextBlock)
 		if err != nil {
 			logs.GetLogger().Error(err)
-		}
-
-		if nextBlock.Transactions().Len() > 0 {
-			err = SaveTransaction(nextBlock)
-			if err != nil {
-				logs.GetLogger().Error(err)
-			}
-
 		}
 
 		uncles := nextBlock.Uncles()
@@ -212,23 +210,6 @@ func UpdateFromLastToCurrent(lastBlockNo, currentBlockNo int64) {
 			}
 
 		}
-		// check and save uncle nextBlock if exists
-		//unclesHashes := GetUnclesHashes(nextBlock)
-		//unclesHashesLength := len(unclesHashes)
-		//if unclesHashesLength >= 1 {
-		//	for _, singleUncleHash := range unclesHashes {
-		//		uncleBlock, err := eth.WebConn.GetUncleBlockByHash(singleUncleHash)
-		//		correspondingCanonicalBlockNumber := nextBlock.Number()
-		//		if err != nil {
-		//			logs.GetLogger().Error(err,"You might need to run the rpc node in full syc mode.")
-		//			panic(err)
-		//		}
-		//		err = SaveUncleBlock(uncleBlock,correspondingCanonicalBlockNumber)
-		//		if err != nil {
-		//			logs.GetLogger().Error(err)
-		//		}
-		//	}
-		//}
 
 		lastBlockNo++
 

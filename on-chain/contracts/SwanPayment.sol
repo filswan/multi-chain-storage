@@ -103,6 +103,8 @@ contract SwanPayment is IPaymentMinimal {
         // if passed deadline, return payback to user
         if (block.timestamp > t.deadline) {
             require(t.owner == msg.sender, "Tx passed deadline, only owner can get locked tokens");
+            t._isExisted = false;
+
             payable(address(t.owner)).transfer(t.lockedFee);
         } else {
             uint256 actualFee = FilecoinOracle(_oracle).getPaymentInfo(txId);
@@ -111,6 +113,8 @@ contract SwanPayment is IPaymentMinimal {
             if (actualFee < t.minPayment) {
                 actualFee = t.minPayment;
             }
+            t._isExisted = false;
+
             payable(address(t.recipient)).transfer(actualFee);
             if (t.lockedFee > actualFee) {
                 payable(address(t.owner)).transfer(t.lockedFee - actualFee);
@@ -118,8 +122,6 @@ contract SwanPayment is IPaymentMinimal {
         }
         // todo: get status from oralce/other contract, status include status, real fee
         // check status, if not complete, return
-
-        txMap[txId]._isExisted = false;
 
         return true;
         // real fee is greater than tx.fee, take tx.fee

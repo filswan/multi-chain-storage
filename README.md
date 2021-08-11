@@ -13,24 +13,22 @@ and save to the database
 git clone https://github.com/filswan/payment-bridge
 ```
 
-2 &ensp;  Enter payment-bridge/off-chain/config directory, <br>
-&ensp;  &ensp;     change config.toml.example to config.toml , <br>
+2 &ensp;  Enter payment-bridge/off-chain/config directory <br>
+&ensp;  &ensp;     change config.toml.example to config.toml  <br>
 &ensp;  &ensp; input your database parameters and blockchain node address
 ```console
 cd $GOPATH/src/payment-bridge/off-chain/config
 mv config.toml.example config.toml
 ```
 
-3 &ensp;  Enter payment-bridge directory, <br>
+3 &ensp;  Enter payment-bridge directory <br>
 &ensp;  &ensp; and execute the make command
 ```console
 cd $GOPATH/src/payment-bridge/
-go mod download
-go mod tidy
 GO111MODULE=on make
 ```
 
-4 &ensp;  Enter payment-bridge/off-chain/build/bin directory, <br>  
+4 &ensp;  Enter payment-bridge/off-chain/build/bin directory <br>  
 &ensp;  &ensp;  execute the binary file of the payment-bridge project
 ```console
 cd $GOPATH/src/payment-bridge/off-chain/build/bin

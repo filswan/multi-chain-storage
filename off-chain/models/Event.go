@@ -1,9 +1,8 @@
 package models
 
 import (
-	"errors"
+	constants "payment-bridge/off-chain/common"
 	"payment-bridge/off-chain/database"
-	"strconv"
 )
 
 type Event struct {
@@ -27,25 +26,16 @@ func (self *Event) FindOneEvent(condition interface{}) (*Event, error) {
 	return self, err
 }
 
-func FindEventsByTxHash(txHash, limit, offset string) ([]Event, int, error, int) { //the last int returned represents error situation
+// FindEvents (&Event{Id: "0xadeaCC802D0f2DFd31bE4Fa7434F15782Fd720ac"},"id desc","10","0")
+func FindEvents(whereCondition interface{}, orderCondition string, limit, offset string) ([]*Event, error) {
 	db := database.GetDB()
-	var events []Event
-
-	var hasOffset bool = len(offset) > 0
-	limit_int, err := strconv.Atoi(limit)
-	if err != nil {
-		return events, 0, err, 1
+	if offset == "" {
+		offset = "0"
 	}
-	offset_int, err := strconv.Atoi(offset)
-	if err != nil && hasOffset {
-		return events, 0, err, 2
+	if limit == "" {
+		limit = constants.DEFAULT_SELECT_LIMIT
 	}
-	count := 0
-	db.Where(&Event{TxHash: txHash}).Find(&events).Count(&count)
-	if offset_int >= count && hasOffset {
-		return events, 0, errors.New("offset exceeds count"), 3
-	}
-	db.Order("id desc").Where(&Event{TxHash: txHash}).Offset(offset_int).Limit(limit_int).Find(&events)
-
-	return events, count, err, 4
+	var models []*Event
+	err := db.Where(whereCondition).Offset(offset).Limit(limit).Order(orderCondition).Find(&models).Error
+	return models, err
 }

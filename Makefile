@@ -47,11 +47,14 @@ endif
 	@rm -rf ./vendor/github.com/karalabe/hid
 	@govendor fetch -tree  github.com/nebulaai/nbai-node/crypto/secp256k1
 	@govendor fetch -tree  github.com/karalabe/hid
+	@go mod tidy
 
 build: ## Build the binary file
 	@go build -o off-chain/build/bin/payment-bridge main/main.go
-	@mkdir ./off-chain/build/bin/config
-	@cp ./off-chain/config/config.toml.example ./off-chain/build/bin/config/config.toml
+	@mkdir -p ./off-chain/build/bin/off-chain/config
+	@mkdir -p ./off-chain/build/bin/on-chain/contracts/abi
+	@cp ./off-chain/config/config.toml.example ./off-chain/build/bin/off-chain/config/config.toml
+	@cp ./on-chain/contracts/abi/SwanPayment.json ./off-chain/build/bin/on-chain/contracts/abi/SwanPayment.json
 
 clean: ## Remove previous build
 	@go clean

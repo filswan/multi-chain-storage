@@ -22,7 +22,7 @@ and save to the database
 &ensp;  &ensp; and execute the make command 
 ```console
 #cd $GOPATH/src/payment-bridge/
-#make all
+#GO111MODULE=on make
 ```
 
 4 &ensp;  Enter payment-bridge/off-chain/build/bin directory, <br>  

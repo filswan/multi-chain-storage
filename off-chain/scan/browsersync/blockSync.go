@@ -7,139 +7,34 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"math/big"
+	common2 "payment-bridge/off-chain/common"
 	"payment-bridge/off-chain/database"
 	"payment-bridge/off-chain/logs"
 	models2 "payment-bridge/off-chain/models"
 	"payment-bridge/off-chain/scan/eth"
-	"sort"
 	"strconv"
 	"time"
 )
-
-//var RewardPerBlock  float64 = 35
 
 func GetRewardPerBlock() *big.Int {
 	rewardBig, _ := new(big.Int).SetString("35000000000000000000", 10) // the unit is wei
 	return rewardBig
 }
 
-func UpdateContractAddress() {
-	transactions := []models2.Transaction{}
-	_, err := models2.FindMultipleTransactions(&transactions, models2.Transaction{TTo: " "})
-	if err != nil {
-		logs.GetLogger().Error(err)
-	}
-	for _, element := range transactions {
-		receipt, _ := eth.WebConn.ConnWeb.TransactionReceipt(context.Background(), common.HexToHash(element.Hash))
-		content := fmt.Sprintf(`contract address is = "%#x" in block`, receipt.ContractAddress)
-		fmt.Println(content)
-		fmt.Println(element.BlockNumber)
-	}
-}
-
-func ScanWallet() { //THIS STEP SHOULD ALSO BE USED FOR CONTRACT CODE DETECTION!
-	var firstId int64
-	var secondId int64
-	var startId int64 //this is the query start id. The necessity of this is to distinguish first scan from subsequent scans. This MAY be rendered more concise, just saying.
-	var endId int64   //this is the query end id. The necessity of this+ is to distinguish first scan from subsequent scans.
-	var firstScan = true
-	for {
-		firstId = secondId + 1 //firstId is the end id in last iteration+1
-		if firstScan {
-			startId = 0
-		} else {
-			startId = firstId
-		}
-		transaction := models2.Transaction{}
-		_, err := transaction.FindLastTxId()
-		if err != nil {
-			logs.GetLogger().Error(err)
-		}
-		secondId = transaction.ID //this selects the latest transaction id at this moment. It's also where we are supposed to begin the query next time
-		if firstScan {
-			endId = 9223372036854775807
-			firstScan = false
-		} else {
-			endId = secondId
-		}
-		transactions := []models2.Transaction{}
-		_, err = models2.FindTransactionsById(&transactions, startId, endId)
-		if err != nil {
-			logs.GetLogger().Error(err)
-		}
-		for _, element := range transactions {
-			wallet := models2.Wallet{WalletAddress: element.TFrom}
-			_wallet, _ := wallet.FindOneWallet(&wallet)
-			if _wallet.ID == 0 {
-				record := models2.Wallet{WalletAddress: element.TFrom, FirstTxID: strconv.FormatInt(element.ID, 10)}
-				err := database.GetDB().Save(&record).Error
-				if err != nil {
-					logs.GetLogger().Error(err)
-				}
-			}
-			wallet2 := models2.Wallet{WalletAddress: element.TTo}
-			_wallet2, _ := wallet2.FindOneWallet(&wallet2)
-			if _wallet2.ID == 0 {
-				record := models2.Wallet{WalletAddress: element.TTo, FirstTxID: strconv.FormatInt(element.ID, 10)}
-				database.GetDB().Save(&record)
-				err := database.GetDB().Save(&record).Error
-				if err != nil {
-					logs.GetLogger().Error(err)
-				}
-			}
-		}
-		UpdateAndSortWallet()
-		time.Sleep(time.Hour * 24)
-	}
-}
-
-func UpdateAndSortWallet() {
-	var wallets []models2.Wallet
-	_, err := models2.FindWalletAddresseses(&wallets)
-	if err != nil {
-		logs.GetLogger().Error(err)
-	}
-	totalBalance := new(big.Int).SetUint64(0)
-	models2.GetSecondSlice().WalletWithBalances = make([]*models2.WalletWithBalance, 0, len(wallets))
-	for _, wallet := range wallets {
-		balance, err := getBalance(wallet.WalletAddress)
-		if err != nil {
-			logs.GetLogger().Error(err)
-			return
-		}
-		totalBalance = new(big.Int).Add(totalBalance, balance)
-		models2.GetSecondSlice().StoreArray(models2.WalletWithBalance{WalletAddress: wallet.WalletAddress, Balance: balance})
-	}
-	totalBalanceFloat := new(big.Float).Quo(new(big.Float).SetInt(totalBalance), new(big.Float).SetUint64(100))
-	sort.Sort(models2.ByBalance(models2.GetSecondSlice().WalletWithBalances))
-	for _, element := range models2.GetSecondSlice().WalletWithBalances {
-		element.Percentage = new(big.Float).Quo(new(big.Float).SetInt(element.Balance), totalBalanceFloat).String()
-	}
-
-	models2.GetFirstSlice().WalletWithBalances = make([]*models2.WalletWithBalance, 0, len(wallets))
-	models2.GetFirstSlice().WalletWithBalances = models2.GetSecondSlice().WalletWithBalances
-}
-
-func getBalance(address string) (*big.Int, error) {
-	account := common.HexToAddress(address)
-	balance, err := eth.WebConn.ConnWeb.BalanceAt(context.Background(), account, nil)
-	if err != nil {
-		return balance, err
-	}
-	return balance, err
-}
-
 func BlockBrowserSyncAndEventLogsSync() {
 
 	for {
+		var lastCunrrentNumber int64
+		blockScanRecord := models2.BlockScanRecord{}
 
-		block := models2.Block{}
-
-		_blockDB, err := block.FindLatestBlock()
-
-		blockNoDB := _blockDB.Number
+		blockScanRecordList, err := blockScanRecord.FindLastCurrentBlockNumber()
 		if err != nil {
 			logs.GetLogger().Error(err)
+			lastCunrrentNumber = 1
+		}
+
+		if len(blockScanRecordList) >= 1 {
+			lastCunrrentNumber = blockScanRecordList[0].LastCurrentBlockNumber
 		}
 
 		blockNoCurrent, err := eth.WebConn.GetBlockNumber()
@@ -149,19 +44,47 @@ func BlockBrowserSyncAndEventLogsSync() {
 			continue
 		}
 
-		err = ScanEventFromChainAndSaveEventLogData(blockNoDB, blockNoCurrent.Int64())
+		err = ScanEventFromChainAndSaveEventLogData(lastCunrrentNumber, blockNoCurrent.Int64())
 		if err != nil {
 			logs.GetLogger().Error(err)
 			continue
 		}
 
-		UpdateFromLastToCurrent(blockNoDB, blockNoCurrent.Int64())
+		//Change to record the current block number in talbe block_scan_records
+		/*UpdateFromLastToCurrent(blockNoDB, blockNoCurrent.Int64())
 		if err != nil {
 			logs.GetLogger().Error(err)
+		}*/
+
+		err = updateOrSaveBlockScanRecord(blockScanRecordList, blockNoCurrent.Int64())
+		if err != nil {
+			logs.GetLogger().Error(err)
+			continue
 		}
 
 		time.Sleep(time.Second * 5)
 	}
+}
+
+func updateOrSaveBlockScanRecord(blockScanRecordList []*models2.BlockScanRecord, lastCurrentBlockNumber int64) error {
+	currentTime := strconv.FormatInt(common2.GetEpochInMillis(), 10)
+	if len(blockScanRecordList) >= 1 {
+		_, err := models2.UpdateBlockScanRecord("", map[string]interface{}{"update_at": currentTime, "last_current_block_number": lastCurrentBlockNumber})
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return err
+		}
+	} else {
+		newRecord := new(models2.BlockScanRecord)
+		newRecord.LastCurrentBlockNumber = lastCurrentBlockNumber
+		newRecord.UpdateAt = string(currentTime)
+		err := database.SaveOne(newRecord)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return err
+		}
+	}
+	return nil
 }
 
 func UpdateFromLastToCurrent(lastBlockNo, currentBlockNo int64) {

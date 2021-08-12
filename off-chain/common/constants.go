@@ -1,4 +1,4 @@
-package constants
+package common
 
 const (
 	PAYMENT_CONTRACT_ADDRESS    = "0xad8cE271beE7b917F2a1870C8b64EDfF6aAF3342"

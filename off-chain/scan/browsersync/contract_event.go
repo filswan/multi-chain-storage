@@ -78,6 +78,7 @@ func ScanEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) error {
 			event.ContractName = "SwanPayment"
 			event.ContractAddress = contractAddress.String()
 			event.PayloadCid = dataList[0].(string)
+			event.MinerAddress = dataList[3].(common.Address).Hex()
 			lockFee := dataList[1].(*big.Int)
 			event.LockedFee = lockFee.String()
 			deadLine := dataList[4].(*big.Int)

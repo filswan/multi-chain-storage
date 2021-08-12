@@ -16,6 +16,7 @@ type Event struct {
 	Deadline        string `json:"deadline"`
 	PayloadCid      string `json:"payload_cid"`
 	BlockNo         uint64 `json:"block_no"`
+	MinerAddress    string `json:"miner_address"`
 }
 
 func (self *Event) FindOneEvent(condition interface{}) (*Event, error) {

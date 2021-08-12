@@ -12,4 +12,6 @@ dbArgs="charset=utf8mb4&parseTime=True&loc=Local"
 
 [MainnetNode]
 rpcUrl="https://goerli.infura.io/v3/48f20ab65d0142c58e8e73658940a533"
+paymentContractAddress  = "0x97916e6CC8DD75c6E6982FFd949Fc1768CF8c055"
+contractFunctionSignature = "0x88e2ea3170ebb5d73f832e672e27a855b3daf0b2264ac6c09b04009dc151509e"
 contractEventPort="8080"

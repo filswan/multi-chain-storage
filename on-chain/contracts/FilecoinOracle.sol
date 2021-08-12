@@ -69,6 +69,7 @@ contract FilecoinOracle {
                 return 0;
             }
         }
+        
         return status[_daoUsers[0]].actualPaid;
     }
 

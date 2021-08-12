@@ -66,7 +66,7 @@ contract SwanPayment is IPaymentMinimal {
         override
         returns (bool)
     {
-        require(!t._isExisted, "Payment of transaction is already locked");
+        require(!txMap[param.id]._isExisted, "Payment of transaction is already locked");
         require(param.minPayment > 0 && msg.value > param.minPayment, "payment should greater than min payment");
         TxInfo storage t = txMap[param.id];
         t.owner = msg.sender;
@@ -108,18 +108,25 @@ contract SwanPayment is IPaymentMinimal {
             payable(address(t.owner)).transfer(t.lockedFee);
         } else {
             uint256 actualFee = FilecoinOracle(_oracle).getPaymentInfo(txId);
-            require(actualFee > 0, "Transaction is not completed");
+            require(actualFee > 0, "Transaction is incompleted");
 
             if (actualFee < t.minPayment) {
                 actualFee = t.minPayment;
             }
             t._isExisted = false;
 
-            payable(address(t.recipient)).transfer(actualFee);
+            console.log("actualFee is %s", actualFee);
+             console.log("locked fee is %s", t.lockedFee);
+            
             if (t.lockedFee > actualFee) {
                 payable(address(t.owner)).transfer(t.lockedFee - actualFee);
+            }else{
+                actualFee = t.lockedFee;
             }
+            payable(address(t.recipient)).transfer(actualFee);
         }
+        t.minPayment = 0;
+        t.lockedFee = 0;
         // todo: get status from oralce/other contract, status include status, real fee
         // check status, if not complete, return
 

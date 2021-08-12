@@ -55,12 +55,12 @@ build: ## Build the binary file
 	@go build -o off-chain/build/bin/payment-bridge main/main.go
 	@mkdir -p ./off-chain/build/bin/off-chain/config
 	@mkdir -p ./off-chain/build/bin/on-chain/contracts/abi
-	@cp ./off-chain/config/config.toml.example ./off-chain/build/bin/off-chain/config/config.toml
+	@cp ./off-chain/config/config.toml ./off-chain/build/bin/off-chain/config/config.toml
 	@cp ./on-chain/contracts/abi/SwanPayment.json ./off-chain/build/bin/on-chain/contracts/abi/SwanPayment.json
 
 clean: ## Remove previous build
 	@go clean
-	@rm -rf $(shell pwd)/build
+	@rm -rf $(shell pwd)/off-chain/build
 
 help: ## Display this help screen
 	@grep -h -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'

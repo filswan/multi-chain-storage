@@ -23,8 +23,10 @@ type database struct {
 }
 
 type mainnetNode struct {
-	RpcUrl            string
-	ContractEventPort string
+	RpcUrl                    string
+	PaymentContractAddress    string
+	ContractFunctionSignature string
+	ContractEventPort         string
 }
 
 var config *Configuration
@@ -71,6 +73,8 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 		{"DataBase", "dbPwd"},
 
 		{"MainnetNode", "rpcUrl"},
+		{"MainnetNode", "paymentContractAddress"},
+		{"MainnetNode", "contractFunctionSignature"},
 	}
 
 	for _, v := range requiredFields {

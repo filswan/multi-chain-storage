@@ -1,7 +1,6 @@
 package models
 
 import (
-	"payment-bridge/off-chain/common/constants"
 	"payment-bridge/off-chain/database"
 )
 
@@ -32,9 +31,6 @@ func FindEvents(whereCondition interface{}, orderCondition string, limit, offset
 	db := database.GetDB()
 	if offset == "" {
 		offset = "0"
-	}
-	if limit == "" {
-		limit = constants.DEFAULT_SELECT_LIMIT
 	}
 	var models []*Event
 	err := db.Where(whereCondition).Offset(offset).Limit(limit).Order(orderCondition).Find(&models).Error

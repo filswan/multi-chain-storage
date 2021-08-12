@@ -1,7 +1,7 @@
 package models
 
 import (
-	constants "payment-bridge/off-chain/common"
+	"payment-bridge/off-chain/common/constants"
 	"payment-bridge/off-chain/database"
 )
 
@@ -14,7 +14,7 @@ type Event struct {
 	ContractAddress string `json:"contract_address"`
 	LockedFee       string `json:"locked_fee"`
 	Deadline        string `json:"deadline"`
-	DataCid         string `json:"data_cid""`
+	PayloadCid      string `json:"payload_cid"`
 	BlockNo         uint64 `json:"block_no"`
 }
 

@@ -7,7 +7,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"math/big"
-	common2 "payment-bridge/off-chain/common"
+	common2 "payment-bridge/off-chain/common/utils"
 	"payment-bridge/off-chain/database"
 	"payment-bridge/off-chain/logs"
 	models2 "payment-bridge/off-chain/models"

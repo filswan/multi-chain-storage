@@ -8,9 +8,9 @@ import (
 )
 
 /**
- * created on 10/10/18.
- * author: nebula-ai-chengkun
- * Copyright defined in blockchainwebbrowser/LICENSE.txt
+ * created on 08/12/21.
+ * author: nebula-ai-zhiqiang
+ * Copyright defined in payment-bridge/LICENSE
  */
 
 type Block struct {

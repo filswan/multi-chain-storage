@@ -1,7 +1,7 @@
 package models
 
 import (
-	constants "payment-bridge/off-chain/common"
+	"payment-bridge/off-chain/common/constants"
 	"payment-bridge/off-chain/database"
 )
 
@@ -14,8 +14,9 @@ type Event struct {
 	ContractAddress string `json:"contract_address"`
 	LockedFee       string `json:"locked_fee"`
 	Deadline        string `json:"deadline"`
-	DataCid         string `json:"data_cid""`
+	PayloadCid      string `json:"payload_cid"`
 	BlockNo         uint64 `json:"block_no"`
+	MinerAddress    string `json:"miner_address"`
 }
 
 func (self *Event) FindOneEvent(condition interface{}) (*Event, error) {
@@ -27,7 +28,7 @@ func (self *Event) FindOneEvent(condition interface{}) (*Event, error) {
 }
 
 // FindEvents (&Event{Id: "0xadeaCC802D0f2DFd31bE4Fa7434F15782Fd720ac"},"id desc","10","0")
-func FindEvents(whereCondition interface{}, orderCondition string, limit, offset string) ([]*Event, error) {
+func FindEvents(whereCondition interface{}, orderCondition, limit, offset string) ([]*Event, error) {
 	db := database.GetDB()
 	if offset == "" {
 		offset = "0"

@@ -9,7 +9,7 @@ import (
 	"io/ioutil"
 	"math/big"
 	"os"
-	constants "payment-bridge/off-chain/common"
+	"payment-bridge/off-chain/config"
 	"payment-bridge/off-chain/database"
 	"payment-bridge/off-chain/logs"
 	"payment-bridge/off-chain/models"
@@ -35,9 +35,9 @@ func ScanEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) error {
 	}
 
 	//SwanPayment contract address
-	contractAddress := common.HexToAddress(constants.PAYMENT_CONTRACT_ADDRESS)
+	contractAddress := common.HexToAddress(config.GetConfig().MainnetNode.PaymentContractAddress)
 	//SwanPayment contract function signature
-	contractFunctionSignature := constants.CONTRACT_FUNCTION_SIGNATURE
+	contractFunctionSignature := config.GetConfig().MainnetNode.ContractFunctionSignature
 
 	//test block no. is : 5297224
 	query := ethereum.FilterQuery{
@@ -77,7 +77,8 @@ func ScanEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) error {
 			event.TxHash = vLog.TxHash.Hex()
 			event.ContractName = "SwanPayment"
 			event.ContractAddress = contractAddress.String()
-			event.DataCid = dataList[0].(string)
+			event.PayloadCid = dataList[0].(string)
+			event.MinerAddress = dataList[3].(common.Address).Hex()
 			lockFee := dataList[1].(*big.Int)
 			event.LockedFee = lockFee.String()
 			deadLine := dataList[4].(*big.Int)

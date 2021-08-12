@@ -3,9 +3,11 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	cors "github.com/itsjamie/gin-cors"
+	"payment-bridge/off-chain/common/constants"
 	"payment-bridge/off-chain/config"
 	"payment-bridge/off-chain/database"
 	"payment-bridge/off-chain/logs"
+	"payment-bridge/off-chain/routers"
 	"payment-bridge/off-chain/scan/browsersync"
 	"payment-bridge/off-chain/scan/eth"
 	"time"
@@ -39,6 +41,9 @@ func main() {
 		Credentials:     true,
 		ValidateHeaders: false,
 	}))
+
+	v1 := r.Group("/api/v1")
+	routers.EventLogManager(v1.Group(constants.URL_EVENT_PREFIX))
 
 	err := r.Run(":" + config.GetConfig().Port)
 	if err != nil {

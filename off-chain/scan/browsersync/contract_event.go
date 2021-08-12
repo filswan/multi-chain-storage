@@ -9,7 +9,7 @@ import (
 	"io/ioutil"
 	"math/big"
 	"os"
-	constants "payment-bridge/off-chain/common"
+	"payment-bridge/off-chain/common/constants"
 	"payment-bridge/off-chain/database"
 	"payment-bridge/off-chain/logs"
 	"payment-bridge/off-chain/models"
@@ -77,7 +77,8 @@ func ScanEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) error {
 			event.TxHash = vLog.TxHash.Hex()
 			event.ContractName = "SwanPayment"
 			event.ContractAddress = contractAddress.String()
-			event.DataCid = dataList[0].(string)
+			event.PayloadCid = dataList[0].(string)
+			event.MinerAddress = dataList[3].(common.Address).Hex()
 			lockFee := dataList[1].(*big.Int)
 			event.LockedFee = lockFee.String()
 			deadLine := dataList[4].(*big.Int)

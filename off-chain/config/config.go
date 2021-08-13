@@ -27,7 +27,7 @@ type GoerliMainnetNode struct {
 	RpcUrl                    string
 	PaymentContractAddress    string
 	ContractFunctionSignature string
-	ScanStep                  uint32
+	ScanStep                  int64
 	StartFromBlockNo          int64
 }
 
@@ -35,7 +35,7 @@ type PolygonMainnetNode struct {
 	RpcUrl                    string
 	PaymentContractAddress    string
 	ContractFunctionSignature string
-	ScanStep                  uint32
+	ScanStep                  int64
 	StartFromBlockNo          int64
 }
 
@@ -85,10 +85,12 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 		{"GoerliMainnetNode", "rpcUrl"},
 		{"GoerliMainnetNode", "paymentContractAddress"},
 		{"GoerliMainnetNode", "contractFunctionSignature"},
+		{"GoerliMainnetNode", "scanStep"},
 
 		{"PolygonMainnetNode", "rpcUrl"},
 		{"PolygonMainnetNode", "paymentContractAddress"},
 		{"PolygonMainnetNode", "contractFunctionSignature"},
+		{"PolygonMainnetNode", "scanStep"},
 	}
 
 	for _, v := range requiredFields {

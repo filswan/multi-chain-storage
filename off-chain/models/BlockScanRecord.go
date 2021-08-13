@@ -7,14 +7,15 @@ import (
 
 type BlockScanRecord struct {
 	ID                     int64  `json:"id"`
+	NetworkType            string `json:"network_type"`
 	LastCurrentBlockNumber int64  `json:"last_current_block_number"`
 	UpdateAt               string `json:"update_at"`
 }
 
-func (self *BlockScanRecord) FindLastCurrentBlockNumber() ([]*BlockScanRecord, error) {
+func (self *BlockScanRecord) FindLastCurrentBlockNumber(whereCondition string) ([]*BlockScanRecord, error) {
 	db := database.GetDB()
 	var models []*BlockScanRecord
-	err := db.Find(&models).Error
+	err := db.Where(whereCondition).Find(&models).Error
 	return models, err
 }
 
@@ -24,6 +25,6 @@ func UpdateBlockScanRecord(whereCondition interface{}, updateFields interface{})
 	db := database.GetDB()
 	var record BlockScanRecord
 	utils.GetEpochInMillis()
-	err := db.Model(&record).Where("").Update(updateFields).Error
+	err := db.Model(&record).Where(whereCondition).Update(updateFields).Error
 	return record, err
 }

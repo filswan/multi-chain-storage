@@ -5,7 +5,7 @@ import (
 	"payment-bridge/off-chain/database"
 )
 
-type Event struct {
+type EventPolygon struct {
 	ID              int64  `json:"id"`
 	TxHash          string `json:"tx_hash"`
 	EventName       string `json:"event_name"`
@@ -19,7 +19,7 @@ type Event struct {
 	MinerAddress    string `json:"miner_address"`
 }
 
-func (self *Event) FindOneEvent(condition interface{}) (*Event, error) {
+func (self *EventPolygon) FindOneEventPolygon(condition interface{}) (*EventPolygon, error) {
 	db := database.GetDB()
 	tx := db.Begin()
 	tx.Where(condition).First(&self)
@@ -28,7 +28,7 @@ func (self *Event) FindOneEvent(condition interface{}) (*Event, error) {
 }
 
 // FindEvents (&Event{Id: "0xadeaCC802D0f2DFd31bE4Fa7434F15782Fd720ac"},"id desc","10","0")
-func FindEvents(whereCondition interface{}, orderCondition, limit, offset string) ([]*Event, error) {
+func FindEventPolygons(whereCondition interface{}, orderCondition, limit, offset string) ([]*EventPolygon, error) {
 	db := database.GetDB()
 	if offset == "" {
 		offset = "0"
@@ -36,7 +36,7 @@ func FindEvents(whereCondition interface{}, orderCondition, limit, offset string
 	if limit == "" {
 		limit = constants.DEFAULT_SELECT_LIMIT
 	}
-	var models []*Event
+	var models []*EventPolygon
 	err := db.Where(whereCondition).Offset(offset).Limit(limit).Order(orderCondition).Find(&models).Error
 	return models, err
 }

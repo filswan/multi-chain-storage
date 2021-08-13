@@ -50,6 +50,7 @@ func PolygonBlockBrowserSyncAndEventLogsSync() {
 			logs.GetLogger().Error(err)
 			continue
 		}
+		lastCunrrentNumber = blockNoCurrent.Int64()
 		mutex.Unlock()
 
 		time.Sleep(time.Second * 5)

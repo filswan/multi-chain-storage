@@ -52,7 +52,7 @@ func GoerliBlockBrowserSyncAndEventLogsSync() {
 			logs.GetLogger().Error(err)
 			continue
 		}
-		lastCunrrentNumber++
+		lastCunrrentNumber = blockNoCurrent.Int64()
 		mutex.Unlock()
 
 		time.Sleep(time.Second * 5)

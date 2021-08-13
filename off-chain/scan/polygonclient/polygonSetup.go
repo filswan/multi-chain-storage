@@ -1,4 +1,4 @@
-package eth
+package polygonclient
 
 import (
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -17,13 +17,13 @@ type ConnSetup struct {
 	ConnWeb *ethclient.Client
 }
 
-//setup eth connection
+//setup polygon client connection
 var WebConn = new(ConnSetup)
 
 func ClientInit() {
 
 	for {
-		rpcUrl := config.GetConfig().MainnetNode.RpcUrl
+		rpcUrl := config.GetConfig().PolygonMainnetNode.RpcUrl
 		client, err := ethclient.Dial(rpcUrl)
 		if err != nil {
 			logs.GetLogger().Error("Try to reconnect block chain node" + rpcUrl + " ...")

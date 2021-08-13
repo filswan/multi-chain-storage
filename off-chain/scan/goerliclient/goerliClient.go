@@ -1,4 +1,4 @@
-package eth
+package goerliclient
 
 import (
 	"context"
@@ -9,9 +9,9 @@ import (
 )
 
 /**
- * created on 10/10/18.
- * author: nebula-ai-chengkun
- * Copyright defined in blockchainwebbrowser/LICENSE.txt
+ * created on 08/13/21.
+ * author: nebula-ai-zhiqiang
+ * Copyright defined in payment-bridge/LICENSE
  */
 
 func (conn *ConnSetup) GetBlockNumber() (*big.Int, error) {

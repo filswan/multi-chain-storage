@@ -7,10 +7,11 @@ import (
 )
 
 type Configuration struct {
-	Port        string
-	Database    database
-	MainnetNode mainnetNode
-	Dev         bool
+	Port               string
+	Database           database
+	GoerliMainnetNode  GoerliMainnetNode
+	PolygonMainnetNode PolygonMainnetNode
+	Dev                bool
 }
 
 type database struct {
@@ -22,11 +23,20 @@ type database struct {
 	DbArgs       string
 }
 
-type mainnetNode struct {
+type GoerliMainnetNode struct {
 	RpcUrl                    string
 	PaymentContractAddress    string
 	ContractFunctionSignature string
-	ContractEventPort         string
+	ScanStep                  uint32
+	StartFromBlockNo          int64
+}
+
+type PolygonMainnetNode struct {
+	RpcUrl                    string
+	PaymentContractAddress    string
+	ContractFunctionSignature string
+	ScanStep                  uint32
+	StartFromBlockNo          int64
 }
 
 var config *Configuration
@@ -44,8 +54,8 @@ func InitConfig(configFile string) {
 	}
 }
 
-func (c *Configuration) GetMainnetNode() string {
-	return c.MainnetNode.RpcUrl
+func (c *Configuration) GetGoerliMainnetNode() string {
+	return c.GoerliMainnetNode.RpcUrl
 }
 
 func GetConfig() Configuration {
@@ -72,9 +82,13 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 		{"DataBase", "dbUsername"},
 		{"DataBase", "dbPwd"},
 
-		{"MainnetNode", "rpcUrl"},
-		{"MainnetNode", "paymentContractAddress"},
-		{"MainnetNode", "contractFunctionSignature"},
+		{"GoerliMainnetNode", "rpcUrl"},
+		{"GoerliMainnetNode", "paymentContractAddress"},
+		{"GoerliMainnetNode", "contractFunctionSignature"},
+
+		{"PolygonMainnetNode", "rpcUrl"},
+		{"PolygonMainnetNode", "paymentContractAddress"},
+		{"PolygonMainnetNode", "contractFunctionSignature"},
 	}
 
 	for _, v := range requiredFields {

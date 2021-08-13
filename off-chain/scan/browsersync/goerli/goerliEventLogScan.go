@@ -3,6 +3,7 @@ package goerli
 import (
 	"payment-bridge/off-chain/common/constants"
 	common2 "payment-bridge/off-chain/common/utils"
+	"payment-bridge/off-chain/config"
 	"payment-bridge/off-chain/database"
 	"payment-bridge/off-chain/logs"
 	models2 "payment-bridge/off-chain/models"
@@ -13,20 +14,9 @@ import (
 )
 
 func GoerliBlockBrowserSyncAndEventLogsSync() {
+	lastCunrrentNumber := getStartBlockNo()
 
 	for {
-		var lastCunrrentNumber int64
-		blockScanRecord := models2.BlockScanRecord{}
-		whereCondition := "network_type='" + constants.NETWORK_TYPE_GOERLI + "'"
-		blockScanRecordList, err := blockScanRecord.FindLastCurrentBlockNumber(whereCondition)
-		if err != nil {
-			logs.GetLogger().Error(err)
-			lastCunrrentNumber = 1
-		}
-
-		if len(blockScanRecordList) >= 1 {
-			lastCunrrentNumber = blockScanRecordList[0].LastCurrentBlockNumber
-		}
 
 		blockNoCurrent, err := goerliclient.WebConn.GetBlockNumber()
 		if err != nil {
@@ -35,8 +25,7 @@ func GoerliBlockBrowserSyncAndEventLogsSync() {
 			continue
 		}
 
-		//If the current block is scanned, start synchronization from 10,000 blocks before the current block
-		if (blockNoCurrent.Int64() - lastCunrrentNumber) < 10000 {
+		if (blockNoCurrent.Int64() < lastCunrrentNumber) || (blockNoCurrent.Int64()-lastCunrrentNumber) < 10000 {
 			lastCunrrentNumber = blockNoCurrent.Int64() - 10000
 		}
 
@@ -49,12 +38,20 @@ func GoerliBlockBrowserSyncAndEventLogsSync() {
 			continue
 		}
 
+		blockScanRecord := models2.BlockScanRecord{}
+		whereCondition := "network_type='" + constants.NETWORK_TYPE_GOERLI + "'"
+		blockScanRecordList, err := blockScanRecord.FindLastCurrentBlockNumber(whereCondition)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			lastCunrrentNumber = 1
+		}
+
 		err = UpdateOrSaveBlockScanRecord(constants.NETWORK_TYPE_GOERLI, blockScanRecordList, blockNoCurrent.Int64())
 		if err != nil {
 			logs.GetLogger().Error(err)
 			continue
 		}
-
+		lastCunrrentNumber++
 		mutex.Unlock()
 
 		time.Sleep(time.Second * 5)
@@ -82,4 +79,13 @@ func UpdateOrSaveBlockScanRecord(networkType string, blockScanRecordList []*mode
 		}
 	}
 	return nil
+}
+
+func getStartBlockNo() int64 {
+	var lastCunrrentNumber int64 = 1
+
+	if config.GetConfig().PolygonMainnetNode.StartFromBlockNo > 0 {
+		lastCunrrentNumber = config.GetConfig().PolygonMainnetNode.StartFromBlockNo
+	}
+	return lastCunrrentNumber
 }

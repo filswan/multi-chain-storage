@@ -1,8 +1,8 @@
 package polygon
 
 import (
-	"fmt"
 	"payment-bridge/off-chain/common/constants"
+	"payment-bridge/off-chain/config"
 	"payment-bridge/off-chain/logs"
 	models2 "payment-bridge/off-chain/models"
 	"payment-bridge/off-chain/scan/browsersync/goerli"
@@ -13,26 +13,19 @@ import (
 )
 
 func PolygonBlockBrowserSyncAndEventLogsSync() {
+	lastCunrrentNumber := getStartBlockNo()
 
 	for {
-		var lastCunrrentNumber int64 = 1
-		blockScanRecord := models2.BlockScanRecord{}
-		whereCondition := "network_type='" + constants.NETWORK_TYPE_POLYGON + "'"
-		blockScanRecordList, err := blockScanRecord.FindLastCurrentBlockNumber(whereCondition)
-		if err != nil {
-			logs.GetLogger().Error(err)
-			lastCunrrentNumber = 1
-		}
 
-		if len(blockScanRecordList) >= 1 {
-			lastCunrrentNumber = blockScanRecordList[0].LastCurrentBlockNumber
-		}
-		fmt.Println(lastCunrrentNumber)
 		blockNoCurrent, err := polygonclient.WebConn.GetBlockNumber()
 		if err != nil {
 			goerliclient.ClientInit()
 			logs.GetLogger().Error(err)
 			continue
+		}
+
+		if (blockNoCurrent.Int64() < lastCunrrentNumber) || (blockNoCurrent.Int64()-lastCunrrentNumber) < 10000 {
+			lastCunrrentNumber = blockNoCurrent.Int64() - 10000
 		}
 
 		var mutex sync.Mutex
@@ -41,6 +34,14 @@ func PolygonBlockBrowserSyncAndEventLogsSync() {
 		if err != nil {
 			logs.GetLogger().Error(err)
 			continue
+		}
+
+		blockScanRecord := models2.BlockScanRecord{}
+		whereCondition := "network_type='" + constants.NETWORK_TYPE_POLYGON + "'"
+		blockScanRecordList, err := blockScanRecord.FindLastCurrentBlockNumber(whereCondition)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			lastCunrrentNumber = 1
 		}
 
 		err = goerli.UpdateOrSaveBlockScanRecord(constants.NETWORK_TYPE_POLYGON, blockScanRecordList, blockNoCurrent.Int64())
@@ -52,4 +53,13 @@ func PolygonBlockBrowserSyncAndEventLogsSync() {
 
 		time.Sleep(time.Second * 5)
 	}
+}
+
+func getStartBlockNo() int64 {
+	var lastCunrrentNumber int64 = 1
+
+	if config.GetConfig().PolygonMainnetNode.StartFromBlockNo > 0 {
+		lastCunrrentNumber = config.GetConfig().PolygonMainnetNode.StartFromBlockNo
+	}
+	return lastCunrrentNumber
 }

@@ -28,6 +28,7 @@ type GoerliMainnetNode struct {
 	PaymentContractAddress    string
 	ContractFunctionSignature string
 	ScanStep                  uint32
+	StartFromBlockNo          int64
 }
 
 type PolygonMainnetNode struct {
@@ -35,6 +36,7 @@ type PolygonMainnetNode struct {
 	PaymentContractAddress    string
 	ContractFunctionSignature string
 	ScanStep                  uint32
+	StartFromBlockNo          int64
 }
 
 var config *Configuration

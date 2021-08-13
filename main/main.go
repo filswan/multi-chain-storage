@@ -24,7 +24,7 @@ func main() {
 
 	// init database
 	db := database.Init()
-	polygon.PolygonBlockBrowserSyncAndEventLogsSync()
+	go polygon.PolygonBlockBrowserSyncAndEventLogsSync()
 
 	go goerli.GoerliBlockBrowserSyncAndEventLogsSync()
 

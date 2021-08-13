@@ -25,8 +25,9 @@ func GoerliBlockBrowserSyncAndEventLogsSync() {
 			continue
 		}
 
-		if (blockNoCurrent.Int64() < lastCunrrentNumber) || (blockNoCurrent.Int64()-lastCunrrentNumber) < 10000 {
-			lastCunrrentNumber = blockNoCurrent.Int64() - 10000
+		scanStep := config.GetConfig().GoerliMainnetNode.ScanStep
+		if (blockNoCurrent.Int64() < lastCunrrentNumber) || (blockNoCurrent.Int64()-lastCunrrentNumber) < scanStep {
+			lastCunrrentNumber = blockNoCurrent.Int64() - scanStep
 		}
 
 		var mutex sync.Mutex
@@ -51,7 +52,7 @@ func GoerliBlockBrowserSyncAndEventLogsSync() {
 			logs.GetLogger().Error(err)
 			continue
 		}
-		lastCunrrentNumber++
+		lastCunrrentNumber = blockNoCurrent.Int64()
 		mutex.Unlock()
 
 		time.Sleep(time.Second * 5)

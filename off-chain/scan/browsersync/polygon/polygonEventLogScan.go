@@ -24,7 +24,8 @@ func PolygonBlockBrowserSyncAndEventLogsSync() {
 			continue
 		}
 
-		if (blockNoCurrent.Int64() < lastCunrrentNumber) || (blockNoCurrent.Int64()-lastCunrrentNumber) < 10000 {
+		scanStep := config.GetConfig().PolygonMainnetNode.ScanStep
+		if (blockNoCurrent.Int64() < lastCunrrentNumber) || (blockNoCurrent.Int64()-lastCunrrentNumber) < scanStep {
 			lastCunrrentNumber = blockNoCurrent.Int64() - 10000
 		}
 
@@ -49,6 +50,7 @@ func PolygonBlockBrowserSyncAndEventLogsSync() {
 			logs.GetLogger().Error(err)
 			continue
 		}
+		lastCunrrentNumber = blockNoCurrent.Int64()
 		mutex.Unlock()
 
 		time.Sleep(time.Second * 5)

@@ -8,8 +8,10 @@ import (
 	"payment-bridge/off-chain/database"
 	"payment-bridge/off-chain/logs"
 	"payment-bridge/off-chain/routers"
-	"payment-bridge/off-chain/scan/browsersync"
-	"payment-bridge/off-chain/scan/eth"
+	"payment-bridge/off-chain/scan/browsersync/goerli"
+	"payment-bridge/off-chain/scan/browsersync/polygon"
+	"payment-bridge/off-chain/scan/goerliclient"
+	polygonclient "payment-bridge/off-chain/scan/polygonclient"
 	"time"
 )
 
@@ -17,12 +19,14 @@ func main() {
 
 	config.InitConfig("")
 
-	eth.ClientInit()
+	goerliclient.ClientInit()
+	polygonclient.ClientInit()
 
 	// init database
 	db := database.Init()
+	go polygon.PolygonBlockBrowserSyncAndEventLogsSync()
 
-	go browsersync.BlockBrowserSyncAndEventLogsSync()
+	go goerli.GoerliBlockBrowserSyncAndEventLogsSync()
 
 	defer func() {
 		err := db.Close()

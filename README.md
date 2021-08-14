@@ -1,7 +1,7 @@
-#Payment-Bridge
-
-Scan the blockchain, find the event log of the block where the swan payment contract has been executed,  <br>
-and save to the database
+# Payment-Bridge
+Payment bridge is desgined for make payment from multichain for filecoin storage.
+## Scan Module 
+Scan the blockchain, find the event log of the block where the swan payment contract has been executed,and save to the database
 
 ## Prerequisite
 - golang1.13 (minimum version)

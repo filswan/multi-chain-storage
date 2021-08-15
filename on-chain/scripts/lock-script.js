@@ -5,44 +5,37 @@
 // Runtime Environment's members available in the global scope.
 const hre = require("hardhat");
 
-const erc20ABI = require('../artifacts/contracts/test/ERC20.sol/TestERC20.json').abi;
-
-const one = "1000000000000000000";
-const ten = "10000000000000000000";
-const oneThousand = "1000000000000000000000";
-
-const overrides = {
-  gasLimit: 9999999
-}
-
 async function main() {
-
-  const usdcAddress = "0xe11A86849d99F524cAC3E7A0Ec1241828e332C62";
+  // Hardhat always runs the compile task when running scripts with its command
+  // line interface.
+  //
+  // If this script is run directly using `node` you may want to call compile
+  // manually to make sure everything is compiled
+  // await hre.run('compile');
 
   const recipientAddress = "0xE53AEd6DEA9e44116D4551a93eEeE28bC8684916";
+  const gatewayContractAddress = "0x5210ED929B5BEdBFFBA2F6b9A0b1B608eEAb3aa0";
 
-  const gatewayContractAddress = "0xABeAAb124e6b52afFF504DB71bbF08D0A768D053";
+  const cid = "bafk2bzaceb7cp727fxdrzudlgvsoivdwscydp35eb6wc3bzuflggfdhfa4rfe";
 
-  const cid = "bafk2bzacedh6keeksywaoa3wjryqzihqixyfekqgfljfosrcoyaj2kozl767s";
+  const minPay10Native = ethers.utils.parseEther("0.03");
 
   const [payer] = await ethers.getSigners();
 
-
-  // const USDCInstance = new ethers.Contract(usdcAddress, erc20ABI);
-
-  // await USDCInstance.connect(payer).approve(gatewayContractAddress, oneThousand);
-
+  const fee = {
+    // To convert Ether to Wei:
+    value: ethers.utils.parseEther("0.05")     // ether in this case MUST be a string
+  };
 
   const contract = await hre.ethers.getContractFactory("SwanPayment");
   const paymentInstance = await contract.attach(gatewayContractAddress);
 
-  const tx = await paymentInstance.connect(payer).lockTokenPayment({
+  const tx = await paymentInstance.connect(payer).lockPayment({
     id: cid,
-    minPayment: one,
-    amount: ten,
-    lockTime: 86400 * 6, // 6 days
+    minPayment: minPay10Native,
+    lockTime: 86400, // one day
     recipient: recipientAddress, //todo:
-  }, overrides);
+  }, fee);
 
   await tx.wait();
 

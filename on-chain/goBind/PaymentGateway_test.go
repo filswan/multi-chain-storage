@@ -1,11 +1,14 @@
 package fileswan_payment
 
 import (
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/ethereum/go-ethereum/crypto"
+	"context"
 	"math/big"
 	"os"
 	"testing"
+
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/pkg/errors"
 
 	"github.com/ethereum/go-ethereum/ethclient"
 
@@ -45,28 +48,69 @@ func TestGateway(t *testing.T) {
 	log.Info().Msg(result.Hash().String())
 }
 
-func TestPolygoncGateway(t *testing.T) {
-	//https://polygon-mumbai.g.alchemy.com/v2/86HeefA3O9EF22t2NTLbmcpfN0hb9vlv
-	infuraKey := "86HeefA3O9EF22t2NTLbmcpfN0hb9vlv"
-	client, err := ethclient.Dial("https://polygon-mumbai.g.alchemy.com/v2/" + infuraKey)
-	if err != nil {
+func TestPolygonGateway(t *testing.T) {
 
+	client, err := ethclient.Dial("https://rpc-mumbai.maticvigil.com")
+	if err != nil {
+		log.Warn().Msg("Cannot connect node")
+		return
 	}
+
+	strPK, ok := os.LookupEnv("ownerPK")
+	if !ok {
+		log.Warn().Msg("No PRIVATE_KEY")
+	}
+
+	privateKey, retErr := crypto.HexToECDSA(strPK)
+	if privateKey == nil || retErr != nil {
+		return
+	}
+
+	// publicKey, ok := privateKey.Public().(*ecdsa.PublicKey)
+	// if !ok {
+	// 	log.Warn().Msg("Cannot generate public key")
+	// 	return
+	// }
+
+	// publicAddress := crypto.PubkeyToAddress(*publicKey)
+
+	//https://polygon-mumbai.g.alchemy.com/v2/86HeefA3O9EF22t2NTLbmcpfN0hb9vlv
+	// infuraKey := "86HeefA3O9EF22t2NTLbmcpfN0hb9vlv"
+
+	// nonce, err := client.PendingNonceAt(context.Background(), publicAddress)
 
 	gatewayAddress := "0x5210ED929B5BEdBFFBA2F6b9A0b1B608eEAb3aa0"
 
 	paymentGateway, _ := NewPaymentGateway(common.HexToAddress(gatewayAddress), client)
 
+	
 	cid := "bafk2bzaceb7cp727fxdrzudlgvsoivdwscydp35eb6wc3bzuflggfdhfa4rfe"
 
 	info, _ := paymentGateway.GetLockedPaymentInfo(nil, cid)
 	log.Info().Msg(info.Recipient.String() + " Locke fee:" + info.LockedFee.String())
 
-	privateString := ""
-	privateKey, _ := crypto.HexToECDSA(privateString)
-	callOpts, err := bind.NewKeyedTransactorWithChainID(privateKey, big.NewInt(80001))
+	opts, err := bind.NewKeyedTransactorWithChainID(privateKey, big.NewInt(80001))
 
-	result, unlockErr := paymentGateway.UnlockPayment(callOpts, cid)
+	if err != nil {
+		retErr = errors.Wrap(err, "failed to created TransactOpts")
+		return
+	}
+
+	opts.Nonce = big.NewInt(int64(9))
+	// log.Info().Msg(fmt.Sprintf("%d", nonce))
+
+	gasPrice, err := client.SuggestGasPrice(context.Background())
+	if err != nil {
+		log.Err(err)
+		return
+	}
+
+	opts.GasLimit = 10000000
+	opts.GasPrice = gasPrice // 30 gwei
+
+	opts.Context = context.Background()
+
+	result, unlockErr := paymentGateway.UnlockPayment(opts, cid)
 	if unlockErr != nil {
 		log.Err(unlockErr)
 	}

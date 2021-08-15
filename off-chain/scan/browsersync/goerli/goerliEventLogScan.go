@@ -1,6 +1,7 @@
 package goerli
 
 import (
+	"math/big"
 	"payment-bridge/off-chain/common/constants"
 	common2 "payment-bridge/off-chain/common/utils"
 	"payment-bridge/off-chain/config"
@@ -17,12 +18,19 @@ func GoerliBlockBrowserSyncAndEventLogsSync() {
 	lastCunrrentNumber := getStartBlockNo()
 
 	for {
-
-		blockNoCurrent, err := goerliclient.WebConn.GetBlockNumber()
-		if err != nil {
-			goerliclient.ClientInit()
-			logs.GetLogger().Error(err)
-			continue
+		var blockNoCurrent *big.Int
+		var err error
+		var getBlockFlag bool = true
+		for getBlockFlag {
+			blockNoCurrent, err = goerliclient.WebConn.GetBlockNumber()
+			if err != nil {
+				logs.GetLogger().Error(err)
+				time.Sleep(5 * time.Second)
+				continue
+			}
+			if err == nil {
+				getBlockFlag = false
+			}
 		}
 
 		scanStep := config.GetConfig().GoerliMainnetNode.ScanStep
@@ -86,7 +94,7 @@ func getStartBlockNo() int64 {
 	var lastCunrrentNumber int64 = 1
 
 	if config.GetConfig().PolygonMainnetNode.StartFromBlockNo > 0 {
-		lastCunrrentNumber = config.GetConfig().PolygonMainnetNode.StartFromBlockNo
+		lastCunrrentNumber = config.GetConfig().GoerliMainnetNode.StartFromBlockNo
 	}
 	return lastCunrrentNumber
 }

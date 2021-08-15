@@ -1,6 +1,7 @@
 package polygon
 
 import (
+	"math/big"
 	"payment-bridge/off-chain/common/constants"
 	"payment-bridge/off-chain/config"
 	"payment-bridge/off-chain/logs"
@@ -16,12 +17,20 @@ func PolygonBlockBrowserSyncAndEventLogsSync() {
 	lastCunrrentNumber := getStartBlockNo()
 
 	for {
-
-		blockNoCurrent, err := polygonclient.WebConn.GetBlockNumber()
-		if err != nil {
-			goerliclient.ClientInit()
-			logs.GetLogger().Error(err)
-			continue
+		var blockNoCurrent *big.Int
+		var err error
+		var getBlockFlag bool = true
+		for getBlockFlag {
+			blockNoCurrent, err = polygonclient.WebConn.GetBlockNumber()
+			if err != nil {
+				goerliclient.ClientInit()
+				logs.GetLogger().Error(err)
+				time.Sleep(5 * time.Second)
+				continue
+			}
+			if err == nil {
+				getBlockFlag = false
+			}
 		}
 
 		scanStep := config.GetConfig().PolygonMainnetNode.ScanStep

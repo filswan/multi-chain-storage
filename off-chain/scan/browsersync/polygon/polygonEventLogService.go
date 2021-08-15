@@ -52,13 +52,13 @@ func ScanPolygonEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) 
 	//logs, err := client.FilterLogs(context.Background(), query)
 	logsInChain, err := polygonclient.WebConn.ConnWeb.FilterLogs(context.Background(), query)
 	if err != nil {
-		logs.GetLogger().Fatal(err)
+		logs.GetLogger().Error(err)
 		return err
 	}
 
 	contractAbi, err := abi.JSON(strings.NewReader(paymentAbiString))
 	if err != nil {
-		logs.GetLogger().Fatal(err)
+		logs.GetLogger().Error(err)
 		return err
 	}
 

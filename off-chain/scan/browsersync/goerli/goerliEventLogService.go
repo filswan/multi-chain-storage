@@ -50,13 +50,13 @@ func ScanGoerliEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) e
 	//logs, err := client.FilterLogs(context.Background(), query)
 	logsInChain, err := goerliclient.WebConn.ConnWeb.FilterLogs(context.Background(), query)
 	if err != nil {
-		logs.GetLogger().Fatal(err)
+		logs.GetLogger().Error(err)
 		return err
 	}
 
 	contractAbi, err := abi.JSON(strings.NewReader(paymentAbiString))
 	if err != nil {
-		logs.GetLogger().Fatal(err)
+		logs.GetLogger().Error(err)
 		return err
 	}
 

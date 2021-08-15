@@ -6,6 +6,7 @@ import (
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 	"math/big"
 	"payment-bridge/off-chain/common/utils"
 	"payment-bridge/off-chain/config"
@@ -16,6 +17,7 @@ import (
 	"payment-bridge/off-chain/scan/polygonclient"
 	"strconv"
 	"strings"
+	"time"
 )
 
 /**
@@ -49,11 +51,18 @@ func ScanPolygonEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) 
 	}
 
 	//logs, err := client.FilterLogs(context.Background(), query)
-	logsInChain, err := polygonclient.WebConn.ConnWeb.FilterLogs(context.Background(), query)
-	if err != nil {
-		polygonclient.ClientInit()
-		logs.GetLogger().Error(err)
-		return err
+	var logsInChain []types.Log
+	var flag bool = true
+	for flag {
+		logsInChain, err = polygonclient.WebConn.ConnWeb.FilterLogs(context.Background(), query)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			time.Sleep(5 * time.Second)
+			continue
+		}
+		if err == nil {
+			flag = false
+		}
 	}
 
 	contractAbi, err := abi.JSON(strings.NewReader(paymentAbiString))

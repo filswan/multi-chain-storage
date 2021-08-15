@@ -13,6 +13,7 @@ import (
 	"payment-bridge/off-chain/logs"
 	"payment-bridge/off-chain/models"
 	"payment-bridge/off-chain/scan/goerliclient"
+	"strconv"
 	"strings"
 )
 
@@ -26,6 +27,8 @@ const SwanPaymentAbiJson = "on-chain/contracts/abi/SwanPayment.json"
 
 // EventLogSave Find the event that executed the contract and save to db
 func ScanGoerliEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) error {
+	logs.GetLogger().Println("blockNoFrom=" + strconv.FormatInt(blockNoFrom, 10) + "--------------blockNoTo=" + strconv.FormatInt(blockNoTo, 10))
+
 	//read contract api json file
 	paymentAbiString, err := utils.ReadContractAbiJsonFile(SwanPaymentAbiJson)
 	if err != nil {

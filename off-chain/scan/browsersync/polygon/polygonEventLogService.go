@@ -27,8 +27,7 @@ import (
 // EventLogSave Find the event that executed the contract and save to db
 func ScanPolygonEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) error {
 	//read contract api json file
-	logs.GetLogger().Println("blockNoFrom=" + strconv.FormatInt(blockNoFrom, 10))
-	logs.GetLogger().Println("blockNoTo=" + strconv.FormatInt(blockNoTo, 10))
+	logs.GetLogger().Println("blockNoFrom=" + strconv.FormatInt(blockNoFrom, 10) + "--------------blockNoTo=" + strconv.FormatInt(blockNoTo, 10))
 	paymentAbiString, err := utils.ReadContractAbiJsonFile(goerli.SwanPaymentAbiJson)
 	if err != nil {
 		logs.GetLogger().Error(err)

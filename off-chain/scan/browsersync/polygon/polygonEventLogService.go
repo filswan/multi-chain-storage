@@ -51,6 +51,7 @@ func ScanPolygonEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) 
 	//logs, err := client.FilterLogs(context.Background(), query)
 	logsInChain, err := polygonclient.WebConn.ConnWeb.FilterLogs(context.Background(), query)
 	if err != nil {
+		polygonclient.ClientInit()
 		logs.GetLogger().Error(err)
 		return err
 	}

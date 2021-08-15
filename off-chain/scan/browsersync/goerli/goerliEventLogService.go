@@ -53,6 +53,7 @@ func ScanGoerliEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) e
 	//logs, err := client.FilterLogs(context.Background(), query)
 	logsInChain, err := goerliclient.WebConn.ConnWeb.FilterLogs(context.Background(), query)
 	if err != nil {
+		goerliclient.ClientInit()
 		logs.GetLogger().Error(err)
 		return err
 	}

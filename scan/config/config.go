@@ -43,7 +43,8 @@ var config *Configuration
 
 func InitConfig(configFile string) {
 	if strings.Trim(configFile, " ") == "" {
-		configFile = "./off-chain/config/config.toml"
+		configFile = "./scan/config/config.toml"
+		//configFile = "./config/config.toml"
 	}
 	if metaData, err := toml.DecodeFile(configFile, &config); err != nil {
 		log.Fatal("error:", err)

@@ -13,11 +13,11 @@ Scan the blockchain, find the event log of the block where the swan payment cont
 git clone https://github.com/filswan/payment-bridge
 ```
 
-2 &ensp;  Enter payment-bridge/off-chain/config directory <br>
+2 &ensp;  Enter payment-bridge/scan/config directory <br>
 &ensp;  &ensp;     change config.toml.example to config.toml  <br>
 &ensp;  &ensp; input your database parameters and blockchain node address
 ```console
-cd $GOPATH/src/payment-bridge/off-chain/config
+cd $GOPATH/src/payment-bridge/scan/config
 mv config.toml.example config.toml
 ```
 
@@ -29,10 +29,10 @@ GO111MODULE=on make
 ```
 
 ## Run the project   
-Enter payment-bridge/off-chain/build/bin directory <br> 
+Enter payment-bridge/scan/build/bin directory <br> 
 execute the binary file of the payment-bridge project
 ```console
-cd $GOPATH/src/payment-bridge/off-chain/build/bin
+cd $GOPATH/src/payment-bridge/scan/build/bin
 chmod +x payment-bridge
 ./payment_bridge
 ```
@@ -86,9 +86,9 @@ the return value like this below:
 
 |table                 |description       |
 |----------------------|------------------|
-|block_scan_record     |Record the block number that has been scanned to the blockchain|
-|event_goerli          |Record eligible data on goerli            |
-|event_polygon         |Record eligible data on polygon   |
+|block_scan_record     |record the block number that has been scanned to the blockchain|
+|event_goerli          |record eligible data on goerli            |
+|event_polygon         |record eligible data on polygon   |
 
 
 ## Other Topics

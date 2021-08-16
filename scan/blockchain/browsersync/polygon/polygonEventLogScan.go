@@ -2,13 +2,13 @@ package polygon
 
 import (
 	"math/big"
-	"payment-bridge/off-chain/common/constants"
-	"payment-bridge/off-chain/config"
-	"payment-bridge/off-chain/logs"
-	models2 "payment-bridge/off-chain/models"
-	"payment-bridge/off-chain/scan/browsersync/goerli"
-	"payment-bridge/off-chain/scan/goerliclient"
-	polygonclient "payment-bridge/off-chain/scan/polygonclient"
+	"payment-bridge/scan/blockchain/browsersync/goerli"
+	"payment-bridge/scan/blockchain/goerliclient"
+	polygonclient "payment-bridge/scan/blockchain/polygonclient"
+	"payment-bridge/scan/common/constants"
+	"payment-bridge/scan/config"
+	"payment-bridge/scan/logs"
+	models2 "payment-bridge/scan/models"
 	"sync"
 	"time"
 )

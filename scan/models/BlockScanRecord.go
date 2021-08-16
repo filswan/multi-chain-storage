@@ -1,8 +1,8 @@
 package models
 
 import (
-	"payment-bridge/off-chain/common/utils"
-	"payment-bridge/off-chain/database"
+	"payment-bridge/scan/common/utils"
+	"payment-bridge/scan/database"
 )
 
 type BlockScanRecord struct {

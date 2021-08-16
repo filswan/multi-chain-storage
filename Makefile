@@ -47,7 +47,7 @@ build: ## Build the binary file
 	@echo "Done building."
 	@mkdir -p ./build/config
 	@mkdir -p ./build/on-chain/contracts/abi
-	@cp ./off-chain/config/config.toml ./build/config/config.toml
+	@cp ./scan/config/config.toml ./build/config/config.toml
 	@cp ./on-chain/contracts/abi/SwanPayment.json ./build/on-chain/contracts/abi/SwanPayment.json
 
 clean: ## Remove previous build

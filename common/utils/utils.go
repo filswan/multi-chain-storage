@@ -4,7 +4,7 @@ import (
 	"io/ioutil"
 	"math/big"
 	"os"
-	"payment-bridge/scan/logs"
+	"payment-bridge/logs"
 	"time"
 )
 

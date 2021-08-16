@@ -1,9 +1,9 @@
-package polygonclient
+package goerliclient
 
 import (
 	"github.com/ethereum/go-ethereum/ethclient"
-	"payment-bridge/scan/config"
-	"payment-bridge/scan/logs"
+	"payment-bridge/config"
+	"payment-bridge/logs"
 	"time"
 )
 
@@ -17,13 +17,13 @@ type ConnSetup struct {
 	ConnWeb *ethclient.Client
 }
 
-//setup polygon client connection
+//setup eth connection
 var WebConn = new(ConnSetup)
 
 func ClientInit() {
 
 	for {
-		rpcUrl := config.GetConfig().PolygonMainnetNode.RpcUrl
+		rpcUrl := config.GetConfig().GoerliMainnetNode.RpcUrl
 		client, err := ethclient.Dial(rpcUrl)
 		if err != nil {
 			logs.GetLogger().Error("Try to reconnect block chain node" + rpcUrl + " ...")

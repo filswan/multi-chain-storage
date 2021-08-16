@@ -1,4 +1,4 @@
-package polygon
+package goerli
 
 import (
 	"context"
@@ -8,13 +8,12 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"math/big"
-	"payment-bridge/scan/blockchain/browsersync/goerli"
-	"payment-bridge/scan/blockchain/polygonclient"
-	"payment-bridge/scan/common/utils"
-	"payment-bridge/scan/config"
-	"payment-bridge/scan/database"
-	"payment-bridge/scan/logs"
-	"payment-bridge/scan/models"
+	"payment-bridge/blockchain/goerliclient"
+	"payment-bridge/common/utils"
+	"payment-bridge/config"
+	"payment-bridge/database"
+	"payment-bridge/logs"
+	"payment-bridge/models"
 	"strconv"
 	"strings"
 	"time"
@@ -26,20 +25,23 @@ import (
  * Copyright defined in payment-bridge/LICENSE
  */
 
+const SwanPaymentAbiJson = "on-chain/contracts/abi/SwanPayment.json"
+
 // EventLogSave Find the event that executed the contract and save to db
-func ScanPolygonEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) error {
-	//read contract api json file
+func ScanGoerliEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) error {
 	logs.GetLogger().Println("blockNoFrom=" + strconv.FormatInt(blockNoFrom, 10) + "--------------blockNoTo=" + strconv.FormatInt(blockNoTo, 10))
-	paymentAbiString, err := utils.ReadContractAbiJsonFile(goerli.SwanPaymentAbiJson)
+
+	//read contract api json file
+	paymentAbiString, err := utils.ReadContractAbiJsonFile(SwanPaymentAbiJson)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
 	}
 
 	//SwanPayment contract address
-	contractAddress := common.HexToAddress(config.GetConfig().PolygonMainnetNode.PaymentContractAddress)
+	contractAddress := common.HexToAddress(config.GetConfig().GoerliMainnetNode.PaymentContractAddress)
 	//SwanPayment contract function signature
-	contractFunctionSignature := config.GetConfig().PolygonMainnetNode.ContractFunctionSignature
+	contractFunctionSignature := config.GetConfig().GoerliMainnetNode.ContractFunctionSignature
 
 	//test block no. is : 5297224
 	query := ethereum.FilterQuery{
@@ -49,12 +51,11 @@ func ScanPolygonEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) 
 			contractAddress,
 		},
 	}
-
-	//logs, err := client.FilterLogs(context.Background(), query)
 	var logsInChain []types.Log
 	var flag bool = true
 	for flag {
-		logsInChain, err = polygonclient.WebConn.ConnWeb.FilterLogs(context.Background(), query)
+		//logs, err := client.FilterLogs(context.Background(), query)
+		logsInChain, err = goerliclient.WebConn.ConnWeb.FilterLogs(context.Background(), query)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			time.Sleep(5 * time.Second)
@@ -74,7 +75,7 @@ func ScanPolygonEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) 
 	for _, vLog := range logsInChain {
 		//if log have this contractor function signer
 		if vLog.Topics[0].Hex() == contractFunctionSignature {
-			eventList, err := models.FindEventPolygons(&models.EventPolygon{TxHash: vLog.TxHash.Hex(), BlockNo: vLog.BlockNumber}, "id desc", "10", "0")
+			eventList, err := models.FindEventGoerlis(&models.EventGoerli{TxHash: vLog.TxHash.Hex(), BlockNo: vLog.BlockNumber}, "id desc", "10", "0")
 			if err != nil {
 				logs.GetLogger().Error(err)
 				continue
@@ -83,8 +84,7 @@ func ScanPolygonEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) 
 				fmt.Println(vLog.BlockHash.Hex())
 				fmt.Println(vLog.BlockNumber)
 				fmt.Println(vLog.TxHash.Hex())
-				var event = new(models.EventPolygon)
-
+				var event = new(models.EventGoerli)
 				dataList, err := contractAbi.Unpack("LockPayment", vLog.Data)
 				if err != nil {
 					logs.GetLogger().Error(err)

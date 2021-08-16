@@ -1,8 +1,8 @@
 package models
 
 import (
-	"payment-bridge/scan/common/utils"
-	"payment-bridge/scan/database"
+	"payment-bridge/common/utils"
+	"payment-bridge/database"
 )
 
 type BlockScanRecord struct {

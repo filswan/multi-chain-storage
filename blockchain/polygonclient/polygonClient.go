@@ -1,11 +1,11 @@
-package goerliclient
+package polygonclient
 
 import (
 	"context"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"math/big"
-	"payment-bridge/scan/logs"
+	"payment-bridge/logs"
 )
 
 /**

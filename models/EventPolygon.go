@@ -1,8 +1,8 @@
 package models
 
 import (
-	"payment-bridge/scan/common/constants"
-	"payment-bridge/scan/database"
+	"payment-bridge/common/constants"
+	"payment-bridge/database"
 )
 
 type EventPolygon struct {

@@ -3,7 +3,7 @@ package logs
 import (
 	"github.com/rifflock/lfshook"
 	"github.com/sirupsen/logrus"
-	"payment-bridge/scan/config"
+	"payment-bridge/config"
 )
 
 var logger *logrus.Logger

@@ -43,12 +43,12 @@ endif
 build: ## Build the binary file
 	@go mod download
 	@go mod tidy
-	@go build -o build/payment-bridge main/main.go
-	@echo "Done building."
+	@go build -o build/payment-bridge main/payment-bridge.go
 	@mkdir -p ./build/config
 	@mkdir -p ./build/on-chain/contracts/abi
-	@cp ./scan/config/config.toml ./build/config/config.toml
+	@cp ./config/config.toml ./build/config/config.toml
 	@cp ./on-chain/contracts/abi/SwanPayment.json ./build/on-chain/contracts/abi/SwanPayment.json
+	@echo "Done building."
 
 clean: ## Remove previous build
 	@go clean

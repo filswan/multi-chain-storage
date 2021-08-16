@@ -82,6 +82,15 @@ the return value like this below:
 }
 ```
 
+## Database table description
+
+|table                 |description       |
+|----------------------|------------------|
+|block_scan_record     |Record the block number that has been scanned to the blockchain|
+|event_goerli          |Record eligible data on goerli            |
+|event_polygon         |Record eligible data on polygon   |
+
+
 ## Other Topics
 - [how to pay for filecoin network storage with polygon](https://www.youtube.com/watch?v=c4Dvidz3plU)
 

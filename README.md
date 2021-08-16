@@ -28,7 +28,7 @@ cd $GOPATH/src/payment-bridge/
 GO111MODULE=on make
 ```
 
-##Run the project   
+## Run the project   
 Enter payment-bridge/off-chain/build/bin directory <br> 
 execute the binary file of the payment-bridge project
 ```console
@@ -37,7 +37,7 @@ chmod +x payment-bridge
 ./payment_bridge
 ```
 
-##Call the api to check your scan data from chain <br>
+## Call the api to check your scan data from chain <br>
 The default port number of the project is 8888, you can modify it to the port you want in config.toml
 Access the application at the address [http://localhost:8888/api/v1/events/logs/:contractAddress/:payloadCid](http://localhost:8888/api/v1/events/logs/:contractAddress/:payloadCid) <br>
 Replace: contractAddress and: payloadCid with your own values.

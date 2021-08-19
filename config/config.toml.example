@@ -1,0 +1,27 @@
+port="8888"
+dev = true
+
+
+[DataBase]
+dbHost="localhost"
+dbPort="3306"
+dbSchemaName="payment_bridge"
+dbUsername="root"
+dbPwd="123456"
+dbArgs="charset=utf8mb4&parseTime=True&loc=Local"
+
+[GoerliMainnetNode]
+rpcUrl="https://goerli.infura.io/v3/48f20ab65d0142c58e8e73658940a533"
+paymentContractAddress  = "0x97916e6CC8DD75c6E6982FFd949Fc1768CF8c055"
+contractFunctionSignature = "0x88e2ea3170ebb5d73f832e672e27a855b3daf0b2264ac6c09b04009dc151509e"
+scanStep=10000
+startFromBlockNo=5000000
+
+
+[PolygonMainnetNode]
+#rpcUrl="https://rpc-mumbai.maticvigil.com"
+rpcUrl="https://polygon-mumbai.g.alchemy.com/v2/86HeefA3O9EF22t2NTLbmcpfN0hb9vlv"
+paymentContractAddress  = "0x5210ED929B5BEdBFFBA2F6b9A0b1B608eEAb3aa0"
+contractFunctionSignature = "0x88e2ea3170ebb5d73f832e672e27a855b3daf0b2264ac6c09b04009dc151509e"
+scanStep=1000
+startFromBlockNo=15000000

@@ -11,6 +11,7 @@ type Configuration struct {
 	Database           database
 	GoerliMainnetNode  GoerliMainnetNode
 	PolygonMainnetNode PolygonMainnetNode
+	NbaiMainnetNode    NbaiMainnetNode
 	Dev                bool
 }
 
@@ -32,6 +33,14 @@ type GoerliMainnetNode struct {
 }
 
 type PolygonMainnetNode struct {
+	RpcUrl                    string
+	PaymentContractAddress    string
+	ContractFunctionSignature string
+	ScanStep                  int64
+	StartFromBlockNo          int64
+}
+
+type NbaiMainnetNode struct {
 	RpcUrl                    string
 	PaymentContractAddress    string
 	ContractFunctionSignature string
@@ -91,6 +100,11 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 		{"PolygonMainnetNode", "paymentContractAddress"},
 		{"PolygonMainnetNode", "contractFunctionSignature"},
 		{"PolygonMainnetNode", "scanStep"},
+
+		{"NbaiMainnetNode", "rpcUrl"},
+		{"NbaiMainnetNode", "paymentContractAddress"},
+		{"NbaiMainnetNode", "contractFunctionSignature"},
+		{"NbaiMainnetNode", "scanStep"},
 	}
 
 	for _, v := range requiredFields {

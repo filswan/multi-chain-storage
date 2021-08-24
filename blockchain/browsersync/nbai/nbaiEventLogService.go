@@ -25,7 +25,7 @@ import (
  * Copyright defined in payment-bridge/LICENSE
  */
 
-const NbaiAbiJson = "on-chain/contracts/abi/SwanPayment.json"
+const NbaiAbiJson = "on-chain/contracts/abi/Nbai.json"
 
 // EventLogSave Find the event that executed the contract and save to db
 func ScanNbaiEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) error {

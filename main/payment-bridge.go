@@ -7,6 +7,7 @@ import (
 	"payment-bridge/blockchain/browsersync/nbai"
 	"payment-bridge/blockchain/browsersync/polygon"
 	"payment-bridge/blockchain/goerliclient"
+	"payment-bridge/blockchain/nbaiclient"
 	polygonclient "payment-bridge/blockchain/polygonclient"
 	"payment-bridge/common/constants"
 	"payment-bridge/config"
@@ -22,12 +23,12 @@ func main() {
 
 	goerliclient.ClientInit()
 	polygonclient.ClientInit()
-	polygonclient.ClientInit()
+	nbaiclient.ClientInit()
 
 	// init database
 	db := database.Init()
-
-	nbai.ScanNbaiEventFromChainAndSaveEventLogData(60000, 6899437)
+	//polygon.ScanPolygonEventFromChainAndSaveEventLogData(1,17785986)
+	nbai.ScanNbaiEventFromChainAndSaveEventLogData(1, 6904984)
 	go polygon.PolygonBlockBrowserSyncAndEventLogsSync()
 
 	go goerli.GoerliBlockBrowserSyncAndEventLogsSync()

@@ -17,21 +17,11 @@ all: build
 
 lint: ## Lint the files
 	@golangci-lint run --timeout 150m
+	@echo "Done lint."
 
 test: ## Run unittests
 	@go test -short ${PKG_LIST}
-
-race: dep ## Run data race detector
-	@go test -race -short ${PKG_LIST}
-
-msan: dep ## Run memory sanitizer
-	@go test -msan -short ${PKG_LIST}
-
-coverage: ## Generate global code coverage report
-	./tools/coverage.sh;
-
-coverhtml: ## Generate global code coverage report in HTML
-	./tools/coverage.sh html;
+	@echo "Done testing."
 
 dep: ## Get the dependencies
 ifeq ($(shell command -v dep 2> /dev/null),)
@@ -47,20 +37,23 @@ endif
 	@rm -rf ./vendor/github.com/karalabe/hid
 	@govendor fetch -tree  github.com/nebulaai/nbai-node/crypto/secp256k1
 	@govendor fetch -tree  github.com/karalabe/hid
+	@echo "Done dep."
 
 
 build: ## Build the binary file
 	@go mod download
 	@go mod tidy
-	@go build -o off-chain/build/bin/payment-bridge main/main.go
-	@mkdir -p ./off-chain/build/bin/off-chain/config
-	@mkdir -p ./off-chain/build/bin/on-chain/contracts/abi
-	@cp ./off-chain/config/config.toml ./off-chain/build/bin/off-chain/config/config.toml
-	@cp ./on-chain/contracts/abi/SwanPayment.json ./off-chain/build/bin/on-chain/contracts/abi/SwanPayment.json
+	@go build -o build/payment-bridge main/payment-bridge.go
+	@mkdir -p ./build/config
+	@mkdir -p ./build/on-chain/contracts/abi
+	@cp ./config/config.toml ./build/config/config.toml
+	@cp ./on-chain/contracts/abi/SwanPayment.json ./build/on-chain/contracts/abi/SwanPayment.json
+	@echo "Done building."
 
 clean: ## Remove previous build
 	@go clean
-	@rm -rf $(shell pwd)/off-chain/build
+	@rm -rf $(shell pwd)/build
+	@echo "Done cleaning."
 
 help: ## Display this help screen
 	@grep -h -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'

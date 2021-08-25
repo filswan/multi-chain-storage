@@ -9,7 +9,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"math/big"
 	"payment-bridge/blockchain/browsersync/goerli"
-	"payment-bridge/blockchain/polygonclient"
+	"payment-bridge/blockchain/initclient/polygonclient"
 	"payment-bridge/common/utils"
 	"payment-bridge/config"
 	"payment-bridge/database"

@@ -3,8 +3,8 @@ package nbai
 import (
 	"math/big"
 	"payment-bridge/blockchain/browsersync/goerli"
-	"payment-bridge/blockchain/goerliclient"
-	nbaiclient "payment-bridge/blockchain/nbaiclient"
+	"payment-bridge/blockchain/initclient/goerliclient"
+	"payment-bridge/blockchain/initclient/nbaiclient"
 	"payment-bridge/common/constants"
 	"payment-bridge/config"
 	"payment-bridge/logs"

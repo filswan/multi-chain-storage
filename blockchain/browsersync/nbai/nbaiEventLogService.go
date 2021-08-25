@@ -8,7 +8,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"math/big"
-	"payment-bridge/blockchain/nbaiclient"
+	"payment-bridge/blockchain/initclient/nbaiclient"
 	"payment-bridge/common/utils"
 	"payment-bridge/config"
 	"payment-bridge/database"
@@ -25,7 +25,7 @@ import (
  * Copyright defined in payment-bridge/LICENSE
  */
 
-const NbaiAbiJson = "on-chain/contracts/abi/Nbai.json"
+const NbaiAbiJson = "on-chain/contracts/abi/ChildChainManager.json"
 
 // EventLogSave Find the event that executed the contract and save to db
 func ScanNbaiEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) error {
@@ -86,16 +86,16 @@ func ScanNbaiEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) err
 				fmt.Println(vLog.TxHash.Hex())
 				var event = new(models.EventNbai)
 
-				dataList, err := contractAbi.Unpack("LockPayment", vLog.Data)
+				dataList, err := contractAbi.Unpack("StateSynced", vLog.Data)
 				if err != nil {
 					logs.GetLogger().Error(err)
 				}
 				fmt.Println(len(dataList))
 				fmt.Println(dataList[0])
+				fmt.Println(dataList[0].([]uint8))
+
+				ChangeNbaiToBnb(dataList[0].([]uint8))
 				fmt.Println(dataList[1])
-				fmt.Println(dataList[2])
-				fmt.Println(dataList[3])
-				fmt.Println(dataList[4])
 				event.BlockNo = vLog.BlockNumber
 				event.TxHash = vLog.TxHash.Hex()
 				event.ContractName = "SwanPayment"

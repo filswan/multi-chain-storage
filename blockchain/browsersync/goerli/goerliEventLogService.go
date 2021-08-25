@@ -8,7 +8,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"math/big"
-	"payment-bridge/blockchain/goerliclient"
+	"payment-bridge/blockchain/initclient/goerliclient"
 	"payment-bridge/common/utils"
 	"payment-bridge/config"
 	"payment-bridge/database"

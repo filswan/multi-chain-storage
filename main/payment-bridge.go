@@ -4,8 +4,10 @@ import (
 	"github.com/gin-gonic/gin"
 	cors "github.com/itsjamie/gin-cors"
 	"payment-bridge/blockchain/browsersync/goerli"
+	"payment-bridge/blockchain/browsersync/nbai"
 	"payment-bridge/blockchain/browsersync/polygon"
 	"payment-bridge/blockchain/goerliclient"
+	"payment-bridge/blockchain/nbaiclient"
 	polygonclient "payment-bridge/blockchain/polygonclient"
 	"payment-bridge/common/constants"
 	"payment-bridge/config"
@@ -21,9 +23,12 @@ func main() {
 
 	goerliclient.ClientInit()
 	polygonclient.ClientInit()
+	nbaiclient.ClientInit()
 
 	// init database
 	db := database.Init()
+	//polygon.ScanPolygonEventFromChainAndSaveEventLogData(1,17785986)
+	nbai.ScanNbaiEventFromChainAndSaveEventLogData(1, 6904984)
 	go polygon.PolygonBlockBrowserSyncAndEventLogsSync()
 
 	go goerli.GoerliBlockBrowserSyncAndEventLogsSync()

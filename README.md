@@ -13,7 +13,15 @@ Scan the blockchain, find the event log of the block where the swan payment cont
 git clone https://github.com/filswan/payment-bridge
 ```
 
-2 &ensp;  Enter payment-bridge/scan/config directory <br>
+2 &ensp;  If you need the bsc block link function, create a .env file in the project root directory <br>
+&ensp;  &ensp; and enter the private key of your bsc blockchain wallet <br>
+&ensp;  &ensp; Input value like this:  privateKey=<your wallet private key in bsc blockchain>
+```console
+cd $GOPATH/src/payment-bridge
+vi  .env
+```
+
+3 &ensp;  Enter payment-bridge/scan/config directory <br>
 &ensp;  &ensp;     change config.toml.example to config.toml  <br>
 &ensp;  &ensp; input your database parameters and blockchain node address
 ```console
@@ -21,7 +29,7 @@ cd $GOPATH/src/payment-bridge/scan/config
 mv config.toml.example config.toml
 ```
 
-3 &ensp; Enter payment-bridge directory <br>
+4 &ensp; Enter payment-bridge directory <br>
 &ensp; &ensp;  and execute the make command
 ```console
 cd $GOPATH/src/payment-bridge/

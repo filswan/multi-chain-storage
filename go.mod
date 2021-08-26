@@ -10,7 +10,6 @@ require (
 )
 
 require (
-	github.com/HydroProtocol/ethereum-watcher v0.6.0
 	github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d // indirect
 	github.com/btcsuite/btcd v0.21.0-beta // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect

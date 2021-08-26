@@ -1,14 +1,16 @@
 package main
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	cors "github.com/itsjamie/gin-cors"
-	"payment-bridge/blockchain/browsersync/goerli"
+	"github.com/joho/godotenv"
+	"os"
 	"payment-bridge/blockchain/browsersync/nbai"
-	"payment-bridge/blockchain/browsersync/polygon"
-	"payment-bridge/blockchain/goerliclient"
-	"payment-bridge/blockchain/nbaiclient"
-	polygonclient "payment-bridge/blockchain/polygonclient"
+	"payment-bridge/blockchain/initclient/bscclient"
+	"payment-bridge/blockchain/initclient/goerliclient"
+	"payment-bridge/blockchain/initclient/nbaiclient"
+	"payment-bridge/blockchain/initclient/polygonclient"
 	"payment-bridge/common/constants"
 	"payment-bridge/config"
 	"payment-bridge/database"
@@ -18,20 +20,18 @@ import (
 )
 
 func main() {
+	initMethod()
 
-	config.InitConfig("")
-
-	goerliclient.ClientInit()
-	polygonclient.ClientInit()
-	nbaiclient.ClientInit()
+	LoadEnv()
 
 	// init database
 	db := database.Init()
 	//polygon.ScanPolygonEventFromChainAndSaveEventLogData(1,17785986)
-	nbai.ScanNbaiEventFromChainAndSaveEventLogData(1, 6904984)
-	go polygon.PolygonBlockBrowserSyncAndEventLogsSync()
+	//nbai.ListenForReceiptLogTillExit2()
+	nbai.ScanNbaiEventFromChainAndSaveEventLogData(6914904, 6915904)
+	//go polygon.PolygonBlockBrowserSyncAndEventLogsSync()
 
-	go goerli.GoerliBlockBrowserSyncAndEventLogsSync()
+	//go goerli.GoerliBlockBrowserSyncAndEventLogsSync()
 
 	defer func() {
 		err := db.Close()
@@ -59,4 +59,21 @@ func main() {
 		logs.GetLogger().Fatal(err)
 	}
 
+}
+
+func initMethod() string {
+	config.InitConfig("")
+	goerliclient.ClientInit()
+	polygonclient.ClientInit()
+	nbaiclient.ClientInit()
+	bscclient.ClientInit()
+	return ""
+}
+
+func LoadEnv() {
+	err := godotenv.Load(".env")
+	if err != nil {
+		logs.GetLogger().Error(err)
+	}
+	fmt.Println("name: ", os.Getenv("privateKey"))
 }

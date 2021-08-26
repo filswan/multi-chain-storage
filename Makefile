@@ -47,6 +47,7 @@ build: ## Build the binary file
 	@mkdir -p ./build/config
 	@mkdir -p ./build/on-chain/contracts/abi
 	@cp ./config/config.toml ./build/config/config.toml
+	@cp .env ./build/.env
 	@cp ./on-chain/contracts/abi/SwanPayment.json ./build/on-chain/contracts/abi/SwanPayment.json
 	@echo "Done building."
 

@@ -7,13 +7,15 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/sirupsen/logrus"
 	"math/big"
-	"payment-bridge/blockchain/nbaiclient"
+	"payment-bridge/blockchain/initclient/nbaiclient"
 	"payment-bridge/common/utils"
 	"payment-bridge/config"
 	"payment-bridge/database"
 	"payment-bridge/logs"
 	"payment-bridge/models"
+	"payment-bridge/on-chain/goBind"
 	"strconv"
 	"strings"
 	"time"
@@ -25,13 +27,12 @@ import (
  * Copyright defined in payment-bridge/LICENSE
  */
 
-const NbaiAbiJson = "on-chain/contracts/abi/Nbai.json"
-
 // EventLogSave Find the event that executed the contract and save to db
 func ScanNbaiEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) error {
 	//read contract api json file
 	logs.GetLogger().Println("blockNoFrom=" + strconv.FormatInt(blockNoFrom, 10) + "--------------blockNoTo=" + strconv.FormatInt(blockNoTo, 10))
-	paymentAbiString, err := utils.ReadContractAbiJsonFile(NbaiAbiJson)
+	//paymentAbiString, err := utils.ReadContractAbiJsonFile(goBind.StateSenderABI)
+	paymentAbiString, err := abi.JSON(strings.NewReader(string(goBind.StateSenderABI)))
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
@@ -66,12 +67,6 @@ func ScanNbaiEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) err
 		}
 	}
 
-	contractAbi, err := abi.JSON(strings.NewReader(paymentAbiString))
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
-
 	for _, vLog := range logsInChain {
 		//if log have this contractor function signer
 		if vLog.Topics[0].Hex() == contractFunctionSignature {
@@ -86,22 +81,19 @@ func ScanNbaiEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) err
 				fmt.Println(vLog.TxHash.Hex())
 				var event = new(models.EventNbai)
 
-				dataList, err := contractAbi.Unpack("LockPayment", vLog.Data)
+				receiveMap := map[string]interface{}{}
+				err = paymentAbiString.UnpackIntoMap(receiveMap, "StateSynced", vLog.Data)
 				if err != nil {
-					logs.GetLogger().Error(err)
+					logrus.Fatal(err)
 				}
-				fmt.Println(len(dataList))
-				fmt.Println(dataList[0])
-				fmt.Println(dataList[1])
-				fmt.Println(dataList[2])
-				fmt.Println(dataList[3])
-				fmt.Println(dataList[4])
+
+				ChangeNbaiToBnb(receiveMap["data"].([]byte))
+
 				event.BlockNo = vLog.BlockNumber
 				event.TxHash = vLog.TxHash.Hex()
 				event.ContractName = "SwanPayment"
 				event.ContractAddress = contractAddress.String()
-				event.BytesData = dataList[0].(string)
-				event.Address = fmt.Sprintf("%x", dataList[2].(*big.Int))
+				event.BytesData = receiveMap["data"].([]byte)
 				event.CreateAt = strconv.FormatInt(utils.GetEpochInMillis(), 10)
 
 				err = database.SaveOne(event)

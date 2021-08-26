@@ -1,4 +1,4 @@
-package fileswan_payment
+package goBind
 
 import (
 	"os"

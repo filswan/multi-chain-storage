@@ -2,7 +2,7 @@ package goerli
 
 import (
 	"math/big"
-	"payment-bridge/blockchain/goerliclient"
+	"payment-bridge/blockchain/initclient/goerliclient"
 	"payment-bridge/common/constants"
 	common2 "payment-bridge/common/utils"
 	"payment-bridge/config"

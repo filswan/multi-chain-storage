@@ -3,8 +3,8 @@ package polygon
 import (
 	"math/big"
 	"payment-bridge/blockchain/browsersync/goerli"
-	"payment-bridge/blockchain/goerliclient"
-	polygonclient "payment-bridge/blockchain/polygonclient"
+	"payment-bridge/blockchain/initclient/goerliclient"
+	"payment-bridge/blockchain/initclient/polygonclient"
 	"payment-bridge/common/constants"
 	"payment-bridge/config"
 	"payment-bridge/logs"

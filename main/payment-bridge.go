@@ -1,8 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	cors "github.com/itsjamie/gin-cors"
+	"github.com/joho/godotenv"
+	"os"
 	"payment-bridge/blockchain/browsersync/nbai"
 	"payment-bridge/blockchain/initclient/bscclient"
 	"payment-bridge/blockchain/initclient/goerliclient"
@@ -19,10 +22,13 @@ import (
 func main() {
 	initMethod()
 
+	LoadEnv()
+
 	// init database
 	db := database.Init()
 	//polygon.ScanPolygonEventFromChainAndSaveEventLogData(1,17785986)
-	nbai.ScanNbaiEventFromChainAndSaveEventLogData(1, 6904984)
+	//nbai.ListenForReceiptLogTillExit2()
+	nbai.ScanNbaiEventFromChainAndSaveEventLogData(6914904, 6915904)
 	//go polygon.PolygonBlockBrowserSyncAndEventLogsSync()
 
 	//go goerli.GoerliBlockBrowserSyncAndEventLogsSync()
@@ -62,4 +68,12 @@ func initMethod() string {
 	nbaiclient.ClientInit()
 	bscclient.ClientInit()
 	return ""
+}
+
+func LoadEnv() {
+	err := godotenv.Load(".env")
+	if err != nil {
+		logs.GetLogger().Error(err)
+	}
+	fmt.Println("name: ", os.Getenv("privateKey"))
 }

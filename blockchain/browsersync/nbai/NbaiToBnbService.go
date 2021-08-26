@@ -6,7 +6,9 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	"math/big"
+	"os"
 	"payment-bridge/blockchain/initclient/bscclient"
+	"payment-bridge/common/constants"
 	"payment-bridge/common/utils"
 	"payment-bridge/config"
 	"payment-bridge/database"
@@ -18,7 +20,7 @@ import (
 )
 
 func ChangeNbaiToBnb(data []byte) {
-	pk := "ad826fe97dc10a50c1d2a796531e5b49847a7697c4ba959430ea740d22d95e35"
+	pk := os.Getenv("privateKey")
 	fromAddress := common.HexToAddress(config.GetConfig().BscMainnetNode.BscWallet)
 	client := bscclient.WebConn.ConnWeb
 	nonce, err := client.PendingNonceAt(context.Background(), fromAddress)
@@ -50,13 +52,13 @@ func ChangeNbaiToBnb(data []byte) {
 	tx, err := childInstance.OnStateReceive(callOpts, big.NewInt(int64(1)), data)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		childChainTX.Status = "fail"
+		childChainTX.Status = constants.TRANSACTION_STATUS_FAIL
 	}
 
 	childChainTX.TxHash = tx.Hash().Hex()
 	childChainTX.CreateAt = strconv.FormatInt(utils.GetEpochInMillis(), 10)
 	childChainTX.UpdateAt = strconv.FormatInt(utils.GetEpochInMillis(), 10)
-	childChainTX.Status = "success"
+	childChainTX.Status = constants.TRANSACTION_STATUS_SUCCESS
 
 	database.SaveOne(childChainTX)
 

@@ -28,7 +28,9 @@ func main() {
 	db := database.Init()
 	//polygon.ScanPolygonEventFromChainAndSaveEventLogData(1,17785986)
 	//nbai.ListenForReceiptLogTillExit2()
-	nbai.ScanNbaiEventFromChainAndSaveEventLogData(6914904, 6915904)
+	nbai.NbaiBlockBrowserSyncAndEventLogsSync()
+	//nbai.ScanNbaiEventFromChainAndSaveEventLogData(6914904, 6915904)
+	//nbai.ChangeNbaiToBnb(nil)
 	//go polygon.PolygonBlockBrowserSyncAndEventLogsSync()
 
 	//go goerli.GoerliBlockBrowserSyncAndEventLogsSync()

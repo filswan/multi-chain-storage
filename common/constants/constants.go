@@ -16,6 +16,7 @@ const (
 
 	NETWORK_TYPE_GOERLI  = "goerli"
 	NETWORK_TYPE_POLYGON = "polygon"
+	NETWORK_TYPE_NBAI    = "nbai"
 
 	TRANSACTION_STATUS_SUCCESS = "success"
 	TRANSACTION_STATUS_FAIL    = "fail"

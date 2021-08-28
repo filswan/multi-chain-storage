@@ -47,14 +47,14 @@ func NbaiBlockBrowserSyncAndEventLogsSync() {
 		}
 
 		blockScanRecord := models2.BlockScanRecord{}
-		whereCondition := "network_type='" + constants.NETWORK_TYPE_POLYGON + "'"
+		whereCondition := "network_type='" + constants.NETWORK_TYPE_NBAI + "'"
 		blockScanRecordList, err := blockScanRecord.FindLastCurrentBlockNumber(whereCondition)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			lastCunrrentNumber = 1
 		}
 
-		err = goerli.UpdateOrSaveBlockScanRecord(constants.NETWORK_TYPE_POLYGON, blockScanRecordList, blockNoCurrent.Int64())
+		err = goerli.UpdateOrSaveBlockScanRecord(constants.NETWORK_TYPE_NBAI, blockScanRecordList, blockNoCurrent.Int64())
 		if err != nil {
 			logs.GetLogger().Error(err)
 			continue
@@ -62,7 +62,7 @@ func NbaiBlockBrowserSyncAndEventLogsSync() {
 		lastCunrrentNumber = blockNoCurrent.Int64()
 		mutex.Unlock()
 
-		time.Sleep(time.Second * 5)
+		time.Sleep(time.Second * 60)
 	}
 }
 

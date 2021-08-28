@@ -21,7 +21,7 @@ import (
 
 func ChangeNbaiToBnb(data []byte) {
 	pk := os.Getenv("privateKey")
-	fromAddress := common.HexToAddress(config.GetConfig().BscMainnetNode.BscWallet)
+	fromAddress := common.HexToAddress(config.GetConfig().BscMainnetNode.BscAdminWallet)
 	client := bscclient.WebConn.ConnWeb
 	nonce, err := client.PendingNonceAt(context.Background(), fromAddress)
 	if err != nil {

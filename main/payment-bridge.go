@@ -6,7 +6,9 @@ import (
 	cors "github.com/itsjamie/gin-cors"
 	"github.com/joho/godotenv"
 	"os"
+	"payment-bridge/blockchain/browsersync/goerli"
 	"payment-bridge/blockchain/browsersync/nbai"
+	"payment-bridge/blockchain/browsersync/polygon"
 	"payment-bridge/blockchain/initclient/bscclient"
 	"payment-bridge/blockchain/initclient/goerliclient"
 	"payment-bridge/blockchain/initclient/nbaiclient"
@@ -20,18 +22,18 @@ import (
 )
 
 func main() {
-	initMethod()
-
 	LoadEnv()
 
 	// init database
 	db := database.Init()
-	//polygon.ScanPolygonEventFromChainAndSaveEventLogData(1,17785986)
-	//nbai.ListenForReceiptLogTillExit2()
-	nbai.ScanNbaiEventFromChainAndSaveEventLogData(6914904, 6915904)
-	//go polygon.PolygonBlockBrowserSyncAndEventLogsSync()
 
-	//go goerli.GoerliBlockBrowserSyncAndEventLogsSync()
+	initMethod()
+
+	go nbai.NbaiBlockBrowserSyncAndEventLogsSync()
+
+	go polygon.PolygonBlockBrowserSyncAndEventLogsSync()
+
+	go goerli.GoerliBlockBrowserSyncAndEventLogsSync()
 
 	defer func() {
 		err := db.Close()

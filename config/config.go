@@ -51,7 +51,7 @@ type NbaiMainnetNode struct {
 
 type BscMainnetNode struct {
 	RpcUrl                          string
-	BscWallet                       string
+	BscAdminWallet                  string
 	ChildChainManageContractAddress string
 	GasLimit                        uint64
 }
@@ -115,7 +115,7 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 		{"NbaiMainnetNode", "scanStep"},
 
 		{"BscMainnetNode", "rpcUrl"},
-		{"BscMainnetNode", "bscWallet"},
+		{"BscMainnetNode", "bscAdminWallet"},
 		{"BscMainnetNode", "childChainManageContractAddress"},
 		{"BscMainnetNode", "gasLimit"},
 	}

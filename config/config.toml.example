@@ -32,6 +32,7 @@ paymentContractAddress = "0x60a43A2d57E79938b8dF8652d86D1b3A2132CBcE"
 contractFunctionSignature = "0xa8133e3dab1689781429189302ba4b39d9a2ba21e28bdc487c2339c798393900"
 scanStep = 1000
 startFromBlockNo = 60000
+cycleTimeInterval = 60 #unit:second
 
 [BscMainnetNode]
 rpcUrl = "https://data-seed-prebsc-1-s1.binance.org:8545/"

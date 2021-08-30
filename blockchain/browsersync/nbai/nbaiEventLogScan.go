@@ -1,20 +1,22 @@
 package nbai
 
 import (
+	"fmt"
 	"math/big"
-	"payment-bridge/blockchain/browsersync/goerli"
-	"payment-bridge/blockchain/initclient/goerliclient"
 	"payment-bridge/blockchain/initclient/nbaiclient"
 	"payment-bridge/common/constants"
+	"payment-bridge/common/utils"
 	"payment-bridge/config"
+	"payment-bridge/database"
 	"payment-bridge/logs"
 	models2 "payment-bridge/models"
+	"strconv"
 	"sync"
 	"time"
 )
 
 func NbaiBlockBrowserSyncAndEventLogsSync() {
-	lastCunrrentNumber := getStartBlockNo()
+	startScanBlockNo := getStartBlockNo()
 
 	for {
 		var blockNoCurrent *big.Int
@@ -23,7 +25,7 @@ func NbaiBlockBrowserSyncAndEventLogsSync() {
 		for getBlockFlag {
 			blockNoCurrent, err = nbaiclient.WebConn.GetBlockNumber()
 			if err != nil {
-				goerliclient.ClientInit()
+				nbaiclient.ClientInit()
 				logs.GetLogger().Error(err)
 				time.Sleep(5 * time.Second)
 				continue
@@ -33,44 +35,65 @@ func NbaiBlockBrowserSyncAndEventLogsSync() {
 			}
 		}
 
-		scanStep := config.GetConfig().PolygonMainnetNode.ScanStep
-		if (blockNoCurrent.Int64() < lastCunrrentNumber) || (blockNoCurrent.Int64()-lastCunrrentNumber) < scanStep {
-			lastCunrrentNumber = blockNoCurrent.Int64() - 10000
-		}
-
-		var mutex sync.Mutex
-		mutex.Lock()
-		err = ScanNbaiEventFromChainAndSaveEventLogData(lastCunrrentNumber, blockNoCurrent.Int64())
-		if err != nil {
-			logs.GetLogger().Error(err)
-			continue
-		}
-
-		blockScanRecord := models2.BlockScanRecord{}
+		blockScanRecord := new(models2.BlockScanRecord)
 		whereCondition := "network_type='" + constants.NETWORK_TYPE_NBAI + "'"
 		blockScanRecordList, err := blockScanRecord.FindLastCurrentBlockNumber(whereCondition)
 		if err != nil {
 			logs.GetLogger().Error(err)
-			lastCunrrentNumber = 1
+			startScanBlockNo = getStartBlockNo()
+		}
+		if len(blockScanRecordList) > 0 {
+			startScanBlockNo = blockScanRecordList[0].LastCurrentBlockNumber
 		}
 
-		err = goerli.UpdateOrSaveBlockScanRecord(constants.NETWORK_TYPE_NBAI, blockScanRecordList, blockNoCurrent.Int64())
-		if err != nil {
-			logs.GetLogger().Error(err)
-			continue
+		var mutex sync.Mutex
+		mutex.Lock()
+		for {
+			start := startScanBlockNo
+			end := start + config.GetConfig().NbaiMainnetNode.ScanStep
+			if startScanBlockNo > blockNoCurrent.Int64() {
+				break
+			}
+			err = ScanNbaiEventFromChainAndSaveEventLogData(start, end)
+			if err != nil {
+				logs.GetLogger().Error(err)
+				continue
+			}
+			blockScanRecord.NetworkType = constants.NETWORK_TYPE_NBAI
+			if end >= blockNoCurrent.Int64() {
+				blockScanRecord.LastCurrentBlockNumber = blockNoCurrent.Int64()
+			} else {
+				blockScanRecord.LastCurrentBlockNumber = end
+			}
+
+			blockScanRecord.NetworkType = constants.NETWORK_TYPE_NBAI
+			blockScanRecord.UpdateAt = strconv.FormatInt(utils.GetEpochInMillis(), 10)
+
+			err = database.SaveOne(blockScanRecord)
+			if err != nil {
+				logs.GetLogger().Error(err)
+				continue
+			}
+			startScanBlockNo = startScanBlockNo + config.GetConfig().NbaiMainnetNode.ScanStep
+			if startScanBlockNo >= blockNoCurrent.Int64() {
+				i := 10
+				fmt.Println(i)
+				break
+			}
 		}
-		lastCunrrentNumber = blockNoCurrent.Int64()
+
+		getBlockFlag = true
 		mutex.Unlock()
 
-		time.Sleep(time.Second * 60)
+		time.Sleep(time.Second * config.GetConfig().NbaiMainnetNode.CycleTimeInterval)
 	}
 }
 
 func getStartBlockNo() int64 {
-	var lastCunrrentNumber int64 = 1
+	var startScanBlockNo int64 = 1
 
 	if config.GetConfig().NbaiMainnetNode.StartFromBlockNo > 0 {
-		lastCunrrentNumber = config.GetConfig().NbaiMainnetNode.StartFromBlockNo
+		startScanBlockNo = config.GetConfig().NbaiMainnetNode.StartFromBlockNo
 	}
-	return lastCunrrentNumber
+	return startScanBlockNo
 }

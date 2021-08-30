@@ -1,7 +1,6 @@
 package nbai
 
 import (
-	"fmt"
 	"math/big"
 	"payment-bridge/blockchain/initclient/nbaiclient"
 	"payment-bridge/common/constants"
@@ -44,6 +43,7 @@ func NbaiBlockBrowserSyncAndEventLogsSync() {
 		}
 		if len(blockScanRecordList) > 0 {
 			startScanBlockNo = blockScanRecordList[0].LastCurrentBlockNumber
+			blockScanRecord.ID = blockScanRecordList[0].ID
 		}
 
 		var mutex sync.Mutex
@@ -59,7 +59,7 @@ func NbaiBlockBrowserSyncAndEventLogsSync() {
 				logs.GetLogger().Error(err)
 				continue
 			}
-			blockScanRecord.NetworkType = constants.NETWORK_TYPE_NBAI
+
 			if end >= blockNoCurrent.Int64() {
 				blockScanRecord.LastCurrentBlockNumber = blockNoCurrent.Int64()
 			} else {
@@ -76,8 +76,6 @@ func NbaiBlockBrowserSyncAndEventLogsSync() {
 			}
 			startScanBlockNo = startScanBlockNo + config.GetConfig().NbaiMainnetNode.ScanStep
 			if startScanBlockNo >= blockNoCurrent.Int64() {
-				i := 10
-				fmt.Println(i)
 				break
 			}
 		}

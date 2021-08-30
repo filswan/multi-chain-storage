@@ -16,6 +16,7 @@ paymentContractAddress = "0x97916e6CC8DD75c6E6982FFd949Fc1768CF8c055"
 contractFunctionSignature = "0x88e2ea3170ebb5d73f832e672e27a855b3daf0b2264ac6c09b04009dc151509e"
 scanStep = 10000
 startFromBlockNo = 5000000
+cycleTimeInterval = 60 #unit:second
 
 
 [PolygonMainnetNode]
@@ -25,6 +26,7 @@ paymentContractAddress = "0x5210ED929B5BEdBFFBA2F6b9A0b1B608eEAb3aa0"
 contractFunctionSignature = "0x88e2ea3170ebb5d73f832e672e27a855b3daf0b2264ac6c09b04009dc151509e"
 scanStep = 1000
 startFromBlockNo = 15000000
+cycleTimeInterval = 60 #unit:second
 
 [NbaiMainnetNode]
 rpcUrl = "https://api.nbai.io/"

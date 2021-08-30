@@ -85,7 +85,7 @@ func PolygonBlockBrowserSyncAndEventLogsSync() {
 
 		mutex.Unlock()
 
-		time.Sleep(time.Second * 5)
+		time.Sleep(time.Second * config.GetConfig().PolygonMainnetNode.CycleTimeInterval)
 	}
 }
 

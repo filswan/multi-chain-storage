@@ -3,6 +3,7 @@ package goerli
 import (
 	"math/big"
 	"payment-bridge/blockchain/initclient/goerliclient"
+	"payment-bridge/blockchain/initclient/nbaiclient"
 	"payment-bridge/common/constants"
 	common2 "payment-bridge/common/utils"
 	"payment-bridge/config"
@@ -15,7 +16,7 @@ import (
 )
 
 func GoerliBlockBrowserSyncAndEventLogsSync() {
-	lastCunrrentNumber := getStartBlockNo()
+	startScanBlockNo := getStartBlockNo()
 
 	for {
 		var blockNoCurrent *big.Int
@@ -24,6 +25,7 @@ func GoerliBlockBrowserSyncAndEventLogsSync() {
 		for getBlockFlag {
 			blockNoCurrent, err = goerliclient.WebConn.GetBlockNumber()
 			if err != nil {
+				nbaiclient.ClientInit()
 				logs.GetLogger().Error(err)
 				time.Sleep(5 * time.Second)
 				continue
@@ -33,67 +35,63 @@ func GoerliBlockBrowserSyncAndEventLogsSync() {
 			}
 		}
 
-		scanStep := config.GetConfig().GoerliMainnetNode.ScanStep
-		if (blockNoCurrent.Int64() < lastCunrrentNumber) || (blockNoCurrent.Int64()-lastCunrrentNumber) < scanStep {
-			lastCunrrentNumber = blockNoCurrent.Int64() - scanStep
-		}
-
-		var mutex sync.Mutex
-		mutex.Lock()
-
-		err = ScanGoerliEventFromChainAndSaveEventLogData(lastCunrrentNumber, blockNoCurrent.Int64())
-		if err != nil {
-			logs.GetLogger().Error(err)
-			continue
-		}
-
-		blockScanRecord := models2.BlockScanRecord{}
+		blockScanRecord := new(models2.BlockScanRecord)
 		whereCondition := "network_type='" + constants.NETWORK_TYPE_GOERLI + "'"
 		blockScanRecordList, err := blockScanRecord.FindLastCurrentBlockNumber(whereCondition)
 		if err != nil {
 			logs.GetLogger().Error(err)
-			lastCunrrentNumber = 1
+			startScanBlockNo = getStartBlockNo()
+		}
+		if len(blockScanRecordList) > 0 {
+			startScanBlockNo = blockScanRecordList[0].LastCurrentBlockNumber
+			blockScanRecord.ID = blockScanRecordList[0].ID
 		}
 
-		err = UpdateOrSaveBlockScanRecord(constants.NETWORK_TYPE_GOERLI, blockScanRecordList, blockNoCurrent.Int64())
-		if err != nil {
-			logs.GetLogger().Error(err)
-			continue
+		var mutex sync.Mutex
+		mutex.Lock()
+		for {
+			start := startScanBlockNo
+			end := start + config.GetConfig().GoerliMainnetNode.ScanStep
+			if startScanBlockNo > blockNoCurrent.Int64() {
+				break
+			}
+			err = ScanGoerliEventFromChainAndSaveEventLogData(start, end)
+			if err != nil {
+				logs.GetLogger().Error(err)
+				continue
+			}
+
+			if end >= blockNoCurrent.Int64() {
+				blockScanRecord.LastCurrentBlockNumber = blockNoCurrent.Int64()
+			} else {
+				blockScanRecord.LastCurrentBlockNumber = end
+			}
+
+			blockScanRecord.NetworkType = constants.NETWORK_TYPE_GOERLI
+			blockScanRecord.UpdateAt = strconv.FormatInt(common2.GetEpochInMillis(), 10)
+
+			err = database.SaveOne(blockScanRecord)
+			if err != nil {
+				logs.GetLogger().Error(err)
+				continue
+			}
+			startScanBlockNo = startScanBlockNo + config.GetConfig().GoerliMainnetNode.ScanStep
+			if startScanBlockNo >= blockNoCurrent.Int64() {
+				break
+			}
 		}
-		lastCunrrentNumber = blockNoCurrent.Int64()
+
+		getBlockFlag = true
 		mutex.Unlock()
 
-		time.Sleep(time.Second * 5)
+		time.Sleep(time.Second * config.GetConfig().GoerliMainnetNode.CycleTimeInterval)
 	}
-}
-
-func UpdateOrSaveBlockScanRecord(networkType string, blockScanRecordList []*models2.BlockScanRecord, lastCurrentBlockNumber int64) error {
-	currentTime := strconv.FormatInt(common2.GetEpochInMillis(), 10)
-	if len(blockScanRecordList) >= 1 {
-		_, err := models2.UpdateBlockScanRecord(&models2.BlockScanRecord{NetworkType: networkType},
-			map[string]interface{}{"update_at": currentTime, "last_current_block_number": lastCurrentBlockNumber})
-		if err != nil {
-			logs.GetLogger().Error(err)
-			return err
-		}
-	} else {
-		newRecord := new(models2.BlockScanRecord)
-		newRecord.NetworkType = networkType
-		newRecord.LastCurrentBlockNumber = lastCurrentBlockNumber
-		newRecord.UpdateAt = string(currentTime)
-		err := database.SaveOne(newRecord)
-		if err != nil {
-			logs.GetLogger().Error(err)
-			return err
-		}
-	}
-	return nil
 }
 
 func getStartBlockNo() int64 {
 	var lastCunrrentNumber int64 = 1
 
-	if config.GetConfig().PolygonMainnetNode.StartFromBlockNo > 0 {
+	if config.GetConfig().GoerliMainnetNode.StartFromBlockNo > 0 {
 		lastCunrrentNumber = config.GetConfig().GoerliMainnetNode.StartFromBlockNo
 	}
 	return lastCunrrentNumber

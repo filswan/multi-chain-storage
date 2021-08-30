@@ -32,6 +32,7 @@ type GoerliMainnetNode struct {
 	ContractFunctionSignature string
 	ScanStep                  int64
 	StartFromBlockNo          int64
+	CycleTimeInterval         time.Duration
 }
 
 type PolygonMainnetNode struct {
@@ -40,6 +41,7 @@ type PolygonMainnetNode struct {
 	ContractFunctionSignature string
 	ScanStep                  int64
 	StartFromBlockNo          int64
+	CycleTimeInterval         time.Duration
 }
 
 type NbaiMainnetNode struct {
@@ -105,11 +107,13 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 		{"GoerliMainnetNode", "paymentContractAddress"},
 		{"GoerliMainnetNode", "contractFunctionSignature"},
 		{"GoerliMainnetNode", "scanStep"},
+		{"GoerliMainnetNode", "cycleTimeInterval"},
 
 		{"PolygonMainnetNode", "rpcUrl"},
 		{"PolygonMainnetNode", "paymentContractAddress"},
 		{"PolygonMainnetNode", "contractFunctionSignature"},
 		{"PolygonMainnetNode", "scanStep"},
+		{"PolygonMainnetNode", "cycleTimeInterval"},
 
 		{"NbaiMainnetNode", "rpcUrl"},
 		{"NbaiMainnetNode", "paymentContractAddress"},

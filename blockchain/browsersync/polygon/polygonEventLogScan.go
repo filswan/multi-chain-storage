@@ -2,19 +2,21 @@ package polygon
 
 import (
 	"math/big"
-	"payment-bridge/blockchain/browsersync/goerli"
 	"payment-bridge/blockchain/initclient/goerliclient"
 	"payment-bridge/blockchain/initclient/polygonclient"
 	"payment-bridge/common/constants"
+	"payment-bridge/common/utils"
 	"payment-bridge/config"
+	"payment-bridge/database"
 	"payment-bridge/logs"
 	models2 "payment-bridge/models"
+	"strconv"
 	"sync"
 	"time"
 )
 
 func PolygonBlockBrowserSyncAndEventLogsSync() {
-	lastCunrrentNumber := getStartBlockNo()
+	startScanBlockNo := getStartBlockNo()
 
 	for {
 		var blockNoCurrent *big.Int
@@ -33,44 +35,65 @@ func PolygonBlockBrowserSyncAndEventLogsSync() {
 			}
 		}
 
-		scanStep := config.GetConfig().PolygonMainnetNode.ScanStep
-		if (blockNoCurrent.Int64() < lastCunrrentNumber) || (blockNoCurrent.Int64()-lastCunrrentNumber) < scanStep {
-			lastCunrrentNumber = blockNoCurrent.Int64() - 10000
-		}
-
-		var mutex sync.Mutex
-		mutex.Lock()
-		err = ScanPolygonEventFromChainAndSaveEventLogData(lastCunrrentNumber, blockNoCurrent.Int64())
-		if err != nil {
-			logs.GetLogger().Error(err)
-			continue
-		}
-
-		blockScanRecord := models2.BlockScanRecord{}
+		blockScanRecord := new(models2.BlockScanRecord)
 		whereCondition := "network_type='" + constants.NETWORK_TYPE_POLYGON + "'"
 		blockScanRecordList, err := blockScanRecord.FindLastCurrentBlockNumber(whereCondition)
 		if err != nil {
 			logs.GetLogger().Error(err)
-			lastCunrrentNumber = 1
+			startScanBlockNo = getStartBlockNo()
+		}
+		if len(blockScanRecordList) > 0 {
+			startScanBlockNo = blockScanRecordList[0].LastCurrentBlockNumber
+			blockScanRecord.ID = blockScanRecordList[0].ID
 		}
 
-		err = goerli.UpdateOrSaveBlockScanRecord(constants.NETWORK_TYPE_POLYGON, blockScanRecordList, blockNoCurrent.Int64())
-		if err != nil {
-			logs.GetLogger().Error(err)
-			continue
+		var mutex sync.Mutex
+		mutex.Lock()
+		for {
+			start := startScanBlockNo
+			end := start + config.GetConfig().PolygonMainnetNode.ScanStep
+			if startScanBlockNo > blockNoCurrent.Int64() {
+				break
+			}
+			err = ScanPolygonEventFromChainAndSaveEventLogData(start, end)
+			if err != nil {
+				logs.GetLogger().Error(err)
+				continue
+			}
+
+			if end >= blockNoCurrent.Int64() {
+				blockScanRecord.LastCurrentBlockNumber = blockNoCurrent.Int64()
+			} else {
+				blockScanRecord.LastCurrentBlockNumber = end
+			}
+
+			blockScanRecord.NetworkType = constants.NETWORK_TYPE_POLYGON
+			blockScanRecord.UpdateAt = strconv.FormatInt(utils.GetEpochInMillis(), 10)
+
+			err = database.SaveOne(blockScanRecord)
+			if err != nil {
+				logs.GetLogger().Error(err)
+				continue
+			}
+			startScanBlockNo = startScanBlockNo + config.GetConfig().PolygonMainnetNode.ScanStep
+			if startScanBlockNo >= blockNoCurrent.Int64() {
+				break
+			}
 		}
-		lastCunrrentNumber = blockNoCurrent.Int64()
+
+		getBlockFlag = true
+
 		mutex.Unlock()
 
-		time.Sleep(time.Second * 5)
+		time.Sleep(time.Second * config.GetConfig().PolygonMainnetNode.CycleTimeInterval)
 	}
 }
 
 func getStartBlockNo() int64 {
-	var lastCunrrentNumber int64 = 1
+	var startScanBlockNo int64 = 1
 
 	if config.GetConfig().PolygonMainnetNode.StartFromBlockNo > 0 {
-		lastCunrrentNumber = config.GetConfig().PolygonMainnetNode.StartFromBlockNo
+		startScanBlockNo = config.GetConfig().PolygonMainnetNode.StartFromBlockNo
 	}
-	return lastCunrrentNumber
+	return startScanBlockNo
 }

@@ -29,6 +29,8 @@ func main() {
 
 	initMethod()
 
+	//nbai.ScanNbaiEventFromChainAndSaveEventLogData(1,6944505)
+
 	go nbai.NbaiBlockBrowserSyncAndEventLogsSync()
 
 	go polygon.PolygonBlockBrowserSyncAndEventLogsSync()

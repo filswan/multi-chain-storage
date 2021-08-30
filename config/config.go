@@ -4,6 +4,7 @@ import (
 	"github.com/BurntSushi/toml"
 	"log"
 	"strings"
+	"time"
 )
 
 type Configuration struct {
@@ -47,6 +48,7 @@ type NbaiMainnetNode struct {
 	ContractFunctionSignature string
 	ScanStep                  int64
 	StartFromBlockNo          int64
+	CycleTimeInterval         time.Duration
 }
 
 type BscMainnetNode struct {
@@ -113,6 +115,7 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 		{"NbaiMainnetNode", "paymentContractAddress"},
 		{"NbaiMainnetNode", "contractFunctionSignature"},
 		{"NbaiMainnetNode", "scanStep"},
+		{"NbaiMainnetNode", "cycleTimeInterval"},
 
 		{"BscMainnetNode", "rpcUrl"},
 		{"BscMainnetNode", "bscAdminWallet"},

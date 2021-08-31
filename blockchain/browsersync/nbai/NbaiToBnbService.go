@@ -37,7 +37,7 @@ func ChangeNbaiToBnb(data []byte) {
 	}
 
 	privateKey, _ := crypto.HexToECDSA(pk)
-	callOpts, _ := bind.NewKeyedTransactorWithChainID(privateKey, big.NewInt(97))
+	callOpts, _ := bind.NewKeyedTransactorWithChainID(privateKey, big.NewInt(config.GetConfig().BscMainnetNode.ChainID))
 
 	//callOpts := new(bind.TransactOpts)
 	callOpts.Nonce = big.NewInt(int64(nonce))

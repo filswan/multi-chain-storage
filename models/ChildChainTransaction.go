@@ -6,11 +6,12 @@ import (
 )
 
 type ChildChainTransaction struct {
-	ID       int64  `json:"id"`
-	TxHash   string `json:"tx_hash"`
-	Status   string `json:"status"`
-	CreateAt string `json:"create_at"`
-	UpdateAt string `json:"create_at"`
+	ID           int64  `json:"id"`
+	TxHashInBsc  string `json:"tx_hash_in_bsc"`
+	TxHashInNbai string `json:"tx_hash_in_nbai""`
+	Status       string `json:"status"`
+	CreateAt     string `json:"create_at"`
+	UpdateAt     string `json:"create_at"`
 }
 
 // FindChildChainTransaction (&ChildChainTransaction{Id: "0xadeaCC802D0f2DFd31bE4Fa7434F15782Fd720ac"},"id desc","10","0")

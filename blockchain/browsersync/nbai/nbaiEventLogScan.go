@@ -39,10 +39,14 @@ func NbaiBlockBrowserSyncAndEventLogsSync() {
 		blockScanRecordList, err := blockScanRecord.FindLastCurrentBlockNumber(whereCondition)
 		if err != nil {
 			logs.GetLogger().Error(err)
-			startScanBlockNo = getStartBlockNo()
+			startScanBlockNo = config.GetConfig().NbaiMainnetNode.StartFromBlockNo
 		}
 		if len(blockScanRecordList) > 0 {
-			startScanBlockNo = blockScanRecordList[0].LastCurrentBlockNumber
+			if blockScanRecordList[0].LastCurrentBlockNumber >= startScanBlockNo {
+				startScanBlockNo = blockScanRecordList[0].LastCurrentBlockNumber
+			} else {
+				startScanBlockNo = config.GetConfig().NbaiMainnetNode.StartFromBlockNo
+			}
 			blockScanRecord.ID = blockScanRecordList[0].ID
 		}
 
@@ -92,6 +96,20 @@ func getStartBlockNo() int64 {
 
 	if config.GetConfig().NbaiMainnetNode.StartFromBlockNo > 0 {
 		startScanBlockNo = config.GetConfig().NbaiMainnetNode.StartFromBlockNo
+	}
+
+	blockScanRecord := new(models2.BlockScanRecord)
+	whereCondition := "network_type='" + constants.NETWORK_TYPE_NBAI + "'"
+	blockScanRecordList, err := blockScanRecord.FindLastCurrentBlockNumber(whereCondition)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		startScanBlockNo = config.GetConfig().NbaiMainnetNode.StartFromBlockNo
+	}
+
+	if len(blockScanRecordList) > 0 {
+		if blockScanRecordList[0].LastCurrentBlockNumber > startScanBlockNo {
+			startScanBlockNo = blockScanRecordList[0].LastCurrentBlockNumber
+		}
 	}
 	return startScanBlockNo
 }

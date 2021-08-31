@@ -87,8 +87,6 @@ func ScanNbaiEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) err
 					logrus.Fatal(err)
 				}
 
-				ChangeNbaiToBnb(receiveMap["data"].([]byte))
-
 				event.BlockNo = vLog.BlockNumber
 				event.TxHash = vLog.TxHash.Hex()
 				event.ContractName = "SwanPayment"
@@ -100,6 +98,8 @@ func ScanNbaiEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) err
 				if err != nil {
 					logs.GetLogger().Error(err)
 				}
+
+				ChangeNbaiToBnb(receiveMap["data"].([]byte), vLog.TxHash.Hex())
 			}
 		}
 	}

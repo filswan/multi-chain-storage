@@ -19,7 +19,7 @@ import (
 	"strings"
 )
 
-func ChangeNbaiToBnb(data []byte) {
+func ChangeNbaiToBnb(data []byte, txHashInNbai string) {
 	pk := os.Getenv("privateKey")
 	fromAddress := common.HexToAddress(config.GetConfig().BscMainnetNode.BscAdminWallet)
 	client := bscclient.WebConn.ConnWeb
@@ -53,13 +53,16 @@ func ChangeNbaiToBnb(data []byte) {
 	if err != nil {
 		logs.GetLogger().Error(err)
 		childChainTX.Status = constants.TRANSACTION_STATUS_FAIL
+		childChainTX.TxHashInBsc = ""
+		childChainTX.Status = constants.TRANSACTION_STATUS_FAIL
+	} else {
+		childChainTX.TxHashInBsc = tx.Hash().Hex()
+		childChainTX.Status = constants.TRANSACTION_STATUS_SUCCESS
 	}
 
-	childChainTX.TxHash = tx.Hash().Hex()
-	childChainTX.CreateAt = strconv.FormatInt(utils.GetEpochInMillis(), 10)
-	childChainTX.UpdateAt = strconv.FormatInt(utils.GetEpochInMillis(), 10)
-	childChainTX.Status = constants.TRANSACTION_STATUS_SUCCESS
-
+	childChainTX.TxHashInNbai = txHashInNbai
+	currenTime := utils.GetEpochInMillis()
+	childChainTX.CreateAt = strconv.FormatInt(currenTime, 10)
+	childChainTX.UpdateAt = strconv.FormatInt(currenTime, 10)
 	database.SaveOne(childChainTX)
-
 }

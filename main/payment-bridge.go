@@ -7,6 +7,8 @@ import (
 	"github.com/joho/godotenv"
 	"os"
 	"payment-bridge/blockchain/browsersync/goerli"
+	"payment-bridge/blockchain/browsersync/nbai"
+	"payment-bridge/blockchain/browsersync/polygon"
 	"payment-bridge/blockchain/initclient/bscclient"
 	"payment-bridge/blockchain/initclient/goerliclient"
 	"payment-bridge/blockchain/initclient/nbaiclient"
@@ -29,9 +31,9 @@ func main() {
 
 	//nbai.ScanNbaiEventFromChainAndSaveEventLogData(1,6944505)
 
-	//go nbai.NbaiBlockBrowserSyncAndEventLogsSync()
+	go nbai.NbaiBlockBrowserSyncAndEventLogsSync()
 
-	//go polygon.PolygonBlockBrowserSyncAndEventLogsSync()
+	go polygon.PolygonBlockBrowserSyncAndEventLogsSync()
 
 	go goerli.GoerliBlockBrowserSyncAndEventLogsSync()
 

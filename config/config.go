@@ -58,6 +58,7 @@ type BscMainnetNode struct {
 	BscAdminWallet                  string
 	ChildChainManageContractAddress string
 	GasLimit                        uint64
+	ChainID                         int64
 }
 
 var config *Configuration
@@ -125,6 +126,7 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 		{"BscMainnetNode", "bscAdminWallet"},
 		{"BscMainnetNode", "childChainManageContractAddress"},
 		{"BscMainnetNode", "gasLimit"},
+		{"BscMainnetNode", "chainID"},
 	}
 
 	for _, v := range requiredFields {

@@ -19,7 +19,7 @@ import (
 	"strings"
 )
 
-func ChangeNbaiToBnb(data []byte, txHashInNbai string) {
+func ChangeNbaiToBnb(data []byte, txHashInNbai string, blockNo uint64, childChainTractionID int64) {
 	pk := os.Getenv("privateKey")
 	fromAddress := common.HexToAddress(config.GetConfig().BscMainnetNode.BscAdminWallet)
 	client := bscclient.WebConn.ConnWeb
@@ -60,9 +60,17 @@ func ChangeNbaiToBnb(data []byte, txHashInNbai string) {
 		childChainTX.Status = constants.TRANSACTION_STATUS_SUCCESS
 	}
 
+	if childChainTractionID > 0 {
+		childChainTX.ID = childChainTractionID
+	}
+
 	childChainTX.TxHashInNbai = txHashInNbai
+	childChainTX.BlockNo = blockNo
 	currenTime := utils.GetEpochInMillis()
 	childChainTX.CreateAt = strconv.FormatInt(currenTime, 10)
 	childChainTX.UpdateAt = strconv.FormatInt(currenTime, 10)
-	database.SaveOne(childChainTX)
+	err = database.SaveOne(childChainTX)
+	if err != nil {
+		logs.GetLogger().Error(err)
+	}
 }

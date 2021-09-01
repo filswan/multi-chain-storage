@@ -7,7 +7,6 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/sirupsen/logrus"
 	"math/big"
 	"payment-bridge/blockchain/initclient/nbaiclient"
 	"payment-bridge/common/utils"
@@ -84,7 +83,8 @@ func ScanNbaiEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) err
 				receiveMap := map[string]interface{}{}
 				err = paymentAbiString.UnpackIntoMap(receiveMap, "StateSynced", vLog.Data)
 				if err != nil {
-					logrus.Fatal(err)
+					logs.GetLogger().Error(err)
+					continue
 				}
 
 				event.BlockNo = vLog.BlockNumber
@@ -98,8 +98,7 @@ func ScanNbaiEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) err
 				if err != nil {
 					logs.GetLogger().Error(err)
 				}
-
-				ChangeNbaiToBnb(receiveMap["data"].([]byte), vLog.TxHash.Hex())
+				ChangeNbaiToBnb(receiveMap["data"].([]byte), vLog.TxHash.Hex(), vLog.BlockNumber, 0)
 			}
 		}
 	}

@@ -10,6 +10,8 @@ type ChildChainTransaction struct {
 	TxHashInBsc  string `json:"tx_hash_in_bsc"`
 	TxHashInNbai string `json:"tx_hash_in_nbai""`
 	Status       string `json:"status"`
+	BlockNo      uint64 `json:"block_no"` //in nbai
+	RedoTimes    int8   `json:"redo_times"`
 	CreateAt     string `json:"create_at"`
 	UpdateAt     string `json:"create_at"`
 }

@@ -27,7 +27,7 @@ func main() {
 
 	initMethod()
 
-	schedule.RedoMapping()
+	go schedule.RedoMappingSchedule()
 
 	//nbai.ScanNbaiEventFromChainAndSaveEventLogData(1,6944505)
 

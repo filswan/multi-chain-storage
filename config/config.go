@@ -14,6 +14,7 @@ type Configuration struct {
 	PolygonMainnetNode PolygonMainnetNode
 	NbaiMainnetNode    NbaiMainnetNode
 	BscMainnetNode     BscMainnetNode
+	ScheduleRule       ScheduleRule
 	Dev                bool
 }
 
@@ -59,6 +60,10 @@ type BscMainnetNode struct {
 	ChildChainManageContractAddress string
 	GasLimit                        uint64
 	ChainID                         int64
+}
+
+type ScheduleRule struct {
+	Nbai2BscMappingRedoRule string
 }
 
 var config *Configuration
@@ -127,6 +132,8 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 		{"BscMainnetNode", "childChainManageContractAddress"},
 		{"BscMainnetNode", "gasLimit"},
 		{"BscMainnetNode", "chainID"},
+
+		{"ScheduleRule", "nbai2BscMappingRedoRule"},
 	}
 
 	for _, v := range requiredFields {

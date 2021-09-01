@@ -43,3 +43,6 @@ bscAdminWallet = "0xc4fcaAdCb0b00a9501e56215c37B10fAF9e79c0a"
 childChainManageContractAddress = "0xa1A58C82bA4a0D8e856D8fad76bB72b04fd9736b"
 gasLimit = 800000
 chainID = 97  # mainnet 56 ;test net 97
+
+[ScheduleRule]
+nbai2BscMappingRedoRule = "0 */1 * * * ?"  #every minute

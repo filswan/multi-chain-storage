@@ -16,6 +16,7 @@ import (
 	"payment-bridge/logs"
 	"payment-bridge/models"
 	"payment-bridge/on-chain/goBind"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -39,9 +40,14 @@ func RedoMapping() error {
 		contractAddress := common.HexToAddress(config.GetConfig().NbaiMainnetNode.PaymentContractAddress)
 
 		//test block no. is : 5297224
+		blockNoInt, err := strconv.Atoi(strconv.FormatUint(v.BlockNo, 10))
+		if err != nil {
+			logs.GetLogger().Error(err)
+			continue
+		}
 		query := ethereum.FilterQuery{
-			FromBlock: big.NewInt(v.BlockNo),
-			ToBlock:   big.NewInt(v.BlockNo),
+			FromBlock: big.NewInt(int64(blockNoInt)),
+			ToBlock:   big.NewInt(int64(blockNoInt)),
 			Addresses: []common.Address{
 				contractAddress,
 			},
@@ -78,7 +84,7 @@ func RedoMapping() error {
 				if err != nil {
 					logs.GetLogger().Error(err)
 				}
-				nbai.ChangeNbaiToBnb(receiveMap["data"].([]byte), v.TxHashInNbai, v.ID)
+				nbai.ChangeNbaiToBnb(receiveMap["data"].([]byte), v.TxHashInNbai, v.BlockNo, v.ID)
 			}
 		}
 	}

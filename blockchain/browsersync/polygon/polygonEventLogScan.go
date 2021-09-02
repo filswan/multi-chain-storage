@@ -2,7 +2,6 @@ package polygon
 
 import (
 	"math/big"
-	"payment-bridge/blockchain/initclient/goerliclient"
 	"payment-bridge/blockchain/initclient/polygonclient"
 	"payment-bridge/common/constants"
 	"payment-bridge/common/utils"
@@ -19,13 +18,15 @@ func PolygonBlockBrowserSyncAndEventLogsSync() {
 	startScanBlockNo := getStartBlockNo()
 
 	for {
+		var mutex sync.Mutex
+		mutex.Lock()
 		var blockNoCurrent *big.Int
 		var err error
 		var getBlockFlag bool = true
 		for getBlockFlag {
 			blockNoCurrent, err = polygonclient.WebConn.GetBlockNumber()
 			if err != nil {
-				goerliclient.ClientInit()
+				polygonclient.ClientInit()
 				logs.GetLogger().Error(err)
 				time.Sleep(5 * time.Second)
 				continue
@@ -40,15 +41,17 @@ func PolygonBlockBrowserSyncAndEventLogsSync() {
 		blockScanRecordList, err := blockScanRecord.FindLastCurrentBlockNumber(whereCondition)
 		if err != nil {
 			logs.GetLogger().Error(err)
-			startScanBlockNo = getStartBlockNo()
+			startScanBlockNo = config.GetConfig().PolygonMainnetNode.StartFromBlockNo
 		}
 		if len(blockScanRecordList) > 0 {
-			startScanBlockNo = blockScanRecordList[0].LastCurrentBlockNumber
+			if blockScanRecordList[0].LastCurrentBlockNumber <= blockNoCurrent.Int64() {
+				startScanBlockNo = blockScanRecordList[0].LastCurrentBlockNumber
+			} else {
+				startScanBlockNo = config.GetConfig().PolygonMainnetNode.StartFromBlockNo
+			}
 			blockScanRecord.ID = blockScanRecordList[0].ID
 		}
 
-		var mutex sync.Mutex
-		mutex.Lock()
 		for {
 			start := startScanBlockNo
 			end := start + config.GetConfig().PolygonMainnetNode.ScanStep
@@ -75,17 +78,18 @@ func PolygonBlockBrowserSyncAndEventLogsSync() {
 				logs.GetLogger().Error(err)
 				continue
 			}
-			startScanBlockNo = startScanBlockNo + config.GetConfig().PolygonMainnetNode.ScanStep
-			if startScanBlockNo >= blockNoCurrent.Int64() {
+			start = end
+			startScanBlockNo = end
+			if end >= blockNoCurrent.Int64() {
 				break
 			}
 		}
 
 		getBlockFlag = true
-
 		mutex.Unlock()
 
 		time.Sleep(time.Second * config.GetConfig().PolygonMainnetNode.CycleTimeInterval)
+		logs.GetLogger().Info("-------------------------polygon----------------------------")
 	}
 }
 
@@ -94,6 +98,19 @@ func getStartBlockNo() int64 {
 
 	if config.GetConfig().PolygonMainnetNode.StartFromBlockNo > 0 {
 		startScanBlockNo = config.GetConfig().PolygonMainnetNode.StartFromBlockNo
+	}
+	blockScanRecord := new(models2.BlockScanRecord)
+	whereCondition := "network_type='" + constants.NETWORK_TYPE_POLYGON + "'"
+	blockScanRecordList, err := blockScanRecord.FindLastCurrentBlockNumber(whereCondition)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		startScanBlockNo = config.GetConfig().PolygonMainnetNode.StartFromBlockNo
+	}
+
+	if len(blockScanRecordList) > 0 {
+		if blockScanRecordList[0].LastCurrentBlockNumber > startScanBlockNo {
+			startScanBlockNo = blockScanRecordList[0].LastCurrentBlockNumber
+		}
 	}
 	return startScanBlockNo
 }

@@ -12,7 +12,6 @@ import (
 	"payment-bridge/blockchain/initclient/nbaiclient"
 	"payment-bridge/common/constants"
 	"payment-bridge/config"
-	"payment-bridge/database"
 	"payment-bridge/logs"
 	"payment-bridge/models"
 	"payment-bridge/on-chain/goBind"
@@ -73,18 +72,18 @@ func RedoMapping() error {
 				fmt.Println(vLog.BlockHash.Hex())
 				fmt.Println(vLog.BlockNumber)
 				fmt.Println(vLog.TxHash.Hex())
-				var event = new(models.EventNbai)
 				receiveMap := map[string]interface{}{}
 				err = paymentAbiString.UnpackIntoMap(receiveMap, "StateSynced", vLog.Data)
 				if err != nil {
 					logs.GetLogger().Error(err)
 					continue
 				}
-				err = database.SaveOne(event)
+
+				err = nbai.ChangeNbaiToBnb(receiveMap["data"].([]byte), v.TxHashInNbai, v.BlockNo, v.ID)
 				if err != nil {
 					logs.GetLogger().Error(err)
+					continue
 				}
-				nbai.ChangeNbaiToBnb(receiveMap["data"].([]byte), v.TxHashInNbai, v.BlockNo, v.ID)
 			}
 		}
 	}

@@ -18,6 +18,8 @@ func NbaiBlockBrowserSyncAndEventLogsSync() {
 	startScanBlockNo := getStartBlockNo()
 
 	for {
+		var mutex sync.Mutex
+		mutex.Lock()
 		var blockNoCurrent *big.Int
 		var err error
 		var getBlockFlag bool = true
@@ -42,7 +44,7 @@ func NbaiBlockBrowserSyncAndEventLogsSync() {
 			startScanBlockNo = config.GetConfig().NbaiMainnetNode.StartFromBlockNo
 		}
 		if len(blockScanRecordList) > 0 {
-			if blockScanRecordList[0].LastCurrentBlockNumber >= startScanBlockNo {
+			if blockScanRecordList[0].LastCurrentBlockNumber <= blockNoCurrent.Int64() {
 				startScanBlockNo = blockScanRecordList[0].LastCurrentBlockNumber
 			} else {
 				startScanBlockNo = config.GetConfig().NbaiMainnetNode.StartFromBlockNo
@@ -50,8 +52,6 @@ func NbaiBlockBrowserSyncAndEventLogsSync() {
 			blockScanRecord.ID = blockScanRecordList[0].ID
 		}
 
-		var mutex sync.Mutex
-		mutex.Lock()
 		for {
 			start := startScanBlockNo
 			end := start + config.GetConfig().NbaiMainnetNode.ScanStep
@@ -78,8 +78,9 @@ func NbaiBlockBrowserSyncAndEventLogsSync() {
 				logs.GetLogger().Error(err)
 				continue
 			}
-			startScanBlockNo = startScanBlockNo + config.GetConfig().NbaiMainnetNode.ScanStep
-			if startScanBlockNo >= blockNoCurrent.Int64() {
+			start = end
+			startScanBlockNo = end
+			if end >= blockNoCurrent.Int64() {
 				break
 			}
 		}
@@ -88,6 +89,7 @@ func NbaiBlockBrowserSyncAndEventLogsSync() {
 		mutex.Unlock()
 
 		time.Sleep(time.Second * config.GetConfig().NbaiMainnetNode.CycleTimeInterval)
+		logs.GetLogger().Info("-------------------------nbai----------------------------")
 	}
 }
 

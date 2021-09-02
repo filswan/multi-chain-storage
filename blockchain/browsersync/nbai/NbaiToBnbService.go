@@ -19,17 +19,19 @@ import (
 	"strings"
 )
 
-func ChangeNbaiToBnb(data []byte, txHashInNbai string) {
+func ChangeNbaiToBnb(data []byte, txHashInNbai string, blockNo uint64, childChainTractionID int64) error {
 	pk := os.Getenv("privateKey")
 	fromAddress := common.HexToAddress(config.GetConfig().BscMainnetNode.BscAdminWallet)
 	client := bscclient.WebConn.ConnWeb
 	nonce, err := client.PendingNonceAt(context.Background(), fromAddress)
 	if err != nil {
 		logs.GetLogger().Error(err)
+		return err
 	}
 	gasPrice, err := client.SuggestGasPrice(context.Background())
 	if err != nil {
 		logs.GetLogger().Error(err)
+		return err
 	}
 
 	if strings.HasPrefix(strings.ToLower(pk), "0x") {
@@ -60,9 +62,19 @@ func ChangeNbaiToBnb(data []byte, txHashInNbai string) {
 		childChainTX.Status = constants.TRANSACTION_STATUS_SUCCESS
 	}
 
+	if childChainTractionID > 0 {
+		childChainTX.ID = childChainTractionID
+	}
+
 	childChainTX.TxHashInNbai = txHashInNbai
+	childChainTX.BlockNo = blockNo
 	currenTime := utils.GetEpochInMillis()
 	childChainTX.CreateAt = strconv.FormatInt(currenTime, 10)
 	childChainTX.UpdateAt = strconv.FormatInt(currenTime, 10)
-	database.SaveOne(childChainTX)
+	err = database.SaveOne(childChainTX)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+	return nil
 }

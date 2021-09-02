@@ -7,7 +7,6 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/sirupsen/logrus"
 	"math/big"
 	"payment-bridge/blockchain/initclient/nbaiclient"
 	"payment-bridge/common/utils"
@@ -30,7 +29,7 @@ import (
 // EventLogSave Find the event that executed the contract and save to db
 func ScanNbaiEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) error {
 	//read contract api json file
-	logs.GetLogger().Println("blockNoFrom=" + strconv.FormatInt(blockNoFrom, 10) + "--------------blockNoTo=" + strconv.FormatInt(blockNoTo, 10))
+	logs.GetLogger().Println("nbai blockNoFrom=" + strconv.FormatInt(blockNoFrom, 10) + "--------------blockNoTo=" + strconv.FormatInt(blockNoTo, 10))
 	//paymentAbiString, err := utils.ReadContractAbiJsonFile(goBind.StateSenderABI)
 	paymentAbiString, err := abi.JSON(strings.NewReader(string(goBind.StateSenderABI)))
 	if err != nil {
@@ -79,14 +78,14 @@ func ScanNbaiEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) err
 				fmt.Println(vLog.BlockHash.Hex())
 				fmt.Println(vLog.BlockNumber)
 				fmt.Println(vLog.TxHash.Hex())
-				var event = new(models.EventNbai)
 
 				receiveMap := map[string]interface{}{}
 				err = paymentAbiString.UnpackIntoMap(receiveMap, "StateSynced", vLog.Data)
 				if err != nil {
-					logrus.Fatal(err)
+					logs.GetLogger().Error(err)
+					continue
 				}
-
+				var event = new(models.EventNbai)
 				event.BlockNo = vLog.BlockNumber
 				event.TxHash = vLog.TxHash.Hex()
 				event.ContractName = "SwanPayment"
@@ -97,9 +96,13 @@ func ScanNbaiEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) err
 				err = database.SaveOne(event)
 				if err != nil {
 					logs.GetLogger().Error(err)
+					continue
 				}
-
-				ChangeNbaiToBnb(receiveMap["data"].([]byte), vLog.TxHash.Hex())
+				err = ChangeNbaiToBnb(receiveMap["data"].([]byte), vLog.TxHash.Hex(), vLog.BlockNumber, 0)
+				if err != nil {
+					logs.GetLogger().Error(err)
+					continue
+				}
 			}
 		}
 	}

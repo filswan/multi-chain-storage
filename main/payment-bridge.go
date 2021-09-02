@@ -13,6 +13,7 @@ import (
 	"payment-bridge/blockchain/initclient/goerliclient"
 	"payment-bridge/blockchain/initclient/nbaiclient"
 	"payment-bridge/blockchain/initclient/polygonclient"
+	"payment-bridge/blockchain/schedule"
 	"payment-bridge/common/constants"
 	"payment-bridge/config"
 	"payment-bridge/database"
@@ -29,7 +30,7 @@ func main() {
 
 	initMethod()
 
-	//nbai.ScanNbaiEventFromChainAndSaveEventLogData(1,6944505)
+	go schedule.RedoMappingSchedule()
 
 	go nbai.NbaiBlockBrowserSyncAndEventLogsSync()
 

@@ -1,7 +1,8 @@
 package constants
 
 const (
-	DEFAULT_SELECT_LIMIT = "100"
+	SWAN_PAYMENT_ABI_JSON = "on-chain/contracts/abi/SwanPayment.json"
+	DEFAULT_SELECT_LIMIT  = "100"
 
 	URL_EVENT_PREFIX = "events"
 
@@ -17,6 +18,7 @@ const (
 	NETWORK_TYPE_GOERLI  = "goerli"
 	NETWORK_TYPE_POLYGON = "polygon"
 	NETWORK_TYPE_NBAI    = "nbai"
+	NETWORK_TYPE_BSC     = "bsc"
 
 	TRANSACTION_STATUS_SUCCESS = "success"
 	TRANSACTION_STATUS_FAIL    = "fail"

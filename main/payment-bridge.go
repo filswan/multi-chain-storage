@@ -6,6 +6,7 @@ import (
 	cors "github.com/itsjamie/gin-cors"
 	"github.com/joho/godotenv"
 	"os"
+	"payment-bridge/blockchain/browsersync/bsc"
 	"payment-bridge/blockchain/browsersync/goerli"
 	"payment-bridge/blockchain/browsersync/nbai"
 	"payment-bridge/blockchain/browsersync/polygon"
@@ -37,6 +38,8 @@ func main() {
 	go polygon.PolygonBlockBrowserSyncAndEventLogsSync()
 
 	go goerli.GoerliBlockBrowserSyncAndEventLogsSync()
+
+	go bsc.BscBlockBrowserSyncAndEventLogsSync()
 
 	defer func() {
 		err := db.Close()

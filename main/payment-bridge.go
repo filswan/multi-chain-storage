@@ -7,10 +7,14 @@ import (
 	"github.com/joho/godotenv"
 	"os"
 	"payment-bridge/blockchain/browsersync/bsc"
+	"payment-bridge/blockchain/browsersync/goerli"
+	"payment-bridge/blockchain/browsersync/nbai"
+	"payment-bridge/blockchain/browsersync/polygon"
 	"payment-bridge/blockchain/initclient/bscclient"
 	"payment-bridge/blockchain/initclient/goerliclient"
 	"payment-bridge/blockchain/initclient/nbaiclient"
 	"payment-bridge/blockchain/initclient/polygonclient"
+	"payment-bridge/blockchain/schedule"
 	"payment-bridge/common/constants"
 	"payment-bridge/config"
 	"payment-bridge/database"
@@ -27,17 +31,15 @@ func main() {
 
 	initMethod()
 
-	bsc.BscBlockBrowserSyncAndEventLogsSync()
+	go schedule.RedoMappingSchedule()
 
-	//go schedule.RedoMappingSchedule()
+	go nbai.NbaiBlockBrowserSyncAndEventLogsSync()
 
-	//nbai.ScanNbaiEventFromChainAndSaveEventLogData(1,6944505)
+	go polygon.PolygonBlockBrowserSyncAndEventLogsSync()
 
-	//go nbai.NbaiBlockBrowserSyncAndEventLogsSync()
+	go goerli.GoerliBlockBrowserSyncAndEventLogsSync()
 
-	//go polygon.PolygonBlockBrowserSyncAndEventLogsSync()
-
-	//go goerli.GoerliBlockBrowserSyncAndEventLogsSync()
+	go bsc.BscBlockBrowserSyncAndEventLogsSync()
 
 	defer func() {
 		err := db.Close()

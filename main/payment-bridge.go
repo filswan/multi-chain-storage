@@ -6,11 +6,11 @@ import (
 	cors "github.com/itsjamie/gin-cors"
 	"github.com/joho/godotenv"
 	"os"
+	"payment-bridge/blockchain/browsersync/bsc"
 	"payment-bridge/blockchain/initclient/bscclient"
 	"payment-bridge/blockchain/initclient/goerliclient"
 	"payment-bridge/blockchain/initclient/nbaiclient"
 	"payment-bridge/blockchain/initclient/polygonclient"
-	"payment-bridge/blockchain/schedule"
 	"payment-bridge/common/constants"
 	"payment-bridge/config"
 	"payment-bridge/database"
@@ -27,7 +27,9 @@ func main() {
 
 	initMethod()
 
-	go schedule.RedoMappingSchedule()
+	bsc.BscBlockBrowserSyncAndEventLogsSync()
+
+	//go schedule.RedoMappingSchedule()
 
 	//nbai.ScanNbaiEventFromChainAndSaveEventLogData(1,6944505)
 

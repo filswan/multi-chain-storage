@@ -60,6 +60,11 @@ type BscMainnetNode struct {
 	ChildChainManageContractAddress string
 	GasLimit                        uint64
 	ChainID                         int64
+	PaymentContractAddress          string
+	ContractFunctionSignature       string
+	ScanStep                        int64
+	StartFromBlockNo                int64
+	CycleTimeInterval               time.Duration
 }
 
 type ScheduleRule struct {

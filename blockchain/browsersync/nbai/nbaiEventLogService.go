@@ -78,7 +78,6 @@ func ScanNbaiEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) err
 				fmt.Println(vLog.BlockHash.Hex())
 				fmt.Println(vLog.BlockNumber)
 				fmt.Println(vLog.TxHash.Hex())
-				var event = new(models.EventNbai)
 
 				receiveMap := map[string]interface{}{}
 				err = paymentAbiString.UnpackIntoMap(receiveMap, "StateSynced", vLog.Data)
@@ -86,7 +85,7 @@ func ScanNbaiEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) err
 					logs.GetLogger().Error(err)
 					continue
 				}
-
+				var event = new(models.EventNbai)
 				event.BlockNo = vLog.BlockNumber
 				event.TxHash = vLog.TxHash.Hex()
 				event.ContractName = "SwanPayment"
@@ -97,8 +96,13 @@ func ScanNbaiEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) err
 				err = database.SaveOne(event)
 				if err != nil {
 					logs.GetLogger().Error(err)
+					continue
 				}
-				ChangeNbaiToBnb(receiveMap["data"].([]byte), vLog.TxHash.Hex(), vLog.BlockNumber, 0)
+				err = ChangeNbaiToBnb(receiveMap["data"].([]byte), vLog.TxHash.Hex(), vLog.BlockNumber, 0)
+				if err != nil {
+					logs.GetLogger().Error(err)
+					continue
+				}
 			}
 		}
 	}

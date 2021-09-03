@@ -3,7 +3,6 @@ package goerli
 import (
 	"math/big"
 	"payment-bridge/blockchain/initclient/goerliclient"
-	"payment-bridge/blockchain/initclient/nbaiclient"
 	"payment-bridge/common/constants"
 	common2 "payment-bridge/common/utils"
 	"payment-bridge/config"
@@ -19,13 +18,15 @@ func GoerliBlockBrowserSyncAndEventLogsSync() {
 	startScanBlockNo := getStartBlockNo()
 
 	for {
+		var mutex sync.Mutex
+		mutex.Lock()
 		var blockNoCurrent *big.Int
 		var err error
 		var getBlockFlag bool = true
 		for getBlockFlag {
 			blockNoCurrent, err = goerliclient.WebConn.GetBlockNumber()
 			if err != nil {
-				nbaiclient.ClientInit()
+				goerliclient.ClientInit()
 				logs.GetLogger().Error(err)
 				time.Sleep(5 * time.Second)
 				continue
@@ -40,15 +41,17 @@ func GoerliBlockBrowserSyncAndEventLogsSync() {
 		blockScanRecordList, err := blockScanRecord.FindLastCurrentBlockNumber(whereCondition)
 		if err != nil {
 			logs.GetLogger().Error(err)
-			startScanBlockNo = getStartBlockNo()
+			startScanBlockNo = config.GetConfig().GoerliMainnetNode.StartFromBlockNo
 		}
 		if len(blockScanRecordList) > 0 {
-			startScanBlockNo = blockScanRecordList[0].LastCurrentBlockNumber
+			if blockScanRecordList[0].LastCurrentBlockNumber <= blockNoCurrent.Int64() {
+				startScanBlockNo = blockScanRecordList[0].LastCurrentBlockNumber
+			} else {
+				startScanBlockNo = config.GetConfig().GoerliMainnetNode.StartFromBlockNo
+			}
 			blockScanRecord.ID = blockScanRecordList[0].ID
 		}
 
-		var mutex sync.Mutex
-		mutex.Lock()
 		for {
 			start := startScanBlockNo
 			end := start + config.GetConfig().GoerliMainnetNode.ScanStep
@@ -75,8 +78,9 @@ func GoerliBlockBrowserSyncAndEventLogsSync() {
 				logs.GetLogger().Error(err)
 				continue
 			}
-			startScanBlockNo = startScanBlockNo + config.GetConfig().GoerliMainnetNode.ScanStep
-			if startScanBlockNo >= blockNoCurrent.Int64() {
+			start = end
+			startScanBlockNo = end
+			if end >= blockNoCurrent.Int64() {
 				break
 			}
 		}
@@ -85,14 +89,28 @@ func GoerliBlockBrowserSyncAndEventLogsSync() {
 		mutex.Unlock()
 
 		time.Sleep(time.Second * config.GetConfig().GoerliMainnetNode.CycleTimeInterval)
+		logs.GetLogger().Info("--------------------goerli---------------------------------")
 	}
 }
 
 func getStartBlockNo() int64 {
-	var lastCunrrentNumber int64 = 1
+	var startScanBlockNo int64 = 1
 
 	if config.GetConfig().GoerliMainnetNode.StartFromBlockNo > 0 {
-		lastCunrrentNumber = config.GetConfig().GoerliMainnetNode.StartFromBlockNo
+		startScanBlockNo = config.GetConfig().GoerliMainnetNode.StartFromBlockNo
 	}
-	return lastCunrrentNumber
+	blockScanRecord := new(models2.BlockScanRecord)
+	whereCondition := "network_type='" + constants.NETWORK_TYPE_GOERLI + "'"
+	blockScanRecordList, err := blockScanRecord.FindLastCurrentBlockNumber(whereCondition)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		startScanBlockNo = config.GetConfig().GoerliMainnetNode.StartFromBlockNo
+	}
+
+	if len(blockScanRecordList) > 0 {
+		if blockScanRecordList[0].LastCurrentBlockNumber > startScanBlockNo {
+			startScanBlockNo = blockScanRecordList[0].LastCurrentBlockNumber
+		}
+	}
+	return startScanBlockNo
 }

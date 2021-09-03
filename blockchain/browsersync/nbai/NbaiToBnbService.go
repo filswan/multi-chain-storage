@@ -19,17 +19,19 @@ import (
 	"strings"
 )
 
-func ChangeNbaiToBnb(data []byte, txHashInNbai string, blockNo uint64, childChainTractionID int64) {
+func ChangeNbaiToBnb(data []byte, txHashInNbai string, blockNo uint64, childChainTractionID int64) error {
 	pk := os.Getenv("privateKey")
 	fromAddress := common.HexToAddress(config.GetConfig().BscMainnetNode.BscAdminWallet)
 	client := bscclient.WebConn.ConnWeb
 	nonce, err := client.PendingNonceAt(context.Background(), fromAddress)
 	if err != nil {
 		logs.GetLogger().Error(err)
+		return err
 	}
 	gasPrice, err := client.SuggestGasPrice(context.Background())
 	if err != nil {
 		logs.GetLogger().Error(err)
+		return err
 	}
 
 	if strings.HasPrefix(strings.ToLower(pk), "0x") {
@@ -72,5 +74,7 @@ func ChangeNbaiToBnb(data []byte, txHashInNbai string, blockNo uint64, childChai
 	err = database.SaveOne(childChainTX)
 	if err != nil {
 		logs.GetLogger().Error(err)
+		return err
 	}
+	return nil
 }

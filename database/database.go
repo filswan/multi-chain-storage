@@ -24,7 +24,7 @@ func Init() *gorm.DB {
 	db.SingularTable(true)
 	db.DB().SetMaxIdleConns(10)
 	//db.LogMode(true)
-	db.LogMode(true)
+	db.LogMode(false)
 	DB = db
 	return DB
 }

@@ -34,6 +34,7 @@ type GoerliMainnetNode struct {
 	ScanStep                  int64
 	StartFromBlockNo          int64
 	CycleTimeInterval         time.Duration
+	ChainID                   int64
 }
 
 type PolygonMainnetNode struct {
@@ -53,6 +54,7 @@ type NbaiMainnetNode struct {
 	ScanStep                  int64
 	StartFromBlockNo          int64
 	CycleTimeInterval         time.Duration
+	ChainID                   int64
 }
 
 type BscMainnetNode struct {

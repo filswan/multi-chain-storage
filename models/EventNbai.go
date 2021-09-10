@@ -12,7 +12,6 @@ type EventNbai struct {
 	IndexedData     string `json:"indexed_data"`
 	ContractName    string `json:"contract_name"`
 	ContractAddress string `json:"contract_address"`
-	Address         string `json:"address"`
 	BytesData       []byte `json:"bytes_data""`
 	BlockNo         uint64 `json:"block_no"`
 	AddressFrom     string `json:"address_from"`

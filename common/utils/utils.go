@@ -9,7 +9,6 @@ import (
 	"io/ioutil"
 	"math/big"
 	"os"
-	"payment-bridge/config"
 	"payment-bridge/logs"
 	"time"
 )
@@ -60,7 +59,7 @@ retry:
 	return rp, nil
 }
 
-func GetFromAndToAddressByTxHash(client *ethclient.Client, txHash common.Hash) (*addressInfo, error) {
+func GetFromAndToAddressByTxHash(client *ethclient.Client, chainID *big.Int, txHash common.Hash) (*addressInfo, error) {
 	addrInfo := new(addressInfo)
 	tx, _, err := client.TransactionByHash(context.Background(), txHash)
 	if err != nil {
@@ -68,7 +67,7 @@ func GetFromAndToAddressByTxHash(client *ethclient.Client, txHash common.Hash) (
 		return nil, err
 	}
 	addrInfo.AddrTo = tx.To().Hex()
-	txMsg, err := tx.AsMessage(types.NewEIP155Signer(big.NewInt(config.GetConfig().PolygonMainnetNode.ChainID)), nil)
+	txMsg, err := tx.AsMessage(types.NewEIP155Signer(chainID), nil)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err

@@ -2,7 +2,6 @@ package bsc
 
 import (
 	"context"
-	"fmt"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
@@ -74,14 +73,17 @@ func ScanBscEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) erro
 				continue
 			}
 			if len(eventList) <= 0 {
-				fmt.Println(vLog.BlockHash.Hex())
-				fmt.Println(vLog.BlockNumber)
-				fmt.Println(vLog.TxHash.Hex())
 				var event = new(models.EventBsc)
-
 				dataList, err := contractAbi.Unpack("LockPayment", vLog.Data)
 				if err != nil {
 					logs.GetLogger().Error(err)
+				}
+				addrInfo, err := utils.GetFromAndToAddressByTxHash(bscclient.WebConn.ConnWeb, big.NewInt(config.GetConfig().BscMainnetNode.ChainID), vLog.TxHash)
+				if err != nil {
+					logs.GetLogger().Error(err)
+				} else {
+					event.AddressFrom = addrInfo.AddrFrom
+					event.AddressTo = addrInfo.AddrTo
 				}
 				event.BlockNo = vLog.BlockNumber
 				event.TxHash = vLog.TxHash.Hex()
@@ -93,6 +95,7 @@ func ScanBscEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) erro
 				event.LockedFee = lockFee.String()
 				deadLine := dataList[4].(*big.Int)
 				event.Deadline = deadLine.String()
+				event.CreateAt = strconv.FormatInt(utils.GetEpochInMillis(), 10)
 				err = database.SaveOne(event)
 				if err != nil {
 					logs.GetLogger().Error(err)

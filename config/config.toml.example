@@ -17,6 +17,7 @@ contractFunctionSignature = "0x88e2ea3170ebb5d73f832e672e27a855b3daf0b2264ac6c09
 scanStep = 10000
 startFromBlockNo = 5000000
 cycleTimeInterval = 15 #unit:second
+chainID = 5
 
 
 [PolygonMainnetNode]
@@ -27,6 +28,7 @@ contractFunctionSignature = "0x88e2ea3170ebb5d73f832e672e27a855b3daf0b2264ac6c09
 scanStep = 1000
 startFromBlockNo = 17590780
 cycleTimeInterval = 10 #unit:second
+chainID = 80001
 
 [NbaiMainnetNode]
 rpcUrl = "https://api.nbai.io/"
@@ -35,16 +37,13 @@ contractFunctionSignature = "0xa8133e3dab1689781429189302ba4b39d9a2ba21e28bdc487
 scanStep = 2000
 startFromBlockNo = 6925072
 cycleTimeInterval = 10 #unit:second
+chainID = 999
 
 
 [BscMainnetNode]
 rpcUrl = "https://data-seed-prebsc-1-s1.binance.org:8545/"
 #rpcUrl = "http://192.168.88.121:8545/"
 #rpcUrl = "https://bsc-dataseed.binance.org/"
-bscAdminWallet = "0xc4fcaAdCb0b00a9501e56215c37B10fAF9e79c0a"
-#bscAdminWallet = "0x05856015d07F3E24936B7D20cB3CcfCa3D34B41d"
-childChainManageContractAddress = "0xa1A58C82bA4a0D8e856D8fad76bB72b04fd9736b"
-gasLimit = 800000
 chainID = 97  # mainnet 56 ;test net 97
 paymentContractAddress = "0x4e2eB289A6e22eb6BBB78d4379aCd27c6BD87001"
 contractFunctionSignature = "0x88e2ea3170ebb5d73f832e672e27a855b3daf0b2264ac6c09b04009dc151509e"
@@ -52,5 +51,4 @@ scanStep = 2000
 startFromBlockNo = 12050113
 cycleTimeInterval = 10 #unit:second
 
-[ScheduleRule]
-nbai2BscMappingRedoRule = "0 */3 * * * ?"  #every minute
+

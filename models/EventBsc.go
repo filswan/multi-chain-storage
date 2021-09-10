@@ -17,6 +17,9 @@ type EventBsc struct {
 	PayloadCid      string `json:"payload_cid"`
 	BlockNo         uint64 `json:"block_no"`
 	MinerAddress    string `json:"miner_address"`
+	AddressFrom     string `json:"address_from"`
+	AddressTo       string `json:"address_to"`
+	CreateAt        string `json:"create_at"`
 }
 
 // FindEvents (&Event{Id: "0xadeaCC802D0f2DFd31bE4Fa7434F15782Fd720ac"},"id desc","10","0")

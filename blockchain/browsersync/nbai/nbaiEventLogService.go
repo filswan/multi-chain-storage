@@ -2,7 +2,6 @@ package nbai
 
 import (
 	"context"
-	"fmt"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
@@ -75,10 +74,6 @@ func ScanNbaiEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) err
 				continue
 			}
 			if len(eventList) <= 0 {
-				fmt.Println(vLog.BlockHash.Hex())
-				fmt.Println(vLog.BlockNumber)
-				fmt.Println(vLog.TxHash.Hex())
-
 				receiveMap := map[string]interface{}{}
 				err = paymentAbiString.UnpackIntoMap(receiveMap, "StateSynced", vLog.Data)
 				if err != nil {
@@ -86,19 +81,21 @@ func ScanNbaiEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) err
 					continue
 				}
 				var event = new(models.EventNbai)
+				addrInfo, err := utils.GetFromAndToAddressByTxHash(nbaiclient.WebConn.ConnWeb, big.NewInt(config.GetConfig().NbaiMainnetNode.ChainID), vLog.TxHash)
+				if err != nil {
+					logs.GetLogger().Error(err)
+				} else {
+					event.AddressFrom = addrInfo.AddrFrom
+					event.AddressTo = addrInfo.AddrTo
+				}
+
 				event.BlockNo = vLog.BlockNumber
 				event.TxHash = vLog.TxHash.Hex()
 				event.ContractName = "SwanPayment"
 				event.ContractAddress = contractAddress.String()
 				event.BytesData = receiveMap["data"].([]byte)
 				event.CreateAt = strconv.FormatInt(utils.GetEpochInMillis(), 10)
-
 				err = database.SaveOne(event)
-				if err != nil {
-					logs.GetLogger().Error(err)
-					continue
-				}
-				err = ChangeNbaiToBnb(receiveMap["data"].([]byte), vLog.TxHash.Hex(), vLog.BlockNumber, 0)
 				if err != nil {
 					logs.GetLogger().Error(err)
 					continue

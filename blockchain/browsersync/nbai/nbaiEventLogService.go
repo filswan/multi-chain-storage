@@ -98,11 +98,6 @@ func ScanNbaiEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) err
 					logs.GetLogger().Error(err)
 					continue
 				}
-				err = ChangeNbaiToBnb(receiveMap["data"].([]byte), vLog.TxHash.Hex(), vLog.BlockNumber, 0)
-				if err != nil {
-					logs.GetLogger().Error(err)
-					continue
-				}
 			}
 		}
 	}

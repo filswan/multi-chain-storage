@@ -43,6 +43,7 @@ type PolygonMainnetNode struct {
 	ScanStep                  int64
 	StartFromBlockNo          int64
 	CycleTimeInterval         time.Duration
+	ChainID                   int64
 }
 
 type NbaiMainnetNode struct {
@@ -125,6 +126,7 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 		{"PolygonMainnetNode", "contractFunctionSignature"},
 		{"PolygonMainnetNode", "scanStep"},
 		{"PolygonMainnetNode", "cycleTimeInterval"},
+		{"PolygonMainnetNode", "chainID"},
 
 		{"NbaiMainnetNode", "rpcUrl"},
 		{"NbaiMainnetNode", "paymentContractAddress"},

@@ -15,6 +15,8 @@ type EventNbai struct {
 	Address         string `json:"address"`
 	BytesData       []byte `json:"bytes_data""`
 	BlockNo         uint64 `json:"block_no"`
+	AddressFrom     string `json:"address_from"`
+	AddressTo       string `json:"address_to"`
 	CreateAt        string `json:"create_at"`
 }
 

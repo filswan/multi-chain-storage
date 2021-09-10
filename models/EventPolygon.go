@@ -17,6 +17,9 @@ type EventPolygon struct {
 	PayloadCid      string `json:"payload_cid"`
 	BlockNo         uint64 `json:"block_no"`
 	MinerAddress    string `json:"miner_address"`
+	AddressFrom     string `json:"address_from"`
+	AddressTo       string `json:"address_to"`
+	CreateAt        string `json:"create_at"`
 }
 
 func (self *EventPolygon) FindOneEventPolygon(condition interface{}) (*EventPolygon, error) {

@@ -14,7 +14,6 @@ type Configuration struct {
 	PolygonMainnetNode PolygonMainnetNode
 	NbaiMainnetNode    NbaiMainnetNode
 	BscMainnetNode     BscMainnetNode
-	ScheduleRule       ScheduleRule
 	Dev                bool
 }
 
@@ -58,20 +57,13 @@ type NbaiMainnetNode struct {
 }
 
 type BscMainnetNode struct {
-	RpcUrl                          string
-	BscAdminWallet                  string
-	ChildChainManageContractAddress string
-	GasLimit                        uint64
-	ChainID                         int64
-	PaymentContractAddress          string
-	ContractFunctionSignature       string
-	ScanStep                        int64
-	StartFromBlockNo                int64
-	CycleTimeInterval               time.Duration
-}
-
-type ScheduleRule struct {
-	Nbai2BscMappingRedoRule string
+	RpcUrl                    string
+	ChainID                   int64
+	PaymentContractAddress    string
+	ContractFunctionSignature string
+	ScanStep                  int64
+	StartFromBlockNo          int64
+	CycleTimeInterval         time.Duration
 }
 
 var config *Configuration
@@ -135,14 +127,14 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 		{"NbaiMainnetNode", "contractFunctionSignature"},
 		{"NbaiMainnetNode", "scanStep"},
 		{"NbaiMainnetNode", "cycleTimeInterval"},
+		{"NbaiMainnetNode", "chainID"},
 
 		{"BscMainnetNode", "rpcUrl"},
-		{"BscMainnetNode", "bscAdminWallet"},
-		{"BscMainnetNode", "childChainManageContractAddress"},
-		{"BscMainnetNode", "gasLimit"},
+		{"BscMainnetNode", "paymentContractAddress"},
+		{"BscMainnetNode", "contractFunctionSignature"},
+		{"BscMainnetNode", "scanStep"},
+		{"BscMainnetNode", "cycleTimeInterval"},
 		{"BscMainnetNode", "chainID"},
-
-		{"ScheduleRule", "nbai2BscMappingRedoRule"},
 	}
 
 	for _, v := range requiredFields {

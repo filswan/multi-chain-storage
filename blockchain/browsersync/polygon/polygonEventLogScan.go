@@ -14,7 +14,7 @@ import (
 	"time"
 )
 
-func PolygonBlockBrowserSyncAndEventLogsSync() {
+func ScanEventFromChainAndSaveDataToDbForPolygon() {
 	startScanBlockNo := getStartBlockNo()
 
 	for {

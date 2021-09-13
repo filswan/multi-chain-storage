@@ -14,7 +14,7 @@ import (
 	"time"
 )
 
-func GoerliBlockBrowserSyncAndEventLogsSync() {
+func ScanEventFromChainAndSaveDataToDbForGoerli() {
 	startScanBlockNo := getStartBlockNo()
 
 	for {

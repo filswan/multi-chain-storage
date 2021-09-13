@@ -14,7 +14,7 @@ import (
 	"time"
 )
 
-func NbaiBlockBrowserSyncAndEventLogsSync() {
+func ScanEventFromChainAndSaveDataToDbForNBAI() {
 	startScanBlockNo := getStartBlockNo()
 
 	for {

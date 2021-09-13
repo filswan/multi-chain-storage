@@ -14,7 +14,7 @@ import (
 	"time"
 )
 
-func BscBlockBrowserSyncAndEventLogsSync() {
+func ScanEventFromChainAndSaveDataToDbForBsc() {
 	startScanBlockNo := getStartBlockNo()
 
 	for {

@@ -6,15 +6,11 @@ import (
 	cors "github.com/itsjamie/gin-cors"
 	"github.com/joho/godotenv"
 	"os"
-	"payment-bridge/blockchain/browsersync/bsc"
-	"payment-bridge/blockchain/browsersync/goerli"
-	"payment-bridge/blockchain/browsersync/nbai"
-	"payment-bridge/blockchain/browsersync/polygon"
 	"payment-bridge/blockchain/initclient/bscclient"
 	"payment-bridge/blockchain/initclient/goerliclient"
 	"payment-bridge/blockchain/initclient/nbaiclient"
 	"payment-bridge/blockchain/initclient/polygonclient"
-	"payment-bridge/blockchain/schedule"
+	"payment-bridge/blockchain/scanFactory"
 	"payment-bridge/common/constants"
 	"payment-bridge/config"
 	"payment-bridge/database"
@@ -31,15 +27,15 @@ func main() {
 
 	initMethod()
 
-	go schedule.RedoMappingSchedule()
+	factory := new(scanFactory.IEventScanFactory)
 
-	go nbai.NbaiBlockBrowserSyncAndEventLogsSync()
+	go factory.GenerateBlockChainNetwork(constants.NETWORK_TYPE_BSC).ScanEventFromChainAndSaveDataToDb()
 
-	go polygon.PolygonBlockBrowserSyncAndEventLogsSync()
+	go factory.GenerateBlockChainNetwork(constants.NETWORK_TYPE_GOERLI).ScanEventFromChainAndSaveDataToDb()
 
-	go goerli.GoerliBlockBrowserSyncAndEventLogsSync()
+	go factory.GenerateBlockChainNetwork(constants.NETWORK_TYPE_NBAI).ScanEventFromChainAndSaveDataToDb()
 
-	go bsc.BscBlockBrowserSyncAndEventLogsSync()
+	go factory.GenerateBlockChainNetwork(constants.NETWORK_TYPE_POLYGON).ScanEventFromChainAndSaveDataToDb()
 
 	defer func() {
 		err := db.Close()

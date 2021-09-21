@@ -1,49 +1,50 @@
 # Payment-Bridge
-Payment bridge is desgined for make payment from multichain for filecoin storage.
-## Scan Module 
+Payment bridge is desgined for make payment from multichain for filecoin storage <br>
+Now supports payment with tokens such as nbai/bsc/goerli/polygon
+
+## Scan Module
 Scan the blockchain, find the event log of the block where the swan payment contract has been executed,and save to the database
 
 ## Prerequisite
 - golang1.13 (minimum version)
+- mysql5.5
 
 ## Getting Started
 
-1 &ensp;  clone code to $GOPATH/src
+### 1 clone code to $GOPATH/src
 ```console
 git clone https://github.com/filswan/payment-bridge
 ```
-
-2 &ensp;  If you need the bsc block link function, create a .env file in the project root directory <br>
-&ensp;  &ensp; and enter the private key of your bsc blockchain wallet <br>
-&ensp;  &ensp; Input value like this:  privateKey=<your wallet private key in bsc blockchain>
-```console
-cd $GOPATH/src/payment-bridge
-vi  .env
-```
-
-3 &ensp;  Enter payment-bridge/scan/config directory <br>
-&ensp;  &ensp;     change config.toml.example to config.toml  <br>
-&ensp;  &ensp; input your database parameters and blockchain node address
+### 2 Generate config file
+Enter payment-bridge/scan/config directory <br>
+change config.toml.example to config.toml  <br>
+input your database parameters and blockchain node address
 ```console
 cd $GOPATH/src/payment-bridge/scan/config
 mv config.toml.example config.toml
 ```
 
-4 &ensp; Enter payment-bridge directory <br>
-&ensp; &ensp;  and execute the make command
+### 3 Complie project
+Enter payment-bridge directory <br>
+adn execute the make command
 ```console
 cd $GOPATH/src/payment-bridge/
 GO111MODULE=on make
 ```
 
-## Run the project   
-Enter payment-bridge/scan/build/bin directory <br> 
+### 4 Run the project
+Enter payment-bridge/scan/build/bin directory <br>
 execute the binary file of the payment-bridge project
 ```console
 cd $GOPATH/src/payment-bridge/scan/build/bin
 chmod +x payment-bridge
 ./payment_bridge
 ```
+
+## The Payment Process
+- First, users use the currencies we support to send tokens to our contract address. <br>
+- Second, payment-biridge scans the events of the above transactions
+- Scan the event data that meets the conditions, and then the user can perform the filecoin network storage function
 
 ## Call the api to check your scan data from chain <br>
 The default port number of the project is 8888, you can modify it to the port you want in config.toml
@@ -95,8 +96,10 @@ the return value like this below:
 |table                 |description       |
 |----------------------|------------------|
 |block_scan_record     |record the block number that has been scanned to the blockchain|
-|event_goerli          |record eligible data on goerli            |
-|event_polygon         |record eligible data on polygon   |
+|event_goerli          |record eligible data on goerli  chain  |
+|event_polygon         |record eligible data on polygon chain  |
+|event_bsc             |record eligible data on bsc chain      |
+|event_nbai            |record eligible data on nbai   chain   |
 
 
 ## Other Topics

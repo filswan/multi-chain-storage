@@ -22,4 +22,7 @@ const (
 
 	TRANSACTION_STATUS_SUCCESS = "success"
 	TRANSACTION_STATUS_FAIL    = "fail"
+
+	URL_HOST_GET_HOST_INFO = "/host/info"
+	URL_HOST_GET_COMMON    = "/common"
 )

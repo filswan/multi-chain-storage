@@ -16,6 +16,7 @@ import (
 	"payment-bridge/database"
 	"payment-bridge/logs"
 	"payment-bridge/routers"
+	"payment-bridge/routers/commonRouters"
 	"time"
 )
 
@@ -56,6 +57,7 @@ func main() {
 	}))
 
 	v1 := r.Group("/api/v1")
+	commonRouters.HostManager(v1.Group(constants.URL_HOST_GET_COMMON))
 	routers.EventLogManager(v1.Group(constants.URL_EVENT_PREFIX))
 
 	err := r.Run(":" + config.GetConfig().Port)

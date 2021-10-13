@@ -10,7 +10,6 @@ import (
 	"payment-bridge/blockchain/initclient/bscclient"
 	"payment-bridge/common/constants"
 	"payment-bridge/common/utils"
-	"payment-bridge/config"
 	"payment-bridge/database"
 	"payment-bridge/logs"
 	"payment-bridge/models"
@@ -30,9 +29,9 @@ func ScanBscEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) erro
 	}
 
 	//SwanPayment contract address
-	contractAddress := common.HexToAddress(config.GetConfig().BscMainnetNode.PaymentContractAddress)
+	contractAddress := common.HexToAddress(GetConfig().BscMainnetNode.PaymentContractAddress)
 	//SwanPayment contract function signature
-	contractFunctionSignature := config.GetConfig().BscMainnetNode.ContractFunctionSignature
+	contractFunctionSignature := GetConfig().BscMainnetNode.ContractFunctionSignature
 
 	//test block no. is : 5297224
 	query := ethereum.FilterQuery{
@@ -78,7 +77,7 @@ func ScanBscEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) erro
 				if err != nil {
 					logs.GetLogger().Error(err)
 				}
-				addrInfo, err := utils.GetFromAndToAddressByTxHash(bscclient.WebConn.ConnWeb, big.NewInt(config.GetConfig().BscMainnetNode.ChainID), vLog.TxHash)
+				addrInfo, err := utils.GetFromAndToAddressByTxHash(bscclient.WebConn.ConnWeb, big.NewInt(GetConfig().BscMainnetNode.ChainID), vLog.TxHash)
 				if err != nil {
 					logs.GetLogger().Error(err)
 				} else {

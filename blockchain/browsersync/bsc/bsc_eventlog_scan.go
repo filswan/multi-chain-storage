@@ -5,7 +5,6 @@ import (
 	"payment-bridge/blockchain/initclient/bscclient"
 	"payment-bridge/common/constants"
 	"payment-bridge/common/utils"
-	"payment-bridge/config"
 	"payment-bridge/database"
 	"payment-bridge/logs"
 	models2 "payment-bridge/models"
@@ -41,20 +40,20 @@ func ScanEventFromChainAndSaveDataToDbForBsc() {
 		blockScanRecordList, err := blockScanRecord.FindLastCurrentBlockNumber(whereCondition)
 		if err != nil {
 			logs.GetLogger().Error(err)
-			startScanBlockNo = config.GetConfig().BscMainnetNode.StartFromBlockNo
+			startScanBlockNo = GetConfig().BscMainnetNode.StartFromBlockNo
 		}
 		if len(blockScanRecordList) > 0 {
 			if blockScanRecordList[0].LastCurrentBlockNumber <= blockNoCurrent.Int64() {
 				startScanBlockNo = blockScanRecordList[0].LastCurrentBlockNumber
 			} else {
-				startScanBlockNo = config.GetConfig().BscMainnetNode.StartFromBlockNo
+				startScanBlockNo = GetConfig().BscMainnetNode.StartFromBlockNo
 			}
 			blockScanRecord.ID = blockScanRecordList[0].ID
 		}
 
 		for {
 			start := startScanBlockNo
-			end := start + config.GetConfig().BscMainnetNode.ScanStep
+			end := start + GetConfig().BscMainnetNode.ScanStep
 			if startScanBlockNo > blockNoCurrent.Int64() {
 				break
 			}
@@ -88,7 +87,7 @@ func ScanEventFromChainAndSaveDataToDbForBsc() {
 		getBlockFlag = true
 		mutex.Unlock()
 
-		time.Sleep(time.Second * config.GetConfig().BscMainnetNode.CycleTimeInterval)
+		time.Sleep(time.Second * GetConfig().BscMainnetNode.CycleTimeInterval)
 		logs.GetLogger().Info("-------------------------bsc----------------------------")
 	}
 }
@@ -96,15 +95,15 @@ func ScanEventFromChainAndSaveDataToDbForBsc() {
 func getStartBlockNo() int64 {
 	var startScanBlockNo int64 = 1
 
-	if config.GetConfig().BscMainnetNode.StartFromBlockNo > 0 {
-		startScanBlockNo = config.GetConfig().BscMainnetNode.StartFromBlockNo
+	if GetConfig().BscMainnetNode.StartFromBlockNo > 0 {
+		startScanBlockNo = GetConfig().BscMainnetNode.StartFromBlockNo
 	}
 	blockScanRecord := new(models2.BlockScanRecord)
 	whereCondition := "network_type='" + constants.NETWORK_TYPE_BSC + "'"
 	blockScanRecordList, err := blockScanRecord.FindLastCurrentBlockNumber(whereCondition)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		startScanBlockNo = config.GetConfig().BscMainnetNode.StartFromBlockNo
+		startScanBlockNo = GetConfig().BscMainnetNode.StartFromBlockNo
 	}
 
 	if len(blockScanRecordList) > 0 {

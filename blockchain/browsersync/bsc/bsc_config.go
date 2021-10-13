@@ -23,7 +23,7 @@ type BscMainnetNode struct {
 var bscConfig *ConfigurationForBsc
 
 func init() {
-	configFile := "./blockchain/browsersync/bsc/config.toml"
+	configFile := "./config/bsc/config_bsc.toml"
 	if metaData, err := toml.DecodeFile(configFile, &bscConfig); err != nil {
 		log.Fatal("error:", err)
 	} else {

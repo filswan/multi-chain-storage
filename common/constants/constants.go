@@ -4,7 +4,8 @@ const (
 	SWAN_PAYMENT_ABI_JSON = "on-chain/contracts/abi/SwanPayment.json"
 	DEFAULT_SELECT_LIMIT  = "100"
 
-	URL_EVENT_PREFIX = "events"
+	URL_EVENT_PREFIX   = "events"
+	URL_BILLING_PREFIX = "billing"
 
 	HTTP_STATUS_SUCCESS = "success"
 	HTTP_STATUS_FAIL    = "fail"
@@ -25,4 +26,8 @@ const (
 
 	URL_HOST_GET_HOST_INFO = "/host/info"
 	URL_HOST_GET_COMMON    = "/common"
+
+	TABLE_NAME_EVENT_BSC     = "event_bsc"
+	TABLE_NAME_EVENT_GOERLI  = "event_goerli"
+	TABLE_NAME_EVENT_POLYGON = "event_polygon"
 )

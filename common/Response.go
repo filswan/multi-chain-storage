@@ -1,6 +1,8 @@
 package common
 
-import "payment-bridge/common/constants"
+import (
+	"payment-bridge/common/constants"
+)
 
 type BasicResponse struct {
 	Status   string      `json:"status"`
@@ -37,5 +39,14 @@ func CreateErrorResponse(_errCode, _errMsg string) BasicResponse {
 		Status:  constants.HTTP_STATUS_ERROR,
 		Code:    _errCode,
 		Message: _errMsg,
+	}
+}
+
+func NewSuccessResponseWithPageInfo(_data interface{}, _page *PageInfo) BasicResponse {
+	return BasicResponse{
+		Status:   constants.HTTP_STATUS_SUCCESS,
+		Code:     constants.HTTP_CODE_200_OK,
+		Data:     _data,
+		PageInfo: _page,
 	}
 }

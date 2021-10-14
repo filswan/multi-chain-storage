@@ -7,7 +7,6 @@ import (
 	"github.com/joho/godotenv"
 	"os"
 	"payment-bridge/blockchain/browsersync"
-	"payment-bridge/blockchain/initclient/bscclient"
 	"payment-bridge/blockchain/initclient/goerliclient"
 	"payment-bridge/blockchain/initclient/nbaiclient"
 	"payment-bridge/blockchain/initclient/polygonclient"
@@ -75,7 +74,6 @@ func initMethod() string {
 	goerliclient.ClientInit()
 	polygonclient.ClientInit()
 	nbaiclient.ClientInit()
-	bscclient.ClientInit()
 	return ""
 }
 

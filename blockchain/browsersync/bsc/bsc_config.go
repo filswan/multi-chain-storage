@@ -22,7 +22,7 @@ type BscMainnetNode struct {
 
 var bscConfig *ConfigurationForBsc
 
-func init() {
+func initCofig() {
 	configFile := "./config/bsc/config_bsc.toml"
 	if metaData, err := toml.DecodeFile(configFile, &bscConfig); err != nil {
 		log.Fatal("error:", err)
@@ -53,5 +53,8 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 }
 
 func GetConfig() ConfigurationForBsc {
+	if bscConfig == nil {
+		initCofig()
+	}
 	return *bscConfig
 }

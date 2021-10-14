@@ -2,7 +2,6 @@ package bsc
 
 import (
 	"math/big"
-	"payment-bridge/blockchain/initclient/bscclient"
 	"payment-bridge/common/constants"
 	"payment-bridge/common/utils"
 	"payment-bridge/database"
@@ -23,9 +22,9 @@ func ScanEventFromChainAndSaveDataToDbForBsc() {
 		var err error
 		var getBlockFlag bool = true
 		for getBlockFlag {
-			blockNoCurrent, err = bscclient.WebConn.GetBlockNumber()
+			blockNoCurrent, err = WebConn.GetBlockNumber()
 			if err != nil {
-				bscclient.ClientInit()
+				ClientInit()
 				logs.GetLogger().Error(err)
 				time.Sleep(5 * time.Second)
 				continue

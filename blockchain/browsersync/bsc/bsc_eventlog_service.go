@@ -7,7 +7,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"math/big"
-	"payment-bridge/blockchain/initclient/bscclient"
 	"payment-bridge/common/constants"
 	"payment-bridge/common/utils"
 	"payment-bridge/database"
@@ -46,7 +45,7 @@ func ScanBscEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) erro
 	var logsInChain []types.Log
 	var flag bool = true
 	for flag {
-		logsInChain, err = bscclient.WebConn.ConnWeb.FilterLogs(context.Background(), query)
+		logsInChain, err = WebConn.ConnWeb.FilterLogs(context.Background(), query)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			time.Sleep(5 * time.Second)
@@ -77,7 +76,7 @@ func ScanBscEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) erro
 				if err != nil {
 					logs.GetLogger().Error(err)
 				}
-				addrInfo, err := utils.GetFromAndToAddressByTxHash(bscclient.WebConn.ConnWeb, big.NewInt(GetConfig().BscMainnetNode.ChainID), vLog.TxHash)
+				addrInfo, err := utils.GetFromAndToAddressByTxHash(WebConn.ConnWeb, big.NewInt(GetConfig().BscMainnetNode.ChainID), vLog.TxHash)
 				if err != nil {
 					logs.GetLogger().Error(err)
 				} else {

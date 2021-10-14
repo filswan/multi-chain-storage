@@ -7,9 +7,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"math/big"
-	"payment-bridge/blockchain/initclient/nbaiclient"
 	"payment-bridge/common/utils"
-	"payment-bridge/config"
 	"payment-bridge/database"
 	"payment-bridge/logs"
 	"payment-bridge/models"
@@ -37,9 +35,9 @@ func ScanNbaiEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) err
 	}
 
 	//SwanPayment contract address
-	contractAddress := common.HexToAddress(config.GetConfig().NbaiMainnetNode.PaymentContractAddress)
+	contractAddress := common.HexToAddress(GetConfig().NbaiMainnetNode.PaymentContractAddress)
 	//SwanPayment contract function signature
-	contractFunctionSignature := config.GetConfig().NbaiMainnetNode.ContractFunctionSignature
+	contractFunctionSignature := GetConfig().NbaiMainnetNode.ContractFunctionSignature
 
 	//test block no. is : 5297224
 	query := ethereum.FilterQuery{
@@ -54,7 +52,7 @@ func ScanNbaiEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) err
 	var logsInChain []types.Log
 	var flag bool = true
 	for flag {
-		logsInChain, err = nbaiclient.WebConn.ConnWeb.FilterLogs(context.Background(), query)
+		logsInChain, err = WebConn.ConnWeb.FilterLogs(context.Background(), query)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			time.Sleep(5 * time.Second)
@@ -81,7 +79,7 @@ func ScanNbaiEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) err
 					continue
 				}
 				var event = new(models.EventNbai)
-				addrInfo, err := utils.GetFromAndToAddressByTxHash(nbaiclient.WebConn.ConnWeb, big.NewInt(config.GetConfig().NbaiMainnetNode.ChainID), vLog.TxHash)
+				addrInfo, err := utils.GetFromAndToAddressByTxHash(WebConn.ConnWeb, big.NewInt(GetConfig().NbaiMainnetNode.ChainID), vLog.TxHash)
 				if err != nil {
 					logs.GetLogger().Error(err)
 				} else {

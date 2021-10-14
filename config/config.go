@@ -8,10 +8,9 @@ import (
 )
 
 type Configuration struct {
-	Port            string
-	Database        database
-	NbaiMainnetNode NbaiMainnetNode
-	Dev             bool
+	Port     string
+	Database database
+	Dev      bool
 }
 
 type database struct {
@@ -64,13 +63,6 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 		{"DataBase", "dbSchemaName"},
 		{"DataBase", "dbUsername"},
 		{"DataBase", "dbPwd"},
-
-		{"NbaiMainnetNode", "rpcUrl"},
-		{"NbaiMainnetNode", "paymentContractAddress"},
-		{"NbaiMainnetNode", "contractFunctionSignature"},
-		{"NbaiMainnetNode", "scanStep"},
-		{"NbaiMainnetNode", "cycleTimeInterval"},
-		{"NbaiMainnetNode", "chainID"},
 	}
 
 	for _, v := range requiredFields {

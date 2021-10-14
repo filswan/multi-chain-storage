@@ -23,7 +23,7 @@ type NbaiMainnetNode struct {
 var nbaiConfig *ConfigurationForNbai
 
 func initCofig() {
-	configFile := "./config/polygon/config_polygon.toml"
+	configFile := "./config/nbai/config_nbai.toml"
 	if metaData, err := toml.DecodeFile(configFile, &nbaiConfig); err != nil {
 		log.Fatal("error:", err)
 	} else {

@@ -6,12 +6,12 @@ import (
 
 func Init() {
 	models.Register(&models.RegInfo{
-		Network:                           "Polygon",
-		CoinName:                          "MATIC",
+		Network:                           "Nbai",
+		CoinName:                          "NBAI",
 		ScanEventFromChainAndSaveDataToDb: ScanEventFromChainAndSaveDataToDb,
 	})
 }
 
 func ScanEventFromChainAndSaveDataToDb() {
-	ScanEventFromChainAndSaveDataToDbForPolygon()
+	ScanEventFromChainAndSaveDataToDbForNBAI()
 }

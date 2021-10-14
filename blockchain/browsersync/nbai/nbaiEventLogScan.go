@@ -2,10 +2,8 @@ package nbai
 
 import (
 	"math/big"
-	"payment-bridge/blockchain/initclient/nbaiclient"
 	"payment-bridge/common/constants"
 	"payment-bridge/common/utils"
-	"payment-bridge/config"
 	"payment-bridge/database"
 	"payment-bridge/logs"
 	models2 "payment-bridge/models"
@@ -24,9 +22,9 @@ func ScanEventFromChainAndSaveDataToDbForNBAI() {
 		var err error
 		var getBlockFlag bool = true
 		for getBlockFlag {
-			blockNoCurrent, err = nbaiclient.WebConn.GetBlockNumber()
+			blockNoCurrent, err = WebConn.GetBlockNumber()
 			if err != nil {
-				nbaiclient.ClientInit()
+				ClientInit()
 				logs.GetLogger().Error(err)
 				time.Sleep(5 * time.Second)
 				continue
@@ -41,20 +39,20 @@ func ScanEventFromChainAndSaveDataToDbForNBAI() {
 		blockScanRecordList, err := blockScanRecord.FindLastCurrentBlockNumber(whereCondition)
 		if err != nil {
 			logs.GetLogger().Error(err)
-			startScanBlockNo = config.GetConfig().NbaiMainnetNode.StartFromBlockNo
+			startScanBlockNo = GetConfig().NbaiMainnetNode.StartFromBlockNo
 		}
 		if len(blockScanRecordList) > 0 {
 			if blockScanRecordList[0].LastCurrentBlockNumber <= blockNoCurrent.Int64() {
 				startScanBlockNo = blockScanRecordList[0].LastCurrentBlockNumber
 			} else {
-				startScanBlockNo = config.GetConfig().NbaiMainnetNode.StartFromBlockNo
+				startScanBlockNo = GetConfig().NbaiMainnetNode.StartFromBlockNo
 			}
 			blockScanRecord.ID = blockScanRecordList[0].ID
 		}
 
 		for {
 			start := startScanBlockNo
-			end := start + config.GetConfig().NbaiMainnetNode.ScanStep
+			end := start + GetConfig().NbaiMainnetNode.ScanStep
 			if startScanBlockNo > blockNoCurrent.Int64() {
 				break
 			}
@@ -88,7 +86,7 @@ func ScanEventFromChainAndSaveDataToDbForNBAI() {
 		getBlockFlag = true
 		mutex.Unlock()
 
-		time.Sleep(time.Second * config.GetConfig().NbaiMainnetNode.CycleTimeInterval)
+		time.Sleep(time.Second * GetConfig().NbaiMainnetNode.CycleTimeInterval)
 		logs.GetLogger().Info("-------------------------nbai----------------------------")
 	}
 }
@@ -96,8 +94,8 @@ func ScanEventFromChainAndSaveDataToDbForNBAI() {
 func getStartBlockNo() int64 {
 	var startScanBlockNo int64 = 1
 
-	if config.GetConfig().NbaiMainnetNode.StartFromBlockNo > 0 {
-		startScanBlockNo = config.GetConfig().NbaiMainnetNode.StartFromBlockNo
+	if GetConfig().NbaiMainnetNode.StartFromBlockNo > 0 {
+		startScanBlockNo = GetConfig().NbaiMainnetNode.StartFromBlockNo
 	}
 
 	blockScanRecord := new(models2.BlockScanRecord)
@@ -105,7 +103,7 @@ func getStartBlockNo() int64 {
 	blockScanRecordList, err := blockScanRecord.FindLastCurrentBlockNumber(whereCondition)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		startScanBlockNo = config.GetConfig().NbaiMainnetNode.StartFromBlockNo
+		startScanBlockNo = GetConfig().NbaiMainnetNode.StartFromBlockNo
 	}
 
 	if len(blockScanRecordList) > 0 {

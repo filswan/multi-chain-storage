@@ -2,10 +2,8 @@ package polygon
 
 import (
 	"math/big"
-	"payment-bridge/blockchain/initclient/polygonclient"
 	"payment-bridge/common/constants"
 	"payment-bridge/common/utils"
-	"payment-bridge/config"
 	"payment-bridge/database"
 	"payment-bridge/logs"
 	models2 "payment-bridge/models"
@@ -24,9 +22,9 @@ func ScanEventFromChainAndSaveDataToDbForPolygon() {
 		var err error
 		var getBlockFlag bool = true
 		for getBlockFlag {
-			blockNoCurrent, err = polygonclient.WebConn.GetBlockNumber()
+			blockNoCurrent, err = WebConn.GetBlockNumber()
 			if err != nil {
-				polygonclient.ClientInit()
+				ClientInit()
 				logs.GetLogger().Error(err)
 				time.Sleep(5 * time.Second)
 				continue
@@ -41,20 +39,20 @@ func ScanEventFromChainAndSaveDataToDbForPolygon() {
 		blockScanRecordList, err := blockScanRecord.FindLastCurrentBlockNumber(whereCondition)
 		if err != nil {
 			logs.GetLogger().Error(err)
-			startScanBlockNo = config.GetConfig().PolygonMainnetNode.StartFromBlockNo
+			startScanBlockNo = GetConfig().PolygonMainnetNode.StartFromBlockNo
 		}
 		if len(blockScanRecordList) > 0 {
 			if blockScanRecordList[0].LastCurrentBlockNumber <= blockNoCurrent.Int64() {
 				startScanBlockNo = blockScanRecordList[0].LastCurrentBlockNumber
 			} else {
-				startScanBlockNo = config.GetConfig().PolygonMainnetNode.StartFromBlockNo
+				startScanBlockNo = GetConfig().PolygonMainnetNode.StartFromBlockNo
 			}
 			blockScanRecord.ID = blockScanRecordList[0].ID
 		}
 
 		for {
 			start := startScanBlockNo
-			end := start + config.GetConfig().PolygonMainnetNode.ScanStep
+			end := start + GetConfig().PolygonMainnetNode.ScanStep
 			if startScanBlockNo > blockNoCurrent.Int64() {
 				break
 			}
@@ -88,7 +86,7 @@ func ScanEventFromChainAndSaveDataToDbForPolygon() {
 		getBlockFlag = true
 		mutex.Unlock()
 
-		time.Sleep(time.Second * config.GetConfig().PolygonMainnetNode.CycleTimeInterval)
+		time.Sleep(time.Second * GetConfig().PolygonMainnetNode.CycleTimeInterval)
 		logs.GetLogger().Info("-------------------------polygon----------------------------")
 	}
 }
@@ -96,15 +94,15 @@ func ScanEventFromChainAndSaveDataToDbForPolygon() {
 func getStartBlockNo() int64 {
 	var startScanBlockNo int64 = 1
 
-	if config.GetConfig().PolygonMainnetNode.StartFromBlockNo > 0 {
-		startScanBlockNo = config.GetConfig().PolygonMainnetNode.StartFromBlockNo
+	if GetConfig().PolygonMainnetNode.StartFromBlockNo > 0 {
+		startScanBlockNo = GetConfig().PolygonMainnetNode.StartFromBlockNo
 	}
 	blockScanRecord := new(models2.BlockScanRecord)
 	whereCondition := "network_type='" + constants.NETWORK_TYPE_POLYGON + "'"
 	blockScanRecordList, err := blockScanRecord.FindLastCurrentBlockNumber(whereCondition)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		startScanBlockNo = config.GetConfig().PolygonMainnetNode.StartFromBlockNo
+		startScanBlockNo = GetConfig().PolygonMainnetNode.StartFromBlockNo
 	}
 
 	if len(blockScanRecordList) > 0 {

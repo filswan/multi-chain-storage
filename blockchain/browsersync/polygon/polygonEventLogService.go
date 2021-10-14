@@ -8,9 +8,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"math/big"
 	"payment-bridge/blockchain/browsersync/goerli"
-	"payment-bridge/blockchain/initclient/polygonclient"
 	"payment-bridge/common/utils"
-	"payment-bridge/config"
 	"payment-bridge/database"
 	"payment-bridge/logs"
 	"payment-bridge/models"
@@ -36,9 +34,9 @@ func ScanPolygonEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) 
 	}
 
 	//SwanPayment contract address
-	contractAddress := common.HexToAddress(config.GetConfig().PolygonMainnetNode.PaymentContractAddress)
+	contractAddress := common.HexToAddress(GetConfig().PolygonMainnetNode.PaymentContractAddress)
 	//SwanPayment contract function signature
-	contractFunctionSignature := config.GetConfig().PolygonMainnetNode.ContractFunctionSignature
+	contractFunctionSignature := GetConfig().PolygonMainnetNode.ContractFunctionSignature
 
 	//test block no. is : 5297224
 	query := ethereum.FilterQuery{
@@ -53,7 +51,7 @@ func ScanPolygonEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) 
 	var logsInChain []types.Log
 	var flag bool = true
 	for flag {
-		logsInChain, err = polygonclient.WebConn.ConnWeb.FilterLogs(context.Background(), query)
+		logsInChain, err = WebConn.ConnWeb.FilterLogs(context.Background(), query)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			time.Sleep(5 * time.Second)
@@ -85,7 +83,7 @@ func ScanPolygonEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) 
 					logs.GetLogger().Error(err)
 				}
 
-				addrInfo, err := utils.GetFromAndToAddressByTxHash(polygonclient.WebConn.ConnWeb, big.NewInt(config.GetConfig().PolygonMainnetNode.ChainID), vLog.TxHash)
+				addrInfo, err := utils.GetFromAndToAddressByTxHash(WebConn.ConnWeb, big.NewInt(GetConfig().PolygonMainnetNode.ChainID), vLog.TxHash)
 				if err != nil {
 					logs.GetLogger().Error(err)
 				} else {

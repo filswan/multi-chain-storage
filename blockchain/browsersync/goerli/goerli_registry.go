@@ -1,4 +1,4 @@
-package bsc
+package goerli
 
 import (
 	"payment-bridge/models"
@@ -6,12 +6,12 @@ import (
 
 func Init() {
 	models.Register(&models.RegInfo{
-		Network:                           "BSC",
-		CoinName:                          "BNB",
+		Network:                           "Goerli",
+		CoinName:                          "ETH(Goerli network)",
 		ScanEventFromChainAndSaveDataToDb: ScanEventFromChainAndSaveDataToDb,
 	})
 }
 
 func ScanEventFromChainAndSaveDataToDb() {
-	ScanEventFromChainAndSaveDataToDbForBsc()
+	ScanEventFromChainAndSaveDataToDbForGoerli()
 }

@@ -2,20 +2,12 @@
 
 package browsersync
 
-var Registry = make(map[string]*RegInfo)
+import (
+	"payment-bridge/blockchain/browsersync/bsc"
+	"payment-bridge/blockchain/browsersync/goerli"
+)
 
-type RegInfo struct {
-	Network                           string
-	CoinName                          string
-	ScanEventFromChainAndSaveDataToDb func() `json:"-"`
-}
-
-func Register(info *RegInfo) {
-	Registry[info.Network] = info
-}
-
-func RunAllTheScan() {
-	for _, v := range Registry {
-		v.ScanEventFromChainAndSaveDataToDb()
-	}
+func Init() {
+	bsc.Init()
+	goerli.Init()
 }

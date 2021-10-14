@@ -2,10 +2,8 @@ package goerli
 
 import (
 	"math/big"
-	"payment-bridge/blockchain/initclient/goerliclient"
 	"payment-bridge/common/constants"
 	common2 "payment-bridge/common/utils"
-	"payment-bridge/config"
 	"payment-bridge/database"
 	"payment-bridge/logs"
 	models2 "payment-bridge/models"
@@ -24,9 +22,9 @@ func ScanEventFromChainAndSaveDataToDbForGoerli() {
 		var err error
 		var getBlockFlag bool = true
 		for getBlockFlag {
-			blockNoCurrent, err = goerliclient.WebConn.GetBlockNumber()
+			blockNoCurrent, err = WebConn.GetBlockNumber()
 			if err != nil {
-				goerliclient.ClientInit()
+				ClientInit()
 				logs.GetLogger().Error(err)
 				time.Sleep(5 * time.Second)
 				continue
@@ -41,20 +39,20 @@ func ScanEventFromChainAndSaveDataToDbForGoerli() {
 		blockScanRecordList, err := blockScanRecord.FindLastCurrentBlockNumber(whereCondition)
 		if err != nil {
 			logs.GetLogger().Error(err)
-			startScanBlockNo = config.GetConfig().GoerliMainnetNode.StartFromBlockNo
+			startScanBlockNo = GetConfig().GoerliMainnetNode.StartFromBlockNo
 		}
 		if len(blockScanRecordList) > 0 {
 			if blockScanRecordList[0].LastCurrentBlockNumber <= blockNoCurrent.Int64() {
 				startScanBlockNo = blockScanRecordList[0].LastCurrentBlockNumber
 			} else {
-				startScanBlockNo = config.GetConfig().GoerliMainnetNode.StartFromBlockNo
+				startScanBlockNo = GetConfig().GoerliMainnetNode.StartFromBlockNo
 			}
 			blockScanRecord.ID = blockScanRecordList[0].ID
 		}
 
 		for {
 			start := startScanBlockNo
-			end := start + config.GetConfig().GoerliMainnetNode.ScanStep
+			end := start + GetConfig().GoerliMainnetNode.ScanStep
 			if startScanBlockNo > blockNoCurrent.Int64() {
 				break
 			}
@@ -88,7 +86,7 @@ func ScanEventFromChainAndSaveDataToDbForGoerli() {
 		getBlockFlag = true
 		mutex.Unlock()
 
-		time.Sleep(time.Second * config.GetConfig().GoerliMainnetNode.CycleTimeInterval)
+		time.Sleep(time.Second * GetConfig().GoerliMainnetNode.CycleTimeInterval)
 		logs.GetLogger().Info("--------------------goerli---------------------------------")
 	}
 }
@@ -96,15 +94,15 @@ func ScanEventFromChainAndSaveDataToDbForGoerli() {
 func getStartBlockNo() int64 {
 	var startScanBlockNo int64 = 1
 
-	if config.GetConfig().GoerliMainnetNode.StartFromBlockNo > 0 {
-		startScanBlockNo = config.GetConfig().GoerliMainnetNode.StartFromBlockNo
+	if GetConfig().GoerliMainnetNode.StartFromBlockNo > 0 {
+		startScanBlockNo = GetConfig().GoerliMainnetNode.StartFromBlockNo
 	}
 	blockScanRecord := new(models2.BlockScanRecord)
 	whereCondition := "network_type='" + constants.NETWORK_TYPE_GOERLI + "'"
 	blockScanRecordList, err := blockScanRecord.FindLastCurrentBlockNumber(whereCondition)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		startScanBlockNo = config.GetConfig().GoerliMainnetNode.StartFromBlockNo
+		startScanBlockNo = GetConfig().GoerliMainnetNode.StartFromBlockNo
 	}
 
 	if len(blockScanRecordList) > 0 {

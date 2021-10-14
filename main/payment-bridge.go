@@ -7,14 +7,13 @@ import (
 	"github.com/joho/godotenv"
 	"os"
 	"payment-bridge/blockchain/browsersync"
-	"payment-bridge/blockchain/initclient/goerliclient"
 	"payment-bridge/blockchain/initclient/nbaiclient"
 	"payment-bridge/blockchain/initclient/polygonclient"
-	"payment-bridge/blockchain/scanFactory"
 	"payment-bridge/common/constants"
 	"payment-bridge/config"
 	"payment-bridge/database"
 	"payment-bridge/logs"
+	"payment-bridge/models"
 	"payment-bridge/routers"
 	"payment-bridge/routers/commonRouters"
 	"time"
@@ -27,14 +26,15 @@ func main() {
 	db := database.Init()
 
 	initMethod()
+	browsersync.Init()
 
-	browsersync.RunAllTheScan()
+	models.RunAllTheScan()
 
-	factory := new(scanFactory.IEventScanFactory)
+	//factory := new(scanFactory.IEventScanFactory)
 
 	//go factory.GenerateBlockChainNetwork(constants.NETWORK_TYPE_BSC).ScanEventFromChainAndSaveDataToDb()
 
-	go factory.GenerateBlockChainNetwork(constants.NETWORK_TYPE_GOERLI).ScanEventFromChainAndSaveDataToDb()
+	//go factory.GenerateBlockChainNetwork(constants.NETWORK_TYPE_GOERLI).ScanEventFromChainAndSaveDataToDb()
 
 	//go factory.GenerateBlockChainNetwork(constants.NETWORK_TYPE_NBAI).ScanEventFromChainAndSaveDataToDb()
 
@@ -71,7 +71,6 @@ func main() {
 
 func initMethod() string {
 	config.InitConfig("")
-	goerliclient.ClientInit()
 	polygonclient.ClientInit()
 	nbaiclient.ClientInit()
 	return ""

@@ -10,7 +10,6 @@ import (
 type Configuration struct {
 	Port               string
 	Database           database
-	GoerliMainnetNode  GoerliMainnetNode
 	PolygonMainnetNode PolygonMainnetNode
 	NbaiMainnetNode    NbaiMainnetNode
 	Dev                bool
@@ -70,20 +69,9 @@ func InitConfig(configFile string) {
 	}
 }
 
-func (c *Configuration) GetGoerliMainnetNode() string {
-	return c.GoerliMainnetNode.RpcUrl
-}
-
 func GetConfig() Configuration {
 	if config == nil {
 		InitConfig("")
-	}
-	return *config
-}
-
-func GetConfigFromMainParams(configFile string) Configuration {
-	if config == nil {
-		InitConfig(configFile)
 	}
 	return *config
 }
@@ -97,12 +85,6 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 		{"DataBase", "dbSchemaName"},
 		{"DataBase", "dbUsername"},
 		{"DataBase", "dbPwd"},
-
-		{"GoerliMainnetNode", "rpcUrl"},
-		{"GoerliMainnetNode", "paymentContractAddress"},
-		{"GoerliMainnetNode", "contractFunctionSignature"},
-		{"GoerliMainnetNode", "scanStep"},
-		{"GoerliMainnetNode", "cycleTimeInterval"},
 
 		{"PolygonMainnetNode", "rpcUrl"},
 		{"PolygonMainnetNode", "paymentContractAddress"},

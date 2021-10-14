@@ -7,9 +7,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"math/big"
-	"payment-bridge/blockchain/initclient/goerliclient"
 	"payment-bridge/common/utils"
-	"payment-bridge/config"
 	"payment-bridge/database"
 	"payment-bridge/logs"
 	"payment-bridge/models"
@@ -38,9 +36,9 @@ func ScanGoerliEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) e
 	}
 
 	//SwanPayment contract address
-	contractAddress := common.HexToAddress(config.GetConfig().GoerliMainnetNode.PaymentContractAddress)
+	contractAddress := common.HexToAddress(GetConfig().GoerliMainnetNode.PaymentContractAddress)
 	//SwanPayment contract function signature
-	contractFunctionSignature := config.GetConfig().GoerliMainnetNode.ContractFunctionSignature
+	contractFunctionSignature := GetConfig().GoerliMainnetNode.ContractFunctionSignature
 
 	//test block no. is : 5297224
 	query := ethereum.FilterQuery{
@@ -54,7 +52,7 @@ func ScanGoerliEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) e
 	var flag bool = true
 	for flag {
 		//logs, err := client.FilterLogs(context.Background(), query)
-		logsInChain, err = goerliclient.WebConn.ConnWeb.FilterLogs(context.Background(), query)
+		logsInChain, err = WebConn.ConnWeb.FilterLogs(context.Background(), query)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			time.Sleep(5 * time.Second)
@@ -85,7 +83,7 @@ func ScanGoerliEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) e
 				if err != nil {
 					logs.GetLogger().Error(err)
 				}
-				addrInfo, err := utils.GetFromAndToAddressByTxHash(goerliclient.WebConn.ConnWeb, big.NewInt(config.GetConfig().GoerliMainnetNode.ChainID), vLog.TxHash)
+				addrInfo, err := utils.GetFromAndToAddressByTxHash(WebConn.ConnWeb, big.NewInt(GetConfig().GoerliMainnetNode.ChainID), vLog.TxHash)
 				if err != nil {
 					logs.GetLogger().Error(err)
 				} else {

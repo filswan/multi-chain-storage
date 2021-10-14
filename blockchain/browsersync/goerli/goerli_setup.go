@@ -1,29 +1,23 @@
-package goerliclient
+package goerli
 
 import (
+	"context"
 	"github.com/ethereum/go-ethereum/ethclient"
-	"payment-bridge/config"
+	"math/big"
 	"payment-bridge/logs"
 	"time"
 )
-
-/**
- * created on 08/10/21.
- * author: nebula-ai-zhiqiang
- * Copyright defined in payment-bridge/LICENSE
- */
 
 type ConnSetup struct {
 	ConnWeb *ethclient.Client
 }
 
-//setup eth connection
+//setup polygon client connection
 var WebConn = new(ConnSetup)
 
 func ClientInit() {
-
 	for {
-		rpcUrl := config.GetConfig().GoerliMainnetNode.RpcUrl
+		rpcUrl := GetConfig().GoerliMainnetNode.RpcUrl
 		client, err := ethclient.Dial(rpcUrl)
 		if err != nil {
 			logs.GetLogger().Error("Try to reconnect block chain node" + rpcUrl + " ...")
@@ -33,4 +27,17 @@ func ClientInit() {
 			break
 		}
 	}
+}
+
+func (conn *ConnSetup) GetBlockNumber() (*big.Int, error) {
+	//return conn.ConnWeb.Eth.GetBlockNumber()
+	block, err := conn.ConnWeb.HeaderByNumber(context.Background(), nil)
+	if block != nil {
+		return block.Number, err
+	}
+	return nil, err
+}
+
+func init() {
+	ClientInit()
 }

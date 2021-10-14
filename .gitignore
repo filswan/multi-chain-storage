@@ -43,7 +43,7 @@ config.toml
 config.json
 conf.toml
 conf.json
-config_*
+config_*.toml
 
 
 

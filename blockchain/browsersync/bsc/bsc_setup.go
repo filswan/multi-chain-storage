@@ -12,7 +12,6 @@ type ConnSetup struct {
 	ConnWeb *ethclient.Client
 }
 
-//setup polygon client connection
 var WebConn = new(ConnSetup)
 
 func ClientInit() {

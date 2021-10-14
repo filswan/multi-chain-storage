@@ -8,11 +8,10 @@ import (
 )
 
 type Configuration struct {
-	Port               string
-	Database           database
-	PolygonMainnetNode PolygonMainnetNode
-	NbaiMainnetNode    NbaiMainnetNode
-	Dev                bool
+	Port            string
+	Database        database
+	NbaiMainnetNode NbaiMainnetNode
+	Dev             bool
 }
 
 type database struct {
@@ -22,26 +21,6 @@ type database struct {
 	DbPort       string
 	DbSchemaName string
 	DbArgs       string
-}
-
-type GoerliMainnetNode struct {
-	RpcUrl                    string
-	PaymentContractAddress    string
-	ContractFunctionSignature string
-	ScanStep                  int64
-	StartFromBlockNo          int64
-	CycleTimeInterval         time.Duration
-	ChainID                   int64
-}
-
-type PolygonMainnetNode struct {
-	RpcUrl                    string
-	PaymentContractAddress    string
-	ContractFunctionSignature string
-	ScanStep                  int64
-	StartFromBlockNo          int64
-	CycleTimeInterval         time.Duration
-	ChainID                   int64
 }
 
 type NbaiMainnetNode struct {
@@ -85,13 +64,6 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 		{"DataBase", "dbSchemaName"},
 		{"DataBase", "dbUsername"},
 		{"DataBase", "dbPwd"},
-
-		{"PolygonMainnetNode", "rpcUrl"},
-		{"PolygonMainnetNode", "paymentContractAddress"},
-		{"PolygonMainnetNode", "contractFunctionSignature"},
-		{"PolygonMainnetNode", "scanStep"},
-		{"PolygonMainnetNode", "cycleTimeInterval"},
-		{"PolygonMainnetNode", "chainID"},
 
 		{"NbaiMainnetNode", "rpcUrl"},
 		{"NbaiMainnetNode", "paymentContractAddress"},

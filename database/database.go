@@ -39,3 +39,12 @@ func SaveOne(data interface{}) error {
 	err := db.Save(data).Error
 	return err
 }
+
+func SaveOneWithTransaction(data interface{}) error {
+	tx := GetDB().Begin()
+	err := tx.Set("gorm:query_option", "FOR UPDATE").Save(data).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+	}
+	return err
+}

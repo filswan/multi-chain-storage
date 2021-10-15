@@ -30,4 +30,6 @@ const (
 	TABLE_NAME_EVENT_BSC     = "event_bsc"
 	TABLE_NAME_EVENT_GOERLI  = "event_goerli"
 	TABLE_NAME_EVENT_POLYGON = "event_polygon"
+
+	PAGE_SIZE_DEFAULT_VALUE = "10"
 )

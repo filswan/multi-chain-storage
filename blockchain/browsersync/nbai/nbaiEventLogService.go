@@ -93,7 +93,7 @@ func ScanNbaiEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) err
 				event.ContractAddress = contractAddress.String()
 				event.BytesData = receiveMap["data"].([]byte)
 				event.CreateAt = strconv.FormatInt(utils.GetEpochInMillis(), 10)
-				err = database.SaveOne(event)
+				err = database.SaveOneWithTransaction(event)
 				if err != nil {
 					logs.GetLogger().Error(err)
 					continue

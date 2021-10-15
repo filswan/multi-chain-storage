@@ -10,6 +10,7 @@ import (
 	"payment-bridge/database"
 	"payment-bridge/logs"
 	"strconv"
+	"strings"
 )
 
 func BillingManager(router *gin.RouterGroup) {
@@ -19,10 +20,28 @@ func BillingManager(router *gin.RouterGroup) {
 func GetUserBillingHistory(c *gin.Context) {
 	var billingRequestParam BillingRequest
 	err := c.BindJSON(&billingRequestParam)
-	addressType := billingRequestParam.AddressType
-	addressValue := billingRequestParam.AddressValue
+	if err != nil {
+		logs.GetLogger().Error(err)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAMS_JSON_FORMAT_ERROR_CODE, errorinfo.HTTP_REQUEST_PARAMS_JSON_FORMAT_ERROR_MSG))
+		return
+	}
+	txHash := billingRequestParam.TxHash
+	walletAddress := billingRequestParam.WalletAddress
 	pageNumber := billingRequestParam.PageNumber
 	pageSize := billingRequestParam.PageSize
+	if strings.Trim(pageNumber, " ") == "" {
+		pageNumber = "1"
+	}
+
+	if strings.Trim(pageSize, " ") == "" {
+		pageNumber = constants.PAGE_SIZE_DEFAULT_VALUE
+	}
+	if strings.Trim(walletAddress, " ") == "" {
+		errMsg := " :walletAddress can not be null"
+		logs.GetLogger().Error("walletAddress")
+		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_CODE, errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_MSG+errMsg))
+		return
+	}
 
 	offset, err := utils.GetOffsetByPagenumber(pageNumber, pageSize)
 	if err != nil {
@@ -31,7 +50,7 @@ func GetUserBillingHistory(c *gin.Context) {
 		return
 	}
 
-	whereCondition := getWhereCondition(addressType, addressValue)
+	whereCondition := getWhereCondition(txHash, walletAddress)
 
 	recordCount, err := getBillingCount(whereCondition)
 	if err != nil {
@@ -71,13 +90,13 @@ func getBillingCount(whereCondition string) (int64, error) {
 	return recordCount.TotalRecord, nil
 }
 
-func getWhereCondition(addressType, addressValue string) string {
+func getWhereCondition(txHash, walletAddress string) string {
 	whereCondition := "where 1=1 "
-	switch addressType {
-	case "tx":
-		whereCondition += "and tx_hash='" + addressValue + "'"
-	case "wallet":
-		whereCondition += "and address_from='" + addressValue + "'"
+	if strings.Trim(txHash, " ") != "" {
+		whereCondition += " and tx_hash='" + txHash + "'"
+	}
+	if strings.Trim(walletAddress, " ") != "" {
+		whereCondition += " and address_from='" + walletAddress + "'"
 	}
 	return whereCondition
 }

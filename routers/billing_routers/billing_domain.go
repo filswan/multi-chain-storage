@@ -11,10 +11,10 @@ type BillingResult struct {
 }
 
 type BillingRequest struct {
-	AddressType  string `json:"address_type"`
-	AddressValue string `json:"address_value""`
-	PageNumber   string `json:"page_number"`
-	PageSize     string `json:"page_size"`
+	TxHash        string `json:"tx_hash"`
+	WalletAddress string `json:"wallet_address"`
+	PageNumber    string `json:"page_number"`
+	PageSize      string `json:"page_size"`
 }
 
 type RecordCount struct {

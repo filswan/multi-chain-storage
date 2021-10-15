@@ -94,7 +94,7 @@ func ScanBscEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) erro
 				deadLine := dataList[4].(*big.Int)
 				event.Deadline = deadLine.String()
 				event.CreateAt = strconv.FormatInt(utils.GetEpochInMillis(), 10)
-				err = database.SaveOne(event)
+				err = database.SaveOneWithTransaction(event)
 				if err != nil {
 					logs.GetLogger().Error(err)
 				}

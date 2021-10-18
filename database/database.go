@@ -46,5 +46,9 @@ func SaveOneWithTransaction(data interface{}) error {
 	if err != nil {
 		logs.GetLogger().Error(err)
 	}
+	err = tx.Commit().Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+	}
 	return err
 }

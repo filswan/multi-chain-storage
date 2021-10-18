@@ -18,17 +18,12 @@ func BillingManager(router *gin.RouterGroup) {
 }
 
 func GetUserBillingHistory(c *gin.Context) {
-	var billingRequestParam BillingRequest
-	err := c.BindJSON(&billingRequestParam)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAMS_JSON_FORMAT_ERROR_CODE, errorinfo.HTTP_REQUEST_PARAMS_JSON_FORMAT_ERROR_MSG))
-		return
-	}
-	txHash := billingRequestParam.TxHash
-	walletAddress := billingRequestParam.WalletAddress
-	pageNumber := billingRequestParam.PageNumber
-	pageSize := billingRequestParam.PageSize
+	URL := c.Request.URL.Query()
+	txHash := URL.Get("tx_hash")
+	walletAddress := URL.Get("wallet_address")
+	pageNumber := URL.Get("page_number")
+	pageSize := URL.Get("page_size")
+
 	if strings.Trim(pageNumber, " ") == "" {
 		pageNumber = "1"
 	}

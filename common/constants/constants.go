@@ -20,6 +20,7 @@ const (
 	NETWORK_TYPE_POLYGON = "polygon"
 	NETWORK_TYPE_NBAI    = "nbai"
 	NETWORK_TYPE_BSC     = "bsc"
+	NETWORK_TYPE_ETH     = "ethereum"
 
 	TRANSACTION_STATUS_SUCCESS = "success"
 	TRANSACTION_STATUS_FAIL    = "fail"

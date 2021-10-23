@@ -46,4 +46,8 @@ conf.json
 config_*.toml
 
 
-
+# remove on-chain local folders
+on-chain/.openzeppelin/
+on-chain/artifacts/
+on-chain/cache/
+on-chain/node_modules/

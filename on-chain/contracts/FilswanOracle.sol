@@ -50,6 +50,15 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
         return true;
     }
 
+    function updateThreshold(uint8 threshold)
+        public
+        onlyRole(DEFAULT_ADMIN_ROLE)
+        returns (bool)
+    {
+        _threshold = threshold;
+        return true;
+    }
+
     function setDAOUsers(address[] calldata daoUsers)
         public
         onlyRole(DEFAULT_ADMIN_ROLE)

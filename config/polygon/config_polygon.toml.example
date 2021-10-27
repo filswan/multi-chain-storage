@@ -1,7 +1,7 @@
 [PolygonMainnetNode]
 #rpcUrl="https://rpc-mumbai.maticvigil.com"
 rpcUrl = "https://polygon-mumbai.g.alchemy.com/v2/86HeefA3O9EF22t2NTLbmcpfN0hb9vlv"
-paymentContractAddress = "0x5210ED929B5BEdBFFBA2F6b9A0b1B608eEAb3aa0"
+paymentContractAddress = "0xABeAAb124e6b52afFF504DB71bbF08D0A768D053"
 contractFunctionSignature = "0x88e2ea3170ebb5d73f832e672e27a855b3daf0b2264ac6c09b04009dc151509e"
 scanStep = 1000
 startFromBlockNo = 17590780

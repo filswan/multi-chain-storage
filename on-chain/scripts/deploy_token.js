@@ -14,6 +14,9 @@ const uniswapv2FactoryABI = require('@uniswap/v2-core/build/IUniswapV2Factory.js
 
 const uniswapv2RouterABI = require('@uniswap/v2-periphery/build/IUniswapV2Router02.json').abi;
 
+
+const uniswapv2LibABI = require('@uniswap/v2-periphery/build/UniswapV2Library.json').abi;
+
 const sushiswapFactoryAddress = "0xc35DADB65012eC5796536bD9864eD8773aBc74C4";
 const sushiswapRouterAddresses = "0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506";
 

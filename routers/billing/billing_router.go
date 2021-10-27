@@ -1,4 +1,4 @@
-package billing_routers
+package billing
 
 import (
 	"github.com/gin-gonic/gin"
@@ -15,6 +15,7 @@ import (
 
 func BillingManager(router *gin.RouterGroup) {
 	router.GET("", GetUserBillingHistory)
+	router.GET("/price/filecoin", GetFileCoinLastestPrice)
 }
 
 func GetUserBillingHistory(c *gin.Context) {
@@ -110,4 +111,15 @@ func getBillHistoryList(whereCondition, limit, offset string) ([]*BillingResult,
 
 	}
 	return billingResultList, nil
+}
+
+func GetFileCoinLastestPrice(c *gin.Context) {
+	price, err := GetFileCoinLastestPriceService()
+	if err != nil {
+		logs.GetLogger().Error(err)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_COUNT_ERROR_CODE, errorinfo.GET_RECORD_COUNT_ERROR_MSG))
+		return
+	}
+
+	c.JSON(http.StatusOK, common.CreateSuccessResponse(price.Filecoin.Usd))
 }

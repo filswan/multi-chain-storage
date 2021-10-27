@@ -2,6 +2,7 @@ package goerli
 
 import (
 	"math/big"
+	"payment-bridge/blockchain/browsersync/blockutils"
 	"payment-bridge/common/constants"
 	common2 "payment-bridge/common/utils"
 	"payment-bridge/database"
@@ -13,7 +14,7 @@ import (
 )
 
 func ScanEventFromChainAndSaveDataToDbForGoerli() {
-	startScanBlockNo := getStartBlockNo()
+	startScanBlockNo := blockutils.GetStartBlockNo(constants.NETWORK_TYPE_GOERLI, GetConfig().GoerliMainnetNode.StartFromBlockNo)
 
 	for {
 		var mutex sync.Mutex

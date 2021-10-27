@@ -44,10 +44,13 @@ build: ## Build the binary file
 	@go mod download
 	@go mod tidy
 	@go build -o build/payment-bridge main/payment-bridge.go
-	@mkdir -p ./build/config
+	@mkdir -p ./build/config ./build/config/bsc ./build/config/goerli ./build/config/nbai ./build/config/polygon
 	@mkdir -p ./build/on-chain/contracts/abi
-	@cp ./config/config.toml ./build/config/config.toml
-	@cp .env ./build/.env
+	@cp ./config/config.toml.example ./build/config/config.toml
+	@cp ./config/bsc/config_bsc.toml.example ./build/config/bsc/config_bsc.toml
+	@cp ./config/goerli/config_goerli.toml.example ./build/config/goerli/config_goerli.toml
+	@cp ./config/nbai/config_nbai.toml.example ./build/config/nbai/config_nbai.toml
+	@cp ./config/polygon/config_polygon.toml.example ./build/config/polygon/config_polygon.toml
 	@cp ./on-chain/contracts/abi/SwanPayment.json ./build/on-chain/contracts/abi/SwanPayment.json
 	@echo "Done building."
 

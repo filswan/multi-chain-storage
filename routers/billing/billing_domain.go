@@ -1,4 +1,4 @@
-package billing_routers
+package billing
 
 type BillingResult struct {
 	TxHash      string `json:"tx_hash"`
@@ -19,4 +19,10 @@ type BillingRequest struct {
 
 type RecordCount struct {
 	TotalRecord int64 `json:"total_record"`
+}
+
+type PriceResult struct {
+	Filecoin struct {
+		Usd float64 `json:"usd"`
+	} `json:"filecoin"`
 }

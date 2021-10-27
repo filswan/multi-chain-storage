@@ -19,6 +19,7 @@ func ClientInit() {
 		rpcUrl := GetConfig().BscMainnetNode.RpcUrl
 		client, err := ethclient.Dial(rpcUrl)
 		if err != nil {
+
 			logs.GetLogger().Error("Try to reconnect block chain node" + rpcUrl + " ...")
 			time.Sleep(time.Second * 5)
 		} else {

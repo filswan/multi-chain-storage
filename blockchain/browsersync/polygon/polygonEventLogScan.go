@@ -2,6 +2,7 @@ package polygon
 
 import (
 	"math/big"
+	"payment-bridge/blockchain/browsersync/blockutils"
 	"payment-bridge/common/constants"
 	"payment-bridge/common/utils"
 	"payment-bridge/database"
@@ -13,7 +14,7 @@ import (
 )
 
 func ScanEventFromChainAndSaveDataToDbForPolygon() {
-	startScanBlockNo := getStartBlockNo()
+	startScanBlockNo := blockutils.GetStartBlockNo(constants.NETWORK_TYPE_POLYGON, GetConfig().PolygonMainnetNode.StartFromBlockNo)
 
 	for {
 		var mutex sync.Mutex

@@ -1,4 +1,4 @@
-package commonRouters
+package common
 
 import (
 	"payment-bridge/common"

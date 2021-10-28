@@ -2,7 +2,7 @@
 #rpcUrl="https://rpc-mumbai.maticvigil.com"
 rpcUrl = "https://polygon-mumbai.g.alchemy.com/v2/86HeefA3O9EF22t2NTLbmcpfN0hb9vlv"
 paymentContractAddress = "0xABeAAb124e6b52afFF504DB71bbF08D0A768D053"
-contractFunctionSignature = "0x88e2ea3170ebb5d73f832e672e27a855b3daf0b2264ac6c09b04009dc151509e"
+contractFunctionSignature = "0x87b076911cb43e46012dbf762607ad5d0c5d6eb5e1d8fec72be99002451c18ba"
 scanStep = 1000
 startFromBlockNo = 17590780
 cycleTimeInterval = 10 #unit:second

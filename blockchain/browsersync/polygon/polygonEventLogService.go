@@ -92,7 +92,6 @@ func ScanPolygonEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) 
 				}
 				event.BlockNo = vLog.BlockNumber
 				event.TxHash = vLog.TxHash.Hex()
-				event.ContractName = "SwanPayment"
 				event.ContractAddress = contractAddress.String()
 				event.PayloadCid = dataList[0].(string)
 				event.MinerAddress = dataList[3].(common.Address).Hex()

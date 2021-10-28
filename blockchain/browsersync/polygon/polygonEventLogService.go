@@ -7,11 +7,12 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"math/big"
-	"payment-bridge/blockchain/browsersync/goerli"
+	"payment-bridge/common/constants"
 	"payment-bridge/common/utils"
 	"payment-bridge/database"
 	"payment-bridge/logs"
 	"payment-bridge/models"
+	"payment-bridge/on-chain/goBind"
 	"strconv"
 	"strings"
 	"time"
@@ -27,11 +28,8 @@ import (
 func ScanPolygonEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) error {
 	//read contract api json file
 	logs.GetLogger().Println("polygon blockNoFrom=" + strconv.FormatInt(blockNoFrom, 10) + "--------------blockNoTo=" + strconv.FormatInt(blockNoTo, 10))
-	paymentAbiString, err := utils.ReadContractAbiJsonFile(goerli.SwanPaymentAbiJson)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
+	//paymentAbiString, err := utils.ReadContractAbiJsonFile(goBind.SwanPaymentMetaData.ABI)
+	paymentAbiString := goBind.SwanPaymentMetaData.ABI
 
 	//SwanPayment contract address
 	contractAddress := common.HexToAddress(GetConfig().PolygonMainnetNode.PaymentContractAddress)
@@ -50,6 +48,7 @@ func ScanPolygonEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) 
 	//logs, err := client.FilterLogs(context.Background(), query)
 	var logsInChain []types.Log
 	var flag bool = true
+	var err error
 	for flag {
 		logsInChain, err = WebConn.ConnWeb.FilterLogs(context.Background(), query)
 		if err != nil {
@@ -78,7 +77,7 @@ func ScanPolygonEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) 
 			}
 			if len(eventList) <= 0 {
 				var event = new(models.EventPolygon)
-				dataList, err := contractAbi.Unpack("LockPayment", vLog.Data)
+				dataList, err := contractAbi.Unpack(constants.EVENT_NAME_LOCAK_PAYMENT, vLog.Data)
 				if err != nil {
 					logs.GetLogger().Error(err)
 				}
@@ -91,14 +90,18 @@ func ScanPolygonEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) 
 					event.AddressTo = addrInfo.AddrTo
 				}
 				event.BlockNo = vLog.BlockNumber
+				//todo
+				event.CoinType = "USDC"
+				event.PayloadCid = dataList[0].(string)
+				event.TokenAddress = dataList[1].(common.Address).Hex()
+				event.LockedFee = dataList[2].(*big.Int).String()
+				event.MinPayment = dataList[3].(*big.Int).String()
+				event.MinerAddress = dataList[4].(common.Address).Hex()
+				deadLine := dataList[5].(*big.Int)
+				event.EventName = constants.EVENT_NAME_LOCAK_PAYMENT
+				event.Deadline = deadLine.String()
 				event.TxHash = vLog.TxHash.Hex()
 				event.ContractAddress = contractAddress.String()
-				event.PayloadCid = dataList[0].(string)
-				event.MinerAddress = dataList[3].(common.Address).Hex()
-				lockFee := dataList[1].(*big.Int)
-				event.LockedFee = lockFee.String()
-				deadLine := dataList[4].(*big.Int)
-				event.Deadline = deadLine.String()
 				event.CreateAt = strconv.FormatInt(utils.GetEpochInMillis(), 10)
 				err = database.SaveOneWithTransaction(event)
 				if err != nil {

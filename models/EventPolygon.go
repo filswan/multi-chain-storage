@@ -11,6 +11,7 @@ type EventPolygon struct {
 	EventName       string `json:"event_name"`
 	PayloadCid      string `json:"payload_cid"`
 	TokenAddress    string `json:"token_address"`
+	MinPayment      string `json:"min_payment"`
 	ContractAddress string `json:"contract_address"`
 	LockedFee       string `json:"locked_fee"`
 	Deadline        string `json:"deadline"`

@@ -33,4 +33,6 @@ const (
 	TABLE_NAME_EVENT_POLYGON = "event_polygon"
 
 	PAGE_SIZE_DEFAULT_VALUE = "10"
+
+	EVENT_NAME_LOCAK_PAYMENT = "LockPayment"
 )

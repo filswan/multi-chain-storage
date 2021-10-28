@@ -11,6 +11,7 @@ import (
 	"payment-bridge/database"
 	"payment-bridge/logs"
 	"payment-bridge/models"
+	"payment-bridge/on-chain/goBind"
 	"strconv"
 	"strings"
 	"time"
@@ -29,7 +30,7 @@ func ScanGoerliEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) e
 	logs.GetLogger().Println("goerli blockNoFrom=" + strconv.FormatInt(blockNoFrom, 10) + "--------------blockNoTo=" + strconv.FormatInt(blockNoTo, 10))
 
 	//read contract api json file
-	paymentAbiString, err := utils.ReadContractAbiJsonFile(SwanPaymentAbiJson)
+	paymentAbiString, err := utils.ReadContractAbiJsonFile(goBind.SwanPaymentABI)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err

@@ -18,4 +18,12 @@ const (
 	GET_RECORD_COUNT_ERROR_MSG  = "Get data total count from db occurred error"
 	GET_RECORD_lIST_ERROR_CODE  = "500003002"
 	GET_RECORD_lIST_ERROR_MSG   = "Get data records from db occurred error"
+
+	// JWT token err 004
+	NO_AUTHORIZATION_TOKEN_ERROR_CODE = "500004001"
+	NO_AUTHORIZATION_TOKEN_ERROR_MSG  = "jwt token is required"
+
+	//lotus send deal err  005
+	SENDING_DEAL_ERROR_CODE = "500005001"
+	SENDING_DEAL_ERROR_MSG  = "failed to send deal"
 )

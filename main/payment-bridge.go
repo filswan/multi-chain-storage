@@ -12,6 +12,7 @@ import (
 	"payment-bridge/routers"
 	"payment-bridge/routers/billing"
 	"payment-bridge/routers/common"
+	"payment-bridge/routers/storage"
 	"time"
 )
 
@@ -56,6 +57,7 @@ func main() {
 	common.HostManager(v1.Group(constants.URL_HOST_GET_COMMON))
 	routers.EventLogManager(v1.Group(constants.URL_EVENT_PREFIX))
 	billing.BillingManager(v1.Group(constants.URL_BILLING_PREFIX))
+	storage.SendDealManager(v1.Group(constants.URL_STORAGE_PREFIX))
 
 	err := r.Run(":" + config.GetConfig().Port)
 	if err != nil {

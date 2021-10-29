@@ -39,6 +39,9 @@ endif
 	@govendor fetch -tree  github.com/karalabe/hid
 	@echo "Done dep."
 
+ffi:
+	./extern/filecoin-ffi/install-filcrypto
+.PHONY: ffi
 
 build: ## Build the binary file
 	@go mod download

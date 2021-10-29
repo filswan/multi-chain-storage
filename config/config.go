@@ -4,13 +4,17 @@ import (
 	"github.com/BurntSushi/toml"
 	"log"
 	"strings"
-	"time"
 )
 
 type Configuration struct {
-	Port     string
-	Database database
-	Dev      bool
+	Port       string
+	Database   database
+	Dev        bool
+	Temp       temp       `toml:"temp"`
+	SwanApi    swanApi    `toml:"swan_api"`
+	IpfsServer ipfsServer `toml:"ipfs_server"`
+	Lotus      lotus      `toml:"lotus"`
+	SwanTask   swanTask   `toml:"swan_task"`
 }
 
 type database struct {
@@ -22,14 +26,35 @@ type database struct {
 	DbArgs       string
 }
 
-type NbaiMainnetNode struct {
-	RpcUrl                    string
-	PaymentContractAddress    string
-	ContractFunctionSignature string
-	ScanStep                  int64
-	StartFromBlockNo          int64
-	CycleTimeInterval         time.Duration
-	ChainID                   int64
+type lotus struct {
+	ApiUrl      string `toml:"api_url"`
+	AccessToken string `toml:"access_token"`
+}
+
+type swanTask struct {
+	Description     string `toml:"description"`
+	CuratedDataset  string `toml:"curated_dataset"`
+	Tags            string `toml:"tags"`
+	MinPrice        string `toml:"min_price"`
+	MaxPrice        string `toml:"max_price"`
+	ExpireDays      int    `toml:"expire_days"`
+	VerifiedDeal    bool   `toml:"verified_deal"`
+	FastRetrieval   bool   `toml:"fast_retrieval"`
+	StartEpochHours int    `toml:"start_epoch_hours"`
+	MinerId         string `toml:"miner_id"`
+}
+
+type temp struct {
+	DirDeal string `toml:"dir_deal"`
+}
+
+type swanApi struct {
+	ApiUrl string `toml:"api_url"`
+}
+
+type ipfsServer struct {
+	DownloadUrlPrefix string `toml:"download_url_prefix"`
+	UploadUrl         string `toml:"upload_url"`
 }
 
 var config *Configuration

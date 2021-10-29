@@ -6,6 +6,7 @@ const (
 
 	URL_EVENT_PREFIX   = "events"
 	URL_BILLING_PREFIX = "billing"
+	URL_STORAGE_PREFIX = "storage"
 
 	HTTP_STATUS_SUCCESS = "success"
 	HTTP_STATUS_FAIL    = "fail"

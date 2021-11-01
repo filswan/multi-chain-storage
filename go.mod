@@ -12,8 +12,8 @@ require (
 require (
 	github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d // indirect
 	github.com/btcsuite/btcd v0.21.0-beta // indirect
-	github.com/filswan/go-swan-client v0.0.6
-	github.com/filswan/go-swan-lib v0.2.7
+	github.com/filswan/go-swan-client v0.0.10
+	github.com/filswan/go-swan-lib v0.2.9
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/gin-gonic/gin v1.3.0
 	github.com/go-kit/kit v0.10.0 // indirect

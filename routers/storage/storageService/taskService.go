@@ -3,7 +3,9 @@ package storageService
 import (
 	clientmodel "github.com/filswan/go-swan-client/model"
 	"github.com/filswan/go-swan-client/subcommand"
+	"github.com/filswan/go-swan-lib/client"
 	libconstants "github.com/filswan/go-swan-lib/constants"
+	libmodel "github.com/filswan/go-swan-lib/model"
 	libutils "github.com/filswan/go-swan-lib/utils"
 	"github.com/gin-gonic/gin"
 	"mime/multipart"
@@ -117,6 +119,73 @@ func CreateTask(c *gin.Context, taskName, jwtToken string, srcFile *multipart.Fi
 		return err
 	}
 	logs.GetLogger().Info("task created")
-
 	return nil
+}
+
+func SendAutoBidDeals(confDeal *clientmodel.ConfDeal) ([]string, [][]*libmodel.FileDesc, error) {
+	err := subcommand.CreateOutputDir(confDeal.OutputDir)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, nil, err
+	}
+
+	logs.GetLogger().Info("output dir is:", confDeal.OutputDir)
+
+	swanClient, err := client.SwanGetClient(confDeal.SwanApiUrl, confDeal.SwanApiKey, confDeal.SwanAccessToken, confDeal.SwanJwtToken)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, nil, err
+	}
+
+	assignedTasks, err := swanClient.SwanGetAssignedTasks()
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, nil, err
+	}
+	logs.GetLogger().Info("autobid Swan task count:", len(assignedTasks))
+	if len(assignedTasks) == 0 {
+		logs.GetLogger().Info("no autobid task to be dealt with")
+		return nil, nil, nil
+	}
+
+	var tasksDeals [][]*libmodel.FileDesc
+	csvFilepaths := []string{}
+	for _, assignedTask := range assignedTasks {
+		assignedTaskInfo, err := swanClient.SwanGetOfflineDealsByTaskUuid(*assignedTask.Uuid)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			continue
+		}
+
+		deals := assignedTaskInfo.Data.Deal
+		task := assignedTaskInfo.Data.Task
+		dealSentNum, csvFilePath, carFiles, err := subcommand.SendAutobidDeals4Task(confDeal, deals, task, confDeal.OutputDir)
+		if err != nil {
+			csvFilepaths = append(csvFilepaths, csvFilePath)
+			logs.GetLogger().Error(err)
+			continue
+		}
+
+		tasksDeals = append(tasksDeals, carFiles)
+
+		if dealSentNum == 0 {
+			logs.GetLogger().Info(dealSentNum, " deal(s) sent for task:", task.TaskName)
+			continue
+		}
+
+		status := libconstants.TASK_STATUS_DEAL_SENT
+		if dealSentNum != len(deals) {
+			status = libconstants.TASK_STATUS_PROGRESS_WITH_FAILURE
+		}
+
+		response, err := swanClient.SwanUpdateAssignedTask(*assignedTask.Uuid, status, csvFilePath)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			continue
+		}
+
+		logs.GetLogger().Info(response.Message)
+	}
+
+	return csvFilepaths, tasksDeals, nil
 }

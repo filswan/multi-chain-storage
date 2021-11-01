@@ -26,4 +26,11 @@ const (
 	//lotus send deal err  005
 	SENDING_DEAL_ERROR_CODE = "500005001"
 	SENDING_DEAL_ERROR_MSG  = "failed to send deal"
+
+	//system command err  006
+	GET_HOME_DIR_ERROR_CODE = "500006001"
+	GET_HOME_DIR_ERROR_MSG  = "getting home dir occurred error"
+
+	CREATE_DIR_ERROR_CODE = "500006002"
+	CREATE_DIR_ERROR_MSG  = "creating dir occurred error"
 )

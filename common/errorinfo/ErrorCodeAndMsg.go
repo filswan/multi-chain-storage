@@ -21,16 +21,18 @@ const (
 
 	// JWT token err 004
 	NO_AUTHORIZATION_TOKEN_ERROR_CODE = "500004001"
-	NO_AUTHORIZATION_TOKEN_ERROR_MSG  = "jwt token is required"
+	NO_AUTHORIZATION_TOKEN_ERROR_MSG  = "Jwt token is required"
 
 	//lotus send deal err  005
-	SENDING_DEAL_ERROR_CODE = "500005001"
-	SENDING_DEAL_ERROR_MSG  = "failed to send deal"
+	SENDING_DEAL_ERROR_CODE                 = "500005001"
+	SENDING_DEAL_ERROR_MSG                  = "Failed to send deal"
+	GET_LATEST_PRICE_OF_FILECOIN_ERROR_CODE = "500005002"
+	GET_LATEST_PRICE_OF_FILECOIN_ERROR_MSG  = "Getting filecion latest price occurred error"
 
 	//system command err  006
 	GET_HOME_DIR_ERROR_CODE = "500006001"
-	GET_HOME_DIR_ERROR_MSG  = "getting home dir occurred error"
+	GET_HOME_DIR_ERROR_MSG  = "Getting home dir occurred error"
 
 	CREATE_DIR_ERROR_CODE = "500006002"
-	CREATE_DIR_ERROR_MSG  = "creating dir occurred error"
+	CREATE_DIR_ERROR_MSG  = "Creating dir occurred error"
 )

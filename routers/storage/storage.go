@@ -94,10 +94,9 @@ func SendDeal(c *gin.Context) {
 		StartEpochIntervalHours: startEpochIntervalHours,
 		StartEpoch:              startEpoch,
 		OutputDir:               carDir,
-		RelativeEpoch:           -858455,
 	}
 
-	dealSentNum, csvFilePath, carFiles, err := subcommand.SendAutoBidDealByTaskUuid(confDeal, task_uuid)
+	dealSentNum, csvFilePath, carFiles, err := subcommand.SendAutoBidDealsByTaskUuid(confDeal, task_uuid)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.JSON(http.StatusOK, common.CreateErrorResponse(errorinfo.SENDING_DEAL_ERROR_CODE, errorinfo.SENDING_DEAL_ERROR_MSG))

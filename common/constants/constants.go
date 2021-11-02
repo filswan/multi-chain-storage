@@ -26,8 +26,9 @@ const (
 	TRANSACTION_STATUS_SUCCESS = "success"
 	TRANSACTION_STATUS_FAIL    = "fail"
 
-	URL_HOST_GET_HOST_INFO = "/host/info"
-	URL_HOST_GET_COMMON    = "/common"
+	URL_HOST_GET_COMMON      = "/common"
+	URL_HOST_GET_HOST_INFO   = "/host/info"
+	URL_SYSTEM_CONFIG_PARAMS = "/system/params"
 
 	TABLE_NAME_EVENT_BSC     = "event_bsc"
 	TABLE_NAME_EVENT_GOERLI  = "event_goerli"

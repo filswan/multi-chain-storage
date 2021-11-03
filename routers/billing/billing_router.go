@@ -92,7 +92,7 @@ func getWhereCondition(txHash, walletAddress string) string {
 		whereCondition += " and tx_hash='" + txHash + "'"
 	}
 	if strings.Trim(walletAddress, " ") != "" {
-		whereCondition += " and address_from='" + walletAddress + "'"
+		whereCondition += " and LOWER(address_from)='" + strings.ToLower(walletAddress) + "'"
 	}
 	return whereCondition
 }

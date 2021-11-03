@@ -12,6 +12,7 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
 
     bytes32 public constant DAO_ROLE = keccak256("DAO_ROLE");
 
+    // todo: add get threshold function
     uint8 private _threshold;
 
     mapping(string => mapping(address => TxOracleInfo)) txInfoMap;
@@ -84,7 +85,7 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
         string memory dealId,
         uint256 paid,
         address recipient,
-        uint256 terms, 
+        uint256 terms, // todo: term is for updated 
         bool status
     ) public onlyRole(DAO_ROLE) {
         string memory key = concatenate(cid, orderId, dealId);
@@ -94,6 +95,7 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
             txInfoMap[key][msg.sender].flag == false,
             "You already sign this transaction"
         );
+
 
         txInfoMap[key][msg.sender].recipient = recipient;
         txInfoMap[key][msg.sender].paid = paid;

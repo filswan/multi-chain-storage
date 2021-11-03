@@ -3,7 +3,7 @@ package storageService
 import (
 	clientmodel "github.com/filswan/go-swan-client/model"
 	"github.com/filswan/go-swan-client/subcommand"
-	"github.com/filswan/go-swan-lib/client"
+	"github.com/filswan/go-swan-lib/client/swan"
 	libconstants "github.com/filswan/go-swan-lib/constants"
 	libmodel "github.com/filswan/go-swan-lib/model"
 	libutils "github.com/filswan/go-swan-lib/utils"
@@ -131,7 +131,7 @@ func SendAutoBidDeals(confDeal *clientmodel.ConfDeal) ([]string, [][]*libmodel.F
 
 	logs.GetLogger().Info("output dir is:", confDeal.OutputDir)
 
-	swanClient, err := client.SwanGetClient(confDeal.SwanApiUrl, confDeal.SwanApiKey, confDeal.SwanAccessToken, confDeal.SwanJwtToken)
+	swanClient, err := swan.SwanGetClient(confDeal.SwanApiUrl, confDeal.SwanApiKey, confDeal.SwanAccessToken, confDeal.SwanJwtToken)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, nil, err
@@ -151,7 +151,7 @@ func SendAutoBidDeals(confDeal *clientmodel.ConfDeal) ([]string, [][]*libmodel.F
 	var tasksDeals [][]*libmodel.FileDesc
 	csvFilepaths := []string{}
 	for _, assignedTask := range assignedTasks {
-		assignedTaskInfo, err := swanClient.SwanGetOfflineDealsByTaskUuid(*assignedTask.Uuid)
+		assignedTaskInfo, err := swanClient.SwanGetOfflineDealsByTaskUuid(assignedTask.Uuid)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			continue
@@ -178,7 +178,7 @@ func SendAutoBidDeals(confDeal *clientmodel.ConfDeal) ([]string, [][]*libmodel.F
 			status = libconstants.TASK_STATUS_PROGRESS_WITH_FAILURE
 		}
 
-		response, err := swanClient.SwanUpdateAssignedTask(*assignedTask.Uuid, status, csvFilePath)
+		response, err := swanClient.SwanUpdateAssignedTask(assignedTask.Uuid, status, csvFilePath)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			continue

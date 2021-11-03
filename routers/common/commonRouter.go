@@ -12,7 +12,7 @@ import (
 
 func HostManager(router *gin.RouterGroup) {
 	router.GET(constants.URL_HOST_GET_HOST_INFO, GetSwanMinerVersion)
-	router.GET(constants.URL_SYSTEM_CONFIG_PARAMS, GetSwanMinerVersion)
+	router.GET(constants.URL_SYSTEM_CONFIG_PARAMS, GetSystemConfigParams)
 }
 
 func GetSwanMinerVersion(c *gin.Context) {
@@ -37,5 +37,9 @@ func GetSystemConfigParams(c *gin.Context) {
 		c.JSON(http.StatusOK, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE, errorinfo.GET_RECORD_lIST_ERROR_MSG+":getting system config from db occurred error"))
 		return
 	}
-	c.JSON(http.StatusOK, common.CreateSuccessResponse(params))
+	config := map[string]string{}
+	for _, v := range params {
+		config[v.ParamKey] = v.ParamValue
+	}
+	c.JSON(http.StatusOK, common.CreateSuccessResponse(config))
 }

@@ -10,3 +10,31 @@ dbUsername="root"
 dbPwd="123456"
 dbArgs="charset=utf8mb4&parseTime=True&loc=Local"
 
+[temp]
+dir_deal="~/.swan/server/temp/deal"
+
+
+[swan_api]
+api_url = "http://192.168.88.216:5002"
+api_key = ""
+access_token = ""
+
+[lotus]
+api_url="http://127.0.0.1:1234/rpc/v0"   # Url of lotus web api
+access_token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBbGxvdyI6WyJyZWFkIiwid3JpdGUiLCJzaWduIiwiYWRtaW4iXX0.TXQfZGBhmzn1r9PmK0KoOeAFR3rHcAjL2DF18hP2F5Q"   # Access token of lotus web api
+
+[ipfs_server]
+download_url_prefix = "http://192.168.88.41:5050/ipfs"
+upload_url = "http://192.168.88.41:5001/api/v0/add?stream-channels=true&pin=true"
+
+[swan_task]
+description = ""
+curated_dataset = ""
+tags = ""
+min_price = "0.00000001"
+max_price = "0.00005"
+expire_days = 4
+verified_deal = false
+fast_retrieval = true
+start_epoch_hours = 96
+

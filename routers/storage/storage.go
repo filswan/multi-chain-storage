@@ -47,7 +47,7 @@ func UploadFileToIpfs(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, common.CreateSuccessResponse("succeeded to send deal"))
+	c.JSON(http.StatusOK, common.CreateSuccessResponse("uploading file and creating task successfully"))
 	return
 }
 

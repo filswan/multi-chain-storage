@@ -3,7 +3,7 @@
 package browsersync
 
 import (
-	"payment-bridge/blockchain/browsersync/polygon"
+	"payment-bridge/blockchain/browsersync/scanlockpayment/polygon"
 )
 
 func Init() {

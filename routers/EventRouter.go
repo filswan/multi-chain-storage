@@ -3,8 +3,8 @@ package routers
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"payment-bridge/blockchain/browsersync/goerli"
-	"payment-bridge/blockchain/browsersync/polygon"
+	"payment-bridge/blockchain/browsersync/scanlockpayment/goerli"
+	"payment-bridge/blockchain/browsersync/scanlockpayment/polygon"
 	common "payment-bridge/common"
 	"payment-bridge/common/constants"
 	"payment-bridge/common/errorinfo"

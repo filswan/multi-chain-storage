@@ -17,6 +17,8 @@ type PolygonMainnetNode struct {
 	ContractFunctionSignature string
 	ScanStep                  int64
 	StartFromBlockNo          int64
+	DaoSwanOracleAddress      string
+	DaoEventFunctionSignature string
 	CycleTimeInterval         time.Duration
 }
 

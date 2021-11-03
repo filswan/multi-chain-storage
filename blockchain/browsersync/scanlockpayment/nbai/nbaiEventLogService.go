@@ -1,4 +1,4 @@
-package daoevent
+package nbai
 
 import (
 	"context"
@@ -7,36 +7,37 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"math/big"
-	"payment-bridge/blockchain/browsersync/goerli"
 	"payment-bridge/common/utils"
 	"payment-bridge/database"
 	"payment-bridge/logs"
 	"payment-bridge/models"
+	"payment-bridge/on-chain/goBind"
 	"strconv"
 	"strings"
 	"time"
 )
 
 /**
- * created on 08/10/21.
+ * created on 08/20/21.
  * author: nebula-ai-zhiqiang
  * Copyright defined in payment-bridge/LICENSE
  */
 
 // EventLogSave Find the event that executed the contract and save to db
-func ScanPolygonEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) error {
+func ScanNbaiEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) error {
 	//read contract api json file
-	logs.GetLogger().Println("scan dao event on polygon : blockNoFrom=" + strconv.FormatInt(blockNoFrom, 10) + "--------------blockNoTo=" + strconv.FormatInt(blockNoTo, 10))
-	daoEventAbiString, err := utils.ReadContractAbiJsonFile(goerli.SwanPaymentAbiJson)
+	logs.GetLogger().Println("nbai blockNoFrom=" + strconv.FormatInt(blockNoFrom, 10) + "--------------blockNoTo=" + strconv.FormatInt(blockNoTo, 10))
+	//paymentAbiString, err := utils.ReadContractAbiJsonFile(goBind.StateSenderABI)
+	paymentAbiString, err := abi.JSON(strings.NewReader(string(goBind.SwanPaymentMetaData.ABI)))
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
 	}
 
 	//SwanPayment contract address
-	contractAddress := common.HexToAddress(GetConfig().PolygonMainnetNode.PaymentContractAddress)
+	contractAddress := common.HexToAddress(GetConfig().NbaiMainnetNode.PaymentContractAddress)
 	//SwanPayment contract function signature
-	contractFunctionSignature := GetConfig().PolygonMainnetNode.ContractFunctionSignature
+	contractFunctionSignature := GetConfig().NbaiMainnetNode.ContractFunctionSignature
 
 	//test block no. is : 5297224
 	query := ethereum.FilterQuery{
@@ -62,40 +63,40 @@ func ScanPolygonEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) 
 		}
 	}
 
-	contractAbi, err := abi.JSON(strings.NewReader(daoEventAbiString))
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
-
 	for _, vLog := range logsInChain {
 		//if log have this contractor function signer
 		if vLog.Topics[0].Hex() == contractFunctionSignature {
-			eventList, err := models.FindDaoEventLog(&models.DaoEventLog{TxHash: vLog.TxHash.Hex(), BlockNo: vLog.BlockNumber}, "id desc", "10", "0")
+			eventList, err := models.FindEventNbai(&models.EventNbai{TxHash: vLog.TxHash.Hex(), BlockNo: vLog.BlockNumber}, "id desc", "10", "0")
 			if err != nil {
 				logs.GetLogger().Error(err)
 				continue
 			}
 			if len(eventList) <= 0 {
-				var event = new(models.DaoEventLog)
-				dataList, err := contractAbi.Unpack("LockPayment", vLog.Data)
+				receiveMap := map[string]interface{}{}
+				err = paymentAbiString.UnpackIntoMap(receiveMap, "StateSynced", vLog.Data)
 				if err != nil {
 					logs.GetLogger().Error(err)
+					continue
 				}
-
-				addrInfo, err := utils.GetFromAndToAddressByTxHash(WebConn.ConnWeb, big.NewInt(GetConfig().PolygonMainnetNode.ChainID), vLog.TxHash)
+				var event = new(models.EventNbai)
+				addrInfo, err := utils.GetFromAndToAddressByTxHash(WebConn.ConnWeb, big.NewInt(GetConfig().NbaiMainnetNode.ChainID), vLog.TxHash)
 				if err != nil {
 					logs.GetLogger().Error(err)
 				} else {
-					event.DaoAddress = addrInfo.AddrFrom
+					event.AddressFrom = addrInfo.AddrFrom
+					event.AddressTo = addrInfo.AddrTo
 				}
+
 				event.BlockNo = vLog.BlockNumber
 				event.TxHash = vLog.TxHash.Hex()
-				event.PayloadCid = dataList[0].(string)
-
+				event.ContractName = "SwanPayment"
+				event.ContractAddress = contractAddress.String()
+				event.BytesData = receiveMap["data"].([]byte)
+				event.CreateAt = strconv.FormatInt(utils.GetEpochInMillis(), 10)
 				err = database.SaveOneWithTransaction(event)
 				if err != nil {
 					logs.GetLogger().Error(err)
+					continue
 				}
 			}
 		}

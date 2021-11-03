@@ -7,11 +7,12 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"math/big"
-	"payment-bridge/blockchain/browsersync/scanlockpayment/goerli"
+	"payment-bridge/common/constants"
 	"payment-bridge/common/utils"
 	"payment-bridge/database"
 	"payment-bridge/logs"
 	"payment-bridge/models"
+	"payment-bridge/on-chain/goBind"
 	"strconv"
 	"strings"
 	"time"
@@ -21,16 +22,12 @@ import (
 func ScanDaoEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) error {
 	//read contract api json file
 	logs.GetLogger().Println("scan dao event on polygon : blockNoFrom=" + strconv.FormatInt(blockNoFrom, 10) + "--------------blockNoTo=" + strconv.FormatInt(blockNoTo, 10))
-	daoEventAbiString, err := utils.ReadContractAbiJsonFile(goerli.SwanPaymentAbiJson)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
+	daoEventAbiString := goBind.FilswanOralcleMetaData.ABI
 
 	//SwanPayment contract address
-	contractAddress := common.HexToAddress(GetConfig().PolygonMainnetNode.PaymentContractAddress)
+	contractAddress := common.HexToAddress(GetConfig().PolygonMainnetNode.DaoSwanOracleAddress)
 	//SwanPayment contract function signature
-	contractFunctionSignature := GetConfig().PolygonMainnetNode.ContractFunctionSignature
+	contractFunctionSignature := GetConfig().PolygonMainnetNode.DaoEventFunctionSignature
 
 	//test block no. is : 5297224
 	query := ethereum.FilterQuery{
@@ -44,6 +41,7 @@ func ScanDaoEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) erro
 	//logs, err := client.FilterLogs(context.Background(), query)
 	var logsInChain []types.Log
 	var flag bool = true
+	var err error
 	for flag {
 		logsInChain, err = WebConn.ConnWeb.FilterLogs(context.Background(), query)
 		if err != nil {
@@ -72,10 +70,14 @@ func ScanDaoEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) erro
 			}
 			if len(eventList) <= 0 {
 				var event = new(models.DaoEventLog)
-				dataList, err := contractAbi.Unpack("LockPayment", vLog.Data)
+				dataList, err := contractAbi.Unpack("SignTransaction", vLog.Data)
 				if err != nil {
 					logs.GetLogger().Error(err)
 				}
+
+				block, _ := WebConn.ConnWeb.BlockByNumber(context.Background(), big.NewInt(int64(vLog.BlockNumber)))
+				event.BlockTime = strconv.FormatUint(block.Time(), 10)
+				event.DaoPassTime = strconv.FormatUint(block.Time(), 10)
 
 				addrInfo, err := utils.GetFromAndToAddressByTxHash(WebConn.ConnWeb, big.NewInt(GetConfig().PolygonMainnetNode.ChainID), vLog.TxHash)
 				if err != nil {
@@ -86,6 +88,12 @@ func ScanDaoEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) erro
 				event.BlockNo = vLog.BlockNumber
 				event.TxHash = vLog.TxHash.Hex()
 				event.PayloadCid = dataList[0].(string)
+				event.DealCid = dataList[1].(string)
+				event.Recipient = dataList[3].(common.Address).String()
+				event.Cost = dataList[4].(*big.Int).String()
+				event.Terms = dataList[5].(*big.Int).String()
+				event.Network = constants.NETWORK_TYPE_POLYGON
+				event.Status = dataList[6].(bool)
 
 				err = database.SaveOneWithTransaction(event)
 				if err != nil {

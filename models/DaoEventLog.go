@@ -8,6 +8,7 @@ import (
 type DaoEventLog struct {
 	ID          int64  `json:"id"`
 	TxHash      string `json:"tx_hash"`
+	Recipient   string `json:"recipient"`
 	PayloadCid  string `json:"payload_cid"`
 	OrderId     string `json:"order_id"`
 	DealCid     string `json:"deal_cid"`
@@ -16,7 +17,9 @@ type DaoEventLog struct {
 	DaoAddress  string `json:"dao_address"`
 	DaoPassTime string `json:"dao_pass_time"`
 	BlockNo     uint64 `json:"block_no"`
+	BlockTime   string `json:"block_time"`
 	Network     string `json:"network"`
+	Status      bool   `json:"status"`
 }
 
 // FindDaoEventLog (&DaoEventLog{Id: "0xadeaCC802D0f2DFd31bE4Fa7434F15782Fd720ac"},"id desc","10","0")

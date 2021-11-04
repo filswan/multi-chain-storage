@@ -91,25 +91,3 @@ func ScanEventFromChainAndSaveDataToDbForGoerli() {
 		logs.GetLogger().Info("--------------------goerli---------------------------------")
 	}
 }
-
-func getStartBlockNo() int64 {
-	var startScanBlockNo int64 = 1
-
-	if GetConfig().GoerliMainnetNode.StartFromBlockNo > 0 {
-		startScanBlockNo = GetConfig().GoerliMainnetNode.StartFromBlockNo
-	}
-	blockScanRecord := new(models2.BlockScanRecord)
-	whereCondition := "network_type='" + constants.NETWORK_TYPE_GOERLI + "'"
-	blockScanRecordList, err := blockScanRecord.FindLastCurrentBlockNumber(whereCondition)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		startScanBlockNo = GetConfig().GoerliMainnetNode.StartFromBlockNo
-	}
-
-	if len(blockScanRecordList) > 0 {
-		if blockScanRecordList[0].LastCurrentBlockNumber > startScanBlockNo {
-			startScanBlockNo = blockScanRecordList[0].LastCurrentBlockNumber
-		}
-	}
-	return startScanBlockNo
-}

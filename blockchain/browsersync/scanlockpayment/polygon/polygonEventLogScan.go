@@ -63,6 +63,12 @@ func ScanEventFromChainAndSaveDataToDbForPolygon() {
 				continue
 			}
 
+			err = ScanDaoEventFromChainAndSaveEventLogData(start, end)
+			if err != nil {
+				logs.GetLogger().Error(err)
+				continue
+			}
+
 			if end >= blockNoCurrent.Int64() {
 				blockScanRecord.LastCurrentBlockNumber = blockNoCurrent.Int64()
 			} else {

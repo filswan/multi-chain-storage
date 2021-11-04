@@ -99,7 +99,7 @@ func getWhereCondition(txHash, walletAddress string) string {
 }
 
 func getBillHistoryList(whereCondition, limit, offset string) ([]*BillingResult, error) {
-	selectColumn := "id,tx_hash,address_from,locked_fee,deadline,payload_cid"
+	selectColumn := "id,tx_hash,address_from,locked_fee,deadline,payload_cid,lock_payment_time,coin_type "
 	sqlBsc := "select " + selectColumn + " ,'bsc' as network from " + constants.TABLE_NAME_EVENT_BSC + " " + whereCondition
 	sqlGoerli := "select " + selectColumn + " ,'goerli' as network  from " + constants.TABLE_NAME_EVENT_GOERLI + " " + whereCondition
 	sqlPolygon := "select " + selectColumn + " ,'polygon' as network  from " + constants.TABLE_NAME_EVENT_POLYGON + " " + whereCondition

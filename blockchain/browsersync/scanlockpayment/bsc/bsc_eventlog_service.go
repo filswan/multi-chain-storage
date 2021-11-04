@@ -94,6 +94,14 @@ func ScanBscEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) erro
 				deadLine := dataList[4].(*big.Int)
 				event.Deadline = deadLine.String()
 				event.CreateAt = strconv.FormatInt(utils.GetEpochInMillis(), 10)
+				block, err := WebConn.ConnWeb.BlockByNumber(context.Background(), big.NewInt(int64(vLog.BlockNumber)))
+				if err != nil {
+					logs.GetLogger().Error(err)
+				} else {
+					event.LockPaymentTime = strconv.FormatUint(block.Time(), 10)
+				}
+				//todo
+				event.EventName = "USDC"
 				err = database.SaveOneWithTransaction(event)
 				if err != nil {
 					logs.GetLogger().Error(err)

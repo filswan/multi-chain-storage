@@ -20,6 +20,7 @@ type EventPolygon struct {
 	AddressFrom     string `json:"address_from"`
 	AddressTo       string `json:"address_to"`
 	CoinType        string `json:"coin_type"`
+	LockPaymentTime string `json:"lock_payment_time"`
 	CreateAt        string `json:"create_at"`
 }
 

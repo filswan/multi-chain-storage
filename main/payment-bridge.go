@@ -4,7 +4,6 @@ import (
 	"github.com/gin-gonic/gin"
 	cors "github.com/itsjamie/gin-cors"
 	"payment-bridge/blockchain/browsersync"
-	"payment-bridge/blockchain/browsersync/scanlockpayment/polygon"
 	"payment-bridge/common/constants"
 	"payment-bridge/config"
 	"payment-bridge/database"
@@ -26,7 +25,7 @@ func main() {
 
 	models.RunAllTheScan()
 
-	polygon.ScanDaoEventFromChainAndSaveEventLogData(20965958, 20966958)
+	//polygon.ScanDaoEventFromChainAndSaveEventLogData(20965958, 20966958)
 
 	//factory := new(scanFactory.IEventScanFactory)
 

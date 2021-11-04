@@ -102,6 +102,14 @@ func ScanPolygonEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) 
 				event.Deadline = deadLine.String()
 				event.TxHash = vLog.TxHash.Hex()
 				event.ContractAddress = contractAddress.String()
+				block, err := WebConn.ConnWeb.BlockByNumber(context.Background(), big.NewInt(int64(vLog.BlockNumber)))
+				if err != nil {
+					logs.GetLogger().Error(err)
+				} else {
+					event.LockPaymentTime = strconv.FormatUint(block.Time(), 10)
+				}
+				//todo
+				event.EventName = "USDC"
 				event.CreateAt = strconv.FormatInt(utils.GetEpochInMillis(), 10)
 				err = database.SaveOneWithTransaction(event)
 				if err != nil {

@@ -101,6 +101,14 @@ func ScanGoerliEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) e
 				event.LockedFee = lockFee.String()
 				deadLine := dataList[4].(*big.Int)
 				event.Deadline = deadLine.String()
+				block, err := WebConn.ConnWeb.BlockByNumber(context.Background(), big.NewInt(int64(vLog.BlockNumber)))
+				if err != nil {
+					logs.GetLogger().Error(err)
+				} else {
+					event.LockPaymentTime = strconv.FormatUint(block.Time(), 10)
+				}
+				//todo
+				event.EventName = "USDC"
 				event.CreateAt = strconv.FormatInt(utils.GetEpochInMillis(), 10)
 				err = database.SaveOne(event)
 				if err != nil {

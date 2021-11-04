@@ -97,25 +97,3 @@ func ScanEventFromChainAndSaveDataToDbForPolygon() {
 		logs.GetLogger().Info("-------------------------polygon----------------------------")
 	}
 }
-
-func getStartBlockNo() int64 {
-	var startScanBlockNo int64 = 1
-
-	if GetConfig().PolygonMainnetNode.StartFromBlockNo > 0 {
-		startScanBlockNo = GetConfig().PolygonMainnetNode.StartFromBlockNo
-	}
-	blockScanRecord := new(models2.BlockScanRecord)
-	whereCondition := "network_type='" + constants.NETWORK_TYPE_POLYGON + "'"
-	blockScanRecordList, err := blockScanRecord.FindLastCurrentBlockNumber(whereCondition)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		startScanBlockNo = GetConfig().PolygonMainnetNode.StartFromBlockNo
-	}
-
-	if len(blockScanRecordList) > 0 {
-		if blockScanRecordList[0].LastCurrentBlockNumber > startScanBlockNo {
-			startScanBlockNo = blockScanRecordList[0].LastCurrentBlockNumber
-		}
-	}
-	return startScanBlockNo
-}

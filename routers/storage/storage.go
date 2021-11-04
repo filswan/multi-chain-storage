@@ -1,7 +1,6 @@
 package storage
 
 import (
-	"fmt"
 	clientmodel "github.com/filswan/go-swan-client/model"
 	"github.com/filswan/go-swan-client/subcommand"
 	libconstants "github.com/filswan/go-swan-lib/constants"
@@ -102,8 +101,9 @@ func SendDeal(c *gin.Context) {
 		c.JSON(http.StatusOK, common.CreateErrorResponse(errorinfo.SENDING_DEAL_ERROR_CODE, errorinfo.SENDING_DEAL_ERROR_MSG))
 		return
 	}
-	fmt.Println(dealSentNum)
-	fmt.Println(csvFilePath)
-	fmt.Println(carFiles)
+	logs.GetLogger().Info("------------------------------send deal success---------------------------------")
+	logs.GetLogger().Info("dealSentNum = ", dealSentNum)
+	logs.GetLogger().Info("csvFilePath = ", csvFilePath)
+	logs.GetLogger().Info("carFiles = ", carFiles)
 	c.JSON(http.StatusOK, common.CreateSuccessResponse("success"))
 }

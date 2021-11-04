@@ -11,6 +11,7 @@ import (
 	"mime/multipart"
 	"os"
 	"path/filepath"
+	"payment-bridge/common/constants"
 	"payment-bridge/config"
 	"payment-bridge/logs"
 	"time"
@@ -111,6 +112,7 @@ func CreateTask(c *gin.Context, taskName, jwtToken string, srcFile *multipart.Fi
 		Description:                &taskDescription,
 		StartEpochIntervalHours:    startEpochIntervalHours,
 		StartEpoch:                 startEpoch,
+		SourceId:                   constants.SOURCE_ID_OF_PAYMENT,
 	}
 
 	_, _, err = subcommand.CreateTask(confTask, nil)

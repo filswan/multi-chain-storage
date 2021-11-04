@@ -98,6 +98,7 @@ func ScanDaoEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) erro
 				event.Terms = dataList[5].(*big.Int).String()
 				event.Network = constants.NETWORK_TYPE_POLYGON
 				event.Status = dataList[6].(bool)
+				event.SignatureUnlockStatus = constants.SIGNATURE_DEFAULT_VALUE
 
 				err = database.SaveOneWithTransaction(event)
 				if err != nil {

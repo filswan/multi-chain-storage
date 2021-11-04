@@ -103,7 +103,7 @@ func getBillHistoryList(whereCondition, limit, offset string) ([]*BillingResult,
 	sqlBsc := "select " + selectColumn + " ,'bsc' as network from " + constants.TABLE_NAME_EVENT_BSC + " " + whereCondition
 	sqlGoerli := "select " + selectColumn + " ,'goerli' as network  from " + constants.TABLE_NAME_EVENT_GOERLI + " " + whereCondition
 	sqlPolygon := "select " + selectColumn + " ,'polygon' as network  from " + constants.TABLE_NAME_EVENT_POLYGON + " " + whereCondition
-	finalSql := sqlBsc + " union " + sqlGoerli + " union " + sqlPolygon
+	finalSql := sqlBsc + " union " + sqlGoerli + " union " + sqlPolygon + " order by lock_payment_time desc"
 	var billingResultList []*BillingResult
 	err := database.GetDB().Raw(finalSql).Scan(&billingResultList).Limit(limit).Offset(offset).Error
 	if err != nil {

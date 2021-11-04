@@ -37,4 +37,10 @@ const (
 	PAGE_SIZE_DEFAULT_VALUE = "10"
 
 	EVENT_NAME_LOCAK_PAYMENT = "LockPayment"
+
+	SIGNATURE_DEFAULT_VALUE = "0" //init value,no unlock operation has been performed
+	SIGNATURE_SUCCESS_VALUE = "1" //init value,no unlock operation has been performed
+	SIGNATURE_FAILED_VALUE  = "2" //init value,no unlock operation has been performed
+
+	SOURCE_ID_OF_PAYMENT = 4
 )

@@ -94,6 +94,7 @@ func getWhereCondition(txHash, walletAddress string) string {
 	if strings.Trim(walletAddress, " ") != "" {
 		whereCondition += " and lower(address_from)='" + strings.ToLower(walletAddress) + "'"
 	}
+	logs.GetLogger().Error(whereCondition)
 	return whereCondition
 }
 

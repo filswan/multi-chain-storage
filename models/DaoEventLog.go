@@ -60,3 +60,14 @@ func GetThresholdForDao() ([]*DaoSignatureResult, error) {
 	}
 	return models, nil
 }
+
+//updateFields: map[string]interface{}{"processing_time": taskT.ProcessingTime, "worker_reward": taskT.WorkerReward}
+func UpdateDaoEventLog(whereCondition interface{}, updateFields interface{}) error {
+	db := database.GetDB()
+	hardware := DaoEventLog{}
+	err := db.Model(&hardware).Where(whereCondition).Update(updateFields).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+	}
+	return err
+}

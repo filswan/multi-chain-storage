@@ -38,3 +38,6 @@ verified_deal = false
 fast_retrieval = true
 start_epoch_hours = 96
 
+[schedule_rule]
+nbai2bsc_mapping_redoRule = "0 */3 * * * ?"  #every minute
+

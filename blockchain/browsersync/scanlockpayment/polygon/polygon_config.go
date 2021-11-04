@@ -20,6 +20,7 @@ type PolygonMainnetNode struct {
 	DaoSwanOracleAddress      string
 	DaoEventFunctionSignature string
 	CycleTimeInterval         time.Duration
+	GasLimit                  uint64
 }
 
 var polygonConfig *ConfigurationForPolygon

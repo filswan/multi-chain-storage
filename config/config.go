@@ -7,14 +7,17 @@ import (
 )
 
 type Configuration struct {
-	Port       string
-	Database   database
-	Dev        bool
-	Temp       temp       `toml:"temp"`
-	SwanApi    swanApi    `toml:"swan_api"`
-	IpfsServer ipfsServer `toml:"ipfs_server"`
-	Lotus      lotus      `toml:"lotus"`
-	SwanTask   swanTask   `toml:"swan_task"`
+	Port                        string
+	Database                    database
+	Dev                         bool
+	Temp                        temp       `toml:"temp"`
+	SwanApi                     swanApi    `toml:"swan_api"`
+	IpfsServer                  ipfsServer `toml:"ipfs_server"`
+	Lotus                       lotus      `toml:"lotus"`
+	SwanTask                    swanTask   `toml:"swan_task"`
+	ScheduleRule                ScheduleRule
+	AdminWalletOnPolygon        string //pay for gas
+	SwanPaymentAddressOnPolygon string
 }
 
 type database struct {
@@ -55,6 +58,10 @@ type swanApi struct {
 type ipfsServer struct {
 	DownloadUrlPrefix string `toml:"download_url_prefix"`
 	UploadUrl         string `toml:"upload_url"`
+}
+
+type ScheduleRule struct {
+	Nbai2BscMappingRedoRule string
 }
 
 var config *Configuration

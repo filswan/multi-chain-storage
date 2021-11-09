@@ -106,13 +106,13 @@ func CreateTask(c *gin.Context, taskName, jwtToken string, srcFile *multipart.Fi
 		ExpireDays:                 config.GetConfig().SwanTask.ExpireDays,
 		OutputDir:                  carDir,
 		InputDir:                   carDir,
-		TaskName:                   taskName,
-		MinerFid:                   "",
-		Dataset:                    taskDataset,
-		Description:                taskDescription,
-		StartEpochIntervalHours:    startEpochIntervalHours,
-		StartEpoch:                 startEpoch,
-		SourceId:                   constants.SOURCE_ID_OF_PAYMENT,
+		//TaskName:                   taskName,
+		MinerFid:                "",
+		Dataset:                 taskDataset,
+		Description:             taskDescription,
+		StartEpochIntervalHours: startEpochIntervalHours,
+		StartEpoch:              startEpoch,
+		SourceId:                constants.SOURCE_ID_OF_PAYMENT,
 	}
 
 	_, _, err = subcommand.CreateTask(confTask, nil)

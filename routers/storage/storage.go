@@ -38,9 +38,9 @@ func UploadFileToIpfs(c *gin.Context) {
 		c.JSON(http.StatusOK, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_CODE, errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_MSG+":file"))
 		return
 	}
-	taskName := c.PostForm("task_name")
+	//taskName := c.PostForm("task_name")
 
-	err = storageService.CreateTask(c, taskName, jwtToken, file)
+	err = storageService.CreateTask(c, "", jwtToken, file)
 	if err != nil {
 		c.JSON(http.StatusOK, common.CreateErrorResponse(errorinfo.SENDING_DEAL_ERROR_CODE, errorinfo.SENDING_DEAL_ERROR_MSG+":file"))
 		return

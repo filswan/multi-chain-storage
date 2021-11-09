@@ -28,6 +28,8 @@ const (
 	SENDING_DEAL_ERROR_MSG                  = "Failed to send deal"
 	GET_LATEST_PRICE_OF_FILECOIN_ERROR_CODE = "500005002"
 	GET_LATEST_PRICE_OF_FILECOIN_ERROR_MSG  = "Getting filecion latest price occurred error"
+	SENDING_DEAL_GET_NULL_RETURN_VALUE_CODE = "500005003"
+	SENDING_DEAL_GET_NULL_RETURN_VALUE_MSG  = "Get null return value when deal had been sent"
 
 	//system command err  006
 	GET_HOME_DIR_ERROR_CODE = "500006001"

@@ -20,6 +20,7 @@ dir_deal="~/.swan/server/temp/deal"
 api_url = "http://192.168.88.216:5002"
 api_key = ""
 access_token = ""
+get_task_api_url_suffix = "paymentgateway/deals?offset=&limit=10&source_id=4&status=ReadyForImport,DealActive,Completed"
 
 [lotus]
 api_url="http://127.0.0.1:1234/rpc/v0"   # Url of lotus web api

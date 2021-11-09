@@ -19,6 +19,7 @@ type Configuration struct {
 	ScheduleRule                ScheduleRule `toml:"schedule_rule"`
 	AdminWalletOnPolygon        string       //pay for gas
 	SwanPaymentAddressOnPolygon string
+	FileCoinWallet              string
 }
 
 type database struct {
@@ -53,7 +54,10 @@ type temp struct {
 }
 
 type swanApi struct {
-	ApiUrl string `toml:"api_url"`
+	ApiUrl              string `toml:"api_url"`
+	ApiKey              string `toml:"api_key"`
+	AccessToken         string `toml:"access_key"`
+	GetTaskApiUrlSuffix string `toml:"get_task_api_url_suffix"`
 }
 
 type ipfsServer struct {

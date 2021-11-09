@@ -17,7 +17,7 @@ import (
 	"time"
 )
 
-func CreateTask(c *gin.Context, taskName, jwtToken string, srcFile *multipart.FileHeader) error {
+func CreateTask(c *gin.Context, taskName, jwtToken string, srcFile *multipart.FileHeader) ([]*libmodel.FileDesc, error) {
 	temDirDeal := config.GetConfig().Temp.DirDeal
 
 	logs.GetLogger().Info("temp dir is ", temDirDeal)
@@ -25,14 +25,14 @@ func CreateTask(c *gin.Context, taskName, jwtToken string, srcFile *multipart.Fi
 	homedir, err := os.UserHomeDir()
 	if err != nil {
 		logs.GetLogger().Error("Cannot get home directory.")
-		return err
+		return nil, err
 	}
 	temDirDeal = filepath.Join(homedir, temDirDeal[2:])
 
 	err = libutils.CreateDir(temDirDeal)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return err
+		return nil, err
 	}
 
 	timeStr := time.Now().Format("20060102_150405")
@@ -42,13 +42,13 @@ func CreateTask(c *gin.Context, taskName, jwtToken string, srcFile *multipart.Fi
 	err = libutils.CreateDir(srcDir)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return err
+		return nil, err
 	}
 
 	err = libutils.CreateDir(carDir)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return err
+		return nil, err
 	}
 
 	srcFilepath := filepath.Join(srcDir, srcFile.Filename)
@@ -56,7 +56,7 @@ func CreateTask(c *gin.Context, taskName, jwtToken string, srcFile *multipart.Fi
 	err = c.SaveUploadedFile(srcFile, srcFilepath)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return err
+		return nil, err
 	}
 	logs.GetLogger().Info("car files created in ", carDir)
 
@@ -69,7 +69,7 @@ func CreateTask(c *gin.Context, taskName, jwtToken string, srcFile *multipart.Fi
 	_, err = subcommand.CreateCarFiles(&confCar)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return err
+		return nil, err
 	}
 	logs.GetLogger().Info("car files created in ", carDir)
 
@@ -84,7 +84,7 @@ func CreateTask(c *gin.Context, taskName, jwtToken string, srcFile *multipart.Fi
 	_, err = subcommand.UploadCarFiles(confUpload)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return err
+		return nil, err
 	}
 	logs.GetLogger().Info("car files uploaded")
 
@@ -115,13 +115,13 @@ func CreateTask(c *gin.Context, taskName, jwtToken string, srcFile *multipart.Fi
 		SourceId:                constants.SOURCE_ID_OF_PAYMENT,
 	}
 
-	_, _, err = subcommand.CreateTask(confTask, nil)
+	_, fileInfoList, err := subcommand.CreateTask(confTask, nil)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return err
+		return nil, err
 	}
 	logs.GetLogger().Info("task created")
-	return nil
+	return fileInfoList, nil
 }
 
 func SendAutoBidDeals(confDeal *clientmodel.ConfDeal) ([]string, [][]*libmodel.FileDesc, error) {

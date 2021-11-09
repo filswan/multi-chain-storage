@@ -92,7 +92,8 @@ func ScanDaoEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) erro
 				event.BlockNo = vLog.BlockNumber
 				event.TxHash = vLog.TxHash.Hex()
 				event.PayloadCid = dataList[0].(string)
-				event.DealCid = dataList[1].(string)
+				event.OrderId = dataList[1].(string)
+				event.DealCid = dataList[2].(string)
 				event.Recipient = dataList[3].(common.Address).String()
 				event.Cost = dataList[4].(*big.Int).String()
 				event.Terms = dataList[5].(*big.Int).String()

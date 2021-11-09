@@ -61,10 +61,10 @@ func CreateTask(c *gin.Context, taskName, jwtToken string, srcFile *multipart.Fi
 	logs.GetLogger().Info("car files created in ", carDir)
 
 	confCar := clientmodel.ConfCar{
-		LotusApiUrl:      config.GetConfig().Lotus.ApiUrl,
-		LotusAccessToken: config.GetConfig().Lotus.AccessToken,
-		InputDir:         srcDir,
-		OutputDir:        carDir,
+		LotusClientApiUrl:      config.GetConfig().Lotus.ApiUrl,
+		LotusClientAccessToken: config.GetConfig().Lotus.AccessToken,
+		InputDir:               srcDir,
+		OutputDir:              carDir,
 	}
 	_, err = subcommand.CreateCarFiles(&confCar)
 	if err != nil {
@@ -106,10 +106,10 @@ func CreateTask(c *gin.Context, taskName, jwtToken string, srcFile *multipart.Fi
 		ExpireDays:                 config.GetConfig().SwanTask.ExpireDays,
 		OutputDir:                  carDir,
 		InputDir:                   carDir,
-		TaskName:                   &taskName,
-		MinerFid:                   nil,
-		Dataset:                    &taskDataset,
-		Description:                &taskDescription,
+		TaskName:                   taskName,
+		MinerFid:                   "",
+		Dataset:                    taskDataset,
+		Description:                taskDescription,
 		StartEpochIntervalHours:    startEpochIntervalHours,
 		StartEpoch:                 startEpoch,
 		SourceId:                   constants.SOURCE_ID_OF_PAYMENT,

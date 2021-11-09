@@ -248,11 +248,10 @@ github.com/filecoin-project/specs-actors/v5 v5.0.0-20210512015452-4fe3889fff57 h
 github.com/filecoin-project/specs-actors/v5 v5.0.0-20210512015452-4fe3889fff57/go.mod h1:283yBMMUSDB2abcjP/hhrwTkhb9h3sfM6KGrep/ZlBI=
 github.com/filedrive-team/go-graphsplit v0.4.1 h1:TxzaOrJk/SDK8vfRFu/v46z/2Za5xSpoHC0UF135Oyk=
 github.com/filedrive-team/go-graphsplit v0.4.1/go.mod h1:W+ivPZK6/qa7I7n34DSLVMjTrszpeZv7UaP98QbQ++A=
-github.com/filswan/go-swan-client v0.0.16 h1:LlLtrL7LIzzO2Serk/BEP/d7lRvRypNxYGrDCNEuweg=
-github.com/filswan/go-swan-client v0.0.16/go.mod h1:xfAesiz0LLgxQl88/hLMNHJT2bpHrNS9EvUeHqV22Qw=
-github.com/filswan/go-swan-lib v0.2.21/go.mod h1:+roryt281JKxvfWI6O5gxTMpKaDNMad9MMiOYDtsrfw=
-github.com/filswan/go-swan-lib v0.2.23 h1:aHAUEXkNwd5OxJLTO6UWGWNMhYQLETL8JIuBC14Khh0=
-github.com/filswan/go-swan-lib v0.2.23/go.mod h1:+roryt281JKxvfWI6O5gxTMpKaDNMad9MMiOYDtsrfw=
+github.com/filswan/go-swan-client v0.0.26 h1:4QSdmPzGi4srhc9IJA8T8tXpkH3K8ErL0gJVqtk1jXY=
+github.com/filswan/go-swan-client v0.0.26/go.mod h1:WvrB1iQ/mvgiccGzMEb/HiWZpZcBpkALff38WfpEhH4=
+github.com/filswan/go-swan-lib v0.2.28 h1:6m9XzElm4waIrDdwxcyWmGL9uRkI+hdmnqoQWdoir1w=
+github.com/filswan/go-swan-lib v0.2.28/go.mod h1:+roryt281JKxvfWI6O5gxTMpKaDNMad9MMiOYDtsrfw=
 github.com/fjl/memsize v0.0.0-20190710130421-bcb5799ab5e5 h1:FtmdgXiUlNeRsoNMFlKLDt+S+6hbjVMEW6RGQ7aUf7c=
 github.com/fjl/memsize v0.0.0-20190710130421-bcb5799ab5e5/go.mod h1:VvhXpOYNQvB+uIk2RvXzuaQtkQJzzIx6lSBe1xv7hi0=
 github.com/flynn/go-shlex v0.0.0-20150515145356-3f9db97f8568/go.mod h1:xEzjJPgXI435gkrCt3MPfRiAkVrwSbHsst4LCFVfpJc=

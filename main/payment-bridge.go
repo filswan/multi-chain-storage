@@ -1,8 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	cors "github.com/itsjamie/gin-cors"
+	"github.com/joho/godotenv"
+	"os"
 	"payment-bridge/blockchain/browsersync"
 	"payment-bridge/common/constants"
 	"payment-bridge/config"
@@ -17,6 +20,7 @@ import (
 )
 
 func main() {
+	LoadEnv()
 	// init database
 	db := database.Init()
 
@@ -24,6 +28,8 @@ func main() {
 	browsersync.Init()
 
 	models.RunAllTheScan()
+
+	//scheduler.DAOUnlockPaymentSchedule()
 
 	//polygon.ScanDaoEventFromChainAndSaveEventLogData(20965958, 20966958)
 
@@ -71,4 +77,12 @@ func main() {
 func initMethod() string {
 	config.InitConfig("")
 	return ""
+}
+
+func LoadEnv() {
+	err := godotenv.Load(".env")
+	if err != nil {
+		logs.GetLogger().Error(err)
+	}
+	fmt.Println("name: ", os.Getenv("privateKey"))
 }

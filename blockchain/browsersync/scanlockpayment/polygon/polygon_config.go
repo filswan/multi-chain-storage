@@ -20,7 +20,7 @@ type PolygonMainnetNode struct {
 	DaoSwanOracleAddress      string
 	DaoEventFunctionSignature string
 	CycleTimeInterval         time.Duration
-	GasLimit                  uint64
+	GasLimit                  int64
 }
 
 var polygonConfig *ConfigurationForPolygon
@@ -38,12 +38,12 @@ func initCofig() {
 
 func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 	requiredFields := [][]string{
-		{"PolygonMainnetNode", "rpcUrl"},
-		{"PolygonMainnetNode", "paymentContractAddress"},
-		{"PolygonMainnetNode", "contractFunctionSignature"},
-		{"PolygonMainnetNode", "scanStep"},
-		{"PolygonMainnetNode", "cycleTimeInterval"},
-		{"PolygonMainnetNode", "chainID"},
+		{"polygonMainnetNode", "rpcUrl"},
+		{"polygonMainnetNode", "paymentContractAddress"},
+		{"polygonMainnetNode", "contractFunctionSignature"},
+		{"polygonMainnetNode", "scanStep"},
+		{"polygonMainnetNode", "cycleTimeInterval"},
+		{"polygonMainnetNode", "chainID"},
 	}
 
 	for _, v := range requiredFields {

@@ -22,13 +22,16 @@ import (
 
 func DAOUnlockPaymentSchedule() {
 	c := cron.New()
-	c.AddFunc(config.GetConfig().ScheduleRule.Nbai2BscMappingRedoRule, func() {
-		log.Println("dao signature unlock payment schedule is running at " + time.Now().Format("2006-01-02 15:04:05"))
+	err := c.AddFunc(config.GetConfig().ScheduleRule.UnlockPaymentRule, func() {
+		log.Println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^dao signature unlock payment schedule is running at " + time.Now().Format("2006-01-02 15:04:05"))
 		err := UnlockPaymentByDao()
 		if err != nil {
 			logs.GetLogger().Error(err)
 		}
 	})
+	if err != nil {
+		logs.GetLogger().Error(err)
+	}
 	c.Start()
 }
 func UnlockPaymentByDao() error {
@@ -38,7 +41,7 @@ func UnlockPaymentByDao() error {
 		return err
 	}
 	for _, v := range daoSigResult {
-		daoEventLogList, err := models.FindDaoEventLog(&models.DaoEventLog{PayloadCid: v.PayloadCid, DealCid: v.DealCid}, "id desc", "10", "0")
+		daoEventLogList, err := models.FindDaoEventLog(&models.DaoEventLog{PayloadCid: v.PayloadCid, DealCid: v.DealCid, SignatureUnlockStatus: constants.SIGNATURE_DEFAULT_VALUE}, "id desc", "10", "0")
 		if err != nil {
 			logs.GetLogger().Error(err)
 			continue
@@ -52,6 +55,7 @@ func UnlockPaymentByDao() error {
 			n, _ = n.SetString(daoEventLogList[0].Cost, 10)
 			parm.Amount = n
 			parm.Recipient = common.HexToAddress(daoEventLogList[0].Recipient)
+			parm.OrderId = v.OrderId
 			err = doUnlockPaymentOnContract(parm)
 			if err != nil {
 				logs.GetLogger().Error(err)
@@ -99,7 +103,7 @@ func doUnlockPaymentOnContract(unlockParams goBind.IPaymentMinimalunlockPaymentP
 	//callOpts := new(bind.TransactOpts)
 	callOpts.Nonce = big.NewInt(int64(nonce))
 	callOpts.GasPrice = gasPrice
-	callOpts.GasLimit = polygon.GetConfig().PolygonMainnetNode.GasLimit
+	callOpts.GasLimit = uint64(polygon.GetConfig().PolygonMainnetNode.GasLimit)
 	callOpts.Context = context.Background()
 
 	swanPaymentContractAddress := common.HexToAddress(config.GetConfig().SwanPaymentAddressOnPolygon) //payment gateway on polygon
@@ -115,5 +119,6 @@ func doUnlockPaymentOnContract(unlockParams goBind.IPaymentMinimalunlockPaymentP
 		return err
 	}
 	fmt.Println(tx)
+	fmt.Println(tx.Hash())
 	return nil
 }

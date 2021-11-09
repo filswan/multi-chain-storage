@@ -2,6 +2,7 @@ package config
 
 import (
 	"github.com/BurntSushi/toml"
+	"github.com/shopspring/decimal"
 	"log"
 	"strings"
 )
@@ -10,13 +11,13 @@ type Configuration struct {
 	Port                        string
 	Database                    database
 	Dev                         bool
-	Temp                        temp       `toml:"temp"`
-	SwanApi                     swanApi    `toml:"swan_api"`
-	IpfsServer                  ipfsServer `toml:"ipfs_server"`
-	Lotus                       lotus      `toml:"lotus"`
-	SwanTask                    swanTask   `toml:"swan_task"`
-	ScheduleRule                ScheduleRule
-	AdminWalletOnPolygon        string //pay for gas
+	Temp                        temp         `toml:"temp"`
+	SwanApi                     swanApi      `toml:"swan_api"`
+	IpfsServer                  ipfsServer   `toml:"ipfs_server"`
+	Lotus                       lotus        `toml:"lotus"`
+	SwanTask                    swanTask     `toml:"swan_task"`
+	ScheduleRule                ScheduleRule `toml:"schedule_rule"`
+	AdminWalletOnPolygon        string       //pay for gas
 	SwanPaymentAddressOnPolygon string
 }
 
@@ -35,16 +36,16 @@ type lotus struct {
 }
 
 type swanTask struct {
-	Description     string `toml:"description"`
-	CuratedDataset  string `toml:"curated_dataset"`
-	Tags            string `toml:"tags"`
-	MinPrice        string `toml:"min_price"`
-	MaxPrice        string `toml:"max_price"`
-	ExpireDays      int    `toml:"expire_days"`
-	VerifiedDeal    bool   `toml:"verified_deal"`
-	FastRetrieval   bool   `toml:"fast_retrieval"`
-	StartEpochHours int    `toml:"start_epoch_hours"`
-	MinerId         string `toml:"miner_id"`
+	Description     string          `toml:"description"`
+	CuratedDataset  string          `toml:"curated_dataset"`
+	Tags            string          `toml:"tags"`
+	MinPrice        decimal.Decimal `toml:"min_price"`
+	MaxPrice        decimal.Decimal `toml:"max_price"`
+	ExpireDays      int             `toml:"expire_days"`
+	VerifiedDeal    bool            `toml:"verified_deal"`
+	FastRetrieval   bool            `toml:"fast_retrieval"`
+	StartEpochHours int             `toml:"start_epoch_hours"`
+	MinerId         string          `toml:"miner_id"`
 }
 
 type temp struct {
@@ -61,7 +62,7 @@ type ipfsServer struct {
 }
 
 type ScheduleRule struct {
-	Nbai2BscMappingRedoRule string
+	UnlockPaymentRule string `toml:"unlock_payment_rule"`
 }
 
 var config *Configuration

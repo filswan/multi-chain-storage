@@ -1,3 +1,8 @@
+# Swan Client Tool Guide
+[![Made by FilSwan](https://img.shields.io/badge/made%20by-FilSwan-green.svg)](https://www.filswan.com/)
+[![Chat on Slack](https://img.shields.io/badge/slack-filswan.slack.com-green.svg)](https://filswan.slack.com)
+[![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg)](https://github.com/RichardLitt/standard-readme)
+
 # Payment-Bridge
 Payment bridge is desgined for make payment from multichain for filecoin storage <br>
 Now supports payment with tokens such as nbai/bsc/goerli/polygon
@@ -6,8 +11,9 @@ Now supports payment with tokens such as nbai/bsc/goerli/polygon
 Scan the blockchain, find the event log of the block where the swan payment contract has been executed,and save to the database
 
 ## Prerequisite
-- golang1.13 (minimum version)
-- mysql5.5
+- Golang1.16 (minimum version)
+- Mysql5.5
+- Lotus node
 
 ## Getting Started
 
@@ -15,16 +21,13 @@ Scan the blockchain, find the event log of the block where the swan payment cont
 ```console
 git clone https://github.com/filswan/payment-bridge
 ```
-### 2 Generate config file
-Enter payment-bridge/scan/config directory <br>
-change config.toml.example to config.toml  <br>
-input your database parameters and blockchain node address
+### 2 Pull-in the submodules:
 ```console
-cd $GOPATH/src/payment-bridge/scan/config
-mv config.toml.example config.toml
+cd $GOPATH/src/payment-bridge/
+git submodule update --init --recursive
 ```
 
-### 3 Complie project
+### 3 build project
 Enter payment-bridge directory <br>
 adn execute the make command
 ```console
@@ -40,6 +43,82 @@ cd $GOPATH/src/payment-bridge/scan/build/bin
 chmod +x payment-bridge
 ./payment_bridge
 ```
+
+##### Note:
+Before running the ./payment-bridge command, you need to edit the config file, the configuration items will be introduced below
+
+## Configuration 
+
+### config.toml
+
+```
+adminWalletOnPolygon="0x05856015d07F3E24936B7D20cB3CcfCa3D34B41d"
+swanPaymentAddressOnPolygon="0xABeAAb124e6b52afFF504DB71bbF08D0A768D053"
+fileCoinWallet="t3u7pumush376xbytsgs5wabkhtadjzfydxxda2vzyasg7cimkcphswrq66j4dubbhwpnojqd3jie6ermpwvvq"
+
+[swan_api]
+api_url = "http://192.168.88.216:5002"
+api_key = "yqBJQhhKMJLOsNnnpChuVQ"
+access_token = "25178205fe651e965985d7f9e70140a9"
+get_task_api_url_suffix = "paymentgateway/deals?offset=&limit=10&source_id=4&status=ReadyForImport,DealActive,Completed"
+
+[lotus]
+api_url="http://127.0.0.1:1234/rpc/v0"   # Url of lotus web api
+access_token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBbGxvdyI6WyJyZWFkIiwid3JpdGUiLCJzaWduIiwiYWRtaW4iXX0.TXQfZGBhmzn1r9PmK0KoOeAFR3rHcAjL2DF18hP2F5Q"   # Access token of lotus web api
+
+[ipfs_server]
+download_url_prefix = "http://192.168.88.41:5050"
+upload_url = "http://192.168.88.41:5001"
+
+[swan_task]
+description = ""
+curated_dataset = ""
+tags = ""
+min_price = "0.00000001"
+max_price = 0.00005
+expire_days = 4
+verified_deal = false
+fast_retrieval = true
+start_epoch_hours = 96
+
+[schedule_rule]
+unlock_payment_rule = "0 */3 * * * ?"  #every minute
+send_deal_rule = "0/7 * * * * *"
+```
+### adminWalletOnPolygon
+The wallet address used to execute contract methods on the polygon network and pay for gas
+### swanPaymentAddressOnPolygon
+The contract address of the swan payment gateway, used for lock and unlock user fees
+### fileCoinWallet
+The wallet address of the user's paying for storage file to the filecoin network
+
+#### swan_api
+
+swan_api section defines the token used for connecting with Swan platform. 
+
+- **api_key & access_token:** Acquire from [Filswan](https://www.filswan.com) -> "My Profile"->"Developer Settings". You
+  can also check the [Guide](https://nebulaai.medium.com/how-to-use-api-key-in-swan-a2ebdb005aa4)
+- **api_url:** Default: "https://api.filswan.com"
+
+
+#### ipfs-server
+
+ipfs-server is used to upload and download generated Car files. You can upload generated Car files via `upstream_url` and storage provider will download Car files from this ipfs-server using `download_stream_url`.
+The downloadable URL in the CSV file is built with the following format: host+port+ipfs+hash,
+e.g. http://host:port/ipfs/QmPrQPfGCAHwYXDZDdmLXieoxZP5JtwQuZMUEGuspKFZKQ
+
+#### sender
+- **dir_deal:** Output directory for saving generated Car files and CSVs
+- **verified_deal:** [true/false] Whether deals in this task are going to be sent as verified
+- **fast_retrieval:** [true/false] Indicates that data should be available for fast retrieval
+- **start_epoch_hours:** start_epoch for deals in hours from current time
+- **expired_days:** expected completion days for storage provider sealing data
+- **max_price:** Max price willing to pay per GiB/epoch for offline deal
+- **min_price:** Min price willing to pay per GiB/epoch for offline deal
+- **generate_md5:** [true/false] Whether to generate md5 for each car file, note: this is a resource consuming action
+- **skip_confirmation:** [true/false] Whether to skip manual confirmation of each deal before sending
+- **wallet:**  Wallet used for sending offline deals
+
 
 ## The Payment Process
 - First, users use the currencies we support to send tokens to our contract address. <br>

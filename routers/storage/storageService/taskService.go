@@ -18,7 +18,7 @@ import (
 )
 
 func CreateTask(c *gin.Context, taskName, jwtToken string, srcFile *multipart.FileHeader) ([]*libmodel.FileDesc, error) {
-	temDirDeal := config.GetConfig().Temp.DirDeal
+	temDirDeal := config.GetConfig().SwanTask.DirDeal
 
 	logs.GetLogger().Info("temp dir is ", temDirDeal)
 

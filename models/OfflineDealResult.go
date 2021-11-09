@@ -32,6 +32,7 @@ type OfflineDeal struct {
 	PieceCid      string      `json:"piece_cid"`
 	PinStatus     string      `json:"pin_status"`
 	StartEpoch    int64       `json:"start_epoch"`
+	TaskStatus    string      `json:"task_status"`
 	Status        string      `json:"status"`
 	UpdatedAt     string      `json:"updated_at"`
 	CreatedAt     string      `json:"created_at"`

@@ -43,4 +43,5 @@ const (
 	SIGNATURE_FAILED_VALUE  = "2" //init value,no unlock operation has been performed
 
 	SOURCE_ID_OF_PAYMENT = 4
+	TASK_STATUS_ASSIGNED = "Assigned"
 )

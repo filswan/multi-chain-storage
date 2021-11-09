@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"payment-bridge/common/constants"
 	"payment-bridge/common/httpClient"
 	"payment-bridge/config"
 	"payment-bridge/logs"
@@ -39,11 +40,18 @@ func doSendDealScheduler() error {
 		return err
 	}
 	for _, v := range dealList.Data.Deals {
-		if v.Status == "Assigned" {
-			err = sendDeal(v.UUID)
+		if v.TaskStatus == constants.TASK_STATUS_ASSIGNED {
+			hasPaid, err := checkIfHaveLockPayment(v.PayloadCid)
 			if err != nil {
 				logs.GetLogger().Error(err)
-				return err
+				continue
+			}
+			if !hasPaid {
+				err = sendDeal(v.UUID)
+				if err != nil {
+					logs.GetLogger().Error(err)
+					return err
+				}
 			}
 		}
 	}
@@ -112,4 +120,17 @@ func sendDeal(taskUuid string) error {
 	logs.GetLogger().Info("csvFilePath = ", csvFilePath)
 	logs.GetLogger().Info("carFiles = ", carFiles)
 	return nil
+}
+
+func checkIfHaveLockPayment(payloadCid string) (bool, error) {
+	polygonEventList, err := models.FindEventPolygons(&models.EventPolygon{PayloadCid: payloadCid}, "id desc", "", "0")
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return true, err
+	}
+	if len(polygonEventList) > 0 {
+		return true, nil
+	} else {
+		return false, nil
+	}
 }

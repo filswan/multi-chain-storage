@@ -11,7 +11,6 @@ type Configuration struct {
 	Port                        string
 	Database                    database
 	Dev                         bool
-	Temp                        temp         `toml:"temp"`
 	SwanApi                     swanApi      `toml:"swan_api"`
 	IpfsServer                  ipfsServer   `toml:"ipfs_server"`
 	Lotus                       lotus        `toml:"lotus"`
@@ -37,6 +36,7 @@ type lotus struct {
 }
 
 type swanTask struct {
+	DirDeal         string          `toml:"dir_deal"`
 	Description     string          `toml:"description"`
 	CuratedDataset  string          `toml:"curated_dataset"`
 	Tags            string          `toml:"tags"`
@@ -47,10 +47,6 @@ type swanTask struct {
 	FastRetrieval   bool            `toml:"fast_retrieval"`
 	StartEpochHours int             `toml:"start_epoch_hours"`
 	MinerId         string          `toml:"miner_id"`
-}
-
-type temp struct {
-	DirDeal string `toml:"dir_deal"`
 }
 
 type swanApi struct {

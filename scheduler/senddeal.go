@@ -7,7 +7,6 @@ import (
 	libconstants "github.com/filswan/go-swan-lib/constants"
 	libutils "github.com/filswan/go-swan-lib/utils"
 	"github.com/robfig/cron"
-	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -21,19 +20,21 @@ import (
 
 func SendDealScheduler() {
 	c := cron.New()
-	err := c.AddFunc(config.GetConfig().ScheduleRule.UnlockPaymentRule, func() {
-		log.Println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^dao signature unlock payment schedule is running at " + time.Now().Format("2006-01-02 15:04:05"))
-		err := doSendDealScheduler()
+	err := c.AddFunc(config.GetConfig().ScheduleRule.SendDealRule, func() {
+		logs.GetLogger().Println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ send deal scheduler is running at " + time.Now().Format("2006-01-02 15:04:05"))
+		err := DoSendDealScheduler()
 		if err != nil {
 			logs.GetLogger().Error(err)
+			return
 		}
 	})
 	if err != nil {
 		logs.GetLogger().Error(err)
+		return
 	}
 	c.Start()
 }
-func doSendDealScheduler() error {
+func DoSendDealScheduler() error {
 	dealList, err := GetTaskListShouldBeSigService()
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -46,7 +47,7 @@ func doSendDealScheduler() error {
 				logs.GetLogger().Error(err)
 				continue
 			}
-			if !hasPaid {
+			if hasPaid {
 				err = sendDeal(v.UUID)
 				if err != nil {
 					logs.GetLogger().Error(err)
@@ -59,7 +60,7 @@ func doSendDealScheduler() error {
 }
 
 func GetTaskListShouldBeSigService() (*models.OfflineDealResult, error) {
-	url := config.GetConfig().SwanApi.ApiUrl + config.GetConfig().SwanApi.GetTaskApiUrlSuffix
+	url := config.GetConfig().SwanApi.ApiUrl + config.GetConfig().SwanApi.GetShouldSendTaskUrlSuffix
 	response, err := httpClient.SendRequestAndGetBytes(http.MethodGet, url, nil, nil)
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -75,9 +76,7 @@ func GetTaskListShouldBeSigService() (*models.OfflineDealResult, error) {
 }
 
 func sendDeal(taskUuid string) error {
-
-	task_uuid := taskUuid
-
+	logs.GetLogger().Println("################################## start to send deal ##################################")
 	startEpochIntervalHours := config.GetConfig().SwanTask.StartEpochHours
 	startEpoch := libutils.GetCurrentEpoch() + (startEpochIntervalHours+1)*libconstants.EPOCH_PER_HOUR
 
@@ -86,7 +85,7 @@ func sendDeal(taskUuid string) error {
 		logs.GetLogger().Error(err)
 		return err
 	}
-	temDirDeal := config.GetConfig().Temp.DirDeal
+	temDirDeal := config.GetConfig().SwanTask.DirDeal
 	temDirDeal = filepath.Join(homedir, temDirDeal[2:])
 	err = libutils.CreateDir(temDirDeal)
 	if err != nil {
@@ -100,7 +99,7 @@ func sendDeal(taskUuid string) error {
 	confDeal := &clientmodel.ConfDeal{
 		SwanApiUrl:              config.GetConfig().SwanApi.ApiUrl,
 		SwanApiKey:              config.GetConfig().SwanApi.ApiKey,
-		SwanAccessToken:         config.GetConfig().SwanApi.ApiKey,
+		SwanAccessToken:         config.GetConfig().SwanApi.AccessToken,
 		SenderWallet:            config.GetConfig().FileCoinWallet,
 		VerifiedDeal:            config.GetConfig().SwanTask.VerifiedDeal,
 		FastRetrieval:           config.GetConfig().SwanTask.FastRetrieval,
@@ -108,9 +107,11 @@ func sendDeal(taskUuid string) error {
 		StartEpochIntervalHours: startEpochIntervalHours,
 		StartEpoch:              startEpoch,
 		OutputDir:               carDir,
+		LotusClientApiUrl:       config.GetConfig().Lotus.ApiUrl,
+		LotusClientAccessToken:  config.GetConfig().Lotus.AccessToken,
 	}
 
-	dealSentNum, csvFilePath, carFiles, err := subcommand.SendAutoBidDealsByTaskUuid(confDeal, task_uuid)
+	dealSentNum, csvFilePath, carFiles, err := subcommand.SendAutoBidDealsByTaskUuid(confDeal, taskUuid)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
@@ -119,6 +120,7 @@ func sendDeal(taskUuid string) error {
 	logs.GetLogger().Info("dealSentNum = ", dealSentNum)
 	logs.GetLogger().Info("csvFilePath = ", csvFilePath)
 	logs.GetLogger().Info("carFiles = ", carFiles)
+	logs.GetLogger().Println("################################## end to send deal ##################################")
 	return nil
 }
 
@@ -126,7 +128,7 @@ func checkIfHaveLockPayment(payloadCid string) (bool, error) {
 	polygonEventList, err := models.FindEventPolygons(&models.EventPolygon{PayloadCid: payloadCid}, "id desc", "", "0")
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return true, err
+		return false, err
 	}
 	if len(polygonEventList) > 0 {
 		return true, nil

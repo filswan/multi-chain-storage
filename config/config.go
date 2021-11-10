@@ -50,10 +50,10 @@ type swanTask struct {
 }
 
 type swanApi struct {
-	ApiUrl              string `toml:"api_url"`
-	ApiKey              string `toml:"api_key"`
-	AccessToken         string `toml:"access_key"`
-	GetTaskApiUrlSuffix string `toml:"get_task_api_url_suffix"`
+	ApiUrl                     string `toml:"api_url"`
+	ApiKey                     string `toml:"api_key"`
+	AccessToken                string `toml:"access_token"`
+	GetShouldSendTaskUrlSuffix string `toml:"get_should_send_task_url_suffix"`
 }
 
 type ipfsServer struct {
@@ -63,6 +63,7 @@ type ipfsServer struct {
 
 type ScheduleRule struct {
 	UnlockPaymentRule string `toml:"unlock_payment_rule"`
+	SendDealRule      string `toml:"send_deal_rule"`
 }
 
 var config *Configuration

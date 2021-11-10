@@ -16,6 +16,7 @@ import (
 	"payment-bridge/routers/billing"
 	"payment-bridge/routers/common"
 	"payment-bridge/routers/storage"
+	"payment-bridge/scheduler"
 	"time"
 )
 
@@ -28,6 +29,8 @@ func main() {
 	browsersync.Init()
 
 	models.RunAllTheScan()
+
+	scheduler.SendDealScheduler()
 
 	//scheduler.DAOUnlockPaymentSchedule()
 

@@ -60,7 +60,6 @@ fileCoinWallet="t3u7pumush376xbytsgs5wabkhtadjzfydxxda2vzyasg7cimkcphswrq66j4dub
 api_url = "http://192.168.88.216:5002"
 api_key = "yqBJQhhKMJLOsNnnpChuVQ"
 access_token = "25178205fe651e965985d7f9e70140a9"
-get_task_api_url_suffix = "paymentgateway/deals?offset=&limit=10&source_id=4&status=ReadyForImport,DealActive,Completed"
 
 [lotus]
 api_url="http://127.0.0.1:1234/rpc/v0"   # Url of lotus web api
@@ -71,28 +70,27 @@ download_url_prefix = "http://192.168.88.41:5050"
 upload_url = "http://192.168.88.41:5001"
 
 [swan_task]
-description = ""
-curated_dataset = ""
-tags = ""
-min_price = "0.00000001"
+min_price = 0.00000001
 max_price = 0.00005
 expire_days = 4
 verified_deal = false
 fast_retrieval = true
 start_epoch_hours = 96
+get_should_send_task_url_suffix = "paymentgateway/deals?offset=&limit=10&source_id=4&status=ReadyForImport,DealActive,Completed"
+
 
 [schedule_rule]
 unlock_payment_rule = "0 */3 * * * ?"  #every minute
 send_deal_rule = "0/7 * * * * *"
 ```
-### adminWalletOnPolygon
+#### adminWalletOnPolygon
 The wallet address used to execute contract methods on the polygon network and pay for gas
-### swanPaymentAddressOnPolygon
+#### swanPaymentAddressOnPolygon
 The contract address of the swan payment gateway, used for lock and unlock user fees
-### fileCoinWallet
+#### fileCoinWallet
 The wallet address of the user's paying for storage file to the filecoin network
 
-#### swan_api
+#### [swan_api]
 
 swan_api section defines the token used for connecting with Swan platform. 
 
@@ -101,13 +99,18 @@ swan_api section defines the token used for connecting with Swan platform.
 - **api_url:** Default: "https://api.filswan.com"
 
 
-#### ipfs-server
+
+#### [lotus]
+- **api_url:** Url of lotus client web api, such as: **http://[ip]:[port]/rpc/v0**, generally the [port] is **1234**. See [Lotus API](https://docs.filecoin.io/reference/lotus-api/)
+- **access_token:** Access token of lotus market web api. When market and miner are not separate, it is also the access token of miner access token. See [Obtaining Tokens](https://docs.filecoin.io/build/lotus/api-tokens/#obtaining-tokens)
+
+#### [ipfs-server]
 
 ipfs-server is used to upload and download generated Car files. You can upload generated Car files via `upstream_url` and storage provider will download Car files from this ipfs-server using `download_stream_url`.
 The downloadable URL in the CSV file is built with the following format: host+port+ipfs+hash,
 e.g. http://host:port/ipfs/QmPrQPfGCAHwYXDZDdmLXieoxZP5JtwQuZMUEGuspKFZKQ
 
-#### sender
+#### [swan_task]
 - **dir_deal:** Output directory for saving generated Car files and CSVs
 - **verified_deal:** [true/false] Whether deals in this task are going to be sent as verified
 - **fast_retrieval:** [true/false] Indicates that data should be available for fast retrieval

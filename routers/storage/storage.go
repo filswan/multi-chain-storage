@@ -46,6 +46,7 @@ func UploadFileToIpfs(c *gin.Context) {
 		return
 	}
 	if len(fileInfoList) > 0 {
+		logs.GetLogger().Info("----------------------------payload_cid: ", fileInfoList[0].DataCid, "-----------------------------")
 		c.JSON(http.StatusOK, common.CreateSuccessResponse(fileInfoList[0].DataCid))
 		return
 	} else {
@@ -76,7 +77,7 @@ func SendDeal(c *gin.Context) {
 		c.JSON(http.StatusOK, common.CreateErrorResponse(errorinfo.GET_HOME_DIR_ERROR_CODE, errorinfo.GET_HOME_DIR_ERROR_MSG))
 		return
 	}
-	temDirDeal := config.GetConfig().Temp.DirDeal
+	temDirDeal := config.GetConfig().SwanTask.DirDeal
 	temDirDeal = filepath.Join(homedir, temDirDeal[2:])
 	err = libutils.CreateDir(temDirDeal)
 	if err != nil {

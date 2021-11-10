@@ -30,7 +30,7 @@ func main() {
 
 	models.RunAllTheScan()
 
-	scheduler.DoSendDealScheduler()
+	scheduler.SendDealScheduler()
 
 	//scheduler.DAOUnlockPaymentSchedule()
 

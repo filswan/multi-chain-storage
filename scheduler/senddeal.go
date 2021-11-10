@@ -107,7 +107,7 @@ func sendDeal(taskUuid string) error {
 		FastRetrieval:           config.GetConfig().SwanTask.FastRetrieval,
 		SkipConfirmation:        true,
 		StartEpochIntervalHours: startEpochIntervalHours,
-		StartEpoch:              startEpoch,
+		StartEpoch:              startEpoch - 7057,
 		OutputDir:               carDir,
 		LotusClientApiUrl:       config.GetConfig().Lotus.ApiUrl,
 		LotusClientAccessToken:  config.GetConfig().Lotus.AccessToken,

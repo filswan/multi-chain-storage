@@ -51,7 +51,7 @@ func DoSendDealScheduler() error {
 				err = sendDeal(v.UUID)
 				if err != nil {
 					logs.GetLogger().Error(err)
-					return err
+					continue
 				}
 			}
 		}

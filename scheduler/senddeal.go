@@ -48,7 +48,10 @@ func DoSendDealScheduler() error {
 				continue
 			}
 			if hasPaid {
+				logs.GetLogger().Println("################################## start to send deal ##################################")
+				logs.GetLogger().Println("task name : ", v.TaskName, " task uuid : ", v.UUID)
 				err = sendDeal(v.UUID)
+				logs.GetLogger().Println("################################## end to send deal ##################################")
 				if err != nil {
 					logs.GetLogger().Error(err)
 					continue
@@ -76,7 +79,6 @@ func GetTaskListShouldBeSigService() (*models.OfflineDealResult, error) {
 }
 
 func sendDeal(taskUuid string) error {
-	logs.GetLogger().Println("################################## start to send deal ##################################")
 	startEpochIntervalHours := config.GetConfig().SwanTask.StartEpochHours
 	startEpoch := libutils.GetCurrentEpoch() + (startEpochIntervalHours+1)*libconstants.EPOCH_PER_HOUR
 
@@ -120,7 +122,6 @@ func sendDeal(taskUuid string) error {
 	logs.GetLogger().Info("dealSentNum = ", dealSentNum)
 	logs.GetLogger().Info("csvFilePath = ", csvFilePath)
 	logs.GetLogger().Info("carFiles = ", carFiles)
-	logs.GetLogger().Println("################################## end to send deal ##################################")
 	return nil
 }
 

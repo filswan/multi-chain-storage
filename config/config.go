@@ -2,68 +2,69 @@ package config
 
 import (
 	"github.com/BurntSushi/toml"
+	"github.com/shopspring/decimal"
 	"log"
 	"strings"
-	"time"
 )
 
 type Configuration struct {
-	Port               string
-	Database           database
-	GoerliMainnetNode  GoerliMainnetNode
-	PolygonMainnetNode PolygonMainnetNode
-	NbaiMainnetNode    NbaiMainnetNode
-	BscMainnetNode     BscMainnetNode
-	Dev                bool
+	Port                        string       `toml:"port"`
+	Database                    database     `toml:"database"`
+	Dev                         bool         `toml:"dev"`
+	SwanApi                     swanApi      `toml:"swan_api"`
+	IpfsServer                  ipfsServer   `toml:"ipfs_server"`
+	Lotus                       lotus        `toml:"lotus"`
+	SwanTask                    swanTask     `toml:"swan_task"`
+	ScheduleRule                ScheduleRule `toml:"schedule_rule"`
+	AdminWalletOnPolygon        string       `toml:"admin_wallet_on_polygon"`
+	SwanPaymentAddressOnPolygon string       `toml:"swan_payment_address_on_polygon"`
+	FileCoinWallet              string       `toml:"file_coin_wallet"`
 }
 
 type database struct {
-	DbUsername   string
-	DbPwd        string
-	DbHost       string
-	DbPort       string
-	DbSchemaName string
-	DbArgs       string
+	DbUsername   string `toml:"db_username"`
+	DbPwd        string `toml:"db_pwd"`
+	DbHost       string `toml:"db_host"`
+	DbPort       string `toml:"db_port"`
+	DbSchemaName string `toml:"db_schema_name"`
+	DbArgs       string `toml:"db_args"`
 }
 
-type GoerliMainnetNode struct {
-	RpcUrl                    string
-	PaymentContractAddress    string
-	ContractFunctionSignature string
-	ScanStep                  int64
-	StartFromBlockNo          int64
-	CycleTimeInterval         time.Duration
-	ChainID                   int64
+type lotus struct {
+	ApiUrl      string `toml:"api_url"`
+	AccessToken string `toml:"access_token"`
 }
 
-type PolygonMainnetNode struct {
-	RpcUrl                    string
-	PaymentContractAddress    string
-	ContractFunctionSignature string
-	ScanStep                  int64
-	StartFromBlockNo          int64
-	CycleTimeInterval         time.Duration
-	ChainID                   int64
+type swanTask struct {
+	DirDeal                      string          `toml:"dir_deal"`
+	Description                  string          `toml:"description"`
+	CuratedDataset               string          `toml:"curated_dataset"`
+	Tags                         string          `toml:"tags"`
+	MinPrice                     decimal.Decimal `toml:"min_price"`
+	MaxPrice                     decimal.Decimal `toml:"max_price"`
+	ExpireDays                   int             `toml:"expire_days"`
+	VerifiedDeal                 bool            `toml:"verified_deal"`
+	FastRetrieval                bool            `toml:"fast_retrieval"`
+	StartEpochHours              int             `toml:"start_epoch_hours"`
+	MinerId                      string          `toml:"miner_id"`
+	RelativeEpochFromMainNetwork int             `toml:"relative_epoch_from_main_network"`
 }
 
-type NbaiMainnetNode struct {
-	RpcUrl                    string
-	PaymentContractAddress    string
-	ContractFunctionSignature string
-	ScanStep                  int64
-	StartFromBlockNo          int64
-	CycleTimeInterval         time.Duration
-	ChainID                   int64
+type swanApi struct {
+	ApiUrl                     string `toml:"api_url"`
+	ApiKey                     string `toml:"api_key"`
+	AccessToken                string `toml:"access_token"`
+	GetShouldSendTaskUrlSuffix string `toml:"get_should_send_task_url_suffix"`
 }
 
-type BscMainnetNode struct {
-	RpcUrl                    string
-	ChainID                   int64
-	PaymentContractAddress    string
-	ContractFunctionSignature string
-	ScanStep                  int64
-	StartFromBlockNo          int64
-	CycleTimeInterval         time.Duration
+type ipfsServer struct {
+	DownloadUrlPrefix string `toml:"download_url_prefix"`
+	UploadUrl         string `toml:"upload_url"`
+}
+
+type ScheduleRule struct {
+	UnlockPaymentRule string `toml:"unlock_payment_rule"`
+	SendDealRule      string `toml:"send_deal_rule"`
 }
 
 var config *Configuration
@@ -81,10 +82,6 @@ func InitConfig(configFile string) {
 	}
 }
 
-func (c *Configuration) GetGoerliMainnetNode() string {
-	return c.GoerliMainnetNode.RpcUrl
-}
-
 func GetConfig() Configuration {
 	if config == nil {
 		InitConfig("")
@@ -92,49 +89,18 @@ func GetConfig() Configuration {
 	return *config
 }
 
-func GetConfigFromMainParams(configFile string) Configuration {
-	if config == nil {
-		InitConfig(configFile)
-	}
-	return *config
-}
-
 func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 	requiredFields := [][]string{
 		{"port"},
+		{"admin_wallet_on_polygon"},
+		{"swan_payment_address_on_polygon"},
+		{"file_coin_wallet"},
 
-		{"DataBase", "dbHost"},
-		{"DataBase", "dbPort"},
-		{"DataBase", "dbSchemaName"},
-		{"DataBase", "dbUsername"},
-		{"DataBase", "dbPwd"},
-
-		{"GoerliMainnetNode", "rpcUrl"},
-		{"GoerliMainnetNode", "paymentContractAddress"},
-		{"GoerliMainnetNode", "contractFunctionSignature"},
-		{"GoerliMainnetNode", "scanStep"},
-		{"GoerliMainnetNode", "cycleTimeInterval"},
-
-		{"PolygonMainnetNode", "rpcUrl"},
-		{"PolygonMainnetNode", "paymentContractAddress"},
-		{"PolygonMainnetNode", "contractFunctionSignature"},
-		{"PolygonMainnetNode", "scanStep"},
-		{"PolygonMainnetNode", "cycleTimeInterval"},
-		{"PolygonMainnetNode", "chainID"},
-
-		{"NbaiMainnetNode", "rpcUrl"},
-		{"NbaiMainnetNode", "paymentContractAddress"},
-		{"NbaiMainnetNode", "contractFunctionSignature"},
-		{"NbaiMainnetNode", "scanStep"},
-		{"NbaiMainnetNode", "cycleTimeInterval"},
-		{"NbaiMainnetNode", "chainID"},
-
-		{"BscMainnetNode", "rpcUrl"},
-		{"BscMainnetNode", "paymentContractAddress"},
-		{"BscMainnetNode", "contractFunctionSignature"},
-		{"BscMainnetNode", "scanStep"},
-		{"BscMainnetNode", "cycleTimeInterval"},
-		{"BscMainnetNode", "chainID"},
+		{"database", "db_host"},
+		{"database", "db_port"},
+		{"database", "db_username"},
+		{"database", "db_schema_name"},
+		{"database", "db_pwd"},
 	}
 
 	for _, v := range requiredFields {

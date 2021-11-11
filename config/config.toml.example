@@ -1,54 +1,45 @@
 port="8888"
-dev = true
+dev = false
+admin_wallet_on_polygon=""
+swan_payment_address_on_polygon=""
+file_coin_wallet=""
 
+[database]
+db_host="localhost"
+db_port="3306"
+db_schema_name="payment_bridge"
+db_username="root"
+db_pwd="123456"
+db_args="charset=utf8mb4&parseTime=True&loc=Local"
 
-[DataBase]
-dbHost="localhost"
-dbPort="3306"
-dbSchemaName="payment_bridge"
-dbUsername="root"
-dbPwd="123456"
-dbArgs="charset=utf8mb4&parseTime=True&loc=Local"
+[swan_api]
+api_url = "http://192.168.88.216:5002"
+api_key = ""
+access_token = ""
+get_should_send_task_url_suffix = "/paymentgateway/deals?offset=0&limit=10&source_id=4&task_status=Assigned&is_public=1"
 
-[GoerliMainnetNode]
-rpcUrl = "https://goerli.infura.io/v3/48f20ab65d0142c58e8e73658940a533"
-paymentContractAddress = "0x97916e6CC8DD75c6E6982FFd949Fc1768CF8c055"
-contractFunctionSignature = "0x88e2ea3170ebb5d73f832e672e27a855b3daf0b2264ac6c09b04009dc151509e"
-scanStep = 10000
-startFromBlockNo = 5000000
-cycleTimeInterval = 15 #unit:second
-chainID = 5
+[lotus]
+api_url="http://127.0.0.1:1234/rpc/v0"   # Url of lotus web api
+access_token=""   # Access token of lotus web api
 
+[ipfs_server]
+download_url_prefix = "http://192.168.88.41:5050"
+upload_url = "http://192.168.88.41:5001"
 
-[PolygonMainnetNode]
-#rpcUrl="https://rpc-mumbai.maticvigil.com"
-rpcUrl = "https://polygon-mumbai.g.alchemy.com/v2/86HeefA3O9EF22t2NTLbmcpfN0hb9vlv"
-paymentContractAddress = "0x5210ED929B5BEdBFFBA2F6b9A0b1B608eEAb3aa0"
-contractFunctionSignature = "0x88e2ea3170ebb5d73f832e672e27a855b3daf0b2264ac6c09b04009dc151509e"
-scanStep = 1000
-startFromBlockNo = 17590780
-cycleTimeInterval = 10 #unit:second
-chainID = 80001
+[swan_task]
+dir_deal="~/.swan/server/temp/deal"
+description = ""
+curated_dataset = ""
+tags = ""
+min_price = "0.00000001"
+max_price = 0.00005
+expire_days = 4
+verified_deal = false
+fast_retrieval = true
+start_epoch_hours = 96
 
-[NbaiMainnetNode]
-rpcUrl = "https://api.nbai.io/"
-paymentContractAddress = "0x60a43A2d57E79938b8dF8652d86D1b3A2132CBcE"
-contractFunctionSignature = "0xa8133e3dab1689781429189302ba4b39d9a2ba21e28bdc487c2339c798393900"
-scanStep = 2000
-startFromBlockNo = 6925072
-cycleTimeInterval = 10 #unit:second
-chainID = 999
-
-
-[BscMainnetNode]
-rpcUrl = "https://data-seed-prebsc-1-s1.binance.org:8545/"
-#rpcUrl = "http://192.168.88.121:8545/"
-#rpcUrl = "https://bsc-dataseed.binance.org/"
-chainID = 97  # mainnet 56 ;test net 97
-paymentContractAddress = "0x4e2eB289A6e22eb6BBB78d4379aCd27c6BD87001"
-contractFunctionSignature = "0x88e2ea3170ebb5d73f832e672e27a855b3daf0b2264ac6c09b04009dc151509e"
-scanStep = 2000
-startFromBlockNo = 12050113
-cycleTimeInterval = 10 #unit:second
-
+[schedule_rule]
+unlock_payment_rule = "0 */3 * * * ?"  #every minute
+send_deal_rule = "0 */3 * * * ?"  #every minute
+#send_deal_rule = "0/7 * * * * *"
 

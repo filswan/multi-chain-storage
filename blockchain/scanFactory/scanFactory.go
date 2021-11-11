@@ -1,10 +1,10 @@
 package scanFactory
 
 import (
-	"payment-bridge/blockchain/browsersync/bsc"
-	"payment-bridge/blockchain/browsersync/goerli"
-	"payment-bridge/blockchain/browsersync/nbai"
-	"payment-bridge/blockchain/browsersync/polygon"
+	"payment-bridge/blockchain/browsersync/scanlockpayment/bsc"
+	"payment-bridge/blockchain/browsersync/scanlockpayment/goerli"
+	"payment-bridge/blockchain/browsersync/scanlockpayment/nbai"
+	"payment-bridge/blockchain/browsersync/scanlockpayment/polygon"
 	"payment-bridge/common/constants"
 )
 

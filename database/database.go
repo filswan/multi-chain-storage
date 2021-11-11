@@ -24,7 +24,7 @@ func Init() *gorm.DB {
 	db.SingularTable(true)
 	db.DB().SetMaxIdleConns(10)
 	//db.LogMode(true)
-	db.LogMode(false)
+	db.LogMode(config.GetConfig().Dev)
 	DB = db
 	return DB
 }
@@ -37,5 +37,18 @@ func GetDB() *gorm.DB {
 func SaveOne(data interface{}) error {
 	db := GetDB()
 	err := db.Save(data).Error
+	return err
+}
+
+func SaveOneWithTransaction(data interface{}) error {
+	tx := GetDB().Begin()
+	err := tx.Set("gorm:query_option", "FOR UPDATE").Save(data).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+	}
+	err = tx.Commit().Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+	}
 	return err
 }

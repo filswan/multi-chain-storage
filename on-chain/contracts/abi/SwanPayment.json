@@ -1,16 +1,5 @@
 [
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "owner",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "constructor"
-  },
-  {
     "anonymous": false,
     "inputs": [
       {
@@ -18,6 +7,12 @@
         "internalType": "string",
         "name": "id",
         "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
       },
       {
         "indexed": false,
@@ -48,6 +43,19 @@
     "type": "event"
   },
   {
+    "inputs": [],
+    "name": "NATIVE_TOKEN",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "string",
@@ -63,6 +71,11 @@
             "internalType": "string",
             "name": "id",
             "type": "string"
+          },
+          {
+            "internalType": "address",
+            "name": "token",
+            "type": "address"
           },
           {
             "internalType": "uint256",
@@ -106,6 +119,34 @@
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "ERC20_TOKEN",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "oracle",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "priceFeed",
+        "type": "address"
+      }
+    ],
+    "name": "initialize",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "components": [
           {
             "internalType": "string",
@@ -115,6 +156,11 @@
           {
             "internalType": "uint256",
             "name": "minPayment",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "amount",
             "type": "uint256"
           },
           {
@@ -147,6 +193,52 @@
   {
     "inputs": [
       {
+        "components": [
+          {
+            "internalType": "string",
+            "name": "id",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "minPayment",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "lockTime",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "recipient",
+            "type": "address"
+          }
+        ],
+        "internalType": "struct IPaymentMinimal.lockPaymentParam",
+        "name": "param",
+        "type": "tuple"
+      }
+    ],
+    "name": "lockTokenPayment",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "address",
         "name": "oracle",
         "type": "address"
@@ -166,12 +258,77 @@
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "priceFeed",
+        "type": "address"
+      }
+    ],
+    "name": "setPriceFeed",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "string",
         "name": "txId",
         "type": "string"
       }
     ],
     "name": "unlockPayment",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "string",
+            "name": "id",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "orderId",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "dealId",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "recipient",
+            "type": "address"
+          }
+        ],
+        "internalType": "struct IPaymentMinimal.unlockPaymentParam",
+        "name": "param",
+        "type": "tuple"
+      }
+    ],
+    "name": "unlockTokenPayment",
     "outputs": [
       {
         "internalType": "bool",

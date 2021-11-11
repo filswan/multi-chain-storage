@@ -44,12 +44,9 @@ Make sure to replace API_TOKEN with the token you got from the full node and YOU
 ```console
 FULLNODE_API_INFO=API_TOKEN:/ip4/YOUR_FULL_NODE_IP_ADDRESS/tcp/1234 lotus daemon --lite
 ```
-FULLNODE_API_INFO=API_TOKEN:/ip4/YOUR_FULL_NODE_IP_ADDRESS/tcp/1234 lotus daemon --lite
+your local lite node rpc url will be : http://127.0.0.1:1234/rpc/v0
 
-### 4 Get your local lite node rpc url
-http://127.0.0.1:1234/rpc/v0
-
-### 5 genarate a token with your local lite node 
+### 5 Genarate a token with your local lite node 
 The generated token will be used in config.toml--->[lotus]--->access_token configuration item
 ```console
 lotus auth create-token --perm admin

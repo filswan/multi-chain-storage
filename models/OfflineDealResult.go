@@ -34,6 +34,7 @@ type OfflineDeal struct {
 	FileSourceURL string      `json:"file_source_url"`
 	Md5Origin     string      `json:"md5_origin"`
 	MinerID       int         `json:"miner_id"`
+	MinerFid      string      `json:"miner_fid"`
 	Note          string      `json:"note"`
 	PayloadCid    string      `json:"payload_cid"`
 	PieceCid      string      `json:"piece_cid"`

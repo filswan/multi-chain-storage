@@ -2,6 +2,7 @@ package scheduler
 
 import (
 	"encoding/json"
+	"fmt"
 	clientmodel "github.com/filswan/go-swan-client/model"
 	"github.com/filswan/go-swan-client/subcommand"
 	libconstants "github.com/filswan/go-swan-lib/constants"
@@ -35,6 +36,8 @@ func SendDealScheduler() {
 	c.Start()
 }
 func DoSendDealScheduler() error {
+	startEpoch := libutils.GetCurrentEpoch() + (96+1)*libconstants.EPOCH_PER_HOUR
+	fmt.Println(startEpoch)
 	dealList, err := GetTaskListShouldBeSigService()
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -99,19 +102,22 @@ func sendDeal(taskUuid string) error {
 	temDirDeal = filepath.Join(temDirDeal, timeStr)
 	carDir := filepath.Join(temDirDeal, "car")
 	confDeal := &clientmodel.ConfDeal{
-		SwanApiUrl:              config.GetConfig().SwanApi.ApiUrl,
-		SwanApiKey:              config.GetConfig().SwanApi.ApiKey,
-		SwanAccessToken:         config.GetConfig().SwanApi.AccessToken,
-		SenderWallet:            config.GetConfig().FileCoinWallet,
-		VerifiedDeal:            config.GetConfig().SwanTask.VerifiedDeal,
-		FastRetrieval:           config.GetConfig().SwanTask.FastRetrieval,
-		SkipConfirmation:        true,
-		StartEpochIntervalHours: startEpochIntervalHours,
-		StartEpoch:              startEpoch - 7057,
-		OutputDir:               carDir,
-		LotusClientApiUrl:       config.GetConfig().Lotus.ApiUrl,
-		LotusClientAccessToken:  config.GetConfig().Lotus.AccessToken,
+		SwanApiUrl:                   config.GetConfig().SwanApi.ApiUrl,
+		SwanApiKey:                   config.GetConfig().SwanApi.ApiKey,
+		SwanAccessToken:              config.GetConfig().SwanApi.AccessToken,
+		SenderWallet:                 config.GetConfig().FileCoinWallet,
+		VerifiedDeal:                 config.GetConfig().SwanTask.VerifiedDeal,
+		FastRetrieval:                config.GetConfig().SwanTask.FastRetrieval,
+		SkipConfirmation:             true,
+		StartEpochIntervalHours:      startEpochIntervalHours,
+		StartEpoch:                   startEpoch,
+		OutputDir:                    carDir,
+		LotusClientApiUrl:            config.GetConfig().Lotus.ApiUrl,
+		LotusClientAccessToken:       config.GetConfig().Lotus.AccessToken,
+		Duration:                     1051200,
+		RelativeEpochFromMainNetwork: -858481,
 	}
+	confDeal.DealSourceIds = append(confDeal.DealSourceIds, libconstants.TASK_SOURCE_ID_SWAN_PAYMENT)
 
 	dealSentNum, csvFilePath, carFiles, err := subcommand.SendAutoBidDealsByTaskUuid(confDeal, taskUuid)
 	if err != nil {

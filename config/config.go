@@ -97,7 +97,7 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 		{"file_coin_wallet"},
 
 		{"database", "db_host"},
-		{"database", "dbPort"},
+		{"database", "db_port"},
 		{"database", "db_username"},
 		{"database", "db_schema_name"},
 		{"database", "db_pwd"},

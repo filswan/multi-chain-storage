@@ -82,7 +82,13 @@ func ScanPolygonEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) 
 					logs.GetLogger().Error(err)
 				}
 
-				addrInfo, err := utils.GetFromAndToAddressByTxHash(WebConn.ConnWeb, big.NewInt(GetConfig().PolygonMainnetNode.ChainID), vLog.TxHash)
+				chainId, err := WebConn.ConnWeb.ChainID(context.Background())
+				if err != nil {
+					logs.GetLogger().Error(err)
+					continue
+				}
+
+				addrInfo, err := utils.GetFromAndToAddressByTxHash(WebConn.ConnWeb, chainId, vLog.TxHash)
 				if err != nil {
 					logs.GetLogger().Error(err)
 				} else {

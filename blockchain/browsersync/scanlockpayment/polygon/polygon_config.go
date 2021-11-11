@@ -7,20 +7,19 @@ import (
 )
 
 type ConfigurationForPolygon struct {
-	PolygonMainnetNode PolygonMainnetNode
+	PolygonMainnetNode PolygonMainnetNode `toml:"polygon_mainnet_node"`
 }
 
 type PolygonMainnetNode struct {
-	RpcUrl                    string
-	ChainID                   int64
-	PaymentContractAddress    string
-	ContractFunctionSignature string
-	ScanStep                  int64
-	StartFromBlockNo          int64
-	DaoSwanOracleAddress      string
-	DaoEventFunctionSignature string
-	CycleTimeInterval         time.Duration
-	GasLimit                  int64
+	RpcUrl                    string        `toml:"rpc_url"`
+	PaymentContractAddress    string        `toml:"payment_contract_address"`
+	ContractFunctionSignature string        `toml:"contract_function_signature"`
+	ScanStep                  int64         `toml:"scan_step"`
+	StartFromBlockNo          int64         `toml:"start_from_blockNo"`
+	DaoSwanOracleAddress      string        `toml:"dao_swan_oracle_address"`
+	DaoEventFunctionSignature string        `toml:"dao_event_function_signature"`
+	CycleTimeInterval         time.Duration `toml:"cycle_time_interval"`
+	GasLimit                  int64         `toml:"gas_limit"`
 }
 
 var polygonConfig *ConfigurationForPolygon
@@ -38,12 +37,11 @@ func initCofig() {
 
 func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 	requiredFields := [][]string{
-		{"polygonMainnetNode", "rpcUrl"},
-		{"polygonMainnetNode", "paymentContractAddress"},
-		{"polygonMainnetNode", "contractFunctionSignature"},
-		{"polygonMainnetNode", "scanStep"},
-		{"polygonMainnetNode", "cycleTimeInterval"},
-		{"polygonMainnetNode", "chainID"},
+		{"polygon_mainnet_node", "rpc_url"},
+		{"polygon_mainnet_node", "payment_contract_address"},
+		{"polygon_mainnet_node", "contract_function_signature"},
+		{"polygon_mainnet_node", "scan_step"},
+		{"polygon_mainnet_node", "cycle_time_interval"},
 	}
 
 	for _, v := range requiredFields {

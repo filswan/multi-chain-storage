@@ -4,8 +4,8 @@
 [![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg)](https://github.com/RichardLitt/standard-readme)
 
 # Payment-Bridge
-Payment bridge is desgined for make payment from multichain for filecoin storage <br>
-Now supports payment with tokens such as nbai/bsc/goerli/polygon
+Payment bridge is desgined for make payment from multichain for filecoin storage,and backup user's file to filecoin network <br>
+Now supports payment with tokens such as USDC on polygon
 
 ## Scan Module
 Scan the blockchain, find the event log of the block where the swan payment contract has been executed,and save to the database
@@ -172,57 +172,40 @@ e.g. http://host:port/ipfs/QmPrQPfGCAHwYXDZDdmLXieoxZP5JtwQuZMUEGuspKFZKQ
 - **generate_md5:** [true/false] Whether to generate md5 for each car file, note: this is a resource consuming action
 - **relative_epoch_from_main_network:**  The difference between the block height of filecoin's mainnet and testnet. If the filecoin testnet is linked, this configuration item is set to -858481, and if the link is the mainnet, it is set to 0
 
+### config_polygon.toml
+Currently, USDC is supported for payment. Take polygon network as an example to introduce configuration items
+
+```console
+[polygon_mainnet_node]
+#rpcUrl="https://rpc-mumbai.maticvigil.com"
+rpc_url = "https://polygon-mumbai.g.alchemy.com/v2/86HeefA3O9EF22t2NTLbmcpfN0hb9vlv"
+payment_contract_address = ""
+contract_function_signature = ""
+dao_swan_oracle_address = ""
+dao_event_function_signature = ""
+scan_step = 1000
+gas_limit = 8000000
+start_from_blockNo = 17590780
+cycle_time_interval = 10 #unit:second
+```
+
+#### polygon_mainnet_node
+- **rpc_url:** the polygon network rpc url
+- **payment_contract_address:**  swan payment gateway address on polygon
+- **contract_function_signature:**  swan payment gateway's lock payment event's function signature on polygon
+- **dao_swan_oracle_address:**  swan dao address on polygon
+- **dao_event_function_signature:**  swan dao's signature event's function signature on polygon
+- **scan_step:**  the number of blocks scanned per scan
+- **start_from_blockNo:**  scan data from this block number
+- **start_from_blockNo:**  the time between each scan of the blockchain
 
 ## The Payment Process
 - First, users upload a file they want to backup to filecoin network, then use the currencies we support to send tokens to our contract address. <br>
 - Second, payment-biridge scans the events of the above transactions
-- Scan the event data that meets the conditions, and then the user can perform the filecoin network storage function
-- If the user's storage is successful, it will be scanned regularly by the dao organization, and then signed to agree to unlock the user's payment. If more than half of the dao agree, the payment bridge will unlock the user's payment, deduct the user's storage fee, and the remaining locked virtual currency Is returned to the customer's wallet
+- Third,  when the event data that get in second step meet the conditions, and then the user can perform the filecoin network storage function
+- Fourth, when the user's storage is successful, it will be scanned by the dao organization, and then dao signed to agree to unlock the user's payment. 
+- Fifth, If more than half of the dao agree, the payment bridge will unlock the user's payment, deduct the user's storage fee, and the remaining locked virtual currency Is returned to the customer's wallet
 
-## Call the api to check your scan data from chain <br>
-The default port number of the project is 8888, you can modify it to the port you want in config.toml
-Access the application at the address [http://localhost:8888/api/v1/events/logs/:contractAddress/:payloadCid](http://localhost:8888/api/v1/events/logs/:contractAddress/:payloadCid) <br>
-Replace: contractAddress and: payloadCid with your own values.
-
-the return value like this below:
-```json
-{
-  "status": "success",
-  "code": "200",
-  "data": {
-    "goerli": [
-      {
-        "id": 17,
-        "tx_hash": "0xee80d76a0d273ac8620d837b2acbc15a322eeded28b2fa61e1479d85cf38755a",
-        "event_name": "",
-        "indexed_data": "",
-        "contract_name": "SwanPayment",
-        "contract_address": "0x5210ED929B5BEdBFFBA2F6b9A0b1B608eEAb3aa0",
-        "locked_fee": "50000000000000000",
-        "deadline": "1629149936",
-        "payload_cid": "bafk2bzaceajwszlar4obpnmifoydefxlhfd7npbnmq3onkfzkincyy4fdj5xk",
-        "block_no": 17685850,
-        "miner_address": "0xE53AEd6DEA9e44116D4551a93eEeE28bC8684916"
-      }
-    ],
-    "polygon": [
-      {
-        "id": 15,
-        "tx_hash": "0x10bee0dd4907015fefa813263b1302a2cb0e8d2e8feb18b0551a12d26f24ab61",
-        "event_name": "",
-        "indexed_data": "",
-        "contract_name": "SwanPayment",
-        "contract_address": "0x5210ED929B5BEdBFFBA2F6b9A0b1B608eEAb3aa0",
-        "locked_fee": "50000000000000000",
-        "deadline": "1629142492",
-        "payload_cid": "bafk2bzaceajwszlar4obpnmifoydefxlhfd7npbnmq3onkfzkincyy4fdj5xk",
-        "block_no": 17682240,
-        "miner_address": "0xE53AEd6DEA9e44116D4551a93eEeE28bC8684916"
-      }
-    ]
-  }
-}
-```
 
 ## Database table description
 
@@ -233,6 +216,10 @@ the return value like this below:
 |event_polygon         |record eligible data on polygon chain  |
 |event_bsc             |record eligible data on bsc chain      |
 |event_nbai            |record eligible data on nbai   chain   |
+|system_config_param   |record system config                   |
+|dao_event_log         |record dao signature event log         |
+
+
 
 
 ## Other Topics
@@ -248,27 +235,3 @@ Feature branches and master are designated as **unstable** which are internal-on
 Periodically a build will be designated as **stable** and will be assigned a version number by tagging the repository
 using Semantic Versioning in the following format: `vMajor.Minor.Patch`.
 
-
-
-#Need lao liu to update
-script to generate golang bind
-
-```
-abigen --abi ./contracts/abi/SwanPayment.json --pkg fileswan_payment --type PaymentGateway --out goBind/PaymentGateway.go
-```
-
-
-// todo: implement
-add event emitter
-returns err code of unlock payment call
-
-goerli payment contract address:
-0xad8cE271beE7b917F2a1870C8b64EDfF6aAF3342
-
-https://goerli.etherscan.io/address/0xad8cE271beE7b917F2a1870C8b64EDfF6aAF3342
-
-oracle contract address:
-0x940695A2B36084aD0552C84af72c859e8C6b0b38
-
-goerli contract owner: 0xE41c53Eb9fce0AC9D204d4F361e28a8f28559D54  
-goerli oracle contract owner: 0xE41c53Eb9fce0AC9D204d4F361e28a8f28559D54

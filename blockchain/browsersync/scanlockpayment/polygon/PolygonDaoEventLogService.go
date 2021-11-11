@@ -82,8 +82,12 @@ func ScanDaoEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) erro
 					event.BlockTime = strconv.FormatUint(block.Time(), 10)
 					event.DaoPassTime = strconv.FormatUint(block.Time(), 10)
 				}
-
-				addrInfo, err := utils.GetFromAndToAddressByTxHash(WebConn.ConnWeb, big.NewInt(GetConfig().PolygonMainnetNode.ChainID), vLog.TxHash)
+				chainId, err := WebConn.ConnWeb.ChainID(context.Background())
+				if err != nil {
+					logs.GetLogger().Error(err)
+					continue
+				}
+				addrInfo, err := utils.GetFromAndToAddressByTxHash(WebConn.ConnWeb, chainId, vLog.TxHash)
 				if err != nil {
 					logs.GetLogger().Error(err)
 				} else {

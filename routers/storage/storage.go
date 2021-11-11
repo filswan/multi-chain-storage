@@ -131,8 +131,16 @@ func GetDealListFromSwan(c *gin.Context) {
 		return
 	}
 
-	if strings.Trim(pageNumber, " ") == "" {
+	//todo because frontend page number start with 0, Write this temporarily
+	if (strings.Trim(pageNumber, " ") == "") || (strings.Trim(pageNumber, " ") == "0") {
 		pageNumber = "1"
+	} else {
+		tmpPageNumber, err := strconv.Atoi(pageNumber)
+		if err != nil {
+			pageNumber = "1"
+		} else {
+			pageNumber = strconv.Itoa(tmpPageNumber + 1)
+		}
 	}
 
 	if strings.Trim(pageSize, " ") == "" {

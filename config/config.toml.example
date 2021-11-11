@@ -1,7 +1,8 @@
 port="8888"
-dev = true
+dev = false
 adminWalletOnPolygon="0x05856015d07F3E24936B7D20cB3CcfCa3D34B41d"
 swanPaymentAddressOnPolygon="0xABeAAb124e6b52afFF504DB71bbF08D0A768D053"
+fileCoinWallet="t3u7pumush376xbytsgs5wabkhtadjzfydxxda2vzyasg7cimkcphswrq66j4dubbhwpnojqd3jie6ermpwvvq"
 
 
 [DataBase]
@@ -12,29 +13,26 @@ dbUsername="root"
 dbPwd="123456"
 dbArgs="charset=utf8mb4&parseTime=True&loc=Local"
 
-[temp]
-dir_deal="~/.swan/server/temp/deal"
-
-
 [swan_api]
 api_url = "http://192.168.88.216:5002"
 api_key = ""
 access_token = ""
-get_task_api_url_suffix = "paymentgateway/deals?offset=&limit=10&source_id=4&status=ReadyForImport,DealActive,Completed"
+get_should_send_task_url_suffix = "/paymentgateway/deals?offset=0&limit=10&source_id=4&task_status=Assigned&is_public=1"
 
 [lotus]
 api_url="http://127.0.0.1:1234/rpc/v0"   # Url of lotus web api
 access_token=""   # Access token of lotus web api
 
 [ipfs_server]
-download_url_prefix = "http://192.168.88.41:5050/ipfs"
-upload_url = "http://192.168.88.41:5001/api/v0/add?stream-channels=true&pin=true"
+download_url_prefix = "http://192.168.88.41:5050"
+upload_url = "http://192.168.88.41:5001"
 
 [swan_task]
+dir_deal="~/.swan/server/temp/deal"
 description = ""
 curated_dataset = ""
 tags = ""
-min_price = 0.00000001
+min_price = "0.00000001"
 max_price = 0.00005
 expire_days = 4
 verified_deal = false
@@ -43,5 +41,6 @@ start_epoch_hours = 96
 
 [schedule_rule]
 unlock_payment_rule = "0 */3 * * * ?"  #every minute
-#unlock_payment_rule = "0/7 * * * * *"
+send_deal_rule = "0 */3 * * * ?"  #every minute
+#send_deal_rule = "0/7 * * * * *"
 

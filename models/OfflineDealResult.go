@@ -6,12 +6,19 @@ import (
 )
 
 type OfflineDealResult struct {
-	Data struct {
-		Deals           []*OfflineDeal `json:"deals"`
-		TotalDealsCount int            `json:"total_deals_count"`
-		TotalItems      int            `json:"total_items"`
-	} `json:"data"`
-	Status string `json:"status"`
+	Data       DataStruct `json:"data"`
+	PagingInfo PagingInfo `json:"paging_info"`
+	Status     string     `json:"status"`
+}
+
+type DataStruct struct {
+	Deals []*OfflineDeal `json:"deals"`
+}
+
+type PagingInfo struct {
+	Limit      int `json:"limit"`
+	Offset     int `json:"offset"`
+	TotalItems int `json:"total_items"`
 }
 
 type OfflineDeal struct {
@@ -34,6 +41,7 @@ type OfflineDeal struct {
 	StartEpoch    int64       `json:"start_epoch"`
 	TaskStatus    string      `json:"task_status"`
 	Status        string      `json:"status"`
+	PayStatus     string      `json:"pay_status"`
 	UpdatedAt     string      `json:"updated_at"`
 	CreatedAt     string      `json:"created_at"`
 }

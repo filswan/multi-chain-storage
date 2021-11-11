@@ -30,7 +30,7 @@ func GetUserBillingHistory(c *gin.Context) {
 	}
 
 	if strings.Trim(pageSize, " ") == "" {
-		pageNumber = constants.PAGE_SIZE_DEFAULT_VALUE
+		pageSize = constants.PAGE_SIZE_DEFAULT_VALUE
 	}
 	if strings.Trim(walletAddress, " ") == "" {
 		errMsg := " :walletAddress can not be null"

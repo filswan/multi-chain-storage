@@ -5,13 +5,17 @@ const (
 	GET_EVENT_FROM_DB_ERROR_CODE = "500001001"
 	GET_EVENT_FROM_DB_ERROR_MSG  = "Get event data from db error"
 
-	//http request param
-	HTTP_REQUEST_PARAMS_JSON_FORMAT_ERROR_CODE = "500002001"
-	HTTP_REQUEST_PARAMS_JSON_FORMAT_ERROR_MSG  = "Request JSON format was error"
-	HTTP_REQUEST_PARAMS_NULL_ERROR_CODE        = "500002002"
-	HTTP_REQUEST_PARAMS_NULL_ERROR_MSG         = "Request params value can not be null"
-	PAGE_NUMBER_OR_SIZE_FORMAT_ERROR_CODE      = "500002003"
-	PAGE_NUMBER_OR_SIZE_FORMAT_ERROR_MSG       = "Page number or page size format was wrong"
+	//http request
+	HTTP_REQUEST_PARAMS_JSON_FORMAT_ERROR_CODE        = "500002001"
+	HTTP_REQUEST_PARAMS_JSON_FORMAT_ERROR_MSG         = "Request JSON format was error"
+	HTTP_REQUEST_PARAMS_NULL_ERROR_CODE               = "500002002"
+	HTTP_REQUEST_PARAMS_NULL_ERROR_MSG                = "Request params value can not be null"
+	PAGE_NUMBER_OR_SIZE_FORMAT_ERROR_CODE             = "500002003"
+	PAGE_NUMBER_OR_SIZE_FORMAT_ERROR_MSG              = "Page number or page size format was wrong"
+	HTTP_REQUEST_SEND_REQUEST_RETUREN_ERROR_CODE      = "500002004"
+	HTTP_REQUEST_SEND_REQUEST_RETUREN_ERROR_MSG       = "return error when sending http request"
+	HTTP_REQUEST_PARSER_RESPONSE_TO_STRUCT_ERROR_CODE = "500002005"
+	HTTP_REQUEST_PARSER_RESPONSE_TO_STRUCT_ERROR_MSG  = "Parse http request response to struct occurred error"
 
 	//database err 003
 	GET_RECORD_COUNT_ERROR_CODE = "500003001"

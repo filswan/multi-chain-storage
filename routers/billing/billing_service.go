@@ -22,3 +22,18 @@ func GetFileCoinLastestPriceService() (*PriceResult, error) {
 	}
 	return price, nil
 }
+
+func GetTaskDealsService(url string) (*PriceResult, error) {
+	response, err := httpClient.SendRequestAndGetBytes(http.MethodGet, url, nil, nil)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+	var price *PriceResult
+	err = json.Unmarshal(response, &price)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+	return price, nil
+}

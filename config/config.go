@@ -8,26 +8,26 @@ import (
 )
 
 type Configuration struct {
-	Port                        string
-	Database                    database
-	Dev                         bool
+	Port                        string       `toml:"port"`
+	Database                    database     `toml:"database"`
+	Dev                         bool         `toml:"dev"`
 	SwanApi                     swanApi      `toml:"swan_api"`
 	IpfsServer                  ipfsServer   `toml:"ipfs_server"`
 	Lotus                       lotus        `toml:"lotus"`
 	SwanTask                    swanTask     `toml:"swan_task"`
 	ScheduleRule                ScheduleRule `toml:"schedule_rule"`
-	AdminWalletOnPolygon        string       //pay for gas
-	SwanPaymentAddressOnPolygon string
-	FileCoinWallet              string
+	AdminWalletOnPolygon        string       `toml:"admin_wallet_on_polygon"`
+	SwanPaymentAddressOnPolygon string       `toml:"swan_payment_address_on_polygon"`
+	FileCoinWallet              string       `toml:"file_coin_wallet"`
 }
 
 type database struct {
-	DbUsername   string
-	DbPwd        string
-	DbHost       string
-	DbPort       string
-	DbSchemaName string
-	DbArgs       string
+	DbUsername   string `toml:"db_username"`
+	DbPwd        string `toml:"db_pwd"`
+	DbHost       string `toml:"db_host"`
+	DbPort       string `toml:"db_port"`
+	DbSchemaName string `toml:"db_schema_name"`
+	DbArgs       string `toml:"db_args"`
 }
 
 type lotus struct {
@@ -36,17 +36,18 @@ type lotus struct {
 }
 
 type swanTask struct {
-	DirDeal         string          `toml:"dir_deal"`
-	Description     string          `toml:"description"`
-	CuratedDataset  string          `toml:"curated_dataset"`
-	Tags            string          `toml:"tags"`
-	MinPrice        decimal.Decimal `toml:"min_price"`
-	MaxPrice        decimal.Decimal `toml:"max_price"`
-	ExpireDays      int             `toml:"expire_days"`
-	VerifiedDeal    bool            `toml:"verified_deal"`
-	FastRetrieval   bool            `toml:"fast_retrieval"`
-	StartEpochHours int             `toml:"start_epoch_hours"`
-	MinerId         string          `toml:"miner_id"`
+	DirDeal                      string          `toml:"dir_deal"`
+	Description                  string          `toml:"description"`
+	CuratedDataset               string          `toml:"curated_dataset"`
+	Tags                         string          `toml:"tags"`
+	MinPrice                     decimal.Decimal `toml:"min_price"`
+	MaxPrice                     decimal.Decimal `toml:"max_price"`
+	ExpireDays                   int             `toml:"expire_days"`
+	VerifiedDeal                 bool            `toml:"verified_deal"`
+	FastRetrieval                bool            `toml:"fast_retrieval"`
+	StartEpochHours              int             `toml:"start_epoch_hours"`
+	MinerId                      string          `toml:"miner_id"`
+	RelativeEpochFromMainNetwork int             `toml:"relative_epoch_from_main_network"`
 }
 
 type swanApi struct {
@@ -91,12 +92,15 @@ func GetConfig() Configuration {
 func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 	requiredFields := [][]string{
 		{"port"},
+		{"admin_wallet_on_polygon"},
+		{"swan_payment_address_on_polygon"},
+		{"file_coin_wallet"},
 
-		{"DataBase", "dbHost"},
-		{"DataBase", "dbPort"},
-		{"DataBase", "dbSchemaName"},
-		{"DataBase", "dbUsername"},
-		{"DataBase", "dbPwd"},
+		{"database", "db_host"},
+		{"database", "dbPort"},
+		{"database", "db_username"},
+		{"database", "db_schema_name"},
+		{"database", "db_pwd"},
 	}
 
 	for _, v := range requiredFields {

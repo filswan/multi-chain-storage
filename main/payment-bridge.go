@@ -32,7 +32,7 @@ func main() {
 
 	scheduler.SendDealScheduler()
 
-	//scheduler.DAOUnlockPaymentSchedule()
+	scheduler.DAOUnlockPaymentSchedule()
 
 	//polygon.ScanDaoEventFromChainAndSaveEventLogData(20965958, 20966958)
 

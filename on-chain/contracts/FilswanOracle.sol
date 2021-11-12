@@ -115,7 +115,7 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
             dealId,
             recipient,
             paid,
-            terms,
+            // terms, no need for terms in signature
             status // bool
         );
     }
@@ -134,4 +134,8 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
         return txVoteMap[voteKey] >= _threshold;
     }
 
+
+    function getThreshold() public view returns (uint8) {
+        return _threshold;
+    }
 }

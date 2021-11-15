@@ -98,7 +98,7 @@ func SendDeal(c *gin.Context) {
 	carDir := filepath.Join(temDirDeal, "car")
 	confDeal := &clientmodel.ConfDeal{
 		SwanApiUrl:              config.GetConfig().SwanApi.ApiUrl,
-		SwanJwtToken:            jwtToken,
+		SwanToken:               jwtToken,
 		SenderWallet:            "t3u7pumush376xbytsgs5wabkhtadjzfydxxda2vzyasg7cimkcphswrq66j4dubbhwpnojqd3jie6ermpwvvq",
 		VerifiedDeal:            config.GetConfig().SwanTask.VerifiedDeal,
 		FastRetrieval:           config.GetConfig().SwanTask.FastRetrieval,

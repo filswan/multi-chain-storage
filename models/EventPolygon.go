@@ -24,7 +24,7 @@ type EventPolygon struct {
 	LockPaymentTime string `json:"lock_payment_time"`
 	CreateAt        string `json:"create_at"`
 	UnlockTxHash    string `json:"unlock_tx_hash"`
-	UnlockTxStatus  string `json:"unlock_tx_hash"`
+	UnlockTxStatus  string `json:"unlock_tx_status"`
 	UnlockTime      string `json:"unlock_time"`
 }
 

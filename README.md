@@ -1,4 +1,3 @@
-# Swan Client Tool Guide
 [![Made by FilSwan](https://img.shields.io/badge/made%20by-FilSwan-green.svg)](https://www.filswan.com/)
 [![Chat on Slack](https://img.shields.io/badge/slack-filswan.slack.com-green.svg)](https://filswan.slack.com)
 [![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg)](https://github.com/RichardLitt/standard-readme)
@@ -63,6 +62,7 @@ git clone https://github.com/filswan/payment-bridge
 ```console
 cd $GOPATH/src/payment-bridge/
 git submodule update --init --recursive
+make ffi
 ```
 
 ### 3 Build project

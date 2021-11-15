@@ -11,15 +11,17 @@ type ConfigurationForPolygon struct {
 }
 
 type PolygonMainnetNode struct {
-	RpcUrl                    string        `toml:"rpc_url"`
-	PaymentContractAddress    string        `toml:"payment_contract_address"`
-	ContractFunctionSignature string        `toml:"contract_function_signature"`
-	ScanStep                  int64         `toml:"scan_step"`
-	StartFromBlockNo          int64         `toml:"start_from_blockNo"`
-	DaoSwanOracleAddress      string        `toml:"dao_swan_oracle_address"`
-	DaoEventFunctionSignature string        `toml:"dao_event_function_signature"`
-	CycleTimeInterval         time.Duration `toml:"cycle_time_interval"`
-	GasLimit                  int64         `toml:"gas_limit"`
+	RpcUrl                          string        `toml:"rpc_url"`
+	PaymentContractAddress          string        `toml:"payment_contract_address"`
+	ContractLockFunctionSignature   string        `toml:"contract_lock_function_signature"`
+	ContractUnlockFunctionSignature string        `toml:"contract_unlock_function_signature"`
+	PaymentUnlockContractAddress    string        `toml:"payment_unlock_contract_address"`
+	ScanStep                        int64         `toml:"scan_step"`
+	StartFromBlockNo                int64         `toml:"start_from_blockNo"`
+	DaoSwanOracleAddress            string        `toml:"dao_swan_oracle_address"`
+	DaoEventFunctionSignature       string        `toml:"dao_event_function_signature"`
+	CycleTimeInterval               time.Duration `toml:"cycle_time_interval"`
+	GasLimit                        int64         `toml:"gas_limit"`
 }
 
 var polygonConfig *ConfigurationForPolygon
@@ -39,7 +41,7 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 	requiredFields := [][]string{
 		{"polygon_mainnet_node", "rpc_url"},
 		{"polygon_mainnet_node", "payment_contract_address"},
-		{"polygon_mainnet_node", "contract_function_signature"},
+		{"polygon_mainnet_node", "contract_lock_function_signature"},
 		{"polygon_mainnet_node", "scan_step"},
 		{"polygon_mainnet_node", "cycle_time_interval"},
 	}

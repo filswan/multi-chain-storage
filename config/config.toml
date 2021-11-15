@@ -1,0 +1,47 @@
+port="8888"
+dev = true
+admin_wallet_on_polygon="0xc4fcaadcb0b00a9501e56215c37b10faf9e79c0a"
+swan_payment_address_on_polygon="0xABeAAb124e6b52afFF504DB71bbF08D0A768D053"
+file_coin_wallet="t3u7pumush376xbytsgs5wabkhtadjzfydxxda2vzyasg7cimkcphswrq66j4dubbhwpnojqd3jie6ermpwvvq"
+
+
+[database]
+db_host="localhost"
+db_port="3306"
+db_schema_name="payment_bridge"
+db_username="root"
+db_pwd="123456"
+db_args="charset=utf8mb4&parseTime=True&loc=Local"
+
+[swan_api]
+api_url = "http://192.168.88.216:5002"
+api_key = "hL-qxt2yexIBTmE-mmy1XA"
+access_token = "e5ca72f0dde2b052a9a243b7857fea04"
+get_should_send_task_url_suffix = "/paymentgateway/deals?offset=0&limit=10&source_id=4&task_status=Assigned&is_public=1"
+
+[lotus]
+api_url="http://127.0.0.1:1234/rpc/v0"   # Url of lotus web api
+access_token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBbGxvdyI6WyJyZWFkIiwid3JpdGUiLCJzaWduIiwiYWRtaW4iXX0.TXQfZGBhmzn1r9PmK0KoOeAFR3rHcAjL2DF18hP2F5Q"   # Access token of lotus web api
+
+[ipfs_server]
+download_url_prefix = "http://192.168.88.41:5050"
+upload_url = "http://192.168.88.41:5001"
+
+[swan_task]
+dir_deal="~/.swan/server/temp/deal"
+description = ""
+curated_dataset = ""
+tags = ""
+min_price = "0.00000001"
+max_price = 0.00005
+expire_days = 4
+verified_deal = false
+fast_retrieval = true
+start_epoch_hours = 96
+relative_epoch_from_main_network = -858481
+
+[schedule_rule]
+unlock_payment_rule = "0 */3 * * * ?"  #every minute
+send_deal_rule = "0 */3 * * * ?"  #every minute
+#send_deal_rule = "0/7 * * * * *"
+

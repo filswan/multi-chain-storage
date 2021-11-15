@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/robfig/cron"
 	"log"
@@ -13,6 +14,7 @@ import (
 	"payment-bridge/common/constants"
 	"payment-bridge/common/utils"
 	"payment-bridge/config"
+	"payment-bridge/database"
 	"payment-bridge/logs"
 	"payment-bridge/models"
 	"payment-bridge/on-chain/goBind"
@@ -124,7 +126,26 @@ func doUnlockPaymentOnContract(daoEvent *models.DaoEventLog, unlockParams goBind
 		logs.GetLogger().Error(err)
 		unlockTxStatus = constants.TRANSACTION_STATUS_FAIL
 	} else {
-		unlockTxStatus = constants.TRANSACTION_STATUS_SUCCESS
+		txRecept, err := utils.CheckTx(client, tx)
+		if err != nil {
+			logs.GetLogger().Error(err)
+		} else {
+			if txRecept.Status == uint64(1) {
+				unlockTxStatus = constants.TRANSACTION_STATUS_SUCCESS
+				logs.GetLogger().Println("unlock success! txHash=" + tx.Hash().Hex())
+			} else {
+				unlockTxStatus = constants.TRANSACTION_STATUS_FAIL
+				logs.GetLogger().Println("unlock failed! txHash=" + tx.Hash().Hex())
+			}
+		}
+		if len(txRecept.Logs) > 0 {
+			eventLogs := txRecept.Logs
+			err = saveUnlockEventLogToDB(eventLogs, daoEvent.Recipient)
+			if err != nil {
+				logs.GetLogger().Error(err)
+				return err
+			}
+		}
 	}
 	err = updateUnlockPaymentStatus(daoEvent.PayloadCid, daoEvent.DealCid, unlockTxStatus, tx.Hash().Hex())
 	if err != nil {
@@ -141,6 +162,71 @@ func updateUnlockPaymentStatus(payloadCid, dealCid, unLockTxStatus, unlockTxHash
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
+	}
+	return nil
+}
+func saveUnlockEventLogToDB(logsInChain []*types.Log, recipient string) error {
+	//paymentAbiString, err := utils.ReadContractAbiJsonFile(goBind.SwanPaymentMetaData.ABI)
+	//paymentAbiString := goBind.SwanPaymentMetaData.ABI
+
+	//SwanPayment contract function signature
+	contractUnlockFunctionSignature := polygon.GetConfig().PolygonMainnetNode.ContractUnlockFunctionSignature
+
+	for _, vLog := range logsInChain {
+		//if log have this contractor function signer
+		if vLog.Topics[0].Hex() == contractUnlockFunctionSignature {
+			eventList, err := models.FindEventUnlockPayments(&models.EventUnlockPayment{TxHash: vLog.TxHash.Hex(), BlockNo: vLog.BlockNumber}, "id desc", "10", "0")
+			if err != nil {
+				logs.GetLogger().Error(err)
+				continue
+			}
+			var event *models.EventUnlockPayment
+			if len(eventList) <= 0 {
+				event = new(models.EventUnlockPayment)
+				event.TxHash = vLog.TxHash.Hex()
+				event.Network = constants.NETWORK_TYPE_POLYGON
+				block, err := polygon.WebConn.ConnWeb.BlockByNumber(context.Background(), big.NewInt(int64(vLog.BlockNumber)))
+				if err != nil {
+					logs.GetLogger().Error(err)
+				} else {
+					event.UnlockTime = strconv.FormatUint(block.Time(), 10)
+				}
+				chainId, err := polygon.WebConn.ConnWeb.ChainID(context.Background())
+				if err != nil {
+					logs.GetLogger().Error(err)
+					continue
+				}
+				addrInfo, err := utils.GetFromAndToAddressByTxHash(polygon.WebConn.ConnWeb, chainId, vLog.TxHash)
+				if err != nil {
+					logs.GetLogger().Error(err)
+				} else {
+					event.UnlockFromAddress = addrInfo.AddrFrom
+				}
+				event.UnlockFromAddress = polygon.GetConfig().PolygonMainnetNode.PaymentContractAddress
+				event.BlockNo = vLog.BlockNumber
+				event.CreateAt = strconv.FormatInt(utils.GetEpochInMillis(), 10)
+			} else {
+				event = eventList[0]
+			}
+
+			quantity := new(big.Int)
+			quantity.SetBytes(vLog.Data)
+			address := common.HexToAddress(vLog.Topics[1].Hex()).String()
+			if strings.ToLower(address) == strings.ToLower(polygon.GetConfig().PolygonMainnetNode.PaymentContractAddress) {
+				if strings.ToLower(common.HexToAddress(vLog.Topics[2].Hex()).String()) == strings.ToLower(recipient) {
+					event.UnlockToAdminAddress = common.HexToAddress(vLog.Topics[2].Hex()).String()
+					event.UnlockToAdminAmount = quantity.String()
+				} else {
+					event.UnlockToUserAddress = common.HexToAddress(vLog.Topics[2].Hex()).String()
+					event.UnlockToUserAmount = quantity.String()
+				}
+			}
+
+			err = database.SaveOneWithTransaction(event)
+			if err != nil {
+				logs.GetLogger().Error(err)
+			}
+		}
 	}
 	return nil
 }

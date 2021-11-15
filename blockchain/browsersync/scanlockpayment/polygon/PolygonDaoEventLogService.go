@@ -21,7 +21,7 @@ import (
 // EventLogSave Find the event that executed the contract and save to db
 func ScanDaoEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) error {
 	//read contract api json file
-	logs.GetLogger().Println("scan dao event on polygon : blockNoFrom=" + strconv.FormatInt(blockNoFrom, 10) + "--------------blockNoTo=" + strconv.FormatInt(blockNoTo, 10))
+	logs.GetLogger().Println("polygon scan dao event  : blockNoFrom=" + strconv.FormatInt(blockNoFrom, 10) + "--------------blockNoTo=" + strconv.FormatInt(blockNoTo, 10))
 	daoEventAbiString := goBind.FilswanOralcleMetaData.ABI
 
 	//SwanPayment contract address

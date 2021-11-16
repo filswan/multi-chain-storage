@@ -12,7 +12,6 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
 
     bytes32 public constant DAO_ROLE = keccak256("DAO_ROLE");
 
-    // todo: add get threshold function
     uint8 private _threshold;
 
     mapping(string => mapping(address => TxOracleInfo)) txInfoMap;
@@ -31,7 +30,6 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
         string dealId,
         address recipient,
         uint256 paid,
-        uint256 terms,
         bool status
     );
 
@@ -40,15 +38,6 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
         __AccessControl_init();
         _setupRole(DEFAULT_ADMIN_ROLE, admin);
         _threshold = threshold;
-    }
-
-    function updateThreshold(uint8 threshold)
-        public
-        onlyRole(DEFAULT_ADMIN_ROLE)
-        returns (bool)
-    {
-        _threshold = threshold;
-        return true;
     }
 
     function updateThreshold(uint8 threshold)
@@ -85,21 +74,17 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
         string memory dealId,
         uint256 paid,
         address recipient,
-        uint256 terms, // todo: term is for updated 
         bool status
     ) public onlyRole(DAO_ROLE) {
         string memory key = concatenate(cid, orderId, dealId);
 
-        // todo: improvement, DAO only can sign once for each transaction 
         require(
             txInfoMap[key][msg.sender].flag == false,
             "You already sign this transaction"
         );
 
-
         txInfoMap[key][msg.sender].recipient = recipient;
         txInfoMap[key][msg.sender].paid = paid;
-        txInfoMap[key][msg.sender].terms = terms;
         txInfoMap[key][msg.sender].status = status;
         txInfoMap[key][msg.sender].flag = true;
 
@@ -115,7 +100,6 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
             dealId,
             recipient,
             paid,
-            // terms, no need for terms in signature
             status // bool
         );
     }

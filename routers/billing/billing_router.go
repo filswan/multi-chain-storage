@@ -98,21 +98,6 @@ func getWhereCondition(txHash, walletAddress string) string {
 	return whereCondition
 }
 
-func getBillHistoryList(whereCondition, limit, offset string) ([]*BillingResult, error) {
-	selectColumn := "id,tx_hash,address_from,locked_fee,deadline,payload_cid,lock_payment_time,coin_type "
-	sqlBsc := "select " + selectColumn + " ,'bsc' as network from " + constants.TABLE_NAME_EVENT_BSC + " " + whereCondition
-	sqlGoerli := "select " + selectColumn + " ,'goerli' as network  from " + constants.TABLE_NAME_EVENT_GOERLI + " " + whereCondition
-	sqlPolygon := "select " + selectColumn + " ,'polygon' as network  from " + constants.TABLE_NAME_EVENT_POLYGON + " " + whereCondition
-	finalSql := sqlBsc + " union " + sqlGoerli + " union " + sqlPolygon + " order by lock_payment_time desc"
-	var billingResultList []*BillingResult
-	err := database.GetDB().Raw(finalSql).Scan(&billingResultList).Limit(limit).Offset(offset).Error
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-
-	}
-	return billingResultList, nil
-}
 
 func GetFileCoinLastestPrice(c *gin.Context) {
 	price, err := GetFileCoinLastestPriceService()

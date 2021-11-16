@@ -68,6 +68,17 @@ contract SwanPayment is IPaymentMinimal, Initializable {
         uint256 deadline
     );
 
+    event UnlockPayment(
+        string id,
+        address token,
+        uint256 cost,
+        uint256 restToken,
+        address recipient, // who receive the token
+        address owner // who lock the token
+    );
+
+    event ExpirePayment(string id, address token, uint256 amount, address owner);
+
     /// @notice Deposits the amount of token for specific transaction
     /// @param param The transaction information for which to deposit balance
     /// @return Returns true for a successful deposit, false for an unsuccessful deposit
@@ -222,6 +233,7 @@ contract SwanPayment is IPaymentMinimal, Initializable {
             t.lockedFee = 0;
             //payable(address(t.owner)).transfer(t.lockedFee);
             IERC20(_ERC20_TOKEN).transfer(t.owner, t.lockedFee);
+            emit ExpirePayment(param.id, _ERC20_TOKEN, t.lockedFee, t.owner);
         } else {
             require(param.amount > 0, "Transaction is incompleted");
 
@@ -242,12 +254,11 @@ contract SwanPayment is IPaymentMinimal, Initializable {
             if (tokenAmount < t.minPayment) {
                 tokenAmount = t.minPayment;
             }
+            
             t._isExisted = false;
-
-            console.log("actual token is %s", tokenAmount);
+            uint256 tmp = t.lockedFee;
 
             if (t.lockedFee > tokenAmount) {
-                uint256 tmp = t.lockedFee;
                 t.lockedFee = 0; // prevent re-entrying
                 IERC20(_ERC20_TOKEN).transfer(t.owner, tmp - tokenAmount);
                 
@@ -256,6 +267,8 @@ contract SwanPayment is IPaymentMinimal, Initializable {
                 t.lockedFee = 0; // prevent re-entrying
             }
             IERC20(_ERC20_TOKEN).transfer(param.recipient, tokenAmount);
+
+            emit UnlockPayment(param.id, _ERC20_TOKEN, tokenAmount, tmp - tokenAmount, param.recipient, t.owner);
         }
 
         return true;

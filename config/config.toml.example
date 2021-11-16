@@ -3,6 +3,7 @@ dev = false
 admin_wallet_on_polygon=""
 swan_payment_address_on_polygon=""
 file_coin_wallet=""
+swan_dao_oracle_address=""
 
 [database]
 db_host="localhost"

@@ -1,13 +1,16 @@
 [polygon_mainnet_node]
-#rpcUrl="https://rpc-mumbai.maticvigil.com"
+#rpc_url="https://rpc-mumbai.maticvigil.com"
 rpc_url = "https://polygon-mumbai.g.alchemy.com/v2/86HeefA3O9EF22t2NTLbmcpfN0hb9vlv"
 payment_contract_address = "0xABeAAb124e6b52afFF504DB71bbF08D0A768D053"
 contract_lock_function_signature = "0x87b076911cb43e46012dbf762607ad5d0c5d6eb5e1d8fec72be99002451c18ba"
 payment_unlock_contract_address = "0xe11A86849d99F524cAC3E7A0Ec1241828e332C62" #this is usdc erc20 address
 contract_unlock_function_signature = "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"
 dao_swan_oracle_address = "0xe3262c0848b0cc5cd43df7139103f1fbf26558cc"
-dao_event_function_signature = "0x5bdc7ea86f89a3ea9f721b4361cc0dec10ec2981ff3a28092b27784d5812021c"
+dao_event_function_signature = "0x4cfe23e0ff309b71bd08673883f3a58a5813247586666c8a7f2147726630a258"
 scan_step = 1000
 gas_limit = 8000000
 start_from_blockNo = 17590780
 cycle_time_interval = 10 #unit:second
+
+
+

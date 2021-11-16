@@ -28,113 +28,113 @@ var (
 	_ = event.NewSubscription
 )
 
-// FilswanOralcleMetaData contains all meta data concerning the FilswanOralcle contract.
-var FilswanOralcleMetaData = &bind.MetaData{
-	ABI: "[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"previousAdminRole\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"newAdminRole\",\"type\":\"bytes32\"}],\"name\":\"RoleAdminChanged\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"RoleGranted\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"RoleRevoked\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"string\",\"name\":\"cid\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"orderId\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"dealId\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"paid\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"terms\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"bool\",\"name\":\"status\",\"type\":\"bool\"}],\"name\":\"SignTransaction\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"DAO_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"DEFAULT_ADMIN_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"}],\"name\":\"getRoleAdmin\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"grantRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"hasRole\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"admin\",\"type\":\"address\"},{\"internalType\":\"uint8\",\"name\":\"threshold\",\"type\":\"uint8\"}],\"name\":\"initialize\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"cid\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"orderId\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"dealId\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"paid\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"status\",\"type\":\"bool\"}],\"name\":\"isPaymentAvailable\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"renounceRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"revokeRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address[]\",\"name\":\"daoUsers\",\"type\":\"address[]\"}],\"name\":\"setDAOUsers\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"cid\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"orderId\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"dealId\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"paid\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"terms\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"status\",\"type\":\"bool\"}],\"name\":\"signTransaction\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes4\",\"name\":\"interfaceId\",\"type\":\"bytes4\"}],\"name\":\"supportsInterface\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"threshold\",\"type\":\"uint8\"}],\"name\":\"updateThreshold\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]",
+// FilswanOracleMetaData contains all meta data concerning the FilswanOracle contract.
+var FilswanOracleMetaData = &bind.MetaData{
+	ABI: "[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"previousAdminRole\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"newAdminRole\",\"type\":\"bytes32\"}],\"name\":\"RoleAdminChanged\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"RoleGranted\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"RoleRevoked\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"string\",\"name\":\"cid\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"orderId\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"dealId\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"paid\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"bool\",\"name\":\"status\",\"type\":\"bool\"}],\"name\":\"SignTransaction\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"DAO_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"DEFAULT_ADMIN_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"}],\"name\":\"getRoleAdmin\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getThreshold\",\"outputs\":[{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"grantRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"hasRole\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"admin\",\"type\":\"address\"},{\"internalType\":\"uint8\",\"name\":\"threshold\",\"type\":\"uint8\"}],\"name\":\"initialize\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"cid\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"orderId\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"dealId\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"paid\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"status\",\"type\":\"bool\"}],\"name\":\"isPaymentAvailable\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"renounceRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"revokeRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address[]\",\"name\":\"daoUsers\",\"type\":\"address[]\"}],\"name\":\"setDAOUsers\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"cid\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"orderId\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"dealId\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"paid\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"status\",\"type\":\"bool\"}],\"name\":\"signTransaction\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes4\",\"name\":\"interfaceId\",\"type\":\"bytes4\"}],\"name\":\"supportsInterface\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"threshold\",\"type\":\"uint8\"}],\"name\":\"updateThreshold\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]",
 }
 
-// FilswanOralcleABI is the input ABI used to generate the binding from.
-// Deprecated: Use FilswanOralcleMetaData.ABI instead.
-var FilswanOralcleABI = FilswanOralcleMetaData.ABI
+// FilswanOracleABI is the input ABI used to generate the binding from.
+// Deprecated: Use FilswanOracleMetaData.ABI instead.
+var FilswanOracleABI = FilswanOracleMetaData.ABI
 
-// FilswanOralcle is an auto generated Go binding around an Ethereum contract.
-type FilswanOralcle struct {
-	FilswanOralcleCaller     // Read-only binding to the contract
-	FilswanOralcleTransactor // Write-only binding to the contract
-	FilswanOralcleFilterer   // Log filterer for contract events
+// FilswanOracle is an auto generated Go binding around an Ethereum contract.
+type FilswanOracle struct {
+	FilswanOracleCaller     // Read-only binding to the contract
+	FilswanOracleTransactor // Write-only binding to the contract
+	FilswanOracleFilterer   // Log filterer for contract events
 }
 
-// FilswanOralcleCaller is an auto generated read-only Go binding around an Ethereum contract.
-type FilswanOralcleCaller struct {
+// FilswanOracleCaller is an auto generated read-only Go binding around an Ethereum contract.
+type FilswanOracleCaller struct {
 	contract *bind.BoundContract // Generic contract wrapper for the low level calls
 }
 
-// FilswanOralcleTransactor is an auto generated write-only Go binding around an Ethereum contract.
-type FilswanOralcleTransactor struct {
+// FilswanOracleTransactor is an auto generated write-only Go binding around an Ethereum contract.
+type FilswanOracleTransactor struct {
 	contract *bind.BoundContract // Generic contract wrapper for the low level calls
 }
 
-// FilswanOralcleFilterer is an auto generated log filtering Go binding around an Ethereum contract events.
-type FilswanOralcleFilterer struct {
+// FilswanOracleFilterer is an auto generated log filtering Go binding around an Ethereum contract events.
+type FilswanOracleFilterer struct {
 	contract *bind.BoundContract // Generic contract wrapper for the low level calls
 }
 
-// FilswanOralcleSession is an auto generated Go binding around an Ethereum contract,
+// FilswanOracleSession is an auto generated Go binding around an Ethereum contract,
 // with pre-set call and transact options.
-type FilswanOralcleSession struct {
-	Contract     *FilswanOralcle   // Generic contract binding to set the session for
+type FilswanOracleSession struct {
+	Contract     *FilswanOracle    // Generic contract binding to set the session for
 	CallOpts     bind.CallOpts     // Call options to use throughout this session
 	TransactOpts bind.TransactOpts // Transaction auth options to use throughout this session
 }
 
-// FilswanOralcleCallerSession is an auto generated read-only Go binding around an Ethereum contract,
+// FilswanOracleCallerSession is an auto generated read-only Go binding around an Ethereum contract,
 // with pre-set call options.
-type FilswanOralcleCallerSession struct {
-	Contract *FilswanOralcleCaller // Generic contract caller binding to set the session for
-	CallOpts bind.CallOpts         // Call options to use throughout this session
+type FilswanOracleCallerSession struct {
+	Contract *FilswanOracleCaller // Generic contract caller binding to set the session for
+	CallOpts bind.CallOpts        // Call options to use throughout this session
 }
 
-// FilswanOralcleTransactorSession is an auto generated write-only Go binding around an Ethereum contract,
+// FilswanOracleTransactorSession is an auto generated write-only Go binding around an Ethereum contract,
 // with pre-set transact options.
-type FilswanOralcleTransactorSession struct {
-	Contract     *FilswanOralcleTransactor // Generic contract transactor binding to set the session for
-	TransactOpts bind.TransactOpts         // Transaction auth options to use throughout this session
+type FilswanOracleTransactorSession struct {
+	Contract     *FilswanOracleTransactor // Generic contract transactor binding to set the session for
+	TransactOpts bind.TransactOpts        // Transaction auth options to use throughout this session
 }
 
-// FilswanOralcleRaw is an auto generated low-level Go binding around an Ethereum contract.
-type FilswanOralcleRaw struct {
-	Contract *FilswanOralcle // Generic contract binding to access the raw methods on
+// FilswanOracleRaw is an auto generated low-level Go binding around an Ethereum contract.
+type FilswanOracleRaw struct {
+	Contract *FilswanOracle // Generic contract binding to access the raw methods on
 }
 
-// FilswanOralcleCallerRaw is an auto generated low-level read-only Go binding around an Ethereum contract.
-type FilswanOralcleCallerRaw struct {
-	Contract *FilswanOralcleCaller // Generic read-only contract binding to access the raw methods on
+// FilswanOracleCallerRaw is an auto generated low-level read-only Go binding around an Ethereum contract.
+type FilswanOracleCallerRaw struct {
+	Contract *FilswanOracleCaller // Generic read-only contract binding to access the raw methods on
 }
 
-// FilswanOralcleTransactorRaw is an auto generated low-level write-only Go binding around an Ethereum contract.
-type FilswanOralcleTransactorRaw struct {
-	Contract *FilswanOralcleTransactor // Generic write-only contract binding to access the raw methods on
+// FilswanOracleTransactorRaw is an auto generated low-level write-only Go binding around an Ethereum contract.
+type FilswanOracleTransactorRaw struct {
+	Contract *FilswanOracleTransactor // Generic write-only contract binding to access the raw methods on
 }
 
-// NewFilswanOralcle creates a new instance of FilswanOralcle, bound to a specific deployed contract.
-func NewFilswanOralcle(address common.Address, backend bind.ContractBackend) (*FilswanOralcle, error) {
-	contract, err := bindFilswanOralcle(address, backend, backend, backend)
+// NewFilswanOracle creates a new instance of FilswanOracle, bound to a specific deployed contract.
+func NewFilswanOracle(address common.Address, backend bind.ContractBackend) (*FilswanOracle, error) {
+	contract, err := bindFilswanOracle(address, backend, backend, backend)
 	if err != nil {
 		return nil, err
 	}
-	return &FilswanOralcle{FilswanOralcleCaller: FilswanOralcleCaller{contract: contract}, FilswanOralcleTransactor: FilswanOralcleTransactor{contract: contract}, FilswanOralcleFilterer: FilswanOralcleFilterer{contract: contract}}, nil
+	return &FilswanOracle{FilswanOracleCaller: FilswanOracleCaller{contract: contract}, FilswanOracleTransactor: FilswanOracleTransactor{contract: contract}, FilswanOracleFilterer: FilswanOracleFilterer{contract: contract}}, nil
 }
 
-// NewFilswanOralcleCaller creates a new read-only instance of FilswanOralcle, bound to a specific deployed contract.
-func NewFilswanOralcleCaller(address common.Address, caller bind.ContractCaller) (*FilswanOralcleCaller, error) {
-	contract, err := bindFilswanOralcle(address, caller, nil, nil)
+// NewFilswanOracleCaller creates a new read-only instance of FilswanOracle, bound to a specific deployed contract.
+func NewFilswanOracleCaller(address common.Address, caller bind.ContractCaller) (*FilswanOracleCaller, error) {
+	contract, err := bindFilswanOracle(address, caller, nil, nil)
 	if err != nil {
 		return nil, err
 	}
-	return &FilswanOralcleCaller{contract: contract}, nil
+	return &FilswanOracleCaller{contract: contract}, nil
 }
 
-// NewFilswanOralcleTransactor creates a new write-only instance of FilswanOralcle, bound to a specific deployed contract.
-func NewFilswanOralcleTransactor(address common.Address, transactor bind.ContractTransactor) (*FilswanOralcleTransactor, error) {
-	contract, err := bindFilswanOralcle(address, nil, transactor, nil)
+// NewFilswanOracleTransactor creates a new write-only instance of FilswanOracle, bound to a specific deployed contract.
+func NewFilswanOracleTransactor(address common.Address, transactor bind.ContractTransactor) (*FilswanOracleTransactor, error) {
+	contract, err := bindFilswanOracle(address, nil, transactor, nil)
 	if err != nil {
 		return nil, err
 	}
-	return &FilswanOralcleTransactor{contract: contract}, nil
+	return &FilswanOracleTransactor{contract: contract}, nil
 }
 
-// NewFilswanOralcleFilterer creates a new log filterer instance of FilswanOralcle, bound to a specific deployed contract.
-func NewFilswanOralcleFilterer(address common.Address, filterer bind.ContractFilterer) (*FilswanOralcleFilterer, error) {
-	contract, err := bindFilswanOralcle(address, nil, nil, filterer)
+// NewFilswanOracleFilterer creates a new log filterer instance of FilswanOracle, bound to a specific deployed contract.
+func NewFilswanOracleFilterer(address common.Address, filterer bind.ContractFilterer) (*FilswanOracleFilterer, error) {
+	contract, err := bindFilswanOracle(address, nil, nil, filterer)
 	if err != nil {
 		return nil, err
 	}
-	return &FilswanOralcleFilterer{contract: contract}, nil
+	return &FilswanOracleFilterer{contract: contract}, nil
 }
 
-// bindFilswanOralcle binds a generic wrapper to an already deployed contract.
-func bindFilswanOralcle(address common.Address, caller bind.ContractCaller, transactor bind.ContractTransactor, filterer bind.ContractFilterer) (*bind.BoundContract, error) {
-	parsed, err := abi.JSON(strings.NewReader(FilswanOralcleABI))
+// bindFilswanOracle binds a generic wrapper to an already deployed contract.
+func bindFilswanOracle(address common.Address, caller bind.ContractCaller, transactor bind.ContractTransactor, filterer bind.ContractFilterer) (*bind.BoundContract, error) {
+	parsed, err := abi.JSON(strings.NewReader(FilswanOracleABI))
 	if err != nil {
 		return nil, err
 	}
@@ -145,46 +145,46 @@ func bindFilswanOralcle(address common.Address, caller bind.ContractCaller, tran
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_FilswanOralcle *FilswanOralcleRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
-	return _FilswanOralcle.Contract.FilswanOralcleCaller.contract.Call(opts, result, method, params...)
+func (_FilswanOracle *FilswanOracleRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
+	return _FilswanOracle.Contract.FilswanOracleCaller.contract.Call(opts, result, method, params...)
 }
 
 // Transfer initiates a plain transaction to move funds to the contract, calling
 // its default method if one is available.
-func (_FilswanOralcle *FilswanOralcleRaw) Transfer(opts *bind.TransactOpts) (*types.Transaction, error) {
-	return _FilswanOralcle.Contract.FilswanOralcleTransactor.contract.Transfer(opts)
+func (_FilswanOracle *FilswanOracleRaw) Transfer(opts *bind.TransactOpts) (*types.Transaction, error) {
+	return _FilswanOracle.Contract.FilswanOracleTransactor.contract.Transfer(opts)
 }
 
 // Transact invokes the (paid) contract method with params as input values.
-func (_FilswanOralcle *FilswanOralcleRaw) Transact(opts *bind.TransactOpts, method string, params ...interface{}) (*types.Transaction, error) {
-	return _FilswanOralcle.Contract.FilswanOralcleTransactor.contract.Transact(opts, method, params...)
+func (_FilswanOracle *FilswanOracleRaw) Transact(opts *bind.TransactOpts, method string, params ...interface{}) (*types.Transaction, error) {
+	return _FilswanOracle.Contract.FilswanOracleTransactor.contract.Transact(opts, method, params...)
 }
 
 // Call invokes the (constant) contract method with params as input values and
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_FilswanOralcle *FilswanOralcleCallerRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
-	return _FilswanOralcle.Contract.contract.Call(opts, result, method, params...)
+func (_FilswanOracle *FilswanOracleCallerRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
+	return _FilswanOracle.Contract.contract.Call(opts, result, method, params...)
 }
 
 // Transfer initiates a plain transaction to move funds to the contract, calling
 // its default method if one is available.
-func (_FilswanOralcle *FilswanOralcleTransactorRaw) Transfer(opts *bind.TransactOpts) (*types.Transaction, error) {
-	return _FilswanOralcle.Contract.contract.Transfer(opts)
+func (_FilswanOracle *FilswanOracleTransactorRaw) Transfer(opts *bind.TransactOpts) (*types.Transaction, error) {
+	return _FilswanOracle.Contract.contract.Transfer(opts)
 }
 
 // Transact invokes the (paid) contract method with params as input values.
-func (_FilswanOralcle *FilswanOralcleTransactorRaw) Transact(opts *bind.TransactOpts, method string, params ...interface{}) (*types.Transaction, error) {
-	return _FilswanOralcle.Contract.contract.Transact(opts, method, params...)
+func (_FilswanOracle *FilswanOracleTransactorRaw) Transact(opts *bind.TransactOpts, method string, params ...interface{}) (*types.Transaction, error) {
+	return _FilswanOracle.Contract.contract.Transact(opts, method, params...)
 }
 
 // DAOROLE is a free data retrieval call binding the contract method 0xe9c26518.
 //
 // Solidity: function DAO_ROLE() view returns(bytes32)
-func (_FilswanOralcle *FilswanOralcleCaller) DAOROLE(opts *bind.CallOpts) ([32]byte, error) {
+func (_FilswanOracle *FilswanOracleCaller) DAOROLE(opts *bind.CallOpts) ([32]byte, error) {
 	var out []interface{}
-	err := _FilswanOralcle.contract.Call(opts, &out, "DAO_ROLE")
+	err := _FilswanOracle.contract.Call(opts, &out, "DAO_ROLE")
 
 	if err != nil {
 		return *new([32]byte), err
@@ -199,23 +199,23 @@ func (_FilswanOralcle *FilswanOralcleCaller) DAOROLE(opts *bind.CallOpts) ([32]b
 // DAOROLE is a free data retrieval call binding the contract method 0xe9c26518.
 //
 // Solidity: function DAO_ROLE() view returns(bytes32)
-func (_FilswanOralcle *FilswanOralcleSession) DAOROLE() ([32]byte, error) {
-	return _FilswanOralcle.Contract.DAOROLE(&_FilswanOralcle.CallOpts)
+func (_FilswanOracle *FilswanOracleSession) DAOROLE() ([32]byte, error) {
+	return _FilswanOracle.Contract.DAOROLE(&_FilswanOracle.CallOpts)
 }
 
 // DAOROLE is a free data retrieval call binding the contract method 0xe9c26518.
 //
 // Solidity: function DAO_ROLE() view returns(bytes32)
-func (_FilswanOralcle *FilswanOralcleCallerSession) DAOROLE() ([32]byte, error) {
-	return _FilswanOralcle.Contract.DAOROLE(&_FilswanOralcle.CallOpts)
+func (_FilswanOracle *FilswanOracleCallerSession) DAOROLE() ([32]byte, error) {
+	return _FilswanOracle.Contract.DAOROLE(&_FilswanOracle.CallOpts)
 }
 
 // DEFAULTADMINROLE is a free data retrieval call binding the contract method 0xa217fddf.
 //
 // Solidity: function DEFAULT_ADMIN_ROLE() view returns(bytes32)
-func (_FilswanOralcle *FilswanOralcleCaller) DEFAULTADMINROLE(opts *bind.CallOpts) ([32]byte, error) {
+func (_FilswanOracle *FilswanOracleCaller) DEFAULTADMINROLE(opts *bind.CallOpts) ([32]byte, error) {
 	var out []interface{}
-	err := _FilswanOralcle.contract.Call(opts, &out, "DEFAULT_ADMIN_ROLE")
+	err := _FilswanOracle.contract.Call(opts, &out, "DEFAULT_ADMIN_ROLE")
 
 	if err != nil {
 		return *new([32]byte), err
@@ -230,23 +230,23 @@ func (_FilswanOralcle *FilswanOralcleCaller) DEFAULTADMINROLE(opts *bind.CallOpt
 // DEFAULTADMINROLE is a free data retrieval call binding the contract method 0xa217fddf.
 //
 // Solidity: function DEFAULT_ADMIN_ROLE() view returns(bytes32)
-func (_FilswanOralcle *FilswanOralcleSession) DEFAULTADMINROLE() ([32]byte, error) {
-	return _FilswanOralcle.Contract.DEFAULTADMINROLE(&_FilswanOralcle.CallOpts)
+func (_FilswanOracle *FilswanOracleSession) DEFAULTADMINROLE() ([32]byte, error) {
+	return _FilswanOracle.Contract.DEFAULTADMINROLE(&_FilswanOracle.CallOpts)
 }
 
 // DEFAULTADMINROLE is a free data retrieval call binding the contract method 0xa217fddf.
 //
 // Solidity: function DEFAULT_ADMIN_ROLE() view returns(bytes32)
-func (_FilswanOralcle *FilswanOralcleCallerSession) DEFAULTADMINROLE() ([32]byte, error) {
-	return _FilswanOralcle.Contract.DEFAULTADMINROLE(&_FilswanOralcle.CallOpts)
+func (_FilswanOracle *FilswanOracleCallerSession) DEFAULTADMINROLE() ([32]byte, error) {
+	return _FilswanOracle.Contract.DEFAULTADMINROLE(&_FilswanOracle.CallOpts)
 }
 
 // GetRoleAdmin is a free data retrieval call binding the contract method 0x248a9ca3.
 //
 // Solidity: function getRoleAdmin(bytes32 role) view returns(bytes32)
-func (_FilswanOralcle *FilswanOralcleCaller) GetRoleAdmin(opts *bind.CallOpts, role [32]byte) ([32]byte, error) {
+func (_FilswanOracle *FilswanOracleCaller) GetRoleAdmin(opts *bind.CallOpts, role [32]byte) ([32]byte, error) {
 	var out []interface{}
-	err := _FilswanOralcle.contract.Call(opts, &out, "getRoleAdmin", role)
+	err := _FilswanOracle.contract.Call(opts, &out, "getRoleAdmin", role)
 
 	if err != nil {
 		return *new([32]byte), err
@@ -261,23 +261,54 @@ func (_FilswanOralcle *FilswanOralcleCaller) GetRoleAdmin(opts *bind.CallOpts, r
 // GetRoleAdmin is a free data retrieval call binding the contract method 0x248a9ca3.
 //
 // Solidity: function getRoleAdmin(bytes32 role) view returns(bytes32)
-func (_FilswanOralcle *FilswanOralcleSession) GetRoleAdmin(role [32]byte) ([32]byte, error) {
-	return _FilswanOralcle.Contract.GetRoleAdmin(&_FilswanOralcle.CallOpts, role)
+func (_FilswanOracle *FilswanOracleSession) GetRoleAdmin(role [32]byte) ([32]byte, error) {
+	return _FilswanOracle.Contract.GetRoleAdmin(&_FilswanOracle.CallOpts, role)
 }
 
 // GetRoleAdmin is a free data retrieval call binding the contract method 0x248a9ca3.
 //
 // Solidity: function getRoleAdmin(bytes32 role) view returns(bytes32)
-func (_FilswanOralcle *FilswanOralcleCallerSession) GetRoleAdmin(role [32]byte) ([32]byte, error) {
-	return _FilswanOralcle.Contract.GetRoleAdmin(&_FilswanOralcle.CallOpts, role)
+func (_FilswanOracle *FilswanOracleCallerSession) GetRoleAdmin(role [32]byte) ([32]byte, error) {
+	return _FilswanOracle.Contract.GetRoleAdmin(&_FilswanOracle.CallOpts, role)
+}
+
+// GetThreshold is a free data retrieval call binding the contract method 0xe75235b8.
+//
+// Solidity: function getThreshold() view returns(uint8)
+func (_FilswanOracle *FilswanOracleCaller) GetThreshold(opts *bind.CallOpts) (uint8, error) {
+	var out []interface{}
+	err := _FilswanOracle.contract.Call(opts, &out, "getThreshold")
+
+	if err != nil {
+		return *new(uint8), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(uint8)).(*uint8)
+
+	return out0, err
+
+}
+
+// GetThreshold is a free data retrieval call binding the contract method 0xe75235b8.
+//
+// Solidity: function getThreshold() view returns(uint8)
+func (_FilswanOracle *FilswanOracleSession) GetThreshold() (uint8, error) {
+	return _FilswanOracle.Contract.GetThreshold(&_FilswanOracle.CallOpts)
+}
+
+// GetThreshold is a free data retrieval call binding the contract method 0xe75235b8.
+//
+// Solidity: function getThreshold() view returns(uint8)
+func (_FilswanOracle *FilswanOracleCallerSession) GetThreshold() (uint8, error) {
+	return _FilswanOracle.Contract.GetThreshold(&_FilswanOracle.CallOpts)
 }
 
 // HasRole is a free data retrieval call binding the contract method 0x91d14854.
 //
 // Solidity: function hasRole(bytes32 role, address account) view returns(bool)
-func (_FilswanOralcle *FilswanOralcleCaller) HasRole(opts *bind.CallOpts, role [32]byte, account common.Address) (bool, error) {
+func (_FilswanOracle *FilswanOracleCaller) HasRole(opts *bind.CallOpts, role [32]byte, account common.Address) (bool, error) {
 	var out []interface{}
-	err := _FilswanOralcle.contract.Call(opts, &out, "hasRole", role, account)
+	err := _FilswanOracle.contract.Call(opts, &out, "hasRole", role, account)
 
 	if err != nil {
 		return *new(bool), err
@@ -292,23 +323,23 @@ func (_FilswanOralcle *FilswanOralcleCaller) HasRole(opts *bind.CallOpts, role [
 // HasRole is a free data retrieval call binding the contract method 0x91d14854.
 //
 // Solidity: function hasRole(bytes32 role, address account) view returns(bool)
-func (_FilswanOralcle *FilswanOralcleSession) HasRole(role [32]byte, account common.Address) (bool, error) {
-	return _FilswanOralcle.Contract.HasRole(&_FilswanOralcle.CallOpts, role, account)
+func (_FilswanOracle *FilswanOracleSession) HasRole(role [32]byte, account common.Address) (bool, error) {
+	return _FilswanOracle.Contract.HasRole(&_FilswanOracle.CallOpts, role, account)
 }
 
 // HasRole is a free data retrieval call binding the contract method 0x91d14854.
 //
 // Solidity: function hasRole(bytes32 role, address account) view returns(bool)
-func (_FilswanOralcle *FilswanOralcleCallerSession) HasRole(role [32]byte, account common.Address) (bool, error) {
-	return _FilswanOralcle.Contract.HasRole(&_FilswanOralcle.CallOpts, role, account)
+func (_FilswanOracle *FilswanOracleCallerSession) HasRole(role [32]byte, account common.Address) (bool, error) {
+	return _FilswanOracle.Contract.HasRole(&_FilswanOracle.CallOpts, role, account)
 }
 
 // IsPaymentAvailable is a free data retrieval call binding the contract method 0x5a2b0ea6.
 //
 // Solidity: function isPaymentAvailable(string cid, string orderId, string dealId, uint256 paid, address recipient, bool status) view returns(bool)
-func (_FilswanOralcle *FilswanOralcleCaller) IsPaymentAvailable(opts *bind.CallOpts, cid string, orderId string, dealId string, paid *big.Int, recipient common.Address, status bool) (bool, error) {
+func (_FilswanOracle *FilswanOracleCaller) IsPaymentAvailable(opts *bind.CallOpts, cid string, orderId string, dealId string, paid *big.Int, recipient common.Address, status bool) (bool, error) {
 	var out []interface{}
-	err := _FilswanOralcle.contract.Call(opts, &out, "isPaymentAvailable", cid, orderId, dealId, paid, recipient, status)
+	err := _FilswanOracle.contract.Call(opts, &out, "isPaymentAvailable", cid, orderId, dealId, paid, recipient, status)
 
 	if err != nil {
 		return *new(bool), err
@@ -323,23 +354,23 @@ func (_FilswanOralcle *FilswanOralcleCaller) IsPaymentAvailable(opts *bind.CallO
 // IsPaymentAvailable is a free data retrieval call binding the contract method 0x5a2b0ea6.
 //
 // Solidity: function isPaymentAvailable(string cid, string orderId, string dealId, uint256 paid, address recipient, bool status) view returns(bool)
-func (_FilswanOralcle *FilswanOralcleSession) IsPaymentAvailable(cid string, orderId string, dealId string, paid *big.Int, recipient common.Address, status bool) (bool, error) {
-	return _FilswanOralcle.Contract.IsPaymentAvailable(&_FilswanOralcle.CallOpts, cid, orderId, dealId, paid, recipient, status)
+func (_FilswanOracle *FilswanOracleSession) IsPaymentAvailable(cid string, orderId string, dealId string, paid *big.Int, recipient common.Address, status bool) (bool, error) {
+	return _FilswanOracle.Contract.IsPaymentAvailable(&_FilswanOracle.CallOpts, cid, orderId, dealId, paid, recipient, status)
 }
 
 // IsPaymentAvailable is a free data retrieval call binding the contract method 0x5a2b0ea6.
 //
 // Solidity: function isPaymentAvailable(string cid, string orderId, string dealId, uint256 paid, address recipient, bool status) view returns(bool)
-func (_FilswanOralcle *FilswanOralcleCallerSession) IsPaymentAvailable(cid string, orderId string, dealId string, paid *big.Int, recipient common.Address, status bool) (bool, error) {
-	return _FilswanOralcle.Contract.IsPaymentAvailable(&_FilswanOralcle.CallOpts, cid, orderId, dealId, paid, recipient, status)
+func (_FilswanOracle *FilswanOracleCallerSession) IsPaymentAvailable(cid string, orderId string, dealId string, paid *big.Int, recipient common.Address, status bool) (bool, error) {
+	return _FilswanOracle.Contract.IsPaymentAvailable(&_FilswanOracle.CallOpts, cid, orderId, dealId, paid, recipient, status)
 }
 
 // Owner is a free data retrieval call binding the contract method 0x8da5cb5b.
 //
 // Solidity: function owner() view returns(address)
-func (_FilswanOralcle *FilswanOralcleCaller) Owner(opts *bind.CallOpts) (common.Address, error) {
+func (_FilswanOracle *FilswanOracleCaller) Owner(opts *bind.CallOpts) (common.Address, error) {
 	var out []interface{}
-	err := _FilswanOralcle.contract.Call(opts, &out, "owner")
+	err := _FilswanOracle.contract.Call(opts, &out, "owner")
 
 	if err != nil {
 		return *new(common.Address), err
@@ -354,23 +385,23 @@ func (_FilswanOralcle *FilswanOralcleCaller) Owner(opts *bind.CallOpts) (common.
 // Owner is a free data retrieval call binding the contract method 0x8da5cb5b.
 //
 // Solidity: function owner() view returns(address)
-func (_FilswanOralcle *FilswanOralcleSession) Owner() (common.Address, error) {
-	return _FilswanOralcle.Contract.Owner(&_FilswanOralcle.CallOpts)
+func (_FilswanOracle *FilswanOracleSession) Owner() (common.Address, error) {
+	return _FilswanOracle.Contract.Owner(&_FilswanOracle.CallOpts)
 }
 
 // Owner is a free data retrieval call binding the contract method 0x8da5cb5b.
 //
 // Solidity: function owner() view returns(address)
-func (_FilswanOralcle *FilswanOralcleCallerSession) Owner() (common.Address, error) {
-	return _FilswanOralcle.Contract.Owner(&_FilswanOralcle.CallOpts)
+func (_FilswanOracle *FilswanOracleCallerSession) Owner() (common.Address, error) {
+	return _FilswanOracle.Contract.Owner(&_FilswanOracle.CallOpts)
 }
 
 // SupportsInterface is a free data retrieval call binding the contract method 0x01ffc9a7.
 //
 // Solidity: function supportsInterface(bytes4 interfaceId) view returns(bool)
-func (_FilswanOralcle *FilswanOralcleCaller) SupportsInterface(opts *bind.CallOpts, interfaceId [4]byte) (bool, error) {
+func (_FilswanOracle *FilswanOracleCaller) SupportsInterface(opts *bind.CallOpts, interfaceId [4]byte) (bool, error) {
 	var out []interface{}
-	err := _FilswanOralcle.contract.Call(opts, &out, "supportsInterface", interfaceId)
+	err := _FilswanOracle.contract.Call(opts, &out, "supportsInterface", interfaceId)
 
 	if err != nil {
 		return *new(bool), err
@@ -385,209 +416,209 @@ func (_FilswanOralcle *FilswanOralcleCaller) SupportsInterface(opts *bind.CallOp
 // SupportsInterface is a free data retrieval call binding the contract method 0x01ffc9a7.
 //
 // Solidity: function supportsInterface(bytes4 interfaceId) view returns(bool)
-func (_FilswanOralcle *FilswanOralcleSession) SupportsInterface(interfaceId [4]byte) (bool, error) {
-	return _FilswanOralcle.Contract.SupportsInterface(&_FilswanOralcle.CallOpts, interfaceId)
+func (_FilswanOracle *FilswanOracleSession) SupportsInterface(interfaceId [4]byte) (bool, error) {
+	return _FilswanOracle.Contract.SupportsInterface(&_FilswanOracle.CallOpts, interfaceId)
 }
 
 // SupportsInterface is a free data retrieval call binding the contract method 0x01ffc9a7.
 //
 // Solidity: function supportsInterface(bytes4 interfaceId) view returns(bool)
-func (_FilswanOralcle *FilswanOralcleCallerSession) SupportsInterface(interfaceId [4]byte) (bool, error) {
-	return _FilswanOralcle.Contract.SupportsInterface(&_FilswanOralcle.CallOpts, interfaceId)
+func (_FilswanOracle *FilswanOracleCallerSession) SupportsInterface(interfaceId [4]byte) (bool, error) {
+	return _FilswanOracle.Contract.SupportsInterface(&_FilswanOracle.CallOpts, interfaceId)
 }
 
 // GrantRole is a paid mutator transaction binding the contract method 0x2f2ff15d.
 //
 // Solidity: function grantRole(bytes32 role, address account) returns()
-func (_FilswanOralcle *FilswanOralcleTransactor) GrantRole(opts *bind.TransactOpts, role [32]byte, account common.Address) (*types.Transaction, error) {
-	return _FilswanOralcle.contract.Transact(opts, "grantRole", role, account)
+func (_FilswanOracle *FilswanOracleTransactor) GrantRole(opts *bind.TransactOpts, role [32]byte, account common.Address) (*types.Transaction, error) {
+	return _FilswanOracle.contract.Transact(opts, "grantRole", role, account)
 }
 
 // GrantRole is a paid mutator transaction binding the contract method 0x2f2ff15d.
 //
 // Solidity: function grantRole(bytes32 role, address account) returns()
-func (_FilswanOralcle *FilswanOralcleSession) GrantRole(role [32]byte, account common.Address) (*types.Transaction, error) {
-	return _FilswanOralcle.Contract.GrantRole(&_FilswanOralcle.TransactOpts, role, account)
+func (_FilswanOracle *FilswanOracleSession) GrantRole(role [32]byte, account common.Address) (*types.Transaction, error) {
+	return _FilswanOracle.Contract.GrantRole(&_FilswanOracle.TransactOpts, role, account)
 }
 
 // GrantRole is a paid mutator transaction binding the contract method 0x2f2ff15d.
 //
 // Solidity: function grantRole(bytes32 role, address account) returns()
-func (_FilswanOralcle *FilswanOralcleTransactorSession) GrantRole(role [32]byte, account common.Address) (*types.Transaction, error) {
-	return _FilswanOralcle.Contract.GrantRole(&_FilswanOralcle.TransactOpts, role, account)
+func (_FilswanOracle *FilswanOracleTransactorSession) GrantRole(role [32]byte, account common.Address) (*types.Transaction, error) {
+	return _FilswanOracle.Contract.GrantRole(&_FilswanOracle.TransactOpts, role, account)
 }
 
 // Initialize is a paid mutator transaction binding the contract method 0x943b24b2.
 //
 // Solidity: function initialize(address admin, uint8 threshold) returns()
-func (_FilswanOralcle *FilswanOralcleTransactor) Initialize(opts *bind.TransactOpts, admin common.Address, threshold uint8) (*types.Transaction, error) {
-	return _FilswanOralcle.contract.Transact(opts, "initialize", admin, threshold)
+func (_FilswanOracle *FilswanOracleTransactor) Initialize(opts *bind.TransactOpts, admin common.Address, threshold uint8) (*types.Transaction, error) {
+	return _FilswanOracle.contract.Transact(opts, "initialize", admin, threshold)
 }
 
 // Initialize is a paid mutator transaction binding the contract method 0x943b24b2.
 //
 // Solidity: function initialize(address admin, uint8 threshold) returns()
-func (_FilswanOralcle *FilswanOralcleSession) Initialize(admin common.Address, threshold uint8) (*types.Transaction, error) {
-	return _FilswanOralcle.Contract.Initialize(&_FilswanOralcle.TransactOpts, admin, threshold)
+func (_FilswanOracle *FilswanOracleSession) Initialize(admin common.Address, threshold uint8) (*types.Transaction, error) {
+	return _FilswanOracle.Contract.Initialize(&_FilswanOracle.TransactOpts, admin, threshold)
 }
 
 // Initialize is a paid mutator transaction binding the contract method 0x943b24b2.
 //
 // Solidity: function initialize(address admin, uint8 threshold) returns()
-func (_FilswanOralcle *FilswanOralcleTransactorSession) Initialize(admin common.Address, threshold uint8) (*types.Transaction, error) {
-	return _FilswanOralcle.Contract.Initialize(&_FilswanOralcle.TransactOpts, admin, threshold)
+func (_FilswanOracle *FilswanOracleTransactorSession) Initialize(admin common.Address, threshold uint8) (*types.Transaction, error) {
+	return _FilswanOracle.Contract.Initialize(&_FilswanOracle.TransactOpts, admin, threshold)
 }
 
 // RenounceOwnership is a paid mutator transaction binding the contract method 0x715018a6.
 //
 // Solidity: function renounceOwnership() returns()
-func (_FilswanOralcle *FilswanOralcleTransactor) RenounceOwnership(opts *bind.TransactOpts) (*types.Transaction, error) {
-	return _FilswanOralcle.contract.Transact(opts, "renounceOwnership")
+func (_FilswanOracle *FilswanOracleTransactor) RenounceOwnership(opts *bind.TransactOpts) (*types.Transaction, error) {
+	return _FilswanOracle.contract.Transact(opts, "renounceOwnership")
 }
 
 // RenounceOwnership is a paid mutator transaction binding the contract method 0x715018a6.
 //
 // Solidity: function renounceOwnership() returns()
-func (_FilswanOralcle *FilswanOralcleSession) RenounceOwnership() (*types.Transaction, error) {
-	return _FilswanOralcle.Contract.RenounceOwnership(&_FilswanOralcle.TransactOpts)
+func (_FilswanOracle *FilswanOracleSession) RenounceOwnership() (*types.Transaction, error) {
+	return _FilswanOracle.Contract.RenounceOwnership(&_FilswanOracle.TransactOpts)
 }
 
 // RenounceOwnership is a paid mutator transaction binding the contract method 0x715018a6.
 //
 // Solidity: function renounceOwnership() returns()
-func (_FilswanOralcle *FilswanOralcleTransactorSession) RenounceOwnership() (*types.Transaction, error) {
-	return _FilswanOralcle.Contract.RenounceOwnership(&_FilswanOralcle.TransactOpts)
+func (_FilswanOracle *FilswanOracleTransactorSession) RenounceOwnership() (*types.Transaction, error) {
+	return _FilswanOracle.Contract.RenounceOwnership(&_FilswanOracle.TransactOpts)
 }
 
 // RenounceRole is a paid mutator transaction binding the contract method 0x36568abe.
 //
 // Solidity: function renounceRole(bytes32 role, address account) returns()
-func (_FilswanOralcle *FilswanOralcleTransactor) RenounceRole(opts *bind.TransactOpts, role [32]byte, account common.Address) (*types.Transaction, error) {
-	return _FilswanOralcle.contract.Transact(opts, "renounceRole", role, account)
+func (_FilswanOracle *FilswanOracleTransactor) RenounceRole(opts *bind.TransactOpts, role [32]byte, account common.Address) (*types.Transaction, error) {
+	return _FilswanOracle.contract.Transact(opts, "renounceRole", role, account)
 }
 
 // RenounceRole is a paid mutator transaction binding the contract method 0x36568abe.
 //
 // Solidity: function renounceRole(bytes32 role, address account) returns()
-func (_FilswanOralcle *FilswanOralcleSession) RenounceRole(role [32]byte, account common.Address) (*types.Transaction, error) {
-	return _FilswanOralcle.Contract.RenounceRole(&_FilswanOralcle.TransactOpts, role, account)
+func (_FilswanOracle *FilswanOracleSession) RenounceRole(role [32]byte, account common.Address) (*types.Transaction, error) {
+	return _FilswanOracle.Contract.RenounceRole(&_FilswanOracle.TransactOpts, role, account)
 }
 
 // RenounceRole is a paid mutator transaction binding the contract method 0x36568abe.
 //
 // Solidity: function renounceRole(bytes32 role, address account) returns()
-func (_FilswanOralcle *FilswanOralcleTransactorSession) RenounceRole(role [32]byte, account common.Address) (*types.Transaction, error) {
-	return _FilswanOralcle.Contract.RenounceRole(&_FilswanOralcle.TransactOpts, role, account)
+func (_FilswanOracle *FilswanOracleTransactorSession) RenounceRole(role [32]byte, account common.Address) (*types.Transaction, error) {
+	return _FilswanOracle.Contract.RenounceRole(&_FilswanOracle.TransactOpts, role, account)
 }
 
 // RevokeRole is a paid mutator transaction binding the contract method 0xd547741f.
 //
 // Solidity: function revokeRole(bytes32 role, address account) returns()
-func (_FilswanOralcle *FilswanOralcleTransactor) RevokeRole(opts *bind.TransactOpts, role [32]byte, account common.Address) (*types.Transaction, error) {
-	return _FilswanOralcle.contract.Transact(opts, "revokeRole", role, account)
+func (_FilswanOracle *FilswanOracleTransactor) RevokeRole(opts *bind.TransactOpts, role [32]byte, account common.Address) (*types.Transaction, error) {
+	return _FilswanOracle.contract.Transact(opts, "revokeRole", role, account)
 }
 
 // RevokeRole is a paid mutator transaction binding the contract method 0xd547741f.
 //
 // Solidity: function revokeRole(bytes32 role, address account) returns()
-func (_FilswanOralcle *FilswanOralcleSession) RevokeRole(role [32]byte, account common.Address) (*types.Transaction, error) {
-	return _FilswanOralcle.Contract.RevokeRole(&_FilswanOralcle.TransactOpts, role, account)
+func (_FilswanOracle *FilswanOracleSession) RevokeRole(role [32]byte, account common.Address) (*types.Transaction, error) {
+	return _FilswanOracle.Contract.RevokeRole(&_FilswanOracle.TransactOpts, role, account)
 }
 
 // RevokeRole is a paid mutator transaction binding the contract method 0xd547741f.
 //
 // Solidity: function revokeRole(bytes32 role, address account) returns()
-func (_FilswanOralcle *FilswanOralcleTransactorSession) RevokeRole(role [32]byte, account common.Address) (*types.Transaction, error) {
-	return _FilswanOralcle.Contract.RevokeRole(&_FilswanOralcle.TransactOpts, role, account)
+func (_FilswanOracle *FilswanOracleTransactorSession) RevokeRole(role [32]byte, account common.Address) (*types.Transaction, error) {
+	return _FilswanOracle.Contract.RevokeRole(&_FilswanOracle.TransactOpts, role, account)
 }
 
 // SetDAOUsers is a paid mutator transaction binding the contract method 0x6bcf35f9.
 //
 // Solidity: function setDAOUsers(address[] daoUsers) returns(bool)
-func (_FilswanOralcle *FilswanOralcleTransactor) SetDAOUsers(opts *bind.TransactOpts, daoUsers []common.Address) (*types.Transaction, error) {
-	return _FilswanOralcle.contract.Transact(opts, "setDAOUsers", daoUsers)
+func (_FilswanOracle *FilswanOracleTransactor) SetDAOUsers(opts *bind.TransactOpts, daoUsers []common.Address) (*types.Transaction, error) {
+	return _FilswanOracle.contract.Transact(opts, "setDAOUsers", daoUsers)
 }
 
 // SetDAOUsers is a paid mutator transaction binding the contract method 0x6bcf35f9.
 //
 // Solidity: function setDAOUsers(address[] daoUsers) returns(bool)
-func (_FilswanOralcle *FilswanOralcleSession) SetDAOUsers(daoUsers []common.Address) (*types.Transaction, error) {
-	return _FilswanOralcle.Contract.SetDAOUsers(&_FilswanOralcle.TransactOpts, daoUsers)
+func (_FilswanOracle *FilswanOracleSession) SetDAOUsers(daoUsers []common.Address) (*types.Transaction, error) {
+	return _FilswanOracle.Contract.SetDAOUsers(&_FilswanOracle.TransactOpts, daoUsers)
 }
 
 // SetDAOUsers is a paid mutator transaction binding the contract method 0x6bcf35f9.
 //
 // Solidity: function setDAOUsers(address[] daoUsers) returns(bool)
-func (_FilswanOralcle *FilswanOralcleTransactorSession) SetDAOUsers(daoUsers []common.Address) (*types.Transaction, error) {
-	return _FilswanOralcle.Contract.SetDAOUsers(&_FilswanOralcle.TransactOpts, daoUsers)
+func (_FilswanOracle *FilswanOracleTransactorSession) SetDAOUsers(daoUsers []common.Address) (*types.Transaction, error) {
+	return _FilswanOracle.Contract.SetDAOUsers(&_FilswanOracle.TransactOpts, daoUsers)
 }
 
-// SignTransaction is a paid mutator transaction binding the contract method 0x0c435a8b.
+// SignTransaction is a paid mutator transaction binding the contract method 0xf7e44ea5.
 //
-// Solidity: function signTransaction(string cid, string orderId, string dealId, uint256 paid, address recipient, uint256 terms, bool status) returns()
-func (_FilswanOralcle *FilswanOralcleTransactor) SignTransaction(opts *bind.TransactOpts, cid string, orderId string, dealId string, paid *big.Int, recipient common.Address, terms *big.Int, status bool) (*types.Transaction, error) {
-	return _FilswanOralcle.contract.Transact(opts, "signTransaction", cid, orderId, dealId, paid, recipient, terms, status)
+// Solidity: function signTransaction(string cid, string orderId, string dealId, uint256 paid, address recipient, bool status) returns()
+func (_FilswanOracle *FilswanOracleTransactor) SignTransaction(opts *bind.TransactOpts, cid string, orderId string, dealId string, paid *big.Int, recipient common.Address, status bool) (*types.Transaction, error) {
+	return _FilswanOracle.contract.Transact(opts, "signTransaction", cid, orderId, dealId, paid, recipient, status)
 }
 
-// SignTransaction is a paid mutator transaction binding the contract method 0x0c435a8b.
+// SignTransaction is a paid mutator transaction binding the contract method 0xf7e44ea5.
 //
-// Solidity: function signTransaction(string cid, string orderId, string dealId, uint256 paid, address recipient, uint256 terms, bool status) returns()
-func (_FilswanOralcle *FilswanOralcleSession) SignTransaction(cid string, orderId string, dealId string, paid *big.Int, recipient common.Address, terms *big.Int, status bool) (*types.Transaction, error) {
-	return _FilswanOralcle.Contract.SignTransaction(&_FilswanOralcle.TransactOpts, cid, orderId, dealId, paid, recipient, terms, status)
+// Solidity: function signTransaction(string cid, string orderId, string dealId, uint256 paid, address recipient, bool status) returns()
+func (_FilswanOracle *FilswanOracleSession) SignTransaction(cid string, orderId string, dealId string, paid *big.Int, recipient common.Address, status bool) (*types.Transaction, error) {
+	return _FilswanOracle.Contract.SignTransaction(&_FilswanOracle.TransactOpts, cid, orderId, dealId, paid, recipient, status)
 }
 
-// SignTransaction is a paid mutator transaction binding the contract method 0x0c435a8b.
+// SignTransaction is a paid mutator transaction binding the contract method 0xf7e44ea5.
 //
-// Solidity: function signTransaction(string cid, string orderId, string dealId, uint256 paid, address recipient, uint256 terms, bool status) returns()
-func (_FilswanOralcle *FilswanOralcleTransactorSession) SignTransaction(cid string, orderId string, dealId string, paid *big.Int, recipient common.Address, terms *big.Int, status bool) (*types.Transaction, error) {
-	return _FilswanOralcle.Contract.SignTransaction(&_FilswanOralcle.TransactOpts, cid, orderId, dealId, paid, recipient, terms, status)
+// Solidity: function signTransaction(string cid, string orderId, string dealId, uint256 paid, address recipient, bool status) returns()
+func (_FilswanOracle *FilswanOracleTransactorSession) SignTransaction(cid string, orderId string, dealId string, paid *big.Int, recipient common.Address, status bool) (*types.Transaction, error) {
+	return _FilswanOracle.Contract.SignTransaction(&_FilswanOracle.TransactOpts, cid, orderId, dealId, paid, recipient, status)
 }
 
 // TransferOwnership is a paid mutator transaction binding the contract method 0xf2fde38b.
 //
 // Solidity: function transferOwnership(address newOwner) returns()
-func (_FilswanOralcle *FilswanOralcleTransactor) TransferOwnership(opts *bind.TransactOpts, newOwner common.Address) (*types.Transaction, error) {
-	return _FilswanOralcle.contract.Transact(opts, "transferOwnership", newOwner)
+func (_FilswanOracle *FilswanOracleTransactor) TransferOwnership(opts *bind.TransactOpts, newOwner common.Address) (*types.Transaction, error) {
+	return _FilswanOracle.contract.Transact(opts, "transferOwnership", newOwner)
 }
 
 // TransferOwnership is a paid mutator transaction binding the contract method 0xf2fde38b.
 //
 // Solidity: function transferOwnership(address newOwner) returns()
-func (_FilswanOralcle *FilswanOralcleSession) TransferOwnership(newOwner common.Address) (*types.Transaction, error) {
-	return _FilswanOralcle.Contract.TransferOwnership(&_FilswanOralcle.TransactOpts, newOwner)
+func (_FilswanOracle *FilswanOracleSession) TransferOwnership(newOwner common.Address) (*types.Transaction, error) {
+	return _FilswanOracle.Contract.TransferOwnership(&_FilswanOracle.TransactOpts, newOwner)
 }
 
 // TransferOwnership is a paid mutator transaction binding the contract method 0xf2fde38b.
 //
 // Solidity: function transferOwnership(address newOwner) returns()
-func (_FilswanOralcle *FilswanOralcleTransactorSession) TransferOwnership(newOwner common.Address) (*types.Transaction, error) {
-	return _FilswanOralcle.Contract.TransferOwnership(&_FilswanOralcle.TransactOpts, newOwner)
+func (_FilswanOracle *FilswanOracleTransactorSession) TransferOwnership(newOwner common.Address) (*types.Transaction, error) {
+	return _FilswanOracle.Contract.TransferOwnership(&_FilswanOracle.TransactOpts, newOwner)
 }
 
 // UpdateThreshold is a paid mutator transaction binding the contract method 0xf3df5b69.
 //
 // Solidity: function updateThreshold(uint8 threshold) returns(bool)
-func (_FilswanOralcle *FilswanOralcleTransactor) UpdateThreshold(opts *bind.TransactOpts, threshold uint8) (*types.Transaction, error) {
-	return _FilswanOralcle.contract.Transact(opts, "updateThreshold", threshold)
+func (_FilswanOracle *FilswanOracleTransactor) UpdateThreshold(opts *bind.TransactOpts, threshold uint8) (*types.Transaction, error) {
+	return _FilswanOracle.contract.Transact(opts, "updateThreshold", threshold)
 }
 
 // UpdateThreshold is a paid mutator transaction binding the contract method 0xf3df5b69.
 //
 // Solidity: function updateThreshold(uint8 threshold) returns(bool)
-func (_FilswanOralcle *FilswanOralcleSession) UpdateThreshold(threshold uint8) (*types.Transaction, error) {
-	return _FilswanOralcle.Contract.UpdateThreshold(&_FilswanOralcle.TransactOpts, threshold)
+func (_FilswanOracle *FilswanOracleSession) UpdateThreshold(threshold uint8) (*types.Transaction, error) {
+	return _FilswanOracle.Contract.UpdateThreshold(&_FilswanOracle.TransactOpts, threshold)
 }
 
 // UpdateThreshold is a paid mutator transaction binding the contract method 0xf3df5b69.
 //
 // Solidity: function updateThreshold(uint8 threshold) returns(bool)
-func (_FilswanOralcle *FilswanOralcleTransactorSession) UpdateThreshold(threshold uint8) (*types.Transaction, error) {
-	return _FilswanOralcle.Contract.UpdateThreshold(&_FilswanOralcle.TransactOpts, threshold)
+func (_FilswanOracle *FilswanOracleTransactorSession) UpdateThreshold(threshold uint8) (*types.Transaction, error) {
+	return _FilswanOracle.Contract.UpdateThreshold(&_FilswanOracle.TransactOpts, threshold)
 }
 
-// FilswanOralcleOwnershipTransferredIterator is returned from FilterOwnershipTransferred and is used to iterate over the raw logs and unpacked data for OwnershipTransferred events raised by the FilswanOralcle contract.
-type FilswanOralcleOwnershipTransferredIterator struct {
-	Event *FilswanOralcleOwnershipTransferred // Event containing the contract specifics and raw log
+// FilswanOracleOwnershipTransferredIterator is returned from FilterOwnershipTransferred and is used to iterate over the raw logs and unpacked data for OwnershipTransferred events raised by the FilswanOracle contract.
+type FilswanOracleOwnershipTransferredIterator struct {
+	Event *FilswanOracleOwnershipTransferred // Event containing the contract specifics and raw log
 
 	contract *bind.BoundContract // Generic contract to use for unpacking event data
 	event    string              // Event name to use for unpacking event data
@@ -601,7 +632,7 @@ type FilswanOralcleOwnershipTransferredIterator struct {
 // Next advances the iterator to the subsequent event, returning whether there
 // are any more events found. In case of a retrieval or parsing error, false is
 // returned and Error() can be queried for the exact failure.
-func (it *FilswanOralcleOwnershipTransferredIterator) Next() bool {
+func (it *FilswanOracleOwnershipTransferredIterator) Next() bool {
 	// If the iterator failed, stop iterating
 	if it.fail != nil {
 		return false
@@ -610,7 +641,7 @@ func (it *FilswanOralcleOwnershipTransferredIterator) Next() bool {
 	if it.done {
 		select {
 		case log := <-it.logs:
-			it.Event = new(FilswanOralcleOwnershipTransferred)
+			it.Event = new(FilswanOracleOwnershipTransferred)
 			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
 				it.fail = err
 				return false
@@ -625,7 +656,7 @@ func (it *FilswanOralcleOwnershipTransferredIterator) Next() bool {
 	// Iterator still in progress, wait for either a data or an error event
 	select {
 	case log := <-it.logs:
-		it.Event = new(FilswanOralcleOwnershipTransferred)
+		it.Event = new(FilswanOracleOwnershipTransferred)
 		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
 			it.fail = err
 			return false
@@ -641,19 +672,19 @@ func (it *FilswanOralcleOwnershipTransferredIterator) Next() bool {
 }
 
 // Error returns any retrieval or parsing error occurred during filtering.
-func (it *FilswanOralcleOwnershipTransferredIterator) Error() error {
+func (it *FilswanOracleOwnershipTransferredIterator) Error() error {
 	return it.fail
 }
 
 // Close terminates the iteration process, releasing any pending underlying
 // resources.
-func (it *FilswanOralcleOwnershipTransferredIterator) Close() error {
+func (it *FilswanOracleOwnershipTransferredIterator) Close() error {
 	it.sub.Unsubscribe()
 	return nil
 }
 
-// FilswanOralcleOwnershipTransferred represents a OwnershipTransferred event raised by the FilswanOralcle contract.
-type FilswanOralcleOwnershipTransferred struct {
+// FilswanOracleOwnershipTransferred represents a OwnershipTransferred event raised by the FilswanOracle contract.
+type FilswanOracleOwnershipTransferred struct {
 	PreviousOwner common.Address
 	NewOwner      common.Address
 	Raw           types.Log // Blockchain specific contextual infos
@@ -662,7 +693,7 @@ type FilswanOralcleOwnershipTransferred struct {
 // FilterOwnershipTransferred is a free log retrieval operation binding the contract event 0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0.
 //
 // Solidity: event OwnershipTransferred(address indexed previousOwner, address indexed newOwner)
-func (_FilswanOralcle *FilswanOralcleFilterer) FilterOwnershipTransferred(opts *bind.FilterOpts, previousOwner []common.Address, newOwner []common.Address) (*FilswanOralcleOwnershipTransferredIterator, error) {
+func (_FilswanOracle *FilswanOracleFilterer) FilterOwnershipTransferred(opts *bind.FilterOpts, previousOwner []common.Address, newOwner []common.Address) (*FilswanOracleOwnershipTransferredIterator, error) {
 
 	var previousOwnerRule []interface{}
 	for _, previousOwnerItem := range previousOwner {
@@ -673,17 +704,17 @@ func (_FilswanOralcle *FilswanOralcleFilterer) FilterOwnershipTransferred(opts *
 		newOwnerRule = append(newOwnerRule, newOwnerItem)
 	}
 
-	logs, sub, err := _FilswanOralcle.contract.FilterLogs(opts, "OwnershipTransferred", previousOwnerRule, newOwnerRule)
+	logs, sub, err := _FilswanOracle.contract.FilterLogs(opts, "OwnershipTransferred", previousOwnerRule, newOwnerRule)
 	if err != nil {
 		return nil, err
 	}
-	return &FilswanOralcleOwnershipTransferredIterator{contract: _FilswanOralcle.contract, event: "OwnershipTransferred", logs: logs, sub: sub}, nil
+	return &FilswanOracleOwnershipTransferredIterator{contract: _FilswanOracle.contract, event: "OwnershipTransferred", logs: logs, sub: sub}, nil
 }
 
 // WatchOwnershipTransferred is a free log subscription operation binding the contract event 0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0.
 //
 // Solidity: event OwnershipTransferred(address indexed previousOwner, address indexed newOwner)
-func (_FilswanOralcle *FilswanOralcleFilterer) WatchOwnershipTransferred(opts *bind.WatchOpts, sink chan<- *FilswanOralcleOwnershipTransferred, previousOwner []common.Address, newOwner []common.Address) (event.Subscription, error) {
+func (_FilswanOracle *FilswanOracleFilterer) WatchOwnershipTransferred(opts *bind.WatchOpts, sink chan<- *FilswanOracleOwnershipTransferred, previousOwner []common.Address, newOwner []common.Address) (event.Subscription, error) {
 
 	var previousOwnerRule []interface{}
 	for _, previousOwnerItem := range previousOwner {
@@ -694,7 +725,7 @@ func (_FilswanOralcle *FilswanOralcleFilterer) WatchOwnershipTransferred(opts *b
 		newOwnerRule = append(newOwnerRule, newOwnerItem)
 	}
 
-	logs, sub, err := _FilswanOralcle.contract.WatchLogs(opts, "OwnershipTransferred", previousOwnerRule, newOwnerRule)
+	logs, sub, err := _FilswanOracle.contract.WatchLogs(opts, "OwnershipTransferred", previousOwnerRule, newOwnerRule)
 	if err != nil {
 		return nil, err
 	}
@@ -704,8 +735,8 @@ func (_FilswanOralcle *FilswanOralcleFilterer) WatchOwnershipTransferred(opts *b
 			select {
 			case log := <-logs:
 				// New log arrived, parse the event and forward to the user
-				event := new(FilswanOralcleOwnershipTransferred)
-				if err := _FilswanOralcle.contract.UnpackLog(event, "OwnershipTransferred", log); err != nil {
+				event := new(FilswanOracleOwnershipTransferred)
+				if err := _FilswanOracle.contract.UnpackLog(event, "OwnershipTransferred", log); err != nil {
 					return err
 				}
 				event.Raw = log
@@ -729,18 +760,18 @@ func (_FilswanOralcle *FilswanOralcleFilterer) WatchOwnershipTransferred(opts *b
 // ParseOwnershipTransferred is a log parse operation binding the contract event 0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0.
 //
 // Solidity: event OwnershipTransferred(address indexed previousOwner, address indexed newOwner)
-func (_FilswanOralcle *FilswanOralcleFilterer) ParseOwnershipTransferred(log types.Log) (*FilswanOralcleOwnershipTransferred, error) {
-	event := new(FilswanOralcleOwnershipTransferred)
-	if err := _FilswanOralcle.contract.UnpackLog(event, "OwnershipTransferred", log); err != nil {
+func (_FilswanOracle *FilswanOracleFilterer) ParseOwnershipTransferred(log types.Log) (*FilswanOracleOwnershipTransferred, error) {
+	event := new(FilswanOracleOwnershipTransferred)
+	if err := _FilswanOracle.contract.UnpackLog(event, "OwnershipTransferred", log); err != nil {
 		return nil, err
 	}
 	event.Raw = log
 	return event, nil
 }
 
-// FilswanOralcleRoleAdminChangedIterator is returned from FilterRoleAdminChanged and is used to iterate over the raw logs and unpacked data for RoleAdminChanged events raised by the FilswanOralcle contract.
-type FilswanOralcleRoleAdminChangedIterator struct {
-	Event *FilswanOralcleRoleAdminChanged // Event containing the contract specifics and raw log
+// FilswanOracleRoleAdminChangedIterator is returned from FilterRoleAdminChanged and is used to iterate over the raw logs and unpacked data for RoleAdminChanged events raised by the FilswanOracle contract.
+type FilswanOracleRoleAdminChangedIterator struct {
+	Event *FilswanOracleRoleAdminChanged // Event containing the contract specifics and raw log
 
 	contract *bind.BoundContract // Generic contract to use for unpacking event data
 	event    string              // Event name to use for unpacking event data
@@ -754,7 +785,7 @@ type FilswanOralcleRoleAdminChangedIterator struct {
 // Next advances the iterator to the subsequent event, returning whether there
 // are any more events found. In case of a retrieval or parsing error, false is
 // returned and Error() can be queried for the exact failure.
-func (it *FilswanOralcleRoleAdminChangedIterator) Next() bool {
+func (it *FilswanOracleRoleAdminChangedIterator) Next() bool {
 	// If the iterator failed, stop iterating
 	if it.fail != nil {
 		return false
@@ -763,7 +794,7 @@ func (it *FilswanOralcleRoleAdminChangedIterator) Next() bool {
 	if it.done {
 		select {
 		case log := <-it.logs:
-			it.Event = new(FilswanOralcleRoleAdminChanged)
+			it.Event = new(FilswanOracleRoleAdminChanged)
 			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
 				it.fail = err
 				return false
@@ -778,7 +809,7 @@ func (it *FilswanOralcleRoleAdminChangedIterator) Next() bool {
 	// Iterator still in progress, wait for either a data or an error event
 	select {
 	case log := <-it.logs:
-		it.Event = new(FilswanOralcleRoleAdminChanged)
+		it.Event = new(FilswanOracleRoleAdminChanged)
 		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
 			it.fail = err
 			return false
@@ -794,19 +825,19 @@ func (it *FilswanOralcleRoleAdminChangedIterator) Next() bool {
 }
 
 // Error returns any retrieval or parsing error occurred during filtering.
-func (it *FilswanOralcleRoleAdminChangedIterator) Error() error {
+func (it *FilswanOracleRoleAdminChangedIterator) Error() error {
 	return it.fail
 }
 
 // Close terminates the iteration process, releasing any pending underlying
 // resources.
-func (it *FilswanOralcleRoleAdminChangedIterator) Close() error {
+func (it *FilswanOracleRoleAdminChangedIterator) Close() error {
 	it.sub.Unsubscribe()
 	return nil
 }
 
-// FilswanOralcleRoleAdminChanged represents a RoleAdminChanged event raised by the FilswanOralcle contract.
-type FilswanOralcleRoleAdminChanged struct {
+// FilswanOracleRoleAdminChanged represents a RoleAdminChanged event raised by the FilswanOracle contract.
+type FilswanOracleRoleAdminChanged struct {
 	Role              [32]byte
 	PreviousAdminRole [32]byte
 	NewAdminRole      [32]byte
@@ -816,7 +847,7 @@ type FilswanOralcleRoleAdminChanged struct {
 // FilterRoleAdminChanged is a free log retrieval operation binding the contract event 0xbd79b86ffe0ab8e8776151514217cd7cacd52c909f66475c3af44e129f0b00ff.
 //
 // Solidity: event RoleAdminChanged(bytes32 indexed role, bytes32 indexed previousAdminRole, bytes32 indexed newAdminRole)
-func (_FilswanOralcle *FilswanOralcleFilterer) FilterRoleAdminChanged(opts *bind.FilterOpts, role [][32]byte, previousAdminRole [][32]byte, newAdminRole [][32]byte) (*FilswanOralcleRoleAdminChangedIterator, error) {
+func (_FilswanOracle *FilswanOracleFilterer) FilterRoleAdminChanged(opts *bind.FilterOpts, role [][32]byte, previousAdminRole [][32]byte, newAdminRole [][32]byte) (*FilswanOracleRoleAdminChangedIterator, error) {
 
 	var roleRule []interface{}
 	for _, roleItem := range role {
@@ -831,17 +862,17 @@ func (_FilswanOralcle *FilswanOralcleFilterer) FilterRoleAdminChanged(opts *bind
 		newAdminRoleRule = append(newAdminRoleRule, newAdminRoleItem)
 	}
 
-	logs, sub, err := _FilswanOralcle.contract.FilterLogs(opts, "RoleAdminChanged", roleRule, previousAdminRoleRule, newAdminRoleRule)
+	logs, sub, err := _FilswanOracle.contract.FilterLogs(opts, "RoleAdminChanged", roleRule, previousAdminRoleRule, newAdminRoleRule)
 	if err != nil {
 		return nil, err
 	}
-	return &FilswanOralcleRoleAdminChangedIterator{contract: _FilswanOralcle.contract, event: "RoleAdminChanged", logs: logs, sub: sub}, nil
+	return &FilswanOracleRoleAdminChangedIterator{contract: _FilswanOracle.contract, event: "RoleAdminChanged", logs: logs, sub: sub}, nil
 }
 
 // WatchRoleAdminChanged is a free log subscription operation binding the contract event 0xbd79b86ffe0ab8e8776151514217cd7cacd52c909f66475c3af44e129f0b00ff.
 //
 // Solidity: event RoleAdminChanged(bytes32 indexed role, bytes32 indexed previousAdminRole, bytes32 indexed newAdminRole)
-func (_FilswanOralcle *FilswanOralcleFilterer) WatchRoleAdminChanged(opts *bind.WatchOpts, sink chan<- *FilswanOralcleRoleAdminChanged, role [][32]byte, previousAdminRole [][32]byte, newAdminRole [][32]byte) (event.Subscription, error) {
+func (_FilswanOracle *FilswanOracleFilterer) WatchRoleAdminChanged(opts *bind.WatchOpts, sink chan<- *FilswanOracleRoleAdminChanged, role [][32]byte, previousAdminRole [][32]byte, newAdminRole [][32]byte) (event.Subscription, error) {
 
 	var roleRule []interface{}
 	for _, roleItem := range role {
@@ -856,7 +887,7 @@ func (_FilswanOralcle *FilswanOralcleFilterer) WatchRoleAdminChanged(opts *bind.
 		newAdminRoleRule = append(newAdminRoleRule, newAdminRoleItem)
 	}
 
-	logs, sub, err := _FilswanOralcle.contract.WatchLogs(opts, "RoleAdminChanged", roleRule, previousAdminRoleRule, newAdminRoleRule)
+	logs, sub, err := _FilswanOracle.contract.WatchLogs(opts, "RoleAdminChanged", roleRule, previousAdminRoleRule, newAdminRoleRule)
 	if err != nil {
 		return nil, err
 	}
@@ -866,8 +897,8 @@ func (_FilswanOralcle *FilswanOralcleFilterer) WatchRoleAdminChanged(opts *bind.
 			select {
 			case log := <-logs:
 				// New log arrived, parse the event and forward to the user
-				event := new(FilswanOralcleRoleAdminChanged)
-				if err := _FilswanOralcle.contract.UnpackLog(event, "RoleAdminChanged", log); err != nil {
+				event := new(FilswanOracleRoleAdminChanged)
+				if err := _FilswanOracle.contract.UnpackLog(event, "RoleAdminChanged", log); err != nil {
 					return err
 				}
 				event.Raw = log
@@ -891,18 +922,18 @@ func (_FilswanOralcle *FilswanOralcleFilterer) WatchRoleAdminChanged(opts *bind.
 // ParseRoleAdminChanged is a log parse operation binding the contract event 0xbd79b86ffe0ab8e8776151514217cd7cacd52c909f66475c3af44e129f0b00ff.
 //
 // Solidity: event RoleAdminChanged(bytes32 indexed role, bytes32 indexed previousAdminRole, bytes32 indexed newAdminRole)
-func (_FilswanOralcle *FilswanOralcleFilterer) ParseRoleAdminChanged(log types.Log) (*FilswanOralcleRoleAdminChanged, error) {
-	event := new(FilswanOralcleRoleAdminChanged)
-	if err := _FilswanOralcle.contract.UnpackLog(event, "RoleAdminChanged", log); err != nil {
+func (_FilswanOracle *FilswanOracleFilterer) ParseRoleAdminChanged(log types.Log) (*FilswanOracleRoleAdminChanged, error) {
+	event := new(FilswanOracleRoleAdminChanged)
+	if err := _FilswanOracle.contract.UnpackLog(event, "RoleAdminChanged", log); err != nil {
 		return nil, err
 	}
 	event.Raw = log
 	return event, nil
 }
 
-// FilswanOralcleRoleGrantedIterator is returned from FilterRoleGranted and is used to iterate over the raw logs and unpacked data for RoleGranted events raised by the FilswanOralcle contract.
-type FilswanOralcleRoleGrantedIterator struct {
-	Event *FilswanOralcleRoleGranted // Event containing the contract specifics and raw log
+// FilswanOracleRoleGrantedIterator is returned from FilterRoleGranted and is used to iterate over the raw logs and unpacked data for RoleGranted events raised by the FilswanOracle contract.
+type FilswanOracleRoleGrantedIterator struct {
+	Event *FilswanOracleRoleGranted // Event containing the contract specifics and raw log
 
 	contract *bind.BoundContract // Generic contract to use for unpacking event data
 	event    string              // Event name to use for unpacking event data
@@ -916,7 +947,7 @@ type FilswanOralcleRoleGrantedIterator struct {
 // Next advances the iterator to the subsequent event, returning whether there
 // are any more events found. In case of a retrieval or parsing error, false is
 // returned and Error() can be queried for the exact failure.
-func (it *FilswanOralcleRoleGrantedIterator) Next() bool {
+func (it *FilswanOracleRoleGrantedIterator) Next() bool {
 	// If the iterator failed, stop iterating
 	if it.fail != nil {
 		return false
@@ -925,7 +956,7 @@ func (it *FilswanOralcleRoleGrantedIterator) Next() bool {
 	if it.done {
 		select {
 		case log := <-it.logs:
-			it.Event = new(FilswanOralcleRoleGranted)
+			it.Event = new(FilswanOracleRoleGranted)
 			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
 				it.fail = err
 				return false
@@ -940,7 +971,7 @@ func (it *FilswanOralcleRoleGrantedIterator) Next() bool {
 	// Iterator still in progress, wait for either a data or an error event
 	select {
 	case log := <-it.logs:
-		it.Event = new(FilswanOralcleRoleGranted)
+		it.Event = new(FilswanOracleRoleGranted)
 		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
 			it.fail = err
 			return false
@@ -956,19 +987,19 @@ func (it *FilswanOralcleRoleGrantedIterator) Next() bool {
 }
 
 // Error returns any retrieval or parsing error occurred during filtering.
-func (it *FilswanOralcleRoleGrantedIterator) Error() error {
+func (it *FilswanOracleRoleGrantedIterator) Error() error {
 	return it.fail
 }
 
 // Close terminates the iteration process, releasing any pending underlying
 // resources.
-func (it *FilswanOralcleRoleGrantedIterator) Close() error {
+func (it *FilswanOracleRoleGrantedIterator) Close() error {
 	it.sub.Unsubscribe()
 	return nil
 }
 
-// FilswanOralcleRoleGranted represents a RoleGranted event raised by the FilswanOralcle contract.
-type FilswanOralcleRoleGranted struct {
+// FilswanOracleRoleGranted represents a RoleGranted event raised by the FilswanOracle contract.
+type FilswanOracleRoleGranted struct {
 	Role    [32]byte
 	Account common.Address
 	Sender  common.Address
@@ -978,7 +1009,7 @@ type FilswanOralcleRoleGranted struct {
 // FilterRoleGranted is a free log retrieval operation binding the contract event 0x2f8788117e7eff1d82e926ec794901d17c78024a50270940304540a733656f0d.
 //
 // Solidity: event RoleGranted(bytes32 indexed role, address indexed account, address indexed sender)
-func (_FilswanOralcle *FilswanOralcleFilterer) FilterRoleGranted(opts *bind.FilterOpts, role [][32]byte, account []common.Address, sender []common.Address) (*FilswanOralcleRoleGrantedIterator, error) {
+func (_FilswanOracle *FilswanOracleFilterer) FilterRoleGranted(opts *bind.FilterOpts, role [][32]byte, account []common.Address, sender []common.Address) (*FilswanOracleRoleGrantedIterator, error) {
 
 	var roleRule []interface{}
 	for _, roleItem := range role {
@@ -993,17 +1024,17 @@ func (_FilswanOralcle *FilswanOralcleFilterer) FilterRoleGranted(opts *bind.Filt
 		senderRule = append(senderRule, senderItem)
 	}
 
-	logs, sub, err := _FilswanOralcle.contract.FilterLogs(opts, "RoleGranted", roleRule, accountRule, senderRule)
+	logs, sub, err := _FilswanOracle.contract.FilterLogs(opts, "RoleGranted", roleRule, accountRule, senderRule)
 	if err != nil {
 		return nil, err
 	}
-	return &FilswanOralcleRoleGrantedIterator{contract: _FilswanOralcle.contract, event: "RoleGranted", logs: logs, sub: sub}, nil
+	return &FilswanOracleRoleGrantedIterator{contract: _FilswanOracle.contract, event: "RoleGranted", logs: logs, sub: sub}, nil
 }
 
 // WatchRoleGranted is a free log subscription operation binding the contract event 0x2f8788117e7eff1d82e926ec794901d17c78024a50270940304540a733656f0d.
 //
 // Solidity: event RoleGranted(bytes32 indexed role, address indexed account, address indexed sender)
-func (_FilswanOralcle *FilswanOralcleFilterer) WatchRoleGranted(opts *bind.WatchOpts, sink chan<- *FilswanOralcleRoleGranted, role [][32]byte, account []common.Address, sender []common.Address) (event.Subscription, error) {
+func (_FilswanOracle *FilswanOracleFilterer) WatchRoleGranted(opts *bind.WatchOpts, sink chan<- *FilswanOracleRoleGranted, role [][32]byte, account []common.Address, sender []common.Address) (event.Subscription, error) {
 
 	var roleRule []interface{}
 	for _, roleItem := range role {
@@ -1018,7 +1049,7 @@ func (_FilswanOralcle *FilswanOralcleFilterer) WatchRoleGranted(opts *bind.Watch
 		senderRule = append(senderRule, senderItem)
 	}
 
-	logs, sub, err := _FilswanOralcle.contract.WatchLogs(opts, "RoleGranted", roleRule, accountRule, senderRule)
+	logs, sub, err := _FilswanOracle.contract.WatchLogs(opts, "RoleGranted", roleRule, accountRule, senderRule)
 	if err != nil {
 		return nil, err
 	}
@@ -1028,8 +1059,8 @@ func (_FilswanOralcle *FilswanOralcleFilterer) WatchRoleGranted(opts *bind.Watch
 			select {
 			case log := <-logs:
 				// New log arrived, parse the event and forward to the user
-				event := new(FilswanOralcleRoleGranted)
-				if err := _FilswanOralcle.contract.UnpackLog(event, "RoleGranted", log); err != nil {
+				event := new(FilswanOracleRoleGranted)
+				if err := _FilswanOracle.contract.UnpackLog(event, "RoleGranted", log); err != nil {
 					return err
 				}
 				event.Raw = log
@@ -1053,18 +1084,18 @@ func (_FilswanOralcle *FilswanOralcleFilterer) WatchRoleGranted(opts *bind.Watch
 // ParseRoleGranted is a log parse operation binding the contract event 0x2f8788117e7eff1d82e926ec794901d17c78024a50270940304540a733656f0d.
 //
 // Solidity: event RoleGranted(bytes32 indexed role, address indexed account, address indexed sender)
-func (_FilswanOralcle *FilswanOralcleFilterer) ParseRoleGranted(log types.Log) (*FilswanOralcleRoleGranted, error) {
-	event := new(FilswanOralcleRoleGranted)
-	if err := _FilswanOralcle.contract.UnpackLog(event, "RoleGranted", log); err != nil {
+func (_FilswanOracle *FilswanOracleFilterer) ParseRoleGranted(log types.Log) (*FilswanOracleRoleGranted, error) {
+	event := new(FilswanOracleRoleGranted)
+	if err := _FilswanOracle.contract.UnpackLog(event, "RoleGranted", log); err != nil {
 		return nil, err
 	}
 	event.Raw = log
 	return event, nil
 }
 
-// FilswanOralcleRoleRevokedIterator is returned from FilterRoleRevoked and is used to iterate over the raw logs and unpacked data for RoleRevoked events raised by the FilswanOralcle contract.
-type FilswanOralcleRoleRevokedIterator struct {
-	Event *FilswanOralcleRoleRevoked // Event containing the contract specifics and raw log
+// FilswanOracleRoleRevokedIterator is returned from FilterRoleRevoked and is used to iterate over the raw logs and unpacked data for RoleRevoked events raised by the FilswanOracle contract.
+type FilswanOracleRoleRevokedIterator struct {
+	Event *FilswanOracleRoleRevoked // Event containing the contract specifics and raw log
 
 	contract *bind.BoundContract // Generic contract to use for unpacking event data
 	event    string              // Event name to use for unpacking event data
@@ -1078,7 +1109,7 @@ type FilswanOralcleRoleRevokedIterator struct {
 // Next advances the iterator to the subsequent event, returning whether there
 // are any more events found. In case of a retrieval or parsing error, false is
 // returned and Error() can be queried for the exact failure.
-func (it *FilswanOralcleRoleRevokedIterator) Next() bool {
+func (it *FilswanOracleRoleRevokedIterator) Next() bool {
 	// If the iterator failed, stop iterating
 	if it.fail != nil {
 		return false
@@ -1087,7 +1118,7 @@ func (it *FilswanOralcleRoleRevokedIterator) Next() bool {
 	if it.done {
 		select {
 		case log := <-it.logs:
-			it.Event = new(FilswanOralcleRoleRevoked)
+			it.Event = new(FilswanOracleRoleRevoked)
 			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
 				it.fail = err
 				return false
@@ -1102,7 +1133,7 @@ func (it *FilswanOralcleRoleRevokedIterator) Next() bool {
 	// Iterator still in progress, wait for either a data or an error event
 	select {
 	case log := <-it.logs:
-		it.Event = new(FilswanOralcleRoleRevoked)
+		it.Event = new(FilswanOracleRoleRevoked)
 		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
 			it.fail = err
 			return false
@@ -1118,19 +1149,19 @@ func (it *FilswanOralcleRoleRevokedIterator) Next() bool {
 }
 
 // Error returns any retrieval or parsing error occurred during filtering.
-func (it *FilswanOralcleRoleRevokedIterator) Error() error {
+func (it *FilswanOracleRoleRevokedIterator) Error() error {
 	return it.fail
 }
 
 // Close terminates the iteration process, releasing any pending underlying
 // resources.
-func (it *FilswanOralcleRoleRevokedIterator) Close() error {
+func (it *FilswanOracleRoleRevokedIterator) Close() error {
 	it.sub.Unsubscribe()
 	return nil
 }
 
-// FilswanOralcleRoleRevoked represents a RoleRevoked event raised by the FilswanOralcle contract.
-type FilswanOralcleRoleRevoked struct {
+// FilswanOracleRoleRevoked represents a RoleRevoked event raised by the FilswanOracle contract.
+type FilswanOracleRoleRevoked struct {
 	Role    [32]byte
 	Account common.Address
 	Sender  common.Address
@@ -1140,7 +1171,7 @@ type FilswanOralcleRoleRevoked struct {
 // FilterRoleRevoked is a free log retrieval operation binding the contract event 0xf6391f5c32d9c69d2a47ea670b442974b53935d1edc7fd64eb21e047a839171b.
 //
 // Solidity: event RoleRevoked(bytes32 indexed role, address indexed account, address indexed sender)
-func (_FilswanOralcle *FilswanOralcleFilterer) FilterRoleRevoked(opts *bind.FilterOpts, role [][32]byte, account []common.Address, sender []common.Address) (*FilswanOralcleRoleRevokedIterator, error) {
+func (_FilswanOracle *FilswanOracleFilterer) FilterRoleRevoked(opts *bind.FilterOpts, role [][32]byte, account []common.Address, sender []common.Address) (*FilswanOracleRoleRevokedIterator, error) {
 
 	var roleRule []interface{}
 	for _, roleItem := range role {
@@ -1155,17 +1186,17 @@ func (_FilswanOralcle *FilswanOralcleFilterer) FilterRoleRevoked(opts *bind.Filt
 		senderRule = append(senderRule, senderItem)
 	}
 
-	logs, sub, err := _FilswanOralcle.contract.FilterLogs(opts, "RoleRevoked", roleRule, accountRule, senderRule)
+	logs, sub, err := _FilswanOracle.contract.FilterLogs(opts, "RoleRevoked", roleRule, accountRule, senderRule)
 	if err != nil {
 		return nil, err
 	}
-	return &FilswanOralcleRoleRevokedIterator{contract: _FilswanOralcle.contract, event: "RoleRevoked", logs: logs, sub: sub}, nil
+	return &FilswanOracleRoleRevokedIterator{contract: _FilswanOracle.contract, event: "RoleRevoked", logs: logs, sub: sub}, nil
 }
 
 // WatchRoleRevoked is a free log subscription operation binding the contract event 0xf6391f5c32d9c69d2a47ea670b442974b53935d1edc7fd64eb21e047a839171b.
 //
 // Solidity: event RoleRevoked(bytes32 indexed role, address indexed account, address indexed sender)
-func (_FilswanOralcle *FilswanOralcleFilterer) WatchRoleRevoked(opts *bind.WatchOpts, sink chan<- *FilswanOralcleRoleRevoked, role [][32]byte, account []common.Address, sender []common.Address) (event.Subscription, error) {
+func (_FilswanOracle *FilswanOracleFilterer) WatchRoleRevoked(opts *bind.WatchOpts, sink chan<- *FilswanOracleRoleRevoked, role [][32]byte, account []common.Address, sender []common.Address) (event.Subscription, error) {
 
 	var roleRule []interface{}
 	for _, roleItem := range role {
@@ -1180,7 +1211,7 @@ func (_FilswanOralcle *FilswanOralcleFilterer) WatchRoleRevoked(opts *bind.Watch
 		senderRule = append(senderRule, senderItem)
 	}
 
-	logs, sub, err := _FilswanOralcle.contract.WatchLogs(opts, "RoleRevoked", roleRule, accountRule, senderRule)
+	logs, sub, err := _FilswanOracle.contract.WatchLogs(opts, "RoleRevoked", roleRule, accountRule, senderRule)
 	if err != nil {
 		return nil, err
 	}
@@ -1190,8 +1221,8 @@ func (_FilswanOralcle *FilswanOralcleFilterer) WatchRoleRevoked(opts *bind.Watch
 			select {
 			case log := <-logs:
 				// New log arrived, parse the event and forward to the user
-				event := new(FilswanOralcleRoleRevoked)
-				if err := _FilswanOralcle.contract.UnpackLog(event, "RoleRevoked", log); err != nil {
+				event := new(FilswanOracleRoleRevoked)
+				if err := _FilswanOracle.contract.UnpackLog(event, "RoleRevoked", log); err != nil {
 					return err
 				}
 				event.Raw = log
@@ -1215,18 +1246,18 @@ func (_FilswanOralcle *FilswanOralcleFilterer) WatchRoleRevoked(opts *bind.Watch
 // ParseRoleRevoked is a log parse operation binding the contract event 0xf6391f5c32d9c69d2a47ea670b442974b53935d1edc7fd64eb21e047a839171b.
 //
 // Solidity: event RoleRevoked(bytes32 indexed role, address indexed account, address indexed sender)
-func (_FilswanOralcle *FilswanOralcleFilterer) ParseRoleRevoked(log types.Log) (*FilswanOralcleRoleRevoked, error) {
-	event := new(FilswanOralcleRoleRevoked)
-	if err := _FilswanOralcle.contract.UnpackLog(event, "RoleRevoked", log); err != nil {
+func (_FilswanOracle *FilswanOracleFilterer) ParseRoleRevoked(log types.Log) (*FilswanOracleRoleRevoked, error) {
+	event := new(FilswanOracleRoleRevoked)
+	if err := _FilswanOracle.contract.UnpackLog(event, "RoleRevoked", log); err != nil {
 		return nil, err
 	}
 	event.Raw = log
 	return event, nil
 }
 
-// FilswanOralcleSignTransactionIterator is returned from FilterSignTransaction and is used to iterate over the raw logs and unpacked data for SignTransaction events raised by the FilswanOralcle contract.
-type FilswanOralcleSignTransactionIterator struct {
-	Event *FilswanOralcleSignTransaction // Event containing the contract specifics and raw log
+// FilswanOracleSignTransactionIterator is returned from FilterSignTransaction and is used to iterate over the raw logs and unpacked data for SignTransaction events raised by the FilswanOracle contract.
+type FilswanOracleSignTransactionIterator struct {
+	Event *FilswanOracleSignTransaction // Event containing the contract specifics and raw log
 
 	contract *bind.BoundContract // Generic contract to use for unpacking event data
 	event    string              // Event name to use for unpacking event data
@@ -1240,7 +1271,7 @@ type FilswanOralcleSignTransactionIterator struct {
 // Next advances the iterator to the subsequent event, returning whether there
 // are any more events found. In case of a retrieval or parsing error, false is
 // returned and Error() can be queried for the exact failure.
-func (it *FilswanOralcleSignTransactionIterator) Next() bool {
+func (it *FilswanOracleSignTransactionIterator) Next() bool {
 	// If the iterator failed, stop iterating
 	if it.fail != nil {
 		return false
@@ -1249,7 +1280,7 @@ func (it *FilswanOralcleSignTransactionIterator) Next() bool {
 	if it.done {
 		select {
 		case log := <-it.logs:
-			it.Event = new(FilswanOralcleSignTransaction)
+			it.Event = new(FilswanOracleSignTransaction)
 			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
 				it.fail = err
 				return false
@@ -1264,7 +1295,7 @@ func (it *FilswanOralcleSignTransactionIterator) Next() bool {
 	// Iterator still in progress, wait for either a data or an error event
 	select {
 	case log := <-it.logs:
-		it.Event = new(FilswanOralcleSignTransaction)
+		it.Event = new(FilswanOracleSignTransaction)
 		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
 			it.fail = err
 			return false
@@ -1280,47 +1311,46 @@ func (it *FilswanOralcleSignTransactionIterator) Next() bool {
 }
 
 // Error returns any retrieval or parsing error occurred during filtering.
-func (it *FilswanOralcleSignTransactionIterator) Error() error {
+func (it *FilswanOracleSignTransactionIterator) Error() error {
 	return it.fail
 }
 
 // Close terminates the iteration process, releasing any pending underlying
 // resources.
-func (it *FilswanOralcleSignTransactionIterator) Close() error {
+func (it *FilswanOracleSignTransactionIterator) Close() error {
 	it.sub.Unsubscribe()
 	return nil
 }
 
-// FilswanOralcleSignTransaction represents a SignTransaction event raised by the FilswanOralcle contract.
-type FilswanOralcleSignTransaction struct {
+// FilswanOracleSignTransaction represents a SignTransaction event raised by the FilswanOracle contract.
+type FilswanOracleSignTransaction struct {
 	Cid       string
 	OrderId   string
 	DealId    string
 	Recipient common.Address
 	Paid      *big.Int
-	Terms     *big.Int
 	Status    bool
 	Raw       types.Log // Blockchain specific contextual infos
 }
 
-// FilterSignTransaction is a free log retrieval operation binding the contract event 0x5bdc7ea86f89a3ea9f721b4361cc0dec10ec2981ff3a28092b27784d5812021c.
+// FilterSignTransaction is a free log retrieval operation binding the contract event 0x4cfe23e0ff309b71bd08673883f3a58a5813247586666c8a7f2147726630a258.
 //
-// Solidity: event SignTransaction(string cid, string orderId, string dealId, address recipient, uint256 paid, uint256 terms, bool status)
-func (_FilswanOralcle *FilswanOralcleFilterer) FilterSignTransaction(opts *bind.FilterOpts) (*FilswanOralcleSignTransactionIterator, error) {
+// Solidity: event SignTransaction(string cid, string orderId, string dealId, address recipient, uint256 paid, bool status)
+func (_FilswanOracle *FilswanOracleFilterer) FilterSignTransaction(opts *bind.FilterOpts) (*FilswanOracleSignTransactionIterator, error) {
 
-	logs, sub, err := _FilswanOralcle.contract.FilterLogs(opts, "SignTransaction")
+	logs, sub, err := _FilswanOracle.contract.FilterLogs(opts, "SignTransaction")
 	if err != nil {
 		return nil, err
 	}
-	return &FilswanOralcleSignTransactionIterator{contract: _FilswanOralcle.contract, event: "SignTransaction", logs: logs, sub: sub}, nil
+	return &FilswanOracleSignTransactionIterator{contract: _FilswanOracle.contract, event: "SignTransaction", logs: logs, sub: sub}, nil
 }
 
-// WatchSignTransaction is a free log subscription operation binding the contract event 0x5bdc7ea86f89a3ea9f721b4361cc0dec10ec2981ff3a28092b27784d5812021c.
+// WatchSignTransaction is a free log subscription operation binding the contract event 0x4cfe23e0ff309b71bd08673883f3a58a5813247586666c8a7f2147726630a258.
 //
-// Solidity: event SignTransaction(string cid, string orderId, string dealId, address recipient, uint256 paid, uint256 terms, bool status)
-func (_FilswanOralcle *FilswanOralcleFilterer) WatchSignTransaction(opts *bind.WatchOpts, sink chan<- *FilswanOralcleSignTransaction) (event.Subscription, error) {
+// Solidity: event SignTransaction(string cid, string orderId, string dealId, address recipient, uint256 paid, bool status)
+func (_FilswanOracle *FilswanOracleFilterer) WatchSignTransaction(opts *bind.WatchOpts, sink chan<- *FilswanOracleSignTransaction) (event.Subscription, error) {
 
-	logs, sub, err := _FilswanOralcle.contract.WatchLogs(opts, "SignTransaction")
+	logs, sub, err := _FilswanOracle.contract.WatchLogs(opts, "SignTransaction")
 	if err != nil {
 		return nil, err
 	}
@@ -1330,8 +1360,8 @@ func (_FilswanOralcle *FilswanOralcleFilterer) WatchSignTransaction(opts *bind.W
 			select {
 			case log := <-logs:
 				// New log arrived, parse the event and forward to the user
-				event := new(FilswanOralcleSignTransaction)
-				if err := _FilswanOralcle.contract.UnpackLog(event, "SignTransaction", log); err != nil {
+				event := new(FilswanOracleSignTransaction)
+				if err := _FilswanOracle.contract.UnpackLog(event, "SignTransaction", log); err != nil {
 					return err
 				}
 				event.Raw = log
@@ -1352,12 +1382,12 @@ func (_FilswanOralcle *FilswanOralcleFilterer) WatchSignTransaction(opts *bind.W
 	}), nil
 }
 
-// ParseSignTransaction is a log parse operation binding the contract event 0x5bdc7ea86f89a3ea9f721b4361cc0dec10ec2981ff3a28092b27784d5812021c.
+// ParseSignTransaction is a log parse operation binding the contract event 0x4cfe23e0ff309b71bd08673883f3a58a5813247586666c8a7f2147726630a258.
 //
-// Solidity: event SignTransaction(string cid, string orderId, string dealId, address recipient, uint256 paid, uint256 terms, bool status)
-func (_FilswanOralcle *FilswanOralcleFilterer) ParseSignTransaction(log types.Log) (*FilswanOralcleSignTransaction, error) {
-	event := new(FilswanOralcleSignTransaction)
-	if err := _FilswanOralcle.contract.UnpackLog(event, "SignTransaction", log); err != nil {
+// Solidity: event SignTransaction(string cid, string orderId, string dealId, address recipient, uint256 paid, bool status)
+func (_FilswanOracle *FilswanOracleFilterer) ParseSignTransaction(log types.Log) (*FilswanOracleSignTransaction, error) {
+	event := new(FilswanOracleSignTransaction)
+	if err := _FilswanOracle.contract.UnpackLog(event, "SignTransaction", log); err != nil {
 		return nil, err
 	}
 	event.Raw = log

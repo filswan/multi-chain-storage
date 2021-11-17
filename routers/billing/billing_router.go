@@ -7,7 +7,6 @@ import (
 	"payment-bridge/common/constants"
 	"payment-bridge/common/errorinfo"
 	"payment-bridge/common/utils"
-	"payment-bridge/database"
 	"payment-bridge/logs"
 	"strconv"
 	"strings"
@@ -20,7 +19,6 @@ func BillingManager(router *gin.RouterGroup) {
 
 func GetUserBillingHistory(c *gin.Context) {
 	URL := c.Request.URL.Query()
-	txHash := URL.Get("tx_hash")
 	walletAddress := URL.Get("wallet_address")
 	pageNumber := URL.Get("page_number")
 	pageSize := URL.Get("page_size")
@@ -46,16 +44,14 @@ func GetUserBillingHistory(c *gin.Context) {
 		return
 	}
 
-	whereCondition := getWhereCondition(txHash, walletAddress)
-
-	recordCount, err := getBillingCount(whereCondition)
+	recordCount, err := getBillingCount(walletAddress)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_COUNT_ERROR_CODE, errorinfo.GET_RECORD_COUNT_ERROR_MSG))
 		return
 	}
 
-	billingResultList, err := getBillHistoryList(whereCondition, pageSize, strconv.FormatInt(offset, 10))
+	billingResultList, err := getBillHistoryList(walletAddress, pageSize, strconv.FormatInt(offset, 10))
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE, errorinfo.GET_RECORD_lIST_ERROR_MSG))
@@ -69,23 +65,6 @@ func GetUserBillingHistory(c *gin.Context) {
 	c.JSON(http.StatusOK, common.NewSuccessResponseWithPageInfo(billingResultList, page))
 }
 
-func getBillingCount(whereCondition string) (int64, error) {
-	sql := `select sum(total_record) as total_record from (
-		select count(*) as total_record  from event_bsc ` + whereCondition + `
-		union
-		select count(*)  as totalRecord  from event_goerli ` + whereCondition + `
-		union
-		select count(*) as totalRecord  from event_polygon  ` + whereCondition + `
-	) t`
-	var recordCount RecordCount
-	err := database.GetDB().Raw(sql).Scan(&recordCount).Error
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return 0, err
-	}
-	return recordCount.TotalRecord, nil
-}
-
 func getWhereCondition(txHash, walletAddress string) string {
 	whereCondition := "where 1=1 "
 	if strings.Trim(txHash, " ") != "" {
@@ -97,7 +76,6 @@ func getWhereCondition(txHash, walletAddress string) string {
 	logs.GetLogger().Error(whereCondition)
 	return whereCondition
 }
-
 
 func GetFileCoinLastestPrice(c *gin.Context) {
 	price, err := GetFileCoinLastestPriceService()

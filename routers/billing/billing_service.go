@@ -6,6 +6,7 @@ import (
 	"payment-bridge/common/httpClient"
 	"payment-bridge/database"
 	"payment-bridge/logs"
+	"strings"
 )
 
 func GetFileCoinLastestPriceService() (*PriceResult, error) {
@@ -38,7 +39,7 @@ func getBillingCount(walletAddress string) (int64, error) {
 
 func getBillHistoryList(walletAddress, limit, offset string) ([]*BillingResult, error) {
 	finalSql := "select ep.address_from,ep.locked_fee,ep.deadline,ep.payload_cid,ep.lock_payment_time,ep.coin_type,eup.unlock_to_user_address,eup.unlock_to_user_amount,eup.unlock_time  " +
-		"from event_polygon ep left join event_unlock_payment eup   on eup.payload_cid = ep.payload_cid where ep.address_from='" + walletAddress + "'"
+		"from event_polygon ep left join event_unlock_payment eup   on eup.payload_cid = ep.payload_cid where lower(ep.address_from)='" + strings.ToLower(walletAddress) + "'"
 	//"limit " + limit + " offset " + offset
 
 	var billingResultList []*BillingResult

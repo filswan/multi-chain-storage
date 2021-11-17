@@ -186,7 +186,7 @@ func saveUnlockEventLogToDB(logsInChain []*types.Log, recipient string) error {
 	for _, vLog := range logsInChain {
 		//if log have this contractor function signer
 		if vLog.Topics[0].Hex() == contractUnlockFunctionSignature {
-			eventList, err := models.FindEventUnlockPayments(&models.EventUnlockPayment{TxHash: vLog.TxHash.Hex(), BlockNo: vLog.BlockNumber}, "id desc", "10", "0")
+			eventList, err := models.FindEventUnlockPayments(&models.EventUnlockPayment{TxHash: vLog.TxHash.Hex(), BlockNo: strconv.FormatUint(vLog.BlockNumber, 10)}, "id desc", "10", "0")
 			if err != nil {
 				logs.GetLogger().Error(err)
 				continue
@@ -219,7 +219,7 @@ func saveUnlockEventLogToDB(logsInChain []*types.Log, recipient string) error {
 					event.UnlockFromAddress = addrInfo.AddrFrom
 				}
 				event.UnlockFromAddress = polygon.GetConfig().PolygonMainnetNode.PaymentContractAddress
-				event.BlockNo = vLog.BlockNumber
+				event.BlockNo = strconv.FormatUint(vLog.BlockNumber, 10)
 				event.CreateAt = strconv.FormatInt(utils.GetEpochInMillis(), 10)
 			} else {
 				event = eventList[0]

@@ -8,7 +8,8 @@ import (
 type EventUnlockPayment struct {
 	ID                   int64  `json:"id"`
 	TxHash               string `json:"tx_hash"`
-	BlockNo              uint64 `json:"block_no"`
+	PayloadCid           string `json:"payload_cid"`
+	BlockNo              string `json:"block_no"`
 	Network              string `json:"network"`
 	UnlockFromAddress    string `json:"unlock_from_address"`
 	UnlockToUserAddress  string `json:"unlock_to_user_address"`

@@ -1,22 +1,28 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	common2 "github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/gin-gonic/gin"
 	cors "github.com/itsjamie/gin-cors"
 	"github.com/joho/godotenv"
 	"os"
 	"payment-bridge/blockchain/browsersync"
+	"payment-bridge/blockchain/browsersync/scanlockpayment/polygon"
 	"payment-bridge/common/constants"
 	"payment-bridge/config"
 	"payment-bridge/database"
 	"payment-bridge/logs"
 	"payment-bridge/models"
+	"payment-bridge/on-chain/goBind"
 	"payment-bridge/routers"
 	"payment-bridge/routers/billing"
 	"payment-bridge/routers/common"
 	"payment-bridge/routers/storage"
 	"payment-bridge/scheduler"
+	"strconv"
 	"time"
 )
 
@@ -28,11 +34,13 @@ func main() {
 	initMethod()
 	browsersync.Init()
 
+	//TxLogs(polygon.WebConn.ConnWeb,"0x718f2d7fd893ec3e873631c386289911496fd87dacd3c718326bf609224eaba0")
+
 	models.RunAllTheScan()
 
 	scheduler.SendDealScheduler()
 
-	scheduler.DAOUnlockPaymentSchedule()
+	//scheduler.DAOUnlockPaymentSchedule()
 
 	//polygon.ScanDaoEventFromChainAndSaveEventLogData(20965958, 20966958)
 
@@ -88,4 +96,34 @@ func LoadEnv() {
 		logs.GetLogger().Error(err)
 	}
 	fmt.Println("name: ", os.Getenv("privateKey"))
+}
+
+func TxLogs(client *ethclient.Client, txHsh string) {
+	rp, _ := client.TransactionReceipt(context.Background(), common2.HexToHash(txHsh))
+	abiFile, err := goBind.SwanPaymentMetaData.GetAbi()
+
+	//SwanPayment contract function signature
+	contractUnlockFunctionSignature := polygon.GetConfig().PolygonMainnetNode.ContractUnlockFunctionSignature
+	//contractAbi, err := abi.JSON(strings.NewReader(paymentAbiString))
+	if err != nil {
+		logs.GetLogger().Error(err)
+	}
+	for _, vLog := range rp.Logs {
+		//if log have this contractor function signer
+		if vLog.Topics[0].Hex() == contractUnlockFunctionSignature {
+			eventList, err := models.FindEventUnlockPayments(&models.EventUnlockPayment{TxHash: vLog.TxHash.Hex(), BlockNo: strconv.FormatUint(vLog.BlockNumber, 10)}, "id desc", "10", "0")
+			if err != nil {
+				logs.GetLogger().Error(err)
+				continue
+			}
+
+			if len(eventList) <= 0 {
+				dataList, err := abiFile.Unpack("UnlockPayment", vLog.Data)
+				if err != nil {
+					logs.GetLogger().Error(err)
+				}
+				fmt.Println(dataList)
+			}
+		}
+	}
 }

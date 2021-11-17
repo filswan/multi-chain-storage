@@ -190,7 +190,6 @@ func saveUnlockEventLogToDB(logsInChain []*types.Log, recipient string) error {
 				logs.GetLogger().Error(err)
 				continue
 			}
-			var event *models.EventUnlockPayment
 			if len(eventList) <= 0 {
 				event := new(models.EventUnlockPayment)
 				dataList, err := contractAbi.Unpack("UnlockPayment", vLog.Data)
@@ -208,14 +207,11 @@ func saveUnlockEventLogToDB(logsInChain []*types.Log, recipient string) error {
 				event.UnlockToUserAddress = dataList[5].(common.Address).Hex()
 				event.UnlockTime = strconv.FormatInt(utils.GetEpochInMillis(), 10)
 				event.CreateAt = strconv.FormatInt(utils.GetEpochInMillis(), 10)
+				err = database.SaveOneWithTransaction(event)
 				if err != nil {
 					logs.GetLogger().Error(err)
-					continue
 				}
-			}
-			err = database.SaveOneWithTransaction(event)
-			if err != nil {
-				logs.GetLogger().Error(err)
+
 			}
 		}
 	}

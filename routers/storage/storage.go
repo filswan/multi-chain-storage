@@ -176,7 +176,11 @@ func GetDealListFromSwan(c *gin.Context) {
 		}
 	}
 	fmt.Println(whereCondition)
-	whereCondition = "1=1 and payload_cid in (" + whereCondition + ")"
+	if strings.Trim(whereCondition, " ") == "" {
+		whereCondition = "1=1"
+	} else {
+		whereCondition = "1=1 and payload_cid in (" + whereCondition + ")"
+	}
 	eventList, err := models.FindEventPolygons(whereCondition, "", strconv.Itoa(results.PagingInfo.Limit), strconv.Itoa(results.PagingInfo.Offset))
 	if err != nil {
 		logs.GetLogger().Error(err)

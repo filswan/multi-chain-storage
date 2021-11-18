@@ -2,7 +2,6 @@ package scheduler
 
 import (
 	"context"
-	"fmt"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
@@ -133,24 +132,24 @@ func doUnlockPaymentOnContract(daoEvent *models.DaoEventLog, unlockParams goBind
 		logs.GetLogger().Error(err)
 		unlockTxStatus = constants.TRANSACTION_STATUS_FAIL
 	} else {
-		txRecept, err := utils.CheckTx(client, tx)
+		txReceipt, err := utils.CheckTx(client, tx)
 		if err != nil {
 			logs.GetLogger().Error(err)
 		} else {
-			if txRecept.Status == uint64(1) {
+			if txReceipt.Status == uint64(1) {
 				unlockTxStatus = constants.TRANSACTION_STATUS_SUCCESS
 				logs.GetLogger().Println("unlock success! txHash=" + tx.Hash().Hex())
+				if len(txReceipt.Logs) > 0 {
+					eventLogs := txReceipt.Logs
+					err = saveUnlockEventLogToDB(eventLogs, daoEvent.Recipient)
+					if err != nil {
+						logs.GetLogger().Error(err)
+						return err
+					}
+				}
 			} else {
 				unlockTxStatus = constants.TRANSACTION_STATUS_FAIL
 				logs.GetLogger().Println("unlock failed! txHash=" + tx.Hash().Hex())
-			}
-		}
-		if len(txRecept.Logs) > 0 {
-			eventLogs := txRecept.Logs
-			err = saveUnlockEventLogToDB(eventLogs, daoEvent.Recipient)
-			if err != nil {
-				logs.GetLogger().Error(err)
-				return err
 			}
 		}
 	}
@@ -191,56 +190,28 @@ func saveUnlockEventLogToDB(logsInChain []*types.Log, recipient string) error {
 				logs.GetLogger().Error(err)
 				continue
 			}
-			var event *models.EventUnlockPayment
 			if len(eventList) <= 0 {
+				event := new(models.EventUnlockPayment)
 				dataList, err := contractAbi.Unpack("UnlockPayment", vLog.Data)
-				if err != nil {
-					logs.GetLogger().Error(err)
-				}
-				fmt.Println(dataList)
-				event = new(models.EventUnlockPayment)
-				event.TxHash = vLog.TxHash.Hex()
-				event.Network = constants.NETWORK_TYPE_POLYGON
-				block, err := polygon.WebConn.ConnWeb.BlockByNumber(context.Background(), big.NewInt(int64(vLog.BlockNumber)))
-				if err != nil {
-					logs.GetLogger().Error(err)
-				} else {
-					event.UnlockTime = strconv.FormatUint(block.Time(), 10)
-				}
-				chainId, err := polygon.WebConn.ConnWeb.ChainID(context.Background())
 				if err != nil {
 					logs.GetLogger().Error(err)
 					continue
 				}
-				addrInfo, err := utils.GetFromAndToAddressByTxHash(polygon.WebConn.ConnWeb, chainId, vLog.TxHash)
+				event.PayloadCid = dataList[0].(string)
+				event.TxHash = vLog.TxHash.Hex()
+				event.Network = constants.NETWORK_TYPE_POLYGON
+				event.TokenAddress = dataList[1].(common.Address).Hex()
+				event.UnlockToAdminAmount = dataList[2].(*big.Int).String()
+				event.UnlockToUserAmount = dataList[3].(*big.Int).String()
+				event.UnlockToAdminAddress = dataList[4].(common.Address).Hex()
+				event.UnlockToUserAddress = dataList[5].(common.Address).Hex()
+				event.UnlockTime = strconv.FormatInt(utils.GetEpochInMillis(), 10)
+				event.CreateAt = strconv.FormatInt(utils.GetEpochInMillis(), 10)
+				err = database.SaveOneWithTransaction(event)
 				if err != nil {
 					logs.GetLogger().Error(err)
-				} else {
-					event.UnlockFromAddress = addrInfo.AddrFrom
 				}
-				event.UnlockFromAddress = polygon.GetConfig().PolygonMainnetNode.PaymentContractAddress
-				event.BlockNo = strconv.FormatUint(vLog.BlockNumber, 10)
-				event.CreateAt = strconv.FormatInt(utils.GetEpochInMillis(), 10)
-			} else {
-				event = eventList[0]
-			}
 
-			quantity := new(big.Int)
-			quantity.SetBytes(vLog.Data)
-			address := common.HexToAddress(vLog.Topics[1].Hex()).String()
-			if strings.ToLower(address) == strings.ToLower(polygon.GetConfig().PolygonMainnetNode.PaymentContractAddress) {
-				if strings.ToLower(common.HexToAddress(vLog.Topics[2].Hex()).String()) == strings.ToLower(recipient) {
-					event.UnlockToAdminAddress = common.HexToAddress(vLog.Topics[2].Hex()).String()
-					event.UnlockToAdminAmount = quantity.String()
-				} else {
-					event.UnlockToUserAddress = common.HexToAddress(vLog.Topics[2].Hex()).String()
-					event.UnlockToUserAmount = quantity.String()
-				}
-			}
-
-			err = database.SaveOneWithTransaction(event)
-			if err != nil {
-				logs.GetLogger().Error(err)
 			}
 		}
 	}

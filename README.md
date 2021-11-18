@@ -24,6 +24,7 @@ please make sure you have a full node that can communicate with rpc first <br>
 ```console
 git clone https://github.com/filecoin-project/lotus
 cd lotus
+git submodule update --init --recursive
 ```
 ### 2 Create the executable, but do not run anything yet
 ```console

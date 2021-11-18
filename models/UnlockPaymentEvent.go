@@ -11,6 +11,7 @@ type EventUnlockPayment struct {
 	PayloadCid           string `json:"payload_cid"`
 	BlockNo              string `json:"block_no"`
 	Network              string `json:"network"`
+	TokenAddress         string `json:"token_address"`
 	UnlockFromAddress    string `json:"unlock_from_address"`
 	UnlockToUserAddress  string `json:"unlock_to_user_address"`
 	UnlockToUserAmount   string `json:"unlock_to_user_amount"`

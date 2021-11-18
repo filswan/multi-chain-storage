@@ -43,14 +43,14 @@ func UploadFileToIpfs(c *gin.Context) {
 	file, err := c.FormFile("file")
 	if err != nil {
 		logs.GetLogger().Error(err)
-		c.JSON(http.StatusOK, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_CODE, errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_MSG+":file"))
+		c.JSON(http.StatusOK, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_CODE, errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_MSG+":file can not be null"))
 		return
 	}
 	//taskName := c.PostForm("task_name")
 
 	fileInfoList, err := storageService.CreateTask(c, "", jwtToken, file)
 	if err != nil {
-		c.JSON(http.StatusOK, common.CreateErrorResponse(errorinfo.SENDING_DEAL_ERROR_CODE, errorinfo.SENDING_DEAL_ERROR_MSG+":file"))
+		c.JSON(http.StatusOK, common.CreateErrorResponse(errorinfo.SENDING_DEAL_ERROR_CODE, errorinfo.SENDING_DEAL_ERROR_MSG))
 		return
 	}
 	if len(fileInfoList) > 0 {
@@ -176,7 +176,11 @@ func GetDealListFromSwan(c *gin.Context) {
 		}
 	}
 	fmt.Println(whereCondition)
-	whereCondition = "1=1 and payload_cid in (" + whereCondition + ")"
+	if strings.Trim(whereCondition, " ") == "" {
+		whereCondition = "1=1"
+	} else {
+		whereCondition = "1=1 and payload_cid in (" + whereCondition + ")"
+	}
 	eventList, err := models.FindEventPolygons(whereCondition, "", strconv.Itoa(results.PagingInfo.Limit), strconv.Itoa(results.PagingInfo.Offset))
 	if err != nil {
 		logs.GetLogger().Error(err)

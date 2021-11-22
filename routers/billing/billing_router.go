@@ -86,5 +86,6 @@ func GetFileCoinLastestPrice(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_LATEST_PRICE_OF_FILECOIN_ERROR_CODE, errorinfo.GET_LATEST_PRICE_OF_FILECOIN_ERROR_MSG))
 		return
 	}
-	c.JSON(http.StatusOK, common.CreateSuccessResponse(new(big.Float).SetInt(price)))
+	priceFloat, _ := new(big.Float).SetInt(price).Float64()
+	c.JSON(http.StatusOK, common.CreateSuccessResponse(priceFloat))
 }

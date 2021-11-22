@@ -2,10 +2,15 @@ package billing
 
 import (
 	"encoding/json"
+	"errors"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/ethclient"
+	"math/big"
 	"net/http"
 	"payment-bridge/common/httpClient"
 	"payment-bridge/database"
 	"payment-bridge/logs"
+	"payment-bridge/on-chain/goBind"
 	"strings"
 )
 
@@ -65,4 +70,31 @@ func GetTaskDealsService(url string) (*PriceResult, error) {
 		return nil, err
 	}
 	return price, nil
+}
+
+func GetWfilPriceFromSushiPrice(client *ethclient.Client, wfilPrice string) (*big.Int, error) {
+	//routerAddress sushiswap mumbai address
+	routerAddress := "0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506"
+
+	//pairAddress sushiswap mumbai address
+	pairAddress := "0x74038ed7D891A043d4aF41FeA242ED01914c2636"
+
+	contractRouter, _ := goBind.NewRouter(common.HexToAddress(routerAddress), client)
+	contractPool, _ := goBind.NewPair(common.HexToAddress(pairAddress), client)
+
+	reserves, _ := contractPool.GetReserves(nil)
+
+	//amt,_:=  new(big.Int).SetString("1000000000000000000", 10)
+	amt, flag := new(big.Int).SetString(wfilPrice, 10)
+	if flag == false {
+		err := errors.New("calculating filecoin to usdc pring occurred error")
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+	dyByContract, err := contractRouter.GetAmountOut(nil, amt, reserves.Reserve0, reserves.Reserve1)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+	return dyByContract, nil
 }

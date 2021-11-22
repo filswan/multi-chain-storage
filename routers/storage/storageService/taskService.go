@@ -17,7 +17,7 @@ import (
 	"time"
 )
 
-func CreateTask(c *gin.Context, taskName, jwtToken string, srcFile *multipart.FileHeader) ([]*libmodel.FileDesc, error) {
+func CreateTask(c *gin.Context, taskName, jwtToken string, srcFile *multipart.FileHeader, duration int) ([]*libmodel.FileDesc, error) {
 	temDirDeal := config.GetConfig().SwanTask.DirDeal
 
 	logs.GetLogger().Info("temp dir is ", temDirDeal)
@@ -113,6 +113,7 @@ func CreateTask(c *gin.Context, taskName, jwtToken string, srcFile *multipart.Fi
 		StartEpochIntervalHours: startEpochIntervalHours,
 		StartEpoch:              startEpoch,
 		SourceId:                constants.SOURCE_ID_OF_PAYMENT,
+		Duration:                duration,
 	}
 
 	_, fileInfoList, err := subcommand.CreateTask(confTask, nil)

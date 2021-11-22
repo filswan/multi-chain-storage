@@ -2,7 +2,6 @@ package storage
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	clientmodel "github.com/filswan/go-swan-client/model"
 	"github.com/filswan/go-swan-client/subcommand"
@@ -47,23 +46,23 @@ func UploadFileToIpfs(c *gin.Context) {
 		c.JSON(http.StatusOK, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_CODE, errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_MSG+":get file from user occurred error,please try again"))
 		return
 	}
-	duration := c.PostForm("duration")
-	if strings.Trim(duration, " ") == "" {
-		errMsg := "duraion can not be null"
-		err = errors.New(errMsg)
-		logs.GetLogger().Error(err)
-		c.JSON(http.StatusOK, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_CODE, errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_MSG+":"+errMsg))
-		return
-	}
+	/*	duration := c.PostForm("duration")
+		if strings.Trim(duration, " ") == "" {
+			errMsg := "duraion can not be null"
+			err = errors.New(errMsg)
+			logs.GetLogger().Error(err)
+			c.JSON(http.StatusOK, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_CODE, errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_MSG+":"+errMsg))
+			return
+		}
 
-	durationInt, err := strconv.Atoi(duration)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		c.JSON(http.StatusOK, common.CreateErrorResponse(errorinfo.TYPE_TRANSFER_ERROR_CODE, errorinfo.TYPE_TRANSFER_ERROR_MSG+": duration is not a number"))
-		return
-	}
+		durationInt, err := strconv.Atoi(duration)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			c.JSON(http.StatusOK, common.CreateErrorResponse(errorinfo.TYPE_TRANSFER_ERROR_CODE, errorinfo.TYPE_TRANSFER_ERROR_MSG+": duration is not a number"))
+			return
+		}*/
 
-	fileInfoList, err := storageService.CreateTask(c, "", jwtToken, file, durationInt)
+	fileInfoList, err := storageService.CreateTask(c, "", jwtToken, file, 123)
 	if err != nil {
 		c.JSON(http.StatusOK, common.CreateErrorResponse(errorinfo.SENDING_DEAL_ERROR_CODE, errorinfo.SENDING_DEAL_ERROR_MSG))
 		return

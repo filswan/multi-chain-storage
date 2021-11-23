@@ -50,7 +50,7 @@ your local lite node rpc url will be : http://127.0.0.1:1234/rpc/v0
 The generated token will be used in config.toml--->[lotus]--->access_token configuration item
 ```console
 lotus auth create-token --perm admin
-eyJhbGciOiJIUzI1NiInR5cCI6IkpXVCJ9.eyJBbGxvdyI6WyJyFkIiwid3JpdGUiLCJzaWduIiwiYWRtaW4iXX0.TXQfZGBhmzr9PmK0KoOeAFR3rHcAjL2D18hP2F5Q
+xxxxxxxxxxxxxxxx..
 ```
 
 ## Getting Started with PaymentBridge

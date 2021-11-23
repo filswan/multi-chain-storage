@@ -106,16 +106,16 @@ db_args="charset=utf8mb4&parseTime=True&loc=Local"
 
 [swan_api]
 api_url = "http://192.168.88.216:5002"
-api_key = "yqBJQhhKMJLOsNnnpChuVQ"
-access_token = "25178205fe651e965985d7f9e70140a9"
+api_key = ""
+access_token = ""
 
 [lotus]
 api_url="http://127.0.0.1:1234/rpc/v0"   # Url of lotus web api
-access_token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBbGxvdyI6WyJyZWFkIiwid3JpdGUiLCJzaWduIiwiYWRtaW4iXX0.TXQfZGBhmzn1r9PmK0KoOeAFR3rHcAjL2DF18hP2F5Q"   # Access token of lotus web api
+access_token=".."   # Access token of lotus web api
 
 [ipfs_server]
-download_url_prefix = "http://192.168.88.41:5050"
-upload_url = "http://192.168.88.41:5001"
+download_url_prefix = "http://192.168.xx.xx:5050"
+upload_url = "http://192.168.xx.xx:5001"
 
 [swan_task]
 min_price = 0.00000001

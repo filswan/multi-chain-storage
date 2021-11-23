@@ -2,15 +2,10 @@ package storage
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
-	clientmodel "github.com/filswan/go-swan-client/model"
-	"github.com/filswan/go-swan-client/subcommand"
-	libconstants "github.com/filswan/go-swan-lib/constants"
-	libutils "github.com/filswan/go-swan-lib/utils"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"os"
-	"path/filepath"
 	"payment-bridge/common"
 	"payment-bridge/common/constants"
 	"payment-bridge/common/errorinfo"
@@ -22,7 +17,6 @@ import (
 	"payment-bridge/routers/storage/storageService"
 	"strconv"
 	"strings"
-	"time"
 )
 
 func SendDealManager(router *gin.RouterGroup) {
@@ -46,23 +40,23 @@ func UploadFileToIpfs(c *gin.Context) {
 		c.JSON(http.StatusOK, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_CODE, errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_MSG+":get file from user occurred error,please try again"))
 		return
 	}
-	/*	duration := c.PostForm("duration")
-		if strings.Trim(duration, " ") == "" {
-			errMsg := "duraion can not be null"
-			err = errors.New(errMsg)
-			logs.GetLogger().Error(err)
-			c.JSON(http.StatusOK, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_CODE, errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_MSG+":"+errMsg))
-			return
-		}
+	duration := c.PostForm("duration")
+	if strings.Trim(duration, " ") == "" {
+		errMsg := "duraion can not be null"
+		err = errors.New(errMsg)
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusOK, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_CODE, errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_MSG+":"+errMsg))
+		return
+	}
 
-		durationInt, err := strconv.Atoi(duration)
-		if err != nil {
-			logs.GetLogger().Error(err)
-			c.JSON(http.StatusOK, common.CreateErrorResponse(errorinfo.TYPE_TRANSFER_ERROR_CODE, errorinfo.TYPE_TRANSFER_ERROR_MSG+": duration is not a number"))
-			return
-		}*/
+	durationInt, err := strconv.Atoi(duration)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusOK, common.CreateErrorResponse(errorinfo.TYPE_TRANSFER_ERROR_CODE, errorinfo.TYPE_TRANSFER_ERROR_MSG+": duration is not a number"))
+		return
+	}
 
-	fileInfoList, err := storageService.CreateTask(c, "", jwtToken, file, 123)
+	fileInfoList, err := storageService.CreateTask(c, "", jwtToken, file, durationInt)
 	if err != nil {
 		c.JSON(http.StatusOK, common.CreateErrorResponse(errorinfo.SENDING_DEAL_ERROR_CODE, errorinfo.SENDING_DEAL_ERROR_MSG))
 		return
@@ -76,63 +70,6 @@ func UploadFileToIpfs(c *gin.Context) {
 		return
 	}
 	return
-}
-
-func SendDeal(c *gin.Context) {
-	authorization := c.Request.Header.Get("authorization")
-	if len(authorization) == 0 {
-		c.JSON(http.StatusOK, common.CreateErrorResponse(errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_CODE, errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_MSG))
-		return
-	}
-
-	jwtToken := strings.TrimPrefix(authorization, "Bearer ")
-
-	task_uuid := c.Param("task_uuid")
-
-	startEpochIntervalHours := config.GetConfig().SwanTask.StartEpochHours
-	startEpoch := libutils.GetCurrentEpoch() + (startEpochIntervalHours+1)*libconstants.EPOCH_PER_HOUR
-
-	homedir, err := os.UserHomeDir()
-	if err != nil {
-		logs.GetLogger().Error(err)
-		c.JSON(http.StatusOK, common.CreateErrorResponse(errorinfo.GET_HOME_DIR_ERROR_CODE, errorinfo.GET_HOME_DIR_ERROR_MSG))
-		return
-	}
-	temDirDeal := config.GetConfig().SwanTask.DirDeal
-	temDirDeal = filepath.Join(homedir, temDirDeal[2:])
-	err = libutils.CreateDir(temDirDeal)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		c.JSON(http.StatusOK, common.CreateErrorResponse(errorinfo.CREATE_DIR_ERROR_CODE, errorinfo.CREATE_DIR_ERROR_MSG))
-		return
-	}
-
-	timeStr := time.Now().Format("20060102_150405")
-	temDirDeal = filepath.Join(temDirDeal, timeStr)
-	carDir := filepath.Join(temDirDeal, "car")
-	confDeal := &clientmodel.ConfDeal{
-		SwanApiUrl:              config.GetConfig().SwanApi.ApiUrl,
-		SwanToken:               jwtToken,
-		SenderWallet:            "t3u7pumush376xbytsgs5wabkhtadjzfydxxda2vzyasg7cimkcphswrq66j4dubbhwpnojqd3jie6ermpwvvq",
-		VerifiedDeal:            config.GetConfig().SwanTask.VerifiedDeal,
-		FastRetrieval:           config.GetConfig().SwanTask.FastRetrieval,
-		SkipConfirmation:        true,
-		StartEpochIntervalHours: startEpochIntervalHours,
-		StartEpoch:              startEpoch,
-		OutputDir:               carDir,
-	}
-
-	dealSentNum, csvFilePath, carFiles, err := subcommand.SendAutoBidDealsByTaskUuid(confDeal, task_uuid)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		c.JSON(http.StatusOK, common.CreateErrorResponse(errorinfo.SENDING_DEAL_ERROR_CODE, errorinfo.SENDING_DEAL_ERROR_MSG))
-		return
-	}
-	logs.GetLogger().Info("------------------------------send deal success---------------------------------")
-	logs.GetLogger().Info("dealSentNum = ", dealSentNum)
-	logs.GetLogger().Info("csvFilePath = ", csvFilePath)
-	logs.GetLogger().Info("carFiles = ", carFiles)
-	c.JSON(http.StatusOK, common.CreateSuccessResponse("success"))
 }
 
 func GetDealListFromSwan(c *gin.Context) {

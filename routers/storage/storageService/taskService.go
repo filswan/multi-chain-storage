@@ -113,7 +113,7 @@ func CreateTask(c *gin.Context, taskName, jwtToken string, srcFile *multipart.Fi
 		StartEpochIntervalHours: startEpochIntervalHours,
 		StartEpoch:              startEpoch,
 		SourceId:                constants.SOURCE_ID_OF_PAYMENT,
-		//Duration:                duration,
+		Duration:                duration,
 	}
 
 	_, fileInfoList, err := subcommand.CreateTask(confTask, nil)

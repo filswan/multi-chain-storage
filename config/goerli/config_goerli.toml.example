@@ -1,10 +1,10 @@
 [GoerliMainnetNode]
 rpcUrl = "https://data-seed-prebsc-1-s1.binance.org:8545/"
-#rpcUrl = "http://192.168.88.121:8545/"
+#rpcUrl = ""
 #rpcUrl = "https://bsc-dataseed.binance.org/"
 chainID = 97  # mainnet 56 ;test net 97
-paymentContractAddress = "0x4e2eB289A6e22eb6BBB78d4379aCd27c6BD87001"
-contractFunctionSignature = "0x88e2ea3170ebb5d73f832e672e27a855b3daf0b2264ac6c09b04009dc151509e"
+paymentContractAddress = ""
+contractFunctionSignature = ""
 scanStep = 2000
 startFromBlockNo = 12050113
 cycleTimeInterval = 10 #unit:second

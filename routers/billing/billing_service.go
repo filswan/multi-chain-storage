@@ -7,6 +7,7 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 	"math/big"
 	"net/http"
+	"payment-bridge/blockchain/browsersync/scanlockpayment/polygon"
 	"payment-bridge/common/httpClient"
 	"payment-bridge/database"
 	"payment-bridge/logs"
@@ -74,10 +75,10 @@ func GetTaskDealsService(url string) (*PriceResult, error) {
 
 func GetWfilPriceFromSushiPrice(client *ethclient.Client, wfilPrice string) (*big.Int, error) {
 	//routerAddress sushiswap mumbai address
-	routerAddress := "0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506"
+	routerAddress := polygon.GetConfig().PolygonMainnetNode.RouterAddressOfSushiswapOnPolygon
 
 	//pairAddress sushiswap mumbai address
-	pairAddress := "0x74038ed7D891A043d4aF41FeA242ED01914c2636"
+	pairAddress := polygon.GetConfig().PolygonMainnetNode.PairAddressBetweenWfilUsdcOfSushiswapOnPolygon
 
 	contractRouter, _ := goBind.NewRouter(common.HexToAddress(routerAddress), client)
 	contractPool, _ := goBind.NewPair(common.HexToAddress(pairAddress), client)

@@ -79,7 +79,7 @@ Enter payment-bridge/scan/build/bin directory, and execute the binary file of th
 Before actually running the payment bridege project, you need to read the section about config introduction below <br>
 and then fill in the configuration items as required, and then run this project
 ```console
-cd $GOPATH/src/payment-bridge/scan/build/bin
+cd $GOPATH/src/payment-bridge/scan/build/bin`
 chmod +x payment-bridge
 ./payment_bridge
 ```
@@ -105,7 +105,7 @@ db_pwd="123456"
 db_args="charset=utf8mb4&parseTime=True&loc=Local"
 
 [swan_api]
-api_url = "http://192.168.88.216:5002"
+api_url = "http://xxxxxxxx:5002"
 api_key = ""
 access_token = ""
 

@@ -176,7 +176,7 @@ Currently, USDC is supported for payment. Take polygon network as an example to 
 ```console
 [polygon_mainnet_node]
 #rpcUrl="https://rpc-mumbai.maticvigil.com"
-rpc_url = "https://polygon-mumbai.g.alchemy.com/v2/86HeefA3O9EF22t2NTLbmcpfN0hb9vlv"
+rpc_url = "https://polygon-mumbai.g.alchemy.com/v2/xxx"
 payment_contract_address = ""
 contract_function_signature = ""
 dao_swan_oracle_address = ""

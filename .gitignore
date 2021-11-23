@@ -131,4 +131,6 @@ dmypy.json
 ./on-chain/node_modules/
 ./on-chain/artifacts/
 ./on-chain/cache/
+config.toml
+config_*.toml
 

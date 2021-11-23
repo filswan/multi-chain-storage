@@ -41,4 +41,8 @@ const (
 
 	CREATE_DIR_ERROR_CODE = "500006002"
 	CREATE_DIR_ERROR_MSG  = "Creating dir occurred error"
+
+	//type transfer error 007
+	TYPE_TRANSFER_ERROR_CODE = "500007001"
+	TYPE_TRANSFER_ERROR_MSG  = "type transfer occurred error"
 )

@@ -2,7 +2,9 @@ package billing
 
 import (
 	"github.com/gin-gonic/gin"
+	"math/big"
 	"net/http"
+	"payment-bridge/blockchain/browsersync/scanlockpayment/polygon"
 	common "payment-bridge/common"
 	"payment-bridge/common/constants"
 	"payment-bridge/common/errorinfo"
@@ -78,12 +80,12 @@ func getWhereCondition(txHash, walletAddress string) string {
 }
 
 func GetFileCoinLastestPrice(c *gin.Context) {
-	price, err := GetFileCoinLastestPriceService()
+	price, err := GetWfilPriceFromSushiPrice(polygon.WebConn.ConnWeb, "1")
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_LATEST_PRICE_OF_FILECOIN_ERROR_CODE, errorinfo.GET_LATEST_PRICE_OF_FILECOIN_ERROR_MSG))
 		return
 	}
-
-	c.JSON(http.StatusOK, common.CreateSuccessResponse(price.Filecoin.Usd))
+	priceFloat, _ := new(big.Float).SetInt(price).Float64()
+	c.JSON(http.StatusOK, common.CreateSuccessResponse(priceFloat))
 }

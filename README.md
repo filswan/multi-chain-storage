@@ -50,7 +50,7 @@ your local lite node rpc url will be : http://127.0.0.1:1234/rpc/v0
 The generated token will be used in config.toml--->[lotus]--->access_token configuration item
 ```console
 lotus auth create-token --perm admin
-eyJhbGciOiJIUzI1NiInR5cCI6IkpXVCJ9.eyJBbGxvdyI6WyJyFkIiwid3JpdGUiLCJzaWduIiwiYWRtaW4iXX0.TXQfZGBhmzr9PmK0KoOeAFR3rHcAjL2D18hP2F5Q
+xxxxxxxxxxxxxxxx..
 ```
 
 ## Getting Started with PaymentBridge
@@ -79,7 +79,7 @@ Enter payment-bridge/scan/build/bin directory, and execute the binary file of th
 Before actually running the payment bridege project, you need to read the section about config introduction below <br>
 and then fill in the configuration items as required, and then run this project
 ```console
-cd $GOPATH/src/payment-bridge/scan/build/bin
+cd $GOPATH/src/payment-bridge/scan/build/bin`
 chmod +x payment-bridge
 ./payment_bridge
 ```
@@ -105,17 +105,17 @@ db_pwd="123456"
 db_args="charset=utf8mb4&parseTime=True&loc=Local"
 
 [swan_api]
-api_url = "http://192.168.88.216:5002"
-api_key = "yqBJQhhKMJLOsNnnpChuVQ"
-access_token = "25178205fe651e965985d7f9e70140a9"
+api_url = "http://xxxxxxxx:5002"
+api_key = ""
+access_token = ""
 
 [lotus]
 api_url="http://127.0.0.1:1234/rpc/v0"   # Url of lotus web api
-access_token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBbGxvdyI6WyJyZWFkIiwid3JpdGUiLCJzaWduIiwiYWRtaW4iXX0.TXQfZGBhmzn1r9PmK0KoOeAFR3rHcAjL2DF18hP2F5Q"   # Access token of lotus web api
+access_token=".."   # Access token of lotus web api
 
 [ipfs_server]
-download_url_prefix = "http://192.168.88.41:5050"
-upload_url = "http://192.168.88.41:5001"
+download_url_prefix = "http://192.168.xx.xx:5050"
+upload_url = "http://192.168.xx.xx:5001"
 
 [swan_task]
 min_price = 0.00000001
@@ -176,7 +176,7 @@ Currently, USDC is supported for payment. Take polygon network as an example to 
 ```console
 [polygon_mainnet_node]
 #rpcUrl="https://rpc-mumbai.maticvigil.com"
-rpc_url = "https://polygon-mumbai.g.alchemy.com/v2/86HeefA3O9EF22t2NTLbmcpfN0hb9vlv"
+rpc_url = "https://polygon-mumbai.g.alchemy.com/v2/xxx"
 payment_contract_address = ""
 contract_function_signature = ""
 dao_swan_oracle_address = ""

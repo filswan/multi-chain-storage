@@ -68,8 +68,12 @@ func ScanEventFromChainAndSaveDataToDbForGoerli() {
 			} else {
 				blockScanRecord.LastCurrentBlockNumber = end
 			}
-
-			blockScanRecord.NetworkType = constants.NETWORK_TYPE_GOERLI
+			networkId, err := models2.FindNetworkIdByUUID(constants.NETWORK_TYPE_GOERLI_UUID)
+			if err != nil {
+				logs.GetLogger().Error(err)
+			} else {
+				blockScanRecord.NetworkId = networkId
+			}
 			blockScanRecord.UpdateAt = strconv.FormatInt(common2.GetEpochInMillis(), 10)
 
 			err = database.SaveOne(blockScanRecord)

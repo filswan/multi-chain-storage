@@ -12,8 +12,12 @@ import (
 	"os"
 	"path/filepath"
 	"payment-bridge/common/constants"
+	"payment-bridge/common/utils"
 	"payment-bridge/config"
+	"payment-bridge/database"
 	"payment-bridge/logs"
+	"payment-bridge/models"
+	"strconv"
 	"time"
 )
 
@@ -59,6 +63,17 @@ func CreateTask(c *gin.Context, taskName, jwtToken string, srcFile *multipart.Fi
 		return nil, err
 	}
 	logs.GetLogger().Info("car files created in ", carDir)
+
+	sourceFile := new(models.SourceFile)
+	sourceFile.FileName = srcFile.Filename
+	sourceFile.FileSize = strconv.FormatInt(srcFile.Size, 10)
+	sourceFile.ResourceUri = srcFilepath
+	sourceFile.CreateAt = strconv.FormatInt(utils.GetEpochInMillis(), 10)
+	err = database.SaveOne(sourceFile)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
 
 	confCar := clientmodel.ConfCar{
 		LotusClientApiUrl:      config.GetConfig().Lotus.ApiUrl,
@@ -121,8 +136,43 @@ func CreateTask(c *gin.Context, taskName, jwtToken string, srcFile *multipart.Fi
 		logs.GetLogger().Error(err)
 		return nil, err
 	}
+	if len(fileInfoList) > 0 {
+		err = saveDealFileAndMapRelation(fileInfoList, sourceFile)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return nil, err
+		}
+	}
+
 	logs.GetLogger().Info("task created")
 	return fileInfoList, nil
+}
+
+func saveDealFileAndMapRelation(fileInfoList []*libmodel.FileDesc, sourceFile *models.SourceFile) error {
+	dealFile := new(models.DealFile)
+	dealFile.CarFileName = fileInfoList[0].CarFileName
+	dealFile.CarFilePath = fileInfoList[0].CarFilePath
+	dealFile.CarFileSize = fileInfoList[0].CarFileSize
+	dealFile.CarMd5 = fileInfoList[0].CarFileMd5
+	dealFile.PayloadCid = fileInfoList[0].DataCid
+	dealFile.PieceCid = fileInfoList[0].PieceCid
+	dealFile.DealCid = fileInfoList[0].DealCid
+	dealFile.CreateAt = strconv.FormatInt(utils.GetEpochInMillis(), 10)
+	err := database.SaveOne(dealFile)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+	filepMap := new(models.SourceFileDealFileMap)
+	filepMap.SourceFileId = sourceFile.ID
+	filepMap.DealFileId = dealFile.ID
+	filepMap.FileIndex = 0
+	err = database.SaveOne(dealFile)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+	return nil
 }
 
 func SendAutoBidDeals(confDeal *clientmodel.ConfDeal) ([]string, [][]*libmodel.FileDesc, error) {

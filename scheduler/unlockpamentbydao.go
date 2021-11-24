@@ -50,7 +50,7 @@ func UnlockPaymentByDao() error {
 		return err
 	}
 	for _, v := range daoSigResult {
-		daoEventLogList, err := models.FindDaoEventLog(&models.DaoEventLog{PayloadCid: v.PayloadCid, DealCid: v.DealCid, SignatureUnlockStatus: constants.SIGNATURE_DEFAULT_VALUE}, "id desc", "10", "0")
+		daoEventLogList, err := models.FindDaoEventLog(&models.EventDaoSignature{PayloadCid: v.PayloadCid, DealCid: v.DealCid, SignatureUnlockStatus: constants.SIGNATURE_DEFAULT_VALUE}, "id desc", "10", "0")
 		if err != nil {
 			logs.GetLogger().Error(err)
 			continue
@@ -72,7 +72,7 @@ func UnlockPaymentByDao() error {
 			}
 
 			//update signature unlock action success
-			err = models.UpdateDaoEventLog(&models.DaoEventLog{PayloadCid: v.PayloadCid, DealCid: v.DealCid}, map[string]interface{}{"SignatureUnlockStatus": constants.SIGNATURE_SUCCESS_VALUE})
+			err = models.UpdateDaoEventLog(&models.EventDaoSignature{PayloadCid: v.PayloadCid, DealCid: v.DealCid}, map[string]interface{}{"SignatureUnlockStatus": constants.SIGNATURE_SUCCESS_VALUE})
 			if err != nil {
 				logs.GetLogger().Error(err)
 				continue
@@ -82,7 +82,7 @@ func UnlockPaymentByDao() error {
 	return err
 }
 
-func doUnlockPaymentOnContract(daoEvent *models.DaoEventLog, unlockParams goBind.IPaymentMinimalunlockPaymentParam) error {
+func doUnlockPaymentOnContract(daoEvent *models.EventDaoSignature, unlockParams goBind.IPaymentMinimalunlockPaymentParam) error {
 	pk := os.Getenv("privateKeyOnPolygon")
 	adminAddress := common.HexToAddress(config.GetConfig().AdminWalletOnPolygon) //pay for gas
 	client := polygon.WebConn.ConnWeb
@@ -164,7 +164,7 @@ func doUnlockPaymentOnContract(daoEvent *models.DaoEventLog, unlockParams goBind
 
 func updateUnlockPaymentStatus(payloadCid, dealCid, unLockTxStatus, unlockTxHash string) error {
 	updateTime := strconv.FormatInt(utils.GetEpochInMillis(), 10)
-	err := models.UpdateEventPolygon(&models.EventPolygon{PayloadCid: payloadCid}, map[string]interface{}{"unlock_time": updateTime, "unlock_tx_status": unLockTxStatus, "unlock_tx_hash": unlockTxHash})
+	err := models.UpdateEventPolygon(&models.EventLockPayment{PayloadCid: payloadCid}, map[string]interface{}{"unlock_time": updateTime, "unlock_tx_status": unLockTxStatus, "unlock_tx_hash": unlockTxHash})
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
@@ -199,7 +199,18 @@ func saveUnlockEventLogToDB(logsInChain []*types.Log, recipient string) error {
 				}
 				event.PayloadCid = dataList[0].(string)
 				event.TxHash = vLog.TxHash.Hex()
-				event.Network = constants.NETWORK_TYPE_POLYGON
+				neoworkId, err := models.FindNetworkIdByUUID(constants.NETWORK_TYPE_POLYGON_UUID)
+				if err != nil {
+					logs.GetLogger().Error(err)
+				} else {
+					event.NetworkId = neoworkId
+				}
+				coinId, err := models.FindCoinIdByUUID(constants.COIN_TYPE_USDC_ON_POLYGON_UUID)
+				if err != nil {
+					logs.GetLogger().Error(err)
+				} else {
+					event.CoinId = coinId
+				}
 				event.TokenAddress = dataList[1].(common.Address).Hex()
 				event.UnlockToAdminAmount = dataList[2].(*big.Int).String()
 				event.UnlockToUserAmount = dataList[3].(*big.Int).String()

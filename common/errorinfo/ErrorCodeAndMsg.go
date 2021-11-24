@@ -22,6 +22,8 @@ const (
 	GET_RECORD_COUNT_ERROR_MSG  = "Get data total count from db occurred error"
 	GET_RECORD_lIST_ERROR_CODE  = "500003002"
 	GET_RECORD_lIST_ERROR_MSG   = "Get data records from db occurred error"
+	SAVE_DATA_TO_DB_ERROR_CODE  = "500003003"
+	SAVE_DATA_TO_DB_ERROR_MSG   = "Saving data to database occurred error"
 
 	// JWT token err 004
 	NO_AUTHORIZATION_TOKEN_ERROR_CODE = "500004001"

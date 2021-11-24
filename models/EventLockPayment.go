@@ -6,10 +6,9 @@ import (
 	"payment-bridge/logs"
 )
 
-type EventPolygon struct {
+type EventLockPayment struct {
 	ID              int64  `json:"id"`
 	TxHash          string `json:"tx_hash"`
-	EventName       string `json:"event_name"`
 	PayloadCid      string `json:"payload_cid"`
 	TokenAddress    string `json:"token_address"`
 	MinPayment      string `json:"min_payment"`
@@ -20,7 +19,8 @@ type EventPolygon struct {
 	MinerAddress    string `json:"miner_address"`
 	AddressFrom     string `json:"address_from"`
 	AddressTo       string `json:"address_to"`
-	CoinType        string `json:"coin_type"`
+	CoinId          int64  `json:"coin_id"`
+	NetworkId       int64  `json:"network_id"`
 	LockPaymentTime string `json:"lock_payment_time"`
 	CreateAt        string `json:"create_at"`
 	UnlockTxHash    string `json:"unlock_tx_hash"`
@@ -28,7 +28,7 @@ type EventPolygon struct {
 	UnlockTime      string `json:"unlock_time"`
 }
 
-func (self *EventPolygon) FindOneEventPolygon(condition interface{}) (*EventPolygon, error) {
+func (self *EventLockPayment) FindOneEventPolygon(condition interface{}) (*EventLockPayment, error) {
 	db := database.GetDB()
 	tx := db.Begin()
 	tx.Where(condition).First(&self)
@@ -37,7 +37,7 @@ func (self *EventPolygon) FindOneEventPolygon(condition interface{}) (*EventPoly
 }
 
 // FindEvents (&Event{Id: "0xadeaCC802D0f2DFd31bE4Fa7434F15782Fd720ac"},"id desc","10","0")
-func FindEventPolygons(whereCondition interface{}, orderCondition, limit, offset string) ([]*EventPolygon, error) {
+func FindEventPolygons(whereCondition interface{}, orderCondition, limit, offset string) ([]*EventLockPayment, error) {
 	db := database.GetDB()
 	if offset == "" {
 		offset = "0"
@@ -45,7 +45,7 @@ func FindEventPolygons(whereCondition interface{}, orderCondition, limit, offset
 	if limit == "" {
 		limit = constants.DEFAULT_SELECT_LIMIT
 	}
-	var models []*EventPolygon
+	var models []*EventLockPayment
 	err := db.Where(whereCondition).Offset(offset).Limit(limit).Order(orderCondition).Find(&models).Error
 	return models, err
 }
@@ -54,7 +54,7 @@ func FindEventPolygons(whereCondition interface{}, orderCondition, limit, offset
 //updateFields: map[string]interface{}{"processing_time": taskT.ProcessingTime, "worker_reward": taskT.WorkerReward}
 func UpdateEventPolygon(whereCondition interface{}, updateFields interface{}) error {
 	db := database.GetDB()
-	hardware := EventPolygon{}
+	hardware := EventLockPayment{}
 	err := db.Model(&hardware).Where(whereCondition).Update(updateFields).Error
 	if err != nil {
 		logs.GetLogger().Error(err)

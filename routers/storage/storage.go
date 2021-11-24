@@ -40,6 +40,7 @@ func UploadFileToIpfs(c *gin.Context) {
 		c.JSON(http.StatusOK, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_CODE, errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_MSG+":get file from user occurred error,please try again"))
 		return
 	}
+
 	duration := c.PostForm("duration")
 	if strings.Trim(duration, " ") == "" {
 		errMsg := "duraion can not be null"
@@ -61,6 +62,7 @@ func UploadFileToIpfs(c *gin.Context) {
 		c.JSON(http.StatusOK, common.CreateErrorResponse(errorinfo.SENDING_DEAL_ERROR_CODE, errorinfo.SENDING_DEAL_ERROR_MSG))
 		return
 	}
+
 	if len(fileInfoList) > 0 {
 		logs.GetLogger().Info("----------------------------payload_cid: ", fileInfoList[0].DataCid, "-----------------------------")
 		c.JSON(http.StatusOK, common.CreateSuccessResponse(fileInfoList[0].DataCid))
@@ -69,7 +71,6 @@ func UploadFileToIpfs(c *gin.Context) {
 		c.JSON(http.StatusOK, common.CreateErrorResponse(errorinfo.SENDING_DEAL_GET_NULL_RETURN_VALUE_CODE, errorinfo.SENDING_DEAL_GET_NULL_RETURN_VALUE_MSG))
 		return
 	}
-	return
 }
 
 func GetDealListFromSwan(c *gin.Context) {

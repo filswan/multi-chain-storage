@@ -10,7 +10,7 @@ type EventUnlockPayment struct {
 	TxHash               string `json:"tx_hash"`
 	PayloadCid           string `json:"payload_cid"`
 	BlockNo              string `json:"block_no"`
-	Network              string `json:"network"`
+	NetworkId            int64  `json:"network"`
 	TokenAddress         string `json:"token_address"`
 	UnlockFromAddress    string `json:"unlock_from_address"`
 	UnlockToUserAddress  string `json:"unlock_to_user_address"`
@@ -19,6 +19,7 @@ type EventUnlockPayment struct {
 	UnlockToAdminAmount  string `json:"unlock_to_admin_amount"`
 	UnlockTime           string `json:"unlock_time"`
 	CreateAt             string `json:"create_at"`
+	CoinId               int64  `json:"coin_id"`
 }
 
 // FindEventUnlockPayments (&UnlockPaymentEvent{Id: "0xadeaCC802D0f2DFd31bE4Fa7434F15782Fd720ac"},"id desc","10","0")

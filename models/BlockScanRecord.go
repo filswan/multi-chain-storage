@@ -7,7 +7,7 @@ import (
 
 type BlockScanRecord struct {
 	ID                     int64  `json:"id"`
-	NetworkType            string `json:"network_type"`
+	NetworkId              int64  `json:"network_id"`
 	LastCurrentBlockNumber int64  `json:"last_current_block_number"`
 	UpdateAt               string `json:"update_at"`
 }

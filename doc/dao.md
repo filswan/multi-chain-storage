@@ -1,2 +1,2 @@
-h2. Filecoin Data online proof
-* Data format
+## Filecoin Data Online DAO proof
+### Data format

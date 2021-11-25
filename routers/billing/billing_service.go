@@ -44,7 +44,7 @@ func getBillingCount(walletAddress string) (int64, error) {
 }
 
 func getBillHistoryList(walletAddress, limit, offset string) ([]*BillingResult, error) {
-	finalSql := "select t.*,co.short_name,ne.network_name from ( " +
+	finalSql := "select t.*,co.short_name as coin_type,ne.network_name from ( " +
 		"     select ep.tx_hash,ep.address_from,ep.locked_fee,ep.deadline,ep.payload_cid,ep.lock_payment_time,ep.coin_id,ep.network_id,eup.unlock_to_user_address,eup.unlock_to_user_amount,eup.unlock_time,'polygon' as network" +
 		"     from event_lock_payment ep left join event_unlock_payment eup   on eup.payload_cid = ep.payload_cid" +
 		"     where lower(ep.address_from)=lower('" + walletAddress + "')" +

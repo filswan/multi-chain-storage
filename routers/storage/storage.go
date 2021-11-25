@@ -3,7 +3,6 @@ package storage
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"payment-bridge/common"
@@ -14,7 +13,6 @@ import (
 	"payment-bridge/config"
 	"payment-bridge/logs"
 	"payment-bridge/models"
-	"payment-bridge/routers/storage/storageService"
 	"strconv"
 	"strings"
 )
@@ -22,7 +20,7 @@ import (
 func SendDealManager(router *gin.RouterGroup) {
 	router.POST("/ipfs/upload", UploadFileToIpfs)
 	//router.GET("/lotus/deal/:task_uuid", SendDeal)
-	router.GET("/tasks/deals", GetDealListFromSwan)
+	router.GET("/tasks/deals", GetDealListFromLocal)
 }
 
 func UploadFileToIpfs(c *gin.Context) {
@@ -57,7 +55,7 @@ func UploadFileToIpfs(c *gin.Context) {
 		return
 	}
 
-	fileInfoList, err := storageService.CreateTask(c, "", jwtToken, file, durationInt)
+	fileInfoList, err := CreateTask(c, "", jwtToken, file, durationInt)
 	if err != nil {
 		c.JSON(http.StatusOK, common.CreateErrorResponse(errorinfo.SENDING_DEAL_ERROR_CODE, errorinfo.SENDING_DEAL_ERROR_MSG))
 		return
@@ -71,6 +69,54 @@ func UploadFileToIpfs(c *gin.Context) {
 		c.JSON(http.StatusOK, common.CreateErrorResponse(errorinfo.SENDING_DEAL_GET_NULL_RETURN_VALUE_CODE, errorinfo.SENDING_DEAL_GET_NULL_RETURN_VALUE_MSG))
 		return
 	}
+}
+func GetDealListFromLocal(c *gin.Context) {
+	URL := c.Request.URL.Query()
+	pageNumber := URL.Get("page_number")
+	pageSize := URL.Get("page_size")
+	authorization := c.Request.Header.Get("authorization")
+	if len(authorization) == 0 {
+		c.JSON(http.StatusOK, common.CreateErrorResponse(errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_CODE, errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_MSG))
+		return
+	}
+
+	if (strings.Trim(pageNumber, " ") == "") || (strings.Trim(pageNumber, " ") == "0") {
+		pageNumber = "1"
+	} else {
+		tmpPageNumber, err := strconv.Atoi(pageNumber)
+		pageNumber = strconv.Itoa(tmpPageNumber)
+		if err != nil {
+			pageNumber = "1"
+		}
+	}
+
+	if strings.Trim(pageSize, " ") == "" {
+		pageSize = constants.PAGE_SIZE_DEFAULT_VALUE
+	}
+
+	offset, err := utils.GetOffsetByPagenumber(pageNumber, pageSize)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.PAGE_NUMBER_OR_SIZE_FORMAT_ERROR_CODE, errorinfo.PAGE_NUMBER_OR_SIZE_FORMAT_ERROR_MSG))
+		return
+	}
+	infoList, err := GetSourceFileAndDealFileInfo(pageNumber, strconv.FormatInt(offset, 10))
+	if err != nil {
+		logs.GetLogger().Error(err)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE, errorinfo.GET_RECORD_lIST_ERROR_MSG+": get source file and deal info from db occurred error"))
+		return
+	}
+	pageInfo := new(common.PageInfo)
+	pageInfo.PageSize = pageSize
+	pageInfo.PageNumber = pageNumber
+	totalCount, err := GetSourceFileAndDealFileInfoCount()
+	if err != nil {
+		logs.GetLogger().Error(err)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_COUNT_ERROR_CODE, errorinfo.GET_RECORD_COUNT_ERROR_MSG+": get source file and deal info total record number from db occurred error"))
+		return
+	}
+	pageInfo.TotalRecordCount = strconv.FormatInt(totalCount, 10)
+	c.JSON(http.StatusOK, common.NewSuccessResponseWithPageInfo(infoList, pageInfo))
 }
 
 func GetDealListFromSwan(c *gin.Context) {
@@ -127,13 +173,12 @@ func GetDealListFromSwan(c *gin.Context) {
 			whereCondition += ","
 		}
 	}
-	fmt.Println(whereCondition)
 	if strings.Trim(whereCondition, " ") == "" {
 		whereCondition = "1=1"
 	} else {
 		whereCondition = "1=1 and payload_cid in (" + whereCondition + ")"
 	}
-	eventList, err := models.FindEventPolygons(whereCondition, "", strconv.Itoa(results.PagingInfo.Limit), strconv.Itoa(results.PagingInfo.Offset))
+	eventList, err := models.FindEventLockPayment(whereCondition, "", strconv.Itoa(results.PagingInfo.Limit), strconv.Itoa(results.PagingInfo.Offset))
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE, errorinfo.GET_RECORD_lIST_ERROR_MSG))

@@ -22,10 +22,6 @@ type BillingRequest struct {
 	PageSize      string `json:"page_size"`
 }
 
-type RecordCount struct {
-	TotalRecord int64 `json:"total_record"`
-}
-
 type PriceResult struct {
 	Filecoin struct {
 		Usd float64 `json:"usd"`

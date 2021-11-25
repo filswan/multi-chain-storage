@@ -8,6 +8,7 @@ import (
 	"math/big"
 	"net/http"
 	"payment-bridge/blockchain/browsersync/scanlockpayment/polygon"
+	common2 "payment-bridge/common"
 	"payment-bridge/common/httpClient"
 	"payment-bridge/database"
 	"payment-bridge/logs"
@@ -34,7 +35,7 @@ func GetFileCoinLastestPriceService() (*PriceResult, error) {
 func getBillingCount(walletAddress string) (int64, error) {
 	sql := "select  count(* ) as total_record " +
 		"from event_polygon ep left join event_unlock_payment eup   on eup.payload_cid = ep.payload_cid where ep.address_from='" + walletAddress + "'"
-	var recordCount RecordCount
+	var recordCount common2.RecordCount
 	err := database.GetDB().Raw(sql).Scan(&recordCount).Error
 	if err != nil {
 		logs.GetLogger().Error(err)

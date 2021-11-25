@@ -28,6 +28,8 @@ func main() {
 	initMethod()
 	browsersync.Init()
 
+	scheduler.GetDealListShouldBeSigService()
+
 	models.RunAllTheScan()
 
 	scheduler.SendDealScheduler()

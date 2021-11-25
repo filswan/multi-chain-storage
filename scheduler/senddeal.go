@@ -132,7 +132,7 @@ func sendDeal(taskUuid string) error {
 }
 
 func checkIfHaveLockPayment(payloadCid string) (bool, error) {
-	polygonEventList, err := models.FindEventPolygons(&models.EventLockPayment{PayloadCid: payloadCid}, "id desc", "", "0")
+	polygonEventList, err := models.FindEventLockPayment(&models.EventLockPayment{PayloadCid: payloadCid}, "id desc", "", "0")
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return false, err

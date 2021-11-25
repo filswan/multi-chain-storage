@@ -37,7 +37,7 @@ func (self *EventLockPayment) FindOneEventPolygon(condition interface{}) (*Event
 }
 
 // FindEvents (&Event{Id: "0xadeaCC802D0f2DFd31bE4Fa7434F15782Fd720ac"},"id desc","10","0")
-func FindEventPolygons(whereCondition interface{}, orderCondition, limit, offset string) ([]*EventLockPayment, error) {
+func FindEventLockPayment(whereCondition interface{}, orderCondition, limit, offset string) ([]*EventLockPayment, error) {
 	db := database.GetDB()
 	if offset == "" {
 		offset = "0"

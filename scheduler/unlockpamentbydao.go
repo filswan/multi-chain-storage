@@ -65,14 +65,16 @@ func UnlockPaymentByDao() error {
 			parm.Amount = n
 			parm.Recipient = common.HexToAddress(daoEventLogList[0].Recipient)
 			parm.OrderId = v.OrderId
+			unLockStatus := constants.SIGNATURE_SUCCESS_VALUE
 			err = doUnlockPaymentOnContract(daoEventLogList[0], parm)
 			if err != nil {
 				logs.GetLogger().Error(err)
+				unLockStatus = constants.SIGNATURE_FAILED_VALUE
 				continue
 			}
 
 			//update signature unlock action success
-			err = models.UpdateDaoEventLog(&models.EventDaoSignature{PayloadCid: v.PayloadCid, DealCid: v.DealCid}, map[string]interface{}{"SignatureUnlockStatus": constants.SIGNATURE_SUCCESS_VALUE})
+			err = models.UpdateDaoEventLog(&models.EventDaoSignature{PayloadCid: v.PayloadCid, DealCid: v.DealCid}, map[string]interface{}{"SignatureUnlockStatus": unLockStatus})
 			if err != nil {
 				logs.GetLogger().Error(err)
 				continue

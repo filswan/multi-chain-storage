@@ -1,4 +1,4 @@
-package storageService
+package storage
 
 import (
 	clientmodel "github.com/filswan/go-swan-client/model"
@@ -11,6 +11,7 @@ import (
 	"mime/multipart"
 	"os"
 	"path/filepath"
+	"payment-bridge/common"
 	"payment-bridge/common/constants"
 	"payment-bridge/common/utils"
 	"payment-bridge/config"
@@ -131,7 +132,7 @@ func CreateTask(c *gin.Context, taskName, jwtToken string, srcFile *multipart.Fi
 		Duration:                duration,
 	}
 
-	_, fileInfoList, err := subcommand.CreateTask(confTask, nil)
+	_, fileInfoList, _, err := subcommand.CreateTask(confTask, nil)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
@@ -156,6 +157,7 @@ func saveDealFileAndMapRelation(fileInfoList []*libmodel.FileDesc, sourceFile *m
 	dealFile.CarMd5 = fileInfoList[0].CarFileMd5
 	dealFile.PayloadCid = fileInfoList[0].DataCid
 	dealFile.PieceCid = fileInfoList[0].PieceCid
+	dealFile.SourceFilePath = sourceFile.ResourceUri
 	dealFile.DealCid = fileInfoList[0].DealCid
 	dealFile.CreateAt = strconv.FormatInt(utils.GetEpochInMillis(), 10)
 	err := database.SaveOne(dealFile)
@@ -167,12 +169,38 @@ func saveDealFileAndMapRelation(fileInfoList []*libmodel.FileDesc, sourceFile *m
 	filepMap.SourceFileId = sourceFile.ID
 	filepMap.DealFileId = dealFile.ID
 	filepMap.FileIndex = 0
-	err = database.SaveOne(dealFile)
+	err = database.SaveOne(filepMap)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
 	}
 	return nil
+}
+
+func GetSourceFileAndDealFileInfo(limit, offset string) ([]*SourceFileAndDealFileInfo, error) {
+	sql := "select s.file_name,s.file_size,df.miner_fid,df.payload_cid,df.deal_cid,df.piece_cid,df.deal_status,df.pin_status from  source_file s " +
+		" inner join source_file_deal_file_map sfdfm on s.id = sfdfm.source_file_id" +
+		" inner join deal_file df on sfdfm.deal_file_id = df.id"
+	var results []*SourceFileAndDealFileInfo
+	err := database.GetDB().Raw(sql).Scan(&results).Limit(limit).Offset(offset).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+	return results, nil
+}
+
+func GetSourceFileAndDealFileInfoCount() (int64, error) {
+	sql := "select s.file_name,s.file_size,df.miner_fid,df.payload_cid,df.deal_cid,df.piece_cid,df.deal_status,df.pin_status from  source_file s " +
+		" inner join source_file_deal_file_map sfdfm on s.id = sfdfm.source_file_id" +
+		" inner join deal_file df on sfdfm.deal_file_id = df.id"
+	var recordCount common.RecordCount
+	err := database.GetDB().Raw(sql).Scan(&recordCount).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return 0, err
+	}
+	return recordCount.TotalRecord, nil
 }
 
 func SendAutoBidDeals(confDeal *clientmodel.ConfDeal) ([]string, [][]*libmodel.FileDesc, error) {

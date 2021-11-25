@@ -70,7 +70,7 @@ func ScanPolygonLockPaymentEventFromChainAndSaveEventLogData(blockNoFrom, blockN
 	for _, vLog := range logsInChain {
 		//if log have this contractor function signer
 		if vLog.Topics[0].Hex() == contractFunctionSignature {
-			eventList, err := models.FindEventPolygons(&models.EventLockPayment{TxHash: vLog.TxHash.Hex(), BlockNo: vLog.BlockNumber}, "id desc", "10", "0")
+			eventList, err := models.FindEventLockPayment(&models.EventLockPayment{TxHash: vLog.TxHash.Hex(), BlockNo: vLog.BlockNumber}, "id desc", "10", "0")
 			if err != nil {
 				logs.GetLogger().Error(err)
 				continue

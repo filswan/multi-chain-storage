@@ -178,7 +178,7 @@ func saveDealFileAndMapRelation(fileInfoList []*libmodel.FileDesc, sourceFile *m
 }
 
 func GetSourceFileAndDealFileInfo(limit, offset string) ([]*SourceFileAndDealFileInfo, error) {
-	sql := "select s.file_name,s.file_size,df.miner_fid,df.payload_cid,df.deal_cid,df.piece_cid,df.deal_status,df.pin_status from  source_file s " +
+	sql := "select s.file_name,s.file_size,s.create_at,df.miner_fid,df.payload_cid,df.deal_cid,df.piece_cid,df.deal_status,df.deal_status as status,df.pin_status from  source_file s " +
 		" inner join source_file_deal_file_map sfdfm on s.id = sfdfm.source_file_id" +
 		" inner join deal_file df on sfdfm.deal_file_id = df.id"
 	var results []*SourceFileAndDealFileInfo
@@ -191,7 +191,7 @@ func GetSourceFileAndDealFileInfo(limit, offset string) ([]*SourceFileAndDealFil
 }
 
 func GetSourceFileAndDealFileInfoCount() (int64, error) {
-	sql := "select s.file_name,s.file_size,df.miner_fid,df.payload_cid,df.deal_cid,df.piece_cid,df.deal_status,df.pin_status from  source_file s " +
+	sql := "select count(1) as total_record from  source_file s " +
 		" inner join source_file_deal_file_map sfdfm on s.id = sfdfm.source_file_id" +
 		" inner join deal_file df on sfdfm.deal_file_id = df.id"
 	var recordCount common.RecordCount

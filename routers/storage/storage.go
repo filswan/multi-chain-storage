@@ -54,6 +54,7 @@ func UploadFileToIpfs(c *gin.Context) {
 		c.JSON(http.StatusOK, common.CreateErrorResponse(errorinfo.TYPE_TRANSFER_ERROR_CODE, errorinfo.TYPE_TRANSFER_ERROR_MSG+": duration is not a number"))
 		return
 	}
+	durationInt = durationInt * 24 * 60 * 60 / 30
 
 	fileInfoList, err := CreateTask(c, "", jwtToken, file, durationInt)
 	if err != nil {

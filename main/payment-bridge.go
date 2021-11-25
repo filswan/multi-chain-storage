@@ -28,13 +28,13 @@ func main() {
 	initMethod()
 	browsersync.Init()
 
-	scheduler.GetDealListShouldBeSigService()
-
 	models.RunAllTheScan()
 
 	scheduler.SendDealScheduler()
 
 	scheduler.DAOUnlockPaymentSchedule()
+
+	scheduler.UpdateDealScheduler()
 
 	//polygon.ScanDaoEventFromChainAndSaveEventLogData(20965958, 20966958)
 

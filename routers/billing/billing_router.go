@@ -2,6 +2,7 @@ package billing
 
 import (
 	"errors"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"math/big"
 	"net/http"
@@ -12,6 +13,7 @@ import (
 	"payment-bridge/common/utils"
 	"payment-bridge/logs"
 	"payment-bridge/models"
+	"reflect"
 	"strconv"
 	"strings"
 )
@@ -68,8 +70,9 @@ func UpdateLockPaymentInfoByPayloadCid(c *gin.Context) {
 		return
 	}
 	if len(dealList) > 0 {
-		if dealList[0].LockPaymentTx != "" {
-			err := models.UpdateDealFile(&models.DealFile{PayloadCid: payloadCid}, map[string]interface{}{"lock_payment_tx": lockPaymentTx, "lock_payment_status": lockPaymentStatus, "lock_payment_network": lockPaymentStatus})
+		fmt.Println(reflect.TypeOf(dealList[0].LockPaymentTx))
+		if strings.Trim(dealList[0].LockPaymentTx, " ") == "" {
+			err := models.UpdateDealFile(&models.DealFile{PayloadCid: payloadCid}, map[string]interface{}{"lock_payment_tx": lockPaymentTx, "lock_payment_status": lockPaymentStatus, "lock_payment_network": networkName})
 			if err != nil {
 				logs.GetLogger().Error(err)
 				c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.UPDATE_DATA_TO_DB_ERROR_CODE, errorinfo.UPDATE_DATA_TO_DB_ERROR_MSG+": update lock payment info to db occurred error"))

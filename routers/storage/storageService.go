@@ -12,6 +12,7 @@ import (
 	"os"
 	"path/filepath"
 	"payment-bridge/common"
+	"payment-bridge/common/constants"
 	"payment-bridge/common/utils"
 	"payment-bridge/config"
 	"payment-bridge/database"
@@ -21,7 +22,7 @@ import (
 	"time"
 )
 
-func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, taskName, jwtToken string, srcFile *multipart.FileHeader, duration int) (string, error) {
+func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multipart.FileHeader, duration int) (string, error) {
 	temDirDeal := config.GetConfig().SwanTask.DirDeal
 
 	logs.GetLogger().Info("temp dir is ", temDirDeal)
@@ -102,7 +103,7 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, taskName, jwtT
 		logs.GetLogger().Error(err)
 		return "", err
 	}
-	err = saveDealFileAndMapRelation(fileList, sourceFile)
+	err = saveDealFileAndMapRelation(fileList, sourceFile, duration)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return "", err
@@ -157,12 +158,14 @@ func CreateTask(){
 	return fileInfoList, nil
 }*/
 
-func saveDealFileAndMapRelation(fileInfoList []*libmodel.FileDesc, sourceFile *models.SourceFile) error {
+func saveDealFileAndMapRelation(fileInfoList []*libmodel.FileDesc, sourceFile *models.SourceFile, duration int) error {
 	dealFile := new(models.DealFile)
-	dealList, err := models.FindDealFileList(&models.DealFile{PayloadCid: fileInfoList[0].DataCid}, "create_at desc", "10", "0")
+	dealList, err := models.FindDealFileList(&models.DealFile{LockPaymentStatus: constants.LOCK_PAYMENT_STATUS_WAITING}, "create_at desc", "10", "0")
 	if len(dealList) > 0 {
 		dealFile = dealList[0]
 		dealFile.ID = 0
+		dealFile.Duration = duration
+		dealFile.LockPaymentStatus = constants.LOCK_PAYMENT_STATUS_FREE
 	} else {
 		dealFile.CarFileName = fileInfoList[0].CarFileName
 		dealFile.CarFilePath = fileInfoList[0].CarFilePath
@@ -173,6 +176,8 @@ func saveDealFileAndMapRelation(fileInfoList []*libmodel.FileDesc, sourceFile *m
 		dealFile.SourceFilePath = sourceFile.ResourceUri
 		dealFile.DealCid = fileInfoList[0].DealCid
 		dealFile.CreateAt = strconv.FormatInt(utils.GetEpochInMillis(), 10)
+		dealFile.Duration = duration
+		dealFile.LockPaymentStatus = constants.LOCK_PAYMENT_STATUS_WAITING
 	}
 	err = database.SaveOne(dealFile)
 	if err != nil {

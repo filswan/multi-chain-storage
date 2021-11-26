@@ -20,6 +20,8 @@ type DealFile struct {
 	SourceFilePath     string `json:"source_file_path"`
 	CarFilePath        string `json:"car_file_path"`
 	CarMd5             string `json:"car_md_5"`
+	Duration           int    `json:"duration"`
+	TaskUuid           string `json:"task_uuid"`
 	Cost               string `json:"cost"`
 	CreateAt           string `json:"create_at"`
 	UpdateAt           string `json:"update_at"`

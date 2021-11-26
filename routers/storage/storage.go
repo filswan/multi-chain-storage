@@ -30,7 +30,6 @@ func UploadFileToIpfs(c *gin.Context) {
 		c.JSON(http.StatusOK, common.CreateErrorResponse(errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_CODE, errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_MSG))
 		return
 	}
-	jwtToken := strings.TrimPrefix(authorization, "Bearer ")
 
 	file, err := c.FormFile("file")
 	if err != nil {
@@ -56,7 +55,7 @@ func UploadFileToIpfs(c *gin.Context) {
 	}
 	durationInt = durationInt * 24 * 60 * 60 / 30
 
-	payloadCid, err := SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c, "", jwtToken, file, durationInt)
+	payloadCid, err := SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c, file, durationInt)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.SENDING_DEAL_ERROR_CODE, errorinfo.SENDING_DEAL_ERROR_MSG))
 		return

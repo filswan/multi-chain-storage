@@ -60,13 +60,21 @@ func UpdateLockPaymentInfoByPayloadCid(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_CODE, errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_MSG+" :"+errMsg))
 		return
 	}
-	//condition :&models.DealFile{DealCid: "123"}
-	//updateFields: map[string]interface{}{"processing_time": taskT.ProcessingTime, "worker_reward": taskT.WorkerReward}
-	err := models.UpdateDealFile(&models.DealFile{PayloadCid: payloadCid}, map[string]interface{}{"lock_payment_tx": lockPaymentTx, "lock_payment_status": lockPaymentStatus, "lock_payment_network": lockPaymentStatus})
+	dealList, err := models.FindDealFileList(&models.DealFile{PayloadCid: payloadCid}, "create_at desc", "10", "0")
 	if err != nil {
 		logs.GetLogger().Error(err)
-		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.UPDATE_DATA_TO_DB_ERROR_CODE, errorinfo.UPDATE_DATA_TO_DB_ERROR_MSG+": update lock payment info to db occurred error"))
+		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE, errorinfo.GET_RECORD_lIST_ERROR_MSG+": get deal info from db occurred error"))
 		return
+	}
+	if len(dealList) > 0 {
+		if dealList[0].LockPaymentTx != "" {
+			err := models.UpdateDealFile(&models.DealFile{PayloadCid: payloadCid}, map[string]interface{}{"lock_payment_tx": lockPaymentTx, "lock_payment_status": lockPaymentStatus, "lock_payment_network": lockPaymentStatus})
+			if err != nil {
+				logs.GetLogger().Error(err)
+				c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.UPDATE_DATA_TO_DB_ERROR_CODE, errorinfo.UPDATE_DATA_TO_DB_ERROR_MSG+": update lock payment info to db occurred error"))
+				return
+			}
+		}
 	}
 	c.JSON(http.StatusOK, common.CreateSuccessResponse(""))
 }

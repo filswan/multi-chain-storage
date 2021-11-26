@@ -12,7 +12,6 @@ import (
 	"os"
 	"path/filepath"
 	"payment-bridge/common"
-	"payment-bridge/common/constants"
 	"payment-bridge/common/utils"
 	"payment-bridge/config"
 	"payment-bridge/database"
@@ -22,7 +21,7 @@ import (
 	"time"
 )
 
-func CreateTask(c *gin.Context, taskName, jwtToken string, srcFile *multipart.FileHeader, duration int) ([]*libmodel.FileDesc, error) {
+func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, taskName, jwtToken string, srcFile *multipart.FileHeader, duration int) (string, error) {
 	temDirDeal := config.GetConfig().SwanTask.DirDeal
 
 	logs.GetLogger().Info("temp dir is ", temDirDeal)
@@ -30,14 +29,14 @@ func CreateTask(c *gin.Context, taskName, jwtToken string, srcFile *multipart.Fi
 	homedir, err := os.UserHomeDir()
 	if err != nil {
 		logs.GetLogger().Error("Cannot get home directory.")
-		return nil, err
+		return "", err
 	}
 	temDirDeal = filepath.Join(homedir, temDirDeal[2:])
 
 	err = libutils.CreateDir(temDirDeal)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return nil, err
+		return "", err
 	}
 
 	timeStr := time.Now().Format("20060102_150405")
@@ -47,13 +46,13 @@ func CreateTask(c *gin.Context, taskName, jwtToken string, srcFile *multipart.Fi
 	err = libutils.CreateDir(srcDir)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return nil, err
+		return "", err
 	}
 
 	err = libutils.CreateDir(carDir)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return nil, err
+		return "", err
 	}
 
 	srcFilepath := filepath.Join(srcDir, srcFile.Filename)
@@ -61,20 +60,9 @@ func CreateTask(c *gin.Context, taskName, jwtToken string, srcFile *multipart.Fi
 	err = c.SaveUploadedFile(srcFile, srcFilepath)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return nil, err
+		return "", err
 	}
 	logs.GetLogger().Info("car files created in ", carDir)
-
-	sourceFile := new(models.SourceFile)
-	sourceFile.FileName = srcFile.Filename
-	sourceFile.FileSize = strconv.FormatInt(srcFile.Size, 10)
-	sourceFile.ResourceUri = srcFilepath
-	sourceFile.CreateAt = strconv.FormatInt(utils.GetEpochInMillis(), 10)
-	err = database.SaveOne(sourceFile)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
 
 	confCar := clientmodel.ConfCar{
 		LotusClientApiUrl:      config.GetConfig().Lotus.ApiUrl,
@@ -82,12 +70,13 @@ func CreateTask(c *gin.Context, taskName, jwtToken string, srcFile *multipart.Fi
 		InputDir:               srcDir,
 		OutputDir:              carDir,
 	}
-	_, err = subcommand.CreateCarFiles(&confCar)
+	fileList, err := subcommand.CreateCarFiles(&confCar)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return nil, err
+		return "", err
 	}
-	logs.GetLogger().Info("car files created in ", carDir)
+
+	logs.GetLogger().Info("car files created in ", carDir, "payload_cid=", fileList[0].DataCid)
 
 	confUpload := &clientmodel.ConfUpload{
 		StorageServerType:           libconstants.STORAGE_SERVER_TYPE_IPFS_SERVER,
@@ -100,10 +89,29 @@ func CreateTask(c *gin.Context, taskName, jwtToken string, srcFile *multipart.Fi
 	_, err = subcommand.UploadCarFiles(confUpload)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return nil, err
+		return "", err
 	}
 	logs.GetLogger().Info("car files uploaded")
+	sourceFile := new(models.SourceFile)
+	sourceFile.FileName = srcFile.Filename
+	sourceFile.FileSize = strconv.FormatInt(srcFile.Size, 10)
+	sourceFile.ResourceUri = srcFilepath
+	sourceFile.CreateAt = strconv.FormatInt(utils.GetEpochInMillis(), 10)
+	err = database.SaveOne(sourceFile)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return "", err
+	}
+	err = saveDealFileAndMapRelation(fileList, sourceFile)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return "", err
+	}
+	return fileList[0].DataCid, nil
+}
 
+/*
+func CreateTask(){
 	taskDataset := config.GetConfig().SwanTask.CuratedDataset
 	taskDescription := config.GetConfig().SwanTask.Description
 	startEpochIntervalHours := config.GetConfig().SwanTask.StartEpochHours
@@ -147,20 +155,26 @@ func CreateTask(c *gin.Context, taskName, jwtToken string, srcFile *multipart.Fi
 
 	logs.GetLogger().Info("task created")
 	return fileInfoList, nil
-}
+}*/
 
 func saveDealFileAndMapRelation(fileInfoList []*libmodel.FileDesc, sourceFile *models.SourceFile) error {
 	dealFile := new(models.DealFile)
-	dealFile.CarFileName = fileInfoList[0].CarFileName
-	dealFile.CarFilePath = fileInfoList[0].CarFilePath
-	dealFile.CarFileSize = fileInfoList[0].CarFileSize
-	dealFile.CarMd5 = fileInfoList[0].CarFileMd5
-	dealFile.PayloadCid = fileInfoList[0].DataCid
-	dealFile.PieceCid = fileInfoList[0].PieceCid
-	dealFile.SourceFilePath = sourceFile.ResourceUri
-	dealFile.DealCid = fileInfoList[0].DealCid
-	dealFile.CreateAt = strconv.FormatInt(utils.GetEpochInMillis(), 10)
-	err := database.SaveOne(dealFile)
+	dealList, err := models.FindDealFileList(&models.DealFile{PayloadCid: fileInfoList[0].DataCid}, "create_at desc", "10", "0")
+	if len(dealList) > 0 {
+		dealFile = dealList[0]
+		dealFile.ID = 0
+	} else {
+		dealFile.CarFileName = fileInfoList[0].CarFileName
+		dealFile.CarFilePath = fileInfoList[0].CarFilePath
+		dealFile.CarFileSize = fileInfoList[0].CarFileSize
+		dealFile.CarMd5 = fileInfoList[0].CarFileMd5
+		dealFile.PayloadCid = fileInfoList[0].DataCid
+		dealFile.PieceCid = fileInfoList[0].PieceCid
+		dealFile.SourceFilePath = sourceFile.ResourceUri
+		dealFile.DealCid = fileInfoList[0].DealCid
+		dealFile.CreateAt = strconv.FormatInt(utils.GetEpochInMillis(), 10)
+	}
+	err = database.SaveOne(dealFile)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err

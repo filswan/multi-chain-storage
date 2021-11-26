@@ -56,15 +56,18 @@ func UploadFileToIpfs(c *gin.Context) {
 	}
 	durationInt = durationInt * 24 * 60 * 60 / 30
 
-	fileInfoList, err := CreateTask(c, "", jwtToken, file, durationInt)
+	payloadCid, err := SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c, "", jwtToken, file, durationInt)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.SENDING_DEAL_ERROR_CODE, errorinfo.SENDING_DEAL_ERROR_MSG))
 		return
 	}
 
-	if len(fileInfoList) > 0 {
-		logs.GetLogger().Info("----------------------------payload_cid: ", fileInfoList[0].DataCid, "-----------------------------")
-		c.JSON(http.StatusOK, common.CreateSuccessResponse(fileInfoList[0].DataCid))
+	if payloadCid != "" {
+		logs.GetLogger().Info("----------------------------payload_cid: ", payloadCid, "-----------------------------")
+		uploadResult := new(uploadResult)
+		uploadResult.PayloadCid = payloadCid
+		uploadResult.NeedPay = true
+		c.JSON(http.StatusOK, common.CreateSuccessResponse(uploadResult))
 		return
 	} else {
 		c.JSON(http.StatusOK, common.CreateErrorResponse(errorinfo.SENDING_DEAL_GET_NULL_RETURN_VALUE_CODE, errorinfo.SENDING_DEAL_GET_NULL_RETURN_VALUE_MSG))
@@ -206,4 +209,9 @@ func GetDealListFromSwan(c *gin.Context) {
 	pageInfo.PageNumber = pageNumber
 	pageInfo.TotalRecordCount = strconv.Itoa(results.PagingInfo.TotalItems)
 	c.JSON(http.StatusOK, common.NewSuccessResponseWithPageInfo(results.Data.Deals, pageInfo))
+}
+
+type uploadResult struct {
+	PayloadCid string `json:"payload_cid"`
+	NeedPay    bool   `json:"need_pay"`
 }

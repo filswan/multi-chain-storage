@@ -16,6 +16,7 @@ import (
 	"payment-bridge/routers/billing"
 	"payment-bridge/routers/common"
 	"payment-bridge/routers/storage"
+	"payment-bridge/scheduler"
 	"time"
 )
 
@@ -29,13 +30,13 @@ func main() {
 
 	models.RunAllTheScan()
 
-	//scheduler.CreateTaskScheduler()
+	scheduler.CreateTaskScheduler()
 
-	//scheduler.SendDealScheduler()
+	scheduler.SendDealScheduler()
 
 	//scheduler.DAOUnlockPaymentSchedule()
 
-	//scheduler.UpdateDealScheduler()
+	scheduler.UpdateDealScheduler()
 
 	defer func() {
 		err := db.Close()

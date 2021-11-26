@@ -22,22 +22,22 @@ import (
 	"time"
 )
 
-func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multipart.FileHeader, duration int) (string, error) {
+func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multipart.FileHeader, duration int) (string, bool, error) {
 	temDirDeal := config.GetConfig().SwanTask.DirDeal
 
 	logs.GetLogger().Info("temp dir is ", temDirDeal)
-
+	ifPayloadCidExist := false
 	homedir, err := os.UserHomeDir()
 	if err != nil {
 		logs.GetLogger().Error("Cannot get home directory.")
-		return "", err
+		return "", ifPayloadCidExist, err
 	}
 	temDirDeal = filepath.Join(homedir, temDirDeal[2:])
 
 	err = libutils.CreateDir(temDirDeal)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return "", err
+		return "", ifPayloadCidExist, err
 	}
 
 	timeStr := time.Now().Format("20060102_150405")
@@ -47,13 +47,13 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 	err = libutils.CreateDir(srcDir)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return "", err
+		return "", ifPayloadCidExist, err
 	}
 
 	err = libutils.CreateDir(carDir)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return "", err
+		return "", ifPayloadCidExist, err
 	}
 
 	srcFilepath := filepath.Join(srcDir, srcFile.Filename)
@@ -61,7 +61,7 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 	err = c.SaveUploadedFile(srcFile, srcFilepath)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return "", err
+		return "", ifPayloadCidExist, err
 	}
 	logs.GetLogger().Info("car files created in ", carDir)
 
@@ -74,41 +74,32 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 	fileList, err := subcommand.CreateCarFiles(&confCar)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return "", err
+		return "", ifPayloadCidExist, err
 	}
-
 	logs.GetLogger().Info("car files created in ", carDir, "payload_cid=", fileList[0].DataCid)
 
-	confUpload := &clientmodel.ConfUpload{
-		StorageServerType:           libconstants.STORAGE_SERVER_TYPE_IPFS_SERVER,
-		IpfsServerDownloadUrlPrefix: config.GetConfig().IpfsServer.DownloadUrlPrefix,
-		IpfsServerUploadUrl:         config.GetConfig().IpfsServer.UploadUrl,
-		OutputDir:                   carDir,
-		InputDir:                    carDir,
+	dealList, err := models.FindDealFileList(&models.DealFile{PayloadCid: fileList[0].DataCid}, "create_at desc", "10", "0")
+	if len(dealList) > 0 {
+		ifPayloadCidExist = true
+		return fileList[0].DataCid, ifPayloadCidExist, nil
+	} else {
+		sourceFile := new(models.SourceFile)
+		sourceFile.FileName = srcFile.Filename
+		sourceFile.FileSize = strconv.FormatInt(srcFile.Size, 10)
+		sourceFile.ResourceUri = srcFilepath
+		sourceFile.CreateAt = strconv.FormatInt(utils.GetEpochInMillis(), 10)
+		err = database.SaveOne(sourceFile)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return "", ifPayloadCidExist, err
+		}
+		err = saveDealFileAndMapRelation(fileList, sourceFile, duration)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return "", ifPayloadCidExist, err
+		}
+		return fileList[0].DataCid, ifPayloadCidExist, nil
 	}
-
-	_, err = subcommand.UploadCarFiles(confUpload)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return "", err
-	}
-	logs.GetLogger().Info("car files uploaded")
-	sourceFile := new(models.SourceFile)
-	sourceFile.FileName = srcFile.Filename
-	sourceFile.FileSize = strconv.FormatInt(srcFile.Size, 10)
-	sourceFile.ResourceUri = srcFilepath
-	sourceFile.CreateAt = strconv.FormatInt(utils.GetEpochInMillis(), 10)
-	err = database.SaveOne(sourceFile)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return "", err
-	}
-	err = saveDealFileAndMapRelation(fileList, sourceFile, duration)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return "", err
-	}
-	return fileList[0].DataCid, nil
 }
 
 /*

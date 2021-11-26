@@ -22,7 +22,7 @@ func CreateTaskScheduler() {
 	c := cron.New()
 	err := c.AddFunc(config.GetConfig().ScheduleRule.SendDealRule, func() {
 		logs.GetLogger().Info("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ send deal scheduler is running at " + time.Now().Format("2006-01-02 15:04:05"))
-		err := DoSendDealScheduler()
+		err := doCreateTask()
 		if err != nil {
 			logs.GetLogger().Error(err)
 			return
@@ -43,6 +43,21 @@ func doCreateTask() error {
 	}
 	for _, v := range dealList {
 		if strings.Trim(v.DealCid, " ") == "" {
+			confUpload := &clientmodel.ConfUpload{
+				StorageServerType:           libconstants.STORAGE_SERVER_TYPE_IPFS_SERVER,
+				IpfsServerDownloadUrlPrefix: config.GetConfig().IpfsServer.DownloadUrlPrefix,
+				IpfsServerUploadUrl:         config.GetConfig().IpfsServer.UploadUrl,
+				OutputDir:                   filepath.Dir(v.CarFilePath),
+				InputDir:                    filepath.Dir(v.CarFilePath),
+			}
+
+			_, err = subcommand.UploadCarFiles(confUpload)
+			if err != nil {
+				logs.GetLogger().Error(err)
+				return err
+			}
+			logs.GetLogger().Info("car files uploaded")
+
 			taskDataset := config.GetConfig().SwanTask.CuratedDataset
 			taskDescription := config.GetConfig().SwanTask.Description
 			startEpochIntervalHours := config.GetConfig().SwanTask.StartEpochHours

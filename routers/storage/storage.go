@@ -55,17 +55,16 @@ func UploadFileToIpfs(c *gin.Context) {
 	}
 	durationInt = durationInt * 24 * 60 * 60 / 30
 
-	payloadCid, err := SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c, file, durationInt)
+	payloadCid, ifPayLoadCid, err := SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c, file, durationInt)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.SENDING_DEAL_ERROR_CODE, errorinfo.SENDING_DEAL_ERROR_MSG))
 		return
 	}
-
+	uploadResult := new(uploadResult)
 	if payloadCid != "" {
 		logs.GetLogger().Info("----------------------------payload_cid: ", payloadCid, "-----------------------------")
-		uploadResult := new(uploadResult)
 		uploadResult.PayloadCid = payloadCid
-		uploadResult.NeedPay = true
+		uploadResult.NeedPay = !ifPayLoadCid
 		c.JSON(http.StatusOK, common.CreateSuccessResponse(uploadResult))
 		return
 	} else {

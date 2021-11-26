@@ -18,12 +18,14 @@ const (
 	HTTP_REQUEST_PARSER_RESPONSE_TO_STRUCT_ERROR_MSG  = "Parse http request response to struct occurred error"
 
 	//database err 003
-	GET_RECORD_COUNT_ERROR_CODE = "500003001"
-	GET_RECORD_COUNT_ERROR_MSG  = "Get data total count from db occurred error"
-	GET_RECORD_lIST_ERROR_CODE  = "500003002"
-	GET_RECORD_lIST_ERROR_MSG   = "Get data records from db occurred error"
-	SAVE_DATA_TO_DB_ERROR_CODE  = "500003003"
-	SAVE_DATA_TO_DB_ERROR_MSG   = "Saving data to database occurred error"
+	GET_RECORD_COUNT_ERROR_CODE  = "500003001"
+	GET_RECORD_COUNT_ERROR_MSG   = "Get data total count from db occurred error"
+	GET_RECORD_lIST_ERROR_CODE   = "500003002"
+	GET_RECORD_lIST_ERROR_MSG    = "Get data records from db occurred error"
+	SAVE_DATA_TO_DB_ERROR_CODE   = "500003003"
+	SAVE_DATA_TO_DB_ERROR_MSG    = "Saving data to database occurred error"
+	UPDATE_DATA_TO_DB_ERROR_CODE = "500003004"
+	UPDATE_DATA_TO_DB_ERROR_MSG  = "Updating data to database occurred error"
 
 	// JWT token err 004
 	NO_AUTHORIZATION_TOKEN_ERROR_CODE = "500004001"

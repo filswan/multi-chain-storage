@@ -22,6 +22,7 @@ func BillingManager(router *gin.RouterGroup) {
 	router.POST("/deal/lockpayment/status", UpdateLockPaymentInfoByPayloadCid)
 }
 func UpdateLockPaymentInfoByPayloadCid(c *gin.Context) {
+	logs.GetLogger().Info("~~~~~~~~~~~~~~~~~~~~~~~~ start to update lock payment status to db ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 	authorization := c.Request.Header.Get("authorization")
 	if len(authorization) == 0 {
 		c.JSON(http.StatusUnauthorized, common.CreateErrorResponse(errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_CODE, errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_MSG))

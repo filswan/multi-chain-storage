@@ -36,7 +36,7 @@ func SendDealScheduler() {
 	c.Start()
 }
 func DoSendDealScheduler() error {
-	dealList, err := GetTaskListShouldBeSigServiceFromLocal()
+	dealList, err := GetTaskListShouldBeSendDealFromLocal()
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
@@ -62,8 +62,8 @@ func DoSendDealScheduler() error {
 	return nil
 }
 
-func GetTaskListShouldBeSigServiceFromLocal() ([]*models.DealFile, error) {
-	whereCondition := "lower(lock_payment_status)=lower('" + constants.LOCK_PAYMENT_STATUS_SUCCESS + "' and task_uuid != null and task_uuid != '' "
+func GetTaskListShouldBeSendDealFromLocal() ([]*models.DealFile, error) {
+	whereCondition := "lower(lock_payment_status)=lower('" + constants.LOCK_PAYMENT_STATUS_SUCCESS + "') and length(task_uuid) > 0  "
 	dealList, err := models.FindDealFileList(whereCondition, "create_at desc", "10", "0")
 	if err != nil {
 		logs.GetLogger().Error(err)

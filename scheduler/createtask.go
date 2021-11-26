@@ -22,7 +22,7 @@ func CreateTaskScheduler() {
 	c := cron.New()
 	err := c.AddFunc(config.GetConfig().ScheduleRule.SendDealRule, func() {
 		logs.GetLogger().Info("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ send deal scheduler is running at " + time.Now().Format("2006-01-02 15:04:05"))
-		err := doCreateTask()
+		err := DoCreateTask()
 		if err != nil {
 			logs.GetLogger().Error(err)
 			return
@@ -35,14 +35,14 @@ func CreateTaskScheduler() {
 	c.Start()
 }
 
-func doCreateTask() error {
+func DoCreateTask() error {
 	dealList, err := models.FindDealFileList(&models.DealFile{LockPaymentStatus: constants.LOCK_PAYMENT_STATUS_SUCCESS}, "create_at desc", "10", "0")
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
 	}
 	for _, v := range dealList {
-		if strings.Trim(v.DealCid, " ") == "" {
+		if strings.Trim(v.TaskUuid, " ") == "" {
 			confUpload := &clientmodel.ConfUpload{
 				StorageServerType:           libconstants.STORAGE_SERVER_TYPE_IPFS_SERVER,
 				IpfsServerDownloadUrlPrefix: config.GetConfig().IpfsServer.DownloadUrlPrefix,

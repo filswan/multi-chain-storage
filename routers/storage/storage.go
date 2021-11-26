@@ -31,6 +31,15 @@ func UploadFileToIpfs(c *gin.Context) {
 		return
 	}
 
+	jwtToken := strings.TrimPrefix(authorization, "Bearer ")
+	claims, err := utils.DecodeJwtToken(jwtToken)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusUnauthorized, common.CreateErrorResponse(errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_CODE, errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_MSG))
+		return
+	}
+	userId := int(claims["sub"].(float64))
+
 	file, err := c.FormFile("file")
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -55,7 +64,7 @@ func UploadFileToIpfs(c *gin.Context) {
 	}
 	durationInt = durationInt * 24 * 60 * 60 / 30
 
-	payloadCid, ifPayLoadCid, err := SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c, file, durationInt)
+	payloadCid, ifPayLoadCid, err := SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c, file, durationInt, userId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.SENDING_DEAL_ERROR_CODE, errorinfo.SENDING_DEAL_ERROR_MSG))
 		return
@@ -78,9 +87,17 @@ func GetDealListFromLocal(c *gin.Context) {
 	pageSize := URL.Get("page_size")
 	authorization := c.Request.Header.Get("authorization")
 	if len(authorization) == 0 {
-		c.JSON(http.StatusOK, common.CreateErrorResponse(errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_CODE, errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_MSG))
+		c.JSON(http.StatusUnauthorized, common.CreateErrorResponse(errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_CODE, errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_MSG))
 		return
 	}
+	jwtToken := strings.TrimPrefix(authorization, "Bearer ")
+	claims, err := utils.DecodeJwtToken(jwtToken)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusUnauthorized, common.CreateErrorResponse(errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_CODE, errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_MSG))
+		return
+	}
+	userId := claims["sub"]
 
 	if (strings.Trim(pageNumber, " ") == "") || (strings.Trim(pageNumber, " ") == "0") {
 		pageNumber = "1"
@@ -102,7 +119,7 @@ func GetDealListFromLocal(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.PAGE_NUMBER_OR_SIZE_FORMAT_ERROR_CODE, errorinfo.PAGE_NUMBER_OR_SIZE_FORMAT_ERROR_MSG))
 		return
 	}
-	infoList, err := GetSourceFileAndDealFileInfo(pageNumber, strconv.FormatInt(offset, 10))
+	infoList, err := GetSourceFileAndDealFileInfo(pageNumber, strconv.FormatInt(offset, 10), int(userId.(float64)))
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE, errorinfo.GET_RECORD_lIST_ERROR_MSG+": get source file and deal info from db occurred error"))

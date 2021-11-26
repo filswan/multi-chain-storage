@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"fmt"
 	clientmodel "github.com/filswan/go-swan-client/model"
 	"github.com/filswan/go-swan-client/subcommand"
 	"github.com/filswan/go-swan-lib/client/swan"
@@ -22,7 +23,7 @@ import (
 	"time"
 )
 
-func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multipart.FileHeader, duration int) (string, bool, error) {
+func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multipart.FileHeader, duration, userId int) (string, bool, error) {
 	temDirDeal := config.GetConfig().SwanTask.DirDeal
 
 	logs.GetLogger().Info("temp dir is ", temDirDeal)
@@ -78,6 +79,15 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 	}
 	logs.GetLogger().Info("car files created in ", carDir, "payload_cid=", fileList[0].DataCid)
 
+	uploadUrl := utils.UrlJoin(config.GetConfig().IpfsServer.UploadUrl, "api/v0/add?stream-channels=true&pin=true")
+	fileHashInIpfs, err := utils.HttpUploadFileByStream(uploadUrl, srcFilepath)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return "", ifPayloadCidExist, err
+	}
+	filePathInIpfs := config.GetConfig().IpfsServer.UploadUrl + constants.IPFS_URL_PREFIX_BEFORE_HASH + fileHashInIpfs
+	fmt.Println(filePathInIpfs)
+
 	dealList, err := models.FindDealFileList(&models.DealFile{PayloadCid: fileList[0].DataCid}, "create_at desc", "10", "0")
 	if len(dealList) > 0 {
 		ifPayloadCidExist = true
@@ -88,6 +98,9 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 		sourceFile.FileSize = strconv.FormatInt(srcFile.Size, 10)
 		sourceFile.ResourceUri = srcFilepath
 		sourceFile.CreateAt = strconv.FormatInt(utils.GetEpochInMillis(), 10)
+		sourceFile.UserId = userId
+		sourceFile.IpfsUrl = filePathInIpfs
+		sourceFile.PinStatus = constants.IPFS_File_PINNED_STATUS
 		err = database.SaveOne(sourceFile)
 		if err != nil {
 			logs.GetLogger().Error(err)
@@ -187,10 +200,10 @@ func saveDealFileAndMapRelation(fileInfoList []*libmodel.FileDesc, sourceFile *m
 	return nil
 }
 
-func GetSourceFileAndDealFileInfo(limit, offset string) ([]*SourceFileAndDealFileInfo, error) {
+func GetSourceFileAndDealFileInfo(limit, offset string, userId int) ([]*SourceFileAndDealFileInfo, error) {
 	sql := "select s.file_name,s.file_size,s.create_at,df.miner_fid,df.payload_cid,df.deal_cid,df.piece_cid,df.deal_status,df.deal_status as status,df.pin_status from  source_file s " +
 		" inner join source_file_deal_file_map sfdfm on s.id = sfdfm.source_file_id" +
-		" inner join deal_file df on sfdfm.deal_file_id = df.id"
+		" inner join deal_file df on sfdfm.deal_file_id = df.id and user_id=" + strconv.Itoa(userId)
 	var results []*SourceFileAndDealFileInfo
 	err := database.GetDB().Raw(sql).Order("create_at desc").Scan(&results).Limit(limit).Offset(offset).Error
 	if err != nil {

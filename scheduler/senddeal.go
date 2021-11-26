@@ -2,7 +2,6 @@ package scheduler
 
 import (
 	"encoding/json"
-	"fmt"
 	clientmodel "github.com/filswan/go-swan-client/model"
 	"github.com/filswan/go-swan-client/subcommand"
 	libconstants "github.com/filswan/go-swan-lib/constants"
@@ -14,6 +13,7 @@ import (
 	"payment-bridge/common/constants"
 	"payment-bridge/common/httpClient"
 	"payment-bridge/config"
+	"payment-bridge/database"
 	"payment-bridge/logs"
 	"payment-bridge/models"
 	"time"
@@ -36,36 +36,43 @@ func SendDealScheduler() {
 	c.Start()
 }
 func DoSendDealScheduler() error {
-	startEpoch := libutils.GetCurrentEpoch() + (96+1)*libconstants.EPOCH_PER_HOUR
-	fmt.Println(startEpoch)
-	dealList, err := GetTaskListShouldBeSigService()
+	dealList, err := GetTaskListShouldBeSigServiceFromLocal()
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
 	}
-	for _, v := range dealList.Data.Deals {
-		if v.TaskStatus == constants.TASK_STATUS_ASSIGNED {
-			hasPaid, err := checkIfHaveLockPayment(v.PayloadCid)
+	for _, v := range dealList {
+		if v.DealStatus == constants.TASK_STATUS_ASSIGNED {
+			logs.GetLogger().Println("################################## start to send deal ##################################")
+			logs.GetLogger().Println(" task uuid : ", v.TaskUuid)
+			err = sendDeal(v.TaskUuid, v)
+			logs.GetLogger().Println("################################## end to send deal ##################################")
 			if err != nil {
 				logs.GetLogger().Error(err)
 				continue
 			}
-			if hasPaid {
-				logs.GetLogger().Println("################################## start to send deal ##################################")
-				logs.GetLogger().Println("task name : ", v.TaskName, " task uuid : ", v.UUID)
-				err = sendDeal(v.UUID)
-				logs.GetLogger().Println("################################## end to send deal ##################################")
-				if err != nil {
-					logs.GetLogger().Error(err)
-					continue
-				}
+			v.DealStatus = "DealSent"
+			err = database.SaveOne(v)
+			if err != nil {
+				logs.GetLogger().Error(err)
+				continue
 			}
 		}
 	}
 	return nil
 }
 
-func GetTaskListShouldBeSigService() (*models.OfflineDealResult, error) {
+func GetTaskListShouldBeSigServiceFromLocal() ([]*models.DealFile, error) {
+	whereCondition := "lower(lock_payment_status)=lower('" + constants.LOCK_PAYMENT_STATUS_SUCCESS + "' and task_uuid != null and task_uuid != '' "
+	dealList, err := models.FindDealFileList(whereCondition, "create_at desc", "10", "0")
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+	return dealList, nil
+}
+
+func GetTaskListShouldBeSigServiceFromSwan() (*models.OfflineDealResult, error) {
 	url := config.GetConfig().SwanApi.ApiUrl + config.GetConfig().SwanApi.GetShouldSendTaskUrlSuffix
 	response, err := httpClient.SendRequestAndGetBytes(http.MethodGet, url, nil, nil)
 	if err != nil {
@@ -81,7 +88,7 @@ func GetTaskListShouldBeSigService() (*models.OfflineDealResult, error) {
 	return results, nil
 }
 
-func sendDeal(taskUuid string) error {
+func sendDeal(taskUuid string, file *models.DealFile) error {
 	startEpochIntervalHours := config.GetConfig().SwanTask.StartEpochHours
 	startEpoch := libutils.GetCurrentEpoch() + (startEpochIntervalHours+1)*libconstants.EPOCH_PER_HOUR
 
@@ -114,8 +121,8 @@ func sendDeal(taskUuid string) error {
 		OutputDir:                    carDir,
 		LotusClientApiUrl:            config.GetConfig().Lotus.ApiUrl,
 		LotusClientAccessToken:       config.GetConfig().Lotus.AccessToken,
-		Duration:                     1051200,
-		RelativeEpochFromMainNetwork: -858481,
+		Duration:                     file.Duration,
+		RelativeEpochFromMainNetwork: config.GetConfig().SwanTask.RelativeEpochFromMainNetwork,
 	}
 	confDeal.DealSourceIds = append(confDeal.DealSourceIds, libconstants.TASK_SOURCE_ID_SWAN_PAYMENT)
 

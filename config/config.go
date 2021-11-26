@@ -34,6 +34,7 @@ type database struct {
 type lotus struct {
 	ApiUrl      string `toml:"api_url"`
 	AccessToken string `toml:"access_token"`
+	FullNodeUrl string `toml:"full_node_url"`
 }
 
 type swanTask struct {

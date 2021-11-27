@@ -36,7 +36,8 @@ func CreateTaskScheduler() {
 }
 
 func DoCreateTask() error {
-	dealList, err := models.FindDealFileList(&models.DealFile{LockPaymentStatus: constants.LOCK_PAYMENT_STATUS_SUCCESS}, "create_at desc", "10", "0")
+	whereCondition := "lower(lock_payment_status)=lower('" + constants.LOCK_PAYMENT_STATUS_SUCCESS + "') and task_uuid = '' "
+	dealList, err := models.FindDealFileList(whereCondition, "create_at desc", "10", "0")
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err

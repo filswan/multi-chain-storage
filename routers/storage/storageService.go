@@ -1,7 +1,6 @@
 package storage
 
 import (
-	"fmt"
 	clientmodel "github.com/filswan/go-swan-client/model"
 	"github.com/filswan/go-swan-client/subcommand"
 	"github.com/filswan/go-swan-lib/client/swan"
@@ -86,7 +85,6 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 		return "", ifPayloadCidExist, err
 	}
 	filePathInIpfs := config.GetConfig().IpfsServer.UploadUrl + constants.IPFS_URL_PREFIX_BEFORE_HASH + fileHashInIpfs
-	fmt.Println(filePathInIpfs)
 
 	dealList, err := models.FindDealFileList(&models.DealFile{PayloadCid: fileList[0].DataCid}, "create_at desc", "10", "0")
 	if len(dealList) > 0 {
@@ -164,30 +162,23 @@ func CreateTask(){
 
 func saveDealFileAndMapRelation(fileInfoList []*libmodel.FileDesc, sourceFile *models.SourceFile, duration int) error {
 	dealFile := new(models.DealFile)
-	dealList, err := models.FindDealFileList(&models.DealFile{LockPaymentStatus: constants.LOCK_PAYMENT_STATUS_WAITING}, "create_at desc", "10", "0")
-	if len(dealList) > 0 {
-		dealFile = dealList[0]
-		dealFile.ID = 0
-		dealFile.Duration = duration
-		dealFile.LockPaymentStatus = constants.LOCK_PAYMENT_STATUS_FREE
-	} else {
-		dealFile.CarFileName = fileInfoList[0].CarFileName
-		dealFile.CarFilePath = fileInfoList[0].CarFilePath
-		dealFile.CarFileSize = fileInfoList[0].CarFileSize
-		dealFile.CarMd5 = fileInfoList[0].CarFileMd5
-		dealFile.PayloadCid = fileInfoList[0].DataCid
-		dealFile.PieceCid = fileInfoList[0].PieceCid
-		dealFile.SourceFilePath = sourceFile.ResourceUri
-		dealFile.DealCid = fileInfoList[0].DealCid
-		dealFile.CreateAt = strconv.FormatInt(utils.GetEpochInMillis(), 10)
-		dealFile.Duration = duration
-		dealFile.LockPaymentStatus = constants.LOCK_PAYMENT_STATUS_WAITING
-	}
-	err = database.SaveOne(dealFile)
+	dealFile.CarFileName = fileInfoList[0].CarFileName
+	dealFile.CarFilePath = fileInfoList[0].CarFilePath
+	dealFile.CarFileSize = fileInfoList[0].CarFileSize
+	dealFile.CarMd5 = fileInfoList[0].CarFileMd5
+	dealFile.PayloadCid = fileInfoList[0].DataCid
+	dealFile.PieceCid = fileInfoList[0].PieceCid
+	dealFile.SourceFilePath = sourceFile.ResourceUri
+	dealFile.DealCid = fileInfoList[0].DealCid
+	dealFile.CreateAt = strconv.FormatInt(utils.GetEpochInMillis(), 10)
+	dealFile.Duration = duration
+	dealFile.LockPaymentStatus = constants.LOCK_PAYMENT_STATUS_WAITING
+	err := database.SaveOne(dealFile)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
 	}
+
 	filepMap := new(models.SourceFileDealFileMap)
 	filepMap.SourceFileId = sourceFile.ID
 	filepMap.DealFileId = dealFile.ID

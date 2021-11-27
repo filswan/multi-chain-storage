@@ -31,6 +31,7 @@ type DealFile struct {
 	LockPaymentNetwork string `json:"lock_payment_network"`
 	DaoSignStatus      string `json:"dao_sign_status"`
 	SendDealStatus     string `json:"send_deal_status"`
+	Verified           bool   `json:"verified"`
 }
 
 // FindDealFileList (&DealFile{Id: "0xadeaCC802D0f2DFd31bE4Fa7434F15782Fd720ac"},"id desc","10","0")

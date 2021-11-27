@@ -284,3 +284,14 @@ func SendAutoBidDeals(confDeal *clientmodel.ConfDeal) ([]string, [][]*libmodel.F
 
 	return csvFilepaths, tasksDeals, nil
 }
+
+func GetDealListThanGreaterDealID(dealId int64, offset, limit int) ([]*DaoDealResult, error) {
+	whereCondition := "deal_id > " + strconv.FormatInt(dealId, 10)
+	var results []*DaoDealResult
+	err := database.GetDB().Table("deal_file").Where(whereCondition).Offset(offset).Limit(limit).Order("create_at").Scan(&results).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+	return results, nil
+}

@@ -51,3 +51,9 @@ type DealOnChainIno struct {
 	Status                   int    `json:"status"`
 	NetworkName              string `json:"network_name"`
 }
+
+type DaoDealResult struct {
+	DealID     int64  `json:"deal_id"`
+	DealCid    string `json:"deal_cid"`
+	PayloadCid string `json:"payload_cid"`
+}

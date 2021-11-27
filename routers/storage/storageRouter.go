@@ -22,6 +22,32 @@ func SendDealManager(router *gin.RouterGroup) {
 	//router.GET("/lotus/deal/:task_uuid", SendDeal)
 	router.GET("/tasks/deals", GetDealListFromLocal)
 	router.GET("/deal/detail/:deal_id", GetDealListFromFilink)
+	router.GET("/dao/signature/deal/:deal_id", GetDealListForDao)
+}
+
+func GetDealListForDao(c *gin.Context) {
+	dealId := c.Params.ByName("deal_id")
+	if strings.Trim(dealId, " ") == "" {
+		errMsg := "deal id can not be null"
+		err := errors.New("")
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_CODE, errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_MSG+":"+errMsg))
+		return
+	}
+	dealIdIntValue, err := strconv.Atoi(dealId)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_CODE, errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_MSG))
+		return
+	}
+	dealList, err := GetDealListThanGreaterDealID(int64(dealIdIntValue), 0, 100)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE, errorinfo.GET_RECORD_lIST_ERROR_MSG))
+		return
+	}
+	c.JSON(http.StatusOK, common.CreateSuccessResponse(dealList))
+	return
 }
 
 func GetDealListFromFilink(c *gin.Context) {

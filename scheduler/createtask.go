@@ -20,7 +20,7 @@ import (
 
 func CreateTaskScheduler() {
 	c := cron.New()
-	err := c.AddFunc(config.GetConfig().ScheduleRule.SendDealRule, func() {
+	err := c.AddFunc(config.GetConfig().ScheduleRule.CreateTaskRule, func() {
 		logs.GetLogger().Info("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ send deal scheduler is running at " + time.Now().Format("2006-01-02 15:04:05"))
 		err := DoCreateTask()
 		if err != nil {

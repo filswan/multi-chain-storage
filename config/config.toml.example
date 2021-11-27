@@ -23,6 +23,7 @@ get_should_send_task_url_suffix = "/paymentgateway/deals?offset=0&limit=10&sourc
 api_url="http://0.0.0.0:1234/rpc/v0"   # Url of lotus web api
 access_token=""   # Access token of lotus web api
 final_status_list="StorageDealError,StorageDealActive,StorageDealStaged,StorageDealPulished"
+full_node_access_token = ""
 
 [ipfs_server]
 download_url_prefix = "http://0.0.0.0:8080"
@@ -42,9 +43,8 @@ start_epoch_hours = 96
 relative_epoch_from_main_network = -858481
 
 [schedule_rule]
-unlock_payment_rule = "0 */3 * * * ?"  #every minute
+unlock_payment_rule = "0 */5 * * * ?"  #every minute
 send_deal_rule = "0 */3 * * * ?"  #every minute
-#send_deal_rule = "0/7 * * * * *"
-create_task_rule = "0 */3 * * * ?"
-scan_deal_status_rule = "0 */3 * * * ?"
+create_task_rule = "0 */2 * * * ?"
+scan_deal_status_rule = "0 */4 * * * ?"
 

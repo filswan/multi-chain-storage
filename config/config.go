@@ -32,10 +32,11 @@ type database struct {
 }
 
 type lotus struct {
-	ApiUrl          string `toml:"api_url"`
-	AccessToken     string `toml:"access_token"`
-	FullNodeUrl     string `toml:"full_node_url"`
-	FinalStatusList string `toml:"final_status_list"`
+	ApiUrl              string `toml:"api_url"`
+	AccessToken         string `toml:"access_token"`
+	FullNodeUrl         string `toml:"full_node_url"`
+	FullNodeAccessToken string `toml:"full_node_access_token"`
+	FinalStatusList     string `toml:"final_status_list"`
 }
 
 type swanTask struct {
@@ -69,7 +70,7 @@ type ScheduleRule struct {
 	UnlockPaymentRule  string `toml:"unlock_payment_rule"`
 	SendDealRule       string `toml:"send_deal_rule"`
 	CreateTaskRule     string `toml:"create_task_rule"`
-	scanDealStatusRule string `toml:"scan_deal_status_rule"`
+	ScanDealStatusRule string `toml:"scan_deal_status_rule"`
 }
 
 var config *Configuration

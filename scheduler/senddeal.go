@@ -52,7 +52,7 @@ func DoSendDealScheduler() error {
 			logs.GetLogger().Println(" task uuid : ", v.TaskUuid)
 			v.SendDealStatus = constants.SEND_DEAL_STATUS_SUCCESS
 			v.MinerFid = taskInfo.Data.Miner.MinerID
-			err = sendDeal(v.TaskUuid, v)
+			dealCid, err := sendDeal(v.TaskUuid, v)
 			if err != nil {
 				logs.GetLogger().Error(err)
 				v.SendDealStatus = constants.SEND_DEAL_STATUS_FAIL
@@ -64,6 +64,7 @@ func DoSendDealScheduler() error {
 				continue
 			}
 			logs.GetLogger().Println("################################## end to send deal ##################################")
+			v.DealCid = dealCid
 			err = database.SaveOne(v)
 			if err != nil {
 				logs.GetLogger().Error(err)
@@ -100,21 +101,21 @@ func GetTaskListShouldBeSigServiceFromSwan() (*models.OfflineDealResult, error) 
 	return results, nil
 }
 
-func sendDeal(taskUuid string, file *models.DealFile) error {
+func sendDeal(taskUuid string, file *models.DealFile) (string, error) {
 	startEpochIntervalHours := config.GetConfig().SwanTask.StartEpochHours
 	startEpoch := libutils.GetCurrentEpoch() + (startEpochIntervalHours+1)*libconstants.EPOCH_PER_HOUR
 
 	homedir, err := os.UserHomeDir()
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return err
+		return "", err
 	}
 	temDirDeal := config.GetConfig().SwanTask.DirDeal
 	temDirDeal = filepath.Join(homedir, temDirDeal[2:])
 	err = libutils.CreateDir(temDirDeal)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return err
+		return "", err
 	}
 
 	timeStr := time.Now().Format("20060102_150405")
@@ -141,13 +142,13 @@ func sendDeal(taskUuid string, file *models.DealFile) error {
 	dealSentNum, csvFilePath, carFiles, err := subcommand.SendAutoBidDealsByTaskUuid(confDeal, taskUuid)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return err
+		return "", err
 	}
 	logs.GetLogger().Info("------------------------------send deal success---------------------------------")
 	logs.GetLogger().Info("dealSentNum = ", dealSentNum)
 	logs.GetLogger().Info("csvFilePath = ", csvFilePath)
 	logs.GetLogger().Info("carFiles = ", carFiles)
-	return nil
+	return carFiles[0].DealCid, nil
 }
 
 func checkIfHaveLockPayment(payloadCid string) (bool, error) {

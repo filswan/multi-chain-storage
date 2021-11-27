@@ -10,6 +10,7 @@ type SourceFileAndDealFileInfo struct {
 	PinStatus  string `json:"pin_status"`
 	PayloadCid string `json:"payload_cid"`
 	DealCid    string `json:"deal_cid"`
+	DealId     int64  `json:"deal_id"`
 	PieceCid   string `json:"piece_cid"`
 }
 

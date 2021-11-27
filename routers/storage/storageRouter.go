@@ -37,7 +37,8 @@ func GetDealListFromFilink(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_CODE, errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_MSG))
 		return
 	}
-
+	//todo
+	dealIdIntValue = 58170
 	url := config.GetConfig().FilinkUrl
 	parameter := new(filinkParams)
 	parameter.Data.Deal = dealIdIntValue

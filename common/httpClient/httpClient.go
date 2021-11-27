@@ -82,14 +82,11 @@ func GetHttpClient() *http.Client {
 }
 
 func SendRequestAndGetBytes(_httpMethod, _url string, _requestData []byte, _header http.Header) (responseData []byte, err error) {
-
 	req, err := http.NewRequest(_httpMethod, _url, bytes.NewReader(_requestData))
-
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return
 	}
-
 	if len(_header) > 0 {
 		req.Header = _header
 	}

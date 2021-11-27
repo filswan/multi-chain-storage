@@ -128,8 +128,10 @@ get_should_send_task_url_suffix = "paymentgateway/deals?offset=0&limit=10&source
 
 
 [schedule_rule]
-unlock_payment_rule = "0 */3 * * * ?"  #every minute
-send_deal_rule = "0/7 * * * * *"
+unlock_payment_rule = "0 */5 * * * ?"  #every 3 minute
+send_deal_rule = "0 */3 * * * ?"  #every 3 minute
+create_task_rule = "0 */2 * * * ?"
+scan_deal_status_rule = "0 */4 * * * ?"
 ```
 
 #### admin_wallet_on_polygon

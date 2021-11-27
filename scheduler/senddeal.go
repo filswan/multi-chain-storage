@@ -2,6 +2,7 @@ package scheduler
 
 import (
 	"encoding/json"
+	"fmt"
 	clientmodel "github.com/filswan/go-swan-client/model"
 	"github.com/filswan/go-swan-client/subcommand"
 	libconstants "github.com/filswan/go-swan-lib/constants"
@@ -36,6 +37,7 @@ func SendDealScheduler() {
 	c.Start()
 }
 func DoSendDealScheduler() error {
+	fmt.Println(config.GetConfig().SwanTask.RelativeEpochFromMainNetwork)
 	dealList, err := GetTaskListShouldBeSendDealFromLocal()
 	if err != nil {
 		logs.GetLogger().Error(err)

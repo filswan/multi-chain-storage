@@ -15,7 +15,11 @@ const (
 	HTTP_REQUEST_SEND_REQUEST_RETUREN_ERROR_CODE      = "500002004"
 	HTTP_REQUEST_SEND_REQUEST_RETUREN_ERROR_MSG       = "return error when sending http request"
 	HTTP_REQUEST_PARSER_RESPONSE_TO_STRUCT_ERROR_CODE = "500002005"
-	HTTP_REQUEST_PARSER_RESPONSE_TO_STRUCT_ERROR_MSG  = "Parse http request response to struct occurred error"
+	HTTP_REQUEST_PARSER_RESPONSE_TO_STRUCT_ERROR_MSG  = "Parse http request response to structure occurred error"
+	HTTP_REQUEST_PARSER_STRUCT_TO_REQUEST_ERROR_CODE  = "500002006"
+	HTTP_REQUEST_PARSER_STRUCT_TO_REQUEST_ERROR_MSG   = "Parse structure to http request request occurred error"
+	HTTP_REQUEST_GET_RESPONSE_ERROR_CODE              = "500002007"
+	HTTP_REQUEST_GET_RESPONSE_ERROR_MSG               = "Get http response occurred error"
 
 	//database err 003
 	GET_RECORD_COUNT_ERROR_CODE  = "500003001"

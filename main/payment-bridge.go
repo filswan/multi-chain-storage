@@ -34,7 +34,7 @@ func main() {
 
 	scheduler.SendDealScheduler()
 
-	scheduler.DAOUnlockPaymentSchedule()
+	//scheduler.DAOUnlockPaymentSchedule()
 
 	scheduler.ScanDealInfoScheduler()
 

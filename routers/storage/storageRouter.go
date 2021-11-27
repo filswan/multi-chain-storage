@@ -21,13 +21,53 @@ func SendDealManager(router *gin.RouterGroup) {
 	router.POST("/ipfs/upload", UploadFileToIpfs)
 	//router.GET("/lotus/deal/:task_uuid", SendDeal)
 	router.GET("/tasks/deals", GetDealListFromLocal)
-	router.GET("/deal/detail/:deal_id", GetDealListFromLocal)
+	router.GET("/deal/detail/:deal_id", GetDealListFromFilink)
+}
+
+func GetDealListFromFilink(c *gin.Context) {
+	authorization := c.Request.Header.Get("authorization")
+	if len(authorization) == 0 {
+		c.JSON(http.StatusUnauthorized, common.CreateErrorResponse(errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_CODE, errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_MSG))
+		return
+	}
+	dealId := c.Params.ByName("deal_id")
+	dealIdIntValue, err := strconv.Atoi(dealId)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_CODE, errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_MSG))
+		return
+	}
+
+	url := config.GetConfig().FilinkUrl
+	parameter := new(filinkParams)
+	parameter.Data.Deal = dealIdIntValue
+	paramBytes, err := json.Marshal(&parameter)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARSER_STRUCT_TO_REQUEST_ERROR_CODE, errorinfo.HTTP_REQUEST_PARSER_STRUCT_TO_REQUEST_ERROR_MSG))
+		return
+	}
+	response, err := httpClient.SendRequestAndGetBytes(http.MethodPost, url, paramBytes, nil)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_GET_RESPONSE_ERROR_CODE, errorinfo.HTTP_REQUEST_GET_RESPONSE_ERROR_MSG))
+		return
+	}
+	var result *DealOnChainResult
+	err = json.Unmarshal(response, &result)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARSER_STRUCT_TO_REQUEST_ERROR_CODE, errorinfo.HTTP_REQUEST_PARSER_STRUCT_TO_REQUEST_ERROR_MSG))
+		return
+	}
+	c.JSON(http.StatusOK, common.CreateSuccessResponse(result))
+	return
 }
 
 func UploadFileToIpfs(c *gin.Context) {
 	authorization := c.Request.Header.Get("authorization")
 	if len(authorization) == 0 {
-		c.JSON(http.StatusOK, common.CreateErrorResponse(errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_CODE, errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_MSG))
+		c.JSON(http.StatusUnauthorized, common.CreateErrorResponse(errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_CODE, errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_MSG))
 		return
 	}
 

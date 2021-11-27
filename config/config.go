@@ -20,6 +20,7 @@ type Configuration struct {
 	SwanDaoOracleAddress        string       `toml:"swan_dao_oracle_address"`
 	SwanPaymentAddressOnPolygon string       `toml:"swan_payment_address_on_polygon"`
 	FileCoinWallet              string       `toml:"file_coin_wallet"`
+	FilinkUrl                   string       `toml:"filink_url"`
 }
 
 type database struct {
@@ -101,12 +102,26 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 		{"admin_wallet_on_polygon"},
 		{"swan_payment_address_on_polygon"},
 		{"file_coin_wallet"},
+		{"filink_url"},
 
 		{"database", "db_host"},
 		{"database", "db_port"},
 		{"database", "db_username"},
 		{"database", "db_schema_name"},
 		{"database", "db_pwd"},
+
+		{"swan_api", "api_url"},
+		{"swan_api", "api_key"},
+		{"swan_api", "get_should_send_task_url_suffix"},
+
+		{"ipfs_server", "download_url_prefix"},
+		{"ipfs_server", "upload_url"},
+
+		{"lotus", "api_url"},
+		{"lotus", "access_token"},
+		{"lotus", "final_status_list"},
+
+		{"swan_task", "relative_epoch_from_main_network"},
 	}
 
 	for _, v := range requiredFields {

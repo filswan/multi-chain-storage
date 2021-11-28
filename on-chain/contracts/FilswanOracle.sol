@@ -95,7 +95,7 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
         txVoteMap[voteKey] = txVoteMap[voteKey] + 1;
         // todo: if vote is greater than threshold, call chainlink oracle to save price
 
-        if(txVoteMap[voteKey] >= _threshold && _filinkAddress != address(0)){
+        if(txVoteMap[voteKey] == _threshold && _filinkAddress != address(0)){
             FilinkConsumer(_filinkAddress).requestDealInfo(dealId);
         }
 

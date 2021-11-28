@@ -3,6 +3,7 @@ package models
 import (
 	"payment-bridge/common/constants"
 	"payment-bridge/database"
+	"payment-bridge/logs"
 )
 
 type EventPolygon struct {
@@ -22,6 +23,9 @@ type EventPolygon struct {
 	CoinType        string `json:"coin_type"`
 	LockPaymentTime string `json:"lock_payment_time"`
 	CreateAt        string `json:"create_at"`
+	UnlockTxHash    string `json:"unlock_tx_hash"`
+	UnlockTxStatus  string `json:"unlock_tx_status"`
+	UnlockTime      string `json:"unlock_time"`
 }
 
 func (self *EventPolygon) FindOneEventPolygon(condition interface{}) (*EventPolygon, error) {
@@ -44,4 +48,16 @@ func FindEventPolygons(whereCondition interface{}, orderCondition, limit, offset
 	var models []*EventPolygon
 	err := db.Where(whereCondition).Offset(offset).Limit(limit).Order(orderCondition).Find(&models).Error
 	return models, err
+}
+
+//condition :&models.EventPolygon{Ip: "192.168.88.80"}
+//updateFields: map[string]interface{}{"processing_time": taskT.ProcessingTime, "worker_reward": taskT.WorkerReward}
+func UpdateEventPolygon(whereCondition interface{}, updateFields interface{}) error {
+	db := database.GetDB()
+	hardware := EventPolygon{}
+	err := db.Model(&hardware).Where(whereCondition).Update(updateFields).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+	}
+	return err
 }

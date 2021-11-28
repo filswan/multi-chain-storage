@@ -29,7 +29,7 @@ const (
 
 	//lotus send deal err  005
 	SENDING_DEAL_ERROR_CODE                 = "500005001"
-	SENDING_DEAL_ERROR_MSG                  = "Failed to send deal"
+	SENDING_DEAL_ERROR_MSG                  = "Failed to create a sending deal task, please contact the administrator"
 	GET_LATEST_PRICE_OF_FILECOIN_ERROR_CODE = "500005002"
 	GET_LATEST_PRICE_OF_FILECOIN_ERROR_MSG  = "Getting filecion latest price occurred error"
 	SENDING_DEAL_GET_NULL_RETURN_VALUE_CODE = "500005003"
@@ -41,4 +41,8 @@ const (
 
 	CREATE_DIR_ERROR_CODE = "500006002"
 	CREATE_DIR_ERROR_MSG  = "Creating dir occurred error"
+
+	//type transfer error 007
+	TYPE_TRANSFER_ERROR_CODE = "500007001"
+	TYPE_TRANSFER_ERROR_MSG  = "type transfer occurred error"
 )

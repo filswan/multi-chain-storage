@@ -4,18 +4,20 @@ const hre = require("hardhat");
 async function main() {
 
   const [signer] = await ethers.getSigners();
- 
+
   const oracleDAOContractAddress = "0xe3262c0848b0cc5cd43df7139103f1fbf26558cc";
   const contract = await hre.ethers.getContractFactory("FilswanOracle");
   const daoOracleInstance = await contract.attach(oracleDAOContractAddress);
 
-  const cid = "abcd2bzacedh6keeksywaoa3wjryqzihqixyfekqgfljfosrcoyaj2";
+
+  const cid = "bafykbzacea4cz7kz77wx6zcqajd3fykb3zwmewiggy4x33wacuwads5favmf2";
   const orderId = "";
-  const dealId = "4109";
+  const dealId = "'4109'";
+
 
   const paid = "10000000000000000"; // paid filcoins
-  const recipient = "0x591f62C3FDC087dADC8A02dF76fD0a2Bd2168CDF";
-  const terms = "2000000000000000"; 
+  const recipient = "0xc4fcaAdCb0b00a9501e56215c37B10fAF9e79c0a";
+  //const terms = "2000000000000000";
   const status = true; // true for successful paid, false for failed paid
 
   const tx = await daoOracleInstance.connect(signer).signTransaction(
@@ -24,6 +26,7 @@ async function main() {
     recipient
   );
   await tx.wait();
+
 
   console.log("Sign transaction completed.");
 }

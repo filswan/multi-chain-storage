@@ -60,7 +60,7 @@ type IPaymentMinimalunlockPaymentParam struct {
 
 // SwanPaymentMetaData contains all meta data concerning the SwanPayment contract.
 var SwanPaymentMetaData = &bind.MetaData{
-	ABI: "[{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"string\",\"name\":\"id\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"lockedFee\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"minPayment\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"deadline\",\"type\":\"uint256\"}],\"name\":\"LockPayment\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"NATIVE_TOKEN\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"txId\",\"type\":\"string\"}],\"name\":\"getLockedPaymentInfo\",\"outputs\":[{\"components\":[{\"internalType\":\"string\",\"name\":\"id\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"minPayment\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"lockedFee\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"deadline\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"_isExisted\",\"type\":\"bool\"}],\"internalType\":\"structIPaymentMinimal.TxInfo\",\"name\":\"tx\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"ERC20_TOKEN\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"oracle\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"priceFeed\",\"type\":\"address\"}],\"name\":\"initialize\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"string\",\"name\":\"id\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"minPayment\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"lockTime\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"}],\"internalType\":\"structIPaymentMinimal.lockPaymentParam\",\"name\":\"param\",\"type\":\"tuple\"}],\"name\":\"lockPayment\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"string\",\"name\":\"id\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"minPayment\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"lockTime\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"}],\"internalType\":\"structIPaymentMinimal.lockPaymentParam\",\"name\":\"param\",\"type\":\"tuple\"}],\"name\":\"lockTokenPayment\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"oracle\",\"type\":\"address\"}],\"name\":\"setOracle\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"priceFeed\",\"type\":\"address\"}],\"name\":\"setPriceFeed\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"txId\",\"type\":\"string\"}],\"name\":\"unlockPayment\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"string\",\"name\":\"id\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"orderId\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"dealId\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"}],\"internalType\":\"structIPaymentMinimal.unlockPaymentParam\",\"name\":\"param\",\"type\":\"tuple\"}],\"name\":\"unlockTokenPayment\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]",
+	ABI: "[{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"string\",\"name\":\"id\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"}],\"name\":\"ExpirePayment\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"string\",\"name\":\"id\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"lockedFee\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"minPayment\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"deadline\",\"type\":\"uint256\"}],\"name\":\"LockPayment\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"string\",\"name\":\"id\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"cost\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"restToken\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"}],\"name\":\"UnlockPayment\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"NATIVE_TOKEN\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"txId\",\"type\":\"string\"}],\"name\":\"getLockedPaymentInfo\",\"outputs\":[{\"components\":[{\"internalType\":\"string\",\"name\":\"id\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"minPayment\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"lockedFee\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"deadline\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"_isExisted\",\"type\":\"bool\"}],\"internalType\":\"structIPaymentMinimal.TxInfo\",\"name\":\"tx\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"ERC20_TOKEN\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"oracle\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"priceFeed\",\"type\":\"address\"}],\"name\":\"initialize\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"string\",\"name\":\"id\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"minPayment\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"lockTime\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"}],\"internalType\":\"structIPaymentMinimal.lockPaymentParam\",\"name\":\"param\",\"type\":\"tuple\"}],\"name\":\"lockPayment\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"string\",\"name\":\"id\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"minPayment\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"lockTime\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"}],\"internalType\":\"structIPaymentMinimal.lockPaymentParam\",\"name\":\"param\",\"type\":\"tuple\"}],\"name\":\"lockTokenPayment\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"oracle\",\"type\":\"address\"}],\"name\":\"setOracle\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"priceFeed\",\"type\":\"address\"}],\"name\":\"setPriceFeed\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"txId\",\"type\":\"string\"}],\"name\":\"unlockPayment\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"string\",\"name\":\"id\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"orderId\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"dealId\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"}],\"internalType\":\"structIPaymentMinimal.unlockPaymentParam\",\"name\":\"param\",\"type\":\"tuple\"}],\"name\":\"unlockTokenPayment\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]",
 }
 
 // SwanPaymentABI is the input ABI used to generate the binding from.
@@ -418,6 +418,143 @@ func (_SwanPayment *SwanPaymentTransactorSession) UnlockTokenPayment(param IPaym
 	return _SwanPayment.Contract.UnlockTokenPayment(&_SwanPayment.TransactOpts, param)
 }
 
+// SwanPaymentExpirePaymentIterator is returned from FilterExpirePayment and is used to iterate over the raw logs and unpacked data for ExpirePayment events raised by the SwanPayment contract.
+type SwanPaymentExpirePaymentIterator struct {
+	Event *SwanPaymentExpirePayment // Event containing the contract specifics and raw log
+
+	contract *bind.BoundContract // Generic contract to use for unpacking event data
+	event    string              // Event name to use for unpacking event data
+
+	logs chan types.Log        // Log channel receiving the found contract events
+	sub  ethereum.Subscription // Subscription for errors, completion and termination
+	done bool                  // Whether the subscription completed delivering logs
+	fail error                 // Occurred error to stop iteration
+}
+
+// Next advances the iterator to the subsequent event, returning whether there
+// are any more events found. In case of a retrieval or parsing error, false is
+// returned and Error() can be queried for the exact failure.
+func (it *SwanPaymentExpirePaymentIterator) Next() bool {
+	// If the iterator failed, stop iterating
+	if it.fail != nil {
+		return false
+	}
+	// If the iterator completed, deliver directly whatever's available
+	if it.done {
+		select {
+		case log := <-it.logs:
+			it.Event = new(SwanPaymentExpirePayment)
+			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+				it.fail = err
+				return false
+			}
+			it.Event.Raw = log
+			return true
+
+		default:
+			return false
+		}
+	}
+	// Iterator still in progress, wait for either a data or an error event
+	select {
+	case log := <-it.logs:
+		it.Event = new(SwanPaymentExpirePayment)
+		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+			it.fail = err
+			return false
+		}
+		it.Event.Raw = log
+		return true
+
+	case err := <-it.sub.Err():
+		it.done = true
+		it.fail = err
+		return it.Next()
+	}
+}
+
+// Error returns any retrieval or parsing error occurred during filtering.
+func (it *SwanPaymentExpirePaymentIterator) Error() error {
+	return it.fail
+}
+
+// Close terminates the iteration process, releasing any pending underlying
+// resources.
+func (it *SwanPaymentExpirePaymentIterator) Close() error {
+	it.sub.Unsubscribe()
+	return nil
+}
+
+// SwanPaymentExpirePayment represents a ExpirePayment event raised by the SwanPayment contract.
+type SwanPaymentExpirePayment struct {
+	Id     string
+	Token  common.Address
+	Amount *big.Int
+	Owner  common.Address
+	Raw    types.Log // Blockchain specific contextual infos
+}
+
+// FilterExpirePayment is a free log retrieval operation binding the contract event 0xe704d5e6168e602e91f017f25d889b182d9e11a90fd939a489cc2f04734c1f8a.
+//
+// Solidity: event ExpirePayment(string id, address token, uint256 amount, address owner)
+func (_SwanPayment *SwanPaymentFilterer) FilterExpirePayment(opts *bind.FilterOpts) (*SwanPaymentExpirePaymentIterator, error) {
+
+	logs, sub, err := _SwanPayment.contract.FilterLogs(opts, "ExpirePayment")
+	if err != nil {
+		return nil, err
+	}
+	return &SwanPaymentExpirePaymentIterator{contract: _SwanPayment.contract, event: "ExpirePayment", logs: logs, sub: sub}, nil
+}
+
+// WatchExpirePayment is a free log subscription operation binding the contract event 0xe704d5e6168e602e91f017f25d889b182d9e11a90fd939a489cc2f04734c1f8a.
+//
+// Solidity: event ExpirePayment(string id, address token, uint256 amount, address owner)
+func (_SwanPayment *SwanPaymentFilterer) WatchExpirePayment(opts *bind.WatchOpts, sink chan<- *SwanPaymentExpirePayment) (event.Subscription, error) {
+
+	logs, sub, err := _SwanPayment.contract.WatchLogs(opts, "ExpirePayment")
+	if err != nil {
+		return nil, err
+	}
+	return event.NewSubscription(func(quit <-chan struct{}) error {
+		defer sub.Unsubscribe()
+		for {
+			select {
+			case log := <-logs:
+				// New log arrived, parse the event and forward to the user
+				event := new(SwanPaymentExpirePayment)
+				if err := _SwanPayment.contract.UnpackLog(event, "ExpirePayment", log); err != nil {
+					return err
+				}
+				event.Raw = log
+
+				select {
+				case sink <- event:
+				case err := <-sub.Err():
+					return err
+				case <-quit:
+					return nil
+				}
+			case err := <-sub.Err():
+				return err
+			case <-quit:
+				return nil
+			}
+		}
+	}), nil
+}
+
+// ParseExpirePayment is a log parse operation binding the contract event 0xe704d5e6168e602e91f017f25d889b182d9e11a90fd939a489cc2f04734c1f8a.
+//
+// Solidity: event ExpirePayment(string id, address token, uint256 amount, address owner)
+func (_SwanPayment *SwanPaymentFilterer) ParseExpirePayment(log types.Log) (*SwanPaymentExpirePayment, error) {
+	event := new(SwanPaymentExpirePayment)
+	if err := _SwanPayment.contract.UnpackLog(event, "ExpirePayment", log); err != nil {
+		return nil, err
+	}
+	event.Raw = log
+	return event, nil
+}
+
 // SwanPaymentLockPaymentIterator is returned from FilterLockPayment and is used to iterate over the raw logs and unpacked data for LockPayment events raised by the SwanPayment contract.
 type SwanPaymentLockPaymentIterator struct {
 	Event *SwanPaymentLockPayment // Event containing the contract specifics and raw log
@@ -551,6 +688,145 @@ func (_SwanPayment *SwanPaymentFilterer) WatchLockPayment(opts *bind.WatchOpts, 
 func (_SwanPayment *SwanPaymentFilterer) ParseLockPayment(log types.Log) (*SwanPaymentLockPayment, error) {
 	event := new(SwanPaymentLockPayment)
 	if err := _SwanPayment.contract.UnpackLog(event, "LockPayment", log); err != nil {
+		return nil, err
+	}
+	event.Raw = log
+	return event, nil
+}
+
+// SwanPaymentUnlockPaymentIterator is returned from FilterUnlockPayment and is used to iterate over the raw logs and unpacked data for UnlockPayment events raised by the SwanPayment contract.
+type SwanPaymentUnlockPaymentIterator struct {
+	Event *SwanPaymentUnlockPayment // Event containing the contract specifics and raw log
+
+	contract *bind.BoundContract // Generic contract to use for unpacking event data
+	event    string              // Event name to use for unpacking event data
+
+	logs chan types.Log        // Log channel receiving the found contract events
+	sub  ethereum.Subscription // Subscription for errors, completion and termination
+	done bool                  // Whether the subscription completed delivering logs
+	fail error                 // Occurred error to stop iteration
+}
+
+// Next advances the iterator to the subsequent event, returning whether there
+// are any more events found. In case of a retrieval or parsing error, false is
+// returned and Error() can be queried for the exact failure.
+func (it *SwanPaymentUnlockPaymentIterator) Next() bool {
+	// If the iterator failed, stop iterating
+	if it.fail != nil {
+		return false
+	}
+	// If the iterator completed, deliver directly whatever's available
+	if it.done {
+		select {
+		case log := <-it.logs:
+			it.Event = new(SwanPaymentUnlockPayment)
+			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+				it.fail = err
+				return false
+			}
+			it.Event.Raw = log
+			return true
+
+		default:
+			return false
+		}
+	}
+	// Iterator still in progress, wait for either a data or an error event
+	select {
+	case log := <-it.logs:
+		it.Event = new(SwanPaymentUnlockPayment)
+		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+			it.fail = err
+			return false
+		}
+		it.Event.Raw = log
+		return true
+
+	case err := <-it.sub.Err():
+		it.done = true
+		it.fail = err
+		return it.Next()
+	}
+}
+
+// Error returns any retrieval or parsing error occurred during filtering.
+func (it *SwanPaymentUnlockPaymentIterator) Error() error {
+	return it.fail
+}
+
+// Close terminates the iteration process, releasing any pending underlying
+// resources.
+func (it *SwanPaymentUnlockPaymentIterator) Close() error {
+	it.sub.Unsubscribe()
+	return nil
+}
+
+// SwanPaymentUnlockPayment represents a UnlockPayment event raised by the SwanPayment contract.
+type SwanPaymentUnlockPayment struct {
+	Id        string
+	Token     common.Address
+	Cost      *big.Int
+	RestToken *big.Int
+	Recipient common.Address
+	Owner     common.Address
+	Raw       types.Log // Blockchain specific contextual infos
+}
+
+// FilterUnlockPayment is a free log retrieval operation binding the contract event 0xd9aab088cd193ab56c9a682b9f2e42fb39206b42c3a6ba78130dc97a2a8d03ee.
+//
+// Solidity: event UnlockPayment(string id, address token, uint256 cost, uint256 restToken, address recipient, address owner)
+func (_SwanPayment *SwanPaymentFilterer) FilterUnlockPayment(opts *bind.FilterOpts) (*SwanPaymentUnlockPaymentIterator, error) {
+
+	logs, sub, err := _SwanPayment.contract.FilterLogs(opts, "UnlockPayment")
+	if err != nil {
+		return nil, err
+	}
+	return &SwanPaymentUnlockPaymentIterator{contract: _SwanPayment.contract, event: "UnlockPayment", logs: logs, sub: sub}, nil
+}
+
+// WatchUnlockPayment is a free log subscription operation binding the contract event 0xd9aab088cd193ab56c9a682b9f2e42fb39206b42c3a6ba78130dc97a2a8d03ee.
+//
+// Solidity: event UnlockPayment(string id, address token, uint256 cost, uint256 restToken, address recipient, address owner)
+func (_SwanPayment *SwanPaymentFilterer) WatchUnlockPayment(opts *bind.WatchOpts, sink chan<- *SwanPaymentUnlockPayment) (event.Subscription, error) {
+
+	logs, sub, err := _SwanPayment.contract.WatchLogs(opts, "UnlockPayment")
+	if err != nil {
+		return nil, err
+	}
+	return event.NewSubscription(func(quit <-chan struct{}) error {
+		defer sub.Unsubscribe()
+		for {
+			select {
+			case log := <-logs:
+				// New log arrived, parse the event and forward to the user
+				event := new(SwanPaymentUnlockPayment)
+				if err := _SwanPayment.contract.UnpackLog(event, "UnlockPayment", log); err != nil {
+					return err
+				}
+				event.Raw = log
+
+				select {
+				case sink <- event:
+				case err := <-sub.Err():
+					return err
+				case <-quit:
+					return nil
+				}
+			case err := <-sub.Err():
+				return err
+			case <-quit:
+				return nil
+			}
+		}
+	}), nil
+}
+
+// ParseUnlockPayment is a log parse operation binding the contract event 0xd9aab088cd193ab56c9a682b9f2e42fb39206b42c3a6ba78130dc97a2a8d03ee.
+//
+// Solidity: event UnlockPayment(string id, address token, uint256 cost, uint256 restToken, address recipient, address owner)
+func (_SwanPayment *SwanPaymentFilterer) ParseUnlockPayment(log types.Log) (*SwanPaymentUnlockPayment, error) {
+	event := new(SwanPaymentUnlockPayment)
+	if err := _SwanPayment.contract.UnpackLog(event, "UnlockPayment", log); err != nil {
 		return nil, err
 	}
 	event.Raw = log

@@ -4,6 +4,7 @@ import (
 	"payment-bridge/common/constants"
 	"payment-bridge/database"
 	"payment-bridge/logs"
+	"strconv"
 )
 
 type DaoEventLog struct {
@@ -13,7 +14,6 @@ type DaoEventLog struct {
 	PayloadCid            string `json:"payload_cid"`
 	OrderId               string `json:"order_id"`
 	DealCid               string `json:"deal_cid"`
-	Terms                 string `json:"terms"`
 	Cost                  string `json:"cost"`
 	DaoAddress            string `json:"dao_address"`
 	DaoPassTime           string `json:"dao_pass_time"`
@@ -46,14 +46,14 @@ func FindDaoEventLog(whereCondition interface{}, orderCondition, limit, offset s
 	return models, err
 }
 
-func GetThresholdForDao() ([]*DaoSignatureResult, error) {
+func GetDaoSignatureEventsSholdBeUnlock(threshHold uint8) ([]*DaoSignatureResult, error) {
 	db := database.GetDB()
 	var models []*DaoSignatureResult
 	daoEventLog := DaoEventLog{}
-	err := db.Model(daoEventLog).Select("recipient,payload_cid,order_id,deal_cid,count(*) as threshold").
+	err := db.Model(daoEventLog).Select("payload_cid,order_id,deal_cid,count(*) as threshold").
 		Where("signature_unlock_status = '0'").
-		Group("recipient,payload_cid,order_id,deal_cid").
-		Having("threshold >=2").Scan(&models).Error
+		Group("payload_cid,order_id,deal_cid").
+		Having("threshold >=" + strconv.Itoa(int(threshHold))).Scan(&models).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err

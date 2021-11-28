@@ -17,6 +17,7 @@ type Configuration struct {
 	SwanTask                    swanTask     `toml:"swan_task"`
 	ScheduleRule                ScheduleRule `toml:"schedule_rule"`
 	AdminWalletOnPolygon        string       `toml:"admin_wallet_on_polygon"`
+	SwanDaoOracleAddress        string       `toml:"swan_dao_oracle_address"`
 	SwanPaymentAddressOnPolygon string       `toml:"swan_payment_address_on_polygon"`
 	FileCoinWallet              string       `toml:"file_coin_wallet"`
 }

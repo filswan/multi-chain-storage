@@ -25,7 +25,7 @@ import (
  */
 
 // EventLogSave Find the event that executed the contract and save to db
-func ScanPolygonEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) error {
+func ScanPolygonLockPaymentEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) error {
 	//read contract api json file
 	logs.GetLogger().Println("polygon blockNoFrom=" + strconv.FormatInt(blockNoFrom, 10) + "--------------blockNoTo=" + strconv.FormatInt(blockNoTo, 10))
 	//paymentAbiString, err := utils.ReadContractAbiJsonFile(goBind.SwanPaymentMetaData.ABI)
@@ -34,7 +34,7 @@ func ScanPolygonEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) 
 	//SwanPayment contract address
 	contractAddress := common.HexToAddress(GetConfig().PolygonMainnetNode.PaymentContractAddress)
 	//SwanPayment contract function signature
-	contractFunctionSignature := GetConfig().PolygonMainnetNode.ContractFunctionSignature
+	contractFunctionSignature := GetConfig().PolygonMainnetNode.ContractLockFunctionSignature
 
 	//test block no. is : 5297224
 	query := ethereum.FilterQuery{
@@ -77,7 +77,7 @@ func ScanPolygonEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) 
 			}
 			if len(eventList) <= 0 {
 				var event = new(models.EventPolygon)
-				dataList, err := contractAbi.Unpack(constants.EVENT_NAME_LOCAK_PAYMENT, vLog.Data)
+				dataList, err := contractAbi.Unpack("LockPayment", vLog.Data)
 				if err != nil {
 					logs.GetLogger().Error(err)
 				}

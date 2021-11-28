@@ -17,7 +17,7 @@ import (
 	"time"
 )
 
-func CreateTask(c *gin.Context, taskName, jwtToken string, srcFile *multipart.FileHeader) ([]*libmodel.FileDesc, error) {
+func CreateTask(c *gin.Context, taskName, jwtToken string, srcFile *multipart.FileHeader, duration int) ([]*libmodel.FileDesc, error) {
 	temDirDeal := config.GetConfig().SwanTask.DirDeal
 
 	logs.GetLogger().Info("temp dir is ", temDirDeal)
@@ -94,7 +94,7 @@ func CreateTask(c *gin.Context, taskName, jwtToken string, srcFile *multipart.Fi
 	startEpoch := libutils.GetCurrentEpoch() + (startEpochIntervalHours+1)*libconstants.EPOCH_PER_HOUR
 	confTask := &clientmodel.ConfTask{
 		SwanApiUrl:                 config.GetConfig().SwanApi.ApiUrl,
-		SwanJwtToken:               jwtToken,
+		SwanToken:                  jwtToken,
 		PublicDeal:                 true,
 		BidMode:                    libconstants.TASK_BID_MODE_AUTO,
 		VerifiedDeal:               config.GetConfig().SwanTask.VerifiedDeal,
@@ -113,6 +113,7 @@ func CreateTask(c *gin.Context, taskName, jwtToken string, srcFile *multipart.Fi
 		StartEpochIntervalHours: startEpochIntervalHours,
 		StartEpoch:              startEpoch,
 		SourceId:                constants.SOURCE_ID_OF_PAYMENT,
+		Duration:                duration,
 	}
 
 	_, fileInfoList, err := subcommand.CreateTask(confTask, nil)
@@ -133,7 +134,7 @@ func SendAutoBidDeals(confDeal *clientmodel.ConfDeal) ([]string, [][]*libmodel.F
 
 	logs.GetLogger().Info("output dir is:", confDeal.OutputDir)
 
-	swanClient, err := swan.SwanGetClient(confDeal.SwanApiUrl, confDeal.SwanApiKey, confDeal.SwanAccessToken, confDeal.SwanJwtToken)
+	swanClient, err := swan.SwanGetClient(confDeal.SwanApiUrl, confDeal.SwanApiKey, confDeal.SwanAccessToken, confDeal.SwanToken)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, nil, err

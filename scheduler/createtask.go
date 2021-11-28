@@ -51,7 +51,6 @@ func DoCreateTask() error {
 				OutputDir:                   filepath.Dir(v.CarFilePath),
 				InputDir:                    filepath.Dir(v.CarFilePath),
 			}
-
 			_, err = subcommand.UploadCarFiles(confUpload)
 			if err != nil {
 				logs.GetLogger().Error(err)

@@ -321,3 +321,17 @@ func GetLockFoundInfoByDealId(dealId int64) ([]*LockFound, error) {
 	}
 	return lockFoundResult, nil
 }
+
+func GetShoulBeSignDealListFromDB() ([]*DealForDaoSignResult, error) {
+	finalSql := "select deal_id,deal_cid,piece_cid,payload_cid,cost,verified,miner_fid,duration,client_wallet_address,create_at from deal_file where deal_id not in  ( " +
+		"     select  deal_id from dao_fetched_deal ) " +
+		" and deal_id > 0 order by create_at desc"
+	var dealForDaoSignResultList []*DealForDaoSignResult
+	err := database.GetDB().Raw(finalSql).Scan(&dealForDaoSignResultList).Limit(0).Offset(constants.DEFAULT_SELECT_LIMIT).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+
+	}
+	return dealForDaoSignResultList, nil
+}

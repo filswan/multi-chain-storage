@@ -79,3 +79,20 @@ type LockFound struct {
 	CreateAt            string `json:"create_at"`
 	LockedFee           string `json:"locked_fee"`
 }
+
+type DealForDaoSignResult struct {
+	PayloadCid          string `json:"payload_cid"`
+	DealCid             string `json:"deal_cid"`
+	DealId              int64  `json:"deal_id"`
+	PieceCid            string `json:"piece_cid"`
+	MinerFid            string `json:"miner_fid"`
+	Duration            int    `json:"duration"`
+	Cost                string `json:"cost"`
+	CreateAt            string `json:"create_at"`
+	Verified            bool   `json:"verified"`
+	ClientWalletAddress string `json:"client_wallet_address"`
+}
+
+type DealIdList struct {
+	DealIdList string `json:"deal_id_list"`
+}

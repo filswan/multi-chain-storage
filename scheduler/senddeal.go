@@ -54,6 +54,7 @@ func DoSendDealScheduler() error {
 			logs.GetLogger().Println(" task uuid : ", v.TaskUuid)
 			v.SendDealStatus = constants.SEND_DEAL_STATUS_SUCCESS
 			v.MinerFid = taskInfo.Data.Miner.MinerID
+			v.ClientWalletAddress = config.GetConfig().FileCoinWallet
 			dealCid, err := sendDeal(v.TaskUuid, v)
 			if err != nil {
 				logs.GetLogger().Error(err)

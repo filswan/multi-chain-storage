@@ -306,3 +306,18 @@ func GetDaoSignatureInfoByDealId(dealId int64) ([]*DaoSignResult, error) {
 	}
 	return results, nil
 }
+
+func GetLockFoundInfoByDealId(dealId int64) ([]*LockFound, error) {
+	finalSql := "select df.payload_cid,df.client_wallet_address,df.create_at,lp.locked_fee from deal_file df,event_lock_payment lp " +
+		" where df.payload_cid = lp.payload_cid" +
+		" and df.deal_id=" + strconv.FormatInt(dealId, 10)
+
+	var lockFoundResult []*LockFound
+	err := database.GetDB().Raw(finalSql).Scan(&lockFoundResult).Limit(0).Offset(10).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+
+	}
+	return lockFoundResult, nil
+}

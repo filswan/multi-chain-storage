@@ -5,12 +5,6 @@
 // Runtime Environment's members available in the global scope.
 const hre = require("hardhat");
 
-const erc20ABI = require('../artifacts/contracts/test/ERC20.sol/TestERC20.json').abi;
-
-const one = "10000000000000";
-const ten = "10000000000000000000";
-const oneThousand = "1000000000000000000000";
-
 const overrides = {
   gasLimit: 9999999
 }
@@ -19,7 +13,7 @@ async function main() {
 
   const usdcAddress = "0xe11A86849d99F524cAC3E7A0Ec1241828e332C62";
 
-  const recipientAddress = "0xE53AEd6DEA9e44116D4551a93eEeE28bC8684916";
+  const recipientAddress = "0x591f62C3FDC087dADC8A02dF76fD0a2Bd2168CDF";
 
   const gatewayContractAddress = "0x12EDC75CE16d778Dc450960d5f1a744477ee49a0";
 
@@ -27,20 +21,14 @@ async function main() {
 
   const [payer] = await ethers.getSigners();
 
-
-  const USDCInstance = new ethers.Contract(usdcAddress, erc20ABI);
-
-  await USDCInstance.connect(payer).approve(gatewayContractAddress, oneThousand);
-
-
   const contract = await hre.ethers.getContractFactory("SwanPayment");
   const paymentInstance = await contract.attach(gatewayContractAddress);
 
-  const tx = await paymentInstance.connect(payer).lockTokenPayment({
+  const tx = await paymentInstance.connect(payer).unlockTokenPayment({
     id: cid,
-    minPayment: one,
-    amount: ten,
-    lockTime: 86400 * 6, // 6 days
+    orderId: "",
+    dealId: "4109",
+    amount: "0",
     recipient: recipientAddress, //todo:
   }, overrides);
 

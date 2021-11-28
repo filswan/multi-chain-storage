@@ -6,7 +6,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 
-import "hardhat/console.sol";
+import "./FilinkConsumer.sol";
 
 contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
 
@@ -16,6 +16,8 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
 
     mapping(string => mapping(address => TxOracleInfo)) txInfoMap;
     mapping(bytes32 => uint8) txVoteMap;
+
+    address private _filinkAddress;
     struct TxOracleInfo {
         uint256 paid;
         uint256 terms;
@@ -26,11 +28,8 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
 
     event SignTransaction(
         string cid,
-        string orderId,
         string dealId,
-        address recipient,
-        uint256 paid,
-        bool status
+        address recipient
     );
 
     function initialize(address admin, uint8 threshold) public initializer {
@@ -49,6 +48,13 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
         return true;
     }
 
+    function setFilinkOracle(address filinkAddress)public
+        onlyRole(DEFAULT_ADMIN_ROLE)
+        returns (bool){
+       _filinkAddress = filinkAddress;
+       return true;
+    }
+
     function setDAOUsers(address[] calldata daoUsers)
         public
         onlyRole(DEFAULT_ADMIN_ROLE)
@@ -62,21 +68,17 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
 
      function concatenate(
         string memory s1,
-        string memory s2,
-        string memory s3
+        string memory s2
     ) private pure returns (string memory) {
-        return string(abi.encodePacked(s1, s2, s3));
+        return string(abi.encodePacked(s1, s2));
     }
 
     function signTransaction(
         string memory cid,
-        string memory orderId,
         string memory dealId,
-        uint256 paid,
-        address recipient,
-        bool status
+        address recipient
     ) public onlyRole(DAO_ROLE) {
-        string memory key = concatenate(cid, orderId, dealId);
+        string memory key = concatenate(cid, dealId);
 
         require(
             txInfoMap[key][msg.sender].flag == false,
@@ -84,36 +86,33 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
         );
 
         txInfoMap[key][msg.sender].recipient = recipient;
-        txInfoMap[key][msg.sender].paid = paid;
-        txInfoMap[key][msg.sender].status = status;
         txInfoMap[key][msg.sender].flag = true;
 
         bytes32 voteKey = keccak256(
-            abi.encodePacked(cid, orderId, dealId, paid, recipient, status)
+            abi.encodePacked(cid, dealId, recipient)
         );
 
         txVoteMap[voteKey] = txVoteMap[voteKey] + 1;
+        // todo: if vote is greater than threshold, call chainlink oracle to save price
+
+        if(txVoteMap[voteKey] >= _threshold && _filinkAddress != address(0)){
+            FilinkConsumer(_filinkAddress).requestDealInfo(dealId);
+        }
 
         emit SignTransaction(
             cid,
-            orderId,
             dealId,
-            recipient,
-            paid,
-            status // bool
+            recipient
         );
     }
 
     function isPaymentAvailable(
         string memory cid,
-        string memory orderId,
         string memory dealId,
-        uint256 paid,
-        address recipient,
-        bool status
+        address recipient
     ) public view returns (bool) {
         bytes32 voteKey = keccak256(
-            abi.encodePacked(cid, orderId, dealId, paid, recipient, status)
+            abi.encodePacked(cid, dealId, recipient)
         );
         return txVoteMap[voteKey] >= _threshold;
     }

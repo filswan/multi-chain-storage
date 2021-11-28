@@ -7,6 +7,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "hardhat/console.sol";
 import "./interfaces/IPaymentGateway.sol";
 import "./FilswanOracle.sol";
+import "./FilinkConsumer.sol";
 import "./interfaces/IPriceFeed.sol";
 
 contract SwanPayment is IPaymentMinimal, Initializable {
@@ -19,16 +20,18 @@ contract SwanPayment is IPaymentMinimal, Initializable {
     address private _oracle;
     address private _priceFeed;
 
+    address private _chainlinkOracle;
+
     uint256 private lockTime;
     mapping(string => TxInfo) private txMap;
 
-    function initialize(address owner, address ERC20_TOKEN, address oracle, address priceFeed) public initializer {
+    function initialize(address owner, address ERC20_TOKEN, address oracle, address priceFeed, address chainlinkOracle) public initializer {
         _owner = owner;
         _ERC20_TOKEN = ERC20_TOKEN;
         _oracle = oracle;
         _priceFeed = priceFeed;
+        _chainlinkOracle = chainlinkOracle;
         lockTime = 5 days;
-        
     }
 
     /**
@@ -41,6 +44,11 @@ contract SwanPayment is IPaymentMinimal, Initializable {
 
     function setOracle(address oracle) public onlyOwner returns (bool) {
         _oracle = oracle;
+        return true;
+    }
+
+    function setChainlinkOracle(address _chainlinkOracle) public onlyOwner returns (bool) {
+        _chainlinkOracle = _chainlinkOracle;
         return true;
     }
 
@@ -235,21 +243,21 @@ contract SwanPayment is IPaymentMinimal, Initializable {
             IERC20(_ERC20_TOKEN).transfer(t.owner, t.lockedFee);
             emit ExpirePayment(param.id, _ERC20_TOKEN, t.lockedFee, t.owner);
         } else {
-            require(param.amount > 0, "Transaction is incompleted");
+            
 
             require(
                 FilswanOracle(_oracle).isPaymentAvailable(
                     param.id,
-                    param.orderId,
                     param.dealId,
-                    param.amount,
-                    param.recipient,
-                    true
+                    param.recipient
                 ),
                 "illegal unlock action"
             );
             // get spend token amount
-            uint256 tokenAmount = IPriceFeed(_priceFeed).consult(_ERC20_TOKEN, param.amount);
+            uint256 serviceCost = FilinkConsumer(_chainlinkOracle).getPrice(param.dealId);
+            require(serviceCost > 0, "Service is incompleted");
+
+            uint256 tokenAmount = IPriceFeed(_priceFeed).consult(_ERC20_TOKEN, serviceCost);
 
             if (tokenAmount < t.minPayment) {
                 tokenAmount = t.minPayment;
@@ -273,4 +281,6 @@ contract SwanPayment is IPaymentMinimal, Initializable {
 
         return true;
     }
+
+    
 }

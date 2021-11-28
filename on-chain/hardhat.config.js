@@ -49,13 +49,18 @@ module.exports = {
         "bb2ab0f910c23824b521af2920a7779077bd261133de5993802d22e9a2cfbba4"],
     },
     goerli: {
-      url: "https://goerli.infura.io/v3/a30f13ea65fe406a86783fa912982906",
+      url: `https://goerli.infura.io/v3/${process.env.infuraKey}`,
+      accounts: [process.env.ownerPK]
+    },
+    kovan: {
+      url: `https://kovan.infura.io/v3/${process.env.infuraKey}`,
       accounts: [process.env.ownerPK]
     },
     matictest: {
       url: "https://matic-mumbai.chainstacklabs.com/", // https://forum.openzeppelin.com/t/hardhat-upgrade-failing-with-hh110-on-matic-testnet/12911
-      accounts: [process.env.ownerPK],
-      gasPrice: 8000000000,
+      accounts: [process.env.ownerPK, process.env.bscTestOwnerPK],
+      gasPrice: 10000000000,
+      gasLimit: 9000000
     },
     bsctest: {
       url: "https://data-seed-prebsc-1-s1.binance.org:8545",

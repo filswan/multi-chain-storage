@@ -46,14 +46,15 @@ async function main() {
 
 
   const priceFeedOracleAddress = "0xe8a67994c114e0c17E1c135d0CB599a2394f1505";
+  const filinkOracleAddress = "0xcE9A9e594db39dCD449E392d68F60959533c0D75";
 
   const swanPaymentContract = await ethers.getContractFactory("SwanPayment");
 
-  const swanPaymentInstance = await upgrades.deployProxy(swanPaymentContract, [deployer.address, usdcAddress, swanOracleAddress, priceFeedOracleAddress], overrides);
+  const swanPaymentInstance = await upgrades.deployProxy(swanPaymentContract, [deployer.address, usdcAddress, swanOracleAddress, priceFeedOracleAddress, filinkOracleAddress], overrides);
   await swanPaymentInstance.deployed();
   console.log(`swanPaymentInstance address: ${swanPaymentInstance.address}`)
 
-  const swanPaymentAddress  = "0xABeAAb124e6b52afFF504DB71bbF08D0A768D053";
+  // const swanPaymentAddress  = "0xABeAAb124e6b52afFF504DB71bbF08D0A768D053";
 
   // swanPaymentInstance address: 0xABeAAb124e6b52afFF504DB71bbF08D0A768D053
 

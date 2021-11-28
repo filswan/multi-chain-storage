@@ -105,12 +105,6 @@
       {
         "indexed": false,
         "internalType": "string",
-        "name": "orderId",
-        "type": "string"
-      },
-      {
-        "indexed": false,
-        "internalType": "string",
         "name": "dealId",
         "type": "string"
       },
@@ -119,18 +113,6 @@
         "internalType": "address",
         "name": "recipient",
         "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "paid",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "bool",
-        "name": "status",
-        "type": "bool"
       }
     ],
     "name": "SignTransaction",
@@ -263,28 +245,13 @@
       },
       {
         "internalType": "string",
-        "name": "orderId",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
         "name": "dealId",
         "type": "string"
-      },
-      {
-        "internalType": "uint256",
-        "name": "paid",
-        "type": "uint256"
       },
       {
         "internalType": "address",
         "name": "recipient",
         "type": "address"
-      },
-      {
-        "internalType": "bool",
-        "name": "status",
-        "type": "bool"
       }
     ],
     "name": "isPaymentAvailable",
@@ -376,13 +343,27 @@
   {
     "inputs": [
       {
-        "internalType": "string",
-        "name": "cid",
-        "type": "string"
-      },
+        "internalType": "address",
+        "name": "filinkAddress",
+        "type": "address"
+      }
+    ],
+    "name": "setFilinkOracle",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
       {
         "internalType": "string",
-        "name": "orderId",
+        "name": "cid",
         "type": "string"
       },
       {
@@ -391,19 +372,9 @@
         "type": "string"
       },
       {
-        "internalType": "uint256",
-        "name": "paid",
-        "type": "uint256"
-      },
-      {
         "internalType": "address",
         "name": "recipient",
         "type": "address"
-      },
-      {
-        "internalType": "bool",
-        "name": "status",
-        "type": "bool"
       }
     ],
     "name": "signTransaction",

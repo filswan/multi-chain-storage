@@ -9,9 +9,9 @@ async function main() {
   const contract = await hre.ethers.getContractFactory("FilswanOracle");
   const daoOracleInstance = await contract.attach(oracleDAOContractAddress);
 
-  const cid = "bafk2bzacedh6keeksywaoa3wjryqzihqixyfekqgfljfosrcoyaj2kozl767s";
+  const cid = "abcd2bzacedh6keeksywaoa3wjryqzihqixyfekqgfljfosrcoyaj2";
   const orderId = "";
-  const dealId = "0x0000000000000000000000000000000000000000000000000000000000000002";
+  const dealId = "4109";
 
   const paid = "10000000000000000"; // paid filcoins
   const recipient = "0x591f62C3FDC087dADC8A02dF76fD0a2Bd2168CDF";
@@ -20,12 +20,8 @@ async function main() {
 
   const tx = await daoOracleInstance.connect(signer).signTransaction(
     cid,
-    orderId,
     dealId,
-    paid,
-    recipient,
-    terms,
-    status
+    recipient
   );
   await tx.wait();
 

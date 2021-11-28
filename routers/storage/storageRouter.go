@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"github.com/gin-gonic/gin"
@@ -63,31 +64,45 @@ func GetDealListFromFilink(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_CODE, errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_MSG))
 		return
 	}
-	//todo
-	dealIdIntValue = 58170
+
 	url := config.GetConfig().FilinkUrl
 	parameter := new(filinkParams)
-	parameter.Data.Deal = dealIdIntValue
+	//todo
+	parameter.Data.Deal = 58172
 	paramBytes, err := json.Marshal(&parameter)
+	paramStr := string(paramBytes)
+	logs.GetLogger().Info(paramStr)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARSER_STRUCT_TO_REQUEST_ERROR_CODE, errorinfo.HTTP_REQUEST_PARSER_STRUCT_TO_REQUEST_ERROR_MSG))
 		return
 	}
-	response, err := httpClient.SendRequestAndGetBytes(http.MethodPost, url, paramBytes, nil)
+	response, err := http.Post(url, "application/json; charset=UTF-8", bytes.NewBuffer(paramBytes))
+	//response, err := httpClient.SendRequestAndGetBytes(http.MethodPost, url, paramBytes, nil)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_GET_RESPONSE_ERROR_CODE, errorinfo.HTTP_REQUEST_GET_RESPONSE_ERROR_MSG))
 		return
 	}
-	var result *DealOnChainResult
-	err = json.Unmarshal(response, &result)
+	//var result *DealOnChainResult
+
+	result := DealOnChainResult{}
+	err = json.NewDecoder(response.Body).Decode(&result)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARSER_STRUCT_TO_REQUEST_ERROR_CODE, errorinfo.HTTP_REQUEST_PARSER_STRUCT_TO_REQUEST_ERROR_MSG))
 		return
 	}
-	c.JSON(http.StatusOK, common.CreateSuccessResponse(result))
+	daoSignList, err := GetDaoSignatureInfoByDealId(int64(dealIdIntValue))
+	if err != nil {
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE, errorinfo.GET_RECORD_lIST_ERROR_CODE+": get dao info from db occurred error"))
+		return
+	}
+	c.JSON(http.StatusOK, common.CreateSuccessResponse(gin.H{
+		"deal": result.Data.Data.Deal,
+		"dao":  daoSignList,
+	}))
 	return
 }
 

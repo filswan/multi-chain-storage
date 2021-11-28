@@ -295,3 +295,14 @@ func GetDealListThanGreaterDealID(dealId int64, offset, limit int) ([]*DaoDealRe
 	}
 	return results, nil
 }
+
+func GetDaoSignatureInfoByDealId(dealId int64) ([]*DaoSignResult, error) {
+	whereCondition := "deal_id = " + strconv.FormatInt(dealId, 10)
+	var results []*DaoSignResult
+	err := database.GetDB().Table("event_dao_signature").Where(whereCondition).Offset(0).Limit(constants.DEFAULT_SELECT_LIMIT).Order("block_time desc").Scan(&results).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+	return results, nil
+}

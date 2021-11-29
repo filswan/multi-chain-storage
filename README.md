@@ -5,7 +5,8 @@
 # Payment-Bridge
 Payment bridge is desgined for make payment from multichain for filecoin storage,and backup user's file to filecoin network <br>
 Now supports payment with tokens such as USDC on polygon
-
+# System Desgin
+![MCP-MCP Desgin](https://user-images.githubusercontent.com/8363795/143811916-f051ccce-f9b2-49eb-99ab-8da1a0d9f2f2.png)
 ## Scan Module
 Scan the blockchain, find the event log of the block where the swan payment contract has been executed,and save to the database
 
@@ -83,6 +84,7 @@ cd $GOPATH/src/payment-bridge/scan/build/bin`
 chmod +x payment-bridge
 ./payment_bridge
 ```
+
 
 ##### Note:
 Before running the ./payment-bridge command, you need to edit the config file, the configuration items will be introduced below

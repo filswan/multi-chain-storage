@@ -156,13 +156,13 @@ func GetDealListFromFilink(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE, errorinfo.GET_RECORD_lIST_ERROR_CODE+": get lock found info from db occurred error"))
 		return
 	}
-	var founcInfo *LockFound
+	var foundInfo *LockFound
 	if len(foundInfoList) > 0 {
-		founcInfo = foundInfoList[0]
+		foundInfo = foundInfoList[0]
 	}
 	c.JSON(http.StatusOK, common.CreateSuccessResponse(gin.H{
 		"deal":  result.Data.Data.Deal,
-		"found": founcInfo,
+		"found": foundInfo,
 		"dao":   daoSignList,
 	}))
 	return

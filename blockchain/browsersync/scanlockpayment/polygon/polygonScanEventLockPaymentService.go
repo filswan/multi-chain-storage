@@ -70,13 +70,13 @@ func ScanPolygonLockPaymentEventFromChainAndSaveEventLogData(blockNoFrom, blockN
 	for _, vLog := range logsInChain {
 		//if log have this contractor function signer
 		if vLog.Topics[0].Hex() == contractFunctionSignature {
-			eventList, err := models.FindEventPolygons(&models.EventPolygon{TxHash: vLog.TxHash.Hex(), BlockNo: vLog.BlockNumber}, "id desc", "10", "0")
+			eventList, err := models.FindEventLockPayment(&models.EventLockPayment{TxHash: vLog.TxHash.Hex(), BlockNo: vLog.BlockNumber}, "id desc", "10", "0")
 			if err != nil {
 				logs.GetLogger().Error(err)
 				continue
 			}
 			if len(eventList) <= 0 {
-				var event = new(models.EventPolygon)
+				var event = new(models.EventLockPayment)
 				dataList, err := contractAbi.Unpack("LockPayment", vLog.Data)
 				if err != nil {
 					logs.GetLogger().Error(err)
@@ -96,15 +96,25 @@ func ScanPolygonLockPaymentEventFromChainAndSaveEventLogData(blockNoFrom, blockN
 					event.AddressTo = addrInfo.AddrTo
 				}
 				event.BlockNo = vLog.BlockNumber
-				//todo
-				event.CoinType = "USDC"
+				usdcCoinId, err := models.FindCoinIdByUUID(constants.COIN_TYPE_USDC_ON_POLYGON_UUID)
+				if err != nil {
+					logs.GetLogger().Error(err)
+				} else {
+					event.CoinId = usdcCoinId
+				}
+				networkId, err := models.FindNetworkIdByUUID(constants.NETWORK_TYPE_POLYGON_UUID)
+				if err != nil {
+					logs.GetLogger().Error(err)
+				} else {
+					event.NetworkId = networkId
+				}
+
 				event.PayloadCid = dataList[0].(string)
 				event.TokenAddress = dataList[1].(common.Address).Hex()
 				event.LockedFee = dataList[2].(*big.Int).String()
 				event.MinPayment = dataList[3].(*big.Int).String()
 				event.MinerAddress = dataList[4].(common.Address).Hex()
 				deadLine := dataList[5].(*big.Int)
-				event.EventName = constants.EVENT_NAME_LOCAK_PAYMENT
 				event.Deadline = deadLine.String()
 				event.TxHash = vLog.TxHash.Hex()
 				event.ContractAddress = contractAddress.String()
@@ -114,8 +124,6 @@ func ScanPolygonLockPaymentEventFromChainAndSaveEventLogData(blockNoFrom, blockN
 				} else {
 					event.LockPaymentTime = strconv.FormatUint(block.Time(), 10)
 				}
-				//todo
-				event.EventName = "USDC"
 				event.CreateAt = strconv.FormatInt(utils.GetEpochInMillis(), 10)
 				err = database.SaveOneWithTransaction(event)
 				if err != nil {

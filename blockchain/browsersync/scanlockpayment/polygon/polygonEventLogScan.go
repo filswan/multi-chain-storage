@@ -34,9 +34,16 @@ func ScanEventFromChainAndSaveDataToDbForPolygon() {
 				getBlockFlag = false
 			}
 		}
+		var whereCondition string
+		networkId, err := models2.FindNetworkIdByUUID(constants.NETWORK_TYPE_POLYGON_UUID)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			startScanBlockNo = GetConfig().PolygonMainnetNode.StartFromBlockNo
+		} else {
+			whereCondition = "network_id=" + strconv.FormatInt(networkId, 10) + ""
+		}
 
 		blockScanRecord := new(models2.BlockScanRecord)
-		whereCondition := "network_type='" + constants.NETWORK_TYPE_POLYGON + "'"
 		blockScanRecordList, err := blockScanRecord.FindLastCurrentBlockNumber(whereCondition)
 		if err != nil {
 			logs.GetLogger().Error(err)
@@ -57,25 +64,29 @@ func ScanEventFromChainAndSaveDataToDbForPolygon() {
 			if startScanBlockNo > blockNoCurrent.Int64() {
 				break
 			}
-			err = ScanPolygonLockPaymentEventFromChainAndSaveEventLogData(start, end)
+			err = ScanPolygonLockPaymentEventFromChainAndSaveEventLogData(start-1, end+1)
 			if err != nil {
 				logs.GetLogger().Error(err)
 				continue
 			}
 
-			err = ScanDaoEventFromChainAndSaveEventLogData(start, end)
+			/*err = ScanDaoEventFromChainAndSaveEventLogData(start-1, end+1)
 			if err != nil {
 				logs.GetLogger().Error(err)
 				continue
-			}
+			}*/
 
 			if end >= blockNoCurrent.Int64() {
 				blockScanRecord.LastCurrentBlockNumber = blockNoCurrent.Int64()
 			} else {
 				blockScanRecord.LastCurrentBlockNumber = end
 			}
-
-			blockScanRecord.NetworkType = constants.NETWORK_TYPE_POLYGON
+			networkId, err := models2.FindNetworkIdByUUID(constants.NETWORK_TYPE_POLYGON_UUID)
+			if err != nil {
+				logs.GetLogger().Error(err)
+			} else {
+				blockScanRecord.NetworkId = networkId
+			}
 			blockScanRecord.UpdateAt = strconv.FormatInt(utils.GetEpochInMillis(), 10)
 
 			err = database.SaveOne(blockScanRecord)

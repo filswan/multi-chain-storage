@@ -6,7 +6,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"math/big"
-	"payment-bridge/common/constants"
 	"payment-bridge/common/utils"
 	"payment-bridge/config"
 	"payment-bridge/database"
@@ -72,7 +71,6 @@ func ScanPolygonUnLockPaymentEventFromChainAndSaveToDB(blockNoFrom, blockNoTo in
 			if len(eventList) <= 0 {
 				event = new(models.EventUnlockPayment)
 				event.TxHash = vLog.TxHash.Hex()
-				event.Network = constants.NETWORK_TYPE_POLYGON
 				block, err := WebConn.ConnWeb.BlockByNumber(context.Background(), big.NewInt(int64(vLog.BlockNumber)))
 				if err != nil {
 					logs.GetLogger().Error(err)

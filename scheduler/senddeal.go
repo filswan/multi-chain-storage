@@ -14,6 +14,7 @@ import (
 	"payment-bridge/common/constants"
 	"payment-bridge/common/httpClient"
 	"payment-bridge/config"
+	"payment-bridge/database"
 	"payment-bridge/logs"
 	"payment-bridge/models"
 	"time"
@@ -36,36 +37,58 @@ func SendDealScheduler() {
 	c.Start()
 }
 func DoSendDealScheduler() error {
-	startEpoch := libutils.GetCurrentEpoch() + (96+1)*libconstants.EPOCH_PER_HOUR
-	fmt.Println(startEpoch)
-	dealList, err := GetTaskListShouldBeSigService()
+	fmt.Println(config.GetConfig().SwanTask.RelativeEpochFromMainNetwork)
+	dealList, err := GetTaskListShouldBeSendDealFromLocal()
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
 	}
-	for _, v := range dealList.Data.Deals {
-		if v.TaskStatus == constants.TASK_STATUS_ASSIGNED {
-			hasPaid, err := checkIfHaveLockPayment(v.PayloadCid)
+	for _, v := range dealList {
+		taskInfo, err := GetTaskStatusByUuid(v.TaskUuid)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			continue
+		}
+		if taskInfo.Data.Task.Status == constants.TASK_STATUS_ASSIGNED {
+			logs.GetLogger().Println("################################## start to send deal ##################################")
+			logs.GetLogger().Println(" task uuid : ", v.TaskUuid)
+			v.SendDealStatus = constants.SEND_DEAL_STATUS_SUCCESS
+			v.MinerFid = taskInfo.Data.Miner.MinerID
+			v.ClientWalletAddress = config.GetConfig().FileCoinWallet
+			dealCid, err := sendDeal(v.TaskUuid, v)
 			if err != nil {
 				logs.GetLogger().Error(err)
-				continue
-			}
-			if hasPaid {
-				logs.GetLogger().Println("################################## start to send deal ##################################")
-				logs.GetLogger().Println("task name : ", v.TaskName, " task uuid : ", v.UUID)
-				err = sendDeal(v.UUID)
-				logs.GetLogger().Println("################################## end to send deal ##################################")
+				v.SendDealStatus = constants.SEND_DEAL_STATUS_FAIL
+				err = database.SaveOne(v)
 				if err != nil {
 					logs.GetLogger().Error(err)
 					continue
 				}
+				continue
+			}
+			logs.GetLogger().Println("################################## end to send deal ##################################")
+			v.DealCid = dealCid
+			err = database.SaveOne(v)
+			if err != nil {
+				logs.GetLogger().Error(err)
+				continue
 			}
 		}
 	}
 	return nil
 }
 
-func GetTaskListShouldBeSigService() (*models.OfflineDealResult, error) {
+func GetTaskListShouldBeSendDealFromLocal() ([]*models.DealFile, error) {
+	whereCondition := "send_deal_status ='' and lower(lock_payment_status)=lower('" + constants.LOCK_PAYMENT_STATUS_SUCCESS + "') and task_uuid != '' "
+	dealList, err := models.FindDealFileList(whereCondition, "create_at desc", "50", "0")
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+	return dealList, nil
+}
+
+func GetTaskListShouldBeSigServiceFromSwan() (*models.OfflineDealResult, error) {
 	url := config.GetConfig().SwanApi.ApiUrl + config.GetConfig().SwanApi.GetShouldSendTaskUrlSuffix
 	response, err := httpClient.SendRequestAndGetBytes(http.MethodGet, url, nil, nil)
 	if err != nil {
@@ -81,21 +104,21 @@ func GetTaskListShouldBeSigService() (*models.OfflineDealResult, error) {
 	return results, nil
 }
 
-func sendDeal(taskUuid string) error {
+func sendDeal(taskUuid string, file *models.DealFile) (string, error) {
 	startEpochIntervalHours := config.GetConfig().SwanTask.StartEpochHours
 	startEpoch := libutils.GetCurrentEpoch() + (startEpochIntervalHours+1)*libconstants.EPOCH_PER_HOUR
 
 	homedir, err := os.UserHomeDir()
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return err
+		return "", err
 	}
 	temDirDeal := config.GetConfig().SwanTask.DirDeal
 	temDirDeal = filepath.Join(homedir, temDirDeal[2:])
 	err = libutils.CreateDir(temDirDeal)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return err
+		return "", err
 	}
 
 	timeStr := time.Now().Format("20060102_150405")
@@ -114,25 +137,25 @@ func sendDeal(taskUuid string) error {
 		OutputDir:                    carDir,
 		LotusClientApiUrl:            config.GetConfig().Lotus.ApiUrl,
 		LotusClientAccessToken:       config.GetConfig().Lotus.AccessToken,
-		Duration:                     1051200,
-		RelativeEpochFromMainNetwork: -858481,
+		Duration:                     file.Duration,
+		RelativeEpochFromMainNetwork: config.GetConfig().SwanTask.RelativeEpochFromMainNetwork,
 	}
 	confDeal.DealSourceIds = append(confDeal.DealSourceIds, libconstants.TASK_SOURCE_ID_SWAN_PAYMENT)
 
 	dealSentNum, csvFilePath, carFiles, err := subcommand.SendAutoBidDealsByTaskUuid(confDeal, taskUuid)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return err
+		return "", err
 	}
 	logs.GetLogger().Info("------------------------------send deal success---------------------------------")
 	logs.GetLogger().Info("dealSentNum = ", dealSentNum)
 	logs.GetLogger().Info("csvFilePath = ", csvFilePath)
 	logs.GetLogger().Info("carFiles = ", carFiles)
-	return nil
+	return carFiles[0].DealCid, nil
 }
 
 func checkIfHaveLockPayment(payloadCid string) (bool, error) {
-	polygonEventList, err := models.FindEventPolygons(&models.EventPolygon{PayloadCid: payloadCid}, "id desc", "", "0")
+	polygonEventList, err := models.FindEventLockPayment(&models.EventLockPayment{PayloadCid: payloadCid}, "id desc", "", "0")
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return false, err
@@ -142,4 +165,112 @@ func checkIfHaveLockPayment(payloadCid string) (bool, error) {
 	} else {
 		return false, nil
 	}
+}
+
+func GetTaskStatusByUuid(taskUuid string) (*AutoGenerated, error) {
+	url := config.GetConfig().SwanApi.ApiUrl + "/tasks/" + taskUuid
+	response, err := httpClient.SendRequestAndGetBytes(http.MethodGet, url, nil, nil)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	var taskInfo *AutoGenerated
+	err = json.Unmarshal(response, &taskInfo)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+	return taskInfo, nil
+}
+
+type AutoGenerated struct {
+	Data struct {
+		AverageBid       string        `json:"average_bid"`
+		Bid              []interface{} `json:"bid"`
+		BidCount         int           `json:"bid_count"`
+		Deal             []Deal        `json:"deal"`
+		DealCompleteRate string        `json:"deal_complete_rate"`
+		Miner            Miner         `json:"miner"`
+		Poster           Poster        `json:"poster"`
+		Task             Task          `json:"task"`
+		TotalDealCount   int           `json:"total_deal_count"`
+		TotalItems       int           `json:"total_items"`
+	} `json:"data"`
+	Status string `json:"status"`
+}
+
+type Miner struct {
+	AddressBalance       string      `json:"address_balance"`
+	AdjustedPower        string      `json:"adjusted_power"`
+	AutoBidTaskCnt       int         `json:"auto_bid_task_cnt"`
+	AutoBidTaskPerDay    int         `json:"auto_bid_task_per_day"`
+	BidMode              int         `json:"bid_mode"`
+	LastAutoBidAt        int64       `json:"last_auto_bid_at"`
+	Location             string      `json:"location"`
+	MaxPieceSize         string      `json:"max_piece_size"`
+	MinPieceSize         string      `json:"min_piece_size"`
+	MinerID              string      `json:"miner_id"`
+	OfflineDealAvailable bool        `json:"offline_deal_available"`
+	Price                interface{} `json:"price"`
+	Score                int         `json:"score"`
+	StartEpoch           int         `json:"start_epoch"`
+	Status               string      `json:"status"`
+	UpdateTimeStr        string      `json:"update_time_str"`
+	VerifiedPrice        interface{} `json:"verified_price"`
+	YearlyPrice          interface{} `json:"yearly_price"`
+	YearlyVerifiedPrice  interface{} `json:"yearly_verified_price"`
+}
+
+type Task struct {
+	BidMode        int         `json:"bid_mode"`
+	CreatedOn      string      `json:"created_on"`
+	CuratedDataset interface{} `json:"curated_dataset"`
+	Description    interface{} `json:"description"`
+	Duration       int         `json:"duration"`
+	ExpireDays     int         `json:"expire_days"`
+	FastRetrieval  int         `json:"fast_retrieval"`
+	IsPublic       int         `json:"is_public"`
+	MaxPrice       string      `json:"max_price"`
+	MinPrice       interface{} `json:"min_price"`
+	MinerID        interface{} `json:"miner_id"`
+	SourceID       int         `json:"source_id"`
+	Status         string      `json:"status"`
+	Tags           interface{} `json:"tags"`
+	TaskFileName   string      `json:"task_file_name"`
+	TaskID         int         `json:"task_id"`
+	TaskName       string      `json:"task_name"`
+	Type           string      `json:"type"`
+	UpdatedOn      string      `json:"updated_on"`
+	UUID           string      `json:"uuid"`
+}
+
+type Deal struct {
+	ContractID    string      `json:"contract_id"`
+	Cost          interface{} `json:"cost"`
+	CreatedAt     string      `json:"created_at"`
+	DealCid       interface{} `json:"deal_cid"`
+	FileName      string      `json:"file_name"`
+	FilePath      interface{} `json:"file_path"`
+	FileSize      string      `json:"file_size"`
+	FileSourceURL string      `json:"file_source_url"`
+	ID            int         `json:"id"`
+	Md5Origin     string      `json:"md5_origin"`
+	MinerID       interface{} `json:"miner_id"`
+	Note          interface{} `json:"note"`
+	PayloadCid    string      `json:"payload_cid"`
+	PieceCid      string      `json:"piece_cid"`
+	PinStatus     string      `json:"pin_status"`
+	StartEpoch    int         `json:"start_epoch"`
+	Status        string      `json:"status"`
+	TaskID        int         `json:"task_id"`
+	UpdatedAt     string      `json:"updated_at"`
+	UserID        int         `json:"user_id"`
+}
+
+type Poster struct {
+	AvatarURL         string      `json:"avatar_url"`
+	CompleteTaskCount int         `json:"complete_task_count"`
+	ContactInfo       interface{} `json:"contact_info"`
+	MemberSince       string      `json:"member_since"`
 }

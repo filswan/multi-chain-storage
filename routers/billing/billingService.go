@@ -8,11 +8,11 @@ import (
 	"math/big"
 	"net/http"
 	"payment-bridge/blockchain/browsersync/scanlockpayment/polygon"
+	common2 "payment-bridge/common"
 	"payment-bridge/common/httpClient"
 	"payment-bridge/database"
 	"payment-bridge/logs"
 	"payment-bridge/on-chain/goBind"
-	"strings"
 )
 
 func GetFileCoinLastestPriceService() (*PriceResult, error) {
@@ -33,8 +33,8 @@ func GetFileCoinLastestPriceService() (*PriceResult, error) {
 
 func getBillingCount(walletAddress string) (int64, error) {
 	sql := "select  count(* ) as total_record " +
-		"from event_polygon ep left join event_unlock_payment eup   on eup.payload_cid = ep.payload_cid where ep.address_from='" + walletAddress + "'"
-	var recordCount RecordCount
+		"from event_lock_payment ep left join event_unlock_payment eup   on eup.payload_cid = ep.payload_cid where ep.address_from='" + walletAddress + "'"
+	var recordCount common2.RecordCount
 	err := database.GetDB().Raw(sql).Scan(&recordCount).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -44,9 +44,13 @@ func getBillingCount(walletAddress string) (int64, error) {
 }
 
 func getBillHistoryList(walletAddress, limit, offset string) ([]*BillingResult, error) {
-	finalSql := "select ep.tx_hash,ep.address_from,ep.locked_fee,ep.deadline,ep.payload_cid,ep.lock_payment_time,ep.coin_type,eup.unlock_to_user_address,eup.unlock_to_user_amount,eup.unlock_time,'polygon' as network  " +
-		"from event_polygon ep left join event_unlock_payment eup   on eup.payload_cid = ep.payload_cid where lower(ep.address_from)='" + strings.ToLower(walletAddress) + "'" +
-		"order by lock_payment_time desc "
+	finalSql := "select t.*,co.short_name as coin_type,ne.network_name from ( " +
+		"     select ep.tx_hash,ep.address_from,ep.locked_fee,ep.deadline,ep.payload_cid,ep.lock_payment_time,ep.coin_id,ep.network_id,eup.unlock_to_user_address,eup.unlock_to_user_amount,eup.unlock_time,'polygon' as network" +
+		"     from event_lock_payment ep left join event_unlock_payment eup   on eup.payload_cid = ep.payload_cid" +
+		"     where lower(ep.address_from)=lower('" + walletAddress + "')" +
+		") as t inner join coin co on t.coin_id=co.id " +
+		" inner join network ne on t.network_id= ne.id" +
+		" order by lock_payment_time desc"
 
 	var billingResultList []*BillingResult
 	err := database.GetDB().Raw(finalSql).Scan(&billingResultList).Limit(limit).Offset(offset).Error

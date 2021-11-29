@@ -30,21 +30,13 @@ func main() {
 
 	models.RunAllTheScan()
 
+	scheduler.CreateTaskScheduler()
+
 	scheduler.SendDealScheduler()
 
 	scheduler.DAOUnlockPaymentSchedule()
 
-	//polygon.ScanDaoEventFromChainAndSaveEventLogData(20965958, 20966958)
-
-	//factory := new(scanFactory.IEventScanFactory)
-
-	//go factory.GenerateBlockChainNetwork(constants.NETWORK_TYPE_BSC).ScanEventFromChainAndSaveDataToDb()
-
-	//go factory.GenerateBlockChainNetwork(constants.NETWORK_TYPE_GOERLI).ScanEventFromChainAndSaveDataToDb()
-
-	//go factory.GenerateBlockChainNetwork(constants.NETWORK_TYPE_NBAI).ScanEventFromChainAndSaveDataToDb()
-
-	//go factory.GenerateBlockChainNetwork(constants.NETWORK_TYPE_POLYGON).ScanEventFromChainAndSaveDataToDb()
+	scheduler.ScanDealInfoScheduler()
 
 	defer func() {
 		err := db.Close()

@@ -8,18 +8,17 @@ import (
 )
 
 type Configuration struct {
-	Port                        string       `toml:"port"`
-	Database                    database     `toml:"database"`
-	Dev                         bool         `toml:"dev"`
-	SwanApi                     swanApi      `toml:"swan_api"`
-	IpfsServer                  ipfsServer   `toml:"ipfs_server"`
-	Lotus                       lotus        `toml:"lotus"`
-	SwanTask                    swanTask     `toml:"swan_task"`
-	ScheduleRule                ScheduleRule `toml:"schedule_rule"`
-	AdminWalletOnPolygon        string       `toml:"admin_wallet_on_polygon"`
-	SwanDaoOracleAddress        string       `toml:"swan_dao_oracle_address"`
-	SwanPaymentAddressOnPolygon string       `toml:"swan_payment_address_on_polygon"`
-	FileCoinWallet              string       `toml:"file_coin_wallet"`
+	Port                 string       `toml:"port"`
+	Database             database     `toml:"database"`
+	Dev                  bool         `toml:"dev"`
+	SwanApi              swanApi      `toml:"swan_api"`
+	IpfsServer           ipfsServer   `toml:"ipfs_server"`
+	Lotus                lotus        `toml:"lotus"`
+	SwanTask             swanTask     `toml:"swan_task"`
+	ScheduleRule         ScheduleRule `toml:"schedule_rule"`
+	AdminWalletOnPolygon string       `toml:"admin_wallet_on_polygon"`
+	FileCoinWallet       string       `toml:"file_coin_wallet"`
+	FilinkUrl            string       `toml:"filink_url"`
 }
 
 type database struct {
@@ -32,8 +31,11 @@ type database struct {
 }
 
 type lotus struct {
-	ApiUrl      string `toml:"api_url"`
-	AccessToken string `toml:"access_token"`
+	ApiUrl              string `toml:"api_url"`
+	AccessToken         string `toml:"access_token"`
+	FullNodeUrl         string `toml:"full_node_url"`
+	FullNodeAccessToken string `toml:"full_node_access_token"`
+	FinalStatusList     string `toml:"final_status_list"`
 }
 
 type swanTask struct {
@@ -64,8 +66,10 @@ type ipfsServer struct {
 }
 
 type ScheduleRule struct {
-	UnlockPaymentRule string `toml:"unlock_payment_rule"`
-	SendDealRule      string `toml:"send_deal_rule"`
+	UnlockPaymentRule  string `toml:"unlock_payment_rule"`
+	SendDealRule       string `toml:"send_deal_rule"`
+	CreateTaskRule     string `toml:"create_task_rule"`
+	ScanDealStatusRule string `toml:"scan_deal_status_rule"`
 }
 
 var config *Configuration
@@ -94,14 +98,27 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 	requiredFields := [][]string{
 		{"port"},
 		{"admin_wallet_on_polygon"},
-		{"swan_payment_address_on_polygon"},
 		{"file_coin_wallet"},
+		{"filink_url"},
 
 		{"database", "db_host"},
 		{"database", "db_port"},
 		{"database", "db_username"},
 		{"database", "db_schema_name"},
 		{"database", "db_pwd"},
+
+		{"swan_api", "api_url"},
+		{"swan_api", "api_key"},
+		{"swan_api", "get_should_send_task_url_suffix"},
+
+		{"ipfs_server", "download_url_prefix"},
+		{"ipfs_server", "upload_url"},
+
+		{"lotus", "api_url"},
+		{"lotus", "access_token"},
+		{"lotus", "final_status_list"},
+
+		{"swan_task", "relative_epoch_from_main_network"},
 	}
 
 	for _, v := range requiredFields {

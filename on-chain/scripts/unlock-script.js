@@ -17,7 +17,7 @@ async function main() {
 
   const gatewayContractAddress = "0x12EDC75CE16d778Dc450960d5f1a744477ee49a0";
 
-  const cid = "abcd2bzacedh6keeksywaoa3wjryqzihqixyfekqgfljfosrcoyaj2";
+  const cid = "234234sdfsdfsd8908080r";
 
   const [payer] = await ethers.getSigners();
 
@@ -27,7 +27,7 @@ async function main() {
   const tx = await paymentInstance.connect(payer).unlockTokenPayment({
     id: cid,
     orderId: "",
-    dealId: "4109",
+    dealId: "1234",
     amount: "0",
     recipient: recipientAddress, //todo:
   }, overrides);

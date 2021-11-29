@@ -36,6 +36,7 @@ func ScanDaoEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) erro
 		Addresses: []common.Address{
 			contractAddress,
 		},
+		Topics: [][]common.Hash{{common.HexToHash(contractFunctionSignature)}},
 	}
 
 	//logs, err := client.FilterLogs(context.Background(), query)
@@ -63,13 +64,18 @@ func ScanDaoEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) erro
 	for _, vLog := range logsInChain {
 		//if log have this contractor function signer
 		if vLog.Topics[0].Hex() == contractFunctionSignature {
-			eventList, err := models.FindDaoEventLog(&models.DaoEventLog{TxHash: vLog.TxHash.Hex(), BlockNo: vLog.BlockNumber}, "id desc", "10", "0")
+			dataList, err := contractAbi.Unpack("SignTransaction", vLog.Data)
+			if err != nil {
+				logs.GetLogger().Error(err)
+			}
+			logs.GetLogger().Info(dataList)
+			eventList, err := models.FindDaoEventLog(&models.EventDaoSignature{TxHash: vLog.TxHash.Hex(), BlockNo: vLog.BlockNumber}, "id desc", "10", "0")
 			if err != nil {
 				logs.GetLogger().Error(err)
 				continue
 			}
 			if len(eventList) <= 0 {
-				var event = new(models.DaoEventLog)
+				var event = new(models.EventDaoSignature)
 				dataList, err := contractAbi.Unpack("SignTransaction", vLog.Data)
 				if err != nil {
 					logs.GetLogger().Error(err)
@@ -93,15 +99,30 @@ func ScanDaoEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) erro
 				} else {
 					event.DaoAddress = addrInfo.AddrFrom
 				}
+
+				wfilCoinId, err := models.FindCoinIdByUUID(constants.COIN_TYPE_WFIL_ON_POLYGON_UUID)
+				if err != nil {
+					logs.GetLogger().Error(err)
+				} else {
+					event.CoinId = wfilCoinId
+				}
+				networkId, err := models.FindNetworkIdByUUID(constants.NETWORK_TYPE_POLYGON_UUID)
+				if err != nil {
+					logs.GetLogger().Error(err)
+				} else {
+					event.NetworkId = networkId
+				}
 				event.BlockNo = vLog.BlockNumber
 				event.TxHash = vLog.TxHash.Hex()
 				event.PayloadCid = dataList[0].(string)
-				event.OrderId = dataList[1].(string)
-				event.DealCid = dataList[2].(string)
-				event.Recipient = dataList[3].(common.Address).String()
-				event.Cost = dataList[4].(*big.Int).String()
-				event.Network = constants.NETWORK_TYPE_POLYGON
-				event.Status = dataList[5].(bool)
+				dealId, err := strconv.ParseInt(dataList[1].(string), 10, 64)
+				if err != nil {
+					logs.GetLogger().Error(err)
+				} else {
+					event.DealId = dealId
+				}
+				event.Recipient = dataList[2].(common.Address).String()
+				event.Status = true
 				event.SignatureUnlockStatus = constants.SIGNATURE_DEFAULT_VALUE
 
 				err = database.SaveOneWithTransaction(event)

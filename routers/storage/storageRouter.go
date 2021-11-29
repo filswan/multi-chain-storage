@@ -119,7 +119,7 @@ func GetDealListFromFilink(c *gin.Context) {
 	url := config.GetConfig().FilinkUrl
 	parameter := new(filinkParams)
 	//todo
-	parameter.Data.Deal = 58172
+	parameter.Data.Deal = dealIdIntValue
 	paramBytes, err := json.Marshal(&parameter)
 	paramStr := string(paramBytes)
 	logs.GetLogger().Info(paramStr)

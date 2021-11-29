@@ -96,3 +96,9 @@ type DealForDaoSignResult struct {
 type DealIdList struct {
 	DealIdList string `json:"deal_id_list"`
 }
+
+type IpfsReturn struct {
+	Name string `json:"Name"`
+	Hash string `json:"Hash"`
+	Size string `json:"Size"`
+}

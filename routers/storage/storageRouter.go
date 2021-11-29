@@ -208,7 +208,7 @@ func UploadFileToIpfs(c *gin.Context) {
 	}
 	durationInt = durationInt * 24 * 60 * 60 / 30
 
-	payloadCid, ifPayLoadCid, err := SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c, file, durationInt, userId)
+	payloadCid, ipfsUrl, ifPayLoadCid, err := SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c, file, durationInt, userId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.SENDING_DEAL_ERROR_CODE, errorinfo.SENDING_DEAL_ERROR_MSG))
 		return
@@ -218,6 +218,7 @@ func UploadFileToIpfs(c *gin.Context) {
 		logs.GetLogger().Info("----------------------------payload_cid: ", payloadCid, "-----------------------------")
 		uploadResult.PayloadCid = payloadCid
 		uploadResult.NeedPay = !ifPayLoadCid
+		uploadResult.IpfsUrl = ipfsUrl
 		c.JSON(http.StatusOK, common.CreateSuccessResponse(uploadResult))
 		return
 	} else {
@@ -372,5 +373,6 @@ func GetDealListFromSwan(c *gin.Context) {
 
 type uploadResult struct {
 	PayloadCid string `json:"payload_cid"`
+	IpfsUrl    string `json:"ipfs_url"`
 	NeedPay    bool   `json:"need_pay"`
 }

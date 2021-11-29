@@ -62,7 +62,13 @@ func UnlockPaymentByDao() error {
 			parm.DealId = strconv.FormatInt(v.DealId, 10)
 			parm.Amount = big.NewInt(0)
 			parm.Recipient = common.HexToAddress(daoEventLogList[0].Recipient)
-			parm.OrderId = v.OrderId
+			parm.OrderId = ""
+			/*parm := goBind.IPaymentMinimalunlockPaymentParam{}
+			parm.Id = "12321434534lkdlfg"
+			parm.DealId ="1234"
+			parm.Amount = big.NewInt(0)
+			parm.Recipient = common.HexToAddress(daoEventLogList[0].Recipient)
+			parm.OrderId = ""*/
 			err = doUnlockPaymentOnContract(daoEventLogList[0], parm)
 			if err != nil {
 				logs.GetLogger().Error(err)

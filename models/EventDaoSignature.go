@@ -4,7 +4,6 @@ import (
 	"payment-bridge/common/constants"
 	"payment-bridge/database"
 	"payment-bridge/logs"
-	"strconv"
 )
 
 type EventDaoSignature struct {
@@ -48,13 +47,15 @@ func FindDaoEventLog(whereCondition interface{}, orderCondition, limit, offset s
 }
 
 func GetDaoSignatureEventsSholdBeUnlock(threshHold uint8) ([]*DaoSignatureResult, error) {
+	sql := " select * from ( " +
+		" SELECT payload_cid,deal_id,count(*) as threshold FROM event_dao_signature " +
+		" WHERE (signature_unlock_status = '0' and deal_id > 0 ) " +
+		" GROUP BY payload_cid,deal_id HAVING (threshold >=2) " +
+		" ) a  where a.deal_id  in ( " +
+		" 	select distinct deal_id from event_dao_signature where signature_unlock_status=0 ) "
 	db := database.GetDB()
 	var models []*DaoSignatureResult
-	daoEventLog := EventDaoSignature{}
-	err := db.Model(daoEventLog).Select("payload_cid,deal_id,count(*) as threshold").
-		Where("signature_unlock_status = '0' and deal_id > 0 ").
-		Group("payload_cid,deal_id").
-		Having("threshold >=" + strconv.Itoa(int(threshHold))).Scan(&models).Error
+	err := db.Raw(sql).Scan(&models).Limit(constants.DEFAULT_SELECT_LIMIT).Offset(0).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err

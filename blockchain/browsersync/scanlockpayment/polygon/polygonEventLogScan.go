@@ -64,13 +64,13 @@ func ScanEventFromChainAndSaveDataToDbForPolygon() {
 			if startScanBlockNo > blockNoCurrent.Int64() {
 				break
 			}
-			err = ScanPolygonLockPaymentEventFromChainAndSaveEventLogData(start, end)
+			err = ScanPolygonLockPaymentEventFromChainAndSaveEventLogData(start-1, end+1)
 			if err != nil {
 				logs.GetLogger().Error(err)
 				continue
 			}
 
-			err = ScanDaoEventFromChainAndSaveEventLogData(start, end)
+			err = ScanDaoEventFromChainAndSaveEventLogData(start-1, end+1)
 			if err != nil {
 				logs.GetLogger().Error(err)
 				continue

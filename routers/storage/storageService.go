@@ -79,12 +79,12 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 	logs.GetLogger().Info("car files created in ", carDir, "payload_cid=", fileList[0].DataCid)
 
 	uploadUrl := utils.UrlJoin(config.GetConfig().IpfsServer.UploadUrl, "api/v0/add?stream-channels=true&pin=true")
-	fileHashInIpfs, err := utils.HttpUploadFileByStream(uploadUrl, srcFilepath)
+	ipfsCid, err := utils.HttpUploadFileByStream(uploadUrl, srcFilepath)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return "", "", ifPayloadCidExist, err
 	}
-	filePathInIpfs := config.GetConfig().IpfsServer.UploadUrl + constants.IPFS_URL_PREFIX_BEFORE_HASH + fileHashInIpfs
+	filePathInIpfs := config.GetConfig().IpfsServer.UploadUrl + constants.IPFS_URL_PREFIX_BEFORE_HASH + ipfsCid
 
 	dealList, err := models.FindDealFileList(&models.DealFile{PayloadCid: fileList[0].DataCid}, "create_at desc", "10", "0")
 	if len(dealList) > 0 {
@@ -109,7 +109,7 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 			logs.GetLogger().Error(err)
 			return "", "", ifPayloadCidExist, err
 		}
-		return fileList[0].DataCid, filePathInIpfs, ifPayloadCidExist, nil
+		return fileList[0].DataCid, ipfsCid, ifPayloadCidExist, nil
 	}
 }
 

@@ -112,11 +112,11 @@ func GetDealListFromFilink(c *gin.Context) {
 		errMsg := "deal id can not be 0"
 		err = errors.New(errMsg)
 		logs.GetLogger().Error(err)
-		c.JSON(http.StatusOK, common.CreateSuccessResponse(gin.H{
-			"deal":  gin.H{},
-			"found": gin.H{},
-			"dao":   gin.H{},
-		}))
+		if err != nil {
+			logs.GetLogger().Error(err)
+			c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAM_TYPE_ERROR_CODE, errorinfo.HTTP_REQUEST_PARAM_TYPE_ERROR_MSG+": "+errMsg))
+			return
+		}
 		return
 	}
 

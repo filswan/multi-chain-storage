@@ -218,7 +218,7 @@ func UploadFileToIpfs(c *gin.Context) {
 		logs.GetLogger().Info("----------------------------payload_cid: ", payloadCid, "-----------------------------")
 		uploadResult.PayloadCid = payloadCid
 		uploadResult.NeedPay = !ifPayLoadCid
-		uploadResult.IpfsCid = ipfsCid
+		uploadResult.IpfsUrl = ipfsCid
 		c.JSON(http.StatusOK, common.CreateSuccessResponse(uploadResult))
 		return
 	} else {
@@ -373,6 +373,6 @@ func GetDealListFromSwan(c *gin.Context) {
 
 type uploadResult struct {
 	PayloadCid string `json:"payload_cid"`
-	IpfsCid    string `json:"ipfs_cid"`
+	IpfsUrl    string `json:"ipfs_url"`
 	NeedPay    bool   `json:"need_pay"`
 }

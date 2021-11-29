@@ -26,10 +26,10 @@ func SendDealManager(router *gin.RouterGroup) {
 	router.GET("/deal/detail/:deal_id", GetDealListFromFilink)
 	//router.GET("/dao/signature/deal/:deal_id", GetDealListForDaoByDealId)
 	router.GET("/dao/signature/deals", GetDealListForDaoToSign)
-	router.PUT("/dao/signature/deals", RecordDealListThatHaveBennSignedByDao)
+	router.PUT("/dao/signature/deals", RecordDealListThatHaveBeenSignedByDao)
 }
 
-func RecordDealListThatHaveBennSignedByDao(c *gin.Context) {
+func RecordDealListThatHaveBeenSignedByDao(c *gin.Context) {
 	var dealIdList DealIdList
 	err := c.BindJSON(&dealIdList)
 	if err != nil {
@@ -105,7 +105,18 @@ func GetDealListFromFilink(c *gin.Context) {
 	dealIdIntValue, err := strconv.Atoi(dealId)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_CODE, errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_MSG))
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAM_TYPE_ERROR_CODE, errorinfo.HTTP_REQUEST_PARAM_TYPE_ERROR_MSG))
+		return
+	}
+	if strings.Trim(dealId, " ") == "0" {
+		errMsg := "deal id can not be 0"
+		err = errors.New(errMsg)
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusOK, common.CreateSuccessResponse(gin.H{
+			"deal":  gin.H{},
+			"found": gin.H{},
+			"dao":   gin.H{},
+		}))
 		return
 	}
 

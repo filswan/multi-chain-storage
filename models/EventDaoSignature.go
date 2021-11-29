@@ -12,17 +12,16 @@ type EventDaoSignature struct {
 	TxHash                string `json:"tx_hash"`
 	Recipient             string `json:"recipient"`
 	PayloadCid            string `json:"payload_cid"`
-	OrderId               string `json:"order_id"`
-	DealCid               string `json:"deal_cid"`
-	Cost                  string `json:"cost"`
-	DaoAddress            string `json:"dao_address"`
+	DealId                int64  `json:"deal_id"`
 	DaoPassTime           string `json:"dao_pass_time"`
 	BlockNo               uint64 `json:"block_no"`
 	BlockTime             string `json:"block_time"`
 	Status                bool   `json:"status"`
 	NetworkId             int64  `json:"network_id"`
 	CoinId                int64  `json:"coin_id"`
+	DaoAddress            string `json:"dao_address"`
 	SignatureUnlockStatus string `json:"signature_unlock_status"`
+	TxHashUnlock          string `json:"tx_hash_unlock"`
 }
 
 type DaoSignatureResult struct {
@@ -30,6 +29,7 @@ type DaoSignatureResult struct {
 	PayloadCid string `json:"payload_cid"`
 	OrderId    string `json:"order_id"`
 	DealCid    string `json:"deal_cid"`
+	DealId     int64  `json:"deal_cid"`
 	Threshold  string `json:"threshold"`
 }
 
@@ -51,9 +51,9 @@ func GetDaoSignatureEventsSholdBeUnlock(threshHold uint8) ([]*DaoSignatureResult
 	db := database.GetDB()
 	var models []*DaoSignatureResult
 	daoEventLog := EventDaoSignature{}
-	err := db.Model(daoEventLog).Select("payload_cid,order_id,deal_cid,count(*) as threshold").
-		Where("signature_unlock_status = '0'").
-		Group("payload_cid,order_id,deal_cid").
+	err := db.Model(daoEventLog).Select("payload_cid,deal_id,count(*) as threshold").
+		Where("signature_unlock_status = '0' and deal_id > 0 ").
+		Group("payload_cid,deal_id").
 		Having("threshold >=" + strconv.Itoa(int(threshHold))).Scan(&models).Error
 	if err != nil {
 		logs.GetLogger().Error(err)

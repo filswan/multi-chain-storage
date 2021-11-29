@@ -36,6 +36,7 @@ func ScanDaoEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) erro
 		Addresses: []common.Address{
 			contractAddress,
 		},
+		Topics: [][]common.Hash{{common.HexToHash(contractFunctionSignature)}},
 	}
 
 	//logs, err := client.FilterLogs(context.Background(), query)
@@ -63,6 +64,11 @@ func ScanDaoEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) erro
 	for _, vLog := range logsInChain {
 		//if log have this contractor function signer
 		if vLog.Topics[0].Hex() == contractFunctionSignature {
+			dataList, err := contractAbi.Unpack("SignTransaction", vLog.Data)
+			if err != nil {
+				logs.GetLogger().Error(err)
+			}
+			logs.GetLogger().Info(dataList)
 			eventList, err := models.FindDaoEventLog(&models.EventDaoSignature{TxHash: vLog.TxHash.Hex(), BlockNo: vLog.BlockNumber}, "id desc", "10", "0")
 			if err != nil {
 				logs.GetLogger().Error(err)
@@ -109,11 +115,14 @@ func ScanDaoEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) erro
 				event.BlockNo = vLog.BlockNumber
 				event.TxHash = vLog.TxHash.Hex()
 				event.PayloadCid = dataList[0].(string)
-				event.OrderId = dataList[1].(string)
-				event.DealCid = dataList[2].(string)
-				event.Recipient = dataList[3].(common.Address).String()
-				event.Cost = dataList[4].(*big.Int).String()
-				event.Status = dataList[5].(bool)
+				dealId, err := strconv.ParseInt(dataList[1].(string), 10, 64)
+				if err != nil {
+					logs.GetLogger().Error(err)
+				} else {
+					event.DealId = dealId
+				}
+				event.Recipient = dataList[2].(common.Address).String()
+				event.Status = true
 				event.SignatureUnlockStatus = constants.SIGNATURE_DEFAULT_VALUE
 
 				err = database.SaveOneWithTransaction(event)

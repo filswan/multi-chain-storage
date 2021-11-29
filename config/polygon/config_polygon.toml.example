@@ -3,7 +3,6 @@
 rpc_url = "https://polygon-mumbai.g.alchemy.com/v2/86HeefA3O9EF22t2NTLbmcpfN0hb9vlv"
 payment_contract_address = ""
 contract_lock_function_signature = ""
-payment_unlock_contract_address = "" #this is usdc erc20 address
 contract_unlock_function_signature = ""
 dao_swan_oracle_address = ""
 dao_event_function_signature = ""

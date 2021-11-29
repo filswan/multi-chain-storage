@@ -8,19 +8,17 @@ import (
 )
 
 type Configuration struct {
-	Port                        string       `toml:"port"`
-	Database                    database     `toml:"database"`
-	Dev                         bool         `toml:"dev"`
-	SwanApi                     swanApi      `toml:"swan_api"`
-	IpfsServer                  ipfsServer   `toml:"ipfs_server"`
-	Lotus                       lotus        `toml:"lotus"`
-	SwanTask                    swanTask     `toml:"swan_task"`
-	ScheduleRule                ScheduleRule `toml:"schedule_rule"`
-	AdminWalletOnPolygon        string       `toml:"admin_wallet_on_polygon"`
-	SwanDaoOracleAddress        string       `toml:"swan_dao_oracle_address"`
-	SwanPaymentAddressOnPolygon string       `toml:"swan_payment_address_on_polygon"`
-	FileCoinWallet              string       `toml:"file_coin_wallet"`
-	FilinkUrl                   string       `toml:"filink_url"`
+	Port                 string       `toml:"port"`
+	Database             database     `toml:"database"`
+	Dev                  bool         `toml:"dev"`
+	SwanApi              swanApi      `toml:"swan_api"`
+	IpfsServer           ipfsServer   `toml:"ipfs_server"`
+	Lotus                lotus        `toml:"lotus"`
+	SwanTask             swanTask     `toml:"swan_task"`
+	ScheduleRule         ScheduleRule `toml:"schedule_rule"`
+	AdminWalletOnPolygon string       `toml:"admin_wallet_on_polygon"`
+	FileCoinWallet       string       `toml:"file_coin_wallet"`
+	FilinkUrl            string       `toml:"filink_url"`
 }
 
 type database struct {
@@ -100,7 +98,6 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 	requiredFields := [][]string{
 		{"port"},
 		{"admin_wallet_on_polygon"},
-		{"swan_payment_address_on_polygon"},
 		{"file_coin_wallet"},
 		{"filink_url"},
 

@@ -102,3 +102,13 @@ type IpfsReturn struct {
 	Hash string `json:"Hash"`
 	Size string `json:"Size"`
 }
+
+type DaoInfoResult struct {
+	DaoName         string `json:"dao_name"`
+	DaoAddress      string `json:"dao_address"`
+	OrderIndex      string `json:"order_index"`
+	DealId          int64  `json:"deal_id"`
+	DaoPassTime     string `json:"dao_pass_time"`
+	PayloadCid      string `json:"payload_cid"`
+	DaoAddressEvent string `json:"dao_address_event"`
+}

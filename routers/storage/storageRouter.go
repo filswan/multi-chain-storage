@@ -118,7 +118,7 @@ func GetDealListFromFilink(c *gin.Context) {
 
 	URL := c.Request.URL.Query()
 	var payloadCid = URL.Get("payload_cid")
-	if strings.Trim(payloadCid, " ") == "0" {
+	if strings.Trim(payloadCid, " ") == "" {
 		errMsg := "payload_cid can not be null"
 		logs.GetLogger().Error(errMsg)
 		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAM_TYPE_ERROR_CODE, errorinfo.HTTP_REQUEST_PARAM_TYPE_ERROR_MSG+":"+errMsg))

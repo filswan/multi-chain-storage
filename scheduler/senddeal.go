@@ -23,6 +23,7 @@ import (
 	"payment-bridge/routers/billing"
 	"payment-bridge/routers/storage"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -231,10 +232,10 @@ func GetMinerPriceInOtherCoin(minerFid string, rate int64, verifiedType string) 
 	}
 	//minerPrice, minerVerifiedPrice, _, _ := lotusClient.LotusGetMinerConfig(minerFid)
 	var unitPrice decimal.Decimal
-	if verifiedType == constants.LOTUS_TASK_TYPE_REGULAR {
-		unitPrice = minerConfig.Price
-	} else {
+	if strings.Trim(verifiedType, " ") == constants.LOTUS_TASK_TYPE_VERIFIED {
 		unitPrice = minerConfig.VerifiedPrice
+	} else {
+		unitPrice = minerConfig.Price
 	}
 	logs.GetLogger().Info("miner price is ", unitPrice.IntPart())
 	finalPrice := decimal.NewFromFloat(float64(rate)).Mul(unitPrice)

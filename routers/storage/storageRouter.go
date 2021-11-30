@@ -104,8 +104,7 @@ func GetDealListFromFilink(c *gin.Context) {
 	dealId := c.Params.ByName("deal_id")
 	if strings.Trim(dealId, " ") == "" {
 		errMsg := "deal id can not be null"
-		err := errors.New(errMsg)
-		logs.GetLogger().Error(err)
+		logs.GetLogger().Error(errMsg)
 		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAM_TYPE_ERROR_CODE, errorinfo.HTTP_REQUEST_PARAM_TYPE_ERROR_MSG+":"+errMsg))
 		return
 	}
@@ -121,8 +120,7 @@ func GetDealListFromFilink(c *gin.Context) {
 	var payloadCid = URL.Get("payload_cid")
 	if strings.Trim(payloadCid, " ") == "0" {
 		errMsg := "payload_cid can not be null"
-		err = errors.New(errMsg)
-		logs.GetLogger().Error(err)
+		logs.GetLogger().Error(errMsg)
 		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAM_TYPE_ERROR_CODE, errorinfo.HTTP_REQUEST_PARAM_TYPE_ERROR_MSG+":"+errMsg))
 		return
 	}

@@ -63,4 +63,9 @@ const (
 
 	IPFS_URL_PREFIX_BEFORE_HASH = "/ipfs/"
 	IPFS_File_PINNED_STATUS     = "Pinned"
+
+	LOTUS_TASK_TYPE_VERIFIED = "verified"
+	LOTUS_TASK_TYPE_REGULAR  = "regular"
+
+	LOTUS_PRICE_MULTIPLE_1E18 = 1e18 // 10^18
 )

@@ -317,7 +317,6 @@ func GetDaoSignatureInfoByDealId(dealId int64) ([]*DaoSignResult, error) {
 }
 
 func GetLockFoundInfoByPayloadCid(payloadCid string) (*LockFound, error) {
-
 	lockEventList, err := models.FindEventLockPayment(&models.EventLockPayment{PayloadCid: payloadCid}, "", "10", "0")
 	if err != nil {
 		logs.GetLogger().Error(err)

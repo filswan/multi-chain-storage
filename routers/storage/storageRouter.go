@@ -102,20 +102,30 @@ func GetDealListFromFilink(c *gin.Context) {
 		return
 	}
 	dealId := c.Params.ByName("deal_id")
-	dealIdIntValue, err := strconv.Atoi(dealId)
-	if err != nil {
+	if strings.Trim(dealId, " ") == "" {
+		errMsg := "deal id can not be null"
+		err := errors.New(errMsg)
 		logs.GetLogger().Error(err)
-		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAM_TYPE_ERROR_CODE, errorinfo.HTTP_REQUEST_PARAM_TYPE_ERROR_MSG))
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAM_TYPE_ERROR_CODE, errorinfo.HTTP_REQUEST_PARAM_TYPE_ERROR_MSG+":"+errMsg))
 		return
 	}
-	if strings.Trim(dealId, " ") == "0" {
-		errMsg := "deal id can not be 0"
-		err = errors.New(errMsg)
+	dealIdIntValue, err := strconv.Atoi(dealId)
+	if err != nil {
+		errMsg := "deal_id must be a number"
 		logs.GetLogger().Error(err)
-		c.JSON(http.StatusOK, common.CreateSuccessResponse(""))
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAM_TYPE_ERROR_CODE, errorinfo.HTTP_REQUEST_PARAM_TYPE_ERROR_MSG+":"+errMsg))
 		return
 	}
 
+	URL := c.Request.URL.Query()
+	var payloadCid = URL.Get("payload_cid")
+	if strings.Trim(payloadCid, " ") == "0" {
+		errMsg := "payload_cid can not be null"
+		err = errors.New(errMsg)
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAM_TYPE_ERROR_CODE, errorinfo.HTTP_REQUEST_PARAM_TYPE_ERROR_MSG+":"+errMsg))
+		return
+	}
 	url := config.GetConfig().FilinkUrl
 	parameter := new(filinkParams)
 	//todo
@@ -144,21 +154,17 @@ func GetDealListFromFilink(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARSER_STRUCT_TO_REQUEST_ERROR_CODE, errorinfo.HTTP_REQUEST_PARSER_STRUCT_TO_REQUEST_ERROR_MSG))
 		return
 	}
-	daoSignList, err := GetDaoSignatureInfoByDealId(int64(dealIdIntValue))
+	daoSignList, err := GetDaoSignEventByDealId(int64(dealIdIntValue))
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE, errorinfo.GET_RECORD_lIST_ERROR_CODE+": get dao info from db occurred error"))
 		return
 	}
-	foundInfoList, err := GetLockFoundInfoByDealId(int64(dealIdIntValue))
+	foundInfo, err := GetLockFoundInfoByPayloadCid(payloadCid)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE, errorinfo.GET_RECORD_lIST_ERROR_CODE+": get lock found info from db occurred error"))
 		return
-	}
-	var foundInfo *LockFound
-	if len(foundInfoList) > 0 {
-		foundInfo = foundInfoList[0]
 	}
 	c.JSON(http.StatusOK, common.CreateSuccessResponse(gin.H{
 		"deal":  result.Data.Data.Deal,
@@ -208,7 +214,7 @@ func UploadFileToIpfs(c *gin.Context) {
 	}
 	durationInt = durationInt * 24 * 60 * 60 / 30
 
-	payloadCid, ipfsCid, ifPayLoadCid, err := SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c, file, durationInt, userId)
+	payloadCid, ipfsDownloadPath, ifPayLoadCid, err := SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c, file, durationInt, userId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.SENDING_DEAL_ERROR_CODE, errorinfo.SENDING_DEAL_ERROR_MSG))
 		return
@@ -218,7 +224,7 @@ func UploadFileToIpfs(c *gin.Context) {
 		logs.GetLogger().Info("----------------------------payload_cid: ", payloadCid, "-----------------------------")
 		uploadResult.PayloadCid = payloadCid
 		uploadResult.NeedPay = !ifPayLoadCid
-		uploadResult.IpfsUrl = ipfsCid
+		uploadResult.IpfsUrl = ipfsDownloadPath
 		c.JSON(http.StatusOK, common.CreateSuccessResponse(uploadResult))
 		return
 	} else {

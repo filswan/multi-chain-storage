@@ -1,9 +1,9 @@
 package storage
 
 import (
-	"encoding/json"
 	clientmodel "github.com/filswan/go-swan-client/model"
 	"github.com/filswan/go-swan-client/subcommand"
+	"github.com/filswan/go-swan-lib/client/ipfs"
 	"github.com/filswan/go-swan-lib/client/swan"
 	libconstants "github.com/filswan/go-swan-lib/constants"
 	libmodel "github.com/filswan/go-swan-lib/model"
@@ -80,20 +80,20 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 	logs.GetLogger().Info("car files created in ", carDir, "payload_cid=", fileList[0].DataCid)
 
 	uploadUrl := utils.UrlJoin(config.GetConfig().IpfsServer.UploadUrl, "api/v0/add?stream-channels=true&pin=true")
-	ipfsObjectString, err := utils.HttpUploadFileByStream(uploadUrl, srcFilepath)
+	ipfsFileHash, err := ipfs.IpfsUploadFileByWebApi(uploadUrl, srcFilepath)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return "", "", ifPayloadCidExist, err
 	}
 
-	var ipfsReturn IpfsReturn
-	err = json.Unmarshal([]byte(ipfsObjectString), &ipfsReturn)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return "", "", ifPayloadCidExist, err
-	}
+	/*	var ipfsReturn IpfsReturn
+		err = json.Unmarshal([]byte(ipfsObjectString), &ipfsReturn)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return "", "", ifPayloadCidExist, err
+		}*/
 
-	filePathInIpfs := config.GetConfig().IpfsServer.UploadUrl + constants.IPFS_URL_PREFIX_BEFORE_HASH + ipfsReturn.Hash
+	filePathInIpfs := config.GetConfig().IpfsServer.DownloadUrlPrefix + constants.IPFS_URL_PREFIX_BEFORE_HASH + *ipfsFileHash
 
 	dealList, err := models.FindDealFileList(&models.DealFile{PayloadCid: fileList[0].DataCid}, "create_at desc", "10", "0")
 	if len(dealList) > 0 {
@@ -118,7 +118,7 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 			logs.GetLogger().Error(err)
 			return "", "", ifPayloadCidExist, err
 		}
-		return fileList[0].DataCid, ipfsReturn.Hash, ifPayloadCidExist, nil
+		return fileList[0].DataCid, filePathInIpfs, ifPayloadCidExist, nil
 	}
 }
 
@@ -316,19 +316,21 @@ func GetDaoSignatureInfoByDealId(dealId int64) ([]*DaoSignResult, error) {
 	return results, nil
 }
 
-func GetLockFoundInfoByDealId(dealId int64) ([]*LockFound, error) {
-	finalSql := "select df.payload_cid,df.client_wallet_address,df.create_at,lp.locked_fee from deal_file df,event_lock_payment lp " +
-		" where df.payload_cid = lp.payload_cid" +
-		" and df.deal_id=" + strconv.FormatInt(dealId, 10)
+func GetLockFoundInfoByPayloadCid(payloadCid string) (*LockFound, error) {
 
-	var lockFoundResult []*LockFound
-	err := database.GetDB().Raw(finalSql).Scan(&lockFoundResult).Limit(0).Offset(10).Error
+	lockEventList, err := models.FindEventLockPayment(&models.EventLockPayment{PayloadCid: payloadCid}, "", "10", "0")
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
 
 	}
-	return lockFoundResult, nil
+	lockFound := new(LockFound)
+	if len(lockEventList) > 0 {
+		lockFound.PayloadCid = lockEventList[0].PayloadCid
+		lockFound.LockedFee = lockEventList[0].LockedFee
+		lockFound.CreateAt = lockEventList[0].CreateAt
+	}
+	return lockFound, nil
 }
 
 func GetShoulBeSignDealListFromDB() ([]*DealForDaoSignResult, error) {
@@ -343,4 +345,19 @@ func GetShoulBeSignDealListFromDB() ([]*DealForDaoSignResult, error) {
 
 	}
 	return dealForDaoSignResultList, nil
+}
+
+func GetDaoSignEventByDealId(dealId int64) ([]*DaoInfoResult, error) {
+	finalSql := " select * from( " +
+		" (select dao_name, dao_address,order_index from dao_info order by order_index asc)) as d  left  join " +
+		" (select deal_id,dao_pass_time,if(deal_id > 0,1,2) as status,dao_address as dao_address_event,payload_cid  from event_dao_signature where deal_id = " + strconv.FormatInt(dealId, 10) + " ) as a " +
+		" on d.dao_address=a.dao_address_event"
+
+	var daoInfoResult []*DaoInfoResult
+	err := database.GetDB().Raw(finalSql).Scan(&daoInfoResult).Limit(0).Offset(constants.DEFAULT_SELECT_LIMIT).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+	return daoInfoResult, nil
 }

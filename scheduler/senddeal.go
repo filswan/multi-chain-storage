@@ -13,16 +13,12 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"payment-bridge/blockchain/browsersync/scanlockpayment/polygon"
 	"payment-bridge/common/constants"
 	"payment-bridge/common/httpClient"
 	"payment-bridge/config"
 	"payment-bridge/database"
 	"payment-bridge/logs"
 	"payment-bridge/models"
-	"payment-bridge/routers/billing"
-	"payment-bridge/routers/storage"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -57,55 +53,28 @@ func DoSendDealScheduler() error {
 			continue
 		}
 		if taskInfo.Data.Task.Status == constants.TASK_STATUS_ASSIGNED {
-			//filecoin's unit price in usdc
-			filPriceInUsdc, err := billing.GetWfilPriceFromSushiPrice(polygon.WebConn.ConnWeb, "1")
+			logs.GetLogger().Println("################################## start to send deal ##################################")
+			logs.GetLogger().Println(" task uuid : ", v.TaskUuid)
+			v.SendDealStatus = constants.SEND_DEAL_STATUS_SUCCESS
+			v.MinerFid = taskInfo.Data.Miner.MinerID
+			v.ClientWalletAddress = config.GetConfig().FileCoinWallet
+			dealCid, err := sendDeal(v.TaskUuid, v)
 			if err != nil {
 				logs.GetLogger().Error(err)
-				continue
-			}
-			//miner's unit price in usdc
-			unitPriceOfMinerInUsdcForPerEpoach, err := GetMinerPerEpoachPriceInOtherCoin(taskInfo.Data.Miner.MinerID, filPriceInUsdc.Int64(), taskInfo.Data.Task.Type, v.CarFileSize)
-			if err != nil {
-				logs.GetLogger().Error(err)
-				continue
-			}
-			//estimated total price of this deal
-			finalPreDealPrice := unitPriceOfMinerInUsdcForPerEpoach * int64(v.Duration)
-			lockFound, err := storage.GetLockFoundInfoByPayloadCid(v.PayloadCid)
-			if err != nil {
-				logs.GetLogger().Error(err)
-				continue
-			}
-			//locked fee of this deal
-			lockedFee, err := strconv.ParseInt(lockFound.LockedFee, 10, 64)
-			if err != nil {
-				logs.GetLogger().Error(err)
-				continue
-			}
-			if lockedFee >= finalPreDealPrice {
-				logs.GetLogger().Println("################################## start to send deal ##################################")
-				logs.GetLogger().Println(" task uuid : ", v.TaskUuid)
-				v.SendDealStatus = constants.SEND_DEAL_STATUS_SUCCESS
-				v.MinerFid = taskInfo.Data.Miner.MinerID
-				v.ClientWalletAddress = config.GetConfig().FileCoinWallet
-				dealCid, err := sendDeal(v.TaskUuid, v)
-				if err != nil {
-					logs.GetLogger().Error(err)
-					v.SendDealStatus = constants.SEND_DEAL_STATUS_FAIL
-					err = database.SaveOne(v)
-					if err != nil {
-						logs.GetLogger().Error(err)
-						continue
-					}
-					continue
-				}
-				logs.GetLogger().Println("################################## end to send deal ##################################")
-				v.DealCid = dealCid
+				v.SendDealStatus = constants.SEND_DEAL_STATUS_FAIL
 				err = database.SaveOne(v)
 				if err != nil {
 					logs.GetLogger().Error(err)
 					continue
 				}
+				continue
+			}
+			logs.GetLogger().Println("################################## end to send deal ##################################")
+			v.DealCid = dealCid
+			err = database.SaveOne(v)
+			if err != nil {
+				logs.GetLogger().Error(err)
+				continue
 			}
 		}
 	}
@@ -188,17 +157,13 @@ func sendDeal(taskUuid string, file *models.DealFile) (string, error) {
 	return carFiles[0].DealCid, nil
 }
 
-func CheckIfHaveLockPayment(payloadCid string) (bool, error) {
+func CheckIfHaveLockPayment(payloadCid string) ([]*models.EventLockPayment, error) {
 	polygonEventList, err := models.FindEventLockPayment(&models.EventLockPayment{PayloadCid: payloadCid}, "id desc", "", "0")
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return false, err
+		return nil, err
 	}
-	if len(polygonEventList) > 0 {
-		return true, nil
-	} else {
-		return false, nil
-	}
+	return polygonEventList, nil
 }
 
 func GetTaskStatusByUuid(taskUuid string) (*TaskDetailResult, error) {

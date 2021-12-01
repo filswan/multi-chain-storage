@@ -8,12 +8,14 @@ import (
 	libmodel "github.com/filswan/go-swan-lib/model"
 	libutils "github.com/filswan/go-swan-lib/utils"
 	"github.com/robfig/cron"
+	"github.com/shopspring/decimal"
 	"path/filepath"
 	"payment-bridge/common/constants"
 	"payment-bridge/config"
 	"payment-bridge/database"
 	"payment-bridge/logs"
 	"payment-bridge/models"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -44,12 +46,17 @@ func DoCreateTask() error {
 	}
 	for _, v := range dealList {
 		//check if user have lock payment
-		havePaid, err := CheckIfHaveLockPayment(v.PayloadCid)
+		lockPaymentList, err := CheckIfHaveLockPayment(v.PayloadCid)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			continue
 		}
-		if havePaid {
+		if len(lockPaymentList) > 0 {
+			lockedFee, err := strconv.ParseInt(lockPaymentList[0].LockedFee, 10, 64)
+			if err != nil {
+				logs.GetLogger().Error(err)
+				continue
+			}
 			if strings.Trim(v.TaskUuid, " ") == "" {
 				confUpload := &clientmodel.ConfUpload{
 					StorageServerType:           libconstants.STORAGE_SERVER_TYPE_IPFS_SERVER,
@@ -71,16 +78,17 @@ func DoCreateTask() error {
 				startEpoch := libutils.GetCurrentEpoch() + (startEpochIntervalHours+1)*libconstants.EPOCH_PER_HOUR
 				fmt.Println(filepath.Dir(v.CarFilePath))
 				confTask := &clientmodel.ConfTask{
-					SwanApiUrl:                 config.GetConfig().SwanApi.ApiUrl,
-					SwanToken:                  "",
-					PublicDeal:                 true,
-					SwanApiKey:                 config.GetConfig().SwanApi.ApiKey,
-					SwanAccessToken:            config.GetConfig().SwanApi.AccessToken,
-					BidMode:                    libconstants.TASK_BID_MODE_AUTO,
-					VerifiedDeal:               config.GetConfig().SwanTask.VerifiedDeal,
-					OfflineMode:                false,
-					FastRetrieval:              config.GetConfig().SwanTask.FastRetrieval,
-					MaxPrice:                   config.GetConfig().SwanTask.MaxPrice,
+					SwanApiUrl:      config.GetConfig().SwanApi.ApiUrl,
+					SwanToken:       "",
+					PublicDeal:      true,
+					SwanApiKey:      config.GetConfig().SwanApi.ApiKey,
+					SwanAccessToken: config.GetConfig().SwanApi.AccessToken,
+					BidMode:         libconstants.TASK_BID_MODE_AUTO,
+					VerifiedDeal:    config.GetConfig().SwanTask.VerifiedDeal,
+					OfflineMode:     false,
+					FastRetrieval:   config.GetConfig().SwanTask.FastRetrieval,
+					//MaxPrice:                 config.GetConfig().SwanTask.MaxPrice,
+					MaxPrice:                   decimal.NewFromInt(lockedFee),
 					StorageServerType:          libconstants.STORAGE_SERVER_TYPE_IPFS_SERVER,
 					WebServerDownloadUrlPrefix: config.GetConfig().IpfsServer.DownloadUrlPrefix,
 					ExpireDays:                 config.GetConfig().SwanTask.ExpireDays,

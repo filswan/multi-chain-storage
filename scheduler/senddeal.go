@@ -5,11 +5,9 @@ import (
 	"fmt"
 	clientmodel "github.com/filswan/go-swan-client/model"
 	"github.com/filswan/go-swan-client/subcommand"
-	"github.com/filswan/go-swan-lib/client/lotus"
 	libconstants "github.com/filswan/go-swan-lib/constants"
 	libutils "github.com/filswan/go-swan-lib/utils"
 	"github.com/robfig/cron"
-	"github.com/shopspring/decimal"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -19,7 +17,6 @@ import (
 	"payment-bridge/database"
 	"payment-bridge/logs"
 	"payment-bridge/models"
-	"strings"
 	"time"
 )
 
@@ -181,33 +178,6 @@ func GetTaskStatusByUuid(taskUuid string) (*TaskDetailResult, error) {
 		return nil, err
 	}
 	return taskInfo, nil
-}
-
-func GetMinerPerEpoachPriceInOtherCoin(minerFid string, rate int64, verifiedType string, carFileSize int64) (int64, error) {
-	lotusClient, err := lotus.LotusGetClient(config.GetConfig().Lotus.ApiUrl, config.GetConfig().Lotus.AccessToken)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return 0, err
-	}
-
-	minerConfig, err := lotusClient.LotusClientQueryAsk(minerFid)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return 0, err
-	}
-	//minerPrice, minerVerifiedPrice, _, _ := lotusClient.LotusGetMinerConfig(minerFid)
-	var unitPriceMiner decimal.Decimal
-	if strings.Trim(verifiedType, " ") == constants.LOTUS_TASK_TYPE_VERIFIED {
-		unitPriceMiner = minerConfig.VerifiedPrice
-	} else {
-		unitPriceMiner = minerConfig.Price
-	}
-	_, sectorSize := libutils.CalculatePieceSize(carFileSize)
-
-	unitPriceMinerWithFileSize := libutils.CalculateRealCost(sectorSize, unitPriceMiner)
-	finalPrice := decimal.NewFromFloat(float64(rate)).Mul(unitPriceMinerWithFileSize)
-	return finalPrice.IntPart(), nil
-
 }
 
 type TaskDetailResult struct {

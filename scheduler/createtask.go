@@ -4,7 +4,6 @@ import (
 	"fmt"
 	clientmodel "github.com/filswan/go-swan-client/model"
 	"github.com/filswan/go-swan-client/subcommand"
-	"github.com/filswan/go-swan-lib/client/lotus"
 	libconstants "github.com/filswan/go-swan-lib/constants"
 	libmodel "github.com/filswan/go-swan-lib/model"
 	libutils "github.com/filswan/go-swan-lib/utils"
@@ -71,7 +70,7 @@ func DoCreateTask() error {
 				logs.GetLogger().Error(err)
 				continue
 			}
-			fmt.Println(maxPrice)
+			logs.GetLogger().Println("payload cid ", v.PayloadCid, " max price is ", maxPrice)
 			if maxPrice.Cmp(config.GetConfig().SwanTask.MaxPrice) < 0 {
 				*maxPrice = config.GetConfig().SwanTask.MaxPrice
 			}
@@ -147,7 +146,7 @@ func GetMaxPriceForCreateTask(rate *big.Int, lockedFee int64, duration int, carF
 	return &maxPrice, nil
 }
 
-func GetMinerPerEpoachPriceInOtherCoin(minerFid string, rate *big.Int, verifiedType string, carFileSize int64) (int64, error) {
+/*func GetMinerPerEpoachPriceInOtherCoin(minerFid string, rate *big.Int, verifiedType string, carFileSize int64) (int64, error) {
 	lotusClient, err := lotus.LotusGetClient(config.GetConfig().Lotus.ApiUrl, config.GetConfig().Lotus.AccessToken)
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -172,7 +171,7 @@ func GetMinerPerEpoachPriceInOtherCoin(minerFid string, rate *big.Int, verifiedT
 	finalPrice := decimal.NewFromInt(rate.Int64()).Mul(unitPriceMinerWithFileSize)
 	return finalPrice.IntPart(), nil
 
-}
+}*/
 
 func updateTaskInfoToDB(taskinfoList []*libmodel.FileDesc, dealFile *models.DealFile) error {
 	dealFile.TaskUuid = taskinfoList[0].Uuid

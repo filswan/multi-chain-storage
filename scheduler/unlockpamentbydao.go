@@ -39,7 +39,7 @@ func DAOUnlockPaymentSchedule() {
 	c.Start()
 }
 func UnlockPaymentByDao() error {
-	threshHold, err := getThreshHold()
+	threshHold, err := GetThreshHold()
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
@@ -223,7 +223,7 @@ func saveUnlockEventLogToDB(logsInChain []*types.Log, recipient string) error {
 	return nil
 }
 
-func getThreshHold() (uint8, error) {
+func GetThreshHold() (uint8, error) {
 	daoAddress := common.HexToAddress(polygon.GetConfig().PolygonMainnetNode.DaoSwanOracleAddress)
 	client := polygon.WebConn.ConnWeb
 

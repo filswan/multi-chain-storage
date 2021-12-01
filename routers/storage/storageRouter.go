@@ -152,15 +152,17 @@ func GetDealListFromFilink(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARSER_STRUCT_TO_REQUEST_ERROR_CODE, errorinfo.HTTP_REQUEST_PARSER_STRUCT_TO_REQUEST_ERROR_MSG))
 		return
 	}
-	var daoSignList []*DaoInfoResult
-	if dealId == "0" {
-		daoSignList = nil
-	} else {
-		daoSignList, err = GetDaoSignEventByDealId(int64(dealIdIntValue))
-		if err != nil {
-			logs.GetLogger().Error(err)
-			c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE, errorinfo.GET_RECORD_lIST_ERROR_CODE+": get dao info from db occurred error"))
-			return
+
+	daoSignList, err := GetDaoSignEventByDealId(int64(dealIdIntValue))
+	if err != nil {
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE, errorinfo.GET_RECORD_lIST_ERROR_CODE+": get dao info from db occurred error"))
+		return
+	}
+	signedDaoCount := 0
+	for _, v := range daoSignList {
+		if strings.Trim(v.PayloadCid, " ") != "" {
+			signedDaoCount++
 		}
 	}
 	foundInfo, err := GetLockFoundInfoByPayloadCid(payloadCid)
@@ -169,10 +171,16 @@ func GetDealListFromFilink(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE, errorinfo.GET_RECORD_lIST_ERROR_CODE+": get lock found info from db occurred error"))
 		return
 	}
+	threshHold, err := GetThreshHold()
+	if err != nil {
+		logs.GetLogger().Error(err)
+	}
 	c.JSON(http.StatusOK, common.CreateSuccessResponse(gin.H{
-		"deal":  result.Data.Data.Deal,
-		"found": foundInfo,
-		"dao":   daoSignList,
+		"dao_thresh_hold":  threshHold,
+		"signed_dao_count": signedDaoCount,
+		"deal":             result.Data.Data.Deal,
+		"found":            foundInfo,
+		"dao":              daoSignList,
 	}))
 	return
 }

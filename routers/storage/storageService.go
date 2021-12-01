@@ -1,6 +1,9 @@
 package storage
 
 import (
+	"context"
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	common2 "github.com/ethereum/go-ethereum/common"
 	clientmodel "github.com/filswan/go-swan-client/model"
 	"github.com/filswan/go-swan-client/subcommand"
 	"github.com/filswan/go-swan-lib/client/ipfs"
@@ -12,6 +15,7 @@ import (
 	"mime/multipart"
 	"os"
 	"path/filepath"
+	"payment-bridge/blockchain/browsersync/scanlockpayment/polygon"
 	"payment-bridge/common"
 	"payment-bridge/common/constants"
 	"payment-bridge/common/utils"
@@ -19,7 +23,9 @@ import (
 	"payment-bridge/database"
 	"payment-bridge/logs"
 	"payment-bridge/models"
+	"payment-bridge/on-chain/goBind"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -347,9 +353,12 @@ func GetShoulBeSignDealListFromDB() ([]*DealForDaoSignResult, error) {
 }
 
 func GetDaoSignEventByDealId(dealId int64) ([]*DaoInfoResult, error) {
+	if dealId == 0 {
+		dealId = constants.FILE_BLOCK_NUMBER_MAX
+	}
 	finalSql := " select * from( " +
 		" (select dao_name, dao_address,order_index from dao_info order by order_index asc)) as d  left  join " +
-		" (select deal_id,dao_pass_time,if(deal_id > 0,1,2) as status,dao_address as dao_address_event,payload_cid  from event_dao_signature where deal_id = " + strconv.FormatInt(dealId, 10) + " ) as a " +
+		" (select deal_id,tx_hash,dao_pass_time,if(deal_id > 0,1,2) as status,dao_address as dao_address_event,payload_cid  from event_dao_signature where deal_id = " + strconv.FormatInt(dealId, 10) + " ) as a " +
 		" on d.dao_address=a.dao_address_event"
 
 	var daoInfoResult []*DaoInfoResult
@@ -359,4 +368,32 @@ func GetDaoSignEventByDealId(dealId int64) ([]*DaoInfoResult, error) {
 		return nil, err
 	}
 	return daoInfoResult, nil
+}
+
+func GetThreshHold() (uint8, error) {
+	daoAddress := common2.HexToAddress(polygon.GetConfig().PolygonMainnetNode.DaoSwanOracleAddress)
+	client := polygon.WebConn.ConnWeb
+
+	pk := os.Getenv("privateKeyOnPolygon")
+	if strings.HasPrefix(strings.ToLower(pk), "0x") {
+		pk = pk[2:]
+	}
+
+	callOpts := new(bind.CallOpts)
+	callOpts.From = daoAddress
+	callOpts.Context = context.Background()
+
+	daoOracleContractInstance, err := goBind.NewFilswanOracle(daoAddress, client)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return 0, err
+	}
+
+	threshHold, err := daoOracleContractInstance.GetThreshold(callOpts)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return 0, err
+	}
+	logs.GetLogger().Info("dao threshHold is : ", threshHold)
+	return threshHold, nil
 }

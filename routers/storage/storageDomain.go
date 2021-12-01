@@ -111,4 +111,6 @@ type DaoInfoResult struct {
 	DaoPassTime     string `json:"dao_pass_time"`
 	PayloadCid      string `json:"payload_cid"`
 	DaoAddressEvent string `json:"dao_address_event"`
+	TxHash          string `json:"tx_hash"`
+	Status          string `json:"status"`
 }

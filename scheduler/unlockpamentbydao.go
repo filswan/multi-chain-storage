@@ -27,7 +27,7 @@ import (
 func DAOUnlockPaymentSchedule() {
 	c := cron.New()
 	err := c.AddFunc(config.GetConfig().ScheduleRule.UnlockPaymentRule, func() {
-		log.Println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^dao signature unlock payment schedule is running at " + time.Now().Format("2006-01-02 15:04:05"))
+		log.Println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^unlock payment scheduler is running at " + time.Now().Format("2006-01-02 15:04:05"))
 		err := UnlockPaymentByDao()
 		if err != nil {
 			logs.GetLogger().Error(err)

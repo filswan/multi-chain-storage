@@ -64,13 +64,13 @@ func DoSendDealScheduler() error {
 				continue
 			}
 			//miner's unit price in usdc
-			unitPriceInUsdc, err := GetMinerPriceInOtherCoin(taskInfo.Data.Miner.MinerID, filPriceInUsdc.Int64(), taskInfo.Data.Task.Type)
+			unitPriceOfMinerInUsdcForPerEpoach, err := GetMinerPerEpoachPriceInOtherCoin(taskInfo.Data.Miner.MinerID, filPriceInUsdc.Int64(), taskInfo.Data.Task.Type, v.CarFileSize)
 			if err != nil {
 				logs.GetLogger().Error(err)
 				continue
 			}
 			//estimated total price of this deal
-			finalPreDealPrice := unitPriceInUsdc * int64(v.Duration)
+			finalPreDealPrice := unitPriceOfMinerInUsdcForPerEpoach * int64(v.Duration)
 			lockFound, err := storage.GetLockFoundInfoByPayloadCid(v.PayloadCid)
 			if err != nil {
 				logs.GetLogger().Error(err)
@@ -218,7 +218,7 @@ func GetTaskStatusByUuid(taskUuid string) (*TaskDetailResult, error) {
 	return taskInfo, nil
 }
 
-func GetMinerPriceInOtherCoin(minerFid string, rate int64, verifiedType string) (int64, error) {
+func GetMinerPerEpoachPriceInOtherCoin(minerFid string, rate int64, verifiedType string, carFileSize int64) (int64, error) {
 	lotusClient, err := lotus.LotusGetClient(config.GetConfig().Lotus.ApiUrl, config.GetConfig().Lotus.AccessToken)
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -231,14 +231,16 @@ func GetMinerPriceInOtherCoin(minerFid string, rate int64, verifiedType string) 
 		return 0, err
 	}
 	//minerPrice, minerVerifiedPrice, _, _ := lotusClient.LotusGetMinerConfig(minerFid)
-	var unitPrice decimal.Decimal
+	var unitPriceMiner decimal.Decimal
 	if strings.Trim(verifiedType, " ") == constants.LOTUS_TASK_TYPE_VERIFIED {
-		unitPrice = minerConfig.VerifiedPrice
+		unitPriceMiner = minerConfig.VerifiedPrice
 	} else {
-		unitPrice = minerConfig.Price
+		unitPriceMiner = minerConfig.Price
 	}
-	logs.GetLogger().Info("miner price is ", unitPrice.IntPart())
-	finalPrice := decimal.NewFromFloat(float64(rate)).Mul(unitPrice)
+	_, sectorSize := libutils.CalculatePieceSize(carFileSize)
+
+	unitPriceMinerWithFileSize := libutils.CalculateRealCost(sectorSize, unitPriceMiner)
+	finalPrice := decimal.NewFromFloat(float64(rate)).Mul(unitPriceMinerWithFileSize)
 	return finalPrice.IntPart(), nil
 
 }

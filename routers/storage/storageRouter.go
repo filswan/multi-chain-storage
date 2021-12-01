@@ -101,7 +101,7 @@ func GetDealListFromFilink(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, common.CreateErrorResponse(errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_CODE, errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_MSG))
 		return
 	}
-	dealId := c.Params.ByName("deal_id")
+	dealId := strings.Trim(c.Params.ByName("deal_id"), " ")
 	if strings.Trim(dealId, " ") == "" {
 		errMsg := "deal id can not be null"
 		logs.GetLogger().Error(errMsg)
@@ -152,11 +152,16 @@ func GetDealListFromFilink(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARSER_STRUCT_TO_REQUEST_ERROR_CODE, errorinfo.HTTP_REQUEST_PARSER_STRUCT_TO_REQUEST_ERROR_MSG))
 		return
 	}
-	daoSignList, err := GetDaoSignEventByDealId(int64(dealIdIntValue))
-	if err != nil {
-		logs.GetLogger().Error(err)
-		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE, errorinfo.GET_RECORD_lIST_ERROR_CODE+": get dao info from db occurred error"))
-		return
+	var daoSignList []*DaoInfoResult
+	if dealId == "0" {
+		daoSignList = nil
+	} else {
+		daoSignList, err = GetDaoSignEventByDealId(int64(dealIdIntValue))
+		if err != nil {
+			logs.GetLogger().Error(err)
+			c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE, errorinfo.GET_RECORD_lIST_ERROR_CODE+": get dao info from db occurred error"))
+			return
+		}
 	}
 	foundInfo, err := GetLockFoundInfoByPayloadCid(payloadCid)
 	if err != nil {

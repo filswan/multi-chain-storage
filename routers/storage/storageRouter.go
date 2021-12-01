@@ -178,6 +178,7 @@ func GetDealListFromFilink(c *gin.Context) {
 	c.JSON(http.StatusOK, common.CreateSuccessResponse(gin.H{
 		"dao_thresh_hold":  threshHold,
 		"signed_dao_count": signedDaoCount,
+		"dao_total_count":  len(daoSignList),
 		"deal":             result.Data.Data.Deal,
 		"found":            foundInfo,
 		"dao":              daoSignList,

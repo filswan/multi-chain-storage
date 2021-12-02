@@ -175,7 +175,17 @@ func GetDealListFromFilink(c *gin.Context) {
 	if err != nil {
 		logs.GetLogger().Error(err)
 	}
+	eventList, err := models.FindEventUnlockPayments(&models.EventUnlockPayment{PayloadCid: payloadCid}, "", "10", "0")
+	if err != nil {
+		logs.GetLogger().Error(err)
+	}
+	unlockStatus := false
+	if len(eventList) > 0 {
+		unlockStatus = true
+	}
+
 	c.JSON(http.StatusOK, common.CreateSuccessResponse(gin.H{
+		"unlock_status":    unlockStatus,
 		"dao_thresh_hold":  threshHold,
 		"signed_dao_count": signedDaoCount,
 		"dao_total_count":  len(daoSignList),

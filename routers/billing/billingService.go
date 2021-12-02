@@ -53,7 +53,7 @@ func getBillHistoryList(walletAddress, limit, offset string) ([]*BillingResult, 
 		" order by lock_payment_time desc"
 
 	var billingResultList []*BillingResult
-	err := database.GetDB().Raw(finalSql).Scan(&billingResultList).Limit(limit).Offset(offset).Error
+	err := database.GetDB().Raw(finalSql).Limit(limit).Offset(offset).Scan(&billingResultList).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err

@@ -276,10 +276,12 @@ func GetDealListFromLocal(c *gin.Context) {
 		pageNumber = "1"
 	} else {
 		tmpPageNumber, err := strconv.Atoi(pageNumber)
-		pageNumber = strconv.Itoa(tmpPageNumber)
 		if err != nil {
 			pageNumber = "1"
+		} else {
+			pageNumber = strconv.Itoa(tmpPageNumber)
 		}
+
 	}
 
 	if strings.Trim(pageSize, " ") == "" {
@@ -292,7 +294,7 @@ func GetDealListFromLocal(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.PAGE_NUMBER_OR_SIZE_FORMAT_ERROR_CODE, errorinfo.PAGE_NUMBER_OR_SIZE_FORMAT_ERROR_MSG))
 		return
 	}
-	infoList, err := GetSourceFileAndDealFileInfo(pageNumber, strconv.FormatInt(offset, 10), int(userId.(float64)))
+	infoList, err := GetSourceFileAndDealFileInfo(pageSize, strconv.FormatInt(offset, 10), int(userId.(float64)))
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE, errorinfo.GET_RECORD_lIST_ERROR_MSG+": get source file and deal info from db occurred error"))

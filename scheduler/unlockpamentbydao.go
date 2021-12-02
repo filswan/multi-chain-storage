@@ -134,7 +134,7 @@ func doUnlockPaymentOnContract(daoEvent *models.EventDaoSignature, unlockParams 
 				logs.GetLogger().Println("unlock success! txHash=" + tx.Hash().Hex())
 				if len(txReceipt.Logs) > 0 {
 					eventLogs := txReceipt.Logs
-					err = saveUnlockEventLogToDB(eventLogs, daoEvent.Recipient)
+					err = saveUnlockEventLogToDB(eventLogs, daoEvent.Recipient, unlockTxStatus)
 					if err != nil {
 						logs.GetLogger().Error(err)
 						return err
@@ -146,26 +146,17 @@ func doUnlockPaymentOnContract(daoEvent *models.EventDaoSignature, unlockParams 
 			}
 		}
 	}
-	daoEvent.TxHashUnlock = tx.Hash().Hex()
-	daoEvent.SignatureUnlockStatus = unlockTxStatus
-	err = database.SaveOne(daoEvent)
+	//update unlock status in event_dao_signature
+	err = models.UpdateDaoEventLog(&models.EventDaoSignature{PayloadCid: daoEvent.PayloadCid, DealId: daoEvent.DealId},
+		map[string]interface{}{"tx_hash_unlock": tx.Hash().Hex(), "signature_unlock_status": unlockTxStatus})
 	if err != nil {
 		logs.GetLogger().Error(err)
 	}
-	logs.GetLogger().Info("unlock tx hash=", tx.Hash().Hex(), " for payloadCid=", daoEvent.PayloadCid)
+	logs.GetLogger().Info("unlock tx hash=", tx.Hash().Hex(), " for payloadCid=", daoEvent.PayloadCid, " and deal_id=", daoEvent.DealId)
 	return nil
 }
 
-func updateUnlockPaymentStatus(payloadCid string, dealCid int64, unLockTxStatus, unlockTxHash string) error {
-	updateTime := strconv.FormatInt(utils.GetEpochInMillis(), 10)
-	err := models.UpdateEventPolygon(&models.EventLockPayment{PayloadCid: payloadCid}, map[string]interface{}{"unlock_time": updateTime, "unlock_tx_status": unLockTxStatus, "unlock_tx_hash": unlockTxHash})
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
-	return nil
-}
-func saveUnlockEventLogToDB(logsInChain []*types.Log, recipient string) error {
+func saveUnlockEventLogToDB(logsInChain []*types.Log, recipient string, unlockStatus string) error {
 	//paymentAbiString, err := utils.ReadContractAbiJsonFile(goBind.SwanPaymentMetaData.ABI)
 	paymentAbiString := goBind.SwanPaymentMetaData.ABI
 
@@ -211,7 +202,9 @@ func saveUnlockEventLogToDB(logsInChain []*types.Log, recipient string) error {
 				event.UnlockToAdminAddress = dataList[4].(common.Address).Hex()
 				event.UnlockToUserAddress = dataList[5].(common.Address).Hex()
 				event.UnlockTime = strconv.FormatInt(utils.GetEpochInMillis(), 10)
+				event.BlockNo = strconv.FormatUint(vLog.BlockNumber, 10)
 				event.CreateAt = strconv.FormatInt(utils.GetEpochInMillis(), 10)
+				event.UnlockStatus = unlockStatus
 				err = database.SaveOneWithTransaction(event)
 				if err != nil {
 					logs.GetLogger().Error(err)

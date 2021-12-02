@@ -20,6 +20,7 @@ type EventUnlockPayment struct {
 	UnlockTime           string `json:"unlock_time"`
 	CreateAt             string `json:"create_at"`
 	CoinId               int64  `json:"coin_id"`
+	UnlockStatus         string `json:"unlock_status"`
 }
 
 // FindEventUnlockPayments (&UnlockPaymentEvent{Id: "0xadeaCC802D0f2DFd31bE4Fa7434F15782Fd720ac"},"id desc","10","0")

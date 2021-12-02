@@ -211,7 +211,7 @@ func GetSourceFileAndDealFileInfo(limit, offset string, userId int) ([]*SourceFi
 		" inner join source_file_deal_file_map sfdfm on s.id = sfdfm.source_file_id" +
 		" inner join deal_file df on sfdfm.deal_file_id = df.id and user_id=" + strconv.Itoa(userId)
 	var results []*SourceFileAndDealFileInfo
-	err := database.GetDB().Raw(sql).Order("create_at desc").Scan(&results).Limit(limit).Offset(offset).Error
+	err := database.GetDB().Raw(sql).Order("create_at desc").Limit(limit).Offset(offset).Scan(&results).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err

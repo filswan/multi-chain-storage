@@ -219,10 +219,11 @@ func GetSourceFileAndDealFileInfo(limit, offset string, userId int) ([]*SourceFi
 	return results, nil
 }
 
-func GetSourceFileAndDealFileInfoCount() (int64, error) {
+func GetSourceFileAndDealFileInfoCount(userId int) (int64, error) {
 	sql := "select count(1) as total_record from  source_file s " +
 		" inner join source_file_deal_file_map sfdfm on s.id = sfdfm.source_file_id" +
-		" inner join deal_file df on sfdfm.deal_file_id = df.id"
+		" inner join deal_file df on sfdfm.deal_file_id = df.id" +
+		" where s.user_id=" + strconv.Itoa(userId)
 	var recordCount common.RecordCount
 	err := database.GetDB().Raw(sql).Scan(&recordCount).Error
 	if err != nil {

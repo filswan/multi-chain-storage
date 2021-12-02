@@ -303,7 +303,7 @@ func GetDealListFromLocal(c *gin.Context) {
 	pageInfo := new(common.PageInfo)
 	pageInfo.PageSize = pageSize
 	pageInfo.PageNumber = pageNumber
-	totalCount, err := GetSourceFileAndDealFileInfoCount()
+	totalCount, err := GetSourceFileAndDealFileInfoCount(int(userId.(float64)))
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_COUNT_ERROR_CODE, errorinfo.GET_RECORD_COUNT_ERROR_MSG+": get source file and deal info total record number from db occurred error"))

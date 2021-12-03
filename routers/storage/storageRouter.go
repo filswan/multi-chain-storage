@@ -281,7 +281,6 @@ func GetDealListFromLocal(c *gin.Context) {
 		} else {
 			pageNumber = strconv.Itoa(tmpPageNumber)
 		}
-
 	}
 
 	if strings.Trim(pageSize, " ") == "" {

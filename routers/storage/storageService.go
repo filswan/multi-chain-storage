@@ -101,8 +101,8 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 
 	filePathInIpfs := config.GetConfig().IpfsServer.DownloadUrlPrefix + constants.IPFS_URL_PREFIX_BEFORE_HASH + *ipfsFileHash
 
-	dealList, err := models.FindDealFileList(&models.DealFile{PayloadCid: fileList[0].DataCid}, "create_at desc", "10", "0")
-	if len(dealList) > 0 {
+	lockPaymentList, err := models.FindEventLockPayment(&models.EventLockPayment{PayloadCid: fileList[0].DataCid}, "create_at desc", "10", "0")
+	if len(lockPaymentList) > 0 {
 		ifPayloadCidExist = true
 		return fileList[0].DataCid, filePathInIpfs, ifPayloadCidExist, nil
 	} else {
@@ -176,6 +176,7 @@ func CreateTask(){
 }*/
 
 func saveDealFileAndMapRelation(fileInfoList []*libmodel.FileDesc, sourceFile *models.SourceFile, duration int) error {
+	currentTime := utils.GetEpochInMillis()
 	dealFile := new(models.DealFile)
 	dealFile.CarFileName = fileInfoList[0].CarFileName
 	dealFile.CarFilePath = fileInfoList[0].CarFilePath
@@ -185,7 +186,8 @@ func saveDealFileAndMapRelation(fileInfoList []*libmodel.FileDesc, sourceFile *m
 	dealFile.PieceCid = fileInfoList[0].PieceCid
 	dealFile.SourceFilePath = sourceFile.ResourceUri
 	dealFile.DealCid = fileInfoList[0].DealCid
-	dealFile.CreateAt = strconv.FormatInt(utils.GetEpochInMillis(), 10)
+	dealFile.CreateAt = strconv.FormatInt(currentTime, 10)
+	dealFile.UpdateAt = strconv.FormatInt(currentTime, 10)
 	dealFile.Duration = duration
 	dealFile.LockPaymentStatus = constants.LOCK_PAYMENT_STATUS_WAITING
 	err := database.SaveOne(dealFile)
@@ -207,7 +209,7 @@ func saveDealFileAndMapRelation(fileInfoList []*libmodel.FileDesc, sourceFile *m
 }
 
 func GetSourceFileAndDealFileInfo(limit, offset string, userId int) ([]*SourceFileAndDealFileInfo, error) {
-	sql := "select s.file_name,s.file_size,s.pin_status,s.create_at,df.miner_fid,df.payload_cid,df.deal_cid,df.deal_id,df.piece_cid,df.deal_status,df.deal_status as status from  source_file s " +
+	sql := "select s.file_name,s.file_size,s.pin_status,s.create_at,df.miner_fid,df.payload_cid,df.deal_cid,df.deal_id,df.piece_cid,df.deal_status,df.deal_status as status,df.lock_payment_status from  source_file s " +
 		" inner join source_file_deal_file_map sfdfm on s.id = sfdfm.source_file_id" +
 		" inner join deal_file df on sfdfm.deal_file_id = df.id and user_id=" + strconv.Itoa(userId)
 	var results []*SourceFileAndDealFileInfo

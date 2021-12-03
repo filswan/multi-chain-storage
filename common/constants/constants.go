@@ -55,8 +55,9 @@ const (
 	TASK_STATUS_ASSIGNED = "Assigned"
 
 	LOCK_PAYMENT_STATUS_FREE    = "Free"
-	LOCK_PAYMENT_STATUS_WAITING = "WaitingToPay"
-	LOCK_PAYMENT_STATUS_SUCCESS = "Success"
+	LOCK_PAYMENT_STATUS_WAITING = "Waiting" //wait for lock payment
+	LOCK_PAYMENT_STATUS_SUCCESS = "Success" //lock payment success
+	LOCK_PAYMENT_STATUS_FAIL    = "Fail"    //lock payment fail
 
 	SEND_DEAL_STATUS_SUCCESS = "Success"
 	SEND_DEAL_STATUS_FAIL    = "Fail"
@@ -69,4 +70,5 @@ const (
 
 	LOTUS_PRICE_MULTIPLE_1E18 = 1e18 // 10^18
 	FILE_BLOCK_NUMBER_MAX     = 999999999999999
+	TIME_HALF_AN_HOUR         = 30 * 60 * 1000
 )

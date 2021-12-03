@@ -104,7 +104,7 @@ func DoCreateTask() error {
 					VerifiedDeal:    config.GetConfig().SwanTask.VerifiedDeal,
 					OfflineMode:     false,
 					FastRetrieval:   config.GetConfig().SwanTask.FastRetrieval,
-					//MaxPrice:                 config.GetConfig().SwanTask.MaxPrice,
+					//MaxPrice:        config.GetConfig().SwanTask.MaxPrice,
 					MaxPrice:                   *maxPrice,
 					StorageServerType:          libconstants.STORAGE_SERVER_TYPE_IPFS_SERVER,
 					WebServerDownloadUrlPrefix: config.GetConfig().IpfsServer.DownloadUrlPrefix,

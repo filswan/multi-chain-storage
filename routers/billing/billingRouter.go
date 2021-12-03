@@ -22,7 +22,36 @@ func BillingManager(router *gin.RouterGroup) {
 	router.GET("", GetUserBillingHistory)
 	router.GET("/price/filecoin", GetFileCoinLastestPrice)
 	router.POST("/deal/lockpayment/status", UpdateLockPaymentInfoByPayloadCid)
+	router.GET("/deal/lockpayment/info", GetLockPaymentInfoByPayloadCid)
 }
+func GetLockPaymentInfoByPayloadCid(c *gin.Context) {
+	authorization := c.Request.Header.Get("authorization")
+	if len(authorization) == 0 {
+		c.JSON(http.StatusUnauthorized, common.CreateErrorResponse(errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_CODE, errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_MSG))
+		return
+	}
+	URL := c.Request.URL.Query()
+	var payloadCid = strings.Trim(URL.Get("payload_cid"), " ")
+	if payloadCid == "" {
+		errMsg := "payload_cid can not be null"
+		logs.GetLogger().Error(errMsg)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAM_TYPE_ERROR_CODE, errorinfo.HTTP_REQUEST_PARAM_TYPE_ERROR_MSG+":"+errMsg))
+		return
+	}
+	lockPaymentList, err := models.FindEventLockPayment(&models.EventLockPayment{PayloadCid: payloadCid}, "create_at desc", "10", "0")
+	if err != nil {
+		logs.GetLogger().Error(err)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE, errorinfo.GET_RECORD_lIST_ERROR_MSG))
+		return
+	}
+	if len(lockPaymentList) > 0 {
+		c.JSON(http.StatusOK, common.CreateSuccessResponse(gin.H{"tx_hash": lockPaymentList[0].TxHash, "payload_cid": lockPaymentList[0].PayloadCid, "locked_fee": lockPaymentList[0].LockedFee}))
+	} else {
+		c.JSON(http.StatusOK, common.CreateSuccessResponse(gin.H{"tx_hash": "", "payload_cid": payloadCid, "locked_fee": ""}))
+	}
+
+}
+
 func UpdateLockPaymentInfoByPayloadCid(c *gin.Context) {
 	logs.GetLogger().Info("~~~~~~~~~~~~~~~~~~~~~~~~ start to update lock payment status to db ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 	authorization := c.Request.Header.Get("authorization")

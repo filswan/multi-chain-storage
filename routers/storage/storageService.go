@@ -29,22 +29,22 @@ import (
 	"time"
 )
 
-func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multipart.FileHeader, duration, userId int) (string, string, bool, error) {
+func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multipart.FileHeader, duration, userId int) (string, string, int, error) {
 	temDirDeal := config.GetConfig().SwanTask.DirDeal
 
 	logs.GetLogger().Info("temp dir is ", temDirDeal)
-	ifPayloadCidExist := false
+	needPay := 0
 	homedir, err := os.UserHomeDir()
 	if err != nil {
 		logs.GetLogger().Error("Cannot get home directory.")
-		return "", "", ifPayloadCidExist, err
+		return "", "", needPay, err
 	}
 	temDirDeal = filepath.Join(homedir, temDirDeal[2:])
 
 	err = libutils.CreateDir(temDirDeal)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return "", "", ifPayloadCidExist, err
+		return "", "", needPay, err
 	}
 
 	timeStr := time.Now().Format("20060102_150405")
@@ -54,13 +54,13 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 	err = libutils.CreateDir(srcDir)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return "", "", ifPayloadCidExist, err
+		return "", "", needPay, err
 	}
 
 	err = libutils.CreateDir(carDir)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return "", "", ifPayloadCidExist, err
+		return "", "", needPay, err
 	}
 
 	srcFilepath := filepath.Join(srcDir, srcFile.Filename)
@@ -68,7 +68,7 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 	err = c.SaveUploadedFile(srcFile, srcFilepath)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return "", "", ifPayloadCidExist, err
+		return "", "", needPay, err
 	}
 	logs.GetLogger().Info("car files created in ", carDir)
 
@@ -81,7 +81,7 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 	fileList, err := subcommand.CreateCarFiles(&confCar)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return "", "", ifPayloadCidExist, err
+		return "", "", needPay, err
 	}
 	logs.GetLogger().Info("car files created in ", carDir, "payload_cid=", fileList[0].DataCid)
 
@@ -89,43 +89,105 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 	ipfsFileHash, err := ipfs.IpfsUploadFileByWebApi(uploadUrl, srcFilepath)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return "", "", ifPayloadCidExist, err
+		return "", "", needPay, err
 	}
 
-	/*	var ipfsReturn IpfsReturn
-		err = json.Unmarshal([]byte(ipfsObjectString), &ipfsReturn)
-		if err != nil {
-			logs.GetLogger().Error(err)
-			return "", "", ifPayloadCidExist, err
-		}*/
-
 	filePathInIpfs := config.GetConfig().IpfsServer.DownloadUrlPrefix + constants.IPFS_URL_PREFIX_BEFORE_HASH + *ipfsFileHash
-
 	lockPaymentList, err := models.FindEventLockPayment(&models.EventLockPayment{PayloadCid: fileList[0].DataCid}, "create_at desc", "10", "0")
-	if len(lockPaymentList) > 0 {
-		ifPayloadCidExist = true
-		return fileList[0].DataCid, filePathInIpfs, ifPayloadCidExist, nil
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return "", "", needPay, err
+	}
+
+	sourceAndDealFileList, err := GetSourceFileAndDealFileInfoByPayloadCid(fileList[0].DataCid)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return "", "", needPay, err
+	}
+	if len(sourceAndDealFileList) > 0 {
+		if sourceAndDealFileList[0].UserId == userId {
+			if len(lockPaymentList) > 0 {
+				needPay = 1
+				return fileList[0].DataCid, sourceAndDealFileList[0].IpfsUrl, needPay, nil
+			} else {
+				needPay = 2
+				return fileList[0].DataCid, sourceAndDealFileList[0].IpfsUrl, needPay, nil
+			}
+		} else {
+			if len(lockPaymentList) > 0 {
+				needPay = 3
+				sourceFile, err := saveSourceFileToDB(srcFile, srcFilepath, userId, filePathInIpfs)
+				if err != nil {
+					logs.GetLogger().Error(err)
+					return "", "", needPay, err
+				}
+				filepMap := new(models.SourceFileDealFileMap)
+				filepMap.SourceFileId = sourceFile.ID
+				filepMap.DealFileId = sourceAndDealFileList[0].ID
+				filepMap.FileIndex = 0
+				err = database.SaveOne(filepMap)
+				if err != nil {
+					logs.GetLogger().Error(err)
+					return "", "", needPay, err
+				}
+				return fileList[0].DataCid, sourceAndDealFileList[0].IpfsUrl, needPay, nil
+			} else {
+				needPay = 4
+				sourceFile, err := saveSourceFileToDB(srcFile, srcFilepath, userId, filePathInIpfs)
+				if err != nil {
+					logs.GetLogger().Error(err)
+					return "", "", needPay, err
+				}
+				err = saveDealFileAndMapRelation(fileList, sourceFile, duration)
+				if err != nil {
+					logs.GetLogger().Error(err)
+					return "", "", needPay, err
+				}
+				return fileList[0].DataCid, filePathInIpfs, needPay, nil
+			}
+		}
 	} else {
-		sourceFile := new(models.SourceFile)
-		sourceFile.FileName = srcFile.Filename
-		sourceFile.FileSize = strconv.FormatInt(srcFile.Size, 10)
-		sourceFile.ResourceUri = srcFilepath
-		sourceFile.CreateAt = strconv.FormatInt(utils.GetEpochInMillis(), 10)
-		sourceFile.UserId = userId
-		sourceFile.IpfsUrl = filePathInIpfs
-		sourceFile.PinStatus = constants.IPFS_File_PINNED_STATUS
-		err = database.SaveOne(sourceFile)
+		sourceFile, err := saveSourceFileToDB(srcFile, srcFilepath, userId, filePathInIpfs)
 		if err != nil {
 			logs.GetLogger().Error(err)
-			return "", "", ifPayloadCidExist, err
+			return "", "", needPay, err
 		}
 		err = saveDealFileAndMapRelation(fileList, sourceFile, duration)
 		if err != nil {
 			logs.GetLogger().Error(err)
-			return "", "", ifPayloadCidExist, err
+			return "", "", needPay, err
 		}
-		return fileList[0].DataCid, filePathInIpfs, ifPayloadCidExist, nil
+		return fileList[0].DataCid, filePathInIpfs, needPay, nil
 	}
+}
+
+func saveSourceFileToDB(srcFile *multipart.FileHeader, srcFilepath string, userId int, filePathInIpfs string) (*models.SourceFile, error) {
+	sourceFile := new(models.SourceFile)
+	sourceFile.FileName = srcFile.Filename
+	sourceFile.FileSize = strconv.FormatInt(srcFile.Size, 10)
+	sourceFile.ResourceUri = srcFilepath
+	sourceFile.CreateAt = strconv.FormatInt(utils.GetEpochInMillis(), 10)
+	sourceFile.UserId = userId
+	sourceFile.IpfsUrl = filePathInIpfs
+	sourceFile.PinStatus = constants.IPFS_File_PINNED_STATUS
+	err := database.SaveOne(sourceFile)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+	return sourceFile, nil
+}
+
+func GetSourceFileAndDealFileInfoByPayloadCid(payloadCid string) ([]*SourceFileAndDealFileInfo, error) {
+	sql := "select s.user_id,s.ipfs_url,d.id,d.payload_cid,d.deal_cid,d.deal_id,d.lock_payment_status,s.create_at from source_file s,source_file_deal_file_map m,deal_file d " +
+		" where s.id = m.source_file_id and m.deal_file_id = d.id and d.payload_cid='" + payloadCid + "'"
+	var results []*SourceFileAndDealFileInfo
+	err := database.GetDB().Raw(sql).Order("create_at desc").Limit(10).Offset(0).Order("create_at desc").Scan(&results).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+	return results, nil
 }
 
 /*

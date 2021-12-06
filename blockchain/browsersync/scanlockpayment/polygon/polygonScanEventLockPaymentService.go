@@ -133,7 +133,7 @@ func ScanPolygonLockPaymentEventFromChainAndSaveEventLogData(blockNoFrom, blockN
 				//condition :&models.EventPolygon{Ip: "192.168.88.80"}
 				//updateFields: map[string]interface{}{"processing_time": taskT.ProcessingTime, "worker_reward": taskT.WorkerReward}
 				err = models.UpdateDealFile(models.DealFile{PayloadCid: dataList[0].(string)},
-					map[string]interface{}{"lock_payment_status": constants.LOCK_PAYMENT_STATUS_PAID, "lock_payment_network": networkId, "lock_payment_tx": vLog.TxHash.Hex(), "update_at": currrentTime})
+					map[string]interface{}{"lock_payment_status": constants.LOCK_PAYMENT_STATUS_PROCESSING, "lock_payment_network": networkId, "lock_payment_tx": vLog.TxHash.Hex(), "update_at": currrentTime})
 				if err != nil {
 					logs.GetLogger().Error(err)
 				}

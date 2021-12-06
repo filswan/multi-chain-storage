@@ -79,7 +79,7 @@ func DoSendDealScheduler() error {
 }
 
 func GetTaskListShouldBeSendDealFromLocal() ([]*models.DealFile, error) {
-	whereCondition := "send_deal_status ='' and lower(lock_payment_status)=lower('" + constants.LOCK_PAYMENT_STATUS_SUCCESS + "') and task_uuid != '' "
+	whereCondition := "send_deal_status ='' and lower(lock_payment_status)=lower('" + constants.LOCK_PAYMENT_STATUS_PROCESSING + "') and task_uuid != '' "
 	dealList, err := models.FindDealFileList(whereCondition, "create_at desc", "50", "0")
 	if err != nil {
 		logs.GetLogger().Error(err)

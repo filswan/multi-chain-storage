@@ -271,7 +271,7 @@ func saveDealFileAndMapRelation(fileInfoList []*libmodel.FileDesc, sourceFile *m
 }
 
 func GetSourceFileAndDealFileInfo(limit, offset string, userId int, payloadCid, fileName string) ([]*SourceFileAndDealFileInfo, error) {
-	sql := "select s.file_name,s.file_size,s.pin_status,s.create_at,df.miner_fid,df.payload_cid,df.deal_cid,df.deal_id,df.piece_cid,df.deal_status,df.lock_payment_status as status from  source_file s " +
+	sql := "select s.file_name,s.file_size,s.pin_status,s.create_at,df.miner_fid,df.payload_cid,df.deal_cid,df.deal_id,df.piece_cid,df.deal_status,df.lock_payment_status as status,df.duration from  source_file s " +
 		" inner join source_file_deal_file_map sfdfm on s.id = sfdfm.source_file_id" +
 		" inner join deal_file df on sfdfm.deal_file_id = df.id and user_id=" + strconv.Itoa(userId)
 	if strings.Trim(payloadCid, " ") != "" {

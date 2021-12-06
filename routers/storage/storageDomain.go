@@ -15,6 +15,7 @@ type SourceFileAndDealFileInfo struct {
 	DealId            int64  `json:"deal_id"`
 	IpfsUrl           string `json:"ipfs_url"`
 	PieceCid          string `json:"piece_cid"`
+	Duration          int    `json:"duration"`
 	LockPaymentStatus string `json:"lock_payment_status"`
 }
 

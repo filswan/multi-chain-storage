@@ -3,52 +3,84 @@
 [![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg)](https://github.com/RichardLitt/standard-readme)
 
 # Payment-Bridge
-Payment bridge is desgined for make payment from multichain for filecoin storage,and backup user's file to filecoin network <br>
-Now supports payment with tokens such as USDC on polygon
-# System Desgin
-![MCP-MCP Desgin](https://user-images.githubusercontent.com/8363795/143811916-f051ccce-f9b2-49eb-99ab-8da1a0d9f2f2.png)
-## Scan Module
-Scan the blockchain, find the event log of the block where the swan payment contract has been executed,and save to the database
 
-## Prerequisite
+Payment bridge is designed for make payment from multi chain for filecoin storage,and backup user's file to filecoin
+network. Now supports payment with tokens such as USDC on polygon
+
+# System Design
+
+![MCP-MCP Desgin](https://user-images.githubusercontent.com/8363795/143811916-f051ccce-f9b2-49eb-99ab-8da1a0d9f2f2.png)
+
+# Modules
+
+* [Token Swap](#Token Swap)
+* Data DAO : [Flink](https://github.com/filswan/flink)
+* IPFS/Filecoin Storage
+
+## Token Swap
+
+Token Swap module is in charge of swap the user token to wrapped token, it can be USDC or other tokens.
+
+### Scan Module
+
+Scan the blockchain, find the event log of the block where the swan payment contract has been executed,and save to the
+database
+
+### Prerequisite
+
 - Golang1.16 (minimum version)
 - Mysql5.5
 - Lotus lite node (Please make sure that lotus lite node and payment bridge project are running on the same server)
 
-## Install lotus lite node
+### Install lotus lite node
+
 Used for making car files and sending offline deals <br>
 You can use lotus full node, but the full node is too heavy, you can use lotus lite node instead <br>
 Take linux as an example to introduce how to install louds lite node <br>
 But the lite node needs to communicate and interact with a full node   <br>
 please make sure you have a full node that can communicate with rpc first <br>
+
 ### 1 Clone the Lotus GitHub repository
+
 ```console
 git clone https://github.com/filecoin-project/lotus
 cd lotus
 git submodule update --init --recursive
 ```
+
 ### 2 Create the executable, but do not run anything yet
+
 ```console
 make clean all
 sudo make install
 ```
 
-### 3 Create the lotus daemon 
+### 3 Create the lotus daemon
+
 If you want to make a lotus lite node for mainnet,use command "make lotus"  <br>
 If you want to make a lotus lite node for testnet,use command "make lotus calibnet"
+
 ```console
 make lotus 
 ```
+# 
 ### 4 Start the lite node
-On the lite node, create an environment variable called FULLNODE_API_INFO and give it the following value while calling lotus daemon --lite.  <br>
-Make sure to replace API_TOKEN with the token you got from the full node and YOUR_FULL_NODE_IP_ADDRESS with the IP address of your full-node
+
+On the lite node, create an environment variable called FULLNODE_API_INFO and give it the following value while calling
+lotus daemon --lite.  <br>
+Make sure to replace API_TOKEN with the token you got from the full node and YOUR_FULL_NODE_IP_ADDRESS with the IP
+address of your full-node
+
 ```console
 FULLNODE_API_INFO=API_TOKEN:/ip4/YOUR_FULL_NODE_IP_ADDRESS/tcp/1234 lotus daemon --lite
 ```
+
 your local lite node rpc url will be : http://127.0.0.1:1234/rpc/v0
 
-### 5 Genarate a token with your local lite node 
+### 5 Genarate a token with your local lite node
+
 The generated token will be used in config.toml--->[lotus]--->access_token configuration item
+
 ```console
 lotus auth create-token --perm admin
 xxxxxxxxxxxxxxxx..
@@ -57,10 +89,13 @@ xxxxxxxxxxxxxxxx..
 ## Getting Started with PaymentBridge
 
 ### 1 Clone code to $GOPATH/src
+
 ```console
 git clone https://github.com/filswan/payment-bridge
 ```
+
 ### 2 Pull-in the submodules:
+
 ```console
 cd $GOPATH/src/payment-bridge/
 git submodule update --init --recursive
@@ -68,28 +103,33 @@ make ffi
 ```
 
 ### 3 Build project
+
 Enter payment-bridge directory <br>
 adn execute the make command
+
 ```console
 cd $GOPATH/src/payment-bridge/
 GO111MODULE=on make
 ```
 
 ### 4 Run the project
+
 Enter payment-bridge/scan/build/bin directory, and execute the binary file of the payment-bridge project <br>
 Before actually running the payment bridege project, you need to read the section about config introduction below <br>
 and then fill in the configuration items as required, and then run this project
+
 ```console
 cd $GOPATH/src/payment-bridge/scan/build/bin`
 chmod +x payment-bridge
 ./payment_bridge
 ```
 
-
 ##### Note:
-Before running the ./payment-bridge command, you need to edit the config file, the configuration items will be introduced below
 
-## Configuration 
+Before running the ./payment-bridge command, you need to edit the config file, the configuration items will be
+introduced below
+
+## Configuration
 
 ### config.toml
 
@@ -137,33 +177,41 @@ scan_deal_status_rule = "0 */4 * * * ?"
 ```
 
 #### admin_wallet_on_polygon
+
 The wallet address used to execute contract methods on the polygon network and pay for gas
+
 #### swan_payment_address_on_polygon
+
 The contract address of the swan payment gateway, used for lock and unlock user fees on polygon
+
 #### file_coin_wallet
+
 The wallet address of the user's paying for storage file to the filecoin network
 
 #### [swan_api]
 
-swan_api section defines the token used for connecting with Swan platform. 
+swan_api section defines the token used for connecting with Swan platform.
 
 - **api_key & access_token:** Acquire from [Filswan](https://www.filswan.com) -> "My Profile"->"Developer Settings". You
   can also check the [Guide](https://nebulaai.medium.com/how-to-use-api-key-in-swan-a2ebdb005aa4)
 - **api_url:** Default: "https://api.filswan.com"
 
-
-
 #### [lotus]
-- **api_url:** Url of lotus client web api, such as: **http://[ip]:[port]/rpc/v0**, generally the [port] is **1234**. See [Lotus API](https://docs.filecoin.io/reference/lotus-api/)
-- **access_token:** Access token of lotus market web api. When market and miner are not separate, it is also the access token of miner access token. See [Obtaining Tokens](https://docs.filecoin.io/build/lotus/api-tokens/#obtaining-tokens)
+
+- **api_url:** Url of lotus client web api, such as: **http://[ip]:[port]/rpc/v0**, generally the [port] is **1234**.
+  See [Lotus API](https://docs.filecoin.io/reference/lotus-api/)
+- **access_token:** Access token of lotus market web api. When market and miner are not separate, it is also the access
+  token of miner access token. See [Obtaining Tokens](https://docs.filecoin.io/build/lotus/api-tokens/#obtaining-tokens)
 
 #### [ipfs_server]
 
-ipfs-server is used to upload and download generated Car files. You can upload generated Car files via `upstream_url` and storage provider will download Car files from this ipfs-server using `download_stream_url`.
-The downloadable URL in the CSV file is built with the following format: host+port+ipfs+hash,
-e.g. http://host:port/ipfs/QmPrQPfGCAHwYXDZDdmLXieoxZP5JtwQuZMUEGuspKFZKQ
+ipfs-server is used to upload and download generated Car files. You can upload generated Car files via `upstream_url`
+and storage provider will download Car files from this ipfs-server using `download_stream_url`. The downloadable URL in
+the CSV file is built with the following format: host+port+ipfs+hash, e.g. http://host:
+port/ipfs/QmPrQPfGCAHwYXDZDdmLXieoxZP5JtwQuZMUEGuspKFZKQ
 
 #### [swan_task]
+
 - **dir_deal:** Output directory for saving generated Car files and CSVs
 - **verified_deal:** [true/false] Whether deals in this task are going to be sent as verified
 - **fast_retrieval:** [true/false] Indicates that data should be available for fast retrieval
@@ -172,9 +220,12 @@ e.g. http://host:port/ipfs/QmPrQPfGCAHwYXDZDdmLXieoxZP5JtwQuZMUEGuspKFZKQ
 - **max_price:** Max price willing to pay per GiB/epoch for offline deal
 - **min_price:** Min price willing to pay per GiB/epoch for offline deal
 - **generate_md5:** [true/false] Whether to generate md5 for each car file, note: this is a resource consuming action
-- **relative_epoch_from_main_network:**  The difference between the block height of filecoin's mainnet and testnet. If the filecoin testnet is linked, this configuration item is set to -858481, and if the link is the mainnet, it is set to 0
+- **relative_epoch_from_main_network:**  The difference between the block height of filecoin's mainnet and testnet. If
+  the filecoin testnet is linked, this configuration item is set to -858481, and if the link is the mainnet, it is set
+  to 0
 
 ### config_polygon.toml
+
 Currently, USDC is supported for payment. Take polygon network as an example to introduce configuration items
 
 ```console
@@ -192,6 +243,7 @@ cycle_time_interval = 10 #unit:second
 ```
 
 #### polygon_mainnet_node
+
 - **rpc_url:** the polygon network rpc url
 - **payment_contract_address:**  swan payment gateway address on polygon
 - **contract_function_signature:**  swan payment gateway's lock payment event's function signature on polygon
@@ -202,12 +254,16 @@ cycle_time_interval = 10 #unit:second
 - **start_from_blockNo:**  the time between each scan of the blockchain
 
 ## The Payment Process
-- First, users upload a file they want to backup to filecoin network, then use the currencies we support to send tokens to our contract address. <br>
-- Second, payment-biridge scans the events of the above transactions
-- Third,  when the event data that get in second step meet the conditions, and then the user can perform the filecoin network storage function
-- Fourth, when the user's storage is successful, it will be scanned by the dao organization, and then dao signed to agree to unlock the user's payment. 
-- Fifth, If more than half of the dao agree, the payment bridge will unlock the user's payment, deduct the user's storage fee, and the remaining locked virtual currency Is returned to the customer's wallet
 
+- First, users upload a file they want to backup to filecoin network, then use the currencies we support to send tokens
+  to our contract address. <br>
+- Second, payment-biridge scans the events of the above transactions
+- Third, when the event data that get in second step meet the conditions, and then the user can perform the filecoin
+  network storage function
+- Fourth, when the user's storage is successful, it will be scanned by the dao organization, and then dao signed to
+  agree to unlock the user's payment.
+- Fifth, If more than half of the dao agree, the payment bridge will unlock the user's payment, deduct the user's
+  storage fee, and the remaining locked virtual currency Is returned to the customer's wallet
 
 ## Database table description
 
@@ -221,14 +277,9 @@ cycle_time_interval = 10 #unit:second
 |system_config_param   |record system config                   |
 |dao_event_log         |record dao signature event log         |
 
-
-
-
 ## Other Topics
+
 - [how to pay for filecoin network storage with polygon](https://www.youtube.com/watch?v=c4Dvidz3plU)
-
-
-
 
 ## Versioning and Releases
 

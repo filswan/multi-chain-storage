@@ -2,8 +2,10 @@ package models
 
 import (
 	"payment-bridge/common/constants"
+	"payment-bridge/common/utils"
 	"payment-bridge/database"
 	"payment-bridge/logs"
+	"strconv"
 )
 
 type DealFile struct {
@@ -33,6 +35,7 @@ type DealFile struct {
 	SendDealStatus      string `json:"send_deal_status"`
 	Verified            bool   `json:"verified"`
 	ClientWalletAddress string `json:"client_wallet_address"`
+	IsDeleted           *bool  `json:"is_deleted"`
 }
 
 // FindDealFileList (&DealFile{Id: "0xadeaCC802D0f2DFd31bE4Fa7434F15782Fd720ac"},"id desc","10","0")
@@ -58,5 +61,15 @@ func UpdateDealFile(whereCondition interface{}, updateFields interface{}) error 
 	if err != nil {
 		logs.GetLogger().Error(err)
 	}
+	return err
+}
+
+//ex: domain.DeleteDiskInfo("ipmi_sn", "uid1")
+func DeleteDealFile(whereCondition interface{}) error {
+	db := database.GetDB()
+	var dealFile *DealFile
+	deleteTime := utils.GetEpochInMillis()
+	err := db.Model(&dealFile).Where(whereCondition).UpdateColumns(&DealFile{IsDeleted: utils.GetBoolPointer(true), DeleteAt: strconv.FormatInt(deleteTime, 10)}).Error
+
 	return err
 }

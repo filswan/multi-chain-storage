@@ -88,22 +88,6 @@ func GetTaskListShouldBeSendDealFromLocal() ([]*models.DealFile, error) {
 	return dealList, nil
 }
 
-func GetTaskListShouldBeSigServiceFromSwan() (*models.OfflineDealResult, error) {
-	url := config.GetConfig().SwanApi.ApiUrl + config.GetConfig().SwanApi.GetShouldSendTaskUrlSuffix
-	response, err := httpClient.SendRequestAndGetBytes(http.MethodGet, url, nil, nil)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-	var results *models.OfflineDealResult
-	err = json.Unmarshal(response, &results)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-	return results, nil
-}
-
 func sendDeal(taskUuid string, file *models.DealFile) (string, error) {
 	startEpochIntervalHours := config.GetConfig().SwanTask.StartEpochHours
 	startEpoch := libutils.GetCurrentEpoch() + (startEpochIntervalHours+1)*libconstants.EPOCH_PER_HOUR

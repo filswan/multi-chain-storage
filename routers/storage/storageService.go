@@ -125,6 +125,9 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 				filepMap.SourceFileId = sourceFile.ID
 				filepMap.DealFileId = sourceAndDealFileList[0].ID
 				filepMap.FileIndex = 0
+				nowTime := strconv.FormatInt(utils.GetEpochInMillis(), 10)
+				filepMap.CreateAt = nowTime
+				filepMap.UpdateAt = nowTime
 				err = database.SaveOne(filepMap)
 				if err != nil {
 					logs.GetLogger().Error(err)
@@ -262,6 +265,8 @@ func saveDealFileAndMapRelation(fileInfoList []*libmodel.FileDesc, sourceFile *m
 	filepMap.SourceFileId = sourceFile.ID
 	filepMap.DealFileId = dealFile.ID
 	filepMap.FileIndex = 0
+	filepMap.CreateAt = strconv.FormatInt(currentTime, 10)
+	filepMap.UpdateAt = strconv.FormatInt(currentTime, 10)
 	err = database.SaveOne(filepMap)
 	if err != nil {
 		logs.GetLogger().Error(err)

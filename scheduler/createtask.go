@@ -13,6 +13,7 @@ import (
 	"path/filepath"
 	"payment-bridge/blockchain/browsersync/scanlockpayment/polygon"
 	"payment-bridge/common/constants"
+	"payment-bridge/common/utils"
 	"payment-bridge/config"
 	"payment-bridge/database"
 	"payment-bridge/logs"
@@ -53,83 +54,121 @@ func DoCreateTask() error {
 		return err
 	}
 	for _, v := range dealList {
-		//check if user have lock payment
-		lockPaymentList, err := CheckIfHaveLockPayment(v.PayloadCid)
+		duplicatedList, err := GetDuplicateTaskInfoByPayloadCid("10", "0", v.PayloadCid)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			continue
 		}
-		if len(lockPaymentList) > 0 {
-			lockedFee, err := strconv.ParseInt(lockPaymentList[0].LockedFee, 10, 64)
+		if len(duplicatedList) > 1 {
+			dataIndex := 0
+			uuid := ""
+			for i, v := range duplicatedList {
+				if v.TaskUuid != "" {
+					uuid = v.TaskUuid
+					dataIndex = i
+				}
+			}
+			var taskInfo *DuplicatedTaskInfo = nil
+			if uuid != "" {
+				taskInfo = duplicatedList[dataIndex]
+			} else {
+				dataIndex = 0
+				taskInfo = duplicatedList[0]
+			}
+			for i, v := range duplicatedList {
+				if i != dataIndex {
+					err = models.DeleteDealFile(&models.DealFile{ID: v.Did})
+					if err != nil {
+						logs.GetLogger().Error(err)
+						continue
+					}
+					currentTime := strconv.FormatInt(utils.GetEpochInMillis(), 10)
+					err = models.UpdateSourceFileDealFileMap(&models.SourceFileDealFileMap{SourceFileId: v.Sid, DealFileId: v.Did}, map[string]interface{}{"deal_file_id": taskInfo.Did, "update_time": currentTime})
+					if err != nil {
+						logs.GetLogger().Error(err)
+						continue
+					}
+				}
+			}
+		} else {
+			//check if user have lock payment
+			lockPaymentList, err := CheckIfHaveLockPayment(v.PayloadCid)
 			if err != nil {
 				logs.GetLogger().Error(err)
 				continue
 			}
-			maxPrice, err := GetMaxPriceForCreateTask(fileCoinPriceInUsdc, lockedFee, v.Duration, v.CarFileSize)
-			if err != nil {
-				logs.GetLogger().Error(err)
-				continue
-			}
-			logs.GetLogger().Println("payload cid ", v.PayloadCid, " max price is ", maxPrice)
-			if maxPrice.Cmp(config.GetConfig().SwanTask.MaxPrice) < 0 {
-				*maxPrice = config.GetConfig().SwanTask.MaxPrice
-			}
-			if strings.Trim(v.TaskUuid, " ") == "" {
-				confUpload := &clientmodel.ConfUpload{
-					StorageServerType:           libconstants.STORAGE_SERVER_TYPE_IPFS_SERVER,
-					IpfsServerDownloadUrlPrefix: config.GetConfig().IpfsServer.DownloadUrlPrefix,
-					IpfsServerUploadUrl:         config.GetConfig().IpfsServer.UploadUrl,
-					OutputDir:                   filepath.Dir(v.CarFilePath),
-					InputDir:                    filepath.Dir(v.CarFilePath),
-				}
-				_, err = subcommand.UploadCarFiles(confUpload)
+			if len(lockPaymentList) > 0 {
+				lockedFee, err := strconv.ParseInt(lockPaymentList[0].LockedFee, 10, 64)
 				if err != nil {
 					logs.GetLogger().Error(err)
-					return err
+					continue
 				}
-				logs.GetLogger().Info("car files uploaded")
-
-				taskDataset := config.GetConfig().SwanTask.CuratedDataset
-				taskDescription := config.GetConfig().SwanTask.Description
-				startEpochIntervalHours := config.GetConfig().SwanTask.StartEpochHours
-				startEpoch := libutils.GetCurrentEpoch() + (startEpochIntervalHours+1)*libconstants.EPOCH_PER_HOUR
-				fmt.Println(filepath.Dir(v.CarFilePath))
-				confTask := &clientmodel.ConfTask{
-					SwanApiUrl:      config.GetConfig().SwanApi.ApiUrl,
-					SwanToken:       "",
-					PublicDeal:      true,
-					SwanApiKey:      config.GetConfig().SwanApi.ApiKey,
-					SwanAccessToken: config.GetConfig().SwanApi.AccessToken,
-					BidMode:         libconstants.TASK_BID_MODE_AUTO,
-					VerifiedDeal:    config.GetConfig().SwanTask.VerifiedDeal,
-					OfflineMode:     false,
-					FastRetrieval:   config.GetConfig().SwanTask.FastRetrieval,
-					//MaxPrice:        config.GetConfig().SwanTask.MaxPrice,
-					MaxPrice:                   *maxPrice,
-					StorageServerType:          libconstants.STORAGE_SERVER_TYPE_IPFS_SERVER,
-					WebServerDownloadUrlPrefix: config.GetConfig().IpfsServer.DownloadUrlPrefix,
-					ExpireDays:                 config.GetConfig().SwanTask.ExpireDays,
-					OutputDir:                  filepath.Dir(v.CarFilePath),
-					InputDir:                   filepath.Dir(v.CarFilePath),
-					MinerFid:                   "",
-					Dataset:                    taskDataset,
-					Description:                taskDescription,
-					StartEpochIntervalHours:    startEpochIntervalHours,
-					StartEpoch:                 startEpoch,
-					SourceId:                   constants.SOURCE_ID_OF_PAYMENT,
-					Duration:                   v.Duration,
-				}
-				_, fileInfoList, _, err := subcommand.CreateTask(confTask, nil)
+				maxPrice, err := GetMaxPriceForCreateTask(fileCoinPriceInUsdc, lockedFee, v.Duration, v.CarFileSize)
 				if err != nil {
 					logs.GetLogger().Error(err)
-					return err
+					continue
 				}
-				if len(fileInfoList) > 0 {
-					logs.GetLogger().Info("task created, uuid=", fileInfoList[0].Uuid)
-					err = updateTaskInfoToDB(fileInfoList, v)
+				logs.GetLogger().Println("payload cid ", v.PayloadCid, " max price is ", maxPrice)
+				if maxPrice.Cmp(config.GetConfig().SwanTask.MaxPrice) < 0 {
+					*maxPrice = config.GetConfig().SwanTask.MaxPrice
+				}
+				if strings.Trim(v.TaskUuid, " ") == "" {
+					confUpload := &clientmodel.ConfUpload{
+						StorageServerType:           libconstants.STORAGE_SERVER_TYPE_IPFS_SERVER,
+						IpfsServerDownloadUrlPrefix: config.GetConfig().IpfsServer.DownloadUrlPrefix,
+						IpfsServerUploadUrl:         config.GetConfig().IpfsServer.UploadUrl,
+						OutputDir:                   filepath.Dir(v.CarFilePath),
+						InputDir:                    filepath.Dir(v.CarFilePath),
+					}
+					_, err = subcommand.UploadCarFiles(confUpload)
 					if err != nil {
 						logs.GetLogger().Error(err)
 						return err
+					}
+					logs.GetLogger().Info("car files uploaded")
+
+					taskDataset := config.GetConfig().SwanTask.CuratedDataset
+					taskDescription := config.GetConfig().SwanTask.Description
+					startEpochIntervalHours := config.GetConfig().SwanTask.StartEpochHours
+					startEpoch := libutils.GetCurrentEpoch() + (startEpochIntervalHours+1)*libconstants.EPOCH_PER_HOUR
+					fmt.Println(filepath.Dir(v.CarFilePath))
+					confTask := &clientmodel.ConfTask{
+						SwanApiUrl:      config.GetConfig().SwanApi.ApiUrl,
+						SwanToken:       "",
+						PublicDeal:      true,
+						SwanApiKey:      config.GetConfig().SwanApi.ApiKey,
+						SwanAccessToken: config.GetConfig().SwanApi.AccessToken,
+						BidMode:         libconstants.TASK_BID_MODE_AUTO,
+						VerifiedDeal:    config.GetConfig().SwanTask.VerifiedDeal,
+						OfflineMode:     false,
+						FastRetrieval:   config.GetConfig().SwanTask.FastRetrieval,
+						//MaxPrice:        config.GetConfig().SwanTask.MaxPrice,
+						MaxPrice:                   *maxPrice,
+						StorageServerType:          libconstants.STORAGE_SERVER_TYPE_IPFS_SERVER,
+						WebServerDownloadUrlPrefix: config.GetConfig().IpfsServer.DownloadUrlPrefix,
+						ExpireDays:                 config.GetConfig().SwanTask.ExpireDays,
+						OutputDir:                  filepath.Dir(v.CarFilePath),
+						InputDir:                   filepath.Dir(v.CarFilePath),
+						MinerFid:                   "",
+						Dataset:                    taskDataset,
+						Description:                taskDescription,
+						StartEpochIntervalHours:    startEpochIntervalHours,
+						StartEpoch:                 startEpoch,
+						SourceId:                   constants.SOURCE_ID_OF_PAYMENT,
+						Duration:                   v.Duration,
+					}
+					_, fileInfoList, _, err := subcommand.CreateTask(confTask, nil)
+					if err != nil {
+						logs.GetLogger().Error(err)
+						return err
+					}
+					if len(fileInfoList) > 0 {
+						logs.GetLogger().Info("task created, uuid=", fileInfoList[0].Uuid)
+						err = updateTaskInfoToDB(fileInfoList, v)
+						if err != nil {
+							logs.GetLogger().Error(err)
+							return err
+						}
 					}
 				}
 			}
@@ -146,32 +185,22 @@ func GetMaxPriceForCreateTask(rate *big.Int, lockedFee int64, duration int, carF
 	return &maxPrice, nil
 }
 
-/*func GetMinerPerEpoachPriceInOtherCoin(minerFid string, rate *big.Int, verifiedType string, carFileSize int64) (int64, error) {
-	lotusClient, err := lotus.LotusGetClient(config.GetConfig().Lotus.ApiUrl, config.GetConfig().Lotus.AccessToken)
+func GetDuplicateTaskInfoByPayloadCid(limit, offset, payloadCid string) ([]*DuplicatedTaskInfo, error) {
+	sql := "select s.id as sid,df.id as did,df.miner_fid,df.payload_cid,df.deal_cid,df.task_uuid,df.piece_cid,df.deal_status,df.lock_payment_status as status,df.create_at from  source_file s " +
+		" inner join source_file_deal_file_map sfdfm on s.id = sfdfm.source_file_id" +
+		" inner join deal_file df on sfdfm.deal_file_id = df.id "
+	if strings.Trim(payloadCid, " ") != "" {
+		sql = sql + " and df.payload_cid='" + payloadCid + "'"
+	}
+
+	var results []*DuplicatedTaskInfo
+	err := database.GetDB().Raw(sql).Order("create_at desc").Limit(limit).Offset(offset).Scan(&results).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return 0, err
+		return nil, err
 	}
-
-	minerConfig, err := lotusClient.LotusClientQueryAsk(minerFid)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return 0, err
-	}
-	//minerPrice, minerVerifiedPrice, _, _ := lotusClient.LotusGetMinerConfig(minerFid)
-	var unitPriceMiner decimal.Decimal
-	if strings.Trim(verifiedType, " ") == constants.LOTUS_TASK_TYPE_VERIFIED {
-		unitPriceMiner = minerConfig.VerifiedPrice
-	} else {
-		unitPriceMiner = minerConfig.Price
-	}
-	_, sectorSize := libutils.CalculatePieceSize(carFileSize)
-
-	unitPriceMinerWithFileSize := libutils.CalculateRealCost(sectorSize, unitPriceMiner)
-	finalPrice := decimal.NewFromInt(rate.Int64()).Mul(unitPriceMinerWithFileSize)
-	return finalPrice.IntPart(), nil
-
-}*/
+	return results, nil
+}
 
 func updateTaskInfoToDB(taskinfoList []*libmodel.FileDesc, dealFile *models.DealFile) error {
 	dealFile.TaskUuid = taskinfoList[0].Uuid
@@ -183,4 +212,19 @@ func updateTaskInfoToDB(taskinfoList []*libmodel.FileDesc, dealFile *models.Deal
 		return err
 	}
 	return nil
+}
+
+type DuplicatedTaskInfo struct {
+	Sid               int64  `json:"sid"`
+	Did               int64  `json:"did"`
+	UserId            int    `json:"user_id"`
+	MinerFid          string `json:"miner_fid"`
+	DealStatus        string `json:"deal_status"`
+	Status            string `json:"status"`
+	PayloadCid        string `json:"payload_cid"`
+	DealCid           string `json:"deal_cid"`
+	TaskUuid          string `json:"task_uuid""`
+	IpfsUrl           string `json:"ipfs_url"`
+	PieceCid          string `json:"piece_cid"`
+	LockPaymentStatus string `json:"lock_payment_status"`
 }

@@ -190,3 +190,7 @@ func UrlJoin(root string, parts ...string) string {
 
 	return url
 }
+
+func GetBoolPointer(b bool) *bool {
+	return &b
+}

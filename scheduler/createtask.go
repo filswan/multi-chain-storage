@@ -63,8 +63,8 @@ func DoCreateTask() error {
 			dataIndex := 0
 			uuid := ""
 			for i, v := range duplicatedList {
-				if v.Uuid != "" {
-					uuid = v.Uuid
+				if v.TaskUuid != "" {
+					uuid = v.TaskUuid
 					dataIndex = i
 				}
 			}
@@ -186,7 +186,7 @@ func GetMaxPriceForCreateTask(rate *big.Int, lockedFee int64, duration int, carF
 }
 
 func GetDuplicateTaskInfoByPayloadCid(limit, offset, payloadCid string) ([]*DuplicatedTaskInfo, error) {
-	sql := "select s.id as sid,df.id as did,df.miner_fid,df.payload_cid,df.deal_cid,df.uuid,df.piece_cid,df.deal_status,df.lock_payment_status as status,df.create_at from  source_file s " +
+	sql := "select s.id as sid,df.id as did,df.miner_fid,df.payload_cid,df.deal_cid,df.task_uuid,df.piece_cid,df.deal_status,df.lock_payment_status as status,df.create_at from  source_file s " +
 		" inner join source_file_deal_file_map sfdfm on s.id = sfdfm.source_file_id" +
 		" inner join deal_file df on sfdfm.deal_file_id = df.id "
 	if strings.Trim(payloadCid, " ") != "" {
@@ -223,7 +223,7 @@ type DuplicatedTaskInfo struct {
 	Status            string `json:"status"`
 	PayloadCid        string `json:"payload_cid"`
 	DealCid           string `json:"deal_cid"`
-	Uuid              string `json:"uuid"`
+	TaskUuid          string `json:"task_uuid""`
 	IpfsUrl           string `json:"ipfs_url"`
 	PieceCid          string `json:"piece_cid"`
 	LockPaymentStatus string `json:"lock_payment_status"`

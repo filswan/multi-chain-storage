@@ -6,9 +6,11 @@ import (
 )
 
 type SourceFileDealFileMap struct {
-	SourceFileId int64 `json:"source_file_id"`
-	FileIndex    int   `json:"file_index"`
-	DealFileId   int64 `json:"source_file_id"`
+	SourceFileId int64  `json:"source_file_id"`
+	FileIndex    int    `json:"file_index"`
+	DealFileId   int64  `json:"source_file_id"`
+	CreateAt     string `json:"create_at"`
+	UpdateAt     string `json:"update_at"`
 }
 
 //condition :&models.SourceFileDealFileMap{DealCid: "123"}

@@ -1,6 +1,8 @@
 package storage
 
 type SourceFileAndDealFileInfo struct {
+	ID                int64  `json:"id"`
+	UserId            int    `json:"user_id"`
 	FileName          string `json:"file_name"`
 	FileSize          string `json:"file_size"`
 	CreateAt          string `json:"create_at"`
@@ -11,7 +13,9 @@ type SourceFileAndDealFileInfo struct {
 	PayloadCid        string `json:"payload_cid"`
 	DealCid           string `json:"deal_cid"`
 	DealId            int64  `json:"deal_id"`
+	IpfsUrl           string `json:"ipfs_url"`
 	PieceCid          string `json:"piece_cid"`
+	Duration          int    `json:"duration"`
 	LockPaymentStatus string `json:"lock_payment_status"`
 }
 

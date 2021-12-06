@@ -116,6 +116,7 @@ func GetUserBillingHistory(c *gin.Context) {
 	walletAddress := URL.Get("wallet_address")
 	pageNumber := URL.Get("page_number")
 	pageSize := URL.Get("page_size")
+	txHash := strings.Trim(URL.Get("tx_hash"), " ")
 
 	if strings.Trim(pageNumber, " ") == "" {
 		pageNumber = "1"
@@ -145,7 +146,7 @@ func GetUserBillingHistory(c *gin.Context) {
 		return
 	}
 
-	billingResultList, err := getBillHistoryList(walletAddress, pageSize, strconv.FormatInt(offset, 10))
+	billingResultList, err := getBillHistoryList(walletAddress, txHash, pageSize, strconv.FormatInt(offset, 10))
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE, errorinfo.GET_RECORD_lIST_ERROR_MSG))

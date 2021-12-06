@@ -28,7 +28,7 @@ type DealFile struct {
 	DeleteAt            string `json:"delete_at"`
 	LockPaymentTx       string `json:"lock_payment_tx"`
 	LockPaymentStatus   string `json:"lock_payment_status"`
-	LockPaymentNetwork  string `json:"lock_payment_network"`
+	LockPaymentNetwork  int64  `json:"lock_payment_network"`
 	DaoSignStatus       string `json:"dao_sign_status"`
 	SendDealStatus      string `json:"send_deal_status"`
 	Verified            bool   `json:"verified"`

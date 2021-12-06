@@ -54,13 +54,18 @@ const (
 	SOURCE_ID_OF_PAYMENT = 4
 	TASK_STATUS_ASSIGNED = "Assigned"
 
-	LOCK_PAYMENT_STATUS_FREE    = "Free"
-	LOCK_PAYMENT_STATUS_WAITING = "Waiting" //wait for lock payment
-	LOCK_PAYMENT_STATUS_SUCCESS = "Success" //lock payment success
-	LOCK_PAYMENT_STATUS_FAIL    = "Fail"    //lock payment fail
+	LOCK_PAYMENT_STATUS_FREE       = "Free"
+	LOCK_PAYMENT_STATUS_WAITING    = "Pending"    //wait for lock payment
+	LOCK_PAYMENT_STATUS_PAID       = "Paid"       //lock payment paid
+	LOCK_PAYMENT_STATUS_PROCESSING = "Processing" //lock payment fail
+	LOCK_PAYMENT_STATUS_SUCCESS    = "Active"     //lock payment active
+	LOCK_PAYMENT_STATUS_REFUNDED   = "Refunded"
 
 	SEND_DEAL_STATUS_SUCCESS = "Success"
 	SEND_DEAL_STATUS_FAIL    = "Fail"
+
+	DEAL_STATUS_ACTIVE = "StorageDealActive"
+	DEAL_STATUS_ERROR  = "StorageDealError"
 
 	IPFS_URL_PREFIX_BEFORE_HASH = "/ipfs/"
 	IPFS_File_PINNED_STATUS     = "Pinned"

@@ -24,19 +24,19 @@ func main() {
 	LoadEnv()
 	// init database
 	db := database.Init()
-	scheduler.GetDealInfoByLotusClientAndUpdateInfoToDB()
+
 	initMethod()
 	browsersync.Init()
 
 	models.RunAllTheScan()
 
-	/*scheduler.CreateTaskScheduler()
+	scheduler.CreateTaskScheduler()
 
 	scheduler.SendDealScheduler()
 
 	scheduler.DAOUnlockPaymentSchedule()
 
-	scheduler.ScanDealInfoScheduler()*/
+	scheduler.ScanDealInfoScheduler()
 
 	defer func() {
 		err := db.Close()

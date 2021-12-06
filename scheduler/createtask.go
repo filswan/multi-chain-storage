@@ -47,14 +47,17 @@ func DoCreateTask() error {
 		logs.GetLogger().Error(err)
 		return err
 	}
-	whereCondition := "lower(lock_payment_status)=lower('" + constants.LOCK_PAYMENT_STATUS_PROCESSING + "') and task_uuid = '' "
+	whereCondition := "lower(lock_payment_status)=lower('" + constants.LOCK_PAYMENT_STATUS_PROCESSING + "') and task_uuid = '' and is_deleted=false "
 	dealList, err := models.FindDealFileList(whereCondition, "create_at desc", "50", "0")
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
 	}
 	for _, v := range dealList {
-		duplicatedList, err := GetDuplicateTaskInfoByPayloadCid("10", "0", v.PayloadCid)
+		//duplicatedList, err := GetDuplicateTaskInfoByPayloadCid("10", "0", v.PayloadCid)
+		whereCondition := "lower(lock_payment_status)=lower('" + constants.LOCK_PAYMENT_STATUS_PROCESSING + "') and task_uuid = '' and is_deleted=false " +
+			" and payload_cid='" + v.PayloadCid + "'"
+		duplicatedList, err := models.FindDealFileList(whereCondition, "create_at desc", "50", "0")
 		if err != nil {
 			logs.GetLogger().Error(err)
 			continue
@@ -68,7 +71,7 @@ func DoCreateTask() error {
 					dataIndex = i
 				}
 			}
-			var taskInfo *DuplicatedTaskInfo = nil
+			var taskInfo *models.DealFile = nil
 			if uuid != "" {
 				taskInfo = duplicatedList[dataIndex]
 			} else {
@@ -77,13 +80,13 @@ func DoCreateTask() error {
 			}
 			for i, v := range duplicatedList {
 				if i != dataIndex {
-					err = models.DeleteDealFile(&models.DealFile{ID: v.Did})
+					err = models.DeleteDealFile(&models.DealFile{ID: v.ID})
 					if err != nil {
 						logs.GetLogger().Error(err)
 						continue
 					}
 					currentTime := strconv.FormatInt(utils.GetEpochInMillis(), 10)
-					err = models.UpdateSourceFileDealFileMap(&models.SourceFileDealFileMap{SourceFileId: v.Sid, DealFileId: v.Did}, map[string]interface{}{"deal_file_id": taskInfo.Did, "update_time": currentTime})
+					err = models.UpdateSourceFileDealFileMap(&models.SourceFileDealFileMap{DealFileId: v.ID}, map[string]interface{}{"deal_file_id": taskInfo.ID, "update_at": currentTime})
 					if err != nil {
 						logs.GetLogger().Error(err)
 						continue
@@ -188,7 +191,7 @@ func GetMaxPriceForCreateTask(rate *big.Int, lockedFee int64, duration int, carF
 func GetDuplicateTaskInfoByPayloadCid(limit, offset, payloadCid string) ([]*DuplicatedTaskInfo, error) {
 	sql := "select s.id as sid,df.id as did,df.miner_fid,df.payload_cid,df.deal_cid,df.task_uuid,df.piece_cid,df.deal_status,df.lock_payment_status as status,df.create_at from  source_file s " +
 		" inner join source_file_deal_file_map sfdfm on s.id = sfdfm.source_file_id" +
-		" inner join deal_file df on sfdfm.deal_file_id = df.id "
+		" inner join deal_file df on sfdfm.deal_file_id = df.id and df.is_deleted = false "
 	if strings.Trim(payloadCid, " ") != "" {
 		sql = sql + " and df.payload_cid='" + payloadCid + "'"
 	}

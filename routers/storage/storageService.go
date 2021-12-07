@@ -255,6 +255,7 @@ func saveDealFileAndMapRelation(fileInfoList []*libmodel.FileDesc, sourceFile *m
 	dealFile.UpdateAt = strconv.FormatInt(currentTime, 10)
 	dealFile.Duration = duration
 	dealFile.LockPaymentStatus = constants.LOCK_PAYMENT_STATUS_WAITING
+	dealFile.IsDeleted = utils.GetBoolPointer(false)
 	err := database.SaveOne(dealFile)
 	if err != nil {
 		logs.GetLogger().Error(err)

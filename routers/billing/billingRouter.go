@@ -23,7 +23,13 @@ func BillingManager(router *gin.RouterGroup) {
 	router.GET("/price/filecoin", GetFileCoinLastestPrice)
 	router.POST("/deal/lockpayment/status", UpdateLockPaymentInfoByPayloadCid)
 	router.GET("/deal/lockpayment/info", GetLockPaymentInfoByPayloadCid)
+	router.GET("/deal/lockpayment", LockPaymentForUser)
 }
+
+func LockPaymentForUser(c *gin.Context) {
+
+}
+
 func GetLockPaymentInfoByPayloadCid(c *gin.Context) {
 	authorization := c.Request.Header.Get("authorization")
 	if len(authorization) == 0 {

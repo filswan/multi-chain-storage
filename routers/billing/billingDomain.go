@@ -13,6 +13,7 @@ type BillingResult struct {
 	UnlockToUserAddress string `json:"unlock_to_user_address"`
 	UnlockToUserAmount  string `json:"unlock_to_user_amount"`
 	UnlockTime          string `json:"unlock_time"`
+	FileName            string `json:"file_name"`
 }
 
 type BillingRequest struct {

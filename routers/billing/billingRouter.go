@@ -23,7 +23,13 @@ func BillingManager(router *gin.RouterGroup) {
 	router.GET("/price/filecoin", GetFileCoinLastestPrice)
 	router.POST("/deal/lockpayment/status", UpdateLockPaymentInfoByPayloadCid)
 	router.GET("/deal/lockpayment/info", GetLockPaymentInfoByPayloadCid)
+	router.GET("/deal/lockpayment", LockPaymentForUser)
 }
+
+func LockPaymentForUser(c *gin.Context) {
+
+}
+
 func GetLockPaymentInfoByPayloadCid(c *gin.Context) {
 	authorization := c.Request.Header.Get("authorization")
 	if len(authorization) == 0 {
@@ -139,7 +145,7 @@ func GetUserBillingHistory(c *gin.Context) {
 		return
 	}
 
-	recordCount, err := getBillingCount(walletAddress)
+	recordCount, err := getBillingCount(walletAddress, txHash)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_COUNT_ERROR_CODE, errorinfo.GET_RECORD_COUNT_ERROR_MSG))

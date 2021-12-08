@@ -182,7 +182,7 @@ func saveSourceFileToDB(srcFile *multipart.FileHeader, srcFilepath string, userI
 }
 
 func GetSourceFileAndDealFileInfoByPayloadCid(payloadCid string) ([]*SourceFileAndDealFileInfo, error) {
-	sql := "select s.user_id,s.ipfs_url,d.id,d.payload_cid,d.deal_cid,d.deal_id,d.lock_payment_status,s.create_at from source_file s,source_file_deal_file_map m,deal_file d " +
+	sql := "select s.user_id,s.ipfs_url,s.file_name,d.id,d.payload_cid,d.deal_cid,d.deal_id,d.lock_payment_status,s.create_at from source_file s,source_file_deal_file_map m,deal_file d " +
 		" where s.id = m.source_file_id and m.deal_file_id = d.id and d.payload_cid='" + payloadCid + "'"
 	var results []*SourceFileAndDealFileInfo
 	err := database.GetDB().Raw(sql).Order("create_at desc").Limit(10).Offset(0).Order("create_at desc").Scan(&results).Error
@@ -473,4 +473,14 @@ func GetThreshHold() (uint8, error) {
 	}
 	logs.GetLogger().Info("dao threshHold is : ", threshHold)
 	return threshHold, nil
+}
+
+func GetDealFileInfoByPayloadCid(payloadCid string) ([]*models.DealFile, error) {
+	dealFileList, err := models.FindDealFileList(&models.DealFile{PayloadCid: payloadCid}, "", "10", "0")
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+
+	}
+	return dealFileList, nil
 }

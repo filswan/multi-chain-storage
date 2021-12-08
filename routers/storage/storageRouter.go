@@ -171,6 +171,16 @@ func GetDealListFromFilink(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE, errorinfo.GET_RECORD_lIST_ERROR_CODE+": get lock found info from db occurred error"))
 		return
 	}
+	fileList, err := GetSourceFileAndDealFileInfoByPayloadCid(payloadCid)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE, errorinfo.GET_RECORD_lIST_ERROR_CODE+": get deal file info from db occurred error"))
+		return
+	}
+	if len(fileList) > 0 {
+		result.Data.Data.Deal.IpfsUrl = fileList[0].IpfsUrl
+		result.Data.Data.Deal.FileName = fileList[0].FileName
+	}
 	threshHold, err := GetThreshHold()
 	if err != nil {
 		logs.GetLogger().Error(err)

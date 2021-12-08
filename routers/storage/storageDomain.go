@@ -53,6 +53,8 @@ type DealOnChainResult struct {
 				Status                   int    `json:"status"`
 				NetworkName              string `json:"network_name"`
 				StoragePrice             int    `json:"storage_price"`
+				IpfsUrl                  string `json:"ipfs_url"`
+				FileName                 string `json:"file_name"`
 			} `json:"deal"`
 		} `json:"data"`
 		Result struct {

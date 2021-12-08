@@ -32,59 +32,16 @@ database
 - Mysql5.5
 - Lotus lite node (Please make sure that lotus lite node and payment bridge project are running on the same server)
 
-### Install lotus lite node
+### Install lotus node
 
-Used for making car files and sending offline deals <br>
+Lotus node is Used for making car files and sending offline deals <br>
 You can use lotus full node, but the full node is too heavy, you can use lotus lite node instead <br>
-Take linux as an example to introduce how to install louds lite node <br>
-But the lite node needs to communicate and interact with a full node   <br>
-please make sure you have a full node that can communicate with rpc first <br>
+If you deploy the payment-bridge project, you need to deploy the payment-bridge and lotus full nodes on the same server <br>
+If you don’t want to deploy payment-bridge and lotus full node on the same server,you can also choose to deploy a lotus lite node<br>
+Please make sure that you already have a lotus full node, because lotus lite node needs to communicate with a full node  <br>
+#### Option one: **install a lotus full node**: See [lotus full node official installation document](https://lotus.filecoin.io/docs/set-up/install/)
+#### Option two: **install a lotus lite node**: See [lotus lite node official installation document](https://lotus.filecoin.io/docs/set-up/lotus-lite/#amd-and-intel-based-computers)
 
-### 1 Clone the Lotus GitHub repository
-
-```console
-git clone https://github.com/filecoin-project/lotus
-cd lotus
-git submodule update --init --recursive
-```
-
-### 2 Create the executable, but do not run anything yet
-
-```console
-make clean all
-sudo make install
-```
-
-### 3 Create the lotus daemon
-
-If you want to make a lotus lite node for mainnet,use command "make lotus"  <br>
-If you want to make a lotus lite node for testnet,use command "make lotus calibnet"
-
-```console
-make lotus 
-```
-# 
-### 4 Start the lite node
-
-On the lite node, create an environment variable called FULLNODE_API_INFO and give it the following value while calling
-lotus daemon --lite.  <br>
-Make sure to replace API_TOKEN with the token you got from the full node and YOUR_FULL_NODE_IP_ADDRESS with the IP
-address of your full-node
-
-```console
-FULLNODE_API_INFO=API_TOKEN:/ip4/YOUR_FULL_NODE_IP_ADDRESS/tcp/1234 lotus daemon --lite
-```
-
-your local lite node rpc url will be : http://127.0.0.1:1234/rpc/v0
-
-### 5 Genarate a token with your local lite node
-
-The generated token will be used in config.toml--->[lotus]--->access_token configuration item
-
-```console
-lotus auth create-token --perm admin
-xxxxxxxxxxxxxxxx..
-```
 
 ## Getting Started with PaymentBridge
 
@@ -104,8 +61,11 @@ make ffi
 
 ### 3 Build project
 
-Enter payment-bridge directory <br>
-adn execute the make command
+Enter payment-bridge directory,and execute the make command  <br>
+You can get a runnable binary file named payment_bridge and config file in $GOPATH/src/payment-bridge/config/ <br>
+We support multi-chain payment,for example<br>
+If you want to pay on polygon network,you also need to edit $GOPATH/src/payment-bridge/config/polygon/config_polygon.toml<br>
+If you want to pay on goerli network,you also need to edit$GOPATH/src/payment-bridge/config/goerli/config_goerli.toml<br>
 
 ```console
 cd $GOPATH/src/payment-bridge/
@@ -114,21 +74,22 @@ GO111MODULE=on make
 
 ### 4 Run the project
 
-Enter payment-bridge/scan/build/bin directory, and execute the binary file of the payment-bridge project <br>
+Enter payment-bridge/build/ directory, and execute the binary file of the payment-bridge project <br>
 Before actually running the payment bridege project, you need to read the section about config introduction below <br>
-and then fill in the configuration items as required, and then run this project
+and then fill in the configuration items as required, and then run this project<br>
 
 ```console
-cd $GOPATH/src/payment-bridge/scan/build/bin`
+cd $GOPATH/src/payment-bridge/build/`
 chmod +x payment-bridge
 ./payment_bridge
 ```
 
 ##### Note:
-
-Before running the ./payment-bridge command, you need to edit the config file, the configuration items will be
-introduced below
-
+you need to edit the config file and input your config params, the configuration items will be introduced below<br>
+Take payment on the polygon network as an example, before running the ./payment-bridge command<br>
+You need to edit two config file: 
+- $GOPATH/src/payment-bridge/build/config/config.toml
+- $GOPATH/src/payment-bridge/build/config/polygon/config_polygon.toml
 ## Configuration
 
 ### config.toml
@@ -266,16 +227,31 @@ cycle_time_interval = 10 #unit:second
   storage fee, and the remaining locked virtual currency Is returned to the customer's wallet
 
 ## Database table description
+You can get db table ddl sql script in $GOPATH/src/payment-bridge/script/dbschema.sql <br>
+There are two tables you need to initialize the data before you can use it<br>
 
-|table                 |description       |
-|----------------------|------------------|
-|block_scan_record     |record the block number that has been scanned to the blockchain|
-|event_goerli          |record eligible data on goerli  chain  |
-|event_polygon         |record eligible data on polygon chain  |
-|event_bsc             |record eligible data on bsc chain      |
-|event_nbai            |record eligible data on nbai   chain   |
-|system_config_param   |record system config                   |
-|dao_event_log         |record dao signature event log         |
+###system_config_param
+|column                 |description       |
+|param_key              |param_value       |
+|-----------------------|------------------|
+|SWAN_PAYMENT_CONTRACT_ADDRESS     |swan payment gateway contract address                     |
+|LOCK_TIME                         |time that user's token will be locked time                |
+|RECIPIENT                         |admin wallet address, used to receive tokens paid by users|
+|PAY_GAS_LIMIT                     |max gas limit                                             |
+|USDC_ADDRESS                      |usdc address                                              |
+
+###dao_info
+###system_config_param
+|column                 |description       |
+|-----------------------|------------------|
+|ID                     |primary key of table   |
+|DAO_NAME               |dao's name,required    |
+|DAO_ADDRESS            |dao's address,required |
+|ORDER_INDEX            |dao display order      |
+|DESCRIPTION            |description            |
+|CREATE_AT              |create time            |
+
+
 
 ## Other Topics
 

@@ -36,11 +36,21 @@ func GetFileCoinLastestPriceService() (*PriceResult, error) {
 	return price, nil
 }
 
-func getBillingCount(walletAddress string) (int64, error) {
-	sql := "select  count(* ) as total_record " +
-		"from event_lock_payment ep left join event_unlock_payment eup   on eup.payload_cid = ep.payload_cid where ep.address_from='" + walletAddress + "'"
+func getBillingCount(walletAddress, txHash string) (int64, error) {
+	/*sql := "select  count(* ) as total_record " +
+	"from event_lock_payment ep left join event_unlock_payment eup   on eup.payload_cid = ep.payload_cid where ep.address_from='" + walletAddress + "'"*/
+	sql := " select count(* ) as total_record from ( " +
+		"     select ep.* from event_lock_payment ep " +
+		"     left join event_unlock_payment eup   on eup.payload_cid = ep.payload_cid " +
+		"     where ep.address_from='" + walletAddress + "'"
+	if txHash != "" {
+		sql = sql + " and ep.tx_hash='" + txHash + "' "
+	}
+	endSql := " ) bh inner join  (select distinct substring_index(source_file_path, '/', -1) as file_name, payload_cid from deal_file) as df " +
+		" on bh.payload_cid=df.payload_cid "
+	finalSql := sql + endSql
 	var recordCount common2.RecordCount
-	err := database.GetDB().Raw(sql).Scan(&recordCount).Error
+	err := database.GetDB().Raw(finalSql).Scan(&recordCount).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return 0, err
@@ -61,8 +71,8 @@ func getBillHistoryList(walletAddress, txHash, limit, offset string) ([]*Billing
 		" inner join network ne on t.network_id= ne.id" +
 		" order by lock_payment_time desc"
 	finalSql := " select bh.*,df.file_name from (" + startSql + endSql + " ) as bh inner join " +
-		" ( select distinct substring_index(source_file_path, '/', -1) as file_name, payload_cid from deal_file order by update_at desc) as df " +
-		" where bh.payload_cid=df.payload_cid"
+		" ( select distinct substring_index(source_file_path, '/', -1) as file_name, payload_cid from deal_file ) as df " +
+		" on bh.payload_cid=df.payload_cid"
 
 	var billingResultList []*BillingResult
 	err := database.GetDB().Raw(finalSql).Limit(limit).Offset(offset).Scan(&billingResultList).Error

@@ -145,7 +145,7 @@ func GetUserBillingHistory(c *gin.Context) {
 		return
 	}
 
-	recordCount, err := getBillingCount(walletAddress)
+	recordCount, err := getBillingCount(walletAddress, txHash)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_COUNT_ERROR_CODE, errorinfo.GET_RECORD_COUNT_ERROR_MSG))

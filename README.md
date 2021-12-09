@@ -14,23 +14,30 @@ network. Now supports payment with tokens such as USDC on polygon
 # Modules
 
 * [Token Swap](#Token Swap)
+* Lock payment
+* DAO Signature
+* Unlock payment
 * Data DAO : [Flink](https://github.com/filswan/flink)
 * IPFS/Filecoin Storage
 
 ## Token Swap
+Token Swap module is in charge of swap the user token to wrapped token, it can be USDC or other tokens
 
-Token Swap module is in charge of swap the user token to wrapped token, it can be USDC or other tokens.
-
-### Scan Module
-
-Scan the blockchain, find the event log of the block where the swan payment contract has been executed,and save to the
-database
+### Lock payment
+When the user uploads the file, the amount that the user needs to pay will be estimated based on the average price of the entire network of the miner <br>
+The token of the extra part that is locked will be returned to the user through the unlock operation later
+### DAO Organization
+If Dao detects that the file uploaded by the user has been chained, it will trigger a signature operation <br>
+### Unlock payment
+When more than half of the signed dao, the unlock operation will be triggered <br>
+The part that needs to be paid is deducted from the locked token, and the remaining token will be returned to the user
 
 ### Prerequisite
 
 - Golang1.16 (minimum version)
 - Mysql5.5
 - Lotus lite node (Please make sure that lotus lite node and payment bridge project are running on the same server)
+- IPFS Client
 
 ### Install lotus node
 
@@ -41,6 +48,9 @@ If you don’t want to deploy payment-bridge and lotus full node on the same ser
 Please make sure that you already have a lotus full node, because lotus lite node needs to communicate with a full node  <br>
 #### Option one: **install a lotus full node**: See [lotus full node official installation document](https://lotus.filecoin.io/docs/set-up/install/)
 #### Option two: **install a lotus lite node**: See [lotus lite node official installation document](https://lotus.filecoin.io/docs/set-up/lotus-lite/#amd-and-intel-based-computers)
+
+### Install IPFS client
+#### **How to install IPFS client**: See [IPFS official installation document](https://docs.ipfs.io/install/)
 
 
 ## Getting Started with PaymentBridge
@@ -230,7 +240,7 @@ cycle_time_interval = 10 #unit:second
 You can get db table ddl sql script in $GOPATH/src/payment-bridge/script/dbschema.sql <br>
 There are two tables you need to initialize the data before you can use it<br>
 
-###system_config_param
+### system_config_param
 |column                 |description       |
 |param_key              |param_value       |
 |-----------------------|------------------|
@@ -240,8 +250,8 @@ There are two tables you need to initialize the data before you can use it<br>
 |PAY_GAS_LIMIT                     |max gas limit                                             |
 |USDC_ADDRESS                      |usdc address                                              |
 
-###dao_info
-###system_config_param
+### dao_info
+### system_config_param
 |column                 |description       |
 |-----------------------|------------------|
 |ID                     |primary key of table   |

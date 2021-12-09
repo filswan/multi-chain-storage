@@ -75,7 +75,7 @@ func getBillHistoryList(walletAddress, txHash, limit, offset string) ([]*Billing
 		" on bh.payload_cid=df.payload_cid"
 
 	var billingResultList []*BillingResult
-	err := database.GetDB().Raw(finalSql).Limit(limit).Offset(offset).Scan(&billingResultList).Error
+	err := database.GetDB().Raw(finalSql).Limit(limit).Offset(offset).Order("lock_payment_time desc").Scan(&billingResultList).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err

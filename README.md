@@ -29,8 +29,8 @@ The token of the extra part that is locked will be returned to the user through 
 ### DAO Organization
 If Dao detects that the file uploaded by the user has been chained, it will trigger a signature operation <br>
 ### Unlock payment
-When more than half of the signed dao, the unlock operation will be triggered <br>
-The part that needs to be paid is deducted from the locked token, and the remaining token will be returned to the user
+When more than half of the dao have been signed, the unlock operation will be triggered <br>
+The part that needs to be paid will be deducted from the locked token, and the remaining token will be returned to the user
 
 ### Prerequisite
 

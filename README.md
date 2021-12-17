@@ -104,8 +104,7 @@ GO111MODULE=on make
 ### 5 Run the project
 
 Enter payment-bridge/build/ directory, and execute the binary file of the payment-bridge project <br>
-Before actually running the payment bridege project <br>
-you need to read the section about config introduction below <br>
+Before actually running the payment bridege project, you need to read the section about config introduction below,
 and then fill in the configuration items as required, and then run this project<br>
 
 ```console

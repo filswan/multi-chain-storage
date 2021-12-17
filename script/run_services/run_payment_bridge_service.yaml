@@ -1,0 +1,25 @@
+- hosts: localhost
+
+  tasks:
+    # Create and start payment bridge service
+    - name: Copy payment bridge system service file
+      copy:
+        src: "{{playbook_dir}}/payment_bridge.service"
+        dest: /lib/systemd/system/payment_bridge.service
+        owner: root
+        group: root
+        mode: 0644
+      become: yes
+    - name: Reload systemd
+      command: systemctl daemon-reload
+      become: yes
+    - name: Enable payment_bridge service
+      service: 
+        name: payment_bridge 
+        enabled: yes
+      become: yes
+    - name: Start payment_bridge service
+      service: 
+        name: payment_bridge 
+        state: started
+      become: yes

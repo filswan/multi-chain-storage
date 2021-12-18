@@ -33,11 +33,16 @@ When more than half of the dao have been signed, the unlock operation will be tr
 The part that needs to be paid will be deducted from the locked token, and the remaining token will be returned to the user
 
 ### Prerequisite
-
+- OS: Ubuntu 20.04 LTS
+- Ansible: Version 2.12+
+- Python 3.6+
 - Golang1.16 (minimum version)
 - Mysql5.5
 - Lotus lite node (Please make sure that lotus lite node and payment bridge project are running on the same server)
 - IPFS Client
+
+If python3 or ansible is not yet installed in the system, please run `install_pre-requisite.sh` script first <br>
+You can get this script from our payment-bridge source code which will be introduced below 
 
 ### Install lotus node
 
@@ -61,7 +66,21 @@ Please make sure that you already have a lotus full node, because lotus lite nod
 git clone https://github.com/filswan/payment-bridge
 ```
 
-### 2 Pull-in the submodules:
+
+### 2 Install MCP Dependencies
+If python3 or ansible is not yet installed in the system, please run `install_pre-requisite.sh` script first:
+```bash
+cd $GOPATH/src/payment-bridge/script/
+chmod +x .install_pre-requisite.sh
+./install_pre-requisite.sh
+```
+To install dependencies for MCP, please run the following command in bash shell and input sudo password when prompt:
+```bash
+cd $GOPATH/src/payment-bridge/script/install_dependencies/
+ansible-playbook mcp_dependencies.yaml --ask-become-pass -vvv
+```
+
+### 3 Pull-in the submodules:
 
 ```console
 cd $GOPATH/src/payment-bridge/
@@ -69,7 +88,7 @@ git submodule update --init --recursive
 make ffi
 ```
 
-### 3 Build project
+### 4 Build project
 
 Enter payment-bridge directory,and execute the make command  <br>
 You can get a runnable binary file named payment_bridge and config file in $GOPATH/src/payment-bridge/config/ <br>
@@ -82,10 +101,10 @@ cd $GOPATH/src/payment-bridge/
 GO111MODULE=on make
 ```
 
-### 4 Run the project
+### 5 Run the project
 
 Enter payment-bridge/build/ directory, and execute the binary file of the payment-bridge project <br>
-Before actually running the payment bridege project, you need to read the section about config introduction below <br>
+Before actually running the payment bridege project, you need to read the section about config introduction below,
 and then fill in the configuration items as required, and then run this project<br>
 
 ```console
@@ -260,6 +279,17 @@ There are two tables you need to initialize the data before you can use it<br>
 |ORDER_INDEX            |dao display order      |
 |DESCRIPTION            |description            |
 |CREATE_AT              |create time            |
+
+### Run Payment Bridge as system service
+Before running the playbook to start payment bridge as a system service, please first change the following line in `$GOPATH/src/payment-bridge/script/run_services/payment_bridge.service` to the actual path of payment bridge executable:
+```
+ExecStart=/home/filswan/payment-bridge/build/payment-bridge
+```
+Now we can run Payment Bridge as a system service by executing the following command in shell and entering sudo password when prompt:
+```bash
+cd $GOPATH/src/payment-bridge/script/run_services
+ansible-playbook run_payment_bridge_service.yaml --ask-become-pass -vvv
+```
 
 
 

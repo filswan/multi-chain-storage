@@ -1,0 +1,14 @@
+[Unit]
+Description=Payment Bridge (MCP Backend) Service
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+ExecStart=/home/filswan/payment-bridge/build/payment-bridge
+Restart=always
+RestartSec=1
+KillMode=mixed
+
+[Install]
+WantedBy=multi-user.target

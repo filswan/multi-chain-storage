@@ -29,7 +29,7 @@ import (
 	"time"
 )
 
-func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multipart.FileHeader, duration, userId int) (string, string, int, error) {
+func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multipart.FileHeader, duration, userId int, walletAddress string) (string, string, int, error) {
 	temDirDeal := config.GetConfig().SwanTask.DirDeal
 
 	logs.GetLogger().Info("temp dir is ", temDirDeal)
@@ -116,7 +116,7 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 		} else {
 			if len(lockPaymentList) > 0 {
 				needPay = 3
-				sourceFile, err := saveSourceFileToDB(srcFile, srcFilepath, userId, filePathInIpfs)
+				sourceFile, err := saveSourceFileToDB(srcFile, srcFilepath, userId, filePathInIpfs, walletAddress)
 				if err != nil {
 					logs.GetLogger().Error(err)
 					return "", "", needPay, err
@@ -136,7 +136,7 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 				return fileList[0].DataCid, sourceAndDealFileList[0].IpfsUrl, needPay, nil
 			} else {
 				needPay = 4
-				sourceFile, err := saveSourceFileToDB(srcFile, srcFilepath, userId, filePathInIpfs)
+				sourceFile, err := saveSourceFileToDB(srcFile, srcFilepath, userId, filePathInIpfs, walletAddress)
 				if err != nil {
 					logs.GetLogger().Error(err)
 					return "", "", needPay, err
@@ -150,7 +150,7 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 			}
 		}
 	} else {
-		sourceFile, err := saveSourceFileToDB(srcFile, srcFilepath, userId, filePathInIpfs)
+		sourceFile, err := saveSourceFileToDB(srcFile, srcFilepath, userId, filePathInIpfs, walletAddress)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			return "", "", needPay, err
@@ -164,15 +164,17 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 	}
 }
 
-func saveSourceFileToDB(srcFile *multipart.FileHeader, srcFilepath string, userId int, filePathInIpfs string) (*models.SourceFile, error) {
+func saveSourceFileToDB(srcFile *multipart.FileHeader, srcFilepath string, userId int, filePathInIpfs, walletAddress string) (*models.SourceFile, error) {
 	sourceFile := new(models.SourceFile)
 	sourceFile.FileName = srcFile.Filename
 	sourceFile.FileSize = strconv.FormatInt(srcFile.Size, 10)
 	sourceFile.ResourceUri = srcFilepath
 	sourceFile.CreateAt = strconv.FormatInt(utils.GetEpochInMillis(), 10)
-	sourceFile.UserId = userId
+	//todo userid
+	//sourceFile.UserId = userId
 	sourceFile.IpfsUrl = filePathInIpfs
 	sourceFile.PinStatus = constants.IPFS_File_PINNED_STATUS
+	sourceFile.WalletAddress = walletAddress
 	err := database.SaveOne(sourceFile)
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -182,7 +184,7 @@ func saveSourceFileToDB(srcFile *multipart.FileHeader, srcFilepath string, userI
 }
 
 func GetSourceFileAndDealFileInfoByPayloadCid(payloadCid string) ([]*SourceFileAndDealFileInfo, error) {
-	sql := "select s.user_id,s.ipfs_url,s.file_name,d.id,d.payload_cid,d.deal_cid,d.deal_id,d.lock_payment_status,s.create_at from source_file s,source_file_deal_file_map m,deal_file d " +
+	sql := "select s.wallet_address,s.ipfs_url,s.file_name,d.id,d.payload_cid,d.deal_cid,d.deal_id,d.lock_payment_status,s.create_at from source_file s,source_file_deal_file_map m,deal_file d " +
 		" where s.id = m.source_file_id and m.deal_file_id = d.id and d.payload_cid='" + payloadCid + "'"
 	var results []*SourceFileAndDealFileInfo
 	err := database.GetDB().Raw(sql).Order("create_at desc").Limit(10).Offset(0).Order("create_at desc").Scan(&results).Error
@@ -276,10 +278,10 @@ func saveDealFileAndMapRelation(fileInfoList []*libmodel.FileDesc, sourceFile *m
 	return nil
 }
 
-func GetSourceFileAndDealFileInfo(limit, offset string, userId int, payloadCid, fileName string) ([]*SourceFileAndDealFileInfo, error) {
+func GetSourceFileAndDealFileInfo(limit, offset string, walletAddress string, payloadCid, fileName string) ([]*SourceFileAndDealFileInfo, error) {
 	sql := "select s.file_name,s.file_size,s.pin_status,s.create_at,df.miner_fid,df.payload_cid,df.deal_cid,df.deal_id,df.piece_cid,df.deal_status,df.lock_payment_status as status,df.duration from  source_file s " +
 		" inner join source_file_deal_file_map sfdfm on s.id = sfdfm.source_file_id" +
-		" inner join deal_file df on sfdfm.deal_file_id = df.id and user_id=" + strconv.Itoa(userId)
+		" inner join deal_file df on sfdfm.deal_file_id = df.id and wallet_address='" + walletAddress + "' "
 	if strings.Trim(payloadCid, " ") != "" {
 		sql = sql + " and df.payload_cid='" + payloadCid + "'"
 	}
@@ -295,11 +297,11 @@ func GetSourceFileAndDealFileInfo(limit, offset string, userId int, payloadCid, 
 	return results, nil
 }
 
-func GetSourceFileAndDealFileInfoCount(userId int) (int64, error) {
+func GetSourceFileAndDealFileInfoCount(walletAddress string) (int64, error) {
 	sql := "select count(1) as total_record from  source_file s " +
 		" inner join source_file_deal_file_map sfdfm on s.id = sfdfm.source_file_id" +
 		" inner join deal_file df on sfdfm.deal_file_id = df.id" +
-		" where s.user_id=" + strconv.Itoa(userId)
+		" where s.wallet_address='" + walletAddress + "'"
 	var recordCount common.RecordCount
 	err := database.GetDB().Raw(sql).Scan(&recordCount).Error
 	if err != nil {

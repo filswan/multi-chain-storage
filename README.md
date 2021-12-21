@@ -71,7 +71,7 @@ git clone https://github.com/filswan/payment-bridge
 If python3 or ansible is not yet installed in the system, please run `install_pre-requisite.sh` script first:
 ```bash
 cd $GOPATH/src/payment-bridge/script/
-chmod +x .install_pre-requisite.sh
+chmod +x ./install_pre-requisite.sh
 ./install_pre-requisite.sh
 ```
 To install dependencies for MCP, please run the following command in bash shell and input sudo password when prompt:

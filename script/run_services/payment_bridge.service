@@ -1,11 +1,10 @@
 [Unit]
 Description=Payment Bridge (MCP Backend) Service
-After=network.target
-StartLimitIntervalSec=0
 
 [Service]
 Type=simple
-ExecStart=/home/filswan/payment-bridge/build/payment-bridge
+ExecStart=/home/zzq/go/src/payment-bridge/build/payment-bridge
+StandardOutput=/home/zzq/go/src/payment-bridge/build/payment-bridge/build/pb_log.log
 Restart=always
 RestartSec=1
 KillMode=mixed

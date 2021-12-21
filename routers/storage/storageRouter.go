@@ -207,28 +207,20 @@ func GetDealListFromFilink(c *gin.Context) {
 }
 
 func UploadFileToIpfs(c *gin.Context) {
-	authorization := c.Request.Header.Get("authorization")
-	if len(authorization) == 0 {
-		c.JSON(http.StatusUnauthorized, common.CreateErrorResponse(errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_CODE, errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_MSG))
-		return
-	}
-
-	jwtToken := strings.TrimPrefix(authorization, "Bearer ")
-	claims, err := utils.DecodeJwtToken(jwtToken)
-	if err != nil {
+	walletAddress := c.PostForm("wallet_address")
+	if strings.Trim(walletAddress, " ") == "" {
+		errMsg := "wallet_address can not be null"
+		err := errors.New(errMsg)
 		logs.GetLogger().Error(err)
-		c.JSON(http.StatusUnauthorized, common.CreateErrorResponse(errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_CODE, errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_MSG))
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_CODE, errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_MSG+":"+errMsg))
 		return
 	}
-	userId := int(claims["sub"].(float64))
-
 	file, err := c.FormFile("file")
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_CODE, errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_MSG+":get file from user occurred error,please try again"))
 		return
 	}
-
 	duration := c.PostForm("duration")
 	if strings.Trim(duration, " ") == "" {
 		errMsg := "duraion can not be null"
@@ -246,7 +238,7 @@ func UploadFileToIpfs(c *gin.Context) {
 	}
 	durationInt = durationInt * 24 * 60 * 60 / 30
 
-	payloadCid, ipfsDownloadPath, needPay, err := SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c, file, durationInt, userId)
+	payloadCid, ipfsDownloadPath, needPay, err := SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c, file, durationInt, 0, walletAddress)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.SENDING_DEAL_ERROR_CODE, errorinfo.SENDING_DEAL_ERROR_MSG))
 		return
@@ -268,20 +260,14 @@ func GetDealListFromLocal(c *gin.Context) {
 	URL := c.Request.URL.Query()
 	pageNumber := URL.Get("page_number")
 	pageSize := URL.Get("page_size")
-	authorization := c.Request.Header.Get("authorization")
-	if len(authorization) == 0 {
-		c.JSON(http.StatusUnauthorized, common.CreateErrorResponse(errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_CODE, errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_MSG))
-		return
-	}
-	jwtToken := strings.TrimPrefix(authorization, "Bearer ")
-	claims, err := utils.DecodeJwtToken(jwtToken)
-	if err != nil {
+	walletAddress := URL.Get("wallet_address")
+	if strings.Trim(walletAddress, " ") == "" {
+		errMsg := "wallet_address can not be null"
+		err := errors.New(errMsg)
 		logs.GetLogger().Error(err)
-		c.JSON(http.StatusUnauthorized, common.CreateErrorResponse(errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_CODE, errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_MSG))
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_CODE, errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_MSG+":"+errMsg))
 		return
 	}
-	userId := claims["sub"]
-
 	if (strings.Trim(pageNumber, " ") == "") || (strings.Trim(pageNumber, " ") == "0") {
 		pageNumber = "1"
 	} else {
@@ -305,7 +291,7 @@ func GetDealListFromLocal(c *gin.Context) {
 	}
 	payloadCid := strings.Trim(URL.Get("payload_cid"), " ")
 	fileName := strings.Trim(URL.Get("file_name"), " ")
-	infoList, err := GetSourceFileAndDealFileInfo(pageSize, strconv.FormatInt(offset, 10), int(userId.(float64)), payloadCid, fileName)
+	infoList, err := GetSourceFileAndDealFileInfo(pageSize, strconv.FormatInt(offset, 10), walletAddress, payloadCid, fileName)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE, errorinfo.GET_RECORD_lIST_ERROR_MSG+": get source file and deal info from db occurred error"))
@@ -314,7 +300,7 @@ func GetDealListFromLocal(c *gin.Context) {
 	pageInfo := new(common.PageInfo)
 	pageInfo.PageSize = pageSize
 	pageInfo.PageNumber = pageNumber
-	totalCount, err := GetSourceFileAndDealFileInfoCount(int(userId.(float64)))
+	totalCount, err := GetSourceFileAndDealFileInfoCount(walletAddress)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_COUNT_ERROR_CODE, errorinfo.GET_RECORD_COUNT_ERROR_MSG+": get source file and deal info total record number from db occurred error"))

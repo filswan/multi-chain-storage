@@ -46,7 +46,7 @@ ffi:
 build: ## Build the binary file
 	@go mod download
 	@go mod tidy
-	@go build -o build/payment-bridge main/payment-bridge.go
+	@go build -o build/multi-chain-payment main.go
 	@mkdir -p ./build/config ./build/config/bsc ./build/config/goerli ./build/config/nbai ./build/config/polygon
 	@mkdir -p ./build/on-chain/contracts/abi
 	@cp ./config/config.toml.example ./build/config/config.toml

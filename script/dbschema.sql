@@ -2,75 +2,68 @@ create schema payment_bridge collate utf8_bin;
 use payment_bridge;
 create table if not exists dao_fetched_deal
 (
-	id bigint auto_increment
-		primary key,
-	deal_id bigint not null,
+	id        bigint auto_increment primary key,
+	deal_id   bigint       not null,
 	create_at varchar(128) not null
 );
 
 create table if not exists dao_info
 (
-	id bigint auto_increment
-		primary key,
-	dao_name varchar(255) not null,
+	id          bigint auto_increment primary key,
+	dao_name    varchar(255) not null,
 	dao_address varchar(255) null,
-	order_index int not null,
+	order_index int          not null,
 	description varchar(255) null,
-	create_at varchar(64) null
+	create_at   varchar(64)  null
 );
 
 create table if not exists deal_file
 (
-	id bigint auto_increment
-		primary key,
-	deal_cid varchar(255) default '' null,
-	car_file_name varchar(255) charset utf8 null,
-	payload_cid varchar(255) charset utf8 null,
-	deal_id bigint null,
-	piece_cid varchar(255) charset utf8 null,
-	car_file_size bigint null,
-	miner_fid varchar(128) null,
-	source_file_path varchar(255) charset utf8 null,
-	car_file_path varchar(255) charset utf8 null,
-	car_md5 varchar(45) charset utf8 null,
-	deal_status varchar(64) charset utf8 null,
-	pin_status varchar(64) null,
-	duration int null,
-	task_uuid varchar(128) default '' null,
-	cost varchar(255) null,
+	id                    bigint auto_increment primary key,
+	deal_cid              varchar(255) default '' null,
+	car_file_name         varchar(255) charset utf8 null,
+	payload_cid           varchar(255) charset utf8 null,
+	deal_id               bigint null,
+	piece_cid             varchar(255) charset utf8 null,
+	car_file_size         bigint null,
+	miner_fid             varchar(128) null,
+	source_file_path      varchar(255) charset utf8 null,
+	car_file_path         varchar(255) charset utf8 null,
+	car_md5               varchar(45) charset utf8 null,
+	deal_status           varchar(64) charset utf8 null,
+	pin_status            varchar(64) null,
+	duration              int null,
+	task_uuid             varchar(128) default '' null,
+	cost                  varchar(255) null,
 	client_wallet_address varchar(255) null,
-	lock_payment_tx varchar(255) null,
-	lock_payment_status varchar(32) default 'Pending' null,
-	lock_payment_network bigint null,
-	dao_sign_status varchar(32) null,
-	send_deal_status varchar(32) default '' null,
-	verified tinyint(1) default 0 null,
-	create_at varchar(128) null,
-	delete_at varchar(128) null,
-	update_at varchar(128) null,
-	is_deleted tinyint(1) default 0 null
+	lock_payment_tx       varchar(255) null,
+	lock_payment_status   varchar(32) default 'Pending' null,
+	lock_payment_network  bigint null,
+	dao_sign_status       varchar(32) null,
+	send_deal_status      varchar(32) default '' null,
+	verified              tinyint(1) default 0 null,
+	create_at             varchar(128) null,
+	delete_at             varchar(128) null,
+	update_at             varchar(128) null,
+	is_deleted            tinyint(1) default 0 null
 );
 
-create index deal_file_network_id_fk
-	on deal_file (lock_payment_network);
+create index deal_file_network_id_fk on deal_file (lock_payment_network);
 
 create table if not exists network
 (
-	id bigint auto_increment
-		primary key,
+	id           bigint auto_increment primary key,
 	network_name varchar(255) not null,
-	uuid varchar(128) null,
-	rpc_url varchar(255) null,
-	native_coin varchar(128) null,
-	description varchar(255) null,
-	constraint network_info_uuid_uindex
-		unique (uuid)
+	uuid         varchar(128) null,
+	rpc_url      varchar(255) null,
+	native_coin  varchar(128) null,
+	description  varchar(255) null,
+	constraint network_info_uuid_uindex	unique (uuid)
 );
 
 create table if not exists block_scan_record
 (
-	id bigint auto_increment
-		primary key,
+	id         bigint auto_increment primary key,
 	network_id bigint null,
 	last_current_block_number bigint not null,
 	update_at varchar(64) null,

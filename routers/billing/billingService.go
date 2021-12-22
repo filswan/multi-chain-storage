@@ -4,10 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/ethclient"
 	"math/big"
 	"net/http"
 	"payment-bridge/blockchain/browsersync/scanlockpayment/polygon"
@@ -18,6 +14,11 @@ import (
 	"payment-bridge/logs"
 	"payment-bridge/on-chain/goBind"
 	"strings"
+
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/ethclient"
 )
 
 func GetFileCoinLastestPriceService() (*PriceResult, error) {
@@ -70,7 +71,7 @@ func getBillHistoryList(walletAddress, txHash, limit, offset string) ([]*Billing
 	endSql := " ) as t inner join coin co on t.coin_id=co.id " +
 		" inner join network ne on t.network_id= ne.id" +
 		" order by lock_payment_time desc"
-	finalSql := " select bh.*,df.file_name from (" + startSql + endSql + " ) as bh inner join " +
+	finalSql := " select bh.*,df.file_name from (" + startSql + endSql + " ) as bh left join " +
 		" ( select distinct substring_index(source_file_path, '/', -1) as file_name, payload_cid from deal_file ) as df " +
 		" on bh.payload_cid=df.payload_cid"
 

@@ -3,12 +3,6 @@ package utils
 import (
 	"context"
 	"fmt"
-	"github.com/dgrijalva/jwt-go"
-	"github.com/ethereum/go-ethereum"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/filswan/go-swan-lib/constants"
 	"io"
 	"io/ioutil"
 	"math/big"
@@ -19,6 +13,13 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/dgrijalva/jwt-go"
+	"github.com/ethereum/go-ethereum"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/filswan/go-swan-lib/constants"
 )
 
 // GetEpochInMillis get current timestamp
@@ -75,7 +76,7 @@ func GetFromAndToAddressByTxHash(client *ethclient.Client, chainID *big.Int, txH
 		return nil, err
 	}
 	addrInfo.AddrTo = tx.To().Hex()
-	txMsg, err := tx.AsMessage(types.NewEIP155Signer(chainID), nil)
+	txMsg, err := tx.AsMessage(types.LatestSignerForChainID(chainID), nil)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err

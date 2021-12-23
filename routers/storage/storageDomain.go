@@ -2,7 +2,7 @@ package storage
 
 type SourceFileAndDealFileInfo struct {
 	ID                int64  `json:"id"`
-	UserId            int    `json:"user_id"`
+	WalletAddress     string `json:"wallet_address"`
 	FileName          string `json:"file_name"`
 	FileSize          string `json:"file_size"`
 	CreateAt          string `json:"create_at"`

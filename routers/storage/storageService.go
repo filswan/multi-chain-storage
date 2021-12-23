@@ -2,16 +2,6 @@ package storage
 
 import (
 	"context"
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	common2 "github.com/ethereum/go-ethereum/common"
-	clientmodel "github.com/filswan/go-swan-client/model"
-	"github.com/filswan/go-swan-client/subcommand"
-	"github.com/filswan/go-swan-lib/client/ipfs"
-	"github.com/filswan/go-swan-lib/client/swan"
-	libconstants "github.com/filswan/go-swan-lib/constants"
-	libmodel "github.com/filswan/go-swan-lib/model"
-	libutils "github.com/filswan/go-swan-lib/utils"
-	"github.com/gin-gonic/gin"
 	"mime/multipart"
 	"os"
 	"path/filepath"
@@ -27,6 +17,17 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	common2 "github.com/ethereum/go-ethereum/common"
+	clientmodel "github.com/filswan/go-swan-client/model"
+	"github.com/filswan/go-swan-client/subcommand"
+	"github.com/filswan/go-swan-lib/client/ipfs"
+	"github.com/filswan/go-swan-lib/client/swan"
+	libconstants "github.com/filswan/go-swan-lib/constants"
+	libmodel "github.com/filswan/go-swan-lib/model"
+	libutils "github.com/filswan/go-swan-lib/utils"
+	"github.com/gin-gonic/gin"
 )
 
 func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multipart.FileHeader, duration, userId int, walletAddress string) (string, string, int, error) {
@@ -105,7 +106,7 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 		return "", "", needPay, err
 	}
 	if len(sourceAndDealFileList) > 0 {
-		if sourceAndDealFileList[0].UserId == userId {
+		if sourceAndDealFileList[0].WalletAddress == walletAddress {
 			if len(lockPaymentList) > 0 {
 				needPay = 1
 				return fileList[0].DataCid, sourceAndDealFileList[0].IpfsUrl, needPay, nil

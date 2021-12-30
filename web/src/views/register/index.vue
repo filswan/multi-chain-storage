@@ -273,8 +273,8 @@ export default {
   },
   components: {},
   computed: {
-    language() {
-      return this.$store.getters.language
+    languageMcp() {
+      return this.$store.getters.languageMcp
     },
   },
 }

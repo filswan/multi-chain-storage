@@ -97,7 +97,7 @@ export default {
                 {
                     icon: 'el-icon-s-documentation',
                     index: '',
-                    title: 'Documentation',
+                    title: this.$t('route.documentation'),
                     name: '',
                     type: ''
                 },
@@ -108,8 +108,8 @@ export default {
         routerMenu() {
           return this.$store.getters.routerMenu.toString()
         },
-        language() {
-            return this.$store.getters.language
+        languageMcp() {
+            return this.$store.getters.languageMcp
         },
         email() {
             return this.$store.state.user.email

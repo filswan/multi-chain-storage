@@ -18,20 +18,20 @@
                         trigger="click"
                         popper-class="addressInfo"
                         @show="walletInfo">
-                        <h6>connected to:</h6>
+                        <h6>{{$t('fs3.connected_to')}}:</h6>
                         <h5 v-if="metaNetworkInfo.name">{{ metaNetworkInfo.name }}</h5>
                         <h4>{{addrChild | hiddAddress}}</h4>
                             <el-divider></el-divider>
                         <h4>{{addrChild | hiddAddress}}</h4>
                         <h5>{{priceAccound}} {{ metaNetworkInfo.unit}}</h5>
                             <el-divider></el-divider>
-                        <h3 @click="signOutFun">Disconnect</h3>
+                        <h3 @click="signOutFun">{{$t('fs3.Disconnect')}}</h3>
 
                         <img src="@/assets/images/metamask.png" slot="reference" />
                     </el-popover>
 
                     <!-- <span class="text" v-if="addrChild && !network.text" @click="wrongVisible=true">Wrong Network</span> -->
-                    <span class="text" v-if="!addrChild" @click="metamaskLogin">Connect Wallet</span>
+                    <span class="text" v-if="!addrChild" @click="metamaskLogin">{{$t('fs3.Connect_Wallet')}}</span>
                     <span class="text textTrue" v-else>{{metaNetworkInfo.name}}</span>
                 </div>
                 <!-- {{$t('navbar.hi')}}
@@ -39,6 +39,37 @@
                     <b>&nbsp;{{email}}</b>
                 </router-link> -->
 
+                <!-- 国际化 -->
+                <el-dropdown
+                    trigger="click"
+                    class="language leftBoth"
+                    @command="handleSetLanguage"
+                    v-if="langShow && !bodyWidth"
+                >
+                    <div>
+                    <span v-if="languageMcp === 'cn'" style="cursor: pointer;">CN</span>
+                    <span v-if="languageMcp === 'en'" style="cursor: pointer;">EN</span>
+                    </div>
+                    <el-dropdown-menu slot="dropdown">
+                    <el-dropdown-item
+                        command="cn"
+                        :disabled="languageMcp === 'cn'"
+                        v-if="languageMcp === 'cn'"
+                    >
+                        <img src="../assets/images/cn.jpg" class="elImg" />简体中文
+                    </el-dropdown-item>
+                    <el-dropdown-item
+                        command="cn"
+                        :disabled="languageMcp === 'cn'"
+                        v-if="languageMcp === 'en'"
+                    >
+                        <img src="../assets/images/cn.jpg" class="elImg" />Chinese
+                    </el-dropdown-item>
+                    <el-dropdown-item command="en" :disabled="languageMcp === 'en'">
+                        <img src="../assets/images/en.jpg" class="elImg" />English
+                    </el-dropdown-item>
+                    </el-dropdown-menu>
+                </el-dropdown>
                 <!-- <div class="sighChild" v-if="!email">
                     <span @click="pageJump(1)">
                         {{$t('navbar.log_in')}}
@@ -111,8 +142,8 @@ export default {
         email() {
             return this.$store.state.user.email
         },
-        language() {
-            return this.$store.getters.language
+        languageMcp() {
+            return this.$store.getters.languageMcp
         },
         routerMenu() {
             return this.$store.getters.routerMenu
@@ -165,6 +196,7 @@ export default {
         },
         metaAddress: function() {
             this.addrChild = this.metaAddress
+            this.commonParam()
             this.walletInfo()
         },
         meta: function() {
@@ -408,10 +440,12 @@ export default {
             let _this = this
             ethereum.on("accountsChanged", function(accounts) {
                 if(_this.metaAddress){
-                    _this.addrChild = accounts[0]
-                    _this.walletInfo()
-                    _this.$store.dispatch('setMetaAddress', accounts[0])
-                    _this.$router.go(0)
+                    web3.eth.getAccounts().then(accounts => {
+                        _this.addrChild = accounts[0]
+                        _this.walletInfo()
+                        _this.$store.dispatch('setMetaAddress', accounts[0])
+                        _this.$router.go(0)
+                    })
                     // console.log('account header:', accounts[0]);  //Once the account is switched, it will be executed here
                 }
             });
@@ -440,7 +474,7 @@ export default {
 
             axios.get(common_api, {
                 headers: {
-                    'Authorization': "Bearer "+ _this.$store.getters.accessToken
+                    // 'Authorization': "Bearer "+ _this.$store.getters.accessToken
                 },
             })
             .then((json) => {
@@ -459,7 +493,6 @@ export default {
     },
     mounted() {
         let _this = this
-        _this.commonParam()
         if(_this.bodyWidth){
             _this.collapseLocal = false
             _this.collapseChage();
@@ -475,6 +508,7 @@ export default {
         }
 
         if(_this.metaAddress){
+            _this.commonParam()
             _this.signFun()
         }
         _this.fn()

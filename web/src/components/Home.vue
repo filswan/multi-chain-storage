@@ -11,7 +11,7 @@
             <div class="content">
                 <div class="content_body">
                     <el-alert type="warning" effect="dark" center show-icon v-if="metaAddress&&networkID!=80001">
-                        <div slot="title">Your wallet is wrongly connected to {{metaNetworkInfo.name}} Network. To use our site, please switch to <span style="text-decoration: underline;">Mumbai Testnet</span>.</div>
+                        <div slot="title">{{$t('fs3Login.toptip_01')}} {{metaNetworkInfo.name}} {{$t('fs3Login.toptip_02')}} <span style="text-decoration: underline;">{{$t('fs3Login.toptip_Network')}}</span>.</div>
                     </el-alert>
                     <transition name="move" mode="out-in">
                         <keep-alive :include="tagsList">

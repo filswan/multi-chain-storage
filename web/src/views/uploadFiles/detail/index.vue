@@ -5,70 +5,70 @@
             <span style="font-size:0.18rem;margin-left:0.05rem">{{$t('deal.backto')}}</span>
         </div>
         <div class="files_title">
-            Deal Detail #{{dealId}}
+            {{$t('uploadFile.Deal_Detail')}} #{{dealId}}
             <span class="title" v-if="dealId == 0">
-                <el-tooltip effect="dark" content="This means your deal has not been accepted by a storage provider yet." placement="top">
+                <el-tooltip effect="dark" :content="$t('uploadFile.detail_tip01')" placement="top">
                     <img src="@/assets/images/info.png"/>
                 </el-tooltip>
             </span>
             <span v-if="!dealCont.found.locked_fee">
                 <img src="@/assets/images/error.png" />
-                <span>No fund locked.</span>
+                <span>{{$t('uploadFile.no_fund_locked')}}</span>
             </span>
             <span v-else-if="dealCont.signed_dao_count >= dealCont.dao_thresh_hold && dealCont.unlock_status">
                 <img src="@/assets/images/dao_success.png" />
-                <span>Successfully unlocked funds.</span>
+                <span>{{$t('uploadFile.Successfully_unlocked_funds')}}</span>
             </span>
             <span v-else-if="dealCont.signed_dao_count >= dealCont.dao_thresh_hold && !dealCont.unlock_status">
                 <img src="@/assets/images/dao_waiting.png" />
-                <span>Successfully signed, waiting for unlock fund. {{dealCont.signed_dao_count}}/{{dealCont.dao_total_count}} </span>
+                <span>{{$t('uploadFile.Successfully_signed')}} {{dealCont.signed_dao_count}}/{{dealCont.dao_total_count}} </span>
             </span>
             <span v-else>
                 <img src="@/assets/images/dao_waiting.png" />
-                <span>Waiting for signature {{dealCont.signed_dao_count}}/{{dealCont.dao_total_count}} </span>
+                <span>{{$t('uploadFile.Waiting_for_signature')}} {{dealCont.signed_dao_count}}/{{dealCont.dao_total_count}} </span>
             </span>
         </div>
         <div class="upload">
             <el-row>
-                <el-col :span="8">File Name:</el-col>
+                <el-col :span="8">{{$t('uploadFile.file_name')}}:</el-col>
                 <el-col :span="16">{{dealCont.deal.file_name | NumFormat}}</el-col>
-                <el-col :span="8">IPFS Download:</el-col>
+                <el-col :span="8">{{$t('uploadFile.detail_IPFSDownload')}}:</el-col>
                 <el-col :span="16">
                     <a :href="dealCont.deal.ipfs_url" target="_blank" v-if="dealCont.deal.ipfs_url" class="linkTo">{{dealCont.deal.ipfs_url}}</a>
                     <span v-else>-</span>
                 </el-col>
-                <el-col :span="8">Network:</el-col>
+                <el-col :span="8">{{$t('uploadFile.detail_Network')}}:</el-col>
                 <el-col :span="16">{{dealCont.deal.network_name | NumFormat}}</el-col>
-                <el-col :span="8">Locked funds:</el-col>
+                <el-col :span="8">{{$t('uploadFile.detail_Locked_funds')}}:</el-col>
                 <el-col :span="16">{{dealCont.found.locked_fee | NumFormatPrice}} USDC</el-col>
-                <el-col :span="8">Storage Provider:</el-col>
+                <el-col :span="8">{{$t('uploadFile.w3ss_id')}}:</el-col>
                 <el-col :span="16">{{dealCont.deal.provider | NumFormat}}</el-col>
-                <el-col :span="8">Storage Price:</el-col>
+                <el-col :span="8">{{$t('uploadFile.detail_Storage_Price')}}:</el-col>
                 <el-col :span="16">{{dealCont.deal.storage_price | NumFormatPrice}} FIL</el-col>
-                <el-col :span="8">Data CID:</el-col>
+                <el-col :span="8">{{$t('billing.PAYLOADCID')}}:</el-col>
                 <el-col :span="16">{{dealCont.found.payload_cid | NumFormat}}</el-col>
-                <el-col :span="8">Proposal CID:</el-col>
+                <el-col :span="8">{{$t('uploadFile.detail_ProposalCID')}}:</el-col>
                 <el-col :span="16">{{dealCont.deal.deal_cid | NumFormat}}</el-col>
-                <el-col :span="8">Create Time:</el-col>
+                <el-col :span="8">{{$t('uploadFile.create_time')}}:</el-col>
                 <el-col :span="16">{{dealCont.found.create_at | NumFormat}}</el-col>
-                <el-col :span="8">Message CID:</el-col>
+                <el-col :span="8">{{$t('uploadFile.detail_MessageCID')}}:</el-col>
                 <el-col :span="16">{{dealCont.deal.message_cid | NumFormat}}</el-col>
-                <el-col :span="8">Piece CID:</el-col>
+                <el-col :span="8">{{$t('uploadFile.detail_PieceCID')}}:</el-col>
                 <el-col :span="16">{{dealCont.deal.piece_cid | NumFormat}}</el-col>
-                <el-col :span="8">Client Address:</el-col>
+                <el-col :span="8">{{$t('uploadFile.detail_Client_Address')}}:</el-col>
                 <el-col :span="16">{{dealCont.deal.client | NumFormat}}</el-col>
-                <el-col :span="8">Verified Deal:</el-col>
+                <el-col :span="8">{{$t('uploadFile.detail_Verified_Deal')}}:</el-col>
                 <el-col :span="16">{{dealCont.deal.verified_deal?'True':'False'}}</el-col>
-                <el-col :span="8">Storage Price Per Epoch:</el-col>
+                <el-col :span="8">{{$t('uploadFile.detail_Storage_Price_Per_Epoch')}}:</el-col>
                 <el-col :span="16">{{dealCont.deal.storage_price_per_epoch | NumFormatPrice}} FIL</el-col>
-                <el-col :span="8">Signature Type:</el-col>
+                <el-col :span="8">{{$t('uploadFile.detail_Signature_Type')}}:</el-col>
                 <el-col :span="16">{{dealCont.deal.signature_type | NumFormat}}</el-col>
-                <el-col :span="8">Signature:</el-col>
+                <el-col :span="8">{{$t('my_profile.miner_add_Signature')}}:</el-col>
                 <el-col :span="16">{{dealCont.deal.signature | NumFormat}}</el-col>
                 <el-col :span="24">
                     <div class="lotupTitle">
-                        Retrieval From Filecoin Network
-                        <el-tooltip effect="dark" content="The deal will not be available for retrieval until it is Published on the blockchain. The ‘output-file’ in the end of this command is the name of the file that you'd like to save, you can also add a path to this variable." placement="top">
+                        {{$t('uploadFile.detail_Retrieval_Filecoin')}}
+                        <el-tooltip effect="dark" :content="$t('uploadFile.detail_Retrieval_Filecoin_tooltip')" placement="top">
                             <img src="@/assets/images/info.png"/>
                         </el-tooltip>：
                          
@@ -79,8 +79,8 @@
             </el-row>
                    
             <div class="title">
-                DAO Signatures
-                <el-tooltip effect="dark" content="The signatures are used to unlock funds to provider." placement="top">
+                {{$t('uploadFile.detail_DAO_Signatures')}}
+                <el-tooltip effect="dark" :content="$t('uploadFile.detail_DAO_Signatures_tooltip')" placement="top">
                     <img src="@/assets/images/info.png"/>
                 </el-tooltip>
             </div>
@@ -88,10 +88,10 @@
                 <el-table-column type="index" width="180">
                     <template slot-scope="scope">
                         <!-- Signature {{scope.$index+1}} -->
-                        Signature {{scope.row.order_index?scope.row.order_index:scope.$index+1}}
+                        {{$t('my_profile.miner_add_Signature')}} {{scope.row.order_index?scope.row.order_index:scope.$index+1}}
                     </template>
                 </el-table-column>
-                <el-table-column prop="dao_address" label="DAO RKH Address" min-width="220">
+                <el-table-column prop="dao_address" :label="$t('uploadFile.detail_DAO_RKH_Address')" min-width="220">
                     <template slot-scope="scope">
                         <div class="hot-cold-box">
                             <el-popover
@@ -109,7 +109,7 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column prop="tx_hash" label="Transaction" min-width="220">
+                <el-table-column prop="tx_hash" :label="$t('billing.TRANSACTION')" min-width="220">
                     <template slot-scope="scope">
                         <div class="hot-cold-box">
                             <el-popover
@@ -128,8 +128,8 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column prop="dao_pass_time" label="Time"></el-table-column>
-                <el-table-column prop="status" label="Status">
+                <el-table-column prop="dao_pass_time" :label="$t('uploadFile.detail_Time')"></el-table-column>
+                <el-table-column prop="status" :label="$t('uploadFile.file_status')">
                     <template slot-scope="scope">
                         <img src="@/assets/images/dao_success.png" v-if="scope.row.status == 1" />
                         <img src="@/assets/images/dao_waiting.png" v-else />
@@ -178,7 +178,7 @@ export default {
         },
         copyTextToClipboard(text) {
             let _this = this
-            let saveLang = localStorage.getItem('lang') == 'cn'?"复制成功":"success";
+            let saveLang = localStorage.getItem('languageMcp') == 'cn'?"复制成功":"success";
             var txtArea = document.createElement("textarea");
             txtArea.id = 'txt';
             txtArea.style.position = 'fixed';
@@ -220,7 +220,7 @@ export default {
             }
             axios.get(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/storage/deal/detail/${_this.dealId}?${QS.stringify(dataCid)}`, {headers: {
             // axios.get(`./static/detail_page_response.json`, {headers: {
-                    'Authorization':"Bearer "
+                    // 'Authorization':"Bearer "
             }}).then((response) => {
                 let json = response.data
                 _this.loading = false
@@ -245,7 +245,7 @@ export default {
                     if(json.data.deal.provider && json.data.found.payload_cid){
                         _this.copy_filename = 'lotus client retrieve --miner '+json.data.deal.provider+' '+json.data.found.payload_cid+' output-file';
                     }else{
-                        _this.copy_filename = "It's not available yet.";
+                        _this.copy_filename = localStorage.getItem('languageMcp') == 'cn'?"现在还没有。":"It's not available yet.";
                     }
 
                     if(!json.data.found){

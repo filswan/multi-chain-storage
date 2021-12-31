@@ -321,69 +321,6 @@ func GetSourceFileAndDealFileInfoCount(walletAddress string) (int64, error) {
 	return recordCount.TotalRecord, nil
 }
 
-/*
-func SendAutoBidDeals(cmdAutoBidDeal *command.CmdAutoBidDeal) ([]string, [][]*libmodel.FileDesc, error) {
-
-	swanClient, err := swan.GetClient(cmdAutoBidDeal.SwanApiUrl, cmdAutoBidDeal.SwanApiKey, cmdAutoBidDeal.SwanAccessToken, cmdAutoBidDeal.SwanToken)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, nil, err
-	}
-
-	assignedTasks, err := swanClient.GetAllTasks(constants.TASK_STATUS_ASSIGNED)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, nil, err
-	}
-	logs.GetLogger().Info("autobid Swan task count:", len(assignedTasks))
-	if len(assignedTasks) == 0 {
-		logs.GetLogger().Info("no autobid task to be dealt with")
-		return nil, nil, nil
-	}
-
-	var tasksDeals [][]*libmodel.FileDesc
-	csvFilepaths := []string{}
-	for _, assignedTask := range assignedTasks {
-		_, fileDesc, err := cmdAutoBidDeal.SendAutoBidDealsByTaskUuid(assignedTask.Uuid)
-		if err != nil {
-			logs.GetLogger().Error(err)
-			continue
-		}
-
-		deals := assignedTaskInfo.Data.Deal
-		task := assignedTaskInfo.Data.Task
-		dealSentNum, csvFilePath, carFiles, err := command.SendAutobidDeals4Task(confDeal, deals, task, confDeal.OutputDir)
-		if err != nil {
-			csvFilepaths = append(csvFilepaths, csvFilePath)
-			logs.GetLogger().Error(err)
-			continue
-		}
-
-		tasksDeals = append(tasksDeals, carFiles)
-
-		if dealSentNum == 0 {
-			logs.GetLogger().Info(dealSentNum, " deal(s) sent for task:", task.TaskName)
-			continue
-		}
-
-		status := libconstants.TASK_STATUS_DEAL_SENT
-		if dealSentNum != len(deals) {
-			status = libconstants.TASK_STATUS_PROGRESS_WITH_FAILURE
-		}
-
-		response, err := swanClient.SwanUpdateAssignedTask(assignedTask.Uuid, status, csvFilePath)
-		if err != nil {
-			logs.GetLogger().Error(err)
-			continue
-		}
-
-		logs.GetLogger().Info(response.Message)
-	}
-
-	return csvFilepaths, tasksDeals, nil
-}
-*/
-
 func GetDealListThanGreaterDealID(dealId int64, offset, limit int) ([]*DaoDealResult, error) {
 	whereCondition := "deal_id > " + strconv.FormatInt(dealId, 10)
 	var results []*DaoDealResult

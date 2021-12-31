@@ -40,7 +40,6 @@
 
 <script>
 import { generateMailResetPassword } from '@/utils/i18n'
-import billing from '@/components/Billing.vue';
 import axios from 'axios'
 
 export default {
@@ -82,9 +81,7 @@ export default {
             passwordWrong: false,
       };
     },
-    components: {
-        billing
-    },
+    components: {},
     computed: {
         email() {
             return this.$store.state.user.email
@@ -92,8 +89,8 @@ export default {
         assetNow() {
             return this.$store.state.app.assetNow
         },
-        language() {
-            return this.$store.getters.language
+        languageMcp() {
+            return this.$store.getters.languageMcp
         },
         avater() {
             return this.$store.getters.avater

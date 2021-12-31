@@ -1,19 +1,19 @@
 <template>
   <div class="metamaskLogin login">
     <el-alert type="warning" effect="dark" center show-icon v-if="metaAddress&&networkID!=80001">
-        <div slot="title">Your wallet is wrongly connected to {{metaNetworkInfo.name}} Network. To use our site, please switch to <span style="text-decoration: underline;">Mumbai Testnet</span>.</div>
+        <div slot="title">{{$t('fs3Login.toptip_01')}} {{metaNetworkInfo.name}} {{$t('fs3Login.toptip_02')}} <span style="text-decoration: underline;">{{$t('fs3Login.toptip_Network')}}</span>.</div>
     </el-alert>
     <div class="metamask">
-      <div class="titleCont">Connect your wallet.</div>
+      <div class="titleCont">{{$t('fs3Login.title')}}</div>
       <el-row>
           <el-col :span="24">
             <img src="@/assets/images/metamask.png" alt="">
-            <span>MetaMask</span>
+            <span>{{$t('fs3Login.MetaMask')}}</span>
           </el-col>
       </el-row>
       <div class="login_footer">
-          <el-button type="primary" @click="signFun">{{$t('transfer.connect_wallet')}}</el-button>
-          <p v-if="metaNetworkInfo.center_fail">Please connect your wallet to Mumbai Testnet.</p>
+          <el-button type="primary" @click="signFun">{{$t('fs3.Connect_Wallet')}}</el-button>
+          <p v-if="metaNetworkInfo.center_fail">{{$t('fs3Login.MetaMask_tip')}}</p>
       </div>
     </div>
   </div>

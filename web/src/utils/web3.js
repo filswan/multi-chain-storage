@@ -16,8 +16,14 @@ function Init(callback){
       if(!accounts){
         return false
       }
-      store.dispatch('setMetaAddress', accounts[0])
-      callback(accounts[0])
+      web3.eth.getAccounts().then(webAccounts => {
+        store.dispatch('setMetaAddress', webAccounts[0])
+        callback(webAccounts[0])
+      })
+      .catch((error) => {
+        store.dispatch('setMetaAddress', accounts[0])
+        callback(accounts[0])
+      })
     })
     .catch((error) => {
       if (error === "User rejected provider access") {

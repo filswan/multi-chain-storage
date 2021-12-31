@@ -17,7 +17,7 @@ service.interceptors.request.use(function (config) {
       // config.data = qs.stringify(config.data)
       // config.content-type = 'application/x-www-form-urlencoded'
     }
-    config.headers.lang = store.getters.language
+    config.headers.lang = store.getters.languageMcp
     // config.headers.userId = store.getters.userId
 	// config.headers.accessToken = store.getters.accessToken
 	// config.headers['Authorization']  =  store.getters.accessToken
@@ -55,19 +55,19 @@ service.interceptors.response.use(response => {
 			});
 			break;
 		case 403:
-			error.message = store.getters.language === 'en'?'please try again after 10 minutes':'请在10分钟后再试';
+			error.message = store.getters.languageMcp === 'en'?'please try again after 10 minutes':'请在10分钟后再试';
 			break;
 		case 500:
-			error.message = store.getters.language === 'en'?'Server side error':'服务器端出错';
+			error.message = store.getters.languageMcp === 'en'?'Server side error':'服务器端出错';
 			break;
 		case 502:
-			error.message = store.getters.language === 'en'?'Network Error':'网络错误';
+			error.message = store.getters.languageMcp === 'en'?'Network Error':'网络错误';
 			break;
 		case 504:
-			error.message = store.getters.language === 'en'?'Network Timeout':'网络超时';
+			error.message = store.getters.languageMcp === 'en'?'Network Timeout':'网络超时';
 			break;
 		default:
-			error.message = store.getters.language === 'en'?'Error':'网络连接错误'
+			error.message = store.getters.languageMcp === 'en'?'Error':'网络连接错误'
 	}
 	Message({
 		message: error.response.message?error.response.message:error.message,

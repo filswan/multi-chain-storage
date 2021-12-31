@@ -424,15 +424,22 @@ export default {
         copied: 'Copied',
         connected_to: 'connected to',
         Connect_Wallet: 'Connect Wallet',
-        Disconnect: 'Disconnect'
+        Disconnect: 'Sign out'
     },
     fs3Login: {
         toptip_01: 'Your wallet is wrongly connected to',
         toptip_02: 'Network. To use our site, please switch to',
+        toptip_03: 'Connect to your MetaMask Wallet',
         toptip_Network: 'Mumbai Testnet',
         title: 'Connect your wallet.',
         MetaMask: 'MetaMask',
-        MetaMask_tip: 'Please connect your wallet to Mumbai Testnet.'
+        MetaMask_tip: 'Please connect your wallet to Mumbai Testnet.',
+        toptip_03: 'Connect to your MetaMask Wallet',
+        Account: 'Account',
+        Connected_MetaMask: 'Connected with MetaMask',
+        View_explorer: 'View on explorer',
+        Copy_Address: 'Copy Address',
+        Copied: 'Copied'
     },
     uploadFile: {
         title: 'Files List',

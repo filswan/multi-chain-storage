@@ -53,19 +53,19 @@
           <el-table-column prop="status" :label="$t('uploadFile.file_status')" width="140">
             <template slot-scope="scope">
               <el-button type="danger" class="statusStyle" v-if="scope.row.status&&scope.row.status.toLowerCase()=='failed'">
-                  {{scope.row.status}}
+                  {{ languageMcp == "en" ? "Fail" : '失败'}}
               </el-button>
               <el-button type="warning" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='pending'">
-                  {{scope.row.status}}
+                  {{ languageMcp == "en" ? "Pending" : '待支付'}}
               </el-button>
               <el-button type="primary" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='processing'">
-                  {{scope.row.status}}
+                  {{ languageMcp == "en" ? "Processing" : '处理中'}}
               </el-button>
               <el-button type="success" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='active'">
-                  {{scope.row.status}}
+                  {{ languageMcp == "en" ? "Active" : '完成'}}
               </el-button>
               <el-button type="info" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='refunded'">
-                  {{scope.row.status}}
+                  {{ languageMcp == "en" ? "Refunded" : '已退款'}}
               </el-button>
               <el-button type="info" plain class="statusStyle" v-else>
                   {{scope.row.status}}

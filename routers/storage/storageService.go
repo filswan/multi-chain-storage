@@ -20,11 +20,11 @@ import (
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	common2 "github.com/ethereum/go-ethereum/common"
-	clientmodel "github.com/filswan/go-swan-client/model"
-	"github.com/filswan/go-swan-client/subcommand"
+
+	//clientmodel "github.com/filswan/go-swan-client/model"
+	"github.com/filswan/go-swan-client/command"
 	"github.com/filswan/go-swan-lib/client/ipfs"
-	"github.com/filswan/go-swan-lib/client/swan"
-	libconstants "github.com/filswan/go-swan-lib/constants"
+
 	libmodel "github.com/filswan/go-swan-lib/model"
 	libutils "github.com/filswan/go-swan-lib/utils"
 	"github.com/gin-gonic/gin"
@@ -73,18 +73,27 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 	}
 	logs.GetLogger().Info("car files created in ", carDir)
 
-	confCar := clientmodel.ConfCar{
+	/*
+		confCar := clientmodel.ConfCar{
+			LotusClientApiUrl:      config.GetConfig().Lotus.ApiUrl,
+			LotusClientAccessToken: config.GetConfig().Lotus.AccessToken,
+			InputDir:               srcDir,
+			OutputDir:              carDir,
+		}*/
+	// Adapt to new version of swan-client
+	cmdCar := &command.CmdCar{
 		LotusClientApiUrl:      config.GetConfig().Lotus.ApiUrl,
 		LotusClientAccessToken: config.GetConfig().Lotus.AccessToken,
-		InputDir:               srcDir,
 		OutputDir:              carDir,
+		InputDir:               srcDir,
+		GenerateMd5:            false,
 	}
-	fileList, err := subcommand.CreateCarFiles(&confCar)
+	fileList, err := cmdCar.CreateCarFiles()
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return "", "", needPay, err
 	}
-	logs.GetLogger().Info("car files created in ", carDir, "payload_cid=", fileList[0].DataCid)
+	logs.GetLogger().Info("car files created in ", carDir, "payload_cid=", fileList[0].PayloadCid)
 
 	uploadUrl := utils.UrlJoin(config.GetConfig().IpfsServer.UploadUrl, "api/v0/add?stream-channels=true&pin=true")
 	ipfsFileHash, err := ipfs.IpfsUploadFileByWebApi(uploadUrl, srcFilepath)
@@ -94,13 +103,13 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 	}
 
 	filePathInIpfs := config.GetConfig().IpfsServer.DownloadUrlPrefix + constants.IPFS_URL_PREFIX_BEFORE_HASH + *ipfsFileHash
-	lockPaymentList, err := models.FindEventLockPayment(&models.EventLockPayment{PayloadCid: fileList[0].DataCid}, "create_at desc", "10", "0")
+	lockPaymentList, err := models.FindEventLockPayment(&models.EventLockPayment{PayloadCid: fileList[0].PayloadCid}, "create_at desc", "10", "0")
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return "", "", needPay, err
 	}
 
-	sourceAndDealFileList, err := GetSourceFileAndDealFileInfoByPayloadCid(fileList[0].DataCid)
+	sourceAndDealFileList, err := GetSourceFileAndDealFileInfoByPayloadCid(fileList[0].PayloadCid)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return "", "", needPay, err
@@ -109,10 +118,10 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 		if sourceAndDealFileList[0].WalletAddress == walletAddress {
 			if len(lockPaymentList) > 0 {
 				needPay = 1
-				return fileList[0].DataCid, sourceAndDealFileList[0].IpfsUrl, needPay, nil
+				return fileList[0].PayloadCid, sourceAndDealFileList[0].IpfsUrl, needPay, nil
 			} else {
 				needPay = 2
-				return fileList[0].DataCid, sourceAndDealFileList[0].IpfsUrl, needPay, nil
+				return fileList[0].PayloadCid, sourceAndDealFileList[0].IpfsUrl, needPay, nil
 			}
 		} else {
 			if len(lockPaymentList) > 0 {
@@ -134,7 +143,7 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 					logs.GetLogger().Error(err)
 					return "", "", needPay, err
 				}
-				return fileList[0].DataCid, sourceAndDealFileList[0].IpfsUrl, needPay, nil
+				return fileList[0].PayloadCid, sourceAndDealFileList[0].IpfsUrl, needPay, nil
 			} else {
 				needPay = 4
 				sourceFile, err := saveSourceFileToDB(srcFile, srcFilepath, userId, filePathInIpfs, walletAddress)
@@ -147,7 +156,7 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 					logs.GetLogger().Error(err)
 					return "", "", needPay, err
 				}
-				return fileList[0].DataCid, filePathInIpfs, needPay, nil
+				return fileList[0].PayloadCid, filePathInIpfs, needPay, nil
 			}
 		}
 	} else {
@@ -161,7 +170,7 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 			logs.GetLogger().Error(err)
 			return "", "", needPay, err
 		}
-		return fileList[0].DataCid, filePathInIpfs, needPay, nil
+		return fileList[0].PayloadCid, filePathInIpfs, needPay, nil
 	}
 }
 
@@ -250,10 +259,10 @@ func saveDealFileAndMapRelation(fileInfoList []*libmodel.FileDesc, sourceFile *m
 	dealFile.CarFilePath = fileInfoList[0].CarFilePath
 	dealFile.CarFileSize = fileInfoList[0].CarFileSize
 	dealFile.CarMd5 = fileInfoList[0].CarFileMd5
-	dealFile.PayloadCid = fileInfoList[0].DataCid
+	dealFile.PayloadCid = fileInfoList[0].PayloadCid
 	dealFile.PieceCid = fileInfoList[0].PieceCid
 	dealFile.SourceFilePath = sourceFile.ResourceUri
-	dealFile.DealCid = fileInfoList[0].DealCid
+	dealFile.DealCid = fileInfoList[0].PayloadCid
 	dealFile.CreateAt = strconv.FormatInt(currentTime, 10)
 	dealFile.UpdateAt = strconv.FormatInt(currentTime, 10)
 	dealFile.Duration = duration
@@ -312,22 +321,16 @@ func GetSourceFileAndDealFileInfoCount(walletAddress string) (int64, error) {
 	return recordCount.TotalRecord, nil
 }
 
-func SendAutoBidDeals(confDeal *clientmodel.ConfDeal) ([]string, [][]*libmodel.FileDesc, error) {
-	err := subcommand.CreateOutputDir(confDeal.OutputDir)
+/*
+func SendAutoBidDeals(cmdAutoBidDeal *command.CmdAutoBidDeal) ([]string, [][]*libmodel.FileDesc, error) {
+
+	swanClient, err := swan.GetClient(cmdAutoBidDeal.SwanApiUrl, cmdAutoBidDeal.SwanApiKey, cmdAutoBidDeal.SwanAccessToken, cmdAutoBidDeal.SwanToken)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, nil, err
 	}
 
-	logs.GetLogger().Info("output dir is:", confDeal.OutputDir)
-
-	swanClient, err := swan.SwanGetClient(confDeal.SwanApiUrl, confDeal.SwanApiKey, confDeal.SwanAccessToken, confDeal.SwanToken)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, nil, err
-	}
-
-	assignedTasks, err := swanClient.SwanGetAssignedTasks()
+	assignedTasks, err := swanClient.GetAllTasks(constants.TASK_STATUS_ASSIGNED)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, nil, err
@@ -341,7 +344,7 @@ func SendAutoBidDeals(confDeal *clientmodel.ConfDeal) ([]string, [][]*libmodel.F
 	var tasksDeals [][]*libmodel.FileDesc
 	csvFilepaths := []string{}
 	for _, assignedTask := range assignedTasks {
-		assignedTaskInfo, err := swanClient.SwanGetOfflineDealsByTaskUuid(assignedTask.Uuid)
+		_, fileDesc, err := cmdAutoBidDeal.SendAutoBidDealsByTaskUuid(assignedTask.Uuid)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			continue
@@ -349,7 +352,7 @@ func SendAutoBidDeals(confDeal *clientmodel.ConfDeal) ([]string, [][]*libmodel.F
 
 		deals := assignedTaskInfo.Data.Deal
 		task := assignedTaskInfo.Data.Task
-		dealSentNum, csvFilePath, carFiles, err := subcommand.SendAutobidDeals4Task(confDeal, deals, task, confDeal.OutputDir)
+		dealSentNum, csvFilePath, carFiles, err := command.SendAutobidDeals4Task(confDeal, deals, task, confDeal.OutputDir)
 		if err != nil {
 			csvFilepaths = append(csvFilepaths, csvFilePath)
 			logs.GetLogger().Error(err)
@@ -379,6 +382,7 @@ func SendAutoBidDeals(confDeal *clientmodel.ConfDeal) ([]string, [][]*libmodel.F
 
 	return csvFilepaths, tasksDeals, nil
 }
+*/
 
 func GetDealListThanGreaterDealID(dealId int64, offset, limit int) ([]*DaoDealResult, error) {
 	whereCondition := "deal_id > " + strconv.FormatInt(dealId, 10)

@@ -55,13 +55,6 @@ func GetLockPaymentInfoByPayloadCid(c *gin.Context) {
 }
 
 func UpdateLockPaymentInfoByPayloadCid(c *gin.Context) {
-	logs.GetLogger().Info("~~~~~~~~~~~~~~~~~~~~~~~~ start to update lock payment status to db ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-	authorization := c.Request.Header.Get("authorization")
-	if len(authorization) == 0 {
-		c.JSON(http.StatusUnauthorized, common.CreateErrorResponse(errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_CODE, errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_MSG))
-		return
-	}
-
 	payloadCid := c.PostForm("payload_cid")
 	if strings.Trim(payloadCid, " ") == "" {
 		errMsg := "payload_cid can not be null when updating lock payment info"

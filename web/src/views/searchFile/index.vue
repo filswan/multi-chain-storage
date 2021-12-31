@@ -86,62 +86,62 @@
                             <div class="statusStyle"
                                  v-if="scope.row.status == 'Created'"
                                  :style="$status_color.Deal_color('Created')">
-                                {{ language == 'en' ? 'Created' : '已创建' }}
+                                {{ languageMcp == 'en' ? 'Created' : '已创建' }}
                             </div>
                             <div class="statusStyle"
                                  v-if="scope.row.status == 'DealActive'"
                                  :style="$status_color.Deal_color('DealActive')">
-                                {{ language == 'en' ? 'DealActive' : '有效交易' }}
+                                {{ languageMcp == 'en' ? 'DealActive' : '有效交易' }}
                             </div>
                             <div class="statusStyle"
                                  v-else-if="scope.row.status == 'Waiting'"
                                  :style="$status_color.Deal_color('Waiting')">
-                                {{ language == 'en' ? 'Waiting' : '等待中' }}
+                                {{ languageMcp == 'en' ? 'Waiting' : '等待中' }}
                             </div>
                             <div class="statusStyle"
                                  v-else-if="scope.row.status == 'ReadyForImport'"
                                  :style="$status_color.Deal_color('ReadyForImport')">
-                                {{ language == 'en' ? 'ReadyForImport' : '准备导入' }}
+                                {{ languageMcp == 'en' ? 'ReadyForImport' : '准备导入' }}
                             </div>
                             <div class="statusStyle"
                                  v-else-if="scope.row.status == 'FileImporting'"
                                  :style="$status_color.Deal_color('FileImporting')">
-                                {{ language == 'en' ? 'FileImporting' : '文件导入中' }}
+                                {{ languageMcp == 'en' ? 'FileImporting' : '文件导入中' }}
                             </div>
                             <div class="statusStyle"
                                  v-else-if="scope.row.status == 'FileImported'"
                                  :style="$status_color.Deal_color('FileImported')">
-                                {{ language == 'en' ? 'FileImported' : '文件已导入' }}
+                                {{ languageMcp == 'en' ? 'FileImported' : '文件已导入' }}
                             </div>
                             <div class="statusStyle"
                                  v-else-if="scope.row.status == 'ImportFailed'"
                                  :style="$status_color.Deal_color('ImportFailed')">
-                                {{ language == 'en' ? 'ImportFailed' : '导入失败' }}
+                                {{ languageMcp == 'en' ? 'ImportFailed' : '导入失败' }}
                             </div>
                             <div class="statusStyle"
                                  v-else-if="scope.row.status == 'Downloading'"
                                  :style="$status_color.Deal_color('Downloading')">
-                                {{ language == 'en' ? 'Downloading' : '下载中' }}
+                                {{ languageMcp == 'en' ? 'Downloading' : '下载中' }}
                             </div>
                             <div class="statusStyle"
                                  v-else-if="scope.row.status == 'Downloaded'"
                                  :style="$status_color.Deal_color('Downloaded')">
-                                {{ language == 'en' ? 'Downloaded' : '已下载' }}
+                                {{ languageMcp == 'en' ? 'Downloaded' : '已下载' }}
                             </div>
                             <div class="statusStyle"
                                  v-else-if="scope.row.status == 'DownloadFailed'"
                                  :style="$status_color.Deal_color('DownloadFailed')">
-                                {{ language == 'en' ? 'DownloadFailed' : '下载失败' }}
+                                {{ languageMcp == 'en' ? 'DownloadFailed' : '下载失败' }}
                             </div>
                             <div class="statusStyle"
                                  v-else-if="scope.row.status == 'Completed'"
                                  :style="$status_color.Deal_color('Completed')">
-                                {{ language == 'en' ? 'Completed' : '已完成' }}
+                                {{ languageMcp == 'en' ? 'Completed' : '已完成' }}
                             </div>
                             <div class="statusStyle"
                                  v-else-if="scope.row.status == 'Failed'"
                                  :style="$status_color.Deal_color('Failed')">
-                                {{ language == 'en' ? 'Failed' : '已失败' }}
+                                {{ languageMcp == 'en' ? 'Failed' : '已失败' }}
                             </div>
                             <div class="statusStyle" v-else style="display:none;color: rgb(255, 184, 34)">
                                 {{ scope.row.status }}
@@ -213,8 +213,8 @@
             };
         },
         computed: {
-            language() {
-                return this.$store.state.app.language
+            languageMcp() {
+                return this.$store.state.app.languageMcp
             }
         },
         components: {},
@@ -312,7 +312,7 @@
             },
             copyTextToClipboard(text) {
                 let _this = this
-                let saveLang = localStorage.getItem('lang') == 'cn'?"复制成功":"success";
+                let saveLang = localStorage.getItem('languageMcp') == 'cn'?"复制成功":"success";
                 var txtArea = document.createElement("textarea");
                 txtArea.id = 'txt';
                 txtArea.style.position = 'fixed';

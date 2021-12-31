@@ -35,7 +35,7 @@
                 },
             }).then(res => {
                 this.list = this.deepClone(res.data.data)
-                let language = 'en'
+                let language = localStorage.getItem('languageMcp') ? localStorage.getItem('languageMcp') : 'en'
                 for (let item in res.data.data){
                     this.list[item] = {
                         title: '',

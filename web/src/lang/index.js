@@ -26,8 +26,8 @@ const messages = {
 }
 
 const i18n = new VueI18n({
-  // locale: localStorage.getItem('language') || 'en', // set locale
-  locale: 'en', // set locale
+  locale: localStorage.getItem('languageMcp') || 'en', // set locale
+  // locale: 'en', // set locale
   messages // set locale messages
 })
 

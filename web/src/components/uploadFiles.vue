@@ -1,7 +1,7 @@
 <template>
     <div id="Create">
         <div class="upload" v-loading="loading">
-            <div class="upload_title">Please upload a file and set a duration. An estimated storage cost will be calculated for you.</div>
+            <div class="upload_title">{{$t('uploadFile.uploadFile_title')}}</div>
             <div class="upload_form">
                 <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" class="demo-ruleForm">
                     <el-form-item prop="fileList" :label="$t('uploadFile.upload')">
@@ -24,19 +24,19 @@
                     </el-form-item>
                     <el-form-item prop="duration">
                         <template slot="label">
-                            Duration 
+                            {{$t('uploadFile.Duration')}} 
                             
-                            <el-tooltip effect="dark" content="Duration refers to the terms in which you want the file to be stored on the Filecoin network." placement="top">
+                            <el-tooltip effect="dark" :content="$t('uploadFile.Duration_tooltip')" placement="top">
                                 <img src="@/assets/images/info.png"/>
                             </el-tooltip>
                         </template>
-                        <el-input v-model="ruleForm.duration" type="number" style="max-width:130px"></el-input> &nbsp; days <small> (min: 180 - max: 540)</small>
+                        <el-input v-model="ruleForm.duration" type="number" style="max-width:130px"></el-input> &nbsp; {{$t('components.day')}} <small> {{$t('components.interval')}}</small>
                     </el-form-item>
                     <el-form-item prop="storage_cost">
                         <template slot="label">
-                            Estimated Storage Cost 
+                            {{$t('uploadFile.Estimated_Storage_Cost')}} 
                             
-                            <el-tooltip effect="dark" content="The estimated storage cost is calculated according to your file size, the duration you set, and the average provider price." placement="top">
+                            <el-tooltip effect="dark" :content="$t('uploadFile.Estimated_Storage_Cost_tooltip')" placement="top">
                                 <img src="@/assets/images/info.png"/>
                             </el-tooltip>
                         </template>
@@ -45,28 +45,28 @@
                 </el-form>
                 <div class="upload_plan">
                     <div class="title" :style="{'color': ruleForm.lock_plan_tip? '#f67e7e' : '#000'}">
-                        Select Lock Funds Plan
-                        <el-tooltip effect="dark" content="The more funds locked, the sooner your file will be stored on the Filecoin network. The overpaid funds will be returned automatically after the deal is on chain." placement="top">
+                        {{$t('uploadFile.Select_Lock_Funds_Plan')}}
+                        <el-tooltip effect="dark" :content="$t('uploadFile.Select_Lock_Funds_Plan_tooltip')" placement="top">
                             <img src="@/assets/images/info.png"/>
                         </el-tooltip>
                     </div>
-                    <div class="desc">The latest exchange rate of FIL to USDC is {{biling_price}}.</div>
+                    <div class="desc">{{$t('uploadFile.latest_exchange_rate')}} {{biling_price}}.</div>
                     <div class="upload_plan_radio">
                         <el-radio-group v-model="ruleForm.lock_plan" @change="agreeChange">
                             <el-radio label="1" border>
-                                <div class="title">Low</div>
+                                <div class="title">{{$t('uploadFile.Low')}}</div>
                                 <div class="cont">
                                     {{storage_cost_low}} <br/> USDC
                                 </div>
                             </el-radio>
                             <el-radio label="2" border>
-                                <div class="title">Average</div>
+                                <div class="title">{{$t('uploadFile.Average')}}</div>
                                 <div class="cont">
                                     {{storage_cost_average}} <br/> USDC
                                 </div>
                             </el-radio>
                             <el-radio label="3" border>
-                                <div class="title">High</div>
+                                <div class="title">{{$t('uploadFile.High')}}</div>
                                 <div class="cont">
                                     {{storage_cost_high}} <br/> USDC
                                 </div>
@@ -78,29 +78,11 @@
                     <el-button type="primary" @click="submitForm('ruleForm')">{{$t('deal.Submit')}}</el-button>
                 </div>
             </div>
-            
-            <el-row class="upload_result" v-if="resultSuc">
-                <el-col :span="24">
-                    <h5>The following file has been successfully uploaded. You can check it in My Files!</h5>
-                </el-col>
-                <el-col :span="24">
-                    <label for="">File name: </label>
-                    <p>{{tableData.file_name}}</p>
-                </el-col>
-                <el-col :span="24">
-                    <label for="">Task name: </label>
-                    <p>{{tableData.task_name}}</p>
-                </el-col>
-                <el-col :span="24">
-                    <label for="">Data CID: </label>
-                    <p>{{tableData.payload_cid}}</p>
-                </el-col>
-            </el-row>
 
             <div class="loadMetamaskPay" v-if="loadMetamaskPay">
                 <div>
                     <div class="el-loading-spinner"><svg viewBox="25 25 50 50" class="circular"><circle cx="50" cy="50" r="20" fill="none" class="path"></circle></svg><!----></div>
-                    <p>Please wait until the process of locking funds completed.</p>
+                    <p>{{$t('uploadFile.payment_tip')}}</p>
                 </div>
             </div>
         </div>
@@ -108,52 +90,52 @@
         <el-dialog title="" :visible.sync="finishTransaction" :width="width"
             custom-class="completeDia">
             <img src="@/assets/images/alert-icon.png" />
-            <h1>Completed!</h1>
-            <h3>Your transaction has been submitted successfully. Check more detail in your transaction history.</h3>
+            <h1>{{$t('uploadFile.COMPLETED')}}!</h1>
+            <h3>{{$t('uploadFile.SUCCESS')}}</h3>
             <a :href="'https://mumbai.polygonscan.com/tx/'+txHash" target="_blank">{{txHash}}</a>
-            <a class="a-close" @click="finishClose">Close</a>
+            <a class="a-close" @click="finishClose">{{$t('uploadFile.CLOSE')}}</a>
         </el-dialog>
 
         <el-dialog title="" :visible.sync="failTransaction" :width="width"
             custom-class="completeDia">
             <img src="@/assets/images/error.png" />
-            <h1>Fail!</h1>
-            <h3>Your transaction has failed. Check the transaction history for more details.</h3>
+            <h1>{{$t('uploadFile.Fail')}}!</h1>
+            <h3>{{$t('uploadFile.FailTIP')}}</h3>
             <a :href="'https://mumbai.polygonscan.com/tx/'+txHash" target="_blank">{{txHash}}</a>
-            <a class="a-close" @click="failTransaction=false">Close</a>
+            <a class="a-close" @click="failTransaction=false">{{$t('uploadFile.CLOSE')}}</a>
         </el-dialog>
 
         <el-dialog
         :visible.sync="fileUploadVisible" :show-close="false" :close-on-click-modal="false"
         :width="widthUpload" custom-class="fileUpload">
-        <span slot="title">File uploading... {{percentIn?'('+percentIn+')':''}}</span>
-        <h3>Your file is still in the process of uploading to IPFS. Please keep this window open until uploading completes.</h3>
+        <span slot="title">{{$t('uploadFile.File_uploading')}}... {{percentIn?'('+percentIn+')':''}}</span>
+        <h3>{{$t('uploadFile.File_uploading_tooltip')}}</h3>
         <img src="@/assets/images/upload.gif" class="gif_img" alt="">
         </el-dialog>
 
         <el-dialog title="" :visible.sync="paymentPopup" :width="width"
             custom-class="completeDia">
             <img src="@/assets/images/box-important.png" />
-            <h2>This file has been uploaded.</h2>
-            <h4>We currently only support uploading a file once. Please select another file to upload.</h4>
-            <h4>Thank you for your comprehension.</h4>
-            <a class="a-close" @click="paymentPopup=false">OK</a>
+            <h2>{{$t('uploadFile.file_uploaded')}}</h2>
+            <h4>{{$t('uploadFile.file_uploaded_tip')}}</h4>
+            <h4>{{$t('uploadFile.file_uploaded_tip01')}}</h4>
+            <a class="a-close" @click="paymentPopup=false">{{$t('uploadFile.OK')}}</a>
         </el-dialog>
 
         <el-dialog title="" :visible.sync="paymentPopup01" :width="width"
             custom-class="completeDia">
             <img src="@/assets/images/box-important.png" />
-            <h2>This file has been uploaded.</h2>
-            <h4>You don’t need to pay this file, it will add to your files. Because we currently only support uploading a file once.</h4>
-            <h4>Thank you for your comprehension.</h4>
-            <a class="a-close" @click="paymentPopup01=false">OK</a>
+            <h2>{{$t('uploadFile.file_uploaded')}}</h2>
+            <h4>{{$t('uploadFile.file_uploaded_tip02')}}</h4>
+            <h4>{{$t('uploadFile.file_uploaded_tip01')}}</h4>
+            <a class="a-close" @click="paymentPopup01=false">{{$t('uploadFile.OK')}}</a>
         </el-dialog>
 
         <el-dialog title="" :visible.sync="metamaskLoginTip" :width="width"
             custom-class="completeDia">
             <img src="@/assets/images/box-important.png" />
-            <h4>Your wallet is wrongly connected to {{network.name}} Network. To use our site, please switch to <b>Mumbai Testnet</b>.</h4>
-            <a class="a-close" @click="metamaskLoginTip=false">OK</a>
+            <h4>{{$t('fs3Login.toptip_01')}} {{network.name}} {{$t('fs3Login.toptip_02')}} <b>{{$t('fs3Login.toptip_Network')}}</b>.</h4>
+            <a class="a-close" @click="metamaskLoginTip=false">{{$t('uploadFile.OK')}}</a>
         </el-dialog>
     </div>
 </template>
@@ -172,7 +154,7 @@
         data() {
             var validateDuration = (rule, value, callback) => {
                 if (!value) {
-                    return callback(new Error('Please enter the duration'));
+                    return callback(new Error(that.$t('uploadFile.Duration_tip')));
                 }
                 setTimeout(() => {
                     if (value < 180) {
@@ -209,12 +191,11 @@
                         { validator: validateDuration, trigger: 'blur'}
                     ],
                     fileList: [
-                        { type: 'array', required: true, message: 'Please choose a file', trigger: 'change' }
+                        { type: 'array', required: true, message: this.$t('uploadFile.file_name_tip'), trigger: 'change' }
                     ]
                 },
                 loading: false,
                 bodyWidth: document.documentElement.clientWidth < 1024 ? true : false,
-                resultSuc: false,
                 fileListTip: false,
                 storage: 0,
                 biling_price: 0,
@@ -334,10 +315,10 @@
                                 xhr.withCredentials = false
                                 const token = _this.$store.getters.accessToken
                                 if (token) {
-                                    xhr.setRequestHeader(
-                                    "Authorization",
-                                    "Bearer " + _this.$store.getters.accessToken
-                                    )
+                                    // xhr.setRequestHeader(
+                                    // "Authorization",
+                                    // "Bearer " + _this.$store.getters.accessToken
+                                    // )
                                 }
                                 let i = 0;
 

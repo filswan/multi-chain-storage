@@ -7,21 +7,21 @@
                         <div class="form_top">
                             <div class="search">
                                 <el-input
-                                    placeholder="Search by TX HASH"
+                                    :placeholder="$t('billing.search_placeholder')"
                                     prefix-icon="el-icon-search"
                                     v-model="searchValue"
                                 >
                                 </el-input>
                                 <div class="search_right" :style="{'opacity': !searchValue?'0.8':'1'}">
                                     <el-button @click="search" style="background-color: #ffb822"
-                                    :disabled="!searchValue">Search</el-button>
+                                    :disabled="!searchValue">{{$t('billing.search_btn')}}</el-button>
                                     <el-button
                                     type="primary"
                                     style="background-color: #0b318f"
                                     @click="clearAll"
                                     :disabled="!searchValue"
                                     >
-                                    Clear
+                                    {{$t('billing.clear_btn')}}
                                     </el-button>
                                 </div>
                             </div>
@@ -49,11 +49,11 @@
                                 <el-table-column prop="locked_fee" :label="$t('billing.AMOUNT')" min-width="150">
                                     <template slot-scope="scope">{{scope.row.locked_fee | balanceFilter}}</template>
                                 </el-table-column>
-                                <el-table-column prop="unlock_to_user_amount" label="UNLOCK AMOUNT" min-width="150">
+                                <el-table-column prop="unlock_to_user_amount" :label="$t('billing.UNLOCKAMOUNT')" min-width="150">
                                     <template slot-scope="scope">{{scope.row.unlock_to_user_amount | balanceFilter}}</template>
                                 </el-table-column>
-                                <el-table-column prop="coin_type" label="TOKEN" min-width="120"></el-table-column>
-                                <el-table-column prop="file_name" label="FILE NAME" min-width="180"></el-table-column>
+                                <el-table-column prop="coin_type" :label="$t('billing.TOKEN')" min-width="120"></el-table-column>
+                                <el-table-column prop="file_name" :label="$t('billing.FILENAME')" min-width="180"></el-table-column>
                                 <el-table-column prop="payload_cid" :label="$t('billing.PAYLOADCID')" min-width="140">
                                     <template slot-scope="scope">
                                         <div class="hot-cold-box">
@@ -92,7 +92,7 @@
                                 </el-table-column>
                                 <el-table-column prop="network" :label="$t('billing.NETWORK')" min-width="120"></el-table-column>
                                 <el-table-column prop="lock_payment_time" :label="$t('billing.PAYMENTDATE')" min-width="140"></el-table-column>
-                                <el-table-column prop="unlock_time" label="UNLOCK DATE" min-width="140"></el-table-column>
+                                <el-table-column prop="unlock_time" :label="$t('billing.UNLOCKDATE')" min-width="140"></el-table-column>
                                 <el-table-column prop="deadline" :label="$t('billing.Deadline')" min-width="140"></el-table-column>
                             </el-table>
                         </div>
@@ -166,8 +166,8 @@
             };
         },
         computed: {
-            language() {
-                return this.$store.state.app.language
+            languageMcp() {
+                return this.$store.state.app.languageMcp
             },
             metaAddress() {
                 return this.$store.getters.metaAddress
@@ -290,7 +290,7 @@
             },
             copyTextToClipboard(text) {
                 let _this = this
-                let saveLang = localStorage.getItem('lang') == 'cn'?"复制成功":"success";
+                let saveLang = localStorage.getItem('languageMcp') == 'cn'?"复制成功":"success";
                 var txtArea = document.createElement("textarea");
                 txtArea.id = 'txt';
                 txtArea.style.position = 'fixed';

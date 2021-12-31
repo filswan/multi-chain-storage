@@ -5,8 +5,8 @@ const app = {
         sidebar: {
             opened: true
         },
-        language: 'en',
-        // language: localStorage.getItem('language') || 'en',
+        // languageMcp: 'en',
+        languageMcp: localStorage.getItem('languageMcp') || 'en',
         routerMenu: localStorage.getItem('routerMenu') || 0,
         headertitle: localStorage.getItem('headertitle') || 'DASHBOARD',
         assetNow: localStorage.getItem('assetNow') || 1,
@@ -27,9 +27,9 @@ const app = {
             }
             state.sidebar.opened = !state.sidebar.opened
         },
-        SET_LANGUAGE: (state, language) => {
-            state.language = language
-            localStorage.setItem('language', language)
+        SET_LANGUAGE: (state, languageMcp) => {
+            state.languageMcp = languageMcp
+            localStorage.setItem('languageMcp', languageMcp)
         },
         SET_ROUTERMENU: (state, routerMenu) => {
             // console.log(state, routerMenu);
@@ -76,8 +76,8 @@ const app = {
         toggleSideBar({commit}) {
             commit('TOGGLE_SIDEBAR')
         },
-        setLanguage({commit}, language) {
-            commit('SET_LANGUAGE', language)
+        setLanguage({commit}, languageMcp) {
+            commit('SET_LANGUAGE', languageMcp)
         },
         setRouterMenu({commit}, routerMenu) {
             commit('SET_ROUTERMENU', routerMenu)

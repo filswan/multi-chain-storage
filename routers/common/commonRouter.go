@@ -1,13 +1,14 @@
 package common
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"payment-bridge/common"
 	"payment-bridge/common/constants"
 	"payment-bridge/common/errorinfo"
 	"payment-bridge/logs"
 	"strings"
+
+	"github.com/gin-gonic/gin"
 )
 
 func HostManager(router *gin.RouterGroup) {
@@ -21,11 +22,6 @@ func GetSwanMinerVersion(c *gin.Context) {
 }
 
 func GetSystemConfigParams(c *gin.Context) {
-	authorization := c.Request.Header.Get("authorization")
-	if len(strings.Trim(authorization, " ")) == 0 {
-		c.JSON(http.StatusOK, common.CreateErrorResponse(errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_CODE, errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_MSG))
-		return
-	}
 	limit := strings.Trim(c.Query("limit"), " ")
 	if limit == "" {
 		limit = constants.DEFAULT_SELECT_LIMIT

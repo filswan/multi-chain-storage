@@ -83,7 +83,6 @@ func GetDealListForDaoByDealId(c *gin.Context) {
 	dealIdIntValue, err := strconv.Atoi(dealId)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_CODE, errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_MSG))
 		return
 	}
 	dealList, err := GetDealListThanGreaterDealID(int64(dealIdIntValue), 0, 100)

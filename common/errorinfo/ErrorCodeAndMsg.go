@@ -33,10 +33,6 @@ const (
 	UPDATE_DATA_TO_DB_ERROR_CODE = "500003004"
 	UPDATE_DATA_TO_DB_ERROR_MSG  = "Updating data to database occurred error"
 
-	// JWT token err 004
-	NO_AUTHORIZATION_TOKEN_ERROR_CODE = "500004001"
-	NO_AUTHORIZATION_TOKEN_ERROR_MSG  = "Jwt token is required"
-
 	//lotus send deal err  005
 	SENDING_DEAL_ERROR_CODE                 = "500005001"
 	SENDING_DEAL_ERROR_MSG                  = "Failed to create a sending deal task, please contact the administrator"

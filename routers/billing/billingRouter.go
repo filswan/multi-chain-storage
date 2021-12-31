@@ -3,7 +3,6 @@ package billing
 import (
 	"errors"
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"math/big"
 	"net/http"
 	"payment-bridge/blockchain/browsersync/scanlockpayment/polygon"
@@ -16,6 +15,8 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
+
+	"github.com/gin-gonic/gin"
 )
 
 func BillingManager(router *gin.RouterGroup) {
@@ -31,11 +32,6 @@ func LockPaymentForUser(c *gin.Context) {
 }
 
 func GetLockPaymentInfoByPayloadCid(c *gin.Context) {
-	authorization := c.Request.Header.Get("authorization")
-	if len(authorization) == 0 {
-		c.JSON(http.StatusUnauthorized, common.CreateErrorResponse(errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_CODE, errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_MSG))
-		return
-	}
 	URL := c.Request.URL.Query()
 	var payloadCid = strings.Trim(URL.Get("payload_cid"), " ")
 	if payloadCid == "" {
@@ -51,20 +47,15 @@ func GetLockPaymentInfoByPayloadCid(c *gin.Context) {
 		return
 	}
 	if len(lockPaymentList) > 0 {
-		c.JSON(http.StatusOK, common.CreateSuccessResponse(gin.H{"tx_hash": lockPaymentList[0].TxHash, "payload_cid": lockPaymentList[0].PayloadCid, "locked_fee": lockPaymentList[0].LockedFee}))
+		c.JSON(http.StatusOK, common.CreateSuccessResponse(gin.H{"tx_hash": lockPaymentList[0].TxHash, "payload_cid": lockPaymentList[0].PayloadCid, "locked_fee": lockPaymentList[0].LockedFee, "token_type": lockPaymentList[0].TokenAddress}))
 	} else {
-		c.JSON(http.StatusOK, common.CreateSuccessResponse(gin.H{"tx_hash": "", "payload_cid": payloadCid, "locked_fee": ""}))
+		c.JSON(http.StatusOK, common.CreateSuccessResponse(gin.H{"tx_hash": "", "payload_cid": payloadCid, "locked_fee": "", "token_type": ""}))
 	}
 
 }
 
 func UpdateLockPaymentInfoByPayloadCid(c *gin.Context) {
 	logs.GetLogger().Info("~~~~~~~~~~~~~~~~~~~~~~~~ start to update lock payment status to db ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-	authorization := c.Request.Header.Get("authorization")
-	if len(authorization) == 0 {
-		c.JSON(http.StatusUnauthorized, common.CreateErrorResponse(errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_CODE, errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_MSG))
-		return
-	}
 
 	payloadCid := c.PostForm("payload_cid")
 	if strings.Trim(payloadCid, " ") == "" {

@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"payment-bridge/common"
 	"payment-bridge/common/constants"
@@ -17,6 +16,8 @@ import (
 	"payment-bridge/models"
 	"strconv"
 	"strings"
+
+	"github.com/gin-gonic/gin"
 )
 
 func SendDealManager(router *gin.RouterGroup) {
@@ -82,7 +83,7 @@ func GetDealListForDaoByDealId(c *gin.Context) {
 	dealIdIntValue, err := strconv.Atoi(dealId)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_CODE, errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_MSG))
+		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.TYPE_TRANSFER_ERROR_CODE, errorinfo.TYPE_TRANSFER_ERROR_MSG))
 		return
 	}
 	dealList, err := GetDealListThanGreaterDealID(int64(dealIdIntValue), 0, 100)
@@ -96,11 +97,6 @@ func GetDealListForDaoByDealId(c *gin.Context) {
 }
 
 func GetDealListFromFilink(c *gin.Context) {
-	authorization := c.Request.Header.Get("authorization")
-	if len(authorization) == 0 {
-		c.JSON(http.StatusUnauthorized, common.CreateErrorResponse(errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_CODE, errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_MSG))
-		return
-	}
 	dealId := strings.Trim(c.Params.ByName("deal_id"), " ")
 	if strings.Trim(dealId, " ") == "" {
 		errMsg := "deal id can not be null"
@@ -314,11 +310,13 @@ func GetDealListFromSwan(c *gin.Context) {
 	URL := c.Request.URL.Query()
 	pageNumber := URL.Get("page_number")
 	pageSize := URL.Get("page_size")
-	authorization := c.Request.Header.Get("authorization")
-	if len(authorization) == 0 {
-		c.JSON(http.StatusOK, common.CreateErrorResponse(errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_CODE, errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_MSG))
-		return
-	}
+	/*
+		authorization := c.Request.Header.Get("authorization")
+		if len(authorization) == 0 {
+			c.JSON(http.StatusOK, common.CreateErrorResponse(errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_CODE, errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_MSG))
+			return
+		}
+	*/
 
 	if (strings.Trim(pageNumber, " ") == "") || (strings.Trim(pageNumber, " ") == "0") {
 		pageNumber = "1"
@@ -343,7 +341,7 @@ func GetDealListFromSwan(c *gin.Context) {
 	url := config.GetConfig().SwanApi.ApiUrl + "/paymentgateway/deals?source_id=" + strconv.Itoa(constants.SOURCE_ID_OF_PAYMENT) +
 		"&limit=" + pageSize + "&offset=" + strconv.FormatInt(offset, 10)
 	header := make(http.Header)
-	header.Add(constants.HTTP_REQUEST_HEADER_AUTHRORIZATION, authorization)
+	//header.Add(constants.HTTP_REQUEST_HEADER_AUTHRORIZATION, authorization)
 	response, err := httpClient.SendRequestAndGetBytes(http.MethodGet, url, nil, header)
 	if err != nil {
 		logs.GetLogger().Error(err)

@@ -83,6 +83,7 @@ func GetDealListForDaoByDealId(c *gin.Context) {
 	dealIdIntValue, err := strconv.Atoi(dealId)
 	if err != nil {
 		logs.GetLogger().Error(err)
+		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.TYPE_TRANSFER_ERROR_CODE, errorinfo.TYPE_TRANSFER_ERROR_MSG))
 		return
 	}
 	dealList, err := GetDealListThanGreaterDealID(int64(dealIdIntValue), 0, 100)

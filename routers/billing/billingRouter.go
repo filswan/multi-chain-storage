@@ -3,7 +3,6 @@ package billing
 import (
 	"errors"
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"math/big"
 	"net/http"
 	"payment-bridge/blockchain/browsersync/scanlockpayment/polygon"
@@ -16,6 +15,8 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
+
+	"github.com/gin-gonic/gin"
 )
 
 func BillingManager(router *gin.RouterGroup) {
@@ -31,11 +32,6 @@ func LockPaymentForUser(c *gin.Context) {
 }
 
 func GetLockPaymentInfoByPayloadCid(c *gin.Context) {
-	authorization := c.Request.Header.Get("authorization")
-	if len(authorization) == 0 {
-		c.JSON(http.StatusUnauthorized, common.CreateErrorResponse(errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_CODE, errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_MSG))
-		return
-	}
 	URL := c.Request.URL.Query()
 	var payloadCid = strings.Trim(URL.Get("payload_cid"), " ")
 	if payloadCid == "" {

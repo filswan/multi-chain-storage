@@ -14,7 +14,7 @@ Run `npm run dev` for a dev server. Navigate to `http://localhost:8080/`. The ap
 
 Go to the `config/` directory and modify the URL in the `prod.env.js` file.
 
-Run `npm run build` to build the project. The build artifacts will be stored in the `dist/` directory.
+Run `npm run build/npm run build dev` to build the project. The build artifacts will be stored in the `dist/` directory.
 
 ## Reference documents
 

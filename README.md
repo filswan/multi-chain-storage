@@ -136,11 +136,6 @@ db_username="root"
 db_pwd="123456"
 db_args="charset=utf8mb4&parseTime=True&loc=Local"
 
-[swan_api]
-api_url = "http://xxxxxxxx:5002"
-api_key = ""
-access_token = ""
-
 [lotus]
 api_url="http://127.0.0.1:1234/rpc/v0"   # Url of lotus web api
 access_token=".."   # Access token of lotus web api
@@ -177,14 +172,6 @@ The contract address of the swan payment gateway, used for lock and unlock user 
 #### file_coin_wallet
 
 The wallet address of the user's paying for storage file to the filecoin network
-
-#### [swan_api]
-
-swan_api section defines the token used for connecting with Swan platform.
-
-- **api_key & access_token:** Acquire from [Filswan](https://www.filswan.com) -> "My Profile"->"Developer Settings". You
-  can also check the [Guide](https://nebulaai.medium.com/how-to-use-api-key-in-swan-a2ebdb005aa4)
-- **api_url:** Default: "https://api.filswan.com"
 
 #### [lotus]
 

@@ -3,7 +3,8 @@
         <div class="header_arera">
             <div class="header_left">
                 <span v-if="!bodyWidth">{{headertitle}}</span>
-                <span v-else>{{$t('navbar.sidebar_header')}}</span>
+                <img v-else src="@/assets/images/MCP_logo.png" alt="">
+                <!-- <span v-else>{{$t('navbar.sidebar_header')}}</span> -->
             </div>
             <div class="header-right">
                 <div :class="{'online': addrChild, 'feh-metamask': 1==1}">
@@ -20,7 +21,7 @@
                             <h5>{{priceAccound}} {{ metaNetworkInfo.unit}}</h5>
                             <h4 @click="wrongVisible=true">{{addrChild | hiddAddress}} <i class="el-icon-user-solid"></i></h4>
                         </div>
-                        <el-button class="text textTrue" @click="signOutFun">{{$t('fs3.Disconnect')}}</el-button>
+                        <el-button v-if="!bodyWidth" class="text textTrue" @click="signOutFun">{{$t('fs3.Disconnect')}}</el-button>
                     </div>
                 </div>
 
@@ -28,11 +29,11 @@
                 <el-dropdown
                     trigger="click"
                     class="language leftBoth"
-                    @command="handleSetLanguage"
+                    @command="handleSetLanguage" v-if="!bodyWidth"
                 >
                     <div class="background">
-                    <span v-if="languageMcp === 'cn'" style="cursor: pointer;">简体中文 <i class="el-icon-arrow-down"></i></span>
-                    <span v-if="languageMcp === 'en'" style="cursor: pointer;">English <i class="el-icon-arrow-down"></i></span>
+                    <span v-if="languageMcp === 'cn'" style="cursor: pointer;">CN <i class="el-icon-arrow-down"></i></span>
+                    <span v-if="languageMcp === 'en'" style="cursor: pointer;">EN <i class="el-icon-arrow-down"></i></span>
                     </div>
                     <el-dropdown-menu slot="dropdown">
                     <el-dropdown-item command="cn" :disabled="languageMcp === 'cn'">
@@ -109,7 +110,7 @@ export default {
             langNew: '',
             userShow: false,
             loginShow: localStorage.getItem("mcpLoginAccessToken") ? false : true,
-            bodyWidth: document.body.clientWidth<1024?true:false,
+            bodyWidth: document.body.clientWidth<999?true:false,
             langShow: true,
             loadIndexing: false,
             // 控制是否在路由栈中清理当前页面的数据
@@ -843,6 +844,8 @@ export default {
 }
 .header_left{
     float: left;
+    display: flex;
+    align-items: center;
     width: auto;
     margin: 0;
     font-size: 0.2772rem;
@@ -850,6 +853,9 @@ export default {
     color: #0b318f;
     line-height: 0.42rem;
     text-transform: uppercase;
+    img{
+        height: 0.35rem;
+    }
 }
 // .collapse-btn-cont {
 //     float: left;
@@ -927,8 +933,8 @@ export default {
         height: 30px;
         margin: 0 10px 0 0;
         cursor: pointer;
-        @media screen and (max-width:441px) {
-            margin: 0 5px 0 0;
+        @media screen and (max-width:999px) {
+            margin: 0;
         }
         img{
             display: block;
@@ -970,23 +976,19 @@ export default {
                 @media screen and (max-width:600px) {
                     font-size: 12px;
                 }
-                @media screen and (max-width:441px) {
-                    display: none;
-                }
             }
             .textTrue{
                 background: #4326ab;
             }
             .el-button{
+                background: #c9f7f5;
+                color: #13c1b8;
                 cursor: pointer;
                 border: 0;
                 font-weight: normal;
                 font-family: inherit;
                 &:hover{
                     opacity: .9;
-                }
-                @media screen and (max-width:441px) {
-                    display: block;
                 }
             }
             .info{
@@ -1007,15 +1009,17 @@ export default {
                     line-height: 2;
                     border-radius: 0.05rem;
                     cursor: pointer;
+                    @media screen and (max-width:600px) {
+                        margin: 0;
+                    }
                 }
                 &:hover{
                     background: rgba(67, 38, 171, 0.9);
                 }
                 @media screen and (max-width:600px) {
                     font-size: 12px;
-                }
-                @media screen and (max-width:441px) {
-                    display: none;
+                    padding: 2px 2px 2px 5px;
+                    margin: 0 2px 0 5px;
                 }
             }
         }
@@ -1073,18 +1077,18 @@ export default {
         }
     }
     .language{
-        .background{
-            padding: 0.05rem 0.1rem;
-            font-size: 14px;
-            background: #4326ab;
-            color: #fff;
-            border-radius: 0.08rem;
-            line-height: 1.5;
-            cursor: pointer;
-            @media screen and (max-width:600px) {
-                font-size: 12px;
-            }
-        }
+    //     .background{
+    //         padding: 0.05rem 0.1rem;
+    //         font-size: 14px;
+    //         background: #4326ab;
+    //         color: #fff;
+    //         border-radius: 0.08rem;
+    //         line-height: 1.5;
+    //         cursor: pointer;
+    //         @media screen and (max-width:600px) {
+    //             font-size: 12px;
+    //         }
+    //     }
     }
 }
 .sighChild{
@@ -1145,8 +1149,8 @@ export default {
         background: #0b318f;
     }
     .header_arera{
-        margin: 0.1rem;
-        height: auto;
+        margin: 0.09rem 0.1rem;
+        // height: auto;
         padding: 0;
         border: 0;
     }
@@ -1188,11 +1192,11 @@ export default {
     }
 }
 @media screen and (max-width:470px){
-    .header_arera{
-        margin: 0.05rem 0.1rem;
-    }
     .header_left{
         font-size: 0.16rem;
+        img{
+            height: 30px;
+        }
     }
 }
 </style>

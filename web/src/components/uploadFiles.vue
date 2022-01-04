@@ -296,7 +296,6 @@
                                 // 判断支付金额是否大于代币余额
                                 if(_this.ruleForm.amount > _this.usdcAvailable ){
                                     _this.$message.error('Insufficient balance')
-                                    // _this.sendSuccess(cid, 'Fail')
                                     return false
                                 }
 
@@ -341,7 +340,6 @@
                                                                 })
                                                                 .catch(error => {
                                                                     // console.log('errorerrorerror', error)
-                                                                    // _this.sendSuccess(res.data.payload_cid, 'Pending')
                                                                 })
                                                             }
                                                             _this.contractSend(res.data.payload_cid)
@@ -484,7 +482,6 @@
                     _this.loading = false
                     _this.loadMetamaskPay = false
                     _this.failTransaction = true
-                    // _this.sendSuccess(cid, 'Fail')
                 }); 
             },
             checkTransaction(txHash, cid) {
@@ -499,32 +496,11 @@
                                 _this.loadMetamaskPay = false
                                 clearTimeout(_this.timer)
                                 _this.finishTransaction = true
-                                // _this.sendSuccess(cid, 'Success')
                             }, 2000)
                         }
                     },
                     err => { console.error(err); }
                 );
-            },
-            sendSuccess(cid, success) {
-                let _this = this 
-                
-                let lockParam = new FormData()
-                lockParam.append('payload_cid', cid)
-                lockParam.append('lock_payment_tx', _this.txHash)
-                lockParam.append('lock_payment_status', success)
-                lockParam.append('network_name', 'polygon')
-                lockParam.append('address', _this.metaAddress)
-
-                axios.post(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/billing/deal/lockpayment/status`, lockParam,{
-                    headers: {
-                    // 'Authorization': "Bearer "+_this.$store.getters.accessToken
-                    },
-                })
-                .then((res) => {
-                }).catch(error => {
-                    console.log(error)
-                })
             },
             finishClose(){
                 this.finishTransaction = false

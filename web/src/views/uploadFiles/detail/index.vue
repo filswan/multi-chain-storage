@@ -245,7 +245,7 @@ export default {
                     if(json.data.deal.provider && json.data.found.payload_cid){
                         _this.copy_filename = 'lotus client retrieve --miner '+json.data.deal.provider+' '+json.data.found.payload_cid+' output-file';
                     }else{
-                        _this.copy_filename = localStorage.getItem('languageMcp') == 'cn'?"现在还没有。":"It's not available yet.";
+                        _this.copy_filename = localStorage.getItem('languageMcp') == 'cn'?"还不可用。":"It's not available yet.";
                     }
 
                     if(!json.data.found){

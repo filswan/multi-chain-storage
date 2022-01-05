@@ -55,8 +55,9 @@
 - If Dao detects that the file uploaded by the user has been chained, it will trigger a signature operation
 
 ### Unlock Payment
-When more than half of the dao have been signed, the unlock operation will be triggered <br>
-The part that needs to be paid will be deducted from the locked token, and the remaining token will be returned to the user
+- When more than half of the dao have been signed, the unlock operation will be triggered
+- The part that needs to be paid will be deducted from the locked token
+- The remaining token will be returned to the user
 
 ## Prerequisites
 - OS: Ubuntu 20.04 LTS

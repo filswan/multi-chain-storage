@@ -10,6 +10,7 @@
 ## Table of Contents
 - [Functions](#Functions)
 - [System Design](#System-Design)
+- [Modules](#Modules)
 - [Prerequisites](#Prerequisites)
 - [Installation](#Installation)
 - [After Installation](#After-Installation)
@@ -25,11 +26,11 @@
 - Backup user's file to filecoin network
 - Supports payment with tokens such as USDC on polygon
 
-# System Design
+## System Design
 
 ![MCP-MCP Desgin](https://user-images.githubusercontent.com/8363795/143811916-f051ccce-f9b2-49eb-99ab-8da1a0d9f2f2.png)
 
-# Modules
+## Modules
 
 * [Token Swap](#Token Swap)
 * Lock payment
@@ -38,7 +39,7 @@
 * Data DAO : [Flink](https://github.com/filswan/flink)
 * IPFS/Filecoin Storage
 
-## Token Swap
+### Token Swap
 Token Swap module is in charge of swap the user token to wrapped token, it can be USDC or other tokens
 
 ### Lock payment

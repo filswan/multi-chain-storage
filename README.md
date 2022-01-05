@@ -75,7 +75,7 @@ You can get this script from our payment-bridge source code which will be introd
 - Lotus node is used for making car files and sending offline deals
 - Install lotus node or louts lite node in the same machine as MCP
 - Lotus full node is too heavy compared with lotus lite node, so lotus lite node is preferred
-- If use lotus lite node, make sure a lotus full node already deployed somewhere, since lotus lite node needs to communicate with a full node
+- Since lotus lite node depends on a lotus node, so ensure that a lotus node exists somewhere when using lotus lite node
 #### Option:one: [install a lotus full node](https://lotus.filecoin.io/docs/set-up/install/)
 #### Option:two: [install a lotus lite node](https://lotus.filecoin.io/docs/set-up/lotus-lite/#amd-and-intel-based-computers)
 

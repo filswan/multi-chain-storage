@@ -88,7 +88,7 @@ git clone https://github.com/filswan/payment-bridge
 ```
 
 
-### 2 Install MCP Dependencies
+### Step:two: Install MCP Dependencies
 If python3 or ansible is not yet installed in the system, please run `install_pre-requisite.sh` script first:
 ```bash
 cd $GOPATH/src/payment-bridge/script/
@@ -101,7 +101,7 @@ cd $GOPATH/src/payment-bridge/script/install_dependencies/
 ansible-playbook mcp_dependencies.yaml --ask-become-pass -vvv
 ```
 
-### 3 Pull-in the submodules:
+### Step:three: Pull-in the submodules:
 
 ```console
 cd $GOPATH/src/payment-bridge/
@@ -109,7 +109,7 @@ git submodule update --init --recursive
 make ffi
 ```
 
-### 4 Build project
+### Step:four: Build project
 
 Enter payment-bridge directory,and execute the make command  <br>
 You can get a runnable binary file named payment_bridge and config file in $GOPATH/src/payment-bridge/config/ <br>
@@ -122,7 +122,7 @@ cd $GOPATH/src/payment-bridge/
 GO111MODULE=on make
 ```
 
-### 5 Run the project
+### Step:five: Run the project
 
 Enter payment-bridge/build/ directory, and execute the binary file of the payment-bridge project <br>
 Before actually running the payment bridege project, you need to read the section about config introduction below,

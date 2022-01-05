@@ -81,7 +81,7 @@ You can get this script from our payment-bridge source code which will be introd
 
 ## Installation
 
-### 1 Clone code to $GOPATH/src
+### Step:one: Clone code to $GOPATH/src
 
 ```console
 git clone https://github.com/filswan/payment-bridge

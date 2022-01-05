@@ -9,7 +9,7 @@
 
 ## Table of Contents
 - [Functions](#Functions)
-- [Concepts](#Concepts)
+- [System Design](#System-Design)
 - [Prerequisites](#Prerequisites)
 - [Installation](#Installation)
 - [After Installation](#After-Installation)
@@ -22,7 +22,7 @@
 
 ## Functions
 - Make payment from multi chain for filecoin storage
-- Backup user's file to filecoin network. 
+- Backup user's file to filecoin network
 - Supports payment with tokens such as USDC on polygon
 
 # System Design

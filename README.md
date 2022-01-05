@@ -134,13 +134,13 @@ nohup ./build/multi-chain-payment >> mcp.log &            #After installation fr
 - **download_url_prefix**: Ipfs server url prefix, such as: `http://[ip]:[port]`. Store car files for downloading by storage provider. Car file url will be `[download_url_prefix]/ipfs/[file_hash]`
 - **upload_url_prefix**: Ipfs server url for uploading files, such as `http://[ip]:[port]`
 #### [swan_task]
-- **dir_deal:** Output directory for saving generated Car files and CSVs
-- **verified_deal:** [true/false] Whether deals in this task are going to be sent as verified
-- **fast_retrieval:** [true/false] Indicates that data should be available for fast retrieval
-- **start_epoch_hours:** start_epoch for deals in hours from current time
-- **expired_days:** expected completion days for storage provider sealing data
-- **max_price:** Max price willing to pay per GiB/epoch for offline deal
-- **generate_md5:** [true/false] Whether to generate md5 for each car file, note: this is a resource consuming action
+- **dir_deal**: Output directory for saving generated Car files and CSVs
+- **verified_deal**: [true/false] Whether deals in this task are going to be sent as verified
+- **fast_retrieval**: [true/false] Indicates that data should be available for fast retrieval
+- **start_epoch_hours**: start_epoch for deals in hours from current time
+- **expired_days**: expected completion days for storage provider sealing data
+- **max_price**: Max price willing to pay per GiB/epoch for offline deal
+- **generate_md5**: [true/false] Whether to generate md5 for each car file, note: this is a resource consuming action
 
 ### config_polygon.toml
 
@@ -149,9 +149,12 @@ Currently, USDC is supported for payment. Take polygon network as an example to 
 
 - **rpc_url:** the polygon network rpc url
 - **payment_contract_address:**  swan payment gateway address on polygon
-- **contract_function_signature:**  swan payment gateway's lock payment event's function signature on polygon
+- **contract_lock_function_signature:**  swan payment gateway's lock payment event's function signature on polygon
+- **contract_unlock_function_signature:**  swan payment gateway's lock payment event's function signature on polygon
 - **dao_swan_oracle_address:**  swan dao address on polygon
 - **dao_event_function_signature:**  swan dao's signature event's function signature on polygon
+-**pair_address_between_wfil_usdc_of_sushiswap_on_polygon**:
+
 - **scan_step:**  the number of blocks scanned per scan
 - **start_from_blockNo:**  scan data from this block number
 - **start_from_blockNo:**  the time between each scan of the blockchain

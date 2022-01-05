@@ -77,7 +77,7 @@ You can get this script from our payment-bridge source code which will be introd
 - Lotus full node is too heavy compared with lotus lite node, so in the machine MCP will run, you can deploy lotus lite node
 - If use lotus lite node, make sure a lotus full node already deployed somewhere, since lotus lite node needs to communicate with a full node
 #### Option:one: [install a lotus full node](https://lotus.filecoin.io/docs/set-up/install/)
-#### Option :two: [install a lotus lite node](https://lotus.filecoin.io/docs/set-up/lotus-lite/#amd-and-intel-based-computers)
+#### Option:two: [install a lotus lite node](https://lotus.filecoin.io/docs/set-up/lotus-lite/#amd-and-intel-based-computers)
 
 ### Install IPFS client
 #### **How to install IPFS client**: See [IPFS official installation document](https://docs.ipfs.io/install/)

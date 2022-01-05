@@ -96,10 +96,6 @@ git checkout <release_branch>
 ```
 
 ## After Installation
-- The binary file `multi-chain-payment` is under `./build` directory, you need to switch to it.
-```shell
-cd build
-```
 - Before executing, you should check your configuration in `~/.swan/mcp/config.toml` to ensure it is right.
 ```shell
 vi ~/.swan/mcp/config.toml
@@ -111,6 +107,21 @@ vi ~/.swan/mcp/config_polygon.toml
 - To pay on goerli network, you need to check your configuration in `~/.swan/mcp/config_goerli.toml` to ensure it is right.
 ```shell
 vi ~/.swan/mcp/config_goerli.toml
+```
+- After set your config in the related config files, you can run `multi-chain-payment` in `./build`
+```shell
+cd build
+multi-chain-payment
+```
+### Note
+- Logs are in directory ./logs
+- You can add `nohup` before `./multi-chain-payment` to ignore the HUP (hangup) signal and therefore avoid stop when you log out.
+- You can add `>> mcp.log` in the command to let all the logs output to `mcp.log`.
+- You can add `&` at the end of the command to let the program run in background.
+- Such as:
+```shell
+nohup ./multi-chain-payment-0.2.1-rc1-unix >> mcp.log &   #After installation from Option 1
+nohup ./build/multi-chain-payment >> mcp.log &            #After installation from Option 2
 ```
 
 ### Step:five: Run the project

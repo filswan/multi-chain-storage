@@ -46,6 +46,7 @@
 
 ### Lock payment
 - After a file is uploaded, the money to be paid is estimated based on the average price of all the miners on the entire network.
+- Then the estimated amount of money will be locked.
 - The overpayment part that is locked will be returned through the unlock operation later
 
 ### DAO Organization

@@ -37,7 +37,6 @@
 * [DAO Organization](#DAO-Organization)
 * [DAO Signature](#DAO-Signature)
 * [Unlock Payment](#Unlock-Payment)
-* Unlock payment
 * Data DAO : [Flink](https://github.com/filswan/flink)
 * IPFS/Filecoin Storage
 

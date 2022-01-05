@@ -79,7 +79,7 @@ You can get this script from our payment-bridge source code which will be introd
 #### Option:one: [install a lotus full node](https://lotus.filecoin.io/docs/set-up/install/)
 #### Option:two: [install a lotus lite node](https://lotus.filecoin.io/docs/set-up/lotus-lite/#amd-and-intel-based-computers)
 
-## Getting Started with PaymentBridge
+## Installation
 
 ### 1 Clone code to $GOPATH/src
 

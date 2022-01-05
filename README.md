@@ -32,7 +32,6 @@
 
 * [Token Swap](#Token-Swap)
 * [Payment Lock](#Payment-Lock)
-* [DAO Organization](#DAO-Organization)
 * [DAO Signature](#DAO-Signature)
 * [Unlock Payment](#Unlock-Payment)
 * [Data DAO](https://github.com/filswan/flink)
@@ -49,11 +48,8 @@
 - Then the estimated amount of money will be locked.
 - The overpayment part that is locked will be returned through the unlock operation later
 
-### DAO Organization
-- If Dao detects that the file uploaded by the user has been chained, it will trigger a signature operation
-
 ### DAO Signature
-- If Dao detects that the file uploaded by the user has been chained, it will trigger a signature operation
+- If DAO detects that the file uploaded has been chained, it will trigger a signature operation
 
 ### Unlock Payment
 - When more than half of the dao have been signed, the unlock operation will be triggered

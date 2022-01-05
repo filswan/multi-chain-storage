@@ -232,7 +232,7 @@ type DuplicatedTaskInfo struct {
 	Status            string `json:"status"`
 	PayloadCid        string `json:"payload_cid"`
 	DealCid           string `json:"deal_cid"`
-	TaskUuid          string `json:"task_uuid""`
+	TaskUuid          string `json:"task_uuid"`
 	IpfsUrl           string `json:"ipfs_url"`
 	PieceCid          string `json:"piece_cid"`
 	LockPaymentStatus string `json:"lock_payment_status"`

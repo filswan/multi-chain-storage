@@ -145,9 +145,6 @@ nohup ./build/multi-chain-payment >> mcp.log &            #After installation fr
 - **max_price:** Max price willing to pay per GiB/epoch for offline deal
 - **min_price:** Min price willing to pay per GiB/epoch for offline deal
 - **generate_md5:** [true/false] Whether to generate md5 for each car file, note: this is a resource consuming action
-- **relative_epoch_from_main_network:**  The difference between the block height of filecoin's mainnet and testnet. If
-  the filecoin testnet is linked, this configuration item is set to -858481, and if the link is the mainnet, it is set
-  to 0
 
 ### config_polygon.toml
 

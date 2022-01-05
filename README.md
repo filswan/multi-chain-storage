@@ -95,17 +95,22 @@ git checkout <release_branch>
 ./build_from_source.sh
 ```
 
-### Step:four: Build project
-
-Enter payment-bridge directory,and execute the make command  <br>
-You can get a runnable binary file named payment_bridge and config file in $GOPATH/src/payment-bridge/config/ <br>
-We support multi-chain payment,for example<br>
-If you want to pay on polygon network,you also need to edit $GOPATH/src/payment-bridge/config/polygon/config_polygon.toml<br>
-If you want to pay on goerli network,you also need to edit$GOPATH/src/payment-bridge/config/goerli/config_goerli.toml<br>
-
-```console
-cd $GOPATH/src/payment-bridge/
-GO111MODULE=on make
+## After Installation
+- The binary file `multi-chain-payment` is under `./build` directory, you need to switch to it.
+```shell
+cd build
+```
+- Before executing, you should check your configuration in `~/.swan/mcp/config.toml` to ensure it is right.
+```shell
+vi ~/.swan/mcp/config.toml
+```
+- To pay on polygon network, you need to check your configuration in `~/.swan/mcp/config_polygon.toml` to ensure it is right.
+```shell
+vi ~/.swan/mcp/config_polygon.toml
+```
+-To pay on goerli network, you need to check your configuration in `~/.swan/mcp/config_goerli.toml`
+```shell
+vi ~/.swan/mcp/config_goerli.toml
 ```
 
 ### Step:five: Run the project

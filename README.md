@@ -169,7 +169,7 @@ to our contract address.<br>
 network storage function<br>
 **Step:four:** when the user's storage is successful, it will be scanned by the dao organization, and then dao signed to
 agree to unlock the user's payment.<br>
-**Step:four:** If more than half of the dao agree, the payment bridge will unlock the user's payment, deduct the user's
+**Step:five:** If more than half of the dao agree, the payment bridge will unlock the user's payment, deduct the user's
 storage fee, and the remaining locked virtual currency Is returned to the customer's wallet<br>
 
 ## Database table description

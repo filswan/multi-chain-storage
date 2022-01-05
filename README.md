@@ -34,7 +34,9 @@
 
 * [Token Swap](#Token-Swap)
 * [Lock payment](#Lock-payment)
-* DAO Signature
+* [DAO Organization](#DAO-Organization)
+* [DAO Signature](#DAO-Signature)
+* [Unlock Payment](#Unlock-Payment)
 * Unlock payment
 * Data DAO : [Flink](https://github.com/filswan/flink)
 * IPFS/Filecoin Storage
@@ -48,8 +50,12 @@
 - The token of the extra part that is locked will be returned to the user through the unlock operation later
 
 ### DAO Organization
-If Dao detects that the file uploaded by the user has been chained, it will trigger a signature operation <br>
-### Unlock payment
+- If Dao detects that the file uploaded by the user has been chained, it will trigger a signature operation
+
+### DAO Signature
+- If Dao detects that the file uploaded by the user has been chained, it will trigger a signature operation
+
+### Unlock Payment
 When more than half of the dao have been signed, the unlock operation will be triggered <br>
 The part that needs to be paid will be deducted from the locked token, and the remaining token will be returned to the user
 

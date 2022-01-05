@@ -16,7 +16,7 @@
 - [After Installation](#After-Installation)
 - [Configuration](#Configuration)
 - [Payment Process](#Payment-Process)
-- [Create Car Files](#Create-Car-Files)
+- [Database Table Introduction](#Database-Table-Introduction)
 - [Upload Car Files](#Upload-Car-Files)
 - [Create A Task](#Create-A-Task)
 - [Send Deals](#Send-Deals)
@@ -172,7 +172,7 @@ agree to unlock the user's payment.<br>
 **Step:five:** If more than half of the dao agree, the payment bridge will unlock the user's payment, deduct the user's
 storage fee, and the remaining locked virtual currency Is returned to the customer's wallet<br>
 
-## Database table description
+## Database Table Introduction
 - You can get db table ddl sql script in `[mcp-source-file-path]/script/dbschema.sql`
 - Two tables should be initialized before it can be used
 

@@ -2,6 +2,9 @@ package goerli
 
 import (
 	"log"
+	"os"
+	"path/filepath"
+	"payment-bridge/logs"
 	"time"
 
 	"github.com/BurntSushi/toml"
@@ -24,7 +27,12 @@ type GoerliMainnetNode struct {
 var goerliConfig *ConfigurationForGoerli
 
 func initCofig() {
-	configFile := "./config/config_goerli.toml"
+	homedir, err := os.UserHomeDir()
+	if err != nil {
+		logs.GetLogger().Fatal("Cannot get home directory.")
+	}
+
+	configFile := filepath.Join(homedir, ".swan/mcp/config_goerli.toml")
 	if metaData, err := toml.DecodeFile(configFile, &goerliConfig); err != nil {
 		log.Fatal("error:", err)
 	} else {

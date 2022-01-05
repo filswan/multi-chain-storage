@@ -2,6 +2,9 @@ package polygon
 
 import (
 	"log"
+	"os"
+	"path/filepath"
+	"payment-bridge/logs"
 	"time"
 
 	"github.com/BurntSushi/toml"
@@ -30,7 +33,12 @@ type PolygonMainnetNode struct {
 var polygonConfig *ConfigurationForPolygon
 
 func initCofig() {
-	configFile := "./config/config_polygon.toml"
+	homedir, err := os.UserHomeDir()
+	if err != nil {
+		logs.GetLogger().Fatal("Cannot get home directory.")
+	}
+
+	configFile := filepath.Join(homedir, ".swan/mcp/config_polygon.toml")
 	if metaData, err := toml.DecodeFile(configFile, &polygonConfig); err != nil {
 		log.Fatal("error:", err)
 	} else {

@@ -2,6 +2,9 @@ package nbai
 
 import (
 	"log"
+	"os"
+	"path/filepath"
+	"payment-bridge/logs"
 	"time"
 
 	"github.com/BurntSushi/toml"
@@ -24,7 +27,12 @@ type NbaiMainnetNode struct {
 var nbaiConfig *ConfigurationForNbai
 
 func initCofig() {
-	configFile := "./config/config_nbai.toml"
+	homedir, err := os.UserHomeDir()
+	if err != nil {
+		logs.GetLogger().Fatal("Cannot get home directory.")
+	}
+
+	configFile := filepath.Join(homedir, ".swan/mcp/config_nbai.toml")
 	if metaData, err := toml.DecodeFile(configFile, &nbaiConfig); err != nil {
 		log.Fatal("error:", err)
 	} else {

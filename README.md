@@ -46,7 +46,7 @@
 
 ### Lock payment
 - After a file is uploaded, the money to be paid is estimated based on the average price of all the miners on the entire network.
-- The token of the extra part that is locked will be returned to the user through the unlock operation later
+- The overpayment part that is locked will be returned through the unlock operation later
 
 ### DAO Organization
 - If Dao detects that the file uploaded by the user has been chained, it will trigger a signature operation

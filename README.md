@@ -45,7 +45,7 @@
 - Token exchange(swap) is done through Sushi Swap which is a DEX.
 
 ### Lock payment
-- When the user uploads the file, the amount that the user needs to pay will be estimated based on the average price of the entire network of the miner
+- After a file is uploaded, the money to be paid is estimated based on the average price of all the miners on the entire network.
 - The token of the extra part that is locked will be returned to the user through the unlock operation later
 
 ### DAO Organization

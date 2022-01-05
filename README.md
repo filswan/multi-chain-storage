@@ -6,8 +6,24 @@
 - Join us on our [public Slack channel](https://www.filswan.com/) for news, discussions, and status updates.
 - [Check out our medium](https://filswan.medium.com) for the latest posts and announcements.
 
-Payment bridge is designed for make payment from multi chain for filecoin storage,and backup user's file to filecoin
-network. Now supports payment with tokens such as USDC on polygon
+
+## Table of Contents
+- [Functions](#Functions)
+- [Concepts](#Concepts)
+- [Prerequisites](#Prerequisites)
+- [Installation](#Installation)
+- [After Installation](#After-Installation)
+- [Configuration](#Configuration)
+- [Flowcharts](#Flowcharts)
+- [Create Car Files](#Create-Car-Files)
+- [Upload Car Files](#Upload-Car-Files)
+- [Create A Task](#Create-A-Task)
+- [Send Deals](#Send-Deals)
+
+## Functions
+- Make payment from multi chain for filecoin storage
+- Backup user's file to filecoin network. 
+- Supports payment with tokens such as USDC on polygon
 
 # System Design
 

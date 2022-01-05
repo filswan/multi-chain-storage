@@ -173,8 +173,8 @@ agree to unlock the user's payment.<br>
 storage fee, and the remaining locked virtual currency Is returned to the customer's wallet<br>
 
 ## Database table description
-You can get db table ddl sql script in $GOPATH/src/payment-bridge/script/dbschema.sql <br>
-There are two tables you need to initialize the data before you can use it<br>
+- You can get db table ddl sql script in `[mcp-source-file-path]/script/dbschema.sql`
+- Two tables should be initialized before it can be used
 
 ### system_config_param
 |column                 |description       |

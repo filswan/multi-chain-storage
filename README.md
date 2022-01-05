@@ -111,7 +111,7 @@ vi ~/.swan/mcp/config_goerli.toml
 - After set your config in the related config files, you can run `multi-chain-payment` in `./build`
 ```shell
 cd build
-multi-chain-payment
+./multi-chain-payment
 ```
 ### Note
 - Logs are in directory ./logs

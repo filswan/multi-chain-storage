@@ -15,7 +15,7 @@
 - [Installation](#Installation)
 - [After Installation](#After-Installation)
 - [Configuration](#Configuration)
-- [Flowcharts](#Flowcharts)
+- [Payment Process](#Payment-Process)
 - [Create Car Files](#Create-Car-Files)
 - [Upload Car Files](#Upload-Car-Files)
 - [Create A Task](#Create-A-Task)
@@ -160,10 +160,10 @@ Currently, USDC is supported for payment. Take polygon network as an example to 
 - **start_from_blockNo:**  scan data from this block number
 - **start_from_blockNo:**  the time between each scan of the blockchain
 
-## The Payment Process
+## Payment Process
 
-- First, users upload a file they want to backup to filecoin network, then use the currencies we support to send tokens
-  to our contract address. <br>
+- **Step:one:** Users upload a file they want to backup to filecoin network, then use the currencies we support to send tokens
+  to our contract address.
 - Second, payment-biridge scans the events of the above transactions
 - Third, when the event data that get in second step meet the conditions, and then the user can perform the filecoin
   network storage function

@@ -107,10 +107,11 @@ vi ~/.swan/mcp/config_goerli.toml
 ```
 - After set your config in the related config files, you can run `multi-chain-payment` in `./build` directory
 ```shell
-./build/multi-chain-payment
+cd build
+./multi-chain-payment
 ```
 ### Note
-- Logs are in directory `./build/logs`
+- Logs are in directory `./logs`
 - You can add `nohup` before `./multi-chain-payment` to ignore the HUP (hangup) signal and therefore avoid stop when you log out.
 - You can add `>> mcp.log` in the command to let all the logs output to `mcp.log`.
 - You can add `&` at the end of the command to let the program run in background.

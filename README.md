@@ -58,7 +58,7 @@
 When more than half of the dao have been signed, the unlock operation will be triggered <br>
 The part that needs to be paid will be deducted from the locked token, and the remaining token will be returned to the user
 
-### Prerequisite
+## Prerequisites
 - OS: Ubuntu 20.04 LTS
 - Ansible: Version 2.12+
 - Python 3.6+

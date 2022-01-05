@@ -80,33 +80,19 @@ You can get this script from our payment-bridge source code which will be introd
 #### Option:two: [install a lotus lite node](https://lotus.filecoin.io/docs/set-up/lotus-lite/#amd-and-intel-based-computers)
 
 ## Installation
-
-### Step:one: Clone code to $GOPATH/src
-
-```console
-git clone https://github.com/filswan/payment-bridge
+### Option:one:  **Prebuilt package**: See [release assets](https://github.com/filswan/multi-chain-payment/releases)
+```shell
+wget https://github.com/filswan/multi-chain-payment/releases/tag/v1.0.1/install.sh
+./install.sh
 ```
 
-
-### Step:two: Install MCP Dependencies
-If python3 or ansible is not yet installed in the system, please run `install_pre-requisite.sh` script first:
-```bash
-cd $GOPATH/src/payment-bridge/script/
-chmod +x ./install_pre-requisite.sh
-./install_pre-requisite.sh
-```
-To install dependencies for MCP, please run the following command in bash shell and input sudo password when prompt:
-```bash
-cd $GOPATH/src/payment-bridge/script/install_dependencies/
-ansible-playbook mcp_dependencies.yaml --ask-become-pass -vvv
-```
-
-### Step:three: Pull-in the submodules:
-
-```console
-cd $GOPATH/src/payment-bridge/
-git submodule update --init --recursive
-make ffi
+### Option:two:  Source Code
+:bell:**go 1.16+** is required
+```shell
+git clone https://github.com/filswan/multi-chain-payment.git
+cd multi-chain-payment
+git checkout <release_branch>
+./build_from_source.sh
 ```
 
 ### Step:four: Build project

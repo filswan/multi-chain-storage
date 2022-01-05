@@ -2,7 +2,6 @@ package scheduler
 
 import (
 	"encoding/json"
-	"fmt"
 
 	"github.com/filswan/go-swan-client/command"
 
@@ -40,7 +39,6 @@ func SendDealScheduler() {
 	c.Start()
 }
 func DoSendDealScheduler() error {
-	fmt.Println(config.GetConfig().SwanTask.RelativeEpochFromMainNetwork)
 	dealList, err := GetTaskListShouldBeSendDealFromLocal()
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -111,30 +109,13 @@ func sendDeal(taskUuid string, file *models.DealFile) (string, error) {
 	timeStr := time.Now().Format("20060102_150405")
 	temDirDeal = filepath.Join(temDirDeal, timeStr)
 	carDir := filepath.Join(temDirDeal, "car")
-	/*
-		confDeal := &clientmodel.ConfDeal{
-			SwanApiUrl:                   config.GetConfig().SwanApi.ApiUrl,
-			SwanApiKey:                   config.GetConfig().SwanApi.ApiKey,
-			SwanAccessToken:              config.GetConfig().SwanApi.AccessToken,
-			SenderWallet:                 config.GetConfig().FileCoinWallet,
-			VerifiedDeal:                 config.GetConfig().SwanTask.VerifiedDeal,
-			FastRetrieval:                config.GetConfig().SwanTask.FastRetrieval,
-			SkipConfirmation:             true,
-			StartEpochIntervalHours:      startEpochIntervalHours,
-			StartEpoch:                   startEpoch,
-			OutputDir:                    carDir,
-			LotusClientApiUrl:            config.GetConfig().Lotus.ApiUrl,
-			LotusClientAccessToken:       config.GetConfig().Lotus.AccessToken,
-			Duration:                     file.Duration,
-			RelativeEpochFromMainNetwork: config.GetConfig().SwanTask.RelativeEpochFromMainNetwork,
-		} */
-	// Adapt to new version of swan-client
+
 	confDeal := &command.CmdAutoBidDeal{
 		SwanApiUrl:             config.GetConfig().SwanApi.ApiUrl,
 		SwanApiKey:             config.GetConfig().SwanApi.ApiKey,
 		SwanAccessToken:        config.GetConfig().SwanApi.AccessToken,
-		LotusClientApiUrl:      config.GetConfig().Lotus.ApiUrl,
-		LotusClientAccessToken: config.GetConfig().Lotus.AccessToken,
+		LotusClientApiUrl:      config.GetConfig().Lotus.ClientApiUrl,
+		LotusClientAccessToken: config.GetConfig().Lotus.ClientAccessToken,
 		SenderWallet:           config.GetConfig().FileCoinWallet,
 		OutputDir:              carDir,
 	}

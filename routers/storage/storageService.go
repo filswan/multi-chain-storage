@@ -21,7 +21,6 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	common2 "github.com/ethereum/go-ethereum/common"
 
-	//clientmodel "github.com/filswan/go-swan-client/model"
 	"github.com/filswan/go-swan-client/command"
 	"github.com/filswan/go-swan-lib/client/ipfs"
 
@@ -82,8 +81,8 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 		}*/
 	// Adapt to new version of swan-client
 	cmdCar := &command.CmdCar{
-		LotusClientApiUrl:      config.GetConfig().Lotus.ApiUrl,
-		LotusClientAccessToken: config.GetConfig().Lotus.AccessToken,
+		LotusClientApiUrl:      config.GetConfig().Lotus.ClientApiUrl,
+		LotusClientAccessToken: config.GetConfig().Lotus.ClientAccessToken,
 		OutputDir:              carDir,
 		InputDir:               srcDir,
 		GenerateMd5:            false,
@@ -95,7 +94,7 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 	}
 	logs.GetLogger().Info("car files created in ", carDir, "payload_cid=", fileList[0].PayloadCid)
 
-	uploadUrl := utils.UrlJoin(config.GetConfig().IpfsServer.UploadUrl, "api/v0/add?stream-channels=true&pin=true")
+	uploadUrl := utils.UrlJoin(config.GetConfig().IpfsServer.UploadUrlPrefix, "api/v0/add?stream-channels=true&pin=true")
 	ipfsFileHash, err := ipfs.IpfsUploadFileByWebApi(uploadUrl, srcFilepath)
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -204,53 +203,6 @@ func GetSourceFileAndDealFileInfoByPayloadCid(payloadCid string) ([]*SourceFileA
 	}
 	return results, nil
 }
-
-/*
-func CreateTask(){
-	taskDataset := config.GetConfig().SwanTask.CuratedDataset
-	taskDescription := config.GetConfig().SwanTask.Description
-	startEpochIntervalHours := config.GetConfig().SwanTask.StartEpochHours
-	startEpoch := libutils.GetCurrentEpoch() + (startEpochIntervalHours+1)*libconstants.EPOCH_PER_HOUR
-	confTask := &clientmodel.ConfTask{
-		SwanApiUrl:                 config.GetConfig().SwanApi.ApiUrl,
-		SwanToken:                  jwtToken,
-		PublicDeal:                 true,
-		BidMode:                    libconstants.TASK_BID_MODE_AUTO,
-		VerifiedDeal:               config.GetConfig().SwanTask.VerifiedDeal,
-		OfflineMode:                false,
-		FastRetrieval:              config.GetConfig().SwanTask.FastRetrieval,
-		MaxPrice:                   config.GetConfig().SwanTask.MaxPrice,
-		StorageServerType:          libconstants.STORAGE_SERVER_TYPE_IPFS_SERVER,
-		WebServerDownloadUrlPrefix: config.GetConfig().IpfsServer.DownloadUrlPrefix,
-		ExpireDays:                 config.GetConfig().SwanTask.ExpireDays,
-		OutputDir:                  carDir,
-		InputDir:                   carDir,
-		//TaskName:                   taskName,
-		MinerFid:                "",
-		Dataset:                 taskDataset,
-		Description:             taskDescription,
-		StartEpochIntervalHours: startEpochIntervalHours,
-		StartEpoch:              startEpoch,
-		SourceId:                constants.SOURCE_ID_OF_PAYMENT,
-		Duration:                duration,
-	}
-
-	_, fileInfoList, _, err := subcommand.CreateTask(confTask, nil)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-	if len(fileInfoList) > 0 {
-		err = saveDealFileAndMapRelation(fileInfoList, sourceFile)
-		if err != nil {
-			logs.GetLogger().Error(err)
-			return nil, err
-		}
-	}
-
-	logs.GetLogger().Info("task created")
-	return fileInfoList, nil
-}*/
 
 func saveDealFileAndMapRelation(fileInfoList []*libmodel.FileDesc, sourceFile *models.SourceFile, duration int) error {
 	currentTime := utils.GetEpochInMillis()

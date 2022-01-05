@@ -125,7 +125,7 @@ nohup ./build/multi-chain-payment >> mcp.log &            #After installation fr
 
 ### config.toml
 - **admin_wallet_on_polygon**: The wallet address used to execute contract methods on the polygon network, pay for gas, lock and unlock user fees on polygon
-- **file_coin_wallet**: The wallet address of the user's paying for storage file to the filecoin network
+- **file_coin_wallet**: The wallet address used to pay on the filecoin network
 - **filink_url**: Deals data can be searched from here
 #### [lotus]
 - **client_api_url**:  Url of lotus client web api, such as: `http://[ip]:[port]/rpc/v0`, generally the `[port]` is `1234`. See [Lotus API](https://docs.filecoin.io/reference/lotus-api/#features)

@@ -108,7 +108,7 @@ vi ~/.swan/mcp/config.toml
 ```shell
 vi ~/.swan/mcp/config_polygon.toml
 ```
--To pay on goerli network, you need to check your configuration in `~/.swan/mcp/config_goerli.toml`
+- To pay on goerli network, you need to check your configuration in `~/.swan/mcp/config_goerli.toml` to ensure it is right.
 ```shell
 vi ~/.swan/mcp/config_goerli.toml
 ```

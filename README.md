@@ -33,18 +33,20 @@
 ## Modules
 
 * [Token Swap](#Token-Swap)
-* Lock payment
+* [Lock payment](#Lock-payment)
 * DAO Signature
 * Unlock payment
 * Data DAO : [Flink](https://github.com/filswan/flink)
 * IPFS/Filecoin Storage
 
 ### Token Swap
-Token Swap module is in charge of swap the user token to wrapped token, it can be USDC or other tokens
+- Take charge of swap the user token to wrapped token
+- It can be USDC or other tokens
 
 ### Lock payment
-When the user uploads the file, the amount that the user needs to pay will be estimated based on the average price of the entire network of the miner <br>
-The token of the extra part that is locked will be returned to the user through the unlock operation later
+- When the user uploads the file, the amount that the user needs to pay will be estimated based on the average price of the entire network of the miner
+- The token of the extra part that is locked will be returned to the user through the unlock operation later
+
 ### DAO Organization
 If Dao detects that the file uploaded by the user has been chained, it will trigger a signature operation <br>
 ### Unlock payment

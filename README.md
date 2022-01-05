@@ -65,19 +65,17 @@
 - Python 3.6+
 - Golang1.16 (minimum version)
 - Mysql5.5
-- Lotus lite node (Please make sure that lotus lite node and payment bridge project are running on the same server)
+- [Lotus Node](#Lotus-Node)
 - IPFS Client
 
-If python3 or ansible is not yet installed in the system, please run `install_pre-requisite.sh` script first <br>
+If python3 or ansible is not yet installed in the system, please run `install_pre-requisite.sh` script first
 You can get this script from our payment-bridge source code which will be introduced below 
 
-### Install lotus node
-
-Lotus node is Used for making car files and sending offline deals <br>
-You can use lotus full node, but the full node is too heavy, you can use lotus lite node instead <br>
-If you deploy the payment-bridge project, you need to deploy the payment-bridge and lotus full nodes on the same server <br>
-If you don’t want to deploy payment-bridge and lotus full node on the same server,you can also choose to deploy a lotus lite node<br>
-Please make sure that you already have a lotus full node, because lotus lite node needs to communicate with a full node  <br>
+### Lotus Node
+- Lotus node is used for making car files and sending offline deals
+- Install lotus node or louts lite node in the same machine as MCP
+- Lotus full node is too heavy compared with lotus lite node, so in the machine MCP will run, you can deploy lotus lite node
+- If use lotus lite node, make sure a lotus full node already deployed somewhere, since lotus lite node needs to communicate with a full node
 #### Option one: **install a lotus full node**: See [lotus full node official installation document](https://lotus.filecoin.io/docs/set-up/install/)
 #### Option two: **install a lotus lite node**: See [lotus lite node official installation document](https://lotus.filecoin.io/docs/set-up/lotus-lite/#amd-and-intel-based-computers)
 

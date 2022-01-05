@@ -21,10 +21,8 @@ import (
 
 func SendDealManager(router *gin.RouterGroup) {
 	router.POST("/ipfs/upload", UploadFileToIpfs)
-	//router.GET("/lotus/deal/:task_uuid", SendDeal)
 	router.GET("/tasks/deals", GetDealListFromLocal)
 	router.GET("/deal/detail/:deal_id", GetDealListFromFilink)
-	//router.GET("/dao/signature/deal/:deal_id", GetDealListForDaoByDealId)
 	router.GET("/dao/signature/deals", GetDealListForDaoToSign)
 	router.PUT("/dao/signature/deals", RecordDealListThatHaveBeenSignedByDao)
 }
@@ -132,13 +130,11 @@ func GetDealListFromFilink(c *gin.Context) {
 		return
 	}
 	response, err := http.Post(url, "application/json; charset=UTF-8", bytes.NewBuffer(paramBytes))
-	//response, err := httpClient.SendRequestAndGetBytes(http.MethodPost, url, paramBytes, nil)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_GET_RESPONSE_ERROR_CODE, errorinfo.HTTP_REQUEST_GET_RESPONSE_ERROR_MSG))
 		return
 	}
-	//var result *DealOnChainResult
 
 	result := DealOnChainResult{}
 	err = json.NewDecoder(response.Body).Decode(&result)
@@ -251,6 +247,7 @@ func UploadFileToIpfs(c *gin.Context) {
 		return
 	}
 }
+
 func GetDealListFromLocal(c *gin.Context) {
 	URL := c.Request.URL.Query()
 	pageNumber := URL.Get("page_number")

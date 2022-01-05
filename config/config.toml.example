@@ -31,7 +31,6 @@ dir_deal="~/.swan/mcp/temp/deal"
 description = ""
 curated_dataset = ""
 tags = ""
-min_price = "0.00000001"
 max_price = 0.00005
 expire_days = 4
 verified_deal = false

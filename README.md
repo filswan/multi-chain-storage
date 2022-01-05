@@ -140,7 +140,6 @@ nohup ./build/multi-chain-payment >> mcp.log &            #After installation fr
 - **start_epoch_hours:** start_epoch for deals in hours from current time
 - **expired_days:** expected completion days for storage provider sealing data
 - **max_price:** Max price willing to pay per GiB/epoch for offline deal
-- **min_price:** Min price willing to pay per GiB/epoch for offline deal
 - **generate_md5:** [true/false] Whether to generate md5 for each car file, note: this is a resource consuming action
 
 ### config_polygon.toml

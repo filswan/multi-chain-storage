@@ -42,7 +42,6 @@ type swanTask struct {
 	Description     string          `toml:"description"`
 	CuratedDataset  string          `toml:"curated_dataset"`
 	Tags            string          `toml:"tags"`
-	MinPrice        decimal.Decimal `toml:"min_price"`
 	MaxPrice        decimal.Decimal `toml:"max_price"`
 	ExpireDays      int             `toml:"expire_days"`
 	VerifiedDeal    bool            `toml:"verified_deal"`

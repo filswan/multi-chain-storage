@@ -124,24 +124,6 @@ nohup ./multi-chain-payment-0.2.1-rc1-unix >> mcp.log &   #After installation fr
 nohup ./build/multi-chain-payment >> mcp.log &            #After installation from Option 2
 ```
 
-### Step:five: Run the project
-
-Enter payment-bridge/build/ directory, and execute the binary file of the payment-bridge project <br>
-Before actually running the payment bridege project, you need to read the section about config introduction below,
-and then fill in the configuration items as required, and then run this project<br>
-
-```console
-cd $GOPATH/src/payment-bridge/build/`
-chmod +x payment-bridge
-./payment_bridge
-```
-
-##### Note:
-you need to edit the config file and input your config params, the configuration items will be introduced below<br>
-Take payment on the polygon network as an example, before running the ./payment-bridge command<br>
-You need to edit two config file: 
-- $GOPATH/src/payment-bridge/build/config/config.toml
-- $GOPATH/src/payment-bridge/build/config/polygon/config_polygon.toml
 ## Configuration
 
 ### config.toml

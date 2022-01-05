@@ -6,7 +6,6 @@
 - Join us on our [public Slack channel](https://www.filswan.com/) for news, discussions, and status updates.
 - [Check out our medium](https://filswan.medium.com) for the latest posts and announcements.
 
-
 ## Table of Contents
 - [Functions](#Functions)
 - [System Design](#System-Design)
@@ -17,9 +16,8 @@
 - [Configuration](#Configuration)
 - [Payment Process](#Payment-Process)
 - [Database Table Introduction](#Database-Table-Introduction)
-- [Upload Car Files](#Upload-Car-Files)
-- [Create A Task](#Create-A-Task)
-- [Send Deals](#Send-Deals)
+- [Other Topics](#Other-Topics)
+- [License](#License)
 
 ## Functions
 - Make payment from multi chain for filecoin storage
@@ -214,10 +212,6 @@ ansible-playbook run_payment_bridge_service.yaml --ask-become-pass -vvv
 
 - [how to pay for filecoin network storage with polygon](https://www.youtube.com/watch?v=c4Dvidz3plU)
 
-## Versioning and Releases
+## License
 
-Feature branches and master are designated as **unstable** which are internal-only development builds.
-
-Periodically a build will be designated as **stable** and will be assigned a version number by tagging the repository
-using Semantic Versioning in the following format: `vMajor.Minor.Patch`.
-
+[Apache](https://github.com/filswan/go-swan-provider/blob/main/LICENSE)

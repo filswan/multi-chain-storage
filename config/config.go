@@ -1,10 +1,11 @@
 package config
 
 import (
-	"github.com/BurntSushi/toml"
-	"github.com/shopspring/decimal"
 	"log"
 	"strings"
+
+	"github.com/BurntSushi/toml"
+	"github.com/shopspring/decimal"
 )
 
 type Configuration struct {
@@ -31,38 +32,34 @@ type database struct {
 }
 
 type lotus struct {
-	ApiUrl              string `toml:"api_url"`
-	AccessToken         string `toml:"access_token"`
-	FullNodeUrl         string `toml:"full_node_url"`
-	FullNodeAccessToken string `toml:"full_node_access_token"`
-	FinalStatusList     string `toml:"final_status_list"`
+	ClientApiUrl      string `toml:"client_api_url"`
+	ClientAccessToken string `toml:"client_access_token"`
+	FinalStatusList   string `toml:"final_status_list"`
 }
 
 type swanTask struct {
-	DirDeal                      string          `toml:"dir_deal"`
-	Description                  string          `toml:"description"`
-	CuratedDataset               string          `toml:"curated_dataset"`
-	Tags                         string          `toml:"tags"`
-	MinPrice                     decimal.Decimal `toml:"min_price"`
-	MaxPrice                     decimal.Decimal `toml:"max_price"`
-	ExpireDays                   int             `toml:"expire_days"`
-	VerifiedDeal                 bool            `toml:"verified_deal"`
-	FastRetrieval                bool            `toml:"fast_retrieval"`
-	StartEpochHours              int             `toml:"start_epoch_hours"`
-	MinerId                      string          `toml:"miner_id"`
-	RelativeEpochFromMainNetwork int             `toml:"relative_epoch_from_main_network"`
+	DirDeal         string          `toml:"dir_deal"`
+	Description     string          `toml:"description"`
+	CuratedDataset  string          `toml:"curated_dataset"`
+	Tags            string          `toml:"tags"`
+	MinPrice        decimal.Decimal `toml:"min_price"`
+	MaxPrice        decimal.Decimal `toml:"max_price"`
+	ExpireDays      int             `toml:"expire_days"`
+	VerifiedDeal    bool            `toml:"verified_deal"`
+	FastRetrieval   bool            `toml:"fast_retrieval"`
+	StartEpochHours int             `toml:"start_epoch_hours"`
+	MinerId         string          `toml:"miner_id"`
 }
 
 type swanApi struct {
-	ApiUrl                     string `toml:"api_url"`
-	ApiKey                     string `toml:"api_key"`
-	AccessToken                string `toml:"access_token"`
-	GetShouldSendTaskUrlSuffix string `toml:"get_should_send_task_url_suffix"`
+	ApiUrl      string `toml:"api_url"`
+	ApiKey      string `toml:"api_key"`
+	AccessToken string `toml:"access_token"`
 }
 
 type ipfsServer struct {
 	DownloadUrlPrefix string `toml:"download_url_prefix"`
-	UploadUrl         string `toml:"upload_url"`
+	UploadUrlPrefix   string `toml:"upload_url_prefix"`
 }
 
 type ScheduleRule struct {
@@ -110,16 +107,14 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 
 		{"swan_api", "api_url"},
 		{"swan_api", "api_key"},
-		{"swan_api", "get_should_send_task_url_suffix"},
+		{"swan_api", "access_token"},
 
 		{"ipfs_server", "download_url_prefix"},
-		{"ipfs_server", "upload_url"},
+		{"ipfs_server", "upload_url_prefix"},
 
-		{"lotus", "api_url"},
-		{"lotus", "access_token"},
+		{"lotus", "client_api_url"},
+		{"lotus", "client_access_token"},
 		{"lotus", "final_status_list"},
-
-		{"swan_task", "relative_epoch_from_main_network"},
 	}
 
 	for _, v := range requiredFields {

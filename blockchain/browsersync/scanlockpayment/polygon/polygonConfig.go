@@ -1,9 +1,10 @@
 package polygon
 
 import (
-	"github.com/BurntSushi/toml"
 	"log"
 	"time"
+
+	"github.com/BurntSushi/toml"
 )
 
 type ConfigurationForPolygon struct {
@@ -29,7 +30,7 @@ type PolygonMainnetNode struct {
 var polygonConfig *ConfigurationForPolygon
 
 func initCofig() {
-	configFile := "./config/polygon/config_polygon.toml"
+	configFile := "./config/config_polygon.toml"
 	if metaData, err := toml.DecodeFile(configFile, &polygonConfig); err != nil {
 		log.Fatal("error:", err)
 	} else {

@@ -81,8 +81,8 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 		}*/
 	// Adapt to new version of swan-client
 	cmdCar := &command.CmdCar{
-		LotusClientApiUrl:      config.GetConfig().Lotus.ApiUrl,
-		LotusClientAccessToken: config.GetConfig().Lotus.AccessToken,
+		LotusClientApiUrl:      config.GetConfig().Lotus.ClientApiUrl,
+		LotusClientAccessToken: config.GetConfig().Lotus.ClientAccessToken,
 		OutputDir:              carDir,
 		InputDir:               srcDir,
 		GenerateMd5:            false,
@@ -94,7 +94,7 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 	}
 	logs.GetLogger().Info("car files created in ", carDir, "payload_cid=", fileList[0].PayloadCid)
 
-	uploadUrl := utils.UrlJoin(config.GetConfig().IpfsServer.UploadUrl, "api/v0/add?stream-channels=true&pin=true")
+	uploadUrl := utils.UrlJoin(config.GetConfig().IpfsServer.UploadUrlPrefix, "api/v0/add?stream-channels=true&pin=true")
 	ipfsFileHash, err := ipfs.IpfsUploadFileByWebApi(uploadUrl, srcFilepath)
 	if err != nil {
 		logs.GetLogger().Error(err)

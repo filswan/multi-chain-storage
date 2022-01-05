@@ -1,9 +1,10 @@
 package nbai
 
 import (
-	"github.com/BurntSushi/toml"
 	"log"
 	"time"
+
+	"github.com/BurntSushi/toml"
 )
 
 type ConfigurationForNbai struct {
@@ -23,7 +24,7 @@ type NbaiMainnetNode struct {
 var nbaiConfig *ConfigurationForNbai
 
 func initCofig() {
-	configFile := "./config/nbai/config_nbai.toml"
+	configFile := "./config/config_nbai.toml"
 	if metaData, err := toml.DecodeFile(configFile, &nbaiConfig); err != nil {
 		log.Fatal("error:", err)
 	} else {

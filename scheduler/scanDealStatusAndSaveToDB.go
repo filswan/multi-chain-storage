@@ -2,8 +2,6 @@ package scheduler
 
 import (
 	"fmt"
-	"github.com/filswan/go-swan-lib/client/lotus"
-	"github.com/robfig/cron"
 	"payment-bridge/common/constants"
 	"payment-bridge/common/utils"
 	"payment-bridge/config"
@@ -13,6 +11,9 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/filswan/go-swan-lib/client/lotus"
+	"github.com/robfig/cron"
 )
 
 func ScanDealInfoScheduler() {
@@ -44,7 +45,7 @@ func GetDealInfoByLotusClientAndUpdateInfoToDB() error {
 	}
 
 	for _, v := range dealList {
-		lotusClient, err := lotus.LotusGetClient(config.GetConfig().Lotus.ApiUrl, config.GetConfig().Lotus.AccessToken)
+		lotusClient, err := lotus.LotusGetClient(config.GetConfig().Lotus.ClientApiUrl, config.GetConfig().Lotus.ClientAccessToken)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			return err

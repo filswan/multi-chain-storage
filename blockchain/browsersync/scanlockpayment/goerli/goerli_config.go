@@ -1,9 +1,10 @@
 package goerli
 
 import (
-	"github.com/BurntSushi/toml"
 	"log"
 	"time"
+
+	"github.com/BurntSushi/toml"
 )
 
 type ConfigurationForGoerli struct {
@@ -23,7 +24,7 @@ type GoerliMainnetNode struct {
 var goerliConfig *ConfigurationForGoerli
 
 func initCofig() {
-	configFile := "./config/goerli/config_goerli.toml"
+	configFile := "./config/config_goerli.toml"
 	if metaData, err := toml.DecodeFile(configFile, &goerliConfig); err != nil {
 		log.Fatal("error:", err)
 	} else {

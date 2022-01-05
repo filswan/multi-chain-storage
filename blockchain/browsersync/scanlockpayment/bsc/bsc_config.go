@@ -1,9 +1,10 @@
 package bsc
 
 import (
-	"github.com/BurntSushi/toml"
 	"log"
 	"time"
+
+	"github.com/BurntSushi/toml"
 )
 
 type ConfigurationForBsc struct {
@@ -23,7 +24,7 @@ type BscMainnetNode struct {
 var bscConfig *ConfigurationForBsc
 
 func initCofig() {
-	configFile := "./config/bsc/config_bsc.toml"
+	configFile := "./config/config_bsc.toml"
 	if metaData, err := toml.DecodeFile(configFile, &bscConfig); err != nil {
 		log.Fatal("error:", err)
 	} else {

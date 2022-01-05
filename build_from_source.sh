@@ -1,5 +1,8 @@
 #!/bin/bash
 
+./script/install_pre-requisite.sh
+
+
 CONF_FILE_DIR_DEST=${HOME}/.swan/mcp
 mkdir -p ${CONF_FILE_DIR_DEST}
 

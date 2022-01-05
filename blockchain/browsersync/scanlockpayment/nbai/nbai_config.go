@@ -26,7 +26,7 @@ type NbaiMainnetNode struct {
 
 var nbaiConfig *ConfigurationForNbai
 
-func initCofig() {
+func initConfig() {
 	homedir, err := os.UserHomeDir()
 	if err != nil {
 		logs.GetLogger().Fatal("Cannot get home directory.")
@@ -63,7 +63,7 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 
 func GetConfig() ConfigurationForNbai {
 	if nbaiConfig == nil {
-		initCofig()
+		initConfig()
 	}
 	return *nbaiConfig
 }

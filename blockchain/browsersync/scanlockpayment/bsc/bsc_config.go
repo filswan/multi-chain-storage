@@ -26,7 +26,7 @@ type BscMainnetNode struct {
 
 var bscConfig *ConfigurationForBsc
 
-func initCofig() {
+func initConfig() {
 	homedir, err := os.UserHomeDir()
 	if err != nil {
 		logs.GetLogger().Fatal("Cannot get home directory.")
@@ -63,7 +63,7 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 
 func GetConfig() ConfigurationForBsc {
 	if bscConfig == nil {
-		initCofig()
+		initConfig()
 	}
 	return *bscConfig
 }

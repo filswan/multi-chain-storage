@@ -26,7 +26,7 @@ type GoerliMainnetNode struct {
 
 var goerliConfig *ConfigurationForGoerli
 
-func initCofig() {
+func initConfig() {
 	homedir, err := os.UserHomeDir()
 	if err != nil {
 		logs.GetLogger().Fatal("Cannot get home directory.")
@@ -63,7 +63,7 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 
 func GetConfig() ConfigurationForGoerli {
 	if goerliConfig == nil {
-		initCofig()
+		initConfig()
 	}
 	return *goerliConfig
 }

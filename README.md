@@ -32,7 +32,7 @@
 
 ## Modules
 
-* [Token Swap](#Token Swap)
+* [Token Swap](#Token-Swap)
 * Lock payment
 * DAO Signature
 * Unlock payment

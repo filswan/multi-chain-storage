@@ -21,7 +21,6 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	common2 "github.com/ethereum/go-ethereum/common"
 
-	//clientmodel "github.com/filswan/go-swan-client/model"
 	"github.com/filswan/go-swan-client/command"
 	"github.com/filswan/go-swan-lib/client/ipfs"
 

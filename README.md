@@ -66,7 +66,7 @@
 - Golang1.16 (minimum version)
 - Mysql5.5
 - [Lotus Node](#Lotus-Node)
-- IPFS Client
+- [IPFS Client](https://docs.ipfs.io/install/)
 
 If python3 or ansible is not yet installed in the system, please run `install_pre-requisite.sh` script first
 You can get this script from our payment-bridge source code which will be introduced below 

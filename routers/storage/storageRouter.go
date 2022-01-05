@@ -54,7 +54,6 @@ func RecordDealListThatHaveBeenSignedByDao(c *gin.Context) {
 		}
 	}
 	c.JSON(http.StatusOK, common.CreateSuccessResponse(""))
-	return
 }
 
 func GetDealListForDaoToSign(c *gin.Context) {
@@ -65,7 +64,6 @@ func GetDealListForDaoToSign(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, common.CreateSuccessResponse(dealList))
-	return
 }
 
 func GetDealListForDaoByDealId(c *gin.Context) {
@@ -90,7 +88,6 @@ func GetDealListForDaoByDealId(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, common.CreateSuccessResponse(dealList))
-	return
 }
 
 func GetDealListFromFilink(c *gin.Context) {
@@ -194,7 +191,6 @@ func GetDealListFromFilink(c *gin.Context) {
 		"found":            foundInfo,
 		"dao":              daoSignList,
 	}))
-	return
 }
 
 func UploadFileToIpfs(c *gin.Context) {

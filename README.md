@@ -33,7 +33,7 @@
 * [Token Swap](#Token-Swap)
 * [Payment Lock](#Payment-Lock)
 * [DAO Signature](#DAO-Signature)
-* [Unlock Payment](#Unlock-Payment)
+* [Payment Unlock](#Payment-Unlock)
 * [Data DAO](https://github.com/filswan/flink)
 * IPFS/Filecoin Storage
 
@@ -51,17 +51,17 @@
 ### DAO Signature
 - If DAO detects that the file uploaded has been chained, it will trigger a signature operation
 
-### Unlock Payment
-- When more than half of the dao have been signed, the unlock operation will be triggered
-- The part that needs to be paid will be deducted from the locked token
-- The remaining token will be returned to the user
+### Payment Unlock
+- When the deal has been signed by more than half of the DAOs, the unlock operation will be triggered.
+- The part that needs to be paid will be deducted from the locked token.
+- The remaining part will be returned to the user.
 
 ## Prerequisites
 - OS: Ubuntu 20.04 LTS
 - Ansible: Version 2.12+
 - Python 3.6+
-- Golang1.16 (minimum version)
-- Mysql5.5
+- Golang1.16+
+- Mysql5.5+
 - [Lotus Node](#Lotus-Node)
 - [IPFS Client](https://docs.ipfs.io/install/)
 
@@ -105,13 +105,12 @@ vi ~/.swan/mcp/config_polygon.toml
 ```shell
 vi ~/.swan/mcp/config_goerli.toml
 ```
-- After set your config in the related config files, you can run `multi-chain-payment` in `./build`
+- After set your config in the related config files, you can run `multi-chain-payment` in `./build` directory
 ```shell
-cd build
-./multi-chain-payment
+./build/multi-chain-payment
 ```
 ### Note
-- Logs are in directory ./logs
+- Logs are in directory ./build/logs
 - You can add `nohup` before `./multi-chain-payment` to ignore the HUP (hangup) signal and therefore avoid stop when you log out.
 - You can add `>> mcp.log` in the command to let all the logs output to `mcp.log`.
 - You can add `&` at the end of the command to let the program run in background.

@@ -128,27 +128,15 @@ nohup ./build/multi-chain-payment >> mcp.log &            #After installation fr
 
 ### config.toml
 - **admin_wallet_on_polygon**: The wallet address used to execute contract methods on the polygon network and pay for gas
-
 - **swan_payment_address_on_polygon**: The contract address of the swan payment gateway, used for lock and unlock user fees on polygon
-
 - **file_coin_wallet**: The wallet address of the user's paying for storage file to the filecoin network
-
 #### [lotus]
-
-- **api_url:** Url of lotus client web api, such as: **http://[ip]:[port]/rpc/v0**, generally the [port] is **1234**.
-  See [Lotus API](https://docs.filecoin.io/reference/lotus-api/)
-- **access_token:** Access token of lotus market web api. When market and miner are not separate, it is also the access
-  token of miner access token. See [Obtaining Tokens](https://docs.filecoin.io/build/lotus/api-tokens/#obtaining-tokens)
-
+- **client_api_url**:  Url of lotus client web api, such as: `http://[ip]:[port]/rpc/v0`, generally the `[port]` is `1234`. See [Lotus API](https://docs.filecoin.io/reference/lotus-api/#features)
+- **client_access_token**:  Access token of lotus client web api. It should have admin access right. You can get it from your lotus node machine using command `lotus auth create-token --perm admin`. See [Obtaining Tokens](https://docs.filecoin.io/build/lotus/api-tokens/#obtaining-tokens)
 #### [ipfs_server]
-
-ipfs-server is used to upload and download generated Car files. You can upload generated Car files via `upstream_url`
-and storage provider will download Car files from this ipfs-server using `download_stream_url`. The downloadable URL in
-the CSV file is built with the following format: host+port+ipfs+hash, e.g. http://host:
-port/ipfs/QmPrQPfGCAHwYXDZDdmLXieoxZP5JtwQuZMUEGuspKFZKQ
-
+- **download_url_prefix**: Ipfs server url prefix, such as: `http://[ip]:[port]`. Store car files for downloading by storage provider. Car file url will be `[download_url_prefix]/ipfs/[file_hash]`
+- **upload_url_prefix**: Ipfs server url for uploading files, such as `http://[ip]:[port]`
 #### [swan_task]
-
 - **dir_deal:** Output directory for saving generated Car files and CSVs
 - **verified_deal:** [true/false] Whether deals in this task are going to be sent as verified
 - **fast_retrieval:** [true/false] Indicates that data should be available for fast retrieval

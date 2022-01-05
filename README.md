@@ -127,45 +127,6 @@ nohup ./build/multi-chain-payment >> mcp.log &            #After installation fr
 ## Configuration
 
 ### config.toml
-
-```
-admin_wallet_on_polygon=""
-swan_payment_address_on_polygon=""
-file_coin_wallet=""
-
-[database]
-db_host="localhost"
-db_port="3306"
-db_schema_name="payment_bridge"
-db_username="root"
-db_pwd="123456"
-db_args="charset=utf8mb4&parseTime=True&loc=Local"
-
-[lotus]
-api_url="http://127.0.0.1:1234/rpc/v0"   # Url of lotus web api
-access_token=".."   # Access token of lotus web api
-
-[ipfs_server]
-download_url_prefix = "http://192.168.xx.xx:5050"
-upload_url = "http://192.168.xx.xx:5001"
-
-[swan_task]
-min_price = 0.00000001
-max_price = 0.00005
-expire_days = 4
-verified_deal = false
-fast_retrieval = true
-start_epoch_hours = 96
-get_should_send_task_url_suffix = "paymentgateway/deals?offset=0&limit=10&source_id=4&task_status=Assigned&is_public=1"
-
-
-[schedule_rule]
-unlock_payment_rule = "0 */5 * * * ?"  #every 3 minute
-send_deal_rule = "0 */3 * * * ?"  #every 3 minute
-create_task_rule = "0 */2 * * * ?"
-scan_deal_status_rule = "0 */4 * * * ?"
-```
-
 #### admin_wallet_on_polygon
 
 The wallet address used to execute contract methods on the polygon network and pay for gas

@@ -127,17 +127,11 @@ nohup ./build/multi-chain-payment >> mcp.log &            #After installation fr
 ## Configuration
 
 ### config.toml
-#### admin_wallet_on_polygon
+- **admin_wallet_on_polygon**: The wallet address used to execute contract methods on the polygon network and pay for gas
 
-The wallet address used to execute contract methods on the polygon network and pay for gas
+- **swan_payment_address_on_polygon**: The contract address of the swan payment gateway, used for lock and unlock user fees on polygon
 
-#### swan_payment_address_on_polygon
-
-The contract address of the swan payment gateway, used for lock and unlock user fees on polygon
-
-#### file_coin_wallet
-
-The wallet address of the user's paying for storage file to the filecoin network
+- **file_coin_wallet**: The wallet address of the user's paying for storage file to the filecoin network
 
 #### [lotus]
 

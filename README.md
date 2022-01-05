@@ -214,4 +214,4 @@ ansible-playbook run_payment_bridge_service.yaml --ask-become-pass -vvv
 
 ## License
 
-[Apache](https://github.com/filswan/multi-chain-payment/blob/main/LICENSE)
+[MIT](https://github.com/filswan/multi-chain-payment/blob/main/LICENSE)

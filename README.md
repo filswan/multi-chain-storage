@@ -58,15 +58,9 @@
 
 ## Prerequisites
 - OS: Ubuntu 20.04 LTS
-- Ansible: Version 2.12+
-- Python 3.6+
-- Golang1.16+
 - Mysql5.5+
 - [Lotus Node](#Lotus-Node)
 - [IPFS Client](https://docs.ipfs.io/install/)
-
-If python3 or ansible is not yet installed in the system, please run `install_pre-requisite.sh` script first
-You can get this script from our payment-bridge source code which will be introduced below 
 
 ### Lotus Node
 - Lotus node is used for making car files and sending offline deals

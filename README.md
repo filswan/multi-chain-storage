@@ -165,7 +165,7 @@ Currently, USDC is supported for payment. Take polygon network as an example to 
 to our contract address.<br>
 **Step:two:** MCP scans the events of the above transactions<br>
 **Step:three:** When the event data got in Step:two: meet the conditions, the user can perform the filecoin network storage function<br>
-**Step:four:** When the user's storage is successful, it will be scanned by the dao organization, and then dao signed to
+**Step:four:** When the user's storage is successful, it will be scanned by DAO organization, and then DAO signed to
 agree to unlock the user's payment.<br>
 **Step:five:** If more than half of the dao agree, the payment bridge will unlock the user's payment, deduct the user's
 storage fee, and the remaining locked virtual currency Is returned to the customer's wallet<br>

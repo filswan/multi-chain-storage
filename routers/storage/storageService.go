@@ -30,10 +30,8 @@ import (
 )
 
 const (
-	SRC_FILE_MIN            = 1 * 1024 * 1024 * 1024
-	CAR_FILE_MIN            = 1 * 1024 * 1024 * 1024
-	CAR_FILE_STATUS_WAIT    = "Wait"    // Waiting to be created
-	CAR_FILE_STATUS_CREATED = "Created" // Already created
+	SRC_FILE_SIZE_MIN = 1 * 1024 * 1024 * 1024
+	CAR_FILE_SIZE_MIN = 1 * 1024 * 1024 * 1024
 )
 
 func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multipart.FileHeader, duration int, walletAddress string) (string, string, int, error) {
@@ -166,7 +164,7 @@ func createCarFile(c *gin.Context, srcFile *multipart.FileHeader) (*string, []*l
 		srcFilesSize = srcFilesSize + srcFile.Size()
 	}
 
-	if srcFilesSize < SRC_FILE_MIN {
+	if srcFilesSize < SRC_FILE_SIZE_MIN {
 		return nil, nil, nil
 	}
 
@@ -185,7 +183,7 @@ func createCarFile(c *gin.Context, srcFile *multipart.FileHeader) (*string, []*l
 	}
 
 	carFileSize := fileList[0].CarFileSize
-	if carFileSize < CAR_FILE_MIN {
+	if carFileSize < CAR_FILE_SIZE_MIN {
 		return nil, nil, nil
 	}
 

@@ -8,7 +8,7 @@ import (
 type SourceFileDealFileMap struct {
 	SourceFileId int64  `json:"source_file_id"`
 	FileIndex    int    `json:"file_index"`
-	DealFileId   int64  `json:"source_file_id"`
+	DealFileId   int64  `json:"deal_file_id"`
 	CreateAt     string `json:"create_at"`
 	UpdateAt     string `json:"update_at"`
 }

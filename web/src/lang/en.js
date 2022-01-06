@@ -14,7 +14,7 @@ export default {
         documentation: 'Documentation'
     },
     navbar: {
-        sidebar_header: 'FIL SWAN',
+        sidebar_header: 'Multi-Chain Payment',
         "section": "Section",
         "myprofile": "My Profile",
         "support": "Support",
@@ -24,7 +24,7 @@ export default {
         sign_up: 'Sign Up',
         dashboard: 'DASHBOARD',
         minerDetail: 'STORAGE PROVIDER DETAIL',
-        deal: 'MY FILES',
+        deal: 'Details',
         miner: 'STORAGE PROVIDER MANAGEMENT',
         deal_details: 'TASK DETAIL',
         My_Profile: 'MY PROFILE',
@@ -46,7 +46,9 @@ export default {
         },
         Power: 'Adj.Storage Power',
         PowerGrowth: 'Adj.Storage Power Growth',
-        BillingHistory: 'Billing History'
+        BillingHistory: 'Billing History',
+        language: 'Language',
+        language_cn: 'Chinese'
     },
     // 首页
     dashboard: {

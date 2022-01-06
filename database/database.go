@@ -1,11 +1,12 @@
 package database
 
 import (
+	"payment-bridge/config"
+	"payment-bridge/logs"
+
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
-	"payment-bridge/config"
-	"payment-bridge/logs"
 )
 
 type Database struct {
@@ -23,7 +24,7 @@ func Init() *gorm.DB {
 	}
 	db.SingularTable(true)
 	db.DB().SetMaxIdleConns(10)
-	//db.LogMode(true)
+	db.LogMode(true)
 	db.LogMode(config.GetConfig().Dev)
 	DB = db
 	return DB

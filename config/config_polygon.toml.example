@@ -1,6 +1,5 @@
 [polygon_mainnet_node]
-#rpc_url="https://rpc-mumbai.maticvigil.com"
-rpc_url = ""
+rpc_url = ""   #"https://rpc-mumbai.maticvigil.com"
 payment_contract_address = ""
 contract_lock_function_signature = ""
 contract_unlock_function_signature = ""

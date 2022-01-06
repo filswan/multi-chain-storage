@@ -13,33 +13,29 @@ db_pwd="123456"
 db_args="charset=utf8mb4&parseTime=True&loc=Local"
 
 [swan_api]
-api_url = "http://0.0.0.0:5002"
+api_url = "http://[ip]:[port]"
 api_key = ""
 access_token = ""
-get_should_send_task_url_suffix = "/paymentgateway/deals?offset=0&limit=10&source_id=4&task_status=Assigned&is_public=1"
 
 [lotus]
-api_url="http://0.0.0.0:1234/rpc/v0"   # Url of lotus web api
-access_token=""   # Access token of lotus web api
+client_api_url="http://[ip]:[port]/rpc/v0"   # Url of lotus web api
+client_access_token=""   # Access token of lotus web api
 final_status_list="StorageDealError,StorageDealActive,StorageDealStaged,StorageDealPulished"
-full_node_access_token = ""
 
 [ipfs_server]
-download_url_prefix = "http://0.0.0.0:8080"
-upload_url = "http://0.0.0.0:5001"
+download_url_prefix = "http://[ip]:[port]"
+upload_url_prefix = "http://[ip]:[port]"
 
 [swan_task]
-dir_deal="~/.swan/server/temp/deal"
+dir_deal="~/.swan/mcp/temp/deal"
 description = ""
 curated_dataset = ""
 tags = ""
-min_price = "0.00000001"
 max_price = 0.00005
 expire_days = 4
 verified_deal = false
 fast_retrieval = true
 start_epoch_hours = 96
-relative_epoch_from_main_network = -858481
 
 [schedule_rule]
 unlock_payment_rule = "0 */5 * * * ?"  #every minute

@@ -91,7 +91,7 @@ top: 1.5rem;
 
 #headerMb{
 background-color: #fff;
-padding: 0 0 0.03rem;
+/* padding: 0 0 0.03rem; */
 }
 .headerMb{
 display: flex;

@@ -2,9 +2,6 @@ package polygon
 
 import (
 	"context"
-	"github.com/ethereum/go-ethereum"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
 	"math/big"
 	"payment-bridge/common/utils"
 	"payment-bridge/config"
@@ -14,6 +11,10 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/ethereum/go-ethereum"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 )
 
 /**
@@ -98,8 +99,8 @@ func ScanPolygonUnLockPaymentEventFromChainAndSaveToDB(blockNoFrom, blockNoTo in
 			quantity := new(big.Int)
 			quantity.SetBytes(vLog.Data)
 			address := common.HexToAddress(vLog.Topics[1].Hex()).String()
-			if strings.ToLower(address) == strings.ToLower(polygonConfig.PolygonMainnetNode.PaymentContractAddress) {
-				if strings.ToLower(common.HexToAddress(vLog.Topics[2].Hex()).String()) == strings.ToLower(config.GetConfig().AdminWalletOnPolygon) {
+			if strings.EqualFold(address, polygonConfig.PolygonMainnetNode.PaymentContractAddress) {
+				if strings.EqualFold(common.HexToAddress(vLog.Topics[2].Hex()).String(), config.GetConfig().AdminWalletOnPolygon) {
 					event.UnlockToAdminAddress = common.HexToAddress(vLog.Topics[2].Hex()).String()
 					event.UnlockToAdminAmount = quantity.String()
 				} else {

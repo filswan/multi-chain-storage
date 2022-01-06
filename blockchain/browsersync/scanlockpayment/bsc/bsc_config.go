@@ -1,9 +1,13 @@
 package bsc
 
 import (
-	"github.com/BurntSushi/toml"
 	"log"
+	"os"
+	"path/filepath"
+	"payment-bridge/logs"
 	"time"
+
+	"github.com/BurntSushi/toml"
 )
 
 type ConfigurationForBsc struct {
@@ -22,8 +26,13 @@ type BscMainnetNode struct {
 
 var bscConfig *ConfigurationForBsc
 
-func initCofig() {
-	configFile := "./config/bsc/config_bsc.toml"
+func initConfig() {
+	homedir, err := os.UserHomeDir()
+	if err != nil {
+		logs.GetLogger().Fatal("Cannot get home directory.")
+	}
+
+	configFile := filepath.Join(homedir, ".swan/mcp/config_bsc.toml")
 	if metaData, err := toml.DecodeFile(configFile, &bscConfig); err != nil {
 		log.Fatal("error:", err)
 	} else {
@@ -54,7 +63,7 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 
 func GetConfig() ConfigurationForBsc {
 	if bscConfig == nil {
-		initCofig()
+		initConfig()
 	}
 	return *bscConfig
 }

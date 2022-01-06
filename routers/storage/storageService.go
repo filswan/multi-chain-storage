@@ -29,7 +29,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multipart.FileHeader, duration, userId int, walletAddress string) (string, string, int, error) {
+func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multipart.FileHeader, duration int, walletAddress string) (string, string, int, error) {
 	temDirDeal := config.GetConfig().SwanTask.DirDeal
 
 	logs.GetLogger().Info("temp dir is ", temDirDeal)
@@ -72,14 +72,6 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 	}
 	logs.GetLogger().Info("car files created in ", carDir)
 
-	/*
-		confCar := clientmodel.ConfCar{
-			LotusClientApiUrl:      config.GetConfig().Lotus.ApiUrl,
-			LotusClientAccessToken: config.GetConfig().Lotus.AccessToken,
-			InputDir:               srcDir,
-			OutputDir:              carDir,
-		}*/
-	// Adapt to new version of swan-client
 	cmdCar := &command.CmdCar{
 		LotusClientApiUrl:      config.GetConfig().Lotus.ClientApiUrl,
 		LotusClientAccessToken: config.GetConfig().Lotus.ClientAccessToken,
@@ -125,7 +117,7 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 		} else {
 			if len(lockPaymentList) > 0 {
 				needPay = 3
-				sourceFile, err := saveSourceFileToDB(srcFile, srcFilepath, userId, filePathInIpfs, walletAddress)
+				sourceFile, err := saveSourceFileToDB(srcFile, srcFilepath, filePathInIpfs, walletAddress)
 				if err != nil {
 					logs.GetLogger().Error(err)
 					return "", "", needPay, err
@@ -145,7 +137,7 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 				return fileList[0].PayloadCid, sourceAndDealFileList[0].IpfsUrl, needPay, nil
 			} else {
 				needPay = 4
-				sourceFile, err := saveSourceFileToDB(srcFile, srcFilepath, userId, filePathInIpfs, walletAddress)
+				sourceFile, err := saveSourceFileToDB(srcFile, srcFilepath, filePathInIpfs, walletAddress)
 				if err != nil {
 					logs.GetLogger().Error(err)
 					return "", "", needPay, err
@@ -159,7 +151,7 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 			}
 		}
 	} else {
-		sourceFile, err := saveSourceFileToDB(srcFile, srcFilepath, userId, filePathInIpfs, walletAddress)
+		sourceFile, err := saveSourceFileToDB(srcFile, srcFilepath, filePathInIpfs, walletAddress)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			return "", "", needPay, err
@@ -173,14 +165,12 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 	}
 }
 
-func saveSourceFileToDB(srcFile *multipart.FileHeader, srcFilepath string, userId int, filePathInIpfs, walletAddress string) (*models.SourceFile, error) {
+func saveSourceFileToDB(srcFile *multipart.FileHeader, srcFilepath string, filePathInIpfs, walletAddress string) (*models.SourceFile, error) {
 	sourceFile := new(models.SourceFile)
 	sourceFile.FileName = srcFile.Filename
 	sourceFile.FileSize = strconv.FormatInt(srcFile.Size, 10)
 	sourceFile.ResourceUri = srcFilepath
 	sourceFile.CreateAt = strconv.FormatInt(utils.GetEpochInMillis(), 10)
-	//todo userid
-	//sourceFile.UserId = userId
 	sourceFile.IpfsUrl = filePathInIpfs
 	sourceFile.PinStatus = constants.IPFS_File_PINNED_STATUS
 	sourceFile.WalletAddress = walletAddress

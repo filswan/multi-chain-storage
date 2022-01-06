@@ -165,6 +165,35 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 	}
 }
 
+func createCarFile(inputDir string, outDir string) {
+	cmdIpfsCar := &command.CmdIpfsCar{
+		LotusClientApiUrl:         config.GetConfig().Lotus.ClientApiUrl,
+		LotusClientAccessToken:    config.GetConfig().Lotus.ClientAccessToken,
+		InputDir:                  inputDir,
+		OutputDir:                 outDir,
+		GenerateMd5:               false,
+		IpfsServerUploadUrlPrefix: config.GetConfig().IpfsServer.UploadUrlPrefix,
+	}
+	fileList, err := cmdIpfsCar.CreateIpfsCarFiles()
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return
+	}
+
+	payloadCid := fileList[0].PayloadCid
+
+	inputDirBak := inputDir + "-" + payloadCid
+	err = os.Rename(inputDir, inputDirBak)
+
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return
+	}
+
+	logs.GetLogger().Info("car files created in ", outDir, "payload_cid=", payloadCid)
+
+}
+
 func saveSourceFileToDB(srcFile *multipart.FileHeader, srcFilepath string, filePathInIpfs, walletAddress string) (*models.SourceFile, error) {
 	sourceFile := new(models.SourceFile)
 	sourceFile.FileName = srcFile.Filename

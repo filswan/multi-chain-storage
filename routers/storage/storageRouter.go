@@ -11,10 +11,11 @@ import (
 	"payment-bridge/common/utils"
 	"payment-bridge/config"
 	"payment-bridge/database"
-	"payment-bridge/logs"
 	"payment-bridge/models"
 	"strconv"
 	"strings"
+
+	"github.com/filswan/go-swan-lib/logs"
 
 	"github.com/gin-gonic/gin"
 )

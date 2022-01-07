@@ -10,12 +10,13 @@ import (
 	"payment-bridge/common/utils"
 	"payment-bridge/config"
 	"payment-bridge/database"
-	"payment-bridge/logs"
 	"payment-bridge/models"
 	"payment-bridge/routers/billing"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/filswan/go-swan-lib/logs"
 
 	"github.com/filswan/go-swan-client/command"
 	libmodel "github.com/filswan/go-swan-lib/model"

@@ -4,8 +4,9 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"payment-bridge/logs"
 	"time"
+
+	"github.com/filswan/go-swan-lib/logs"
 
 	"github.com/BurntSushi/toml"
 )

@@ -2,12 +2,6 @@ package scheduler
 
 import (
 	"context"
-	"github.com/ethereum/go-ethereum/accounts/abi"
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/robfig/cron"
 	"log"
 	"math/big"
 	"os"
@@ -16,12 +10,19 @@ import (
 	"payment-bridge/common/utils"
 	"payment-bridge/config"
 	"payment-bridge/database"
-	"payment-bridge/logs"
 	"payment-bridge/models"
 	"payment-bridge/on-chain/goBind"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/ethereum/go-ethereum/accounts/abi"
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/filswan/go-swan-lib/logs"
+	"github.com/robfig/cron"
 )
 
 func DAOUnlockPaymentSchedule() {

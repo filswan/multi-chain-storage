@@ -8,10 +8,11 @@ import (
 	"payment-bridge/common/constants"
 	"payment-bridge/common/errorinfo"
 	"payment-bridge/common/utils"
-	"payment-bridge/logs"
 	"payment-bridge/models"
 	"strconv"
 	"strings"
+
+	"github.com/filswan/go-swan-lib/logs"
 
 	"github.com/gin-gonic/gin"
 )

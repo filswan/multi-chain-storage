@@ -5,11 +5,12 @@ import (
 	"payment-bridge/common/constants"
 	"payment-bridge/common/utils"
 	"payment-bridge/database"
-	"payment-bridge/logs"
 	models2 "payment-bridge/models"
 	"strconv"
 	"sync"
 	"time"
+
+	"github.com/filswan/go-swan-lib/logs"
 )
 
 func ScanEventFromChainAndSaveDataToDbForBsc() {

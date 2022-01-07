@@ -2,9 +2,10 @@ package blockutils
 
 import (
 	"payment-bridge/common/constants"
-	"payment-bridge/logs"
 	models2 "payment-bridge/models"
 	"strconv"
+
+	"github.com/filswan/go-swan-lib/logs"
 )
 
 func GetStartBlockNo(networkName string, startBlockNoInConfig int64) int64 {

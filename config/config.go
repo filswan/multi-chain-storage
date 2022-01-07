@@ -1,8 +1,10 @@
 package config
 
 import (
-	"log"
-	"strings"
+	"os"
+	"path/filepath"
+
+	"github.com/filswan/go-swan-lib/logs"
 
 	"github.com/BurntSushi/toml"
 	"github.com/shopspring/decimal"
@@ -71,22 +73,26 @@ type ScheduleRule struct {
 
 var config *Configuration
 
-func InitConfig(configFile string) {
-	if strings.Trim(configFile, " ") == "" {
-		configFile = "./config/config.toml"
+func InitConfig() {
+	homedir, err := os.UserHomeDir()
+	if err != nil {
+		logs.GetLogger().Fatal("Cannot get home directory.")
 	}
+
+	configFile := filepath.Join(homedir, ".swan/mcp/config.toml")
+
 	if metaData, err := toml.DecodeFile(configFile, &config); err != nil {
-		log.Fatal("error:", err)
+		logs.GetLogger().Fatal("error:", err)
 	} else {
 		if !requiredFieldsAreGiven(metaData) {
-			log.Fatal("required fields not given")
+			logs.GetLogger().Fatal("required fields not given")
 		}
 	}
 }
 
 func GetConfig() Configuration {
 	if config == nil {
-		InitConfig("")
+		InitConfig()
 	}
 	return *config
 }
@@ -118,7 +124,7 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 
 	for _, v := range requiredFields {
 		if !metaData.IsDefined(v...) {
-			log.Fatal("required fields ", v)
+			logs.GetLogger().Fatal("required fields ", v)
 		}
 	}
 

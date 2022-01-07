@@ -6,11 +6,12 @@ import (
 	"payment-bridge/common/utils"
 	"payment-bridge/config"
 	"payment-bridge/database"
-	"payment-bridge/logs"
 	"payment-bridge/models"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/filswan/go-swan-lib/logs"
 
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"

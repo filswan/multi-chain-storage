@@ -11,8 +11,9 @@ import (
 	"net"
 	"net/http"
 	"os"
-	"payment-bridge/logs"
 	"time"
+
+	"github.com/filswan/go-swan-lib/logs"
 )
 
 var (

@@ -69,7 +69,7 @@ func createGinServer() {
 func LoadEnv() {
 	err := godotenv.Load(".env")
 	if err != nil {
-		logs.GetLogger().Error(err)
+		logs.GetLogger().Fatal(err)
 	}
 
 	keyName := "privateKeyOnPolygon"

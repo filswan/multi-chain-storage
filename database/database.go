@@ -53,3 +53,10 @@ func SaveOneWithTransaction(data interface{}) error {
 	}
 	return err
 }
+
+func CloseDB(db *gorm.DB) {
+	err := db.Close()
+	if err != nil {
+		logs.GetLogger().Error(err)
+	}
+}

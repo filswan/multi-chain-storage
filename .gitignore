@@ -138,3 +138,4 @@ config_*.toml
 .vscode/launch.json
 .vscode/*
 .vscode
+__debug_bin

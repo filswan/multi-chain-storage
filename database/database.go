@@ -18,15 +18,14 @@ var DB *gorm.DB
 
 // Opening a database and save the reference to `Database` struct.
 func Init() *gorm.DB {
-	dbSource := config.GetConfig().Database.DbUsername + ":" + config.GetConfig().Database.DbPwd + "@tcp(" + config.GetConfig().Database.DbHost + ":" + config.GetConfig().Database.DbPort + ")/" + config.GetConfig().Database.DbSchemaName + "?" + config.GetConfig().Database.DbArgs
+	dbSource := config.GetConfig().Database.DbUsername + ":" + config.GetConfig().Database.DbPassword + "@tcp(" + config.GetConfig().Database.DbHost + ":" + config.GetConfig().Database.DbPort + ")/" + config.GetConfig().Database.DbSchemaName + "?" + config.GetConfig().Database.DbArgs
 	db, err := gorm.Open("mysql", dbSource)
 	if err != nil {
 		logs.GetLogger().Fatal("db err: ", err)
 	}
 	db.SingularTable(true)
 	db.DB().SetMaxIdleConns(10)
-	db.LogMode(true)
-	db.LogMode(config.GetConfig().Dev)
+	db.LogMode(!config.GetConfig().Release)
 	DB = db
 	return DB
 }

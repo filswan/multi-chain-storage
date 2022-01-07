@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"payment-bridge/common"
 	"payment-bridge/common/constants"
@@ -211,10 +212,9 @@ func UploadFileToIpfs(c *gin.Context) {
 	}
 	duration := c.PostForm("duration")
 	if strings.Trim(duration, " ") == "" {
-		errMsg := "duraion can not be null"
-		err = errors.New(errMsg)
+		err = fmt.Errorf("duraion can not be null")
 		logs.GetLogger().Error(err)
-		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_CODE, errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_MSG+":"+errMsg))
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_CODE, errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_MSG+":"+err.Error()))
 		return
 	}
 

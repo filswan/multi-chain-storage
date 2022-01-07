@@ -404,13 +404,3 @@ func GetThreshHold() (uint8, error) {
 	logs.GetLogger().Info("dao threshHold is : ", threshHold)
 	return threshHold, nil
 }
-
-func GetDealFileInfoByPayloadCid(payloadCid string) ([]*models.DealFile, error) {
-	dealFileList, err := models.FindDealFileList(&models.DealFile{PayloadCid: payloadCid}, "", "10", "0")
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-
-	}
-	return dealFileList, nil
-}

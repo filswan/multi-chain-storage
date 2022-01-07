@@ -1,7 +1,6 @@
 package config
 
 import (
-	"log"
 	"os"
 	"path/filepath"
 
@@ -83,10 +82,10 @@ func InitConfig() {
 	configFile := filepath.Join(homedir, ".swan/mcp/config.toml")
 
 	if metaData, err := toml.DecodeFile(configFile, &config); err != nil {
-		log.Fatal("error:", err)
+		logs.GetLogger().Fatal("error:", err)
 	} else {
 		if !requiredFieldsAreGiven(metaData) {
-			log.Fatal("required fields not given")
+			logs.GetLogger().Fatal("required fields not given")
 		}
 	}
 }
@@ -125,7 +124,7 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 
 	for _, v := range requiredFields {
 		if !metaData.IsDefined(v...) {
-			log.Fatal("required fields ", v)
+			logs.GetLogger().Fatal("required fields ", v)
 		}
 	}
 

@@ -32,11 +32,8 @@ func main() {
 	models.RunAllTheScan()
 
 	scheduler.CreateTaskScheduler()
-
 	scheduler.SendDealScheduler()
-
 	scheduler.DAOUnlockPaymentSchedule()
-
 	scheduler.ScanDealInfoScheduler()
 
 	createGinServer()

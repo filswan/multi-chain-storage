@@ -72,5 +72,6 @@ func LoadEnv() {
 		logs.GetLogger().Error(err)
 	}
 
-	logs.GetLogger().Info("name: ", os.Getenv("privateKey"))
+	keyName := "privateKeyOnPolygon"
+	logs.GetLogger().Info(keyName, ":", os.Getenv(keyName))
 }

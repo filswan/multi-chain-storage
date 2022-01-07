@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"path/filepath"
 	"payment-bridge/blockchain/browsersync"
 	"payment-bridge/common/constants"
 	"payment-bridge/config"
@@ -64,7 +65,13 @@ func createGinServer() {
 }
 
 func LoadEnv() {
-	err := godotenv.Load(".env")
+	homedir, err := os.UserHomeDir()
+	if err != nil {
+		logs.GetLogger().Fatal("Cannot get home directory.")
+	}
+
+	envFile := filepath.Join(homedir, ".swan/mcp/.env")
+	err = godotenv.Load(envFile)
 	if err != nil {
 		logs.GetLogger().Fatal(err)
 	}

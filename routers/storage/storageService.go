@@ -2,6 +2,7 @@ package storage
 
 import (
 	"context"
+	"io/ioutil"
 	"mime/multipart"
 	"os"
 	"path/filepath"
@@ -16,7 +17,6 @@ import (
 	"payment-bridge/on-chain/goBind"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	common2 "github.com/ethereum/go-ethereum/common"
@@ -29,86 +29,35 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multipart.FileHeader, duration, userId int, walletAddress string) (string, string, int, error) {
-	temDirDeal := config.GetConfig().SwanTask.DirDeal
+const (
+	SRC_FILE_SIZE_MIN = 1 * 1024 * 1024 * 1024
+	CAR_FILE_SIZE_MIN = 1 * 1024 * 1024 * 1024
+)
 
-	logs.GetLogger().Info("temp dir is ", temDirDeal)
+func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multipart.FileHeader, duration int, walletAddress string) (string, string, int, error) {
 	needPay := 0
-	homedir, err := os.UserHomeDir()
-	if err != nil {
-		logs.GetLogger().Error("Cannot get home directory.")
-		return "", "", needPay, err
-	}
-	temDirDeal = filepath.Join(homedir, temDirDeal[2:])
-
-	err = libutils.CreateDir(temDirDeal)
+	srcFilepath, fileList, err := createCarFile(c, srcFile)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return "", "", needPay, err
 	}
 
-	timeStr := time.Now().Format("20060102_150405")
-	temDirDeal = filepath.Join(temDirDeal, timeStr)
-	srcDir := filepath.Join(temDirDeal, "src")
-	carDir := filepath.Join(temDirDeal, "car")
-	err = libutils.CreateDir(srcDir)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return "", "", needPay, err
-	}
-
-	err = libutils.CreateDir(carDir)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return "", "", needPay, err
-	}
-
-	srcFilepath := filepath.Join(srcDir, srcFile.Filename)
-	logs.GetLogger().Info("save your file to ", srcFilepath)
-	err = c.SaveUploadedFile(srcFile, srcFilepath)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return "", "", needPay, err
-	}
-	logs.GetLogger().Info("car files created in ", carDir)
-
-	/*
-		confCar := clientmodel.ConfCar{
-			LotusClientApiUrl:      config.GetConfig().Lotus.ApiUrl,
-			LotusClientAccessToken: config.GetConfig().Lotus.AccessToken,
-			InputDir:               srcDir,
-			OutputDir:              carDir,
-		}*/
-	// Adapt to new version of swan-client
-	cmdCar := &command.CmdCar{
-		LotusClientApiUrl:      config.GetConfig().Lotus.ClientApiUrl,
-		LotusClientAccessToken: config.GetConfig().Lotus.ClientAccessToken,
-		OutputDir:              carDir,
-		InputDir:               srcDir,
-		GenerateMd5:            false,
-	}
-	fileList, err := cmdCar.CreateCarFiles()
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return "", "", needPay, err
-	}
-	logs.GetLogger().Info("car files created in ", carDir, "payload_cid=", fileList[0].PayloadCid)
-
+	payloadCid := fileList[0].PayloadCid
 	uploadUrl := utils.UrlJoin(config.GetConfig().IpfsServer.UploadUrlPrefix, "api/v0/add?stream-channels=true&pin=true")
-	ipfsFileHash, err := ipfs.IpfsUploadFileByWebApi(uploadUrl, srcFilepath)
+	ipfsFileHash, err := ipfs.IpfsUploadFileByWebApi(uploadUrl, *srcFilepath)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return "", "", needPay, err
 	}
 
 	filePathInIpfs := config.GetConfig().IpfsServer.DownloadUrlPrefix + constants.IPFS_URL_PREFIX_BEFORE_HASH + *ipfsFileHash
-	lockPaymentList, err := models.FindEventLockPayment(&models.EventLockPayment{PayloadCid: fileList[0].PayloadCid}, "create_at desc", "10", "0")
+	lockPaymentList, err := models.FindEventLockPayment(&models.EventLockPayment{PayloadCid: payloadCid}, "create_at desc", "10", "0")
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return "", "", needPay, err
 	}
 
-	sourceAndDealFileList, err := GetSourceFileAndDealFileInfoByPayloadCid(fileList[0].PayloadCid)
+	sourceAndDealFileList, err := GetSourceFileAndDealFileInfoByPayloadCid(payloadCid)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return "", "", needPay, err
@@ -125,7 +74,7 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 		} else {
 			if len(lockPaymentList) > 0 {
 				needPay = 3
-				sourceFile, err := saveSourceFileToDB(srcFile, srcFilepath, userId, filePathInIpfs, walletAddress)
+				sourceFile, err := saveSourceFileToDB(srcFile, *srcFilepath, filePathInIpfs, walletAddress)
 				if err != nil {
 					logs.GetLogger().Error(err)
 					return "", "", needPay, err
@@ -145,7 +94,7 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 				return fileList[0].PayloadCid, sourceAndDealFileList[0].IpfsUrl, needPay, nil
 			} else {
 				needPay = 4
-				sourceFile, err := saveSourceFileToDB(srcFile, srcFilepath, userId, filePathInIpfs, walletAddress)
+				sourceFile, err := saveSourceFileToDB(srcFile, *srcFilepath, filePathInIpfs, walletAddress)
 				if err != nil {
 					logs.GetLogger().Error(err)
 					return "", "", needPay, err
@@ -159,7 +108,7 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 			}
 		}
 	} else {
-		sourceFile, err := saveSourceFileToDB(srcFile, srcFilepath, userId, filePathInIpfs, walletAddress)
+		sourceFile, err := saveSourceFileToDB(srcFile, *srcFilepath, filePathInIpfs, walletAddress)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			return "", "", needPay, err
@@ -173,14 +122,98 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 	}
 }
 
-func saveSourceFileToDB(srcFile *multipart.FileHeader, srcFilepath string, userId int, filePathInIpfs, walletAddress string) (*models.SourceFile, error) {
+func createCarFile(c *gin.Context, srcFile *multipart.FileHeader) (*string, []*libmodel.FileDesc, error) {
+	temDirDeal := config.GetConfig().SwanTask.DirDeal
+	homedir, err := os.UserHomeDir()
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, nil, err
+	}
+	temDirDeal = filepath.Join(homedir, temDirDeal[2:])
+
+	srcDir := filepath.Join(temDirDeal, "src")
+	err = libutils.CreateDir(srcDir)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, nil, err
+	}
+
+	carDir := filepath.Join(temDirDeal, "car")
+	err = libutils.CreateDir(carDir)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, nil, err
+	}
+
+	srcFilepath := filepath.Join(srcDir, srcFile.Filename)
+	logs.GetLogger().Info("save your file to ", srcFilepath)
+	err = c.SaveUploadedFile(srcFile, srcFilepath)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, nil, err
+	}
+	logs.GetLogger().Info("car files created in ", carDir)
+
+	srcFiles, err := ioutil.ReadDir(srcDir)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, nil, err
+	}
+	srcFilesSize := int64(0)
+	for _, srcFile := range srcFiles {
+		srcFilesSize = srcFilesSize + srcFile.Size()
+	}
+
+	if srcFilesSize < SRC_FILE_SIZE_MIN {
+		return nil, nil, nil
+	}
+
+	cmdIpfsCar := &command.CmdIpfsCar{
+		LotusClientApiUrl:         config.GetConfig().Lotus.ClientApiUrl,
+		LotusClientAccessToken:    config.GetConfig().Lotus.ClientAccessToken,
+		InputDir:                  srcDir,
+		OutputDir:                 carDir,
+		GenerateMd5:               false,
+		IpfsServerUploadUrlPrefix: config.GetConfig().IpfsServer.UploadUrlPrefix,
+	}
+	fileList, err := cmdIpfsCar.CreateIpfsCarFiles()
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, nil, err
+	}
+
+	carFileSize := fileList[0].CarFileSize
+	if carFileSize < CAR_FILE_SIZE_MIN {
+		return nil, nil, nil
+	}
+
+	payloadCid := fileList[0].PayloadCid
+
+	srcDirBak := srcDir + "-" + payloadCid
+	err = os.Rename(srcDir, srcDirBak)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, nil, err
+	}
+
+	carDirBak := carDir + "-" + payloadCid
+	err = os.Rename(srcDir, carDirBak)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, nil, err
+	}
+
+	logs.GetLogger().Info("car files created in ", carDir, "payload_cid=", payloadCid)
+
+	return &srcDirBak, fileList, nil
+}
+
+func saveSourceFileToDB(srcFile *multipart.FileHeader, srcFilepath string, filePathInIpfs, walletAddress string) (*models.SourceFile, error) {
 	sourceFile := new(models.SourceFile)
 	sourceFile.FileName = srcFile.Filename
 	sourceFile.FileSize = strconv.FormatInt(srcFile.Size, 10)
 	sourceFile.ResourceUri = srcFilepath
 	sourceFile.CreateAt = strconv.FormatInt(utils.GetEpochInMillis(), 10)
-	//todo userid
-	//sourceFile.UserId = userId
 	sourceFile.IpfsUrl = filePathInIpfs
 	sourceFile.PinStatus = constants.IPFS_File_PINNED_STATUS
 	sourceFile.WalletAddress = walletAddress

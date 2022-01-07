@@ -134,3 +134,7 @@ dmypy.json
 config.toml
 config_*.toml
 
+.DS_Store
+.vscode/launch.json
+.vscode/*
+.vscode

@@ -1,9 +1,13 @@
 package polygon
 
 import (
-	"github.com/BurntSushi/toml"
 	"log"
+	"os"
+	"path/filepath"
+	"payment-bridge/logs"
 	"time"
+
+	"github.com/BurntSushi/toml"
 )
 
 type ConfigurationForPolygon struct {
@@ -28,8 +32,13 @@ type PolygonMainnetNode struct {
 
 var polygonConfig *ConfigurationForPolygon
 
-func initCofig() {
-	configFile := "./config/polygon/config_polygon.toml"
+func initConfig() {
+	homedir, err := os.UserHomeDir()
+	if err != nil {
+		logs.GetLogger().Fatal("Cannot get home directory.")
+	}
+
+	configFile := filepath.Join(homedir, ".swan/mcp/config_polygon.toml")
 	if metaData, err := toml.DecodeFile(configFile, &polygonConfig); err != nil {
 		log.Fatal("error:", err)
 	} else {
@@ -59,7 +68,7 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 
 func GetConfig() ConfigurationForPolygon {
 	if polygonConfig == nil {
-		initCofig()
+		initConfig()
 	}
 	return *polygonConfig
 }

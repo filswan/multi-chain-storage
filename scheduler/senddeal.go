@@ -2,12 +2,10 @@ package scheduler
 
 import (
 	"encoding/json"
-	"fmt"
-	clientmodel "github.com/filswan/go-swan-client/model"
-	"github.com/filswan/go-swan-client/subcommand"
-	libconstants "github.com/filswan/go-swan-lib/constants"
-	libutils "github.com/filswan/go-swan-lib/utils"
-	"github.com/robfig/cron"
+
+	"github.com/filswan/go-swan-client/command"
+
+	//clientmodel "github.com/filswan/go-swan-client/model"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -18,6 +16,10 @@ import (
 	"payment-bridge/logs"
 	"payment-bridge/models"
 	"time"
+
+	libconstants "github.com/filswan/go-swan-lib/constants"
+	libutils "github.com/filswan/go-swan-lib/utils"
+	"github.com/robfig/cron"
 )
 
 func SendDealScheduler() {
@@ -37,7 +39,6 @@ func SendDealScheduler() {
 	c.Start()
 }
 func DoSendDealScheduler() error {
-	fmt.Println(config.GetConfig().SwanTask.RelativeEpochFromMainNetwork)
 	dealList, err := GetTaskListShouldBeSendDealFromLocal()
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -89,8 +90,8 @@ func GetTaskListShouldBeSendDealFromLocal() ([]*models.DealFile, error) {
 }
 
 func sendDeal(taskUuid string, file *models.DealFile) (string, error) {
-	startEpochIntervalHours := config.GetConfig().SwanTask.StartEpochHours
-	startEpoch := libutils.GetCurrentEpoch() + (startEpochIntervalHours+1)*libconstants.EPOCH_PER_HOUR
+	//startEpochIntervalHours := config.GetConfig().SwanTask.StartEpochHours
+	//startEpoch := libutils.GetCurrentEpoch() + (startEpochIntervalHours+1)*libconstants.EPOCH_PER_HOUR
 
 	homedir, err := os.UserHomeDir()
 	if err != nil {
@@ -108,34 +109,28 @@ func sendDeal(taskUuid string, file *models.DealFile) (string, error) {
 	timeStr := time.Now().Format("20060102_150405")
 	temDirDeal = filepath.Join(temDirDeal, timeStr)
 	carDir := filepath.Join(temDirDeal, "car")
-	confDeal := &clientmodel.ConfDeal{
-		SwanApiUrl:                   config.GetConfig().SwanApi.ApiUrl,
-		SwanApiKey:                   config.GetConfig().SwanApi.ApiKey,
-		SwanAccessToken:              config.GetConfig().SwanApi.AccessToken,
-		SenderWallet:                 config.GetConfig().FileCoinWallet,
-		VerifiedDeal:                 config.GetConfig().SwanTask.VerifiedDeal,
-		FastRetrieval:                config.GetConfig().SwanTask.FastRetrieval,
-		SkipConfirmation:             true,
-		StartEpochIntervalHours:      startEpochIntervalHours,
-		StartEpoch:                   startEpoch,
-		OutputDir:                    carDir,
-		LotusClientApiUrl:            config.GetConfig().Lotus.ApiUrl,
-		LotusClientAccessToken:       config.GetConfig().Lotus.AccessToken,
-		Duration:                     file.Duration,
-		RelativeEpochFromMainNetwork: config.GetConfig().SwanTask.RelativeEpochFromMainNetwork,
+
+	confDeal := &command.CmdAutoBidDeal{
+		SwanApiUrl:             config.GetConfig().SwanApi.ApiUrl,
+		SwanApiKey:             config.GetConfig().SwanApi.ApiKey,
+		SwanAccessToken:        config.GetConfig().SwanApi.AccessToken,
+		LotusClientApiUrl:      config.GetConfig().Lotus.ClientApiUrl,
+		LotusClientAccessToken: config.GetConfig().Lotus.ClientAccessToken,
+		SenderWallet:           config.GetConfig().FileCoinWallet,
+		OutputDir:              carDir,
 	}
 	confDeal.DealSourceIds = append(confDeal.DealSourceIds, libconstants.TASK_SOURCE_ID_SWAN_PAYMENT)
 
-	dealSentNum, csvFilePath, carFiles, err := subcommand.SendAutoBidDealsByTaskUuid(confDeal, taskUuid)
+	_, fileDesc, err := confDeal.SendAutoBidDealsByTaskUuid(taskUuid)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return "", err
 	}
-	logs.GetLogger().Info("------------------------------send deal success---------------------------------")
-	logs.GetLogger().Info("dealSentNum = ", dealSentNum)
-	logs.GetLogger().Info("csvFilePath = ", csvFilePath)
-	logs.GetLogger().Info("carFiles = ", carFiles)
-	return carFiles[0].DealCid, nil
+	//logs.GetLogger().Info("------------------------------send deal success---------------------------------")
+	//logs.GetLogger().Info("dealSentNum = ", len(fileDesc))
+	//logs.GetLogger().Info("csvFilePath = ", csvFilePath)
+	//logs.GetLogger().Info("carFiles = ", carFiles)
+	return fileDesc[0].PayloadCid, nil
 }
 
 func CheckIfHaveLockPayment(payloadCid string) ([]*models.EventLockPayment, error) {

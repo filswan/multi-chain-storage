@@ -1,9 +1,13 @@
 package goerli
 
 import (
-	"github.com/BurntSushi/toml"
 	"log"
+	"os"
+	"path/filepath"
+	"payment-bridge/logs"
 	"time"
+
+	"github.com/BurntSushi/toml"
 )
 
 type ConfigurationForGoerli struct {
@@ -22,8 +26,13 @@ type GoerliMainnetNode struct {
 
 var goerliConfig *ConfigurationForGoerli
 
-func initCofig() {
-	configFile := "./config/goerli/config_goerli.toml"
+func initConfig() {
+	homedir, err := os.UserHomeDir()
+	if err != nil {
+		logs.GetLogger().Fatal("Cannot get home directory.")
+	}
+
+	configFile := filepath.Join(homedir, ".swan/mcp/config_goerli.toml")
 	if metaData, err := toml.DecodeFile(configFile, &goerliConfig); err != nil {
 		log.Fatal("error:", err)
 	} else {
@@ -54,7 +63,7 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 
 func GetConfig() ConfigurationForGoerli {
 	if goerliConfig == nil {
-		initCofig()
+		initConfig()
 	}
 	return *goerliConfig
 }

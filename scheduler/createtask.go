@@ -2,13 +2,7 @@ package scheduler
 
 import (
 	"fmt"
-	clientmodel "github.com/filswan/go-swan-client/model"
-	"github.com/filswan/go-swan-client/subcommand"
-	libconstants "github.com/filswan/go-swan-lib/constants"
-	libmodel "github.com/filswan/go-swan-lib/model"
-	libutils "github.com/filswan/go-swan-lib/utils"
-	"github.com/robfig/cron"
-	"github.com/shopspring/decimal"
+	//clientmodel "github.com/filswan/go-swan-client/model"
 	"math/big"
 	"path/filepath"
 	"payment-bridge/blockchain/browsersync/scanlockpayment/polygon"
@@ -22,6 +16,12 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/filswan/go-swan-client/command"
+	libmodel "github.com/filswan/go-swan-lib/model"
+	libutils "github.com/filswan/go-swan-lib/utils"
+	"github.com/robfig/cron"
+	"github.com/shopspring/decimal"
 )
 
 func CreateTaskScheduler() {
@@ -116,14 +116,16 @@ func DoCreateTask() error {
 					*maxPrice = config.GetConfig().SwanTask.MaxPrice
 				}
 				if strings.Trim(v.TaskUuid, " ") == "" {
-					confUpload := &clientmodel.ConfUpload{
-						StorageServerType:           libconstants.STORAGE_SERVER_TYPE_IPFS_SERVER,
-						IpfsServerDownloadUrlPrefix: config.GetConfig().IpfsServer.DownloadUrlPrefix,
-						IpfsServerUploadUrl:         config.GetConfig().IpfsServer.UploadUrl,
-						OutputDir:                   filepath.Dir(v.CarFilePath),
-						InputDir:                    filepath.Dir(v.CarFilePath),
-					}
-					_, err = subcommand.UploadCarFiles(confUpload)
+					/*
+						confUpload := &clientmodel.ConfUpload{
+							StorageServerType:           libconstants.STORAGE_SERVER_TYPE_IPFS_SERVER,
+							IpfsServerDownloadUrlPrefix: config.GetConfig().IpfsServer.DownloadUrlPrefix,
+							IpfsServerUploadUrl:         config.GetConfig().IpfsServer.UploadUrl,
+							OutputDir:                   filepath.Dir(v.CarFilePath),
+							InputDir:                    filepath.Dir(v.CarFilePath),
+						}*/
+					//_, err = subcommand.UploadCarFiles(confUpload)
+					_, err = command.UploadCarFilesByConfig(filepath.Dir(v.CarFilePath))
 					if err != nil {
 						logs.GetLogger().Error(err)
 						return err
@@ -132,35 +134,39 @@ func DoCreateTask() error {
 
 					taskDataset := config.GetConfig().SwanTask.CuratedDataset
 					taskDescription := config.GetConfig().SwanTask.Description
-					startEpochIntervalHours := config.GetConfig().SwanTask.StartEpochHours
-					startEpoch := libutils.GetCurrentEpoch() + (startEpochIntervalHours+1)*libconstants.EPOCH_PER_HOUR
+					//startEpochIntervalHours := config.GetConfig().SwanTask.StartEpochHours
+					//startEpoch := libutils.GetCurrentEpoch() + (startEpochIntervalHours+1)*libconstants.EPOCH_PER_HOUR
 					fmt.Println(filepath.Dir(v.CarFilePath))
-					confTask := &clientmodel.ConfTask{
-						SwanApiUrl:      config.GetConfig().SwanApi.ApiUrl,
-						SwanToken:       "",
-						PublicDeal:      true,
-						SwanApiKey:      config.GetConfig().SwanApi.ApiKey,
-						SwanAccessToken: config.GetConfig().SwanApi.AccessToken,
-						BidMode:         libconstants.TASK_BID_MODE_AUTO,
-						VerifiedDeal:    config.GetConfig().SwanTask.VerifiedDeal,
-						OfflineMode:     false,
-						FastRetrieval:   config.GetConfig().SwanTask.FastRetrieval,
-						//MaxPrice:        config.GetConfig().SwanTask.MaxPrice,
-						MaxPrice:                   *maxPrice,
-						StorageServerType:          libconstants.STORAGE_SERVER_TYPE_IPFS_SERVER,
-						WebServerDownloadUrlPrefix: config.GetConfig().IpfsServer.DownloadUrlPrefix,
-						ExpireDays:                 config.GetConfig().SwanTask.ExpireDays,
-						OutputDir:                  filepath.Dir(v.CarFilePath),
-						InputDir:                   filepath.Dir(v.CarFilePath),
-						MinerFid:                   "",
-						Dataset:                    taskDataset,
-						Description:                taskDescription,
-						StartEpochIntervalHours:    startEpochIntervalHours,
-						StartEpoch:                 startEpoch,
-						SourceId:                   constants.SOURCE_ID_OF_PAYMENT,
-						Duration:                   v.Duration,
-					}
-					_, fileInfoList, _, err := subcommand.CreateTask(confTask, nil)
+					/*
+						confTask := &clientmodel.ConfTask{
+							SwanApiUrl:      config.GetConfig().SwanApi.ApiUrl,
+							SwanToken:       "",
+							PublicDeal:      true,
+							SwanApiKey:      config.GetConfig().SwanApi.ApiKey,
+							SwanAccessToken: config.GetConfig().SwanApi.AccessToken,
+							BidMode:         libconstants.TASK_BID_MODE_AUTO,
+							VerifiedDeal:    config.GetConfig().SwanTask.VerifiedDeal,
+							OfflineMode:     false,
+							FastRetrieval:   config.GetConfig().SwanTask.FastRetrieval,
+							//MaxPrice:        config.GetConfig().SwanTask.MaxPrice,
+							MaxPrice:                   *maxPrice,
+							StorageServerType:          libconstants.STORAGE_SERVER_TYPE_IPFS_SERVER,
+							WebServerDownloadUrlPrefix: config.GetConfig().IpfsServer.DownloadUrlPrefix,
+							ExpireDays:                 config.GetConfig().SwanTask.ExpireDays,
+							OutputDir:                  filepath.Dir(v.CarFilePath),
+							InputDir:                   filepath.Dir(v.CarFilePath),
+							MinerFid:                   "",
+							Dataset:                    taskDataset,
+							Description:                taskDescription,
+							StartEpochIntervalHours:    startEpochIntervalHours,
+							StartEpoch:                 startEpoch,
+							SourceId:                   constants.SOURCE_ID_OF_PAYMENT,
+							Duration:                   v.Duration,
+						} */
+					//_, fileInfoList, _, err := subcommand.CreateTask(confTask, nil)
+					//Adapt to new version of swan-client
+					inoutputDir := filepath.Dir(v.CarFilePath)
+					_, fileInfoList, _, err := command.CreateTaskByConfig(inoutputDir, &inoutputDir, "", "", taskDataset, taskDescription)
 					if err != nil {
 						logs.GetLogger().Error(err)
 						return err
@@ -207,8 +213,8 @@ func GetDuplicateTaskInfoByPayloadCid(limit, offset, payloadCid string) ([]*Dupl
 
 func updateTaskInfoToDB(taskinfoList []*libmodel.FileDesc, dealFile *models.DealFile) error {
 	dealFile.TaskUuid = taskinfoList[0].Uuid
-	dealFile.DealCid = taskinfoList[0].DealCid
-	dealFile.Cost = taskinfoList[0].Cost
+	dealFile.DealCid = taskinfoList[0].Deals[0].DealCid
+	//dealFile.Cost = taskinfoList[0].Cost
 	err := database.SaveOne(dealFile)
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -226,7 +232,7 @@ type DuplicatedTaskInfo struct {
 	Status            string `json:"status"`
 	PayloadCid        string `json:"payload_cid"`
 	DealCid           string `json:"deal_cid"`
-	TaskUuid          string `json:"task_uuid""`
+	TaskUuid          string `json:"task_uuid"`
 	IpfsUrl           string `json:"ipfs_url"`
 	PieceCid          string `json:"piece_cid"`
 	LockPaymentStatus string `json:"lock_payment_status"`

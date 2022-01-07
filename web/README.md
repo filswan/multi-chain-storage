@@ -2,6 +2,32 @@
 
 **Technology stack：** vue2 + vuex + vue-router + webpack + sass + element-ui + web3
 
+
+## Container Installation
+
+Running Swan Faucet as a container is the recommended way of using it.
+
+### Prerequisites
+
+#### Install Docker Compose
+
+https://docs.docker.com/compose/install/
+### Stable
+
+Run the following command to run the latest stable image of MCP Web
+
+```bash
+docker build -t filswan/mcp-web .
+docker run filswan/mcp-web
+```
+The service will be Available on:
+
+http://127.0.0.1:8080
+
+http://172.17.0.2:8080
+
+Hit CTRL-C to stop the server
+
 ## Installation dependency
 
 Run `npm install` to generate component.
@@ -28,11 +54,11 @@ $ npm run build:prod
 - [vue](https://vuejs.bootcss.com/v2/guide/)：Vue is a progressive framework for building user interfaces.
 
 - [vuex](https://vuex.vuejs.org/zh/)：Vuex is a state management pattern developed specifically for vue.js applications.
- 
+
 - [vue-router](https://router.vuejs.org/zh/)：Vue router is the official routing manager of vue.js.
- 
+
 - [webpack](https://webpack.js.org/concepts/)：Front end module packer.
- 
+
 - [element-ui](https://element.eleme.io/)：Element, a desktop component library based on Vue 2.0 for developers, designers and product managers.
 
 - [web3.js](http://cw.hubwiz.com/card/c/web3.js-1.0/)：Web3.js is a set of JS libraries used to interact with local or remote Ethereum nodes.

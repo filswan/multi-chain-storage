@@ -1,9 +1,13 @@
 package nbai
 
 import (
-	"github.com/BurntSushi/toml"
 	"log"
+	"os"
+	"path/filepath"
+	"payment-bridge/logs"
 	"time"
+
+	"github.com/BurntSushi/toml"
 )
 
 type ConfigurationForNbai struct {
@@ -22,8 +26,13 @@ type NbaiMainnetNode struct {
 
 var nbaiConfig *ConfigurationForNbai
 
-func initCofig() {
-	configFile := "./config/nbai/config_nbai.toml"
+func initConfig() {
+	homedir, err := os.UserHomeDir()
+	if err != nil {
+		logs.GetLogger().Fatal("Cannot get home directory.")
+	}
+
+	configFile := filepath.Join(homedir, ".swan/mcp/config_nbai.toml")
 	if metaData, err := toml.DecodeFile(configFile, &nbaiConfig); err != nil {
 		log.Fatal("error:", err)
 	} else {
@@ -54,7 +63,7 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 
 func GetConfig() ConfigurationForNbai {
 	if nbaiConfig == nil {
-		initCofig()
+		initConfig()
 	}
 	return *nbaiConfig
 }

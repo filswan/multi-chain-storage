@@ -28,7 +28,7 @@ type DaoSignatureResult struct {
 	PayloadCid string `json:"payload_cid"`
 	OrderId    string `json:"order_id"`
 	DealCid    string `json:"deal_cid"`
-	DealId     int64  `json:"deal_cid"`
+	DealId     int64  `json:"deal_id"`
 	Threshold  string `json:"threshold"`
 }
 

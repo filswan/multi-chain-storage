@@ -9,10 +9,11 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"payment-bridge/logs"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/filswan/go-swan-lib/logs"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/ethereum/go-ethereum"

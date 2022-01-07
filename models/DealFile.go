@@ -4,8 +4,9 @@ import (
 	"payment-bridge/common/constants"
 	"payment-bridge/common/utils"
 	"payment-bridge/database"
-	"payment-bridge/logs"
 	"strconv"
+
+	"github.com/filswan/go-swan-lib/logs"
 )
 
 type DealFile struct {

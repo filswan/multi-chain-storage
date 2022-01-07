@@ -12,11 +12,12 @@ import (
 	"payment-bridge/common/utils"
 	"payment-bridge/config"
 	"payment-bridge/database"
-	"payment-bridge/logs"
 	"payment-bridge/models"
 	"payment-bridge/on-chain/goBind"
 	"strconv"
 	"strings"
+
+	"github.com/filswan/go-swan-lib/logs"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	common2 "github.com/ethereum/go-ethereum/common"

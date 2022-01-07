@@ -2,7 +2,10 @@ package config
 
 import (
 	"log"
-	"strings"
+	"os"
+	"path/filepath"
+
+	"github.com/filswan/go-swan-lib/logs"
 
 	"github.com/BurntSushi/toml"
 	"github.com/shopspring/decimal"
@@ -71,10 +74,14 @@ type ScheduleRule struct {
 
 var config *Configuration
 
-func InitConfig(configFile string) {
-	if strings.Trim(configFile, " ") == "" {
-		configFile = "./config/config.toml"
+func InitConfig() {
+	homedir, err := os.UserHomeDir()
+	if err != nil {
+		logs.GetLogger().Fatal("Cannot get home directory.")
 	}
+
+	configFile := filepath.Join(homedir, ".swan/mcp/config.toml")
+
 	if metaData, err := toml.DecodeFile(configFile, &config); err != nil {
 		log.Fatal("error:", err)
 	} else {
@@ -86,7 +93,7 @@ func InitConfig(configFile string) {
 
 func GetConfig() Configuration {
 	if config == nil {
-		InitConfig("")
+		InitConfig()
 	}
 	return *config
 }

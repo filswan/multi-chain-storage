@@ -3,7 +3,8 @@ package models
 import (
 	"payment-bridge/common/constants"
 	"payment-bridge/database"
-	"payment-bridge/logs"
+
+	"github.com/filswan/go-swan-lib/logs"
 )
 
 type EventDaoSignature struct {

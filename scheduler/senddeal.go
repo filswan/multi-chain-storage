@@ -13,9 +13,10 @@ import (
 	"payment-bridge/common/httpClient"
 	"payment-bridge/config"
 	"payment-bridge/database"
-	"payment-bridge/logs"
 	"payment-bridge/models"
 	"time"
+
+	"github.com/filswan/go-swan-lib/logs"
 
 	libconstants "github.com/filswan/go-swan-lib/constants"
 	libutils "github.com/filswan/go-swan-lib/utils"

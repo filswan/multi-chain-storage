@@ -2,7 +2,8 @@ package models
 
 import (
 	"payment-bridge/database"
-	"payment-bridge/logs"
+
+	"github.com/filswan/go-swan-lib/logs"
 )
 
 type SourceFileDealFileMap struct {

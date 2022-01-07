@@ -2,10 +2,11 @@ package polygon
 
 import (
 	"context"
-	"github.com/ethereum/go-ethereum/ethclient"
 	"math/big"
-	"payment-bridge/logs"
 	"time"
+
+	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/filswan/go-swan-lib/logs"
 )
 
 type ConnSetup struct {

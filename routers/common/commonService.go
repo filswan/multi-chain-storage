@@ -2,9 +2,10 @@ package common
 
 import (
 	"payment-bridge/common"
-	"payment-bridge/logs"
 	"payment-bridge/models"
 	"runtime"
+
+	"github.com/filswan/go-swan-lib/logs"
 )
 
 func getSwanMinerHostInfo() *common.HostInfo {

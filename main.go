@@ -7,7 +7,6 @@ import (
 	"payment-bridge/common/constants"
 	"payment-bridge/config"
 	"payment-bridge/database"
-	"payment-bridge/logs"
 	"payment-bridge/models"
 	"payment-bridge/routers"
 	"payment-bridge/routers/billing"
@@ -15,6 +14,8 @@ import (
 	"payment-bridge/routers/storage"
 	"payment-bridge/scheduler"
 	"time"
+
+	"github.com/filswan/go-swan-lib/logs"
 
 	"github.com/gin-gonic/gin"
 	cors "github.com/itsjamie/gin-cors"
@@ -71,7 +72,7 @@ func main() {
 }
 
 func initMethod() string {
-	config.InitConfig("")
+	config.InitConfig()
 	return ""
 }
 

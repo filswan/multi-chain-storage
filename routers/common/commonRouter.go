@@ -5,8 +5,9 @@ import (
 	"payment-bridge/common"
 	"payment-bridge/common/constants"
 	"payment-bridge/common/errorinfo"
-	"payment-bridge/logs"
 	"strings"
+
+	"github.com/filswan/go-swan-lib/logs"
 
 	"github.com/gin-gonic/gin"
 )

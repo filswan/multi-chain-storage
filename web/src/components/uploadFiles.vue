@@ -30,7 +30,17 @@
                                 <img src="@/assets/images/info.png"/>
                             </el-tooltip>
                         </template>
-                        <el-input v-model="ruleForm.duration" type="number" style="max-width:130px"></el-input> &nbsp; {{$t('components.day')}} <small> {{$t('components.interval')}}</small>
+                        <el-input v-model="ruleForm.duration" disabled type="number" style="max-width:130px"></el-input>
+                    </el-form-item>
+                    <el-form-item prop="storage_copy">
+                        <template slot="label">
+                            {{$t('uploadFile.Storage_copy')}} 
+                            
+                            <el-tooltip effect="dark" :content="$t('uploadFile.Storage_copy_tooltip')" placement="top">
+                                <img src="@/assets/images/info.png"/>
+                            </el-tooltip>
+                        </template>
+                        <el-input v-model="ruleForm.storage_copy" disabled type="number" style="max-width:130px"></el-input>
                     </el-form-item>
                     <el-form-item prop="storage_cost">
                         <template slot="label">
@@ -175,7 +185,8 @@
                     payload_cid: ''
                 },
                 ruleForm: {
-                    duration: '365',
+                    duration: '535',
+                    storage_copy: '5',
                     fileList: [],
                     file_size: '',
                     file_size_byte: '',
@@ -303,6 +314,7 @@
                                 var formData = new FormData()
                                 formData.append('file', _this._file)
                                 formData.append('duration', _this.ruleForm.duration)
+                                formData.append('storage_copy', _this.ruleForm.storage_copy)
                                 formData.append('wallet_address', _this.metaAddress)
                                 // formData.append('task_name', _this.ruleForm.task_name)
                                 _this.loading = true

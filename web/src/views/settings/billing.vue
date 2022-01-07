@@ -113,9 +113,6 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- 回到顶部 -->
-                    <el-backtop target=".content-box" :bottom="40" :right="20"></el-backtop>
                 </div>
             </div>
             <div v-else>

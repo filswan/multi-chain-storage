@@ -514,6 +514,8 @@ export default {
         Duration: 'Duration',
         Duration_tip: 'Please enter the duration',
         Duration_tooltip: 'Duration refers to the terms in which you want the file to be stored on the Filecoin network.',
+        Storage_copy: 'Storage Copy',
+        Storage_copy_tooltip: 'The number of copies of files stored in Filecoin network. Your file will be assigned to dbifferent storage providers. ',
         Estimated_Storage_Cost: 'Estimated Storage Cost',
         Estimated_Storage_Cost_tooltip: 'The estimated storage cost is calculated according to your file size, the duration you set, and the average provider price.',
         Select_Lock_Funds_Plan: 'Select Lock Funds Plan',

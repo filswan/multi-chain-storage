@@ -320,6 +320,7 @@ export default {
         align-items: center;
         font-size: 0.24rem;
         line-height: 1;
+        max-width: 200px;
         margin: 0 0 0.2rem;
         cursor: pointer;
     }

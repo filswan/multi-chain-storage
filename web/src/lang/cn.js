@@ -519,6 +519,8 @@ export default {
         Duration: '存储时间',
         Duration_tip: '请输入存储时间',
         Duration_tooltip: '存储时间是指您希望文件在Filecoin网络上存储的期限。',
+        Storage_copy: '存储份数',
+        Storage_copy_tooltip: '将文件存储到Filecoin网络的份数。您的文件将会被分配到不同的存储提供者。',
         Estimated_Storage_Cost: '预计存储费用',
         Estimated_Storage_Cost_tooltip: '预计存储费用是根据文件大小，存储时间，和平均数据存储价格计算的。',
         Select_Lock_Funds_Plan: '选择资金锁定计划',

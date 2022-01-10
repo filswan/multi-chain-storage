@@ -32,8 +32,8 @@ import (
 )
 
 const (
-	SRC_FILE_SIZE_MIN = 1 * 1024 //* 1024 * 1024
-	CAR_FILE_SIZE_MIN = 1 * 1024 //* 1024 * 1024
+	SRC_FILE_SIZE_MIN = 1 * 1024 * 1024 // * 1024
+	CAR_FILE_SIZE_MIN = 1 * 1024 * 1024 //* 1024
 )
 
 var srcDir string = ""
@@ -46,7 +46,6 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 		return "", "", needPay, err
 	}
 
-	payloadCid := fileList[0].PayloadCid
 	uploadUrl := utils.UrlJoin(config.GetConfig().IpfsServer.UploadUrlPrefix, "api/v0/add?stream-channels=true&pin=true")
 	ipfsFileHash, err := ipfs.IpfsUploadFileByWebApi(uploadUrl, *srcFilepath)
 	if err != nil {
@@ -56,6 +55,12 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 
 	filePathInIpfs := config.GetConfig().IpfsServer.DownloadUrlPrefix + constants.IPFS_URL_PREFIX_BEFORE_HASH + *ipfsFileHash
 
+	// no car file generated because the source files or car file are too small
+	if fileList == nil {
+		return "", filePathInIpfs, needPay, nil
+	}
+
+	payloadCid := fileList[0].PayloadCid
 	sourceAndDealFileList, err := GetSourceFileAndDealFileInfoByPayloadCid(payloadCid)
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -174,7 +179,7 @@ func createCarFile(c *gin.Context, srcFile *multipart.FileHeader) (*string, []*l
 	}
 
 	if srcFilesSize < SRC_FILE_SIZE_MIN {
-		return nil, nil, nil
+		return &srcFilepath, nil, nil
 	}
 
 	carDir := filepath.Join(temDirDeal, "car")
@@ -199,7 +204,7 @@ func createCarFile(c *gin.Context, srcFile *multipart.FileHeader) (*string, []*l
 
 	carFileSize := fileList[0].CarFileSize
 	if carFileSize < CAR_FILE_SIZE_MIN {
-		return nil, nil, nil
+		return &srcFilepath, nil, nil
 	}
 
 	payloadCid := fileList[0].PayloadCid

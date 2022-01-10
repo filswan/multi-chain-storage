@@ -10,12 +10,12 @@ type SourceFile struct {
 	FileName      string `json:"file_name"`
 	ResourceUri   string `json:"resource_uri"`
 	FileSize      string `json:"file_size"`
-	Uuid          string `json:"uuid"`
 	Dataset       string `json:"dataset"`
 	CreateAt      string `json:"create_at"`
 	IpfsUrl       string `json:"ipfs_url"`
 	PinStatus     string `json:"pin_status"`
 	WalletAddress string `json:"wallet_address"`
+	PayloadCid    string `json:"payload_cid"`
 }
 
 // FindSourceFileList (&SourceFile{Id: "0xadeaCC802D0f2DFd31bE4Fa7434F15782Fd720ac"},"id desc","10","0")

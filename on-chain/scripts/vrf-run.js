@@ -25,12 +25,18 @@ async function main() {
   
   console.log(`random number requestId is: ${requestId}`);
 
-  console.log("Waiting for generating random number (30 seconds)......");
+  console.log("Waiting for generating random number (30-120 seconds)......");
 
-  await sleep(30000); 
-
-  const number = await vrfInstance.requestIdToRandomNumber(requestId);
+  let number = 0;
+  let count = 0;
+  while(number == 0 && count++ < 12)
+  {
+    process.stdout.write(`waiting seconds: ${count}0...\r`)
+    await sleep(10000); 
+    number = await vrfInstance.requestIdToRandomNumber(requestId);
+  }
   console.log(`random number is:${number}`)
+  
 }
 
 main()

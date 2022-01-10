@@ -55,18 +55,19 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 	}
 
 	filePathInIpfs := config.GetConfig().IpfsServer.DownloadUrlPrefix + constants.IPFS_URL_PREFIX_BEFORE_HASH + *ipfsFileHash
-	lockPaymentList, err := models.FindEventLockPayment(&models.EventLockPayment{PayloadCid: payloadCid}, "create_at desc", "10", "0")
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return "", "", needPay, err
-	}
 
 	sourceAndDealFileList, err := GetSourceFileAndDealFileInfoByPayloadCid(payloadCid)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return "", "", needPay, err
 	}
+
 	if len(sourceAndDealFileList) > 0 {
+		lockPaymentList, err := models.FindEventLockPayment(&models.EventLockPayment{PayloadCid: payloadCid}, "create_at desc", "10", "0")
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return "", "", needPay, err
+		}
 		if sourceAndDealFileList[0].WalletAddress == walletAddress {
 			if len(lockPaymentList) > 0 {
 				needPay = 1
@@ -75,43 +76,31 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 				needPay = 2
 				return fileList[0].PayloadCid, sourceAndDealFileList[0].IpfsUrl, needPay, nil
 			}
-		} else {
-			if len(lockPaymentList) > 0 {
-				needPay = 3
-				sourceFile, err := saveSourceFileToDB(srcFile, *srcFilepath, filePathInIpfs, walletAddress)
-				if err != nil {
-					logs.GetLogger().Error(err)
-					return "", "", needPay, err
-				}
-				filepMap := new(models.SourceFileDealFileMap)
-				filepMap.SourceFileId = sourceFile.ID
-				filepMap.DealFileId = sourceAndDealFileList[0].ID
-				filepMap.FileIndex = 0
-				nowTime := strconv.FormatInt(utils.GetEpochInMillis(), 10)
-				filepMap.CreateAt = nowTime
-				filepMap.UpdateAt = nowTime
-				err = database.SaveOne(filepMap)
-				if err != nil {
-					logs.GetLogger().Error(err)
-					return "", "", needPay, err
-				}
-				return fileList[0].PayloadCid, sourceAndDealFileList[0].IpfsUrl, needPay, nil
-			} else {
-				needPay = 4
-				sourceFile, err := saveSourceFileToDB(srcFile, *srcFilepath, filePathInIpfs, walletAddress)
-				if err != nil {
-					logs.GetLogger().Error(err)
-					return "", "", needPay, err
-				}
-				err = saveDealFileAndMapRelation(fileList, sourceFile, duration)
-				if err != nil {
-					logs.GetLogger().Error(err)
-					return "", "", needPay, err
-				}
-				return fileList[0].PayloadCid, filePathInIpfs, needPay, nil
-			}
 		}
-	} else {
+
+		if len(lockPaymentList) > 0 {
+			needPay = 3
+			sourceFile, err := saveSourceFileToDB(srcFile, *srcFilepath, filePathInIpfs, walletAddress)
+			if err != nil {
+				logs.GetLogger().Error(err)
+				return "", "", needPay, err
+			}
+			filepMap := new(models.SourceFileDealFileMap)
+			filepMap.SourceFileId = sourceFile.ID
+			filepMap.DealFileId = sourceAndDealFileList[0].ID
+			filepMap.FileIndex = 0
+			nowTime := strconv.FormatInt(utils.GetEpochInMillis(), 10)
+			filepMap.CreateAt = nowTime
+			filepMap.UpdateAt = nowTime
+			err = database.SaveOne(filepMap)
+			if err != nil {
+				logs.GetLogger().Error(err)
+				return "", "", needPay, err
+			}
+			return fileList[0].PayloadCid, sourceAndDealFileList[0].IpfsUrl, needPay, nil
+		}
+
+		needPay = 4
 		sourceFile, err := saveSourceFileToDB(srcFile, *srcFilepath, filePathInIpfs, walletAddress)
 		if err != nil {
 			logs.GetLogger().Error(err)
@@ -124,6 +113,18 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 		}
 		return fileList[0].PayloadCid, filePathInIpfs, needPay, nil
 	}
+
+	sourceFile, err := saveSourceFileToDB(srcFile, *srcFilepath, filePathInIpfs, walletAddress)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return "", "", needPay, err
+	}
+	err = saveDealFileAndMapRelation(fileList, sourceFile, duration)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return "", "", needPay, err
+	}
+	return fileList[0].PayloadCid, filePathInIpfs, needPay, nil
 }
 
 func createCarFile(c *gin.Context, srcFile *multipart.FileHeader) (*string, []*libmodel.FileDesc, error) {

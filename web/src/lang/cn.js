@@ -47,7 +47,8 @@ export default {
         PowerGrowth: '有效算力增量',
         BillingHistory: '账单详情',
         language: '语言',
-        language_cn: '简体中文'
+        language_cn: '简体中文',
+        swan_share: 'swan分配'
     },
     // 首页
     dashboard: {
@@ -534,7 +535,8 @@ export default {
         file_uploaded: '该文件已经上传。',
         file_uploaded_tip: '我们目前只支持上传一次文件。请选择另一个要上传的文件。',
         file_uploaded_tip01: '谢谢您的理解。',
-        file_uploaded_tip02: '这个文件你不用付钱，它会加到你的文件里的。因为我们目前只支持上传一次文件。'
+        file_uploaded_tip02: '这个文件你不用付钱，它会加到你的文件里的。因为我们目前只支持上传一次文件。',
+        update_time: '更新时间:'
     },
     billing: {
         search_placeholder: '按交易哈希搜索',

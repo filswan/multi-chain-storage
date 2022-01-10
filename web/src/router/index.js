@@ -5,6 +5,7 @@ Vue.use(Router)
 const home = () => import("@/components/Home");
 const my_files = () => import("@/views/uploadFiles/index");
 const my_files_index = () => import("@/views/uploadFiles/dashboard/index");
+const my_files_filename = () => import("@/views/uploadFiles/fileName/index");
 const my_files_detail = () => import("@/views/uploadFiles/detail/index");
 const upload_file = () => import("@/components/uploadFiles");
 const Search_file = () => import("@/views/searchFile/index");
@@ -65,6 +66,27 @@ export default new Router({
                     path: '/my_files',
                     name: 'my_files',
                     component: my_files_index,
+                    beforeEnter: (to, from, next) => {
+                        if (!sessionStorage.getItem('metaAddress')) {
+                            next({
+                                path: '/metamask_login',
+                                query: { redirect: to.fullPath }
+                            })
+                        } else {
+                            next()
+                        }
+                    },
+                    meta: {
+                        metaInfo: {
+                            title: 'My Files',
+                            description: "Swan is a marketplace for Filecoin miners, clients post/bidding deals the online."
+                        }
+                    }
+                },
+                {
+                    path: '/my_files/detail/:file_name',
+                    name: 'my_files_filename',
+                    component: my_files_filename,
                     beforeEnter: (to, from, next) => {
                         if (!sessionStorage.getItem('metaAddress')) {
                             next({

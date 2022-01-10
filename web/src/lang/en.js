@@ -48,7 +48,8 @@ export default {
         PowerGrowth: 'Adj.Storage Power Growth',
         BillingHistory: 'Billing History',
         language: 'Language',
-        language_cn: 'Chinese'
+        language_cn: 'Chinese',
+        swan_share: 'swan share'
     },
     // 首页
     dashboard: {
@@ -529,7 +530,8 @@ export default {
         file_uploaded: 'This file has been uploaded.',
         file_uploaded_tip: 'We currently only support uploading a file once. Please select another file to upload.',
         file_uploaded_tip01: 'Thank you for your comprehension.',
-        file_uploaded_tip02: 'You don’t need to pay this file, it will add to your files. Because we currently only support uploading a file once.'
+        file_uploaded_tip02: 'You don’t need to pay this file, it will add to your files. Because we currently only support uploading a file once.',
+        update_time: 'Update Time:'
     },
     billing: {
         search_placeholder: 'Search by TX HASH',

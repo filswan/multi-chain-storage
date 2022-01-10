@@ -1,143 +1,144 @@
 <template>
-    <div id="dealManagement" v-loading="loading">
+    <div id="dealManagement">
         <div class="backTo" @click="back">
             <span class="el-icon-back"></span>
             <span style="font-size:0.18rem;margin-left:0.05rem">{{$t('deal.backto')}}</span>
         </div>
-        <div class="files_title">
-            {{$t('uploadFile.Deal_Detail')}} #{{dealId}}
-            <span class="title" v-if="dealId == 0">
-                <el-tooltip effect="dark" :content="$t('uploadFile.detail_tip01')" placement="top">
-                    <img src="@/assets/images/info.png"/>
-                </el-tooltip>
-            </span>
-            <span v-if="!dealCont.found.locked_fee">
-                <img src="@/assets/images/error.png" />
-                <span>{{$t('uploadFile.no_fund_locked')}}</span>
-            </span>
-            <span v-else-if="dealCont.signed_dao_count >= dealCont.dao_thresh_hold && dealCont.unlock_status">
-                <img src="@/assets/images/dao_success.png" />
-                <span>{{$t('uploadFile.Successfully_unlocked_funds')}}</span>
-            </span>
-            <span v-else-if="dealCont.signed_dao_count >= dealCont.dao_thresh_hold && !dealCont.unlock_status">
-                <img src="@/assets/images/dao_waiting.png" />
-                <span>{{$t('uploadFile.Successfully_signed')}} {{dealCont.signed_dao_count}}/{{dealCont.dao_total_count}} </span>
-            </span>
-            <span v-else>
-                <img src="@/assets/images/dao_waiting.png" />
-                <span>{{$t('uploadFile.Waiting_for_signature')}} {{dealCont.signed_dao_count}}/{{dealCont.dao_total_count}} </span>
-            </span>
-        </div>
-        <div class="upload">
-            <el-row>
-                <el-col :span="8">{{$t('uploadFile.file_name')}}:</el-col>
-                <el-col :span="16">{{dealCont.deal.file_name | NumFormat}}</el-col>
-                <el-col :span="8">{{$t('uploadFile.detail_IPFSDownload')}}:</el-col>
-                <el-col :span="16">
-                    <a :href="dealCont.deal.ipfs_url" target="_blank" v-if="dealCont.deal.ipfs_url" class="linkTo">{{dealCont.deal.ipfs_url}}</a>
-                    <span v-else>-</span>
-                </el-col>
-                <el-col :span="8">{{$t('uploadFile.detail_Network')}}:</el-col>
-                <el-col :span="16">{{dealCont.deal.network_name | NumFormat}}</el-col>
-                <el-col :span="8">{{$t('uploadFile.detail_Locked_funds')}}:</el-col>
-                <el-col :span="16">{{dealCont.found.locked_fee | NumFormatPrice}} USDC</el-col>
-                <el-col :span="8">{{$t('uploadFile.w3ss_id')}}:</el-col>
-                <el-col :span="16">{{dealCont.deal.provider | NumFormat}}</el-col>
-                <el-col :span="8">{{$t('uploadFile.detail_Storage_Price')}}:</el-col>
-                <el-col :span="16">{{dealCont.deal.storage_price | NumFormatPrice}} FIL</el-col>
-                <el-col :span="8">{{$t('billing.PAYLOADCID')}}:</el-col>
-                <el-col :span="16">{{dealCont.found.payload_cid | NumFormat}}</el-col>
-                <el-col :span="8">{{$t('uploadFile.detail_ProposalCID')}}:</el-col>
-                <el-col :span="16">{{dealCont.deal.deal_cid | NumFormat}}</el-col>
-                <el-col :span="8">{{$t('uploadFile.create_time')}}:</el-col>
-                <el-col :span="16">{{dealCont.found.create_at | NumFormat}}</el-col>
-                <el-col :span="8">{{$t('uploadFile.detail_MessageCID')}}:</el-col>
-                <el-col :span="16">{{dealCont.deal.message_cid | NumFormat}}</el-col>
-                <el-col :span="8">{{$t('uploadFile.detail_PieceCID')}}:</el-col>
-                <el-col :span="16">{{dealCont.deal.piece_cid | NumFormat}}</el-col>
-                <el-col :span="8">{{$t('uploadFile.detail_Client_Address')}}:</el-col>
-                <el-col :span="16">{{dealCont.deal.client | NumFormat}}</el-col>
-                <el-col :span="8">{{$t('uploadFile.detail_Verified_Deal')}}:</el-col>
-                <el-col :span="16">{{dealCont.deal.verified_deal?'True':'False'}}</el-col>
-                <el-col :span="8">{{$t('uploadFile.detail_Storage_Price_Per_Epoch')}}:</el-col>
-                <el-col :span="16">{{dealCont.deal.storage_price_per_epoch | NumFormatPrice}} FIL</el-col>
-                <el-col :span="8">{{$t('uploadFile.detail_Signature_Type')}}:</el-col>
-                <el-col :span="16">{{dealCont.deal.signature_type | NumFormat}}</el-col>
-                <el-col :span="8">{{$t('my_profile.miner_add_Signature')}}:</el-col>
-                <el-col :span="16">{{dealCont.deal.signature | NumFormat}}</el-col>
-                <el-col :span="24">
-                    <div class="lotupTitle">
-                        {{$t('uploadFile.detail_Retrieval_Filecoin')}}
-                        <el-tooltip effect="dark" :content="$t('uploadFile.detail_Retrieval_Filecoin_tooltip')" placement="top">
-                            <img src="@/assets/images/info.png"/>
-                        </el-tooltip>：
-                         
-                        <img class="img" src="@/assets/images/copy.png" @click="copyTextToClipboard(copy_filename)" alt="">
-                    </div>
-                    <div class="lotupContent" :class="{'color': !dealCont.deal.provider && !dealCont.found.payload_cid}" @click="copyTextToClipboard(copy_filename)">{{copy_filename}}</div>
-                </el-col>
-            </el-row>
-                   
-            <div class="title">
-                {{$t('uploadFile.detail_DAO_Signatures')}}
-                <el-tooltip effect="dark" :content="$t('uploadFile.detail_DAO_Signatures_tooltip')" placement="top">
-                    <img src="@/assets/images/info.png"/>
-                </el-tooltip>
+        <div v-loading="loading">
+            <div class="files_title">
+                {{$t('uploadFile.Deal_Detail')}} #{{dealId}}
+                <span class="title" v-if="dealId == 0">
+                    <el-tooltip effect="dark" :content="$t('uploadFile.detail_tip01')" placement="top">
+                        <img src="@/assets/images/info.png"/>
+                    </el-tooltip>
+                </span>
+                <span v-if="!dealCont.found.locked_fee">
+                    <img src="@/assets/images/error.png" />
+                    <span>{{$t('uploadFile.no_fund_locked')}}</span>
+                </span>
+                <span v-else-if="dealCont.signed_dao_count >= dealCont.dao_thresh_hold && dealCont.unlock_status">
+                    <img src="@/assets/images/dao_success.png" />
+                    <span>{{$t('uploadFile.Successfully_unlocked_funds')}}</span>
+                </span>
+                <span v-else-if="dealCont.signed_dao_count >= dealCont.dao_thresh_hold && !dealCont.unlock_status">
+                    <img src="@/assets/images/dao_waiting.png" />
+                    <span>{{$t('uploadFile.Successfully_signed')}} {{dealCont.signed_dao_count}}/{{dealCont.dao_total_count}} </span>
+                </span>
+                <span v-else>
+                    <img src="@/assets/images/dao_waiting.png" />
+                    <span>{{$t('uploadFile.Waiting_for_signature')}} {{dealCont.signed_dao_count}}/{{dealCont.dao_total_count}} </span>
+                </span>
             </div>
-            <el-table :data="daoCont" stripe style="width: 100%">
-                <el-table-column type="index" width="180">
-                    <template slot-scope="scope">
-                        <!-- Signature {{scope.$index+1}} -->
-                        {{$t('my_profile.miner_add_Signature')}} {{scope.row.order_index?scope.row.order_index:scope.$index+1}}
-                    </template>
-                </el-table-column>
-                <el-table-column prop="dao_address" :label="$t('uploadFile.detail_DAO_RKH_Address')" min-width="220">
-                    <template slot-scope="scope">
-                        <div class="hot-cold-box">
-                            <el-popover
-                                placement="top"
-                                trigger="hover"
-                                v-model="scope.row.daoAddressVis">
-                                <div class="upload_form_right">
-                                    <p>{{scope.row.dao_address}}</p>
-                                </div>
-                                <el-button slot="reference" @click="copyTextToClipboard(scope.row.dao_address)">
-                                    <img src="@/assets/images/copy.png" alt="">
-                                    {{scope.row.dao_address}}
-                                </el-button>
-                            </el-popover>
+            <div class="upload">
+                <el-row>
+                    <el-col :span="8">{{$t('uploadFile.file_name')}}:</el-col>
+                    <el-col :span="16">{{dealCont.deal.file_name | NumFormat}}</el-col>
+                    <el-col :span="8">{{$t('uploadFile.detail_IPFSDownload')}}:</el-col>
+                    <el-col :span="16">
+                        <a :href="dealCont.deal.ipfs_url" target="_blank" v-if="dealCont.deal.ipfs_url" class="linkTo">{{dealCont.deal.ipfs_url}}</a>
+                        <span v-else>-</span>
+                    </el-col>
+                    <el-col :span="8">{{$t('uploadFile.detail_Network')}}:</el-col>
+                    <el-col :span="16">{{dealCont.deal.network_name | NumFormat}}</el-col>
+                    <el-col :span="8">{{$t('uploadFile.detail_Locked_funds')}}:</el-col>
+                    <el-col :span="16">{{dealCont.found.locked_fee | NumFormatPrice}} USDC</el-col>
+                    <el-col :span="8">{{$t('uploadFile.w3ss_id')}}:</el-col>
+                    <el-col :span="16">{{dealCont.deal.provider | NumFormat}}</el-col>
+                    <el-col :span="8">{{$t('uploadFile.detail_Storage_Price')}}:</el-col>
+                    <el-col :span="16">{{dealCont.deal.storage_price | NumFormatPrice}} FIL</el-col>
+                    <el-col :span="8">{{$t('billing.PAYLOADCID')}}:</el-col>
+                    <el-col :span="16">{{dealCont.found.payload_cid | NumFormat}}</el-col>
+                    <el-col :span="8">{{$t('uploadFile.detail_ProposalCID')}}:</el-col>
+                    <el-col :span="16">{{dealCont.deal.deal_cid | NumFormat}}</el-col>
+                    <el-col :span="8">{{$t('uploadFile.create_time')}}:</el-col>
+                    <el-col :span="16">{{dealCont.found.create_at | NumFormat}}</el-col>
+                    <el-col :span="8">{{$t('uploadFile.detail_MessageCID')}}:</el-col>
+                    <el-col :span="16">{{dealCont.deal.message_cid | NumFormat}}</el-col>
+                    <el-col :span="8">{{$t('uploadFile.detail_PieceCID')}}:</el-col>
+                    <el-col :span="16">{{dealCont.deal.piece_cid | NumFormat}}</el-col>
+                    <el-col :span="8">{{$t('uploadFile.detail_Client_Address')}}:</el-col>
+                    <el-col :span="16">{{dealCont.deal.client | NumFormat}}</el-col>
+                    <el-col :span="8">{{$t('uploadFile.detail_Verified_Deal')}}:</el-col>
+                    <el-col :span="16">{{dealCont.deal.verified_deal?'True':'False'}}</el-col>
+                    <el-col :span="8">{{$t('uploadFile.detail_Storage_Price_Per_Epoch')}}:</el-col>
+                    <el-col :span="16">{{dealCont.deal.storage_price_per_epoch | NumFormatPrice}} FIL</el-col>
+                    <el-col :span="8">{{$t('uploadFile.detail_Signature_Type')}}:</el-col>
+                    <el-col :span="16">{{dealCont.deal.signature_type | NumFormat}}</el-col>
+                    <el-col :span="8">{{$t('my_profile.miner_add_Signature')}}:</el-col>
+                    <el-col :span="16">{{dealCont.deal.signature | NumFormat}}</el-col>
+                    <el-col :span="24">
+                        <div class="lotupTitle">
+                            {{$t('uploadFile.detail_Retrieval_Filecoin')}}
+                            <el-tooltip effect="dark" :content="$t('uploadFile.detail_Retrieval_Filecoin_tooltip')" placement="top">
+                                <img src="@/assets/images/info.png"/>
+                            </el-tooltip>：
+                            
+                            <img class="img" src="@/assets/images/copy.png" @click="copyTextToClipboard(copy_filename)" alt="">
                         </div>
-                    </template>
-                </el-table-column>
-                <el-table-column prop="tx_hash" :label="$t('billing.TRANSACTION')" min-width="220">
-                    <template slot-scope="scope">
-                        <div class="hot-cold-box">
-                            <el-popover
-                                placement="top"
-                                trigger="hover" width="200"
-                                v-model="scope.row.txHashVis">
-                                <div class="upload_form_right">
-                                    <p>{{scope.row.tx_hash}}</p>
-                                </div>
-                                 <!-- :class="{'color': dealCont.network&&dealCont.network.toLowerCase() == 'polygon'}" -->
-                                <el-button slot="reference" @click="networkLink(scope.row.tx_hash)" class="color">
-                                    <!-- <img src="@/assets/images/copy.png" alt=""> -->
-                                    {{scope.row.tx_hash}}
-                                </el-button>
-                            </el-popover>
-                        </div>
-                    </template>
-                </el-table-column>
-                <el-table-column prop="dao_pass_time" :label="$t('uploadFile.detail_Time')"></el-table-column>
-                <el-table-column prop="status" :label="$t('uploadFile.file_status')">
-                    <template slot-scope="scope">
-                        <img src="@/assets/images/dao_success.png" v-if="scope.row.status == 1" />
-                        <img src="@/assets/images/dao_waiting.png" v-else />
-                    </template>
-                </el-table-column>
-            </el-table>
+                        <div class="lotupContent" :class="{'color': !dealCont.deal.provider && !dealCont.found.payload_cid}" @click="copyTextToClipboard(copy_filename)">{{copy_filename}}</div>
+                    </el-col>
+                </el-row>
+                    
+                <div class="title">
+                    {{$t('uploadFile.detail_DAO_Signatures')}}
+                    <el-tooltip effect="dark" :content="$t('uploadFile.detail_DAO_Signatures_tooltip')" placement="top">
+                        <img src="@/assets/images/info.png"/>
+                    </el-tooltip>
+                </div>
+                <el-table :data="daoCont" stripe style="width: 100%">
+                    <el-table-column type="index" width="180">
+                        <template slot-scope="scope">
+                            <!-- Signature {{scope.$index+1}} -->
+                            {{$t('my_profile.miner_add_Signature')}} {{scope.row.order_index?scope.row.order_index:scope.$index+1}}
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="dao_address" :label="$t('uploadFile.detail_DAO_RKH_Address')" min-width="220">
+                        <template slot-scope="scope">
+                            <div class="hot-cold-box">
+                                <el-popover
+                                    placement="top"
+                                    trigger="hover"
+                                    v-model="scope.row.daoAddressVis">
+                                    <div class="upload_form_right">
+                                        <p>{{scope.row.dao_address}}</p>
+                                    </div>
+                                    <el-button slot="reference" @click="copyTextToClipboard(scope.row.dao_address)">
+                                        <img src="@/assets/images/copy.png" alt="">
+                                        {{scope.row.dao_address}}
+                                    </el-button>
+                                </el-popover>
+                            </div>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="tx_hash" :label="$t('billing.TRANSACTION')" min-width="220">
+                        <template slot-scope="scope">
+                            <div class="hot-cold-box">
+                                <el-popover
+                                    placement="top"
+                                    trigger="hover" width="200"
+                                    v-model="scope.row.txHashVis">
+                                    <div class="upload_form_right">
+                                        <p>{{scope.row.tx_hash}}</p>
+                                    </div>
+                                    <!-- :class="{'color': dealCont.network&&dealCont.network.toLowerCase() == 'polygon'}" -->
+                                    <el-button slot="reference" @click="networkLink(scope.row.tx_hash)" class="color">
+                                        <!-- <img src="@/assets/images/copy.png" alt=""> -->
+                                        {{scope.row.tx_hash}}
+                                    </el-button>
+                                </el-popover>
+                            </div>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="dao_pass_time" :label="$t('uploadFile.detail_Time')"></el-table-column>
+                    <el-table-column prop="status" :label="$t('uploadFile.file_status')">
+                        <template slot-scope="scope">
+                            <img src="@/assets/images/dao_success.png" v-if="scope.row.status == 1" />
+                            <img src="@/assets/images/dao_waiting.png" v-else />
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </div>
         </div>
-
         <!-- 回到顶部 -->
         <el-backtop target=".content-box" :bottom="40" :right="20"></el-backtop>
     </div>

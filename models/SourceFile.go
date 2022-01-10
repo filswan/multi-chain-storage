@@ -3,6 +3,8 @@ package models
 import (
 	"payment-bridge/common/constants"
 	"payment-bridge/database"
+
+	"github.com/filswan/go-swan-lib/logs"
 )
 
 type SourceFile struct {
@@ -30,4 +32,16 @@ func FindSourceFileList(whereCondition interface{}, orderCondition, limit, offse
 	var models []*SourceFile
 	err := db.Where(whereCondition).Offset(offset).Limit(limit).Order(orderCondition).Find(&models).Error
 	return models, err
+}
+
+func GetSourceFilesByPayloadCid(payloadCid string) ([]*SourceFile, error) {
+	var sourceFiles []*SourceFile
+
+	err := database.GetDB().Where("payload_cid=?").Find(&sourceFiles).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	return sourceFiles, nil
 }

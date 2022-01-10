@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"mime/multipart"
 	"os"
+	"path"
 	"path/filepath"
 	"payment-bridge/blockchain/browsersync/scanlockpayment/polygon"
 	"payment-bridge/common"
@@ -54,6 +55,12 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 	}
 
 	filePathInIpfs := config.GetConfig().IpfsServer.DownloadUrlPrefix + constants.IPFS_URL_PREFIX_BEFORE_HASH + *ipfsFileHash
+
+	sourceFile, err := saveSourceFileToDB(srcFile, *srcFilepath, filePathInIpfs, walletAddress)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return "", "", needPay, err
+	}
 
 	// no car file generated because the source files or car file are too small
 	if fileList == nil {
@@ -119,7 +126,7 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 		return fileList[0].PayloadCid, filePathInIpfs, needPay, nil
 	}
 
-	sourceFile, err := saveSourceFileToDB(srcFile, *srcFilepath, filePathInIpfs, walletAddress)
+	sourceFile, err = saveSourceFileToDB(srcFile, *srcFilepath, filePathInIpfs, walletAddress)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return "", "", needPay, err
@@ -225,6 +232,7 @@ func saveSourceFileToDB(srcFile *multipart.FileHeader, srcFilepath string, fileP
 	sourceFile.IpfsUrl = filePathInIpfs
 	sourceFile.PinStatus = constants.IPFS_File_PINNED_STATUS
 	sourceFile.WalletAddress = walletAddress
+	sourceFile.PayloadCid = path.Base(filePathInIpfs)
 	err := database.SaveOne(sourceFile)
 	if err != nil {
 		logs.GetLogger().Error(err)

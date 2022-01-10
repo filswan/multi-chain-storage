@@ -253,14 +253,15 @@ contract SwanPayment is IPaymentMinimal, Initializable {
                 ),
                 "illegal unlock action"
             );
+
+            uint256 tokenAmount = t.minPayment;
             // get spend token amount
             uint256 serviceCost = FilinkConsumer(_chainlinkOracle).getPrice(param.dealId);
-            require(serviceCost > 0, "Service is incompleted");
-
-            uint256 tokenAmount = IPriceFeed(_priceFeed).consult(_ERC20_TOKEN, serviceCost);
-
-            if (tokenAmount < t.minPayment) {
-                tokenAmount = t.minPayment;
+            if(serviceCost > 0){
+                tokenAmount = IPriceFeed(_priceFeed).consult(_ERC20_TOKEN, serviceCost);
+                if (tokenAmount < t.minPayment) {
+                    tokenAmount = t.minPayment;
+                }
             }
             
             t._isExisted = false;

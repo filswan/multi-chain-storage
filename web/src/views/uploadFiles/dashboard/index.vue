@@ -38,7 +38,7 @@
         >
           <el-table-column prop="file_name" :label="$t('uploadFile.file_name')" min-width="120">
             <template slot-scope="scope">
-              <div class="hot-cold-box" @click="toDetail(scope.row.deal_id, scope.row.payload_cid)" style="text-decoration: underline;">
+              <div class="hot-cold-box" @click="toDetail(scope.row)" style="text-decoration: underline;">
                 {{ scope.row.file_name }}
               </div>
             </template>
@@ -481,8 +481,11 @@ export default {
     minerIdLink(id){
       window.open(`https://calibration.filscout.com/en/miner/${id}`)
     },
-    toDetail(id, cid){
-      this.$router.push({name: 'my_files_detail', params: {id: id, cid: cid}})
+    toDetail(row){
+      this.$router.push({name: 'my_files_filename', params: {file_name: row.file_name}})
+      localStorage.setItem('files_deal_id', row.deal_id)
+      localStorage.setItem('files_payload_cid', row.payload_cid)
+      // this.$router.push({name: 'my_files_detail', params: {id: id, cid: cid}})
     },
     clickRowHandle(row, column, event) {
       if (this.expands.includes(row.uuid)) {

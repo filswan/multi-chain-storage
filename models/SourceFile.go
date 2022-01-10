@@ -6,14 +6,13 @@ import (
 )
 
 type SourceFile struct {
-	ID          int64  `json:"id"`
-	FileName    string `json:"file_name"`
-	ResourceUri string `json:"resource_uri"`
-	FileSize    string `json:"file_size"`
-	Uuid        string `json:"uuid"`
-	Dataset     string `json:"dataset"`
-	CreateAt    string `json:"create_at"`
-	//UserId        int    `json:"user_id"`
+	ID            int64  `json:"id"`
+	FileName      string `json:"file_name"`
+	ResourceUri   string `json:"resource_uri"`
+	FileSize      string `json:"file_size"`
+	Uuid          string `json:"uuid"`
+	Dataset       string `json:"dataset"`
+	CreateAt      string `json:"create_at"`
 	IpfsUrl       string `json:"ipfs_url"`
 	PinStatus     string `json:"pin_status"`
 	WalletAddress string `json:"wallet_address"`

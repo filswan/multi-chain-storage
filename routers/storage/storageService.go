@@ -16,6 +16,7 @@ import (
 	"payment-bridge/on-chain/goBind"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/filswan/go-swan-lib/logs"
 
@@ -31,9 +32,11 @@ import (
 )
 
 const (
-	SRC_FILE_SIZE_MIN = 1 * 1024 * 1024 * 1024
-	CAR_FILE_SIZE_MIN = 1 * 1024 * 1024 * 1024
+	SRC_FILE_SIZE_MIN = 1 * 1024 //* 1024 * 1024
+	CAR_FILE_SIZE_MIN = 1 * 1024 //* 1024 * 1024
 )
+
+var srcDir string = ""
 
 func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multipart.FileHeader, duration int, walletAddress string) (string, string, int, error) {
 	needPay := 0
@@ -132,15 +135,19 @@ func createCarFile(c *gin.Context, srcFile *multipart.FileHeader) (*string, []*l
 	}
 	temDirDeal = filepath.Join(homedir, temDirDeal[2:])
 
-	srcDir := filepath.Join(temDirDeal, "src")
-	err = libutils.CreateDir(srcDir)
+	currentTime, err := time.Now().UTC().MarshalText()
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, nil, err
 	}
 
-	carDir := filepath.Join(temDirDeal, "car")
-	err = libutils.CreateDir(carDir)
+	temDirDeal = filepath.Join(temDirDeal, string(currentTime))
+
+	if strings.Trim(srcDir, " ") == "" {
+		srcDir = filepath.Join(temDirDeal, "src")
+	}
+
+	err = libutils.CreateDir(srcDir)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, nil, err
@@ -153,7 +160,7 @@ func createCarFile(c *gin.Context, srcFile *multipart.FileHeader) (*string, []*l
 		logs.GetLogger().Error(err)
 		return nil, nil, err
 	}
-	logs.GetLogger().Info("car files created in ", carDir)
+	logs.GetLogger().Info("your file saved to ", srcFilepath)
 
 	srcFiles, err := ioutil.ReadDir(srcDir)
 	if err != nil {
@@ -169,6 +176,12 @@ func createCarFile(c *gin.Context, srcFile *multipart.FileHeader) (*string, []*l
 		return nil, nil, nil
 	}
 
+	carDir := filepath.Join(temDirDeal, "car")
+	err = libutils.CreateDir(carDir)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, nil, err
+	}
 	cmdIpfsCar := &command.CmdIpfsCar{
 		LotusClientApiUrl:         config.GetConfig().Lotus.ClientApiUrl,
 		LotusClientAccessToken:    config.GetConfig().Lotus.ClientAccessToken,
@@ -190,23 +203,11 @@ func createCarFile(c *gin.Context, srcFile *multipart.FileHeader) (*string, []*l
 
 	payloadCid := fileList[0].PayloadCid
 
-	srcDirBak := srcDir + "-" + payloadCid
-	err = os.Rename(srcDir, srcDirBak)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, nil, err
-	}
-
-	carDirBak := carDir + "-" + payloadCid
-	err = os.Rename(srcDir, carDirBak)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, nil, err
-	}
-
 	logs.GetLogger().Info("car files created in ", carDir, "payload_cid=", payloadCid)
 
-	return &srcDirBak, fileList, nil
+	srcDir = ""
+
+	return &srcFilepath, fileList, nil
 }
 
 func saveSourceFileToDB(srcFile *multipart.FileHeader, srcFilepath string, filePathInIpfs, walletAddress string) (*models.SourceFile, error) {

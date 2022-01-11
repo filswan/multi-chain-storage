@@ -1,7 +1,6 @@
 package scheduler
 
 import (
-	"fmt"
 
 	//clientmodel "github.com/filswan/go-swan-client/model"
 	"math/big"
@@ -12,13 +11,13 @@ import (
 	"payment-bridge/database"
 	"payment-bridge/models"
 	"payment-bridge/routers/billing"
-	"strconv"
 	"strings"
 	"time"
 
 	"github.com/filswan/go-swan-lib/logs"
 
 	"github.com/filswan/go-swan-client/command"
+	libconstants "github.com/filswan/go-swan-lib/constants"
 	libmodel "github.com/filswan/go-swan-lib/model"
 	libutils "github.com/filswan/go-swan-lib/utils"
 	"github.com/robfig/cron"
@@ -42,6 +41,15 @@ func CreateTaskScheduler() {
 	c.Start()
 }
 
+func CheckIfHaveLockPayment(payloadCid string) ([]*models.EventLockPayment, error) {
+	polygonEventList, err := models.FindEventLockPayment(&models.EventLockPayment{PayloadCid: payloadCid}, "id desc", "", "0")
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+	return polygonEventList, nil
+}
+
 func DoCreateTask() error {
 	whereCondition := "lower(lock_payment_status)=lower('" + constants.LOCK_PAYMENT_STATUS_PROCESSING + "') and task_uuid = '' and is_deleted=false "
 	dealList, err := models.FindDealFileList(whereCondition, "create_at desc", "50", "0")
@@ -49,97 +57,83 @@ func DoCreateTask() error {
 		logs.GetLogger().Error(err)
 		return err
 	}
-	for _, v := range dealList {
-		//check if user have lock payment
-		lockPaymentList, err := CheckIfHaveLockPayment(v.PayloadCid)
+	for _, deal := range dealList {
+		totalLockFee, err := models.GetTotalLockFeeByCarPayloadCid(deal.PayloadCid)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			continue
 		}
-		if len(lockPaymentList) > 0 {
-			lockedFee, err := strconv.ParseInt(lockPaymentList[0].LockedFee, 10, 64)
-			if err != nil {
-				logs.GetLogger().Error(err)
-				continue
-			}
-			fileCoinPriceInUsdc, err := billing.GetWfilPriceFromSushiPrice(polygon.WebConn.ConnWeb, "1")
+
+		lockedFee := totalLockFee.IntPart()
+
+		fileCoinPriceInUsdc, err := billing.GetWfilPriceFromSushiPrice(polygon.WebConn.ConnWeb, "1")
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return err
+		}
+		maxPrice, err := GetMaxPriceForCreateTask(fileCoinPriceInUsdc, lockedFee, deal.Duration, deal.CarFileSize)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			continue
+		}
+		logs.GetLogger().Println("payload cid ", deal.PayloadCid, " max price is ", maxPrice)
+
+		if maxPrice.Cmp(config.GetConfig().SwanTask.MaxPrice) < 0 {
+			*maxPrice = config.GetConfig().SwanTask.MaxPrice
+		}
+
+		cmdUpload := command.CmdUpload{
+			StorageServerType:           libconstants.STORAGE_SERVER_TYPE_IPFS_SERVER,
+			IpfsServerDownloadUrlPrefix: config.GetConfig().IpfsServer.DownloadUrlPrefix,
+			IpfsServerUploadUrlPrefix:   config.GetConfig().IpfsServer.UploadUrlPrefix,
+			OutputDir:                   filepath.Dir(deal.CarFilePath),
+			InputDir:                    filepath.Dir(deal.CarFilePath),
+		}
+
+		_, err = cmdUpload.UploadCarFiles()
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return err
+		}
+		logs.GetLogger().Info("car files uploaded")
+
+		taskDataset := config.GetConfig().SwanTask.CuratedDataset
+		taskDescription := config.GetConfig().SwanTask.Description
+		startEpochIntervalHours := config.GetConfig().SwanTask.StartEpochHours
+
+		cmdTask := command.CmdTask{
+			SwanApiUrl:                 config.GetConfig().SwanApi.ApiUrl,
+			SwanToken:                  "",
+			SwanApiKey:                 config.GetConfig().SwanApi.ApiKey,
+			SwanAccessToken:            config.GetConfig().SwanApi.AccessToken,
+			BidMode:                    libconstants.TASK_BID_MODE_AUTO,
+			VerifiedDeal:               config.GetConfig().SwanTask.VerifiedDeal,
+			OfflineMode:                false,
+			FastRetrieval:              config.GetConfig().SwanTask.FastRetrieval,
+			MaxPrice:                   *maxPrice,
+			StorageServerType:          libconstants.STORAGE_SERVER_TYPE_IPFS_SERVER,
+			WebServerDownloadUrlPrefix: config.GetConfig().IpfsServer.DownloadUrlPrefix,
+			ExpireDays:                 config.GetConfig().SwanTask.ExpireDays,
+			OutputDir:                  filepath.Dir(deal.CarFilePath),
+			InputDir:                   filepath.Dir(deal.CarFilePath),
+			Dataset:                    taskDataset,
+			Description:                taskDescription,
+			StartEpochHours:            startEpochIntervalHours,
+			SourceId:                   constants.SOURCE_ID_OF_PAYMENT,
+			Duration:                   deal.Duration,
+		}
+
+		_, fileDescs, _, err := cmdTask.CreateTask(nil)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return err
+		}
+		if len(fileDescs) > 0 {
+			logs.GetLogger().Info("task created, uuid=", fileDescs[0].Uuid)
+			err = updateTaskInfoToDB(fileDescs, deal)
 			if err != nil {
 				logs.GetLogger().Error(err)
 				return err
-			}
-			maxPrice, err := GetMaxPriceForCreateTask(fileCoinPriceInUsdc, lockedFee, v.Duration, v.CarFileSize)
-			if err != nil {
-				logs.GetLogger().Error(err)
-				continue
-			}
-			logs.GetLogger().Println("payload cid ", v.PayloadCid, " max price is ", maxPrice)
-			if maxPrice.Cmp(config.GetConfig().SwanTask.MaxPrice) < 0 {
-				*maxPrice = config.GetConfig().SwanTask.MaxPrice
-			}
-			if strings.Trim(v.TaskUuid, " ") == "" {
-				/*
-					confUpload := &clientmodel.ConfUpload{
-						StorageServerType:           libconstants.STORAGE_SERVER_TYPE_IPFS_SERVER,
-						IpfsServerDownloadUrlPrefix: config.GetConfig().IpfsServer.DownloadUrlPrefix,
-						IpfsServerUploadUrl:         config.GetConfig().IpfsServer.UploadUrl,
-						OutputDir:                   filepath.Dir(v.CarFilePath),
-						InputDir:                    filepath.Dir(v.CarFilePath),
-					}*/
-				//_, err = subcommand.UploadCarFiles(confUpload)
-				_, err = command.UploadCarFilesByConfig(filepath.Dir(v.CarFilePath))
-				if err != nil {
-					logs.GetLogger().Error(err)
-					return err
-				}
-				logs.GetLogger().Info("car files uploaded")
-
-				taskDataset := config.GetConfig().SwanTask.CuratedDataset
-				taskDescription := config.GetConfig().SwanTask.Description
-				//startEpochIntervalHours := config.GetConfig().SwanTask.StartEpochHours
-				//startEpoch := libutils.GetCurrentEpoch() + (startEpochIntervalHours+1)*libconstants.EPOCH_PER_HOUR
-				fmt.Println(filepath.Dir(v.CarFilePath))
-				/*
-					confTask := &clientmodel.ConfTask{
-						SwanApiUrl:      config.GetConfig().SwanApi.ApiUrl,
-						SwanToken:       "",
-						PublicDeal:      true,
-						SwanApiKey:      config.GetConfig().SwanApi.ApiKey,
-						SwanAccessToken: config.GetConfig().SwanApi.AccessToken,
-						BidMode:         libconstants.TASK_BID_MODE_AUTO,
-						VerifiedDeal:    config.GetConfig().SwanTask.VerifiedDeal,
-						OfflineMode:     false,
-						FastRetrieval:   config.GetConfig().SwanTask.FastRetrieval,
-						//MaxPrice:        config.GetConfig().SwanTask.MaxPrice,
-						MaxPrice:                   *maxPrice,
-						StorageServerType:          libconstants.STORAGE_SERVER_TYPE_IPFS_SERVER,
-						WebServerDownloadUrlPrefix: config.GetConfig().IpfsServer.DownloadUrlPrefix,
-						ExpireDays:                 config.GetConfig().SwanTask.ExpireDays,
-						OutputDir:                  filepath.Dir(v.CarFilePath),
-						InputDir:                   filepath.Dir(v.CarFilePath),
-						MinerFid:                   "",
-						Dataset:                    taskDataset,
-						Description:                taskDescription,
-						StartEpochIntervalHours:    startEpochIntervalHours,
-						StartEpoch:                 startEpoch,
-						SourceId:                   constants.SOURCE_ID_OF_PAYMENT,
-						Duration:                   v.Duration,
-					} */
-				//_, fileInfoList, _, err := subcommand.CreateTask(confTask, nil)
-				//Adapt to new version of swan-client
-				inoutputDir := filepath.Dir(v.CarFilePath)
-				_, fileInfoList, _, err := command.CreateTaskByConfig(inoutputDir, &inoutputDir, "", "", taskDataset, taskDescription)
-				if err != nil {
-					logs.GetLogger().Error(err)
-					return err
-				}
-				if len(fileInfoList) > 0 {
-					logs.GetLogger().Info("task created, uuid=", fileInfoList[0].Uuid)
-					err = updateTaskInfoToDB(fileInfoList, v)
-					if err != nil {
-						logs.GetLogger().Error(err)
-						return err
-					}
-				}
 			}
 		}
 	}

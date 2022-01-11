@@ -134,15 +134,6 @@ func sendDeal(taskUuid string, file *models.DealFile) (string, error) {
 	return fileDesc[0].PayloadCid, nil
 }
 
-func CheckIfHaveLockPayment(payloadCid string) ([]*models.EventLockPayment, error) {
-	polygonEventList, err := models.FindEventLockPayment(&models.EventLockPayment{PayloadCid: payloadCid}, "id desc", "", "0")
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-	return polygonEventList, nil
-}
-
 func GetTaskStatusByUuid(taskUuid string) (*TaskDetailResult, error) {
 	url := config.GetConfig().SwanApi.ApiUrl + "/tasks/" + taskUuid
 	response, err := httpClient.SendRequestAndGetBytes(http.MethodGet, url, nil, nil)

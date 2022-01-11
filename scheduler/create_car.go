@@ -19,8 +19,6 @@ import (
 	"github.com/robfig/cron"
 )
 
-var SrcFilesDir string = ""
-
 const (
 	SRC_FILE_SIZE_MIN = 1 * 1024 // * 1024 // * 1024
 	CAR_FILE_SIZE_MIN = 1 * 1024 // * 1024 //* 1024
@@ -43,6 +41,22 @@ type SrcFileInfo struct {
 	FileUrl    string
 }
 
+func GetSrcDir() *string {
+	if len(SrcDirs) == 0 {
+		return nil
+	}
+
+	return &SrcDirs[0].SrcDir
+}
+
+func AddSrcDir(srcDir string) {
+	srcDirInfo := SrcDirInfo{}
+	srcDirInfo.SrcDir = srcDir
+	srcDirInfo.TotalSize = 0
+
+	SrcDirs = append(SrcDirs, srcDirInfo)
+}
+
 func CreateCarScheduler() {
 	c := cron.New()
 	err := c.AddFunc(config.GetConfig().ScheduleRule.CreateCarRule, func() {
@@ -57,18 +71,18 @@ func CreateCarScheduler() {
 }
 
 func createCar() {
-	for _, srcDir := range SrcDirs {
-		if srcDir.TotalSize < SRC_FILE_SIZE_MIN {
+	for _, srcDirInfo := range SrcDirs {
+		if srcDirInfo.TotalSize < SRC_FILE_SIZE_MIN {
 			continue
 		}
 
-		fileDesc, err := createCarFile()
+		fileDesc, err := createCarFile(srcDirInfo.SrcDir)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			continue
 		}
 
-		err = saveCarInfo2DB(fileDesc, srcDir)
+		err = saveCarInfo2DB(fileDesc, srcDirInfo)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			continue
@@ -76,8 +90,7 @@ func createCar() {
 	}
 }
 
-func createCarFile() (*libmodel.FileDesc, error) {
-	srcDir := SrcFilesDir
+func createCarFile(srcDir string) (*libmodel.FileDesc, error) {
 	srcFiles, err := ioutil.ReadDir(srcDir)
 	if err != nil {
 		logs.GetLogger().Error(err)

@@ -47,18 +47,20 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration int, walle
 
 	tempDirDeal = filepath.Join(tempDirDeal, string(currentTime))
 
-	srcDir := scheduler.SrcFilesDir
-	if strings.Trim(srcDir, " ") == "" {
-		srcDir = filepath.Join(tempDirDeal, "src")
+	srcDir := scheduler.GetSrcDir()
+	if srcDir == nil {
+		srcDir1 := filepath.Join(tempDirDeal, "src")
+		srcDir = &srcDir1
+		scheduler.AddSrcDir(*srcDir)
 	}
 
-	err = libutils.CreateDir(srcDir)
+	err = libutils.CreateDir(*srcDir)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, nil, nil, err
 	}
 
-	srcFilepath := filepath.Join(srcDir, srcFile.Filename)
+	srcFilepath := filepath.Join(*srcDir, srcFile.Filename)
 	logs.GetLogger().Info("saving source file to ", srcFilepath)
 	err = c.SaveUploadedFile(srcFile, srcFilepath)
 	if err != nil {

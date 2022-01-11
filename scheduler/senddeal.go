@@ -38,6 +38,7 @@ func SendDealScheduler() {
 	}
 	c.Start()
 }
+
 func DoSendDealScheduler() error {
 	dealList, err := GetTaskListShouldBeSendDealFromLocal()
 	if err != nil {

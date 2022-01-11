@@ -27,7 +27,7 @@ import (
 func CreateTaskScheduler() {
 	c := cron.New()
 	err := c.AddFunc(config.GetConfig().ScheduleRule.CreateTaskRule, func() {
-		logs.GetLogger().Info("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ create task  scheduler is running at " + time.Now().Format("2006-01-02 15:04:05"))
+		logs.GetLogger().Info("create task scheduler is running at " + time.Now().Format("2006-01-02 15:04:05"))
 		err := DoCreateTask()
 		if err != nil {
 			logs.GetLogger().Error(err)

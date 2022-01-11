@@ -10,11 +10,13 @@ import (
 	"payment-bridge/database"
 	"payment-bridge/models"
 	"strconv"
+	"time"
 
 	"github.com/filswan/go-swan-client/command"
 	"github.com/filswan/go-swan-lib/logs"
 	libmodel "github.com/filswan/go-swan-lib/model"
 	libutils "github.com/filswan/go-swan-lib/utils"
+	"github.com/robfig/cron"
 )
 
 var SrcFilesDir string = ""
@@ -41,7 +43,20 @@ type SrcFileInfo struct {
 	FileUrl    string
 }
 
-func CreateCar() {
+func CreateCarScheduler() {
+	c := cron.New()
+	err := c.AddFunc(config.GetConfig().ScheduleRule.CreateTaskRule, func() {
+		logs.GetLogger().Info("creating car file scheduler is running at " + time.Now().Format("2006-01-02 15:04:05"))
+		createCar()
+	})
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return
+	}
+	c.Start()
+}
+
+func createCar() {
 	for _, srcDir := range SrcDirs {
 		if srcDir.TotalSize < SRC_FILE_SIZE_MIN {
 			continue

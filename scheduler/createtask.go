@@ -3,8 +3,6 @@ package scheduler
 import (
 	"fmt"
 	"io/ioutil"
-	"mime/multipart"
-	"os"
 
 	//clientmodel "github.com/filswan/go-swan-client/model"
 	"math/big"
@@ -21,7 +19,6 @@ import (
 	"time"
 
 	"github.com/filswan/go-swan-lib/logs"
-	"github.com/gin-gonic/gin"
 
 	"github.com/filswan/go-swan-client/command"
 	libmodel "github.com/filswan/go-swan-lib/model"
@@ -54,47 +51,12 @@ func CreateTaskScheduler() {
 	c.Start()
 }
 
-func createCarFile(c *gin.Context, srcFile *multipart.FileHeader) (*string, []*libmodel.FileDesc, error) {
-	temDirDeal := config.GetConfig().SwanTask.DirDeal
-	homedir, err := os.UserHomeDir()
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, nil, err
-	}
-	temDirDeal = filepath.Join(homedir, temDirDeal[2:])
-
-	currentTime, err := time.Now().UTC().MarshalText()
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, nil, err
-	}
-
-	temDirDeal = filepath.Join(temDirDeal, string(currentTime))
-
+func createCarFile() error {
 	srcDir := SrcFilesDir
-	if strings.Trim(srcDir, " ") == "" {
-		srcDir = filepath.Join(temDirDeal, "src")
-	}
-
-	err = libutils.CreateDir(srcDir)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, nil, err
-	}
-
-	srcFilepath := filepath.Join(srcDir, srcFile.Filename)
-	logs.GetLogger().Info("save your file to ", srcFilepath)
-	err = c.SaveUploadedFile(srcFile, srcFilepath)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, nil, err
-	}
-	logs.GetLogger().Info("your file saved to ", srcFilepath)
-
 	srcFiles, err := ioutil.ReadDir(srcDir)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return nil, nil, err
+		return err
 	}
 	srcFilesSize := int64(0)
 	for _, srcFile := range srcFiles {
@@ -102,14 +64,16 @@ func createCarFile(c *gin.Context, srcFile *multipart.FileHeader) (*string, []*l
 	}
 
 	if srcFilesSize < SRC_FILE_SIZE_MIN {
-		return &srcFilepath, nil, nil
+		return nil
 	}
+
+	temDirDeal := filepath.Base(srcDir)
 
 	carDir := filepath.Join(temDirDeal, "car")
 	err = libutils.CreateDir(carDir)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return nil, nil, err
+		return err
 	}
 	cmdIpfsCar := &command.CmdIpfsCar{
 		LotusClientApiUrl:         config.GetConfig().Lotus.ClientApiUrl,
@@ -122,12 +86,12 @@ func createCarFile(c *gin.Context, srcFile *multipart.FileHeader) (*string, []*l
 	fileList, err := cmdIpfsCar.CreateIpfsCarFiles()
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return nil, nil, err
+		return err
 	}
 
 	carFileSize := fileList[0].CarFileSize
 	if carFileSize < CAR_FILE_SIZE_MIN {
-		return &srcFilepath, nil, nil
+		return nil
 	}
 
 	payloadCid := fileList[0].PayloadCid
@@ -136,7 +100,43 @@ func createCarFile(c *gin.Context, srcFile *multipart.FileHeader) (*string, []*l
 
 	srcDir = ""
 
-	return &srcFilepath, fileList, nil
+	return nil
+}
+
+func saveDealFileAndMapRelation(fileInfoList []*libmodel.FileDesc, sourceFile *models.SourceFile, duration int) error {
+	currentTime := utils.GetEpochInMillis()
+	dealFile := new(models.DealFile)
+	dealFile.CarFileName = fileInfoList[0].CarFileName
+	dealFile.CarFilePath = fileInfoList[0].CarFilePath
+	dealFile.CarFileSize = fileInfoList[0].CarFileSize
+	dealFile.CarMd5 = fileInfoList[0].CarFileMd5
+	dealFile.PayloadCid = fileInfoList[0].PayloadCid
+	dealFile.PieceCid = fileInfoList[0].PieceCid
+	dealFile.SourceFilePath = sourceFile.ResourceUri
+	dealFile.DealCid = fileInfoList[0].PayloadCid
+	dealFile.CreateAt = strconv.FormatInt(currentTime, 10)
+	dealFile.UpdateAt = strconv.FormatInt(currentTime, 10)
+	dealFile.Duration = duration
+	dealFile.LockPaymentStatus = constants.LOCK_PAYMENT_STATUS_WAITING
+	dealFile.IsDeleted = utils.GetBoolPointer(false)
+	err := database.SaveOne(dealFile)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	filepMap := new(models.SourceFileDealFileMap)
+	filepMap.SourceFileId = sourceFile.ID
+	filepMap.DealFileId = dealFile.ID
+	filepMap.FileIndex = 0
+	filepMap.CreateAt = strconv.FormatInt(currentTime, 10)
+	filepMap.UpdateAt = strconv.FormatInt(currentTime, 10)
+	err = database.SaveOne(filepMap)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+	return nil
 }
 
 func DoCreateTask() error {

@@ -26,7 +26,6 @@ import (
 
 	"github.com/filswan/go-swan-lib/client/ipfs"
 
-	libmodel "github.com/filswan/go-swan-lib/model"
 	libutils "github.com/filswan/go-swan-lib/utils"
 	"github.com/gin-gonic/gin"
 )
@@ -117,42 +116,6 @@ func GetSourceFileAndDealFileInfoByPayloadCid(payloadCid string) ([]*SourceFileA
 		return nil, err
 	}
 	return results, nil
-}
-
-func saveDealFileAndMapRelation(fileInfoList []*libmodel.FileDesc, sourceFile *models.SourceFile, duration int) error {
-	currentTime := utils.GetEpochInMillis()
-	dealFile := new(models.DealFile)
-	dealFile.CarFileName = fileInfoList[0].CarFileName
-	dealFile.CarFilePath = fileInfoList[0].CarFilePath
-	dealFile.CarFileSize = fileInfoList[0].CarFileSize
-	dealFile.CarMd5 = fileInfoList[0].CarFileMd5
-	dealFile.PayloadCid = fileInfoList[0].PayloadCid
-	dealFile.PieceCid = fileInfoList[0].PieceCid
-	dealFile.SourceFilePath = sourceFile.ResourceUri
-	dealFile.DealCid = fileInfoList[0].PayloadCid
-	dealFile.CreateAt = strconv.FormatInt(currentTime, 10)
-	dealFile.UpdateAt = strconv.FormatInt(currentTime, 10)
-	dealFile.Duration = duration
-	dealFile.LockPaymentStatus = constants.LOCK_PAYMENT_STATUS_WAITING
-	dealFile.IsDeleted = utils.GetBoolPointer(false)
-	err := database.SaveOne(dealFile)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
-
-	filepMap := new(models.SourceFileDealFileMap)
-	filepMap.SourceFileId = sourceFile.ID
-	filepMap.DealFileId = dealFile.ID
-	filepMap.FileIndex = 0
-	filepMap.CreateAt = strconv.FormatInt(currentTime, 10)
-	filepMap.UpdateAt = strconv.FormatInt(currentTime, 10)
-	err = database.SaveOne(filepMap)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
-	return nil
 }
 
 func GetSourceFileAndDealFileInfo(limit, offset string, walletAddress string, payloadCid, fileName string) ([]*SourceFileAndDealFileInfo, error) {

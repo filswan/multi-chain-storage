@@ -5,7 +5,6 @@ import (
 
 	"github.com/filswan/go-swan-client/command"
 
-	//clientmodel "github.com/filswan/go-swan-client/model"
 	"net/http"
 	"os"
 	"path/filepath"

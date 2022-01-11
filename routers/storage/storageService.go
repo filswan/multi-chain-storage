@@ -4,7 +4,6 @@ import (
 	"context"
 	"mime/multipart"
 	"os"
-	"path"
 	"path/filepath"
 	"payment-bridge/blockchain/browsersync/scanlockpayment/polygon"
 	"payment-bridge/common"
@@ -76,7 +75,7 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration int, walle
 		return nil, nil, nil, err
 	}
 
-	filePathInIpfs := libutils.UrlJoin(config.GetConfig().IpfsServer.DownloadUrlPrefix, constants.IPFS_URL_PREFIX_BEFORE_HASH, *ipfsFileHash)
+	ipfsUrl := libutils.UrlJoin(config.GetConfig().IpfsServer.DownloadUrlPrefix, constants.IPFS_URL_PREFIX_BEFORE_HASH, *ipfsFileHash)
 
 	sourceFiles, err := models.GetSourceFilesByPayloadCid(*ipfsFileHash)
 	if err != nil {
@@ -95,17 +94,17 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration int, walle
 	sourceFile.FileSize = strconv.FormatInt(srcFile.Size, 10)
 	sourceFile.ResourceUri = srcFilepath
 	sourceFile.CreateAt = strconv.FormatInt(utils.GetEpochInMillis(), 10)
-	sourceFile.IpfsUrl = filePathInIpfs
+	sourceFile.IpfsUrl = ipfsUrl
 	sourceFile.PinStatus = constants.IPFS_File_PINNED_STATUS
 	sourceFile.WalletAddress = walletAddress
-	sourceFile.PayloadCid = path.Base(filePathInIpfs)
+	sourceFile.PayloadCid = *ipfsFileHash
 	err = database.SaveOne(sourceFile)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, nil, nil, err
 	}
 
-	return &srcFilepath, &filePathInIpfs, &needPay, nil
+	return &srcFilepath, &ipfsUrl, &needPay, nil
 }
 
 func GetSourceFileAndDealFileInfoByPayloadCid(payloadCid string) ([]*SourceFileAndDealFileInfo, error) {

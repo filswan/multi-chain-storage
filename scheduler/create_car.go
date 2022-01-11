@@ -28,9 +28,8 @@ const (
 var SrcDirs []SrcDirInfo
 
 type SrcDirInfo struct {
-	SrcDir    string
-	TotalSize int64
-	SrcFiles  []SrcFileInfo
+	SrcDir   string
+	SrcFiles []SrcFileInfo
 }
 
 type SrcFileInfo struct {
@@ -52,7 +51,6 @@ func GetSrcDir() *string {
 func AddSrcDir(srcDir string) {
 	srcDirInfo := SrcDirInfo{}
 	srcDirInfo.SrcDir = srcDir
-	srcDirInfo.TotalSize = 0
 
 	SrcDirs = append(SrcDirs, srcDirInfo)
 }
@@ -70,9 +68,29 @@ func CreateCarScheduler() {
 	c.Start()
 }
 
+func getFilesSize(dir string) (*int64, error) {
+	srcFiles, err := ioutil.ReadDir(dir)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+	srcFilesSize := int64(0)
+	for _, srcFile := range srcFiles {
+		srcFilesSize = srcFilesSize + srcFile.Size()
+	}
+
+	return &srcFilesSize, nil
+}
+
 func createCar() {
 	for _, srcDirInfo := range SrcDirs {
-		if srcDirInfo.TotalSize < SRC_FILE_SIZE_MIN {
+		srcFilesSize, err := getFilesSize(srcDirInfo.SrcDir)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			continue
+		}
+
+		if *srcFilesSize < SRC_FILE_SIZE_MIN {
 			continue
 		}
 
@@ -91,17 +109,13 @@ func createCar() {
 }
 
 func createCarFile(srcDir string) (*libmodel.FileDesc, error) {
-	srcFiles, err := ioutil.ReadDir(srcDir)
+	srcFilesSize, err := getFilesSize(srcDir)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
 	}
-	srcFilesSize := int64(0)
-	for _, srcFile := range srcFiles {
-		srcFilesSize = srcFilesSize + srcFile.Size()
-	}
 
-	if srcFilesSize < SRC_FILE_SIZE_MIN {
+	if *srcFilesSize < SRC_FILE_SIZE_MIN {
 		err := fmt.Errorf("source file size is less than %d", SRC_FILE_SIZE_MIN)
 		logs.GetLogger().Error(err)
 		return nil, err

@@ -59,7 +59,17 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration int, walle
 		return nil, nil, nil, err
 	}
 
-	srcFilepath := filepath.Join(*srcDir, srcFile.Filename)
+	filename := srcFile.Filename
+	if libutils.IsFileExists(*srcDir, filename) {
+		for i := 0; ; i++ {
+			filename = srcFile.Filename + strconv.Itoa(i)
+			if !libutils.IsFileExists(*srcDir, filename) {
+				break
+			}
+		}
+	}
+
+	srcFilepath := filepath.Join(*srcDir, filename)
 	logs.GetLogger().Info("saving source file to ", srcFilepath)
 	err = c.SaveUploadedFile(srcFile, srcFilepath)
 	if err != nil {

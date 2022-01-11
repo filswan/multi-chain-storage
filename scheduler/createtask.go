@@ -34,6 +34,19 @@ const (
 	CAR_FILE_SIZE_MIN = 1 * 1024 // * 1024 //* 1024
 )
 
+type SrcFilesInfo struct {
+	SrcFilesDir string
+	SrcFiles    []SrcFileInfo
+}
+
+type SrcFileInfo struct {
+	Id         int
+	PayloadCid string
+	VrfRandStr string
+	Filepath   string
+	FileUrl    string
+}
+
 func CreateTaskScheduler() {
 	c := cron.New()
 	err := c.AddFunc(config.GetConfig().ScheduleRule.CreateTaskRule, func() {

@@ -45,7 +45,7 @@ type SrcFileInfo struct {
 
 func CreateCarScheduler() {
 	c := cron.New()
-	err := c.AddFunc(config.GetConfig().ScheduleRule.CreateTaskRule, func() {
+	err := c.AddFunc(config.GetConfig().ScheduleRule.CreateCarRule, func() {
 		logs.GetLogger().Info("creating car file scheduler is running at " + time.Now().Format("2006-01-02 15:04:05"))
 		createCar()
 	})

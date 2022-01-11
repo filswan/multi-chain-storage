@@ -32,6 +32,7 @@ func main() {
 
 	models.RunAllTheScan()
 
+	scheduler.CreateCarScheduler()
 	scheduler.CreateTaskScheduler()
 	scheduler.SendDealScheduler()
 	scheduler.DAOUnlockPaymentSchedule()

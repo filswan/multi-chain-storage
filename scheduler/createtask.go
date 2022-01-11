@@ -34,13 +34,16 @@ const (
 	CAR_FILE_SIZE_MIN = 1 * 1024 // * 1024 //* 1024
 )
 
-type SrcFilesInfo struct {
-	SrcFilesDir string
-	SrcFiles    []SrcFileInfo
+var SrcDirs []SrcDirInfo
+
+type SrcDirInfo struct {
+	SrcDir    string
+	TotalSize int64
+	SrcFiles  []SrcFileInfo
 }
 
 type SrcFileInfo struct {
-	Id         int
+	Id         int64
 	PayloadCid string
 	VrfRandStr string
 	Filepath   string
@@ -62,6 +65,14 @@ func CreateTaskScheduler() {
 		return
 	}
 	c.Start()
+}
+
+func CreateTask() {
+	for _, srcDir := range SrcDirs {
+		if srcDir.TotalSize < SRC_FILE_SIZE_MIN {
+			continue
+		}
+	}
 }
 
 func createCarFile() error {
@@ -116,39 +127,50 @@ func createCarFile() error {
 	return nil
 }
 
-func saveDealFileAndMapRelation(fileInfoList []*libmodel.FileDesc, sourceFile *models.SourceFile, duration int) error {
+func saveDealFileAndMapRelation(fileDesc *libmodel.FileDesc, srcDir SrcDirInfo, duration int) error {
+	db := database.GetDBTransaction()
 	currentTime := utils.GetEpochInMillis()
 	dealFile := new(models.DealFile)
-	dealFile.CarFileName = fileInfoList[0].CarFileName
-	dealFile.CarFilePath = fileInfoList[0].CarFilePath
-	dealFile.CarFileSize = fileInfoList[0].CarFileSize
-	dealFile.CarMd5 = fileInfoList[0].CarFileMd5
-	dealFile.PayloadCid = fileInfoList[0].PayloadCid
-	dealFile.PieceCid = fileInfoList[0].PieceCid
-	dealFile.SourceFilePath = sourceFile.ResourceUri
-	dealFile.DealCid = fileInfoList[0].PayloadCid
+	dealFile.CarFileName = fileDesc.CarFileName
+	dealFile.CarFilePath = fileDesc.CarFilePath
+	dealFile.CarFileSize = fileDesc.CarFileSize
+	dealFile.CarMd5 = fileDesc.CarFileMd5
+	dealFile.PayloadCid = fileDesc.PayloadCid
+	dealFile.PieceCid = fileDesc.PieceCid
+	dealFile.DealCid = fileDesc.PayloadCid
 	dealFile.CreateAt = strconv.FormatInt(currentTime, 10)
 	dealFile.UpdateAt = strconv.FormatInt(currentTime, 10)
 	dealFile.Duration = duration
 	dealFile.LockPaymentStatus = constants.LOCK_PAYMENT_STATUS_WAITING
 	dealFile.IsDeleted = utils.GetBoolPointer(false)
-	err := database.SaveOne(dealFile)
+	err := database.SaveOneInTransaction(db, dealFile)
+	if err != nil {
+		db.Rollback()
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	for _, srcFile := range srcDir.SrcFiles {
+		filepMap := new(models.SourceFileDealFileMap)
+		filepMap.SourceFileId = srcFile.Id
+		filepMap.DealFileId = dealFile.ID
+		filepMap.FileIndex = 0
+		filepMap.CreateAt = strconv.FormatInt(currentTime, 10)
+		filepMap.UpdateAt = strconv.FormatInt(currentTime, 10)
+		err = database.SaveOne(filepMap)
+		if err != nil {
+			db.Rollback()
+			logs.GetLogger().Error(err)
+			return err
+		}
+	}
+
+	err = db.Commit().Error
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
 	}
 
-	filepMap := new(models.SourceFileDealFileMap)
-	filepMap.SourceFileId = sourceFile.ID
-	filepMap.DealFileId = dealFile.ID
-	filepMap.FileIndex = 0
-	filepMap.CreateAt = strconv.FormatInt(currentTime, 10)
-	filepMap.UpdateAt = strconv.FormatInt(currentTime, 10)
-	err = database.SaveOne(filepMap)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
 	return nil
 }
 

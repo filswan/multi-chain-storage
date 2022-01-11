@@ -1,6 +1,7 @@
 package database
 
 import (
+	"context"
 	"payment-bridge/config"
 
 	"github.com/filswan/go-swan-lib/logs"
@@ -41,6 +42,14 @@ func SaveOne(data interface{}) error {
 	return err
 }
 
+func SaveOneInTransaction(db *gorm.DB, data interface{}) error {
+	err := db.Save(data).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+	}
+	return err
+}
+
 func SaveOneWithTransaction(data interface{}) error {
 	tx := GetDB().Begin()
 	err := tx.Set("gorm:query_option", "FOR UPDATE").Save(data).Error
@@ -52,6 +61,12 @@ func SaveOneWithTransaction(data interface{}) error {
 		logs.GetLogger().Error(err)
 	}
 	return err
+}
+
+func GetDBTransaction() *gorm.DB {
+	ctx := context.Background()
+	db := GetDB().BeginTx(ctx, nil)
+	return db
 }
 
 func CloseDB(db *gorm.DB) {

@@ -12,24 +12,24 @@ import (
 
 type Configuration struct {
 	Port                 string       `toml:"port"`
-	Database             database     `toml:"database"`
-	Dev                  bool         `toml:"dev"`
-	SwanApi              swanApi      `toml:"swan_api"`
-	IpfsServer           ipfsServer   `toml:"ipfs_server"`
-	Lotus                lotus        `toml:"lotus"`
-	SwanTask             swanTask     `toml:"swan_task"`
-	ScheduleRule         ScheduleRule `toml:"schedule_rule"`
+	Release              bool         `toml:"release"`
 	AdminWalletOnPolygon string       `toml:"admin_wallet_on_polygon"`
 	FileCoinWallet       string       `toml:"file_coin_wallet"`
 	FilinkUrl            string       `toml:"filink_url"`
+	Database             database     `toml:"database"`
+	SwanApi              swanApi      `toml:"swan_api"`
+	Lotus                lotus        `toml:"lotus"`
+	IpfsServer           ipfsServer   `toml:"ipfs_server"`
+	SwanTask             swanTask     `toml:"swan_task"`
+	ScheduleRule         ScheduleRule `toml:"schedule_rule"`
 }
 
 type database struct {
-	DbUsername   string `toml:"db_username"`
-	DbPwd        string `toml:"db_pwd"`
 	DbHost       string `toml:"db_host"`
 	DbPort       string `toml:"db_port"`
 	DbSchemaName string `toml:"db_schema_name"`
+	DbUsername   string `toml:"db_username"`
+	DbPassword   string `toml:"db_password"`
 	DbArgs       string `toml:"db_args"`
 }
 
@@ -49,7 +49,6 @@ type swanTask struct {
 	VerifiedDeal    bool            `toml:"verified_deal"`
 	FastRetrieval   bool            `toml:"fast_retrieval"`
 	StartEpochHours int             `toml:"start_epoch_hours"`
-	MinerId         string          `toml:"miner_id"`
 }
 
 type swanApi struct {
@@ -64,11 +63,11 @@ type ipfsServer struct {
 }
 
 type ScheduleRule struct {
-	UnlockPaymentRule   string `toml:"unlock_payment_rule"`
-	SendDealRule        string `toml:"send_deal_rule"`
-	CreateTaskRule      string `toml:"create_task_rule"`
-	ScanDealStatusRule  string `toml:"scan_deal_status_rule"`
-	UpdatePayStatusRule string `toml:"update_pay_status_rule"`
+	UnlockPaymentRule  string `toml:"unlock_payment_rule"`
+	CreateCarRule      string `toml:"create_car_rule"`
+	CreateTaskRule     string `toml:"create_task_rule"`
+	SendDealRule       string `toml:"send_deal_rule"`
+	ScanDealStatusRule string `toml:"scan_deal_status_rule"`
 }
 
 var config *Configuration
@@ -100,26 +99,44 @@ func GetConfig() Configuration {
 func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 	requiredFields := [][]string{
 		{"port"},
+		{"release"},
 		{"admin_wallet_on_polygon"},
 		{"file_coin_wallet"},
 		{"filink_url"},
 
 		{"database", "db_host"},
 		{"database", "db_port"},
-		{"database", "db_username"},
 		{"database", "db_schema_name"},
-		{"database", "db_pwd"},
+		{"database", "db_username"},
+		{"database", "db_password"},
+		{"database", "db_args"},
 
 		{"swan_api", "api_url"},
 		{"swan_api", "api_key"},
 		{"swan_api", "access_token"},
 
-		{"ipfs_server", "download_url_prefix"},
-		{"ipfs_server", "upload_url_prefix"},
-
 		{"lotus", "client_api_url"},
 		{"lotus", "client_access_token"},
 		{"lotus", "final_status_list"},
+
+		{"ipfs_server", "download_url_prefix"},
+		{"ipfs_server", "upload_url_prefix"},
+
+		{"swan_task", "dir_deal"},
+		{"swan_task", "description"},
+		{"swan_task", "curated_dataset"},
+		{"swan_task", "tags"},
+		{"swan_task", "max_price"},
+		{"swan_task", "expire_days"},
+		{"swan_task", "verified_deal"},
+		{"swan_task", "fast_retrieval"},
+		{"swan_task", "start_epoch_hours"},
+
+		{"schedule_rule", "unlock_payment_rule"},
+		{"schedule_rule", "create_car_rule"},
+		{"schedule_rule", "create_task_rule"},
+		{"schedule_rule", "send_deal_rule"},
+		{"schedule_rule", "scan_deal_status_rule"},
 	}
 
 	for _, v := range requiredFields {

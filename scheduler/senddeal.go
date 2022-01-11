@@ -5,7 +5,6 @@ import (
 
 	"github.com/filswan/go-swan-client/command"
 
-	//clientmodel "github.com/filswan/go-swan-client/model"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -26,7 +25,7 @@ import (
 func SendDealScheduler() {
 	c := cron.New()
 	err := c.AddFunc(config.GetConfig().ScheduleRule.SendDealRule, func() {
-		logs.GetLogger().Println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ send deal scheduler is running at " + time.Now().Format("2006-01-02 15:04:05"))
+		logs.GetLogger().Println("send deal scheduler is running at " + time.Now().Format("2006-01-02 15:04:05"))
 		err := DoSendDealScheduler()
 		if err != nil {
 			logs.GetLogger().Error(err)
@@ -39,6 +38,7 @@ func SendDealScheduler() {
 	}
 	c.Start()
 }
+
 func DoSendDealScheduler() error {
 	dealList, err := GetTaskListShouldBeSendDealFromLocal()
 	if err != nil {
@@ -111,7 +111,7 @@ func sendDeal(taskUuid string, file *models.DealFile) (string, error) {
 	temDirDeal = filepath.Join(temDirDeal, timeStr)
 	carDir := filepath.Join(temDirDeal, "car")
 
-	confDeal := &command.CmdAutoBidDeal{
+	cmdAutoBidDeal := &command.CmdAutoBidDeal{
 		SwanApiUrl:             config.GetConfig().SwanApi.ApiUrl,
 		SwanApiKey:             config.GetConfig().SwanApi.ApiKey,
 		SwanAccessToken:        config.GetConfig().SwanApi.AccessToken,
@@ -120,9 +120,9 @@ func sendDeal(taskUuid string, file *models.DealFile) (string, error) {
 		SenderWallet:           config.GetConfig().FileCoinWallet,
 		OutputDir:              carDir,
 	}
-	confDeal.DealSourceIds = append(confDeal.DealSourceIds, libconstants.TASK_SOURCE_ID_SWAN_PAYMENT)
+	cmdAutoBidDeal.DealSourceIds = append(cmdAutoBidDeal.DealSourceIds, libconstants.TASK_SOURCE_ID_SWAN_PAYMENT)
 
-	_, fileDesc, err := confDeal.SendAutoBidDealsByTaskUuid(taskUuid)
+	_, fileDesc, err := cmdAutoBidDeal.SendAutoBidDealsByTaskUuid(taskUuid)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return "", err
@@ -132,15 +132,6 @@ func sendDeal(taskUuid string, file *models.DealFile) (string, error) {
 	//logs.GetLogger().Info("csvFilePath = ", csvFilePath)
 	//logs.GetLogger().Info("carFiles = ", carFiles)
 	return fileDesc[0].PayloadCid, nil
-}
-
-func CheckIfHaveLockPayment(payloadCid string) ([]*models.EventLockPayment, error) {
-	polygonEventList, err := models.FindEventLockPayment(&models.EventLockPayment{PayloadCid: payloadCid}, "id desc", "", "0")
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-	return polygonEventList, nil
 }
 
 func GetTaskStatusByUuid(taskUuid string) (*TaskDetailResult, error) {

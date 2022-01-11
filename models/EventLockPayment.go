@@ -5,6 +5,7 @@ import (
 	"payment-bridge/database"
 
 	"github.com/filswan/go-swan-lib/logs"
+	"github.com/shopspring/decimal"
 )
 
 type EventLockPayment struct {
@@ -61,4 +62,41 @@ func UpdateEventLockPayment(whereCondition interface{}, updateFields interface{}
 		logs.GetLogger().Error(err)
 	}
 	return err
+}
+
+func GetEventLockPaymentByCarPayloadCid(carFilePayloadCid string) ([]*EventLockPayment, error) {
+	var eventLockPayments []*EventLockPayment
+	sql := "select * from event_lock_payment a, source_file b, source_file_deal_file_map c, deal_file d"
+	sql = sql + "where d.payload_cid=? and d.id=c.deal_file_id and c.source_file_id=b.id and a.payload_cid=b.payload_cid"
+
+	query := database.GetDB().Raw(sql, carFilePayloadCid).Scan(&eventLockPayments)
+
+	err := query.Error
+
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	return eventLockPayments, nil
+}
+
+func GetTotalLockFeeByCarPayloadCid(carFilePayloadCid string) (*decimal.Decimal, error) {
+	eventLockPayments, err := GetEventLockPaymentByCarPayloadCid(carFilePayloadCid)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	totalLockFee := decimal.NewFromFloat(0.0)
+	for _, localPayment := range eventLockPayments {
+		lockFee, err := decimal.NewFromString(localPayment.LockedFee)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return nil, err
+		}
+		totalLockFee = totalLockFee.Add(lockFee)
+	}
+
+	return &totalLockFee, nil
 }

@@ -4,6 +4,7 @@ CONF_FILE_DIR_DEST=${HOME}/.swan/mcp
 mkdir -p ${CONF_FILE_DIR_DEST}
 
 CONF_FILE_NAMES=(
+    .env
     config.toml
     config_polygon.toml
     config_nbai.toml

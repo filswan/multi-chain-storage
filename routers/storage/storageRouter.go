@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"payment-bridge/common"
 	"payment-bridge/common/constants"
@@ -211,10 +212,9 @@ func UploadFileToIpfs(c *gin.Context) {
 	}
 	duration := c.PostForm("duration")
 	if strings.Trim(duration, " ") == "" {
-		errMsg := "duraion can not be null"
-		err = errors.New(errMsg)
+		err = fmt.Errorf("duraion can not be null")
 		logs.GetLogger().Error(err)
-		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_CODE, errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_MSG+":"+errMsg))
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_CODE, errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_MSG+":"+err.Error()))
 		return
 	}
 
@@ -226,23 +226,18 @@ func UploadFileToIpfs(c *gin.Context) {
 	}
 	durationInt = durationInt * 24 * 60 * 60 / 30
 
-	payloadCid, ipfsDownloadPath, needPay, err := SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c, file, durationInt, walletAddress)
+	payloadCid, ipfsDownloadPath, needPay, err := SaveFile(c, file, durationInt, walletAddress)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.SENDING_DEAL_ERROR_CODE, errorinfo.SENDING_DEAL_ERROR_MSG))
 		return
 	}
+
 	uploadResult := new(uploadResult)
-	if payloadCid != "" {
-		logs.GetLogger().Info("----------------------------payload_cid: ", payloadCid, "-----------------------------")
-		uploadResult.PayloadCid = payloadCid
-		uploadResult.NeedPay = needPay
-		uploadResult.IpfsUrl = ipfsDownloadPath
-		c.JSON(http.StatusOK, common.CreateSuccessResponse(uploadResult))
-		return
-	} else {
-		c.JSON(http.StatusOK, common.CreateErrorResponse(errorinfo.SENDING_DEAL_GET_NULL_RETURN_VALUE_CODE, errorinfo.SENDING_DEAL_GET_NULL_RETURN_VALUE_MSG))
-		return
-	}
+	logs.GetLogger().Info("----------------------------payload_cid: ", payloadCid, "-----------------------------")
+	uploadResult.PayloadCid = *payloadCid
+	uploadResult.NeedPay = *needPay
+	uploadResult.IpfsUrl = *ipfsDownloadPath
+	c.JSON(http.StatusOK, common.CreateSuccessResponse(uploadResult))
 }
 
 func GetDealListFromLocal(c *gin.Context) {
@@ -300,6 +295,7 @@ func GetDealListFromLocal(c *gin.Context) {
 }
 
 type uploadResult struct {
+	VrfRand    string `json:"vrf_rand"`
 	PayloadCid string `json:"payload_cid"`
 	IpfsUrl    string `json:"ipfs_url"`
 	NeedPay    int    `json:"need_pay"`

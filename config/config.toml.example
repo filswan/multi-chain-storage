@@ -1,5 +1,5 @@
 port="8888"
-dev = false
+release = true              # when work in release mode: set this to true, otherwise to false and enviornment variable GIN_MODE not to release
 admin_wallet_on_polygon=""
 file_coin_wallet=""
 filink_url=""
@@ -9,7 +9,7 @@ db_host="localhost"
 db_port="3306"
 db_schema_name="payment_bridge"
 db_username="root"
-db_pwd="123456"
+db_password="123456"
 db_args="charset=utf8mb4&parseTime=True&loc=Local"
 
 [swan_api]
@@ -39,7 +39,8 @@ start_epoch_hours = 96
 
 [schedule_rule]
 unlock_payment_rule = "0 */5 * * * ?"  #every minute
-send_deal_rule = "0 */3 * * * ?"  #every minute
+create_car_rule = "0 */2 * * * ?"
 create_task_rule = "0 */2 * * * ?"
+send_deal_rule = "0 */3 * * * ?"  #every minute
 scan_deal_status_rule = "0 */4 * * * ?"
 

@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"os"
+	"path/filepath"
 	"payment-bridge/blockchain/browsersync"
 	"payment-bridge/common/constants"
 	"payment-bridge/config"
@@ -24,29 +24,24 @@ import (
 
 func main() {
 	LoadEnv()
-	// init database
-	db := database.Init()
 
-	initMethod()
+	db := database.Init()
+	defer database.CloseDB(db)
+
 	browsersync.Init()
 
 	models.RunAllTheScan()
 
+	scheduler.CreateCarScheduler()
 	scheduler.CreateTaskScheduler()
-
 	scheduler.SendDealScheduler()
-
 	scheduler.DAOUnlockPaymentSchedule()
-
 	scheduler.ScanDealInfoScheduler()
 
-	defer func() {
-		err := db.Close()
-		if err != nil {
-			logs.GetLogger().Error(err)
-		}
-	}()
+	createGinServer()
+}
 
+func createGinServer() {
 	r := gin.Default()
 	r.Use(cors.Middleware(cors.Config{
 		Origins:         "*",
@@ -68,18 +63,20 @@ func main() {
 	if err != nil {
 		logs.GetLogger().Fatal(err)
 	}
-
-}
-
-func initMethod() string {
-	config.InitConfig()
-	return ""
 }
 
 func LoadEnv() {
-	err := godotenv.Load(".env")
+	homedir, err := os.UserHomeDir()
 	if err != nil {
-		logs.GetLogger().Error(err)
+		logs.GetLogger().Fatal("Cannot get home directory.")
 	}
-	fmt.Println("name: ", os.Getenv("privateKey"))
+
+	envFile := filepath.Join(homedir, ".swan/mcp/.env")
+	err = godotenv.Load(envFile)
+	if err != nil {
+		logs.GetLogger().Fatal(err)
+	}
+
+	keyName := "privateKeyOnPolygon"
+	logs.GetLogger().Info(keyName, ":", os.Getenv(keyName))
 }

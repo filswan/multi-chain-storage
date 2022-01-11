@@ -2,6 +2,10 @@ package scheduler
 
 import (
 	"fmt"
+	"io/ioutil"
+	"mime/multipart"
+	"os"
+
 	//clientmodel "github.com/filswan/go-swan-client/model"
 	"math/big"
 	"path/filepath"
@@ -17,12 +21,20 @@ import (
 	"time"
 
 	"github.com/filswan/go-swan-lib/logs"
+	"github.com/gin-gonic/gin"
 
 	"github.com/filswan/go-swan-client/command"
 	libmodel "github.com/filswan/go-swan-lib/model"
 	libutils "github.com/filswan/go-swan-lib/utils"
 	"github.com/robfig/cron"
 	"github.com/shopspring/decimal"
+)
+
+var SrcFilesDir string = ""
+
+const (
+	SRC_FILE_SIZE_MIN = 1 * 1024 // * 1024 // * 1024
+	CAR_FILE_SIZE_MIN = 1 * 1024 // * 1024 //* 1024
 )
 
 func CreateTaskScheduler() {
@@ -40,6 +52,91 @@ func CreateTaskScheduler() {
 		return
 	}
 	c.Start()
+}
+
+func createCarFile(c *gin.Context, srcFile *multipart.FileHeader) (*string, []*libmodel.FileDesc, error) {
+	temDirDeal := config.GetConfig().SwanTask.DirDeal
+	homedir, err := os.UserHomeDir()
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, nil, err
+	}
+	temDirDeal = filepath.Join(homedir, temDirDeal[2:])
+
+	currentTime, err := time.Now().UTC().MarshalText()
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, nil, err
+	}
+
+	temDirDeal = filepath.Join(temDirDeal, string(currentTime))
+
+	srcDir := SrcFilesDir
+	if strings.Trim(srcDir, " ") == "" {
+		srcDir = filepath.Join(temDirDeal, "src")
+	}
+
+	err = libutils.CreateDir(srcDir)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, nil, err
+	}
+
+	srcFilepath := filepath.Join(srcDir, srcFile.Filename)
+	logs.GetLogger().Info("save your file to ", srcFilepath)
+	err = c.SaveUploadedFile(srcFile, srcFilepath)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, nil, err
+	}
+	logs.GetLogger().Info("your file saved to ", srcFilepath)
+
+	srcFiles, err := ioutil.ReadDir(srcDir)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, nil, err
+	}
+	srcFilesSize := int64(0)
+	for _, srcFile := range srcFiles {
+		srcFilesSize = srcFilesSize + srcFile.Size()
+	}
+
+	if srcFilesSize < SRC_FILE_SIZE_MIN {
+		return &srcFilepath, nil, nil
+	}
+
+	carDir := filepath.Join(temDirDeal, "car")
+	err = libutils.CreateDir(carDir)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, nil, err
+	}
+	cmdIpfsCar := &command.CmdIpfsCar{
+		LotusClientApiUrl:         config.GetConfig().Lotus.ClientApiUrl,
+		LotusClientAccessToken:    config.GetConfig().Lotus.ClientAccessToken,
+		InputDir:                  srcDir,
+		OutputDir:                 carDir,
+		GenerateMd5:               false,
+		IpfsServerUploadUrlPrefix: config.GetConfig().IpfsServer.UploadUrlPrefix,
+	}
+	fileList, err := cmdIpfsCar.CreateIpfsCarFiles()
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, nil, err
+	}
+
+	carFileSize := fileList[0].CarFileSize
+	if carFileSize < CAR_FILE_SIZE_MIN {
+		return &srcFilepath, nil, nil
+	}
+
+	payloadCid := fileList[0].PayloadCid
+
+	logs.GetLogger().Info("car files created in ", carDir, "payload_cid=", payloadCid)
+
+	srcDir = ""
+
+	return &srcFilepath, fileList, nil
 }
 
 func DoCreateTask() error {

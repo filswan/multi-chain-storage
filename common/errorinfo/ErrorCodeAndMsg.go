@@ -35,7 +35,7 @@ const (
 
 	//lotus send deal err  005
 	SENDING_DEAL_ERROR_CODE                 = "500005001"
-	SENDING_DEAL_ERROR_MSG                  = "Failed to create a sending deal task, please contact the administrator"
+	SENDING_DEAL_ERROR_MSG                  = "Failed to save file on server, please contact the administrator"
 	GET_LATEST_PRICE_OF_FILECOIN_ERROR_CODE = "500005002"
 	GET_LATEST_PRICE_OF_FILECOIN_ERROR_MSG  = "Getting filecion latest price occurred error"
 	SENDING_DEAL_GET_NULL_RETURN_VALUE_CODE = "500005003"

@@ -104,7 +104,7 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration int, walle
 		return nil, nil, nil, err
 	}
 
-	return &srcFilepath, &ipfsUrl, &needPay, nil
+	return ipfsFileHash, &ipfsUrl, &needPay, nil
 }
 
 func GetSourceFileAndDealFileInfoByPayloadCid(payloadCid string) ([]*SourceFileAndDealFileInfo, error) {

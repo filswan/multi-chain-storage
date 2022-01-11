@@ -168,7 +168,6 @@ func GetDuplicateTaskInfoByPayloadCid(limit, offset, payloadCid string) ([]*Dupl
 func updateTaskInfoToDB(taskinfoList []*libmodel.FileDesc, dealFile *models.DealFile) error {
 	dealFile.TaskUuid = taskinfoList[0].Uuid
 	dealFile.DealCid = taskinfoList[0].Deals[0].DealCid
-	//dealFile.Cost = taskinfoList[0].Cost
 	err := database.SaveOne(dealFile)
 	if err != nil {
 		logs.GetLogger().Error(err)

@@ -11,7 +11,6 @@ import (
 	"payment-bridge/database"
 	"payment-bridge/models"
 	"payment-bridge/routers/billing"
-	"strings"
 	"time"
 
 	"github.com/filswan/go-swan-lib/logs"
@@ -148,23 +147,6 @@ func GetMaxPriceForCreateTask(rate *big.Int, lockedFee int64, duration int, carF
 	return &maxPrice, nil
 }
 
-func GetDuplicateTaskInfoByPayloadCid(limit, offset, payloadCid string) ([]*DuplicatedTaskInfo, error) {
-	sql := "select s.id as sid,df.id as did,df.miner_fid,df.payload_cid,df.deal_cid,df.task_uuid,df.piece_cid,df.deal_status,df.lock_payment_status as status,df.create_at from  source_file s " +
-		" inner join source_file_deal_file_map sfdfm on s.id = sfdfm.source_file_id" +
-		" inner join deal_file df on sfdfm.deal_file_id = df.id and df.is_deleted = false "
-	if strings.Trim(payloadCid, " ") != "" {
-		sql = sql + " and df.payload_cid='" + payloadCid + "'"
-	}
-
-	var results []*DuplicatedTaskInfo
-	err := database.GetDB().Raw(sql).Order("create_at desc").Limit(limit).Offset(offset).Scan(&results).Error
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-	return results, nil
-}
-
 func updateTaskInfoToDB(taskinfoList []*libmodel.FileDesc, dealFile *models.DealFile) error {
 	dealFile.TaskUuid = taskinfoList[0].Uuid
 	dealFile.DealCid = taskinfoList[0].Deals[0].DealCid
@@ -174,19 +156,4 @@ func updateTaskInfoToDB(taskinfoList []*libmodel.FileDesc, dealFile *models.Deal
 		return err
 	}
 	return nil
-}
-
-type DuplicatedTaskInfo struct {
-	Sid               int64  `json:"sid"`
-	Did               int64  `json:"did"`
-	UserId            int    `json:"user_id"`
-	MinerFid          string `json:"miner_fid"`
-	DealStatus        string `json:"deal_status"`
-	Status            string `json:"status"`
-	PayloadCid        string `json:"payload_cid"`
-	DealCid           string `json:"deal_cid"`
-	TaskUuid          string `json:"task_uuid"`
-	IpfsUrl           string `json:"ipfs_url"`
-	PieceCid          string `json:"piece_cid"`
-	LockPaymentStatus string `json:"lock_payment_status"`
 }

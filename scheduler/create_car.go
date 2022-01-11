@@ -121,7 +121,7 @@ func createCarFile(srcDir string) (*libmodel.FileDesc, error) {
 		return nil, err
 	}
 
-	temDirDeal := filepath.Base(srcDir)
+	temDirDeal := filepath.Dir(srcDir)
 
 	carDir := filepath.Join(temDirDeal, "car")
 	err = libutils.CreateDir(carDir)

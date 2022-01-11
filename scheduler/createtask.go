@@ -32,6 +32,7 @@ var SrcFilesDir string = ""
 const (
 	SRC_FILE_SIZE_MIN = 1 * 1024 // * 1024 // * 1024
 	CAR_FILE_SIZE_MIN = 1 * 1024 // * 1024 //* 1024
+	DURATION          = 500
 )
 
 var SrcDirs []SrcDirInfo
@@ -72,15 +73,27 @@ func CreateTask() {
 		if srcDir.TotalSize < SRC_FILE_SIZE_MIN {
 			continue
 		}
+
+		fileDesc, err := createCarFile()
+		if err != nil {
+			logs.GetLogger().Error(err)
+			continue
+		}
+
+		err = saveCarInfo2DB(fileDesc, srcDir)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			continue
+		}
 	}
 }
 
-func createCarFile() error {
+func createCarFile() (*libmodel.FileDesc, error) {
 	srcDir := SrcFilesDir
 	srcFiles, err := ioutil.ReadDir(srcDir)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return err
+		return nil, err
 	}
 	srcFilesSize := int64(0)
 	for _, srcFile := range srcFiles {
@@ -88,7 +101,9 @@ func createCarFile() error {
 	}
 
 	if srcFilesSize < SRC_FILE_SIZE_MIN {
-		return nil
+		err := fmt.Errorf("source file size is less than %d", SRC_FILE_SIZE_MIN)
+		logs.GetLogger().Error(err)
+		return nil, err
 	}
 
 	temDirDeal := filepath.Base(srcDir)
@@ -97,7 +112,7 @@ func createCarFile() error {
 	err = libutils.CreateDir(carDir)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return err
+		return nil, err
 	}
 	cmdIpfsCar := &command.CmdIpfsCar{
 		LotusClientApiUrl:         config.GetConfig().Lotus.ClientApiUrl,
@@ -107,27 +122,26 @@ func createCarFile() error {
 		GenerateMd5:               false,
 		IpfsServerUploadUrlPrefix: config.GetConfig().IpfsServer.UploadUrlPrefix,
 	}
-	fileList, err := cmdIpfsCar.CreateIpfsCarFiles()
+	fileDescs, err := cmdIpfsCar.CreateIpfsCarFiles()
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return err
+		return nil, err
 	}
 
-	carFileSize := fileList[0].CarFileSize
-	if carFileSize < CAR_FILE_SIZE_MIN {
-		return nil
+	fileDesc := fileDescs[0]
+
+	if fileDesc.CarFileSize < CAR_FILE_SIZE_MIN {
+		err := fmt.Errorf("car file size is less than %d", CAR_FILE_SIZE_MIN)
+		logs.GetLogger().Error(err)
+		return nil, err
 	}
 
-	payloadCid := fileList[0].PayloadCid
+	logs.GetLogger().Info("car files created in ", carDir, "payload_cid=", fileDesc.PayloadCid)
 
-	logs.GetLogger().Info("car files created in ", carDir, "payload_cid=", payloadCid)
-
-	srcDir = ""
-
-	return nil
+	return fileDesc, nil
 }
 
-func saveDealFileAndMapRelation(fileDesc *libmodel.FileDesc, srcDir SrcDirInfo, duration int) error {
+func saveCarInfo2DB(fileDesc *libmodel.FileDesc, srcDir SrcDirInfo) error {
 	db := database.GetDBTransaction()
 	currentTime := utils.GetEpochInMillis()
 	dealFile := new(models.DealFile)
@@ -140,7 +154,7 @@ func saveDealFileAndMapRelation(fileDesc *libmodel.FileDesc, srcDir SrcDirInfo, 
 	dealFile.DealCid = fileDesc.PayloadCid
 	dealFile.CreateAt = strconv.FormatInt(currentTime, 10)
 	dealFile.UpdateAt = strconv.FormatInt(currentTime, 10)
-	dealFile.Duration = duration
+	dealFile.Duration = DURATION
 	dealFile.LockPaymentStatus = constants.LOCK_PAYMENT_STATUS_WAITING
 	dealFile.IsDeleted = utils.GetBoolPointer(false)
 	err := database.SaveOneInTransaction(db, dealFile)

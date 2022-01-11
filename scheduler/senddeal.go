@@ -111,7 +111,7 @@ func sendDeal(taskUuid string, file *models.DealFile) (string, error) {
 	temDirDeal = filepath.Join(temDirDeal, timeStr)
 	carDir := filepath.Join(temDirDeal, "car")
 
-	confDeal := &command.CmdAutoBidDeal{
+	cmdAutoBidDeal := &command.CmdAutoBidDeal{
 		SwanApiUrl:             config.GetConfig().SwanApi.ApiUrl,
 		SwanApiKey:             config.GetConfig().SwanApi.ApiKey,
 		SwanAccessToken:        config.GetConfig().SwanApi.AccessToken,
@@ -120,9 +120,9 @@ func sendDeal(taskUuid string, file *models.DealFile) (string, error) {
 		SenderWallet:           config.GetConfig().FileCoinWallet,
 		OutputDir:              carDir,
 	}
-	confDeal.DealSourceIds = append(confDeal.DealSourceIds, libconstants.TASK_SOURCE_ID_SWAN_PAYMENT)
+	cmdAutoBidDeal.DealSourceIds = append(cmdAutoBidDeal.DealSourceIds, libconstants.TASK_SOURCE_ID_SWAN_PAYMENT)
 
-	_, fileDesc, err := confDeal.SendAutoBidDealsByTaskUuid(taskUuid)
+	_, fileDesc, err := cmdAutoBidDeal.SendAutoBidDealsByTaskUuid(taskUuid)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return "", err

@@ -31,39 +31,38 @@ const (
 	SRC_DIR_STATUS_CAR_CREATED  = "CarCreated"
 )
 
-var dealDir string
 var carDir string
 var srcDir string
-var workMutex sync.Mutex
+var creatingCarMutex sync.Mutex
 
 func init() {
-	tempDirDeal := config.GetConfig().SwanTask.DirDeal
+	dealDir := config.GetConfig().SwanTask.DirDeal
 	homedir, err := os.UserHomeDir()
 	if err != nil {
 		logs.GetLogger().Fatal(err)
 	}
 
-	if len(tempDirDeal) < 2 {
+	if len(dealDir) < 2 {
 		err := fmt.Errorf("deal directory config error, please contact administrator")
 		logs.GetLogger().Fatal(err)
 	}
 
-	tempDirDeal = filepath.Join(homedir, tempDirDeal[2:])
+	dealDir = filepath.Join(homedir, dealDir[2:])
 
-	err = libutils.CreateDir(tempDirDeal)
+	err = libutils.CreateDir(dealDir)
 	if err != nil {
-		logs.GetLogger().Error("creating dir:", tempDirDeal, " failed")
+		logs.GetLogger().Error("creating dir:", dealDir, " failed")
 		logs.GetLogger().Fatal(err)
 	}
 
-	srcDir = filepath.Join(tempDirDeal, "src")
+	srcDir = filepath.Join(dealDir, "src")
 	err = libutils.CreateDir(srcDir)
 	if err != nil {
 		logs.GetLogger().Error("creating dir:", srcDir, " failed")
 		logs.GetLogger().Fatal(err)
 	}
 
-	carDir = filepath.Join(tempDirDeal, "car")
+	carDir = filepath.Join(dealDir, "car")
 	err = libutils.CreateDir(srcDir)
 	if err != nil {
 		logs.GetLogger().Error("creating dir:", carDir, " failed")
@@ -79,7 +78,10 @@ func CreateCarScheduler() {
 	c := cron.New()
 	err := c.AddFunc(config.GetConfig().ScheduleRule.CreateCarRule, func() {
 		logs.GetLogger().Info("creating car file scheduler is running at " + time.Now().Format("2006-01-02 15:04:05"))
+
+		creatingCarMutex.Lock()
 		createCar()
+		creatingCarMutex.Unlock()
 	})
 	if err != nil {
 		logs.GetLogger().Error(err)

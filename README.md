@@ -268,6 +268,7 @@ There are two tables you need to initialize the data before you can use it<br>
 |RECIPIENT                         |admin wallet address, used to receive tokens paid by users|
 |PAY_GAS_LIMIT                     |max gas limit                                             |
 |USDC_ADDRESS                      |usdc address                                              |
+|MINT_CONTRACT                     |mint contract address                                     |
 
 ### dao_info
 ### system_config_param

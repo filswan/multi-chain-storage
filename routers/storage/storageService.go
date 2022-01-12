@@ -277,8 +277,8 @@ func saveDealFileAndMapRelation(fileInfoList []*libmodel.FileDesc, sourceFile *m
 	return nil
 }
 
-func GetSourceFileAndDealFileInfo(limit, offset string, walletAddress string, payloadCid, fileName string) ([]*SourceFileAndDealFileInfo, error) {
-	sql := "select s.file_name,s.file_size,s.pin_status,s.create_at,df.miner_fid,df.payload_cid,df.deal_cid,df.deal_id,df.piece_cid,df.deal_status,df.lock_payment_status as status,df.duration from  source_file s " +
+func GetSourceFileAndDealFileInfo(limit, offset string, walletAddress string, payloadCid, fileName string) ([]*SourceFileAndDealFileInfoExtend, error) {
+	sql := "select s.file_name,s.file_size,s.pin_status,s.create_at,df.miner_fid,df.payload_cid,df.deal_cid,df.deal_id,df.piece_cid,df.deal_status,df.lock_payment_status as status,df.duration, df.cost as locked_fee from  source_file s " +
 		" inner join source_file_deal_file_map sfdfm on s.id = sfdfm.source_file_id" +
 		" inner join deal_file df on sfdfm.deal_file_id = df.id and wallet_address='" + walletAddress + "' "
 	if strings.Trim(payloadCid, " ") != "" {
@@ -287,7 +287,7 @@ func GetSourceFileAndDealFileInfo(limit, offset string, walletAddress string, pa
 	if strings.Trim(fileName, " ") != "" {
 		sql = sql + " and s.file_name like '%" + fileName + "%'"
 	}
-	var results []*SourceFileAndDealFileInfo
+	var results []*SourceFileAndDealFileInfoExtend
 	err := database.GetDB().Raw(sql).Order("create_at desc").Limit(limit).Offset(offset).Scan(&results).Error
 	if err != nil {
 		logs.GetLogger().Error(err)

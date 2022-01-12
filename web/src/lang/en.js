@@ -464,9 +464,11 @@ export default {
         create_time: 'Create Time',
         deal_id: 'Deal ID',
         payment: 'PAYMENT',
+        MINT: 'MINT',
         pay: 'PAY',
         failed: 'FAILED',
         paid: 'PAID',
+        refund: 'refund',
         download_link: 'Download Link',
         upload: 'Upload File',
         upload_form_file_tip: 'The uploaded file cannot be empty',
@@ -531,7 +533,14 @@ export default {
         file_uploaded_tip: 'We currently only support uploading a file once. Please select another file to upload.',
         file_uploaded_tip01: 'Thank you for your comprehension.',
         file_uploaded_tip02: 'You don’t need to pay this file, it will add to your files. Because we currently only support uploading a file once.',
-        update_time: 'Update Time:'
+        update_time: 'Update Time:',
+        nft_title: 'Create Your ',
+        nft_Name: 'Name',
+        nft_Description: 'Description',
+        Payment_Transaction_Hash: 'Payment Transaction Hash',
+        Back: 'Back',
+        Minting: 'Minting…',
+        Mint_NFT: 'Mint NFT'
     },
     billing: {
         search_placeholder: 'Search by TX HASH',

@@ -41,8 +41,10 @@ Run `npm run dev` for a dev server. Navigate to `http://localhost:8080/`. The ap
 ```shell
 # install cross-env
 $ npm i cross-env --save
+
 # Build test projects
 $ npm run build:test
+
 # Build production projects
 $ npm run build:prod
 ```

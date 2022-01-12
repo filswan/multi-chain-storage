@@ -245,6 +245,19 @@ func saveCarInfo2DB(fileDesc *libmodel.FileDesc, srcFiles []*models.SourceFile) 
 			logs.GetLogger().Error(err)
 			return err
 		}
+
+		sql := "update source_file set status=? where id=?"
+
+		params := []interface{}{}
+		params = append(params, constants.SOURCE_FILE_STATUS_CAR_CREATED)
+		params = append(params, srcFile.ID)
+
+		err := db.Exec(sql, params...).Error
+		if err != nil {
+			db.Rollback()
+			logs.GetLogger().Error(err)
+			return err
+		}
 	}
 
 	err = db.Commit().Error

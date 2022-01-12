@@ -471,6 +471,7 @@ export default {
         pay: '支付',
         failed: '失败',
         paid: '已支付',
+        refund: '退款',
         download_link: '下载链接',
         upload: '上传文件',
         upload_form_file_tip: '上传文件不能为空',

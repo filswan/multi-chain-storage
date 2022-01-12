@@ -284,6 +284,11 @@
                   @click.stop="payClick(scope.row)">
                   {{$t('uploadFile.pay')}}
                 </el-button>
+                <el-button class="uploadBtn blue" type="primary"
+                  v-else-if="tableData[scope.$index].status.toLowerCase()=='refunded'"
+                  @click.stop="refundClick(scope.row)">
+                  {{$t('uploadFile.refund')}}
+                </el-button>
                 <el-button 
                   v-else-if="tableData[scope.$index].status.toLowerCase()=='failed'"
                   :disabled="true"
@@ -484,18 +489,6 @@ export default {
     toDetail(id, cid){
       this.$router.push({name: 'my_files_detail', params: {id: id, cid: cid}})
     },
-    clickRowHandle(row, column, event) {
-      if (this.expands.includes(row.uuid)) {
-        // this.expands = this.expands.filter(val => val !== row.uuid);
-        this.expands = []
-      } else {
-        this.expands = []
-        if (row) {
-          this.expands.push(row.uuid)
-        }
-        this.tableTrClick(row)
-      }
-    },
     payClick(row){
       let _this = this
       if(_this.metaAddress&&_this.networkID!=80001) {
@@ -512,6 +505,50 @@ export default {
 
       _this.payVisible = true
       return false
+    },
+    refundClick(row){
+        let _this = this
+        let contract_instance = new web3.eth.Contract( first_contract_json );
+        contract_instance.options.address = _this.gatewayContractAddress
+        _this.loading = true
+
+        let payObject = {
+            from: _this.metaAddress,
+            gas: web3.utils.toHex(_this.$root.PAY_GAS_LIMIT),
+        };
+        
+        let lockObj = {
+            id: row.payload_cid,
+            orderId: "",
+            dealId: row.deal_id,
+            amount: row.locked_fee,
+            recipient: _this.recipientAddress, //todo:
+        }
+        console.log(lockObj)
+        try{
+          contract_instance.methods.unlockTokenPayment(lockObj)
+          .send(payObject)
+          .on('transactionHash', function(hash){
+              // console.log('unlock hash console:', hash);
+              _this.txHash = hash
+          })
+          .on('confirmation', function(confirmationNumber, receipt){
+              // console.log('confirmationNumber console:', confirmationNumber, receipt);
+          })
+          .on('receipt', function(receipt){
+              // console.log('receipt console:', receipt);
+              _this.checkTransaction(receipt.transactionHash, cid)
+              _this.txHash = receipt.transactionHash
+          })
+          .on('error', function(error){
+              // console.log('error console:', error)
+              _this.loading = false
+              _this.failTransaction = true
+          }); 
+        }catch (err){
+          console.log(err)
+          _this.loading = false
+        }
     },
     payStartClick(rowAmount){
       let _this = this
@@ -578,8 +615,6 @@ export default {
         // 合约转账
         let contract_instance = new web3.eth.Contract( first_contract_json );
         contract_instance.options.address = _this.gatewayContractAddress
-        // console.log( 'contract_instance合约实例：', contract_instance );
-        // console.log(contract_instance.options.jsonInterface)
 
         let payObject = {
             from: _this.metaAddress,
@@ -1667,6 +1702,7 @@ export default {
                         display: -webkit-box;
                         -webkit-line-clamp: 2;
                         -webkit-box-orient: vertical;
+                        text-transform: uppercase;
                     }
                     img{
                         display: none;

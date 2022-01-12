@@ -385,11 +385,12 @@
             :before-close="finishClose"
             custom-class="completeDia">
             <img src="@/assets/images/alert-icon.png" />
-            <h1>View Your NFT</h1>
-            <h3>Your NFT has been minted! You can view the transaction here:</h3>
+            <h1>{{$t('uploadFile.View_Your_NFT')}}</h1>
+            <h3>{{$t('uploadFile.View_Your_NFT_tips')}}</h3>
             <a :href="'https://mumbai.polygonscan.com/tx/'+txHash" target="_blank">{{txHash}}</a>
             <br />
-            <a :href="'https://testnets.opensea.io/assets/mumbai/'+mintContractAddress+'/'+tokenId" target="_blank">Note: The NFT will take some time to load on Opensea.</a>
+            <a :href="'https://testnets.opensea.io/assets/mumbai/'+mintContractAddress+'/'+tokenId" target="_blank">{{$t('uploadFile.View_Your_NFT_OpenSea')}}</a>
+            <h3>{{$t('uploadFile.View_Your_NFT_Note')}}</h3>
             <a class="a-close" @click="finishClose">{{$t('uploadFile.CLOSE')}}</a>
         </el-dialog>
     <mint-tip v-if="mineVisible" :mineVisible="mineVisible" :cid="mintCID" :dealID="dealID" :fileSize="fileSize"
@@ -447,7 +448,7 @@ export default {
       mintCID: '',
       dealID: '',
       fileSize: '',
-      mintContractAddress: process.env.NEXT_PUBLIC_MINT_CONTRACT,
+      mintContractAddress: this.$root.MINT_CONTRACT,
       tokenId: '',
       toAddress: '',
       storage: 0,
@@ -975,6 +976,7 @@ export default {
             _this.gatewayContractAddress = _this.$root.SWAN_PAYMENT_CONTRACT_ADDRESS
             _this.usdcAddress = _this.$root.USDC_ADDRESS
             _this.recipientAddress = _this.$root.RECIPIENT
+            _this.mintContractAddress = _this.$root.MINT_CONTRACT
             
             let stats_api = `${process.env.BASE_API}stats/storage?wallet_address=${_this.metaAddress}`
             axios.get(stats_api, {

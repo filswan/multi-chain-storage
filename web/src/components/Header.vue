@@ -494,6 +494,7 @@ export default {
                     _this.$root.RECIPIENT = json.data.data.RECIPIENT
                     _this.$root.SWAN_PAYMENT_CONTRACT_ADDRESS = json.data.data.SWAN_PAYMENT_CONTRACT_ADDRESS
                     _this.$root.USDC_ADDRESS = json.data.data.USDC_ADDRESS
+                    _this.$root.MINT_CONTRACT = json.data.data.MINT_CONTRACT
                 }
             }).catch(error => {
                 console.log(error)

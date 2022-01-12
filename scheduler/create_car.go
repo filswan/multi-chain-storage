@@ -3,6 +3,7 @@ package scheduler
 import (
 	"fmt"
 	"io/ioutil"
+	"os"
 	"path/filepath"
 	"payment-bridge/common/constants"
 	"payment-bridge/common/utils"
@@ -20,12 +21,12 @@ import (
 )
 
 const (
-	SRC_FILE_SIZE_MIN = 1 * 1024 // * 1024 // * 1024
-	CAR_FILE_SIZE_MIN = 1 * 1024 // * 1024 //* 1024
+	SRC_FILE_SIZE_MIN = int64(1 * 1024) // * 1024 // * 1024
+	CAR_FILE_SIZE_MIN = int64(1 * 1024) // * 1024 //* 1024
 	DURATION          = 500
 )
 
-var SrcDirs []SrcDirInfo
+var srcDirs []SrcDirInfo
 
 type SrcDirInfo struct {
 	SrcDir   string
@@ -40,19 +41,48 @@ type SrcFileInfo struct {
 	FileUrl    string
 }
 
-func GetSrcDir() *string {
-	if len(SrcDirs) == 0 {
-		return nil
+func GetSrcDir() (*SrcDirInfo, error) {
+	for _, srcDir := range srcDirs {
+		filesSize, err := getFilesSize(srcDir.SrcDir)
+		if err != nil {
+			return nil, err
+		}
+
+		if *filesSize < SRC_FILE_SIZE_MIN {
+			return &srcDir, nil
+		}
 	}
 
-	return &SrcDirs[0].SrcDir
-}
+	tempDirDeal := config.GetConfig().SwanTask.DirDeal
+	homedir, err := os.UserHomeDir()
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+	if len(tempDirDeal) < 2 {
+		err := fmt.Errorf("deal directory config error, please contact administrator")
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
 
-func AddSrcDir(srcDir string) {
-	srcDirInfo := SrcDirInfo{}
-	srcDirInfo.SrcDir = srcDir
+	tempDirDeal = filepath.Join(homedir, tempDirDeal[2:])
 
-	SrcDirs = append(SrcDirs, srcDirInfo)
+	currentTime, err := time.Now().UTC().MarshalText()
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	tempDirDeal = filepath.Join(tempDirDeal, string(currentTime))
+
+	srcDirPath := filepath.Join(tempDirDeal, "src")
+	srcDir := SrcDirInfo{
+		SrcDir: srcDirPath,
+	}
+
+	srcDirs = append(srcDirs, srcDir)
+
+	return &srcDir, nil
 }
 
 func CreateCarScheduler() {
@@ -83,27 +113,27 @@ func getFilesSize(dir string) (*int64, error) {
 }
 
 func createCar() {
-	for _, srcDirInfo := range SrcDirs {
-		srcFilesSize, err := getFilesSize(srcDirInfo.SrcDir)
+	for _, srcDir := range srcDirs {
+		srcFilesSize, err := getFilesSize(srcDir.SrcDir)
 		if err != nil {
 			logs.GetLogger().Error(err)
-			continue
+			return
 		}
 
 		if *srcFilesSize < SRC_FILE_SIZE_MIN {
-			continue
+			return
 		}
 
-		fileDesc, err := createCarFile(srcDirInfo.SrcDir)
+		fileDesc, err := createCarFile(srcDir.SrcDir)
 		if err != nil {
 			logs.GetLogger().Error(err)
-			continue
+			return
 		}
 
-		err = saveCarInfo2DB(fileDesc, srcDirInfo)
+		err = saveCarInfo2DB(fileDesc, srcDir)
 		if err != nil {
 			logs.GetLogger().Error(err)
-			continue
+			return
 		}
 	}
 }

@@ -1,17 +1,19 @@
 {
-  "name": "Staging",
+  "name": "multichainpayment",
   "version": "1.0.0",
-  "description": "Staging",
+  "description": "Multi-Chain Payment",
   "author": "yxie <yxie@nbai.io>",
   "private": true,
   "scripts": {
     "dev": "webpack-dev-server --inline --progress --config buildVue/webpack.dev.conf.js",
     "start": "npm run dev",
     "lint": "eslint --ext .js,.vue src",
-    "build": "node buildVue/build.js"
+    "build:test": "cross-env NODE_ENV=production env_config=test node buildVue/build.js",
+    "build:prod": "cross-env NODE_ENV=production env_config=prod node buildVue/build.js"
   },
   "dependencies": {
     "axios": "^0.21.1",
+    "cross-env": "^7.0.3",
     "element-resize-detector": "^1.2.3",
     "element-ui": "^2.15.6",
     "jquery": "^3.6.0",

@@ -466,6 +466,7 @@ export default {
         pay: 'PAY',
         failed: 'FAILED',
         paid: 'PAID',
+        refund: 'refund',
         download_link: 'Download Link',
         upload: 'Upload File',
         upload_form_file_tip: 'The uploaded file cannot be empty',

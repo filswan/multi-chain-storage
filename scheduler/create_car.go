@@ -25,7 +25,7 @@ const (
 	CAR_FILE_SIZE_MIN = int64(1 * 1024) // * 1024 //* 1024
 	DURATION          = 500
 
-	SRC_DIR_STATUS_CREATED      = "Created"
+	SRC_DIR_STATUS_DIR_REATED   = "DirCreated"
 	SRC_DIR_STATUS_CREATING_CAR = "CreatingCar"
 	SRC_DIR_STATUS_CAR_CREATED  = "CarCreated"
 )
@@ -48,7 +48,7 @@ type SrcFileInfo struct {
 
 func GetSrcDir() (*SrcDirInfo, error) {
 	for _, srcDir := range srcDirs {
-		if srcDir.Status != SRC_DIR_STATUS_CREATED {
+		if srcDir.Status != SRC_DIR_STATUS_DIR_REATED {
 			continue
 		}
 
@@ -93,7 +93,7 @@ func GetSrcDir() (*SrcDirInfo, error) {
 
 	srcDir := SrcDirInfo{
 		SrcDir: srcDirPath,
-		Status: SRC_DIR_STATUS_CREATED,
+		Status: SRC_DIR_STATUS_DIR_REATED,
 	}
 
 	srcDirs = append(srcDirs, srcDir)

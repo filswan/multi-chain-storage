@@ -48,7 +48,8 @@ export default {
         PowerGrowth: 'Adj.Storage Power Growth',
         BillingHistory: 'Billing History',
         language: 'Language',
-        language_cn: 'Chinese'
+        language_cn: 'Chinese',
+        swan_share: 'swan share'
     },
     // 首页
     dashboard: {
@@ -463,6 +464,7 @@ export default {
         create_time: 'Create Time',
         deal_id: 'Deal ID',
         payment: 'PAYMENT',
+        MINT: 'MINT',
         pay: 'PAY',
         failed: 'FAILED',
         paid: 'PAID',
@@ -515,6 +517,8 @@ export default {
         Duration: 'Duration',
         Duration_tip: 'Please enter the duration',
         Duration_tooltip: 'Duration refers to the terms in which you want the file to be stored on the Filecoin network.',
+        Storage_copy: 'Storage Copy',
+        Storage_copy_tooltip: 'The number of copies of files stored in Filecoin network. Your file will be assigned to dbifferent storage providers. ',
         Estimated_Storage_Cost: 'Estimated Storage Cost',
         Estimated_Storage_Cost_tooltip: 'The estimated storage cost is calculated according to your file size, the duration you set, and the average provider price.',
         Select_Lock_Funds_Plan: 'Select Lock Funds Plan',
@@ -528,7 +532,20 @@ export default {
         file_uploaded: 'This file has been uploaded.',
         file_uploaded_tip: 'We currently only support uploading a file once. Please select another file to upload.',
         file_uploaded_tip01: 'Thank you for your comprehension.',
-        file_uploaded_tip02: 'You don’t need to pay this file, it will add to your files. Because we currently only support uploading a file once.'
+        file_uploaded_tip02: 'You don’t need to pay this file, it will add to your files. Because we currently only support uploading a file once.',
+        update_time: 'Update Time:',
+        nft_title: 'Create Your ',
+        nft_Name: 'Name',
+        nft_IPFSURL: 'IPFS URL',
+        nft_Description: 'Description',
+        Payment_Transaction_Hash: 'Payment Transaction Hash',
+        Back: 'Back',
+        Minting: 'Minting…',
+        Mint_NFT: 'Mint NFT',
+        View_Your_NFT: 'View Your NFT',
+        View_Your_NFT_tips: 'Your NFT has been minted! You can view the transaction here:',
+        View_Your_NFT_OpenSea: 'Click here to view your NFT on OpenSea',
+        View_Your_NFT_Note: 'Note: The NFT will take some time to load on Opensea.'
     },
     billing: {
         search_placeholder: 'Search by TX HASH',

@@ -24,12 +24,17 @@ const (
 	SRC_FILE_SIZE_MIN = int64(1 * 1024) // * 1024 // * 1024
 	CAR_FILE_SIZE_MIN = int64(1 * 1024) // * 1024 //* 1024
 	DURATION          = 500
+
+	SRC_DIR_STATUS_CREATED      = "Created"
+	SRC_DIR_STATUS_CREATING_CAR = "CreatingCar"
+	SRC_DIR_STATUS_CAR_CREATED  = "CarCreated"
 )
 
 var srcDirs []SrcDirInfo
 
 type SrcDirInfo struct {
 	SrcDir   string
+	Status   string // "Created", "CreatingCar","CarCreated"
 	SrcFiles []SrcFileInfo
 }
 
@@ -43,6 +48,10 @@ type SrcFileInfo struct {
 
 func GetSrcDir() (*SrcDirInfo, error) {
 	for _, srcDir := range srcDirs {
+		if srcDir.Status != SRC_DIR_STATUS_CREATED {
+			continue
+		}
+
 		filesSize, err := getFilesSize(srcDir.SrcDir)
 		if err != nil {
 			return nil, err
@@ -84,6 +93,7 @@ func GetSrcDir() (*SrcDirInfo, error) {
 
 	srcDir := SrcDirInfo{
 		SrcDir: srcDirPath,
+		Status: SRC_DIR_STATUS_CREATED,
 	}
 
 	srcDirs = append(srcDirs, srcDir)

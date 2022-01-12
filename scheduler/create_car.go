@@ -25,10 +25,6 @@ const (
 	SRC_FILE_SIZE_MIN = int64(1 * 1024) // * 1024 // * 1024
 	CAR_FILE_SIZE_MIN = int64(1 * 1024) // * 1024 //* 1024
 	DURATION          = 500
-
-	SRC_DIR_STATUS_DIR_REATED   = "DirCreated"
-	SRC_DIR_STATUS_CREATING_CAR = "CreatingCar"
-	SRC_DIR_STATUS_CAR_CREATED  = "CarCreated"
 )
 
 var carDir string

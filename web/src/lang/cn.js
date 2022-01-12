@@ -538,7 +538,14 @@ export default {
         file_uploaded_tip: '我们目前只支持上传一次文件。请选择另一个要上传的文件。',
         file_uploaded_tip01: '谢谢您的理解。',
         file_uploaded_tip02: '这个文件你不用付钱，它会加到你的文件里的。因为我们目前只支持上传一次文件。',
-        update_time: '更新时间:'
+        update_time: '更新时间:',
+        nft_title: '创建您的',
+        nft_Name: '名称',
+        nft_Description: '描述',
+        Payment_Transaction_Hash: '支付交易哈希',
+        Back: '关闭',
+        Minting: 'Minting…',
+        Mint_NFT: 'Mint NFT'
     },
     billing: {
         search_placeholder: '按交易哈希搜索',

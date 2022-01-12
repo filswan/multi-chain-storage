@@ -300,6 +300,21 @@
               </div>
             </template>
           </el-table-column>
+          <el-table-column prop="MINT" width="100" :label="$t('uploadFile.MINT')">
+            <template slot-scope="scope">
+              <div class="hot-cold-box">
+                <el-button class="uploadBtn blue" type="primary"
+                  v-if="tableData[scope.$index].status.toLowerCase()!='pending'"
+                  @click.stop="mintFunction(scope.row)">
+                  {{$t('uploadFile.MINT')}}
+                </el-button>
+                <el-button 
+                  v-else
+                  :disabled="true"
+                  class="uploadBtn grey opacity">{{$t('uploadFile.MINT')}}</el-button>
+              </div>
+            </template>
+          </el-table-column>
         </el-table>
 
         <div class="form_pagination">
@@ -365,7 +380,20 @@
             <h4>{{$t('fs3Login.toptip_01')}} {{network.name}} {{$t('fs3Login.toptip_02')}} <b>{{$t('fs3Login.toptip_Network')}}</b>.</h4>
             <a class="a-close" @click="metamaskLoginTip=false">{{$t('uploadFile.OK')}}</a>
         </el-dialog>
-
+        
+        <el-dialog title="" :visible.sync="mintTransaction" :width="width"
+            :before-close="finishClose"
+            custom-class="completeDia">
+            <img src="@/assets/images/alert-icon.png" />
+            <h1>View Your NFT</h1>
+            <h3>Your NFT has been minted! You can view the transaction here:</h3>
+            <a :href="'https://mumbai.polygonscan.com/tx/'+txHash" target="_blank">{{txHash}}</a>
+            <br />
+            <a :href="'https://testnets.opensea.io/assets/mumbai/'+mintContractAddress+'/'+tokenId" target="_blank">Note: The NFT will take some time to load on Opensea.</a>
+            <a class="a-close" @click="finishClose">{{$t('uploadFile.CLOSE')}}</a>
+        </el-dialog>
+    <mint-tip v-if="mineVisible" :mineVisible="mineVisible" :cid="mintCID" :dealID="dealID" :fileSize="fileSize"
+                @getMintDialog="getMintDialog"></mint-tip>
       
     <!-- 回到顶部 -->
     <el-backtop target=".content-box" :bottom="40" :right="20"></el-backtop>
@@ -379,6 +407,7 @@ import QS from 'qs';
 import * as myAjax from "@/api/uploadFile";
 import moment from "moment";
 import payTip from "@/components/payTip"
+import mintTip from "@/components/mintTip"
 import NCWeb3 from "@/utils/web3";
 import first_contract_json from "@/utils/swanPayment.json";
 import erc20_contract_json from "@/utils/ERC20.json";
@@ -414,6 +443,12 @@ export default {
       },
       exChangeList: [],
       payVisible: false,
+      mineVisible: false,
+      mintCID: '',
+      dealID: '',
+      fileSize: '',
+      mintContractAddress: process.env.NEXT_PUBLIC_MINT_CONTRACT,
+      tokenId: '',
       toAddress: '',
       storage: 0,
       centerDialogVisible: false,
@@ -439,6 +474,7 @@ export default {
       usdcAddress: this.$root.USDC_ADDRESS,
       txHash: '',
       finishTransaction: false,
+      mintTransaction: false,
       failTransaction: false,
       loadMetamaskPay: false,
       payRow: {},
@@ -464,7 +500,8 @@ export default {
     }
   },
   components: {
-      payTip
+      payTip,
+      mintTip
   },
   watch: {
     'searchValue': function(){
@@ -520,6 +557,12 @@ export default {
 
       _this.payVisible = true
       return false
+    },
+    mintFunction(row){
+      this.mintCID = row.payload_cid
+      this.dealID = row.deal_id
+      this.fileSize = row.file_size
+      this.mineVisible=true
     },
     refundClick(row){
         let _this = this
@@ -691,11 +734,21 @@ export default {
     },
     finishClose(){
         this.finishTransaction = false
+        this.mintTransaction = false
         this.getData()
     },
     getDialog(dialog, rows){
         this.payVisible = dialog
         if(rows) this.payStartClick(rows)
+    },
+    getMintDialog(dialog, tokenId, nftHash){
+        let _this = this
+        _this.mineVisible = dialog
+        if(nftHash) {
+          _this.tokenId = tokenId
+          _this.txHash = nftHash
+          _this.mintTransaction = true
+        }
     },
     exChange(row, rowList) {
       var that = this

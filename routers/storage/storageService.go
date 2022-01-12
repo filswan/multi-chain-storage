@@ -29,25 +29,21 @@ import (
 )
 
 func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration int, walletAddress string) (*string, *string, *int, error) {
-	srcDir, err := scheduler.GetSrcDir()
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, nil, nil, err
-	}
+	srcDir := scheduler.GetSrcDir()
 
 	filename := srcFile.Filename
-	if libutils.IsFileExists(srcDir.SrcDir, filename) {
+	if libutils.IsFileExists(srcDir, filename) {
 		for i := 0; ; i++ {
 			filename = srcFile.Filename + strconv.Itoa(i)
-			if !libutils.IsFileExists(srcDir.SrcDir, filename) {
+			if !libutils.IsFileExists(srcDir, filename) {
 				break
 			}
 		}
 	}
 
-	srcFilepath := filepath.Join(srcDir.SrcDir, filename)
+	srcFilepath := filepath.Join(srcDir, filename)
 	logs.GetLogger().Info("saving source file to ", srcFilepath)
-	err = c.SaveUploadedFile(srcFile, srcFilepath)
+	err := c.SaveUploadedFile(srcFile, srcFilepath)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, nil, nil, err
@@ -79,6 +75,7 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration int, walle
 		sourceFile.FileName = srcFile.Filename
 		sourceFile.FileSize = strconv.FormatInt(srcFile.Size, 10)
 		sourceFile.ResourceUri = srcFilepath
+		sourceFile.Status = constants.SOURCE_FILE_STATUS_CREATED
 		sourceFile.CreateAt = strconv.FormatInt(utils.GetEpochInMillis(), 10)
 		sourceFile.IpfsUrl = ipfsUrl
 		sourceFile.PinStatus = constants.IPFS_File_PINNED_STATUS
@@ -136,6 +133,7 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration int, walle
 	sourceFile.FileName = srcFile.Filename
 	sourceFile.FileSize = strconv.FormatInt(srcFile.Size, 10)
 	sourceFile.ResourceUri = sourceFiles[0].ResourceUri
+	sourceFile.Status = constants.SOURCE_FILE_STATUS_CREATED
 	sourceFile.CreateAt = strconv.FormatInt(utils.GetEpochInMillis(), 10)
 	sourceFile.IpfsUrl = sourceFiles[0].IpfsUrl
 	sourceFile.PinStatus = constants.IPFS_File_PINNED_STATUS

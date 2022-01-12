@@ -11,6 +11,7 @@ import (
 	"payment-bridge/database"
 	"payment-bridge/models"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/filswan/go-swan-client/command"
@@ -30,75 +31,48 @@ const (
 	SRC_DIR_STATUS_CAR_CREATED  = "CarCreated"
 )
 
-var srcDirs []SrcDirInfo
+var dealDir string
+var carDir string
+var srcDir string
+var workMutex sync.Mutex
 
-type SrcDirInfo struct {
-	SrcDir   string
-	Status   string // "Created", "CreatingCar","CarCreated"
-	SrcFiles []SrcFileInfo
-}
-
-type SrcFileInfo struct {
-	Id         int64
-	PayloadCid string
-	VrfRandStr string
-	Filepath   string
-	FileUrl    string
-}
-
-func GetSrcDir() (*SrcDirInfo, error) {
-	for _, srcDir := range srcDirs {
-		if srcDir.Status != SRC_DIR_STATUS_DIR_REATED {
-			continue
-		}
-
-		filesSize, err := getFilesSize(srcDir.SrcDir)
-		if err != nil {
-			return nil, err
-		}
-
-		if *filesSize < SRC_FILE_SIZE_MIN {
-			return &srcDir, nil
-		}
-	}
-
+func init() {
 	tempDirDeal := config.GetConfig().SwanTask.DirDeal
 	homedir, err := os.UserHomeDir()
 	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
+		logs.GetLogger().Fatal(err)
 	}
+
 	if len(tempDirDeal) < 2 {
 		err := fmt.Errorf("deal directory config error, please contact administrator")
-		logs.GetLogger().Error(err)
-		return nil, err
+		logs.GetLogger().Fatal(err)
 	}
 
 	tempDirDeal = filepath.Join(homedir, tempDirDeal[2:])
 
-	currentTime, err := time.Now().UTC().MarshalText()
+	err = libutils.CreateDir(tempDirDeal)
 	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
+		logs.GetLogger().Error("creating dir:", tempDirDeal, " failed")
+		logs.GetLogger().Fatal(err)
 	}
 
-	tempDirDeal = filepath.Join(tempDirDeal, string(currentTime))
-
-	srcDirPath := filepath.Join(tempDirDeal, "src")
-	err = libutils.CreateDir(srcDirPath)
+	srcDir = filepath.Join(tempDirDeal, "src")
+	err = libutils.CreateDir(srcDir)
 	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
+		logs.GetLogger().Error("creating dir:", srcDir, " failed")
+		logs.GetLogger().Fatal(err)
 	}
 
-	srcDir := SrcDirInfo{
-		SrcDir: srcDirPath,
-		Status: SRC_DIR_STATUS_DIR_REATED,
+	carDir = filepath.Join(tempDirDeal, "car")
+	err = libutils.CreateDir(srcDir)
+	if err != nil {
+		logs.GetLogger().Error("creating dir:", carDir, " failed")
+		logs.GetLogger().Fatal(err)
 	}
+}
 
-	srcDirs = append(srcDirs, srcDir)
-
-	return &srcDir, nil
+func GetSrcDir() string {
+	return srcDir
 }
 
 func CreateCarScheduler() {
@@ -129,32 +103,75 @@ func getFilesSize(dir string) (*int64, error) {
 }
 
 func createCar() {
-	for _, srcDir := range srcDirs {
-		srcFilesSize, err := getFilesSize(srcDir.SrcDir)
+	currentTimeStr := time.Now().Format("2006-01-02T15:04:05")
+	carSrcDir := filepath.Join(carDir, "src_"+currentTimeStr)
+	carDestDir := filepath.Join(carDir, "car_"+currentTimeStr)
+
+	err := libutils.CreateDir(carSrcDir)
+	if err != nil {
+		logs.GetLogger().Error("creating dir:", carSrcDir, " failed,", err)
+		return
+	}
+
+	srcFiles, err := models.GetSourceFilesNeed2Car()
+	if err != nil {
+		os.RemoveAll(carSrcDir)
+		logs.GetLogger().Error(err)
+		return
+	}
+
+	totalSize := int64(0)
+	for _, srcFile := range srcFiles {
+		srcFilepathTemp := filepath.Join(carSrcDir, srcFile.FileName)
+
+		bytesCopied, err := libutils.CopyFile(srcFile.ResourceUri, srcFilepathTemp)
 		if err != nil {
+			os.RemoveAll(carSrcDir)
+
 			logs.GetLogger().Error(err)
 			return
 		}
 
-		if *srcFilesSize < SRC_FILE_SIZE_MIN {
-			return
-		}
+		totalSize = totalSize + bytesCopied
+	}
 
-		fileDesc, err := createCarFile(srcDir.SrcDir)
-		if err != nil {
-			logs.GetLogger().Error(err)
-			return
-		}
+	if totalSize < SRC_FILE_SIZE_MIN {
+		os.RemoveAll(carSrcDir)
+		logs.GetLogger().Error("source file size is not enough")
+		return
+	}
 
-		err = saveCarInfo2DB(fileDesc, srcDir)
-		if err != nil {
-			logs.GetLogger().Error(err)
-			return
-		}
+	err = libutils.CreateDir(carDestDir)
+	if err != nil {
+		os.RemoveAll(carSrcDir)
+		logs.GetLogger().Error("creating dir:", carDestDir, " failed,", err)
+		return
+	}
+
+	fileDesc, err := createCarFile(carSrcDir, carDestDir)
+	if err != nil {
+		os.RemoveAll(carSrcDir)
+		os.RemoveAll(carDestDir)
+		logs.GetLogger().Error(err)
+		return
+	}
+
+	err = saveCarInfo2DB(fileDesc, srcFiles)
+	if err != nil {
+		os.RemoveAll(carSrcDir)
+		os.RemoveAll(carDestDir)
+		logs.GetLogger().Error(err)
+		return
+	}
+
+	err = os.RemoveAll(carSrcDir)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return
 	}
 }
 
-func createCarFile(srcDir string) (*libmodel.FileDesc, error) {
+func createCarFile(srcDir, carDir string) (*libmodel.FileDesc, error) {
 	srcFilesSize, err := getFilesSize(srcDir)
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -167,14 +184,6 @@ func createCarFile(srcDir string) (*libmodel.FileDesc, error) {
 		return nil, err
 	}
 
-	temDirDeal := filepath.Dir(srcDir)
-
-	carDir := filepath.Join(temDirDeal, "car")
-	err = libutils.CreateDir(carDir)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
 	cmdIpfsCar := &command.CmdIpfsCar{
 		LotusClientApiUrl:         config.GetConfig().Lotus.ClientApiUrl,
 		LotusClientAccessToken:    config.GetConfig().Lotus.ClientAccessToken,
@@ -202,7 +211,7 @@ func createCarFile(srcDir string) (*libmodel.FileDesc, error) {
 	return fileDesc, nil
 }
 
-func saveCarInfo2DB(fileDesc *libmodel.FileDesc, srcDir SrcDirInfo) error {
+func saveCarInfo2DB(fileDesc *libmodel.FileDesc, srcFiles []*models.SourceFile) error {
 	db := database.GetDBTransaction()
 	currentTime := utils.GetEpochInMillis()
 	dealFile := new(models.DealFile)
@@ -225,9 +234,9 @@ func saveCarInfo2DB(fileDesc *libmodel.FileDesc, srcDir SrcDirInfo) error {
 		return err
 	}
 
-	for _, srcFile := range srcDir.SrcFiles {
+	for _, srcFile := range srcFiles {
 		filepMap := new(models.SourceFileDealFileMap)
-		filepMap.SourceFileId = srcFile.Id
+		filepMap.SourceFileId = srcFile.ID
 		filepMap.DealFileId = dealFile.ID
 		filepMap.FileIndex = 0
 		filepMap.CreateAt = strconv.FormatInt(currentTime, 10)

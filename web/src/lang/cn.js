@@ -47,7 +47,8 @@ export default {
         PowerGrowth: '有效算力增量',
         BillingHistory: '账单详情',
         language: '语言',
-        language_cn: '简体中文'
+        language_cn: '简体中文',
+        swan_share: 'swan分配'
     },
     // 首页
     dashboard: {
@@ -468,6 +469,7 @@ export default {
         create_time: '创建时间',
         deal_id: '交易ID',
         payment: '支付',
+        MINT: '铸造',
         pay: '支付',
         failed: '失败',
         paid: '已支付',
@@ -520,6 +522,8 @@ export default {
         Duration: '存储时间',
         Duration_tip: '请输入存储时间',
         Duration_tooltip: '存储时间是指您希望文件在Filecoin网络上存储的期限。',
+        Storage_copy: '存储份数',
+        Storage_copy_tooltip: '将文件存储到Filecoin网络的份数。您的文件将会被分配到不同的存储提供者。',
         Estimated_Storage_Cost: '预计存储费用',
         Estimated_Storage_Cost_tooltip: '预计存储费用是根据文件大小，存储时间，和平均数据存储价格计算的。',
         Select_Lock_Funds_Plan: '选择资金锁定计划',
@@ -533,7 +537,20 @@ export default {
         file_uploaded: '该文件已经上传。',
         file_uploaded_tip: '我们目前只支持上传一次文件。请选择另一个要上传的文件。',
         file_uploaded_tip01: '谢谢您的理解。',
-        file_uploaded_tip02: '这个文件你不用付钱，它会加到你的文件里的。因为我们目前只支持上传一次文件。'
+        file_uploaded_tip02: '这个文件你不用付钱，它会加到你的文件里的。因为我们目前只支持上传一次文件。',
+        update_time: '更新时间:',
+        nft_title: '创建您的',
+        nft_Name: '名称',
+        nft_Description: '描述',
+        nft_IPFSURL: 'IPFS链接',
+        Payment_Transaction_Hash: '支付交易哈希',
+        Back: '关闭',
+        Minting: '铸造中…',
+        Mint_NFT: '铸造NFT',
+        View_Your_NFT: '查看您的NFT',
+        View_Your_NFT_tips: '您的NFT已经成功铸造！您可以在这里查看该交易：',
+        View_Your_NFT_OpenSea: '点击到OpenSea查看您的NFT',
+        View_Your_NFT_Note: '注意：OpenSea需要一些时间加载您的NFT。'
     },
     billing: {
         search_placeholder: '按交易哈希搜索',

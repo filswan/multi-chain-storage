@@ -19,6 +19,23 @@ type SourceFileAndDealFileInfo struct {
 	LockPaymentStatus string `json:"lock_payment_status"`
 }
 
+type SourceFileAndDealFileInfoExtend struct {
+	ID         int64  `json:"id"`
+	FileName   string `json:"file_name"`
+	FileSize   string `json:"file_size"`
+	CreateAt   string `json:"create_at"`
+	MinerFid   string `json:"miner_fid"`
+	DealStatus string `json:"deal_status"`
+	Status     string `json:"status"`
+	PinStatus  string `json:"pin_status"`
+	PayloadCid string `json:"payload_cid"`
+	DealCid    string `json:"deal_cid"`
+	DealId     int64  `json:"deal_id"`
+	PieceCid   string `json:"piece_cid"`
+	Duration   int    `json:"duration"`
+	LockedFee  string `json:"locked_fee"`
+}
+
 type filinkParams struct {
 	ID   int `json:"id"`
 	Data struct {

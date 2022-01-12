@@ -37,7 +37,7 @@ func FindSourceFileList(whereCondition interface{}, orderCondition, limit, offse
 func GetSourceFilesByPayloadCid(payloadCid string) ([]*SourceFile, error) {
 	var sourceFiles []*SourceFile
 
-	err := database.GetDB().Where("payload_cid=?", payloadCid).Find(&sourceFiles).Error
+	err := database.GetDB().Where("payload_cid=?", payloadCid).Order("create_at").Find(&sourceFiles).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err

@@ -2,6 +2,7 @@ package storage
 
 import (
 	"context"
+	"fmt"
 	"mime/multipart"
 	"os"
 	"path/filepath"
@@ -36,6 +37,12 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration int, walle
 		logs.GetLogger().Error(err)
 		return nil, nil, nil, err
 	}
+	if len(tempDirDeal) < 2 {
+		err := fmt.Errorf("deal directory config error, please contact administrator")
+		logs.GetLogger().Error(err)
+		return nil, nil, nil, err
+	}
+
 	tempDirDeal = filepath.Join(homedir, tempDirDeal[2:])
 
 	currentTime, err := time.Now().UTC().MarshalText()

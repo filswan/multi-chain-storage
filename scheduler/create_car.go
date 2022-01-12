@@ -76,6 +76,12 @@ func GetSrcDir() (*SrcDirInfo, error) {
 	tempDirDeal = filepath.Join(tempDirDeal, string(currentTime))
 
 	srcDirPath := filepath.Join(tempDirDeal, "src")
+	err = libutils.CreateDir(srcDirPath)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
 	srcDir := SrcDirInfo{
 		SrcDir: srcDirPath,
 	}

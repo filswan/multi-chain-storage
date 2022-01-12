@@ -2,7 +2,6 @@ package storage
 
 import (
 	"context"
-	"fmt"
 	"mime/multipart"
 	"os"
 	"path/filepath"
@@ -17,7 +16,6 @@ import (
 	"payment-bridge/scheduler"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/filswan/go-swan-lib/logs"
 
@@ -31,52 +29,23 @@ import (
 )
 
 func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration int, walletAddress string) (*string, *string, *int, error) {
-	tempDirDeal := config.GetConfig().SwanTask.DirDeal
-	homedir, err := os.UserHomeDir()
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, nil, nil, err
-	}
-	if len(tempDirDeal) < 2 {
-		err := fmt.Errorf("deal directory config error, please contact administrator")
-		logs.GetLogger().Error(err)
-		return nil, nil, nil, err
-	}
-
-	tempDirDeal = filepath.Join(homedir, tempDirDeal[2:])
-
-	currentTime, err := time.Now().UTC().MarshalText()
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, nil, nil, err
-	}
-
-	tempDirDeal = filepath.Join(tempDirDeal, string(currentTime))
-
-	srcDir := scheduler.GetSrcDir()
-	if srcDir == nil {
-		srcDir1 := filepath.Join(tempDirDeal, "src")
-		srcDir = &srcDir1
-		scheduler.AddSrcDir(*srcDir)
-	}
-
-	err = libutils.CreateDir(*srcDir)
+	srcDir, err := scheduler.GetSrcDir()
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, nil, nil, err
 	}
 
 	filename := srcFile.Filename
-	if libutils.IsFileExists(*srcDir, filename) {
+	if libutils.IsFileExists(srcDir.SrcDir, filename) {
 		for i := 0; ; i++ {
 			filename = srcFile.Filename + strconv.Itoa(i)
-			if !libutils.IsFileExists(*srcDir, filename) {
+			if !libutils.IsFileExists(srcDir.SrcDir, filename) {
 				break
 			}
 		}
 	}
 
-	srcFilepath := filepath.Join(*srcDir, filename)
+	srcFilepath := filepath.Join(srcDir.SrcDir, filename)
 	logs.GetLogger().Info("saving source file to ", srcFilepath)
 	err = c.SaveUploadedFile(srcFile, srcFilepath)
 	if err != nil {

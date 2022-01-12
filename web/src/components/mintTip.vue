@@ -10,7 +10,7 @@
                 <el-form-item :label="'NFT'+$t('uploadFile.nft_Description')" prop="description">
                     <el-input v-model="ruleForm.description" type="textarea" :rows="2"></el-input>
                 </el-form-item>
-                <el-form-item :label="$t('billing.PAYLOADCID')" prop="image">
+                <el-form-item :label="$t('uploadFile.nft_IPFSURL')" prop="image">
                     <el-input v-model="ruleForm.image" readOnly></el-input>
                 </el-form-item>
                 <el-form-item :label="$t('uploadFile.Payment_Transaction_Hash')" prop="tx_hash">
@@ -78,7 +78,7 @@
                             })
 
                             var formData = new FormData()
-                            formData.append('file', fileBlob, `${that.ruleForm.name}.json`)
+                            formData.append('file', fileBlob, `${that.ruleForm.name}`)
                             formData.append('duration', 180)
                             formData.append('wallet_address', that.metaAddress)
 
@@ -87,7 +87,7 @@
 
                             let nftContract = new web3.eth.Contract(
                                 nftContractAbi,
-                                process.env.NEXT_PUBLIC_MINT_CONTRACT,
+                                that.$root.MINT_CONTRACT,
                                 { from: that.metaAddress, gas: 9999999 },
                             )
                             const transaction = await nftContract.methods

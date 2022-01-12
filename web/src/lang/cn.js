@@ -469,7 +469,7 @@ export default {
         create_time: '创建时间',
         deal_id: '交易ID',
         payment: '支付',
-        MINT: 'MINT',
+        MINT: '铸造',
         pay: '支付',
         failed: '失败',
         paid: '已支付',
@@ -542,10 +542,15 @@ export default {
         nft_title: '创建您的',
         nft_Name: '名称',
         nft_Description: '描述',
+        nft_IPFSURL: 'IPFS链接',
         Payment_Transaction_Hash: '支付交易哈希',
         Back: '关闭',
-        Minting: 'Minting…',
-        Mint_NFT: 'Mint NFT'
+        Minting: '铸造中…',
+        Mint_NFT: '铸造NFT',
+        View_Your_NFT: '查看您的NFT',
+        View_Your_NFT_tips: '您的NFT已经成功铸造！您可以在这里查看该交易：',
+        View_Your_NFT_OpenSea: '点击到OpenSea查看您的NFT',
+        View_Your_NFT_Note: '注意：OpenSea需要一些时间加载您的NFT。'
     },
     billing: {
         search_placeholder: '按交易哈希搜索',

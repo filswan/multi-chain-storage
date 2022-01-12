@@ -536,11 +536,16 @@ export default {
         update_time: 'Update Time:',
         nft_title: 'Create Your ',
         nft_Name: 'Name',
+        nft_IPFSURL: 'IPFS URL',
         nft_Description: 'Description',
         Payment_Transaction_Hash: 'Payment Transaction Hash',
         Back: 'Back',
         Minting: 'Minting…',
-        Mint_NFT: 'Mint NFT'
+        Mint_NFT: 'Mint NFT',
+        View_Your_NFT: 'View Your NFT',
+        View_Your_NFT_tips: 'Your NFT has been minted! You can view the transaction here:',
+        View_Your_NFT_OpenSea: 'Click here to view your NFT on OpenSea',
+        View_Your_NFT_Note: 'Note: The NFT will take some time to load on Opensea.'
     },
     billing: {
         search_placeholder: 'Search by TX HASH',

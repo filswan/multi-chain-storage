@@ -75,7 +75,7 @@ func ScanEventFromChainAndSaveDataToDbForGoerli() {
 			} else {
 				blockScanRecord.NetworkId = networkId
 			}
-			blockScanRecord.UpdateAt = strconv.FormatInt(common2.GetEpochInMillis(), 10)
+			blockScanRecord.UpdateAt = strconv.FormatInt(common2.GetCurrentUtcMilliSecond(), 10)
 
 			err = database.SaveOne(blockScanRecord)
 			if err != nil {

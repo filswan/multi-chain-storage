@@ -69,7 +69,7 @@ func ScanEventFromChainAndSaveDataToDbForNBAI() {
 				blockScanRecord.LastCurrentBlockNumber = end
 			}
 
-			blockScanRecord.UpdateAt = strconv.FormatInt(utils.GetEpochInMillis(), 10)
+			blockScanRecord.UpdateAt = strconv.FormatInt(utils.GetCurrentUtcMilliSecond(), 10)
 
 			err = database.SaveOne(blockScanRecord)
 			if err != nil {

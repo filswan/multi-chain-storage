@@ -125,7 +125,7 @@ func ScanPolygonLockPaymentEventFromChainAndSaveEventLogData(blockNoFrom, blockN
 				} else {
 					event.LockPaymentTime = strconv.FormatUint(block.Time(), 10)
 				}
-				currrentTime := strconv.FormatInt(utils.GetEpochInMillis(), 10)
+				currrentTime := strconv.FormatInt(utils.GetCurrentUtcMilliSecond(), 10)
 				event.CreateAt = currrentTime
 				err = database.SaveOneWithTransaction(event)
 				if err != nil {

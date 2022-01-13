@@ -36,6 +36,8 @@ expire_days = 4
 verified_deal = false
 fast_retrieval = true
 start_epoch_hours = 96
+max_auto_bid_copy_number = 5 # max copy number you want to send
+min_file_size_mb = 1024   # unit: MB
 
 [schedule_rule]
 unlock_payment_rule = "0 */5 * * * ?"  #every minute

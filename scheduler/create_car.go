@@ -20,9 +20,7 @@ import (
 )
 
 const (
-	SRC_FILE_SIZE_MIN = int64(1 * 1024) // * 1024 // * 1024
-	CAR_FILE_SIZE_MIN = int64(1 * 1024) // * 1024 //* 1024
-	DURATION          = 500
+	DURATION = 500
 )
 
 var carDir string
@@ -132,7 +130,9 @@ func createCar() error {
 		createAnyway = true
 	}
 
-	if !createAnyway && totalSize < SRC_FILE_SIZE_MIN {
+	fileSizeMin := config.GetConfig().SwanTask.MinFileSizeMb * 1024 * 1024
+
+	if !createAnyway && totalSize < fileSizeMin {
 		os.RemoveAll(carSrcDir)
 		err := fmt.Errorf("source file size is not enough")
 		logs.GetLogger().Error("source file size is not enough")
@@ -154,10 +154,10 @@ func createCar() error {
 		return err
 	}
 
-	if !createAnyway && fileDesc.CarFileSize < CAR_FILE_SIZE_MIN {
+	if !createAnyway && fileDesc.CarFileSize < fileSizeMin {
 		os.RemoveAll(carSrcDir)
 		os.RemoveAll(carDestDir)
-		err := fmt.Errorf("car file size is less than %d", CAR_FILE_SIZE_MIN)
+		err := fmt.Errorf("car file size is less than %d", fileSizeMin)
 		logs.GetLogger().Error(err)
 		return err
 	}

@@ -312,7 +312,8 @@ func RecordMintInfo(c *gin.Context) {
 	payloadCid := model.PayloadCid
 	nftTxHash := model.TxHash
 	tokenId := model.TokenId
-	if payloadCid == "" || nftTxHash == "" || tokenId == "" {
+	mintAddress := model.MintAddress
+	if payloadCid == "" || nftTxHash == "" || tokenId == "" || mintAddress == "" {
 		errMsg := "payload_cid, tx_hash and token_id cannot be nil"
 		err := errors.New(errMsg)
 		logs.GetLogger().Error(err)
@@ -335,6 +336,7 @@ func RecordMintInfo(c *gin.Context) {
 			} else {
 				sourceFile.NftTxHash = nftTxHash
 				sourceFile.TokenId = tokenId
+				sourceFile.MintAddress = mintAddress
 				database.SaveOneWithTransaction(sourceFile)
 				c.JSON(http.StatusOK, common.CreateSuccessResponse(sourceFile))
 			}
@@ -359,4 +361,5 @@ type mintInfoUpload struct {
 	PayloadCid string `json:"payload_cid"`
 	TxHash     string `json:"tx_hash"`
 	TokenId    string `json:"token_id"`
+	MintAddress string `json:"mint_address"`
 }

@@ -4,7 +4,6 @@ import (
 	"payment-bridge/common/constants"
 	"payment-bridge/common/utils"
 	"payment-bridge/database"
-	"strconv"
 
 	"github.com/filswan/go-swan-lib/logs"
 )
@@ -28,7 +27,7 @@ type DealFile struct {
 	Cost                string `json:"cost"`
 	CreateAt            int64  `json:"create_at"`
 	UpdateAt            int64  `json:"update_at"`
-	DeleteAt            string `json:"delete_at"`
+	DeleteAt            int64  `json:"delete_at"`
 	LockPaymentTx       string `json:"lock_payment_tx"`
 	LockPaymentStatus   string `json:"lock_payment_status"`
 	LockPaymentNetwork  int64  `json:"lock_payment_network"`
@@ -70,7 +69,7 @@ func DeleteDealFile(whereCondition interface{}) error {
 	db := database.GetDB()
 	var dealFile *DealFile
 	deleteTime := utils.GetCurrentUtcMilliSecond()
-	err := db.Model(&dealFile).Where(whereCondition).UpdateColumns(&DealFile{IsDeleted: utils.GetBoolPointer(true), DeleteAt: strconv.FormatInt(deleteTime, 10)}).Error
+	err := db.Model(&dealFile).Where(whereCondition).UpdateColumns(&DealFile{IsDeleted: utils.GetBoolPointer(true), DeleteAt: deleteTime}).Error
 
 	return err
 }

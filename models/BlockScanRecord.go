@@ -5,10 +5,10 @@ import (
 )
 
 type BlockScanRecord struct {
-	ID                     int64  `json:"id"`
-	NetworkId              int64  `json:"network_id"`
-	LastCurrentBlockNumber int64  `json:"last_current_block_number"`
-	UpdateAt               string `json:"update_at"`
+	ID                     int64 `json:"id"`
+	NetworkId              int64 `json:"network_id"`
+	LastCurrentBlockNumber int64 `json:"last_current_block_number"`
+	UpdateAt               int64 `json:"update_at"`
 }
 
 func (self *BlockScanRecord) FindLastCurrentBlockNumber(whereCondition string) ([]*BlockScanRecord, error) {

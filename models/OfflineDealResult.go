@@ -44,8 +44,8 @@ type OfflineDeal struct {
 	Status        string      `json:"status"`
 	Cost          string      `json:"cost"`
 	PayStatus     string      `json:"pay_status"`
-	UpdatedAt     string      `json:"updated_at"`
-	CreatedAt     string      `json:"created_at"`
+	UpdatedAt     int64       `json:"updated_at"`
+	CreatedAt     int64       `json:"created_at"`
 }
 
 // FindOfflineDeals (&OfflineDeal{Id: "0xadeaCC802D0f2DFd31bE4Fa7434F15782Fd720ac"},"id desc","10","0")

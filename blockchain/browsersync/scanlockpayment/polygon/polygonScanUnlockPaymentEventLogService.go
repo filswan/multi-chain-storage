@@ -92,7 +92,7 @@ func ScanPolygonUnLockPaymentEventFromChainAndSaveToDB(blockNoFrom, blockNoTo in
 				}
 				event.UnlockFromAddress = polygonConfig.PolygonMainnetNode.PaymentContractAddress
 				event.BlockNo = strconv.FormatUint(vLog.BlockNumber, 10)
-				event.CreateAt = strconv.FormatInt(utils.GetCurrentUtcMilliSecond(), 10)
+				event.CreateAt = utils.GetCurrentUtcMilliSecond()
 			} else {
 				event = eventList[0]
 			}

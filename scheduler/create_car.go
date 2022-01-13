@@ -2,7 +2,6 @@ package scheduler
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"payment-bridge/common/constants"
@@ -90,20 +89,6 @@ func CreateCarScheduler() {
 	c.Start()
 }
 
-func getFilesSize(dir string) (*int64, error) {
-	srcFiles, err := ioutil.ReadDir(dir)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-	srcFilesSize := int64(0)
-	for _, srcFile := range srcFiles {
-		srcFilesSize = srcFilesSize + srcFile.Size()
-	}
-
-	return &srcFilesSize, nil
-}
-
 func createCar() error {
 	currentTimeStr := time.Now().Format("2006-01-02T15:04:05")
 	carSrcDir := filepath.Join(carDir, "src_"+currentTimeStr)
@@ -176,18 +161,6 @@ func createCar() error {
 }
 
 func createCarFile(srcDir, carDir string) (*libmodel.FileDesc, error) {
-	srcFilesSize, err := getFilesSize(srcDir)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-
-	if *srcFilesSize < SRC_FILE_SIZE_MIN {
-		err := fmt.Errorf("source file size is less than %d", SRC_FILE_SIZE_MIN)
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-
 	cmdIpfsCar := &command.CmdIpfsCar{
 		LotusClientApiUrl:         config.GetConfig().Lotus.ClientApiUrl,
 		LotusClientAccessToken:    config.GetConfig().Lotus.ClientAccessToken,

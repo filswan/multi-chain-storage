@@ -143,6 +143,14 @@ func createCar() error {
 		return err
 	}
 
+	if fileDesc.CarFileSize < CAR_FILE_SIZE_MIN {
+		os.RemoveAll(carSrcDir)
+		os.RemoveAll(carDestDir)
+		err := fmt.Errorf("car file size is less than %d", CAR_FILE_SIZE_MIN)
+		logs.GetLogger().Error(err)
+		return err
+	}
+
 	err = saveCarInfo2DB(fileDesc, srcFiles)
 	if err != nil {
 		os.RemoveAll(carSrcDir)
@@ -169,6 +177,7 @@ func createCarFile(srcDir, carDir string) (*libmodel.FileDesc, error) {
 		GenerateMd5:               false,
 		IpfsServerUploadUrlPrefix: config.GetConfig().IpfsServer.UploadUrlPrefix,
 	}
+
 	fileDescs, err := cmdIpfsCar.CreateIpfsCarFiles()
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -176,12 +185,6 @@ func createCarFile(srcDir, carDir string) (*libmodel.FileDesc, error) {
 	}
 
 	fileDesc := fileDescs[0]
-
-	if fileDesc.CarFileSize < CAR_FILE_SIZE_MIN {
-		err := fmt.Errorf("car file size is less than %d", CAR_FILE_SIZE_MIN)
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
 
 	logs.GetLogger().Info("car files created in ", carDir, "payload_cid=", fileDesc.PayloadCid)
 

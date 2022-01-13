@@ -21,7 +21,7 @@ type EventGoerli struct {
 	AddressTo       string `json:"address_to"`
 	CoinType        string `json:"coin_type"`
 	LockPaymentTime string `json:"lock_payment_time"`
-	CreateAt        string `json:"create_at"`
+	CreateAt        int64  `json:"create_at"`
 }
 
 func (self *EventGoerli) FindOneEventGoerli(condition interface{}) (*EventGoerli, error) {

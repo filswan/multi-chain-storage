@@ -120,6 +120,7 @@ func DoCreateTask() error {
 			StartEpochHours:            startEpochIntervalHours,
 			SourceId:                   constants.SOURCE_ID_OF_PAYMENT,
 			Duration:                   deal.Duration,
+			MaxAutoBidCopyNumber:       5,
 		}
 
 		_, fileDescs, _, err := cmdTask.CreateTask(nil)

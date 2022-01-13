@@ -18,7 +18,7 @@ type EventUnlockPayment struct {
 	UnlockToAdminAddress string `json:"unlock_to_admin_address"`
 	UnlockToAdminAmount  string `json:"unlock_to_admin_amount"`
 	UnlockTime           string `json:"unlock_time"`
-	CreateAt             string `json:"create_at"`
+	CreateAt             int64  `json:"create_at"`
 	CoinId               int64  `json:"coin_id"`
 	UnlockStatus         string `json:"unlock_status"`
 }

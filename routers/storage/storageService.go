@@ -16,7 +16,6 @@ import (
 	"payment-bridge/scheduler"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/filswan/go-swan-lib/logs"
 
@@ -30,48 +29,21 @@ import (
 )
 
 func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration int, walletAddress string) (*string, *string, *int, error) {
-	tempDirDeal := config.GetConfig().SwanTask.DirDeal
-	homedir, err := os.UserHomeDir()
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, nil, nil, err
-	}
-	tempDirDeal = filepath.Join(homedir, tempDirDeal[2:])
-
-	currentTime, err := time.Now().UTC().MarshalText()
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, nil, nil, err
-	}
-
-	tempDirDeal = filepath.Join(tempDirDeal, string(currentTime))
-
 	srcDir := scheduler.GetSrcDir()
-	if srcDir == nil {
-		srcDir1 := filepath.Join(tempDirDeal, "src")
-		srcDir = &srcDir1
-		scheduler.AddSrcDir(*srcDir)
-	}
-
-	err = libutils.CreateDir(*srcDir)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, nil, nil, err
-	}
 
 	filename := srcFile.Filename
-	if libutils.IsFileExists(*srcDir, filename) {
+	if libutils.IsFileExists(srcDir, filename) {
 		for i := 0; ; i++ {
 			filename = srcFile.Filename + strconv.Itoa(i)
-			if !libutils.IsFileExists(*srcDir, filename) {
+			if !libutils.IsFileExists(srcDir, filename) {
 				break
 			}
 		}
 	}
 
-	srcFilepath := filepath.Join(*srcDir, filename)
+	srcFilepath := filepath.Join(srcDir, filename)
 	logs.GetLogger().Info("saving source file to ", srcFilepath)
-	err = c.SaveUploadedFile(srcFile, srcFilepath)
+	err := c.SaveUploadedFile(srcFile, srcFilepath)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, nil, nil, err
@@ -95,26 +67,85 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration int, walle
 
 	needPay := 0
 
-	if len(sourceFiles) > 0 {
+	// not uploaded by anyone yet
+	if len(sourceFiles) == 0 {
 		needPay = 1
+
+		sourceFile := new(models.SourceFile)
+		sourceFile.FileName = srcFile.Filename
+		sourceFile.FileSize = strconv.FormatInt(srcFile.Size, 10)
+		sourceFile.ResourceUri = srcFilepath
+		sourceFile.Status = constants.SOURCE_FILE_STATUS_CREATED
+		sourceFile.CreateAt = utils.GetCurrentUtcMilliSecond()
+		sourceFile.IpfsUrl = ipfsUrl
+		sourceFile.PinStatus = constants.IPFS_File_PINNED_STATUS
+		sourceFile.WalletAddress = walletAddress
+		sourceFile.PayloadCid = *ipfsFileHash
+		err = database.SaveOne(sourceFile)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return nil, nil, nil, err
+		}
+
+		return ipfsFileHash, &ipfsUrl, &needPay, nil
+	}
+
+	// remove the current copy of file
+	err = os.Remove(srcFilepath)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, nil, nil, err
+	}
+
+	for _, srcFile := range sourceFiles {
+		// uploaded by the same wallet
+		if srcFile.PayloadCid == *ipfsFileHash && srcFile.WalletAddress == walletAddress {
+			eventLockPayments, err := models.GetEventLockPaymentByPayloadCidWallet(*ipfsFileHash, walletAddress)
+			if err != nil {
+				logs.GetLogger().Error(err)
+				return nil, nil, nil, err
+			}
+
+			if len(eventLockPayments) > 0 { // paid by the same wallet
+				needPay = 1
+			} else { // not paid by the same wallet
+				needPay = 2
+			}
+
+			return &srcFile.PayloadCid, &srcFile.IpfsUrl, &needPay, nil
+		}
+	}
+
+	// uploaded by other wallet
+	eventLockPayments, err := models.GetEventLockPaymentByPayloadCid(*ipfsFileHash)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, nil, nil, err
+	}
+
+	if len(eventLockPayments) > 0 { // uploaded and paid by others
+		needPay = 3
+	} else { // uploaded by others but not paid
+		needPay = 4
 	}
 
 	sourceFile := new(models.SourceFile)
 	sourceFile.FileName = srcFile.Filename
 	sourceFile.FileSize = strconv.FormatInt(srcFile.Size, 10)
-	sourceFile.ResourceUri = srcFilepath
-	sourceFile.CreateAt = strconv.FormatInt(utils.GetEpochInMillis(), 10)
-	sourceFile.IpfsUrl = ipfsUrl
+	sourceFile.ResourceUri = sourceFiles[0].ResourceUri
+	sourceFile.Status = constants.SOURCE_FILE_STATUS_CREATED
+	sourceFile.CreateAt = utils.GetCurrentUtcMilliSecond()
+	sourceFile.IpfsUrl = sourceFiles[0].IpfsUrl
 	sourceFile.PinStatus = constants.IPFS_File_PINNED_STATUS
 	sourceFile.WalletAddress = walletAddress
-	sourceFile.PayloadCid = *ipfsFileHash
+	sourceFile.PayloadCid = sourceFiles[0].PayloadCid
 	err = database.SaveOne(sourceFile)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, nil, nil, err
 	}
 
-	return ipfsFileHash, &ipfsUrl, &needPay, nil
+	return &sourceFile.PayloadCid, &sourceFile.IpfsUrl, &needPay, nil
 }
 
 func GetSourceFileAndDealFileInfoByPayloadCid(payloadCid string) ([]*SourceFileAndDealFileInfo, error) {
@@ -195,7 +226,7 @@ func GetLockFoundInfoByPayloadCid(payloadCid string) (*LockFound, error) {
 	if len(lockEventList) > 0 {
 		lockFound.PayloadCid = lockEventList[0].PayloadCid
 		lockFound.LockedFee = lockEventList[0].LockedFee
-		lockFound.CreateAt = lockEventList[0].CreateAt
+		lockFound.CreateAt = strconv.FormatInt(lockEventList[0].CreateAt, 10)
 	}
 	return lockFound, nil
 }

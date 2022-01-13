@@ -10,7 +10,6 @@ type SystemConfigParam struct {
 	ParamKey   string `json:"param_key"`
 	ParamValue string `json:"param_value"`
 	Module     string `json:"module"`
-	CreateAt   string `json:"create_at"`
 }
 
 // FindSystemConfigParam (&SystemConfigParam{Id: "0xadeaCC802D0f2DFd31bE4Fa7434F15782Fd720ac"},"id desc","10","0")

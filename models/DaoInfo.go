@@ -11,7 +11,7 @@ type DaoInfo struct {
 	DaoAddress  string `json:"dao_address"`
 	OrderIndex  string `json:"order_index"`
 	Description string `json:"description"`
-	CreateAt    string `json:"create_at"`
+	CreateAt    int64  `json:"create_at"`
 }
 
 // FindDaoInfoList (&DaoInfo{Id: "0xadeaCC802D0f2DFd31bE4Fa7434F15782Fd720ac"},"id desc","10","0")

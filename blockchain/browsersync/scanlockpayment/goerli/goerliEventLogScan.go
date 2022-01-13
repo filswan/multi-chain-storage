@@ -7,7 +7,6 @@ import (
 	common2 "payment-bridge/common/utils"
 	"payment-bridge/database"
 	models2 "payment-bridge/models"
-	"strconv"
 	"sync"
 	"time"
 
@@ -75,7 +74,7 @@ func ScanEventFromChainAndSaveDataToDbForGoerli() {
 			} else {
 				blockScanRecord.NetworkId = networkId
 			}
-			blockScanRecord.UpdateAt = strconv.FormatInt(common2.GetEpochInMillis(), 10)
+			blockScanRecord.UpdateAt = common2.GetCurrentUtcMilliSecond()
 
 			err = database.SaveOne(blockScanRecord)
 			if err != nil {

@@ -94,7 +94,7 @@ func ScanBscEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) erro
 				event.LockedFee = lockFee.String()
 				deadLine := dataList[4].(*big.Int)
 				event.Deadline = deadLine.String()
-				event.CreateAt = strconv.FormatInt(utils.GetEpochInMillis(), 10)
+				event.CreateAt = utils.GetCurrentUtcMilliSecond()
 				block, err := WebConn.ConnWeb.BlockByNumber(context.Background(), big.NewInt(int64(vLog.BlockNumber)))
 				if err != nil {
 					logs.GetLogger().Error(err)

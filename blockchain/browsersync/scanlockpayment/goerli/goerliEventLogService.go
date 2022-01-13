@@ -110,7 +110,7 @@ func ScanGoerliEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) e
 				}
 				//todo
 				event.EventName = "USDC"
-				event.CreateAt = strconv.FormatInt(utils.GetEpochInMillis(), 10)
+				event.CreateAt = utils.GetCurrentUtcMilliSecond()
 				err = database.SaveOne(event)
 				if err != nil {
 					logs.GetLogger().Error(err)

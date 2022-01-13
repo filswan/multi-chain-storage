@@ -23,6 +23,8 @@ import (
 )
 
 func main() {
+	//logs.GetLogger().Info(errorinfo.GetErrMsg("abc"))
+	//logs.GetLogger().Info(errorinfo.GetErrMsg(errorinfo.GET_EVENT_FROM_DB_ERROR_CODE))
 	LoadEnv()
 
 	db := database.Init()

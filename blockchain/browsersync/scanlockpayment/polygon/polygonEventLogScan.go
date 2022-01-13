@@ -88,7 +88,7 @@ func ScanEventFromChainAndSaveDataToDbForPolygon() {
 			} else {
 				blockScanRecord.NetworkId = networkId
 			}
-			blockScanRecord.UpdateAt = strconv.FormatInt(utils.GetEpochInMillis(), 10)
+			blockScanRecord.UpdateAt = utils.GetCurrentUtcMilliSecond()
 
 			err = database.SaveOne(blockScanRecord)
 			if err != nil {

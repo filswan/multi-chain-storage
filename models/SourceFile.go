@@ -11,9 +11,10 @@ type SourceFile struct {
 	ID            int64  `json:"id"`
 	FileName      string `json:"file_name"`
 	ResourceUri   string `json:"resource_uri"`
+	Status        string `json:"status"`
 	FileSize      string `json:"file_size"`
 	Dataset       string `json:"dataset"`
-	CreateAt      string `json:"create_at"`
+	CreateAt      int64  `json:"create_at"`
 	IpfsUrl       string `json:"ipfs_url"`
 	PinStatus     string `json:"pin_status"`
 	WalletAddress string `json:"wallet_address"`
@@ -37,7 +38,20 @@ func FindSourceFileList(whereCondition interface{}, orderCondition, limit, offse
 func GetSourceFilesByPayloadCid(payloadCid string) ([]*SourceFile, error) {
 	var sourceFiles []*SourceFile
 
-	err := database.GetDB().Where("payload_cid=?", payloadCid).Find(&sourceFiles).Error
+	err := database.GetDB().Where("payload_cid=?", payloadCid).Order("create_at").Find(&sourceFiles).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	return sourceFiles, nil
+}
+
+func GetSourceFilesNeed2Car() ([]*SourceFile, error) {
+	var sourceFiles []*SourceFile
+	sql := "select a.* from source_file a,event_lock_payment b where a.status =? and a.payload_cid=b.payload_cid and a.wallet_address=b.address_from"
+	err := database.GetDB().Raw(sql, constants.SOURCE_FILE_STATUS_CREATED).Scan(&sourceFiles).Error
+
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err

@@ -24,7 +24,7 @@ type EventLockPayment struct {
 	CoinId          int64  `json:"coin_id"`
 	NetworkId       int64  `json:"network_id"`
 	LockPaymentTime string `json:"lock_payment_time"`
-	CreateAt        string `json:"create_at"`
+	CreateAt        int64  `json:"create_at"`
 	UnlockTxHash    string `json:"unlock_tx_hash"`
 	UnlockTxStatus  string `json:"unlock_tx_status"`
 	UnlockTime      string `json:"unlock_time"`
@@ -99,4 +99,28 @@ func GetTotalLockFeeByCarPayloadCid(carFilePayloadCid string) (*decimal.Decimal,
 	}
 
 	return &totalLockFee, nil
+}
+
+func GetEventLockPaymentByPayloadCidWallet(payloadCid, walletAddress string) ([]*EventLockPayment, error) {
+	var eventLockPayment []*EventLockPayment
+	err := database.GetDB().Where("payload_cid=? and address_from=?", payloadCid, walletAddress).Find((&eventLockPayment)).Error
+
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	return eventLockPayment, nil
+}
+
+func GetEventLockPaymentByPayloadCid(payloadCid string) ([]*EventLockPayment, error) {
+	var eventLockPayment []*EventLockPayment
+	err := database.GetDB().Where("payload_cid=?", payloadCid).Find((&eventLockPayment)).Error
+
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	return eventLockPayment, nil
 }

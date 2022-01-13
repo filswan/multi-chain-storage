@@ -140,7 +140,7 @@ func LockPaymentService(client *ethclient.Client, userWalletAddress, privateKeyO
 
 	paymentParam := new(goBind.IPaymentMinimallockPaymentParam)
 	paymentParam.Id = payloadCid
-	paymentParam.LockTime = big.NewInt(utils.GetEpochInMillis())
+	paymentParam.LockTime = big.NewInt(utils.GetCurrentUtcMilliSecond())
 	paymentParam.Amount = lockedFee
 
 	tx, err := paymentGatewayInstance.LockTokenPayment(callOpts, *paymentParam)

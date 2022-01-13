@@ -6,7 +6,6 @@ import (
 	"payment-bridge/common/utils"
 	"payment-bridge/database"
 	models2 "payment-bridge/models"
-	"strconv"
 	"sync"
 	"time"
 
@@ -69,7 +68,7 @@ func ScanEventFromChainAndSaveDataToDbForBsc() {
 				blockScanRecord.LastCurrentBlockNumber = end
 			}
 
-			blockScanRecord.UpdateAt = strconv.FormatInt(utils.GetEpochInMillis(), 10)
+			blockScanRecord.UpdateAt = utils.GetCurrentUtcMilliSecond()
 
 			err = database.SaveOne(blockScanRecord)
 			if err != nil {

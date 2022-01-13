@@ -202,9 +202,9 @@ func saveUnlockEventLogToDB(logsInChain []*types.Log, recipient string, unlockSt
 				event.UnlockToUserAmount = dataList[3].(*big.Int).String()
 				event.UnlockToAdminAddress = dataList[4].(common.Address).Hex()
 				event.UnlockToUserAddress = dataList[5].(common.Address).Hex()
-				event.UnlockTime = strconv.FormatInt(utils.GetEpochInMillis(), 10)
+				event.UnlockTime = strconv.FormatInt(utils.GetCurrentUtcMilliSecond(), 10)
 				event.BlockNo = strconv.FormatUint(vLog.BlockNumber, 10)
-				event.CreateAt = strconv.FormatInt(utils.GetEpochInMillis(), 10)
+				event.CreateAt = utils.GetCurrentUtcMilliSecond()
 				event.UnlockStatus = unlockStatus
 				err = database.SaveOneWithTransaction(event)
 				if err != nil {

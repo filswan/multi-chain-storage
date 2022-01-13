@@ -1,7 +1,6 @@
 package models
 
 import (
-	"payment-bridge/common/utils"
 	"payment-bridge/database"
 )
 
@@ -24,7 +23,6 @@ func (self *BlockScanRecord) FindLastCurrentBlockNumber(whereCondition string) (
 func UpdateBlockScanRecord(whereCondition interface{}, updateFields interface{}) (BlockScanRecord, error) {
 	db := database.GetDB()
 	var record BlockScanRecord
-	utils.GetEpochInMillis()
 	err := db.Model(&record).Where(whereCondition).Update(updateFields).Error
 	return record, err
 }

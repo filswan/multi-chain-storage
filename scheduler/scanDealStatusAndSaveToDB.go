@@ -7,7 +7,6 @@ import (
 	"payment-bridge/config"
 	"payment-bridge/database"
 	"payment-bridge/models"
-	"strconv"
 	"strings"
 	"time"
 
@@ -69,7 +68,7 @@ func GetDealInfoByLotusClientAndUpdateInfoToDB() error {
 		v.DealId = dealInfo.DealId
 		v.Cost = dealInfo.CostComputed
 		v.LockPaymentStatus = paymentStatus
-		v.UpdateAt = strconv.FormatInt(utils.GetEpochInMillis(), 10)
+		v.UpdateAt = utils.GetCurrentUtcMilliSecond()
 		err = database.SaveOne(v)
 		if err != nil {
 			logs.GetLogger().Error(err)

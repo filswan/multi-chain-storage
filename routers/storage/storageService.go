@@ -76,7 +76,7 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration int, walle
 		sourceFile.FileSize = strconv.FormatInt(srcFile.Size, 10)
 		sourceFile.ResourceUri = srcFilepath
 		sourceFile.Status = constants.SOURCE_FILE_STATUS_CREATED
-		sourceFile.CreateAt = strconv.FormatInt(utils.GetEpochInMillis(), 10)
+		sourceFile.CreateAt = utils.GetCurrentUtcMilliSecond()
 		sourceFile.IpfsUrl = ipfsUrl
 		sourceFile.PinStatus = constants.IPFS_File_PINNED_STATUS
 		sourceFile.WalletAddress = walletAddress
@@ -134,7 +134,7 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration int, walle
 	sourceFile.FileSize = strconv.FormatInt(srcFile.Size, 10)
 	sourceFile.ResourceUri = sourceFiles[0].ResourceUri
 	sourceFile.Status = constants.SOURCE_FILE_STATUS_CREATED
-	sourceFile.CreateAt = strconv.FormatInt(utils.GetEpochInMillis(), 10)
+	sourceFile.CreateAt = utils.GetCurrentUtcMilliSecond()
 	sourceFile.IpfsUrl = sourceFiles[0].IpfsUrl
 	sourceFile.PinStatus = constants.IPFS_File_PINNED_STATUS
 	sourceFile.WalletAddress = walletAddress

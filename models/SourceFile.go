@@ -14,7 +14,7 @@ type SourceFile struct {
 	Status        string `json:"status"`
 	FileSize      string `json:"file_size"`
 	Dataset       string `json:"dataset"`
-	CreateAt      string `json:"create_at"`
+	CreateAt      int64  `json:"create_at"`
 	IpfsUrl       string `json:"ipfs_url"`
 	PinStatus     string `json:"pin_status"`
 	WalletAddress string `json:"wallet_address"`

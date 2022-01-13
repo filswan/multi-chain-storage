@@ -9,7 +9,6 @@ import (
 	"payment-bridge/config"
 	"payment-bridge/database"
 	"payment-bridge/models"
-	"strconv"
 	"sync"
 	"time"
 
@@ -108,7 +107,12 @@ func createCar() error {
 	}
 
 	totalSize := int64(0)
+	createdTimeMin := utils.GetCurrentUtcMilliSecond()
 	for _, srcFile := range srcFiles {
+		if srcFile.CreateAt < createdTimeMin {
+			createdTimeMin = srcFile.CreateAt
+		}
+
 		srcFilepathTemp := filepath.Join(carSrcDir, srcFile.FileName)
 
 		bytesCopied, err := libutils.CopyFile(srcFile.ResourceUri, srcFilepathTemp)
@@ -193,7 +197,6 @@ func createCarFile(srcDir, carDir string) (*libmodel.FileDesc, error) {
 
 func saveCarInfo2DB(fileDesc *libmodel.FileDesc, srcFiles []*models.SourceFile) error {
 	db := database.GetDBTransaction()
-	currentTime := utils.GetEpochInMillis()
 	dealFile := new(models.DealFile)
 	dealFile.CarFileName = fileDesc.CarFileName
 	dealFile.CarFilePath = fileDesc.CarFilePath
@@ -202,8 +205,8 @@ func saveCarInfo2DB(fileDesc *libmodel.FileDesc, srcFiles []*models.SourceFile) 
 	dealFile.PayloadCid = fileDesc.PayloadCid
 	dealFile.PieceCid = fileDesc.PieceCid
 	dealFile.DealCid = fileDesc.PayloadCid
-	dealFile.CreateAt = strconv.FormatInt(currentTime, 10)
-	dealFile.UpdateAt = strconv.FormatInt(currentTime, 10)
+	dealFile.CreateAt = utils.GetCurrentUtcMilliSecond()
+	dealFile.UpdateAt = dealFile.CreateAt
 	dealFile.Duration = DURATION
 	dealFile.LockPaymentStatus = constants.LOCK_PAYMENT_STATUS_WAITING
 	dealFile.IsDeleted = utils.GetBoolPointer(false)
@@ -219,8 +222,8 @@ func saveCarInfo2DB(fileDesc *libmodel.FileDesc, srcFiles []*models.SourceFile) 
 		filepMap.SourceFileId = srcFile.ID
 		filepMap.DealFileId = dealFile.ID
 		filepMap.FileIndex = 0
-		filepMap.CreateAt = strconv.FormatInt(currentTime, 10)
-		filepMap.UpdateAt = strconv.FormatInt(currentTime, 10)
+		filepMap.CreateAt = dealFile.CreateAt
+		filepMap.UpdateAt = dealFile.CreateAt
 		err = database.SaveOne(filepMap)
 		if err != nil {
 			db.Rollback()

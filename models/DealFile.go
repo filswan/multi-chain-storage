@@ -26,8 +26,8 @@ type DealFile struct {
 	Duration            int    `json:"duration"`
 	TaskUuid            string `json:"task_uuid"`
 	Cost                string `json:"cost"`
-	CreateAt            string `json:"create_at"`
-	UpdateAt            string `json:"update_at"`
+	CreateAt            int64  `json:"create_at"`
+	UpdateAt            int64  `json:"update_at"`
 	DeleteAt            string `json:"delete_at"`
 	LockPaymentTx       string `json:"lock_payment_tx"`
 	LockPaymentStatus   string `json:"lock_payment_status"`
@@ -69,7 +69,7 @@ func UpdateDealFile(whereCondition interface{}, updateFields interface{}) error 
 func DeleteDealFile(whereCondition interface{}) error {
 	db := database.GetDB()
 	var dealFile *DealFile
-	deleteTime := utils.GetEpochInMillis()
+	deleteTime := utils.GetCurrentUtcMilliSecond()
 	err := db.Model(&dealFile).Where(whereCondition).UpdateColumns(&DealFile{IsDeleted: utils.GetBoolPointer(true), DeleteAt: strconv.FormatInt(deleteTime, 10)}).Error
 
 	return err

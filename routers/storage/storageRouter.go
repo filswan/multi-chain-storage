@@ -39,7 +39,7 @@ func RecordDealListThatHaveBeenSignedByDao(c *gin.Context) {
 	}
 
 	idList := strings.Split(dealIdList.DealIdList, ",")
-	currentTime := strconv.FormatInt(utils.GetEpochInMillis(), 10)
+	currentTime := strconv.FormatInt(utils.GetCurrentUtcMilliSecond(), 10)
 	for _, v := range idList {
 		daoFetchedDeal := new(models.DaoFetchedDeal)
 		dealIdIntValue, err := strconv.ParseInt(v, 10, 64)

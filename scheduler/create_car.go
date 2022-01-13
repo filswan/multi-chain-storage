@@ -107,7 +107,8 @@ func createCar() error {
 	}
 
 	totalSize := int64(0)
-	createdTimeMin := utils.GetCurrentUtcMilliSecond()
+	currentUtcMilliSec := utils.GetCurrentUtcMilliSecond()
+	createdTimeMin := currentUtcMilliSec
 	for _, srcFile := range srcFiles {
 		if srcFile.CreateAt < createdTimeMin {
 			createdTimeMin = srcFile.CreateAt
@@ -125,7 +126,13 @@ func createCar() error {
 		totalSize = totalSize + bytesCopied
 	}
 
-	if totalSize < SRC_FILE_SIZE_MIN {
+	passedMilliSec := currentUtcMilliSec - createdTimeMin
+	createAnyway := false
+	if passedMilliSec >= 24*60*60*1000 {
+		createAnyway = true
+	}
+
+	if !createAnyway && totalSize < SRC_FILE_SIZE_MIN {
 		os.RemoveAll(carSrcDir)
 		err := fmt.Errorf("source file size is not enough")
 		logs.GetLogger().Error("source file size is not enough")
@@ -147,7 +154,7 @@ func createCar() error {
 		return err
 	}
 
-	if fileDesc.CarFileSize < CAR_FILE_SIZE_MIN {
+	if !createAnyway && fileDesc.CarFileSize < CAR_FILE_SIZE_MIN {
 		os.RemoveAll(carSrcDir)
 		os.RemoveAll(carDestDir)
 		err := fmt.Errorf("car file size is less than %d", CAR_FILE_SIZE_MIN)

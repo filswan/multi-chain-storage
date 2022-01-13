@@ -193,7 +193,9 @@ create table if not exists source_file
 	delete_at varchar(128) null,
 	user_id int null,
 	ipfs_url varchar(255) null,
-	pin_status varchar(32) null
+	pin_status varchar(32) null,
+	nft_tx_hash varchar(255) not null,
+	token_id varchar(200) not null
 );
 
 create table if not exists source_file_deal_file_map

@@ -27,6 +27,7 @@ func SendDealManager(router *gin.RouterGroup) {
 	//router.GET("/dao/signature/deal/:deal_id", GetDealListForDaoByDealId)
 	router.GET("/dao/signature/deals", GetDealListForDaoToSign)
 	router.PUT("/dao/signature/deals", RecordDealListThatHaveBeenSignedByDao)
+	router.POST("/mint/info", RecordMintInfo)
 }
 
 func RecordDealListThatHaveBeenSignedByDao(c *gin.Context) {
@@ -305,8 +306,57 @@ func GetDealListFromLocal(c *gin.Context) {
 	c.JSON(http.StatusOK, common.NewSuccessResponseWithPageInfo(infoList, pageInfo))
 }
 
+func RecordMintInfo(c *gin.Context) {
+	var model mintInfoUpload
+	c.BindJSON(&model)
+	payloadCid := model.PayloadCid
+	nftTxHash := model.TxHash
+	tokenId := model.TokenId
+	if payloadCid == "" || nftTxHash == "" || tokenId == "" {
+		errMsg := "payload_cid, tx_hash and token_id cannot be nil"
+		err := errors.New(errMsg)
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_CODE, errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_MSG+":"+errMsg))
+		return
+	}
+
+	dealList, err := models.FindDealFileList(&models.DealFile{PayloadCid: payloadCid}, "create_at desc", "10", "0")
+	if err != nil {
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE, errorinfo.GET_RECORD_lIST_ERROR_MSG))
+		return
+	} else {
+		if len(dealList) > 0 {
+			sourceFile, err := models.FindSourceFileByPayloadCid(dealList[0].PayloadCid)
+			if err != nil {
+				logs.GetLogger().Error(err)
+				c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.SAVE_DATA_TO_DB_ERROR_CODE, errorinfo.SAVE_DATA_TO_DB_ERROR_MSG))
+				return
+			} else {
+				sourceFile.NftTxHash = nftTxHash
+				sourceFile.TokenId = tokenId
+				database.SaveOneWithTransaction(sourceFile)
+				c.JSON(http.StatusOK, common.CreateSuccessResponse(sourceFile))
+			}
+		} else {
+			errMsg := "no deal is found"
+			err := errors.New(errMsg)
+			logs.GetLogger().Error(err)
+			c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.SAVE_DATA_TO_DB_ERROR_CODE, errorinfo.SAVE_DATA_TO_DB_ERROR_MSG+":"+errMsg))
+			return
+		}
+
+	}
+}
+
 type uploadResult struct {
 	PayloadCid string `json:"payload_cid"`
 	IpfsUrl    string `json:"ipfs_url"`
 	NeedPay    int    `json:"need_pay"`
+}
+
+type mintInfoUpload struct {
+	PayloadCid string `json:"payload_cid"`
+	TxHash     string `json:"tx_hash"`
+	TokenId    string `json:"token_id"`
 }

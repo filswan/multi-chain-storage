@@ -88,7 +88,7 @@
                             let nftContract = new web3.eth.Contract(
                                 nftContractAbi,
                                 that.$root.MINT_CONTRACT,
-                                { from: that.metaAddress, gas: 9999999 },
+                                { from: that.metaAddress, gas: web3.utils.toHex(that.$root.PAY_GAS_LIMIT) },
                             )
                             const transaction = await nftContract.methods
                             .mintData(that.metaAddress, nftUrl)
@@ -108,6 +108,13 @@
                             });
 
                             that.tokenId = await nftContract.methods.totalSupply().call()                            
+                            
+                            let mintInfoJson = {
+                                payload_cid: that.cid,
+                                tx_hash: that.nftHash,
+                                token_id: that.tokenId
+                            }
+                            const mintInfoResponse = await that.sendPostRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/storage/mint/info`, mintInfoJson)
                             
                             that.$emit('getMintDialog', false, that.tokenId, that.nftHash)
                         }
@@ -140,9 +147,9 @@
                     console.error(err)
                 }
             },
-            async sendPostRequest(apilink, formData) {
+            async sendPostRequest(apilink, jsonObject) {
                 try {
-                    const response = await axios.post(apilink, formData)
+                    const response = await axios.post(apilink, jsonObject)
                     return response.data
                 } catch (err) {
                     console.error(err)

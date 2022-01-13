@@ -303,15 +303,18 @@
           <el-table-column prop="MINT" width="100" :label="$t('uploadFile.MINT')">
             <template slot-scope="scope">
               <div class="hot-cold-box">
-                <el-button class="uploadBtn blue" type="primary"
-                  v-if="tableData[scope.$index].status.toLowerCase()!='pending'"
-                  @click.stop="mintFunction(scope.row)">
+                <el-button
+                  class="uploadBtn grey opacity"
+                  v-if="tableData[scope.$index].status.toLowerCase()=='pending' || tableData[scope.$index].status.toLowerCase()=='failed'"
+                  :disabled="true">
                   {{$t('uploadFile.MINT')}}
                 </el-button>
-                <el-button 
+                <el-button class="uploadBtn blue" type="primary"
+                  v-else-if="tableData[scope.$index].token_id"
+                  @click.stop="mintViewFunction(scope.row)">{{$t('uploadFile.mint_view')}}</el-button>
+                <el-button  class="uploadBtn blue" type="primary"
                   v-else
-                  :disabled="true"
-                  class="uploadBtn grey opacity">{{$t('uploadFile.MINT')}}</el-button>
+                  @click.stop="mintFunction(scope.row)">{{$t('uploadFile.MINT')}}</el-button>
               </div>
             </template>
           </el-table-column>
@@ -382,7 +385,6 @@
         </el-dialog>
         
         <el-dialog title="" :visible.sync="mintTransaction" :width="width"
-            :before-close="finishClose"
             custom-class="completeDia">
             <img src="@/assets/images/alert-icon.png" />
             <h1>{{$t('uploadFile.View_Your_NFT')}}</h1>
@@ -391,7 +393,7 @@
             <br />
             <a :href="'https://testnets.opensea.io/assets/mumbai/'+mintContractAddress+'/'+tokenId" target="_blank">{{$t('uploadFile.View_Your_NFT_OpenSea')}}</a>
             <h3>{{$t('uploadFile.View_Your_NFT_Note')}}</h3>
-            <a class="a-close" @click="finishClose">{{$t('uploadFile.CLOSE')}}</a>
+            <a class="a-close" @click="mintTransaction=false">{{$t('uploadFile.CLOSE')}}</a>
         </el-dialog>
     <mint-tip v-if="mineVisible" :mineVisible="mineVisible" :cid="mintCID" :dealID="dealID" :fileSize="fileSize"
                 @getMintDialog="getMintDialog"></mint-tip>
@@ -564,6 +566,11 @@ export default {
       this.dealID = row.deal_id
       this.fileSize = row.file_size
       this.mineVisible=true
+    },
+    mintViewFunction(row){
+      this.tokenId = row.token_id
+      this.txHash = row.nft_tx_hash
+      this.mintTransaction=true
     },
     refundClick(row){
         let _this = this
@@ -746,6 +753,7 @@ export default {
         let _this = this
         _this.mineVisible = dialog
         if(nftHash) {
+          _this.getData()
           _this.tokenId = tokenId
           _this.txHash = nftHash
           _this.mintTransaction = true

@@ -465,6 +465,7 @@ export default {
         deal_id: 'Deal ID',
         payment: 'PAYMENT',
         MINT: 'MINT',
+        mint_view: 'VIEW',
         pay: 'PAY',
         failed: 'FAILED',
         paid: 'PAID',

@@ -227,12 +227,12 @@ func UploadFileToIpfs(c *gin.Context) {
 
 	payloadCid, ipfsDownloadPath, needPay, err := SaveFile(c, file, durationInt, walletAddress)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.SENDING_DEAL_ERROR_CODE))
+		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.SAVE_FILE_ERROR))
 		return
 	}
 
 	uploadResult := new(uploadResult)
-	logs.GetLogger().Info("----------------------------payload_cid: ", payloadCid, "-----------------------------")
+	logs.GetLogger().Info("payload_cid: ", payloadCid)
 	uploadResult.PayloadCid = *payloadCid
 	uploadResult.NeedPay = *needPay
 	uploadResult.IpfsUrl = *ipfsDownloadPath

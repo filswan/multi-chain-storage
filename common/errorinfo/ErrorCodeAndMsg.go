@@ -21,7 +21,7 @@ const (
 	UPDATE_DATA_TO_DB_ERROR_CODE = "500003004"
 
 	//lotus send deal err  005
-	SENDING_DEAL_ERROR_CODE                 = "500005001"
+	SAVE_FILE_ERROR                         = "500005001"
 	GET_LATEST_PRICE_OF_FILECOIN_ERROR_CODE = "500005002"
 	SENDING_DEAL_GET_NULL_RETURN_VALUE_CODE = "500005003"
 
@@ -50,7 +50,7 @@ func init() {
 		GET_RECORD_lIST_ERROR_CODE:                        "Get data records from db occurred error",
 		SAVE_DATA_TO_DB_ERROR_CODE:                        "Saving data to database occurred error",
 		UPDATE_DATA_TO_DB_ERROR_CODE:                      "Updating data to database occurred error",
-		SENDING_DEAL_ERROR_CODE:                           "Failed to save file on server, please contact the administrator",
+		SAVE_FILE_ERROR:                                   "Failed to save file on server, please contact the administrator",
 		GET_LATEST_PRICE_OF_FILECOIN_ERROR_CODE:           "Getting filecion latest price occurred error",
 		SENDING_DEAL_GET_NULL_RETURN_VALUE_CODE:           "Get null return value when deal had been sent",
 		GET_HOME_DIR_ERROR_CODE:                           "Getting home dir occurred error",

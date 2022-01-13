@@ -198,10 +198,9 @@ func GetDealListFromFilink(c *gin.Context) {
 func UploadFileToIpfs(c *gin.Context) {
 	walletAddress := c.PostForm("wallet_address")
 	if strings.Trim(walletAddress, " ") == "" {
-		errMsg := "wallet_address can not be null"
-		err := errors.New(errMsg)
+		err := fmt.Errorf("wallet_address can not be null")
 		logs.GetLogger().Error(err)
-		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_CODE, errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_MSG+":"+errMsg))
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_CODE, errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_MSG+":"+err.Error()))
 		return
 	}
 	file, err := c.FormFile("file")

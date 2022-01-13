@@ -470,6 +470,7 @@ export default {
         deal_id: '交易ID',
         payment: '支付',
         MINT: '铸造',
+        mint_view: '查看',
         pay: '支付',
         failed: '失败',
         paid: '已支付',

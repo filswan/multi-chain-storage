@@ -104,7 +104,7 @@ func getFilesSize(dir string) (*int64, error) {
 	return &srcFilesSize, nil
 }
 
-func createCar() {
+func createCar() error {
 	currentTimeStr := time.Now().Format("2006-01-02T15:04:05")
 	carSrcDir := filepath.Join(carDir, "src_"+currentTimeStr)
 	carDestDir := filepath.Join(carDir, "car_"+currentTimeStr)
@@ -112,14 +112,14 @@ func createCar() {
 	err := libutils.CreateDir(carSrcDir)
 	if err != nil {
 		logs.GetLogger().Error("creating dir:", carSrcDir, " failed,", err)
-		return
+		return err
 	}
 
 	srcFiles, err := models.GetSourceFilesNeed2Car()
 	if err != nil {
 		os.RemoveAll(carSrcDir)
 		logs.GetLogger().Error(err)
-		return
+		return err
 	}
 
 	totalSize := int64(0)
@@ -129,9 +129,8 @@ func createCar() {
 		bytesCopied, err := libutils.CopyFile(srcFile.ResourceUri, srcFilepathTemp)
 		if err != nil {
 			os.RemoveAll(carSrcDir)
-
 			logs.GetLogger().Error(err)
-			return
+			return err
 		}
 
 		totalSize = totalSize + bytesCopied
@@ -139,15 +138,16 @@ func createCar() {
 
 	if totalSize < SRC_FILE_SIZE_MIN {
 		os.RemoveAll(carSrcDir)
+		err := fmt.Errorf("source file size is not enough")
 		logs.GetLogger().Error("source file size is not enough")
-		return
+		return err
 	}
 
 	err = libutils.CreateDir(carDestDir)
 	if err != nil {
 		os.RemoveAll(carSrcDir)
 		logs.GetLogger().Error("creating dir:", carDestDir, " failed,", err)
-		return
+		return err
 	}
 
 	fileDesc, err := createCarFile(carSrcDir, carDestDir)
@@ -155,7 +155,7 @@ func createCar() {
 		os.RemoveAll(carSrcDir)
 		os.RemoveAll(carDestDir)
 		logs.GetLogger().Error(err)
-		return
+		return err
 	}
 
 	err = saveCarInfo2DB(fileDesc, srcFiles)
@@ -163,14 +163,16 @@ func createCar() {
 		os.RemoveAll(carSrcDir)
 		os.RemoveAll(carDestDir)
 		logs.GetLogger().Error(err)
-		return
+		return err
 	}
 
 	err = os.RemoveAll(carSrcDir)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return
+		return err
 	}
+
+	return nil
 }
 
 func createCarFile(srcDir, carDir string) (*libmodel.FileDesc, error) {

@@ -34,6 +34,8 @@ type SourceFileAndDealFileInfoExtend struct {
 	PieceCid   string `json:"piece_cid"`
 	Duration   int    `json:"duration"`
 	LockedFee  string `json:"locked_fee"`
+	NftTxHash  string `json:"nft_tx_hash"`
+	TokenId    string `json:"token_id"`
 }
 
 type filinkParams struct {

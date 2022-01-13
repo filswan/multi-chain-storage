@@ -47,22 +47,22 @@ func init() {
 
 	err = libutils.CreateDir(dealDir)
 	if err != nil {
-		logs.GetLogger().Error("creating dir:", dealDir, " failed")
-		logs.GetLogger().Fatal(err)
+		logs.GetLogger().Error(err)
+		logs.GetLogger().Fatal("creating dir:", dealDir, " failed")
 	}
 
 	srcDir = filepath.Join(dealDir, "src")
 	err = libutils.CreateDir(srcDir)
 	if err != nil {
-		logs.GetLogger().Error("creating dir:", srcDir, " failed")
-		logs.GetLogger().Fatal(err)
+		logs.GetLogger().Error(err)
+		logs.GetLogger().Fatal("creating dir:", srcDir, " failed")
 	}
 
 	carDir = filepath.Join(dealDir, "car")
 	err = libutils.CreateDir(srcDir)
 	if err != nil {
-		logs.GetLogger().Error("creating dir:", carDir, " failed")
-		logs.GetLogger().Fatal(err)
+		logs.GetLogger().Error(err)
+		logs.GetLogger().Fatal("creating dir:", carDir, " failed")
 	}
 }
 
@@ -72,17 +72,21 @@ func GetSrcDir() string {
 
 func CreateCarScheduler() {
 	c := cron.New()
+
 	err := c.AddFunc(config.GetConfig().ScheduleRule.CreateCarRule, func() {
-		logs.GetLogger().Info("creating car file scheduler is running at " + time.Now().Format("2006-01-02 15:04:05"))
+		logs.GetLogger().Info("start")
 
 		creatingCarMutex.Lock()
 		createCar()
 		creatingCarMutex.Unlock()
+
+		logs.GetLogger().Info("end")
 	})
+
 	if err != nil {
-		logs.GetLogger().Error(err)
-		return
+		logs.GetLogger().Fatal(err)
 	}
+
 	c.Start()
 }
 

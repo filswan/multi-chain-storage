@@ -226,7 +226,7 @@ func GetLockFoundInfoByPayloadCid(payloadCid string) (*LockFound, error) {
 	if len(lockEventList) > 0 {
 		lockFound.PayloadCid = lockEventList[0].PayloadCid
 		lockFound.LockedFee = lockEventList[0].LockedFee
-		lockFound.CreateAt = lockEventList[0].CreateAt
+		lockFound.CreateAt = strconv.FormatInt(lockEventList[0].CreateAt, 10)
 	}
 	return lockFound, nil
 }

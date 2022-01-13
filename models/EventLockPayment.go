@@ -24,7 +24,7 @@ type EventLockPayment struct {
 	CoinId          int64  `json:"coin_id"`
 	NetworkId       int64  `json:"network_id"`
 	LockPaymentTime string `json:"lock_payment_time"`
-	CreateAt        string `json:"create_at"`
+	CreateAt        int64  `json:"create_at"`
 	UnlockTxHash    string `json:"unlock_tx_hash"`
 	UnlockTxStatus  string `json:"unlock_tx_status"`
 	UnlockTime      string `json:"unlock_time"`

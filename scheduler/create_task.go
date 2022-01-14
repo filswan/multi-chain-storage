@@ -1,8 +1,6 @@
 package scheduler
 
 import (
-
-	//clientmodel "github.com/filswan/go-swan-client/model"
 	"math/big"
 	"path/filepath"
 	"payment-bridge/blockchain/browsersync/scanlockpayment/polygon"

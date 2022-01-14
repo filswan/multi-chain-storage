@@ -90,30 +90,6 @@ func GetTaskListShouldBeSendDealFromLocal() ([]*models.DealFile, error) {
 	return dealList, nil
 }
 
-func sendDeal(taskUuid string, file *models.DealFile) (string, error) {
-	cmdAutoBidDeal := &command.CmdAutoBidDeal{
-		SwanApiUrl:             config.GetConfig().SwanApi.ApiUrl,
-		SwanApiKey:             config.GetConfig().SwanApi.ApiKey,
-		SwanAccessToken:        config.GetConfig().SwanApi.AccessToken,
-		LotusClientApiUrl:      config.GetConfig().Lotus.ClientApiUrl,
-		LotusClientAccessToken: config.GetConfig().Lotus.ClientAccessToken,
-		SenderWallet:           config.GetConfig().FileCoinWallet,
-		OutputDir:              filepath.Dir(file.CarFilePath),
-	}
-	cmdAutoBidDeal.DealSourceIds = append(cmdAutoBidDeal.DealSourceIds, libconstants.TASK_SOURCE_ID_SWAN_PAYMENT)
-
-	_, fileDesc, err := cmdAutoBidDeal.SendAutoBidDealsByTaskUuid(taskUuid)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return "", err
-	}
-	//logs.GetLogger().Info("------------------------------send deal success---------------------------------")
-	//logs.GetLogger().Info("dealSentNum = ", len(fileDesc))
-	//logs.GetLogger().Info("csvFilePath = ", csvFilePath)
-	//logs.GetLogger().Info("carFiles = ", carFiles)
-	return fileDesc[0].PayloadCid, nil
-}
-
 type TaskDetailResult struct {
 	Data struct {
 		AverageBid       string        `json:"average_bid"`

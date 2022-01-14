@@ -20,20 +20,20 @@ func SendDealScheduler() {
 	c := cron.New()
 	err := c.AddFunc(config.GetConfig().ScheduleRule.SendDealRule, func() {
 		logs.GetLogger().Println("send deal scheduler is running at " + time.Now().Format("2006-01-02 15:04:05"))
-		err := DoSendDealScheduler()
+		err := sendDeals()
 		if err != nil {
 			logs.GetLogger().Error(err)
 			return
 		}
 	})
 	if err != nil {
-		logs.GetLogger().Error(err)
+		logs.GetLogger().Fatal(err)
 		return
 	}
 	c.Start()
 }
 
-func DoSendDealScheduler() error {
+func sendDeals() error {
 	dealList, err := GetTaskListShouldBeSendDealFromLocal()
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -51,8 +51,8 @@ func DoSendDealScheduler() error {
 	cmdAutoBidDeal.DealSourceIds = append(cmdAutoBidDeal.DealSourceIds, libconstants.TASK_SOURCE_ID_SWAN_PAYMENT)
 
 	for _, deal := range dealList {
-		cmdAutoBidDeal.OutputDir = filepath.Dir(deal.CarFilePath)
 		logs.GetLogger().Info("start to send deal for task:", deal.TaskUuid)
+		cmdAutoBidDeal.OutputDir = filepath.Dir(deal.CarFilePath)
 
 		_, fileDescs, err := cmdAutoBidDeal.SendAutoBidDealsByTaskUuid(deal.TaskUuid)
 		if err != nil {
@@ -65,11 +65,11 @@ func DoSendDealScheduler() error {
 			continue
 		}
 
-		deal.DealCid = fileDescs[0].Deals[0].DealCid
-
 		deal.SendDealStatus = constants.SEND_DEAL_STATUS_SUCCESS
 		deal.ClientWalletAddress = cmdAutoBidDeal.SenderWallet
-		//deal.MinerFid = taskInfo.Data.Miner.MinerID
+		deal.DealCid = fileDescs[0].Deals[0].DealCid
+		deal.MinerFid = fileDescs[0].Deals[0].MinerFid
+
 		err = database.SaveOne(deal)
 		if err != nil {
 			logs.GetLogger().Error(err)

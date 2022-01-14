@@ -211,7 +211,6 @@ func saveCarInfo2DB(fileDesc *libmodel.FileDesc, srcFiles []*models.SourceFile) 
 	dealFile.CarMd5 = fileDesc.CarFileMd5
 	dealFile.PayloadCid = fileDesc.PayloadCid
 	dealFile.PieceCid = fileDesc.PieceCid
-	dealFile.DealCid = fileDesc.PayloadCid
 	dealFile.CreateAt = utils.GetCurrentUtcMilliSecond()
 	dealFile.UpdateAt = dealFile.CreateAt
 	dealFile.Duration = DURATION

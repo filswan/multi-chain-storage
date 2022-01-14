@@ -45,23 +45,23 @@ func DoSendDealScheduler() error {
 		logs.GetLogger().Error(err)
 		return err
 	}
-	for _, v := range dealList {
-		taskInfo, err := GetTaskStatusByUuid(v.TaskUuid)
+	for _, deal := range dealList {
+		taskInfo, err := GetTaskStatusByUuid(deal.TaskUuid)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			continue
 		}
 		if taskInfo.Data.Task.Status == constants.TASK_STATUS_ASSIGNED {
 			logs.GetLogger().Println("################################## start to send deal ##################################")
-			logs.GetLogger().Println(" task uuid : ", v.TaskUuid)
-			v.SendDealStatus = constants.SEND_DEAL_STATUS_SUCCESS
-			v.MinerFid = taskInfo.Data.Miner.MinerID
-			v.ClientWalletAddress = config.GetConfig().FileCoinWallet
-			dealCid, err := sendDeal(v.TaskUuid, v)
+			logs.GetLogger().Println(" task uuid : ", deal.TaskUuid)
+			deal.SendDealStatus = constants.SEND_DEAL_STATUS_SUCCESS
+			deal.MinerFid = taskInfo.Data.Miner.MinerID
+			deal.ClientWalletAddress = config.GetConfig().FileCoinWallet
+			dealCid, err := sendDeal(deal.TaskUuid, deal)
 			if err != nil {
 				logs.GetLogger().Error(err)
-				v.SendDealStatus = constants.SEND_DEAL_STATUS_FAIL
-				err = database.SaveOne(v)
+				deal.SendDealStatus = constants.SEND_DEAL_STATUS_FAIL
+				err = database.SaveOne(deal)
 				if err != nil {
 					logs.GetLogger().Error(err)
 					continue
@@ -69,8 +69,8 @@ func DoSendDealScheduler() error {
 				continue
 			}
 			logs.GetLogger().Println("################################## end to send deal ##################################")
-			v.DealCid = dealCid
-			err = database.SaveOne(v)
+			deal.DealCid = dealCid
+			err = database.SaveOne(deal)
 			if err != nil {
 				logs.GetLogger().Error(err)
 				continue

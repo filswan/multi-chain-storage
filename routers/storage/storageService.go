@@ -95,7 +95,6 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration int, walle
 		}
 
 		sourceFileCreated, err := models.CreateSourceFile(sourceFile)
-		err = database.SaveOne(sourceFile)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			return nil, nil, nil, nil, err

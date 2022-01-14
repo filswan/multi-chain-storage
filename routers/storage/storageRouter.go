@@ -234,7 +234,15 @@ func UploadFileToIpfs(c *gin.Context) {
 	}
 	durationInt = durationInt * 24 * 60 * 60 / 30
 
-	payloadCid, ipfsDownloadPath, needPay, err := SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c, file, durationInt, 0, walletAddress)
+	fileType := c.DefaultPostForm("file_type", "0")
+	fileTypeInt, err := strconv.Atoi(fileType)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.TYPE_TRANSFER_ERROR_CODE, errorinfo.TYPE_TRANSFER_ERROR_MSG+": file type is not a number"))
+		return
+	}
+
+	payloadCid, ipfsDownloadPath, needPay, err := SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c, file, durationInt, 0, walletAddress, fileTypeInt)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.SENDING_DEAL_ERROR_CODE, errorinfo.SENDING_DEAL_ERROR_MSG))
 		return
@@ -358,8 +366,8 @@ type uploadResult struct {
 }
 
 type mintInfoUpload struct {
-	PayloadCid string `json:"payload_cid"`
-	TxHash     string `json:"tx_hash"`
-	TokenId    string `json:"token_id"`
+	PayloadCid  string `json:"payload_cid"`
+	TxHash      string `json:"tx_hash"`
+	TokenId     string `json:"token_id"`
 	MintAddress string `json:"mint_address"`
 }

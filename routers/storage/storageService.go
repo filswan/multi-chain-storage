@@ -28,7 +28,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multipart.FileHeader, duration, userId int, walletAddress string) (string, string, int, error) {
+func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multipart.FileHeader, duration, userId int, walletAddress string, fileType int) (string, string, int, error) {
 	temDirDeal := config.GetConfig().SwanTask.DirDeal
 
 	logs.GetLogger().Info("temp dir is ", temDirDeal)
@@ -115,7 +115,7 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 		} else {
 			if len(lockPaymentList) > 0 {
 				needPay = 3
-				sourceFile, err := saveSourceFileToDB(srcFile, srcFilepath, userId, filePathInIpfs, walletAddress)
+				sourceFile, err := saveSourceFileToDB(srcFile, srcFilepath, userId, filePathInIpfs, walletAddress, fileType)
 				if err != nil {
 					logs.GetLogger().Error(err)
 					return "", "", needPay, err
@@ -135,7 +135,7 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 				return fileList[0].DataCid, sourceAndDealFileList[0].IpfsUrl, needPay, nil
 			} else {
 				needPay = 4
-				sourceFile, err := saveSourceFileToDB(srcFile, srcFilepath, userId, filePathInIpfs, walletAddress)
+				sourceFile, err := saveSourceFileToDB(srcFile, srcFilepath, userId, filePathInIpfs, walletAddress, fileType)
 				if err != nil {
 					logs.GetLogger().Error(err)
 					return "", "", needPay, err
@@ -149,7 +149,7 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 			}
 		}
 	} else {
-		sourceFile, err := saveSourceFileToDB(srcFile, srcFilepath, userId, filePathInIpfs, walletAddress)
+		sourceFile, err := saveSourceFileToDB(srcFile, srcFilepath, userId, filePathInIpfs, walletAddress, fileType)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			return "", "", needPay, err
@@ -163,7 +163,7 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 	}
 }
 
-func saveSourceFileToDB(srcFile *multipart.FileHeader, srcFilepath string, userId int, filePathInIpfs, walletAddress string) (*models.SourceFile, error) {
+func saveSourceFileToDB(srcFile *multipart.FileHeader, srcFilepath string, userId int, filePathInIpfs, walletAddress string, fileType int) (*models.SourceFile, error) {
 	sourceFile := new(models.SourceFile)
 	sourceFile.FileName = srcFile.Filename
 	sourceFile.FileSize = strconv.FormatInt(srcFile.Size, 10)
@@ -174,6 +174,7 @@ func saveSourceFileToDB(srcFile *multipart.FileHeader, srcFilepath string, userI
 	sourceFile.IpfsUrl = filePathInIpfs
 	sourceFile.PinStatus = constants.IPFS_File_PINNED_STATUS
 	sourceFile.WalletAddress = walletAddress
+	sourceFile.FileType = strconv.Itoa(fileType)
 	err := database.SaveOne(sourceFile)
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -288,6 +289,7 @@ func GetSourceFileAndDealFileInfo(limit, offset string, walletAddress string, pa
 		sql = sql + " and s.file_name like '%" + fileName + "%'"
 	}
 	sql = sql + " left outer join event_lock_payment evpm on evpm.payload_cid = df.payload_cid"
+	sql = sql + " where IFNULL(s.file_type,'0') <>'1'"
 	var results []*SourceFileAndDealFileInfoExtend
 	err := database.GetDB().Raw(sql).Order("create_at desc").Limit(limit).Offset(offset).Scan(&results).Error
 	if err != nil {

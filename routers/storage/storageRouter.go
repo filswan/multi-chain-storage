@@ -17,6 +17,7 @@ import (
 	"strings"
 
 	"github.com/filswan/go-swan-lib/logs"
+	"github.com/shopspring/decimal"
 
 	"github.com/gin-gonic/gin"
 )
@@ -27,6 +28,29 @@ func SendDealManager(router *gin.RouterGroup) {
 	router.GET("/deal/detail/:deal_id", GetDealListFromFilink)
 	router.GET("/dao/signature/deals", GetDealListForDaoToSign)
 	router.PUT("/dao/signature/deals", RecordDealListThatHaveBeenSignedByDao)
+}
+
+type UpdateSourceFileParam struct {
+	Id       int64           `json:"id"`
+	MaxPrice decimal.Decimal `json:"max_price"`
+}
+
+func UpdateSourceFile(c *gin.Context) {
+	var updateSourceFileParam UpdateSourceFileParam
+
+	err := c.BindJSON(&updateSourceFileParam)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusOK, common.CreateErrorResponse(err.Error()))
+		return
+	}
+
+	err = UpdateSourceFileMaxPrice(updateSourceFileParam.Id, updateSourceFileParam.MaxPrice)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusOK, common.CreateErrorResponse(err.Error()))
+		return
+	}
 }
 
 func RecordDealListThatHaveBeenSignedByDao(c *gin.Context) {

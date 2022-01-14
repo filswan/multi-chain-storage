@@ -18,6 +18,7 @@ import (
 	"strings"
 
 	"github.com/filswan/go-swan-lib/logs"
+	"github.com/shopspring/decimal"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	common2 "github.com/ethereum/go-ethereum/common"
@@ -27,6 +28,16 @@ import (
 	libutils "github.com/filswan/go-swan-lib/utils"
 	"github.com/gin-gonic/gin"
 )
+
+func UpdateSourceFileMaxPrice(id int64, maxPrice decimal.Decimal) error {
+	err := models.UpdateSourceFileMaxPrice(id, maxPrice)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	return nil
+}
 
 func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration int, walletAddress string) (*string, *string, *int, error) {
 	srcDir := scheduler.GetSrcDir()

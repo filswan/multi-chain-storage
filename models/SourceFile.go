@@ -5,20 +5,22 @@ import (
 	"payment-bridge/database"
 
 	"github.com/filswan/go-swan-lib/logs"
+	"github.com/shopspring/decimal"
 )
 
 type SourceFile struct {
-	ID            int64  `json:"id"`
-	FileName      string `json:"file_name"`
-	ResourceUri   string `json:"resource_uri"`
-	Status        string `json:"status"`
-	FileSize      string `json:"file_size"`
-	Dataset       string `json:"dataset"`
-	CreateAt      int64  `json:"create_at"`
-	IpfsUrl       string `json:"ipfs_url"`
-	PinStatus     string `json:"pin_status"`
-	WalletAddress string `json:"wallet_address"`
-	PayloadCid    string `json:"payload_cid"`
+	ID            int64           `json:"id"`
+	FileName      string          `json:"file_name"`
+	ResourceUri   string          `json:"resource_uri"`
+	Status        string          `json:"status"`
+	FileSize      string          `json:"file_size"`
+	Dataset       string          `json:"dataset"`
+	CreateAt      int64           `json:"create_at"`
+	IpfsUrl       string          `json:"ipfs_url"`
+	PinStatus     string          `json:"pin_status"`
+	WalletAddress string          `json:"wallet_address"`
+	PayloadCid    string          `json:"payload_cid"`
+	MaxPrice      decimal.Decimal `json:"max_price"`
 }
 
 // FindSourceFileList (&SourceFile{Id: "0xadeaCC802D0f2DFd31bE4Fa7434F15782Fd720ac"},"id desc","10","0")
@@ -58,4 +60,21 @@ func GetSourceFilesNeed2Car() ([]*SourceFile, error) {
 	}
 
 	return sourceFiles, nil
+}
+
+func UpdateSourceFileMaxPrice(id int64, maxPrice decimal.Decimal) error {
+	sql := "update source_file set max_price=? where id=?"
+
+	params := []interface{}{}
+	params = append(params, maxPrice)
+	params = append(params, id)
+
+	err := database.GetDB().Exec(sql, params...).Error
+
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	return nil
 }

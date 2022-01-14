@@ -20,7 +20,8 @@ type SourceFile struct {
 	WalletAddress string `json:"wallet_address"`
 	NftTxHash     string `json:"nft_tx_hash"`
 	TokenId       string `json:"token_id"`
-	MintAddress string `json:"mint_address"`
+	MintAddress   string `json:"mint_address"`
+	FileType      string `json:"file_type"`
 }
 
 // FindSourceFileList (&SourceFile{Id: "0xadeaCC802D0f2DFd31bE4Fa7434F15782Fd720ac"},"id desc","10","0")

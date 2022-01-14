@@ -595,7 +595,7 @@ export default {
           contract_instance.methods.unlockTokenPayment(lockObj)
           .send(payObject)
           .on('transactionHash', function(hash){
-              // console.log('unlock hash console:', hash);
+              console.log('unlock hash console:', hash);
               _this.txHash = hash
           })
           .on('confirmation', function(confirmationNumber, receipt){
@@ -603,7 +603,7 @@ export default {
           })
           .on('receipt', function(receipt){
               // console.log('receipt console:', receipt);
-              _this.checkTransaction(receipt.transactionHash, cid)
+              _this.checkTransaction(receipt.transactionHash)
               _this.txHash = receipt.transactionHash
           })
           .on('error', function(error){
@@ -1780,7 +1780,6 @@ export default {
                         display: -webkit-box;
                         -webkit-line-clamp: 2;
                         -webkit-box-orient: vertical;
-                        text-transform: uppercase;
                     }
                     img{
                         display: none;

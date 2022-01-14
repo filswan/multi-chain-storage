@@ -14,6 +14,11 @@ SET SQL_SAFE_UPDATES = 0;
 update deal_file set update_at=null where update_at='';
 alter table deal_file modify update_at bigint;
 
+
+SET SQL_SAFE_UPDATES = 0;
+update deal_file set delete_at=null where delete_at='';
+alter table deal_file modify delete_at bigint;
+
 alter table event_lock_payment modify create_at bigint;
 
 alter table event_unlock_payment modify create_at bigint;

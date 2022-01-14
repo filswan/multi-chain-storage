@@ -30,14 +30,6 @@ type EventLockPayment struct {
 	UnlockTime      string `json:"unlock_time"`
 }
 
-func (self *EventLockPayment) FindOneEventPolygon(condition interface{}) (*EventLockPayment, error) {
-	db := database.GetDB()
-	tx := db.Begin()
-	tx.Where(condition).First(&self)
-	err := tx.Commit().Error
-	return self, err
-}
-
 // FindEvents (&Event{Id: "0xadeaCC802D0f2DFd31bE4Fa7434F15782Fd720ac"},"id desc","10","0")
 func FindEventLockPayment(whereCondition interface{}, orderCondition, limit, offset string) ([]*EventLockPayment, error) {
 	db := database.GetDB()

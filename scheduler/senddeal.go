@@ -54,7 +54,6 @@ func DoSendDealScheduler() error {
 			}
 			continue
 		}
-		logs.GetLogger().Println("################################## end to send deal ##################################")
 		deal.DealCid = dealCid
 
 		//deal.MinerFid = taskInfo.Data.Miner.MinerID

@@ -39,10 +39,19 @@ func DoSendDealScheduler() error {
 		logs.GetLogger().Error(err)
 		return err
 	}
+
+	cmdAutoBidDeal := &command.CmdAutoBidDeal{
+		SwanApiUrl:             config.GetConfig().SwanApi.ApiUrl,
+		SwanApiKey:             config.GetConfig().SwanApi.ApiKey,
+		SwanAccessToken:        config.GetConfig().SwanApi.AccessToken,
+		LotusClientApiUrl:      config.GetConfig().Lotus.ClientApiUrl,
+		LotusClientAccessToken: config.GetConfig().Lotus.ClientAccessToken,
+		SenderWallet:           config.GetConfig().FileCoinWallet,
+	}
+
 	for _, deal := range dealList {
+		cmdAutoBidDeal.OutputDir = filepath.Dir(deal.CarFilePath)
 		logs.GetLogger().Info("start to send deal for task:", deal.TaskUuid)
-		deal.SendDealStatus = constants.SEND_DEAL_STATUS_SUCCESS
-		deal.ClientWalletAddress = config.GetConfig().FileCoinWallet
 		dealCid, err := sendDeal(deal.TaskUuid, deal)
 		if err != nil {
 			logs.GetLogger().Error(err)
@@ -56,6 +65,8 @@ func DoSendDealScheduler() error {
 		}
 		deal.DealCid = dealCid
 
+		deal.SendDealStatus = constants.SEND_DEAL_STATUS_SUCCESS
+		deal.ClientWalletAddress = cmdAutoBidDeal.SenderWallet
 		//deal.MinerFid = taskInfo.Data.Miner.MinerID
 		err = database.SaveOne(deal)
 		if err != nil {

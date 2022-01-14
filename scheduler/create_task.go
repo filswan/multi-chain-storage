@@ -17,7 +17,6 @@ import (
 
 	"github.com/filswan/go-swan-client/command"
 	libconstants "github.com/filswan/go-swan-lib/constants"
-	libmodel "github.com/filswan/go-swan-lib/model"
 	libutils "github.com/filswan/go-swan-lib/utils"
 	"github.com/robfig/cron"
 	"github.com/shopspring/decimal"
@@ -129,12 +128,15 @@ func DoCreateTask() error {
 			return err
 		}
 		if len(fileDescs) > 0 {
-			logs.GetLogger().Info("task created, uuid=", fileDescs[0].Uuid)
-			err = updateTaskInfoToDB(fileDescs, deal)
+			taskUuid := fileDescs[0].Uuid
+			logs.GetLogger().Info("task created, uuid=", taskUuid)
+			deal.TaskUuid = taskUuid
+			err := database.SaveOne(deal)
 			if err != nil {
 				logs.GetLogger().Error(err)
 				return err
 			}
+			return nil
 		}
 	}
 	return nil
@@ -146,15 +148,4 @@ func GetMaxPriceForCreateTask(rate *big.Int, lockedFee int64, duration int, carF
 	lockedFeeInFileCoin := lockedFeeDecimal.Div(decimal.NewFromFloat(constants.LOTUS_PRICE_MULTIPLE_1E18)).Div(decimal.NewFromInt(rate.Int64()))
 	maxPrice := lockedFeeInFileCoin.Div(decimal.NewFromFloat(sectorSize).Div(decimal.NewFromInt(10204 * 1024 * 1024))).Div(decimal.NewFromInt(int64(duration)))
 	return &maxPrice, nil
-}
-
-func updateTaskInfoToDB(taskinfoList []*libmodel.FileDesc, dealFile *models.DealFile) error {
-	dealFile.TaskUuid = taskinfoList[0].Uuid
-	dealFile.DealCid = taskinfoList[0].Deals[0].DealCid
-	err := database.SaveOne(dealFile)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
-	return nil
 }

@@ -8,7 +8,6 @@ import (
 	"payment-bridge/database"
 	"payment-bridge/models"
 	"strings"
-	"time"
 
 	"github.com/filswan/go-swan-lib/logs"
 
@@ -19,7 +18,7 @@ import (
 func ScanDealInfoScheduler() {
 	c := cron.New()
 	err := c.AddFunc(config.GetConfig().ScheduleRule.ScanDealStatusRule, func() {
-		logs.GetLogger().Info("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ scan deal info from chain scheduler is running at " + time.Now().Format("2006-01-02 15:04:05"))
+		logs.GetLogger().Info("scanning deal info from chain scheduler")
 		err := GetDealInfoByLotusClientAndUpdateInfoToDB()
 		if err != nil {
 			logs.GetLogger().Error(err)

@@ -39,7 +39,26 @@ func GetDB() *gorm.DB {
 func SaveOne(data interface{}) error {
 	db := GetDB()
 	err := db.Save(data).Error
-	return err
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	return nil
+}
+
+func SaveOneWithResult(data interface{}) (interface{}, error) {
+	db := GetDB()
+	//err := db.Save(data).Error
+
+	result := db.Create(data)
+	err := result.Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	return result.Value, nil
 }
 
 func SaveOneInTransaction(db *gorm.DB, data interface{}) error {

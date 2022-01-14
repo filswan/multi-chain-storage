@@ -78,3 +78,14 @@ func UpdateSourceFileMaxPrice(payloadCid string, maxPrice decimal.Decimal) error
 
 	return nil
 }
+
+func CreateSourceFile(sourceFile SourceFile) (*SourceFile, error) {
+	value, err := database.SaveOneWithResult(&sourceFile)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+	sourceFileCreated := value.(*SourceFile)
+
+	return sourceFileCreated, nil
+}

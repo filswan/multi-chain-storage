@@ -588,7 +588,7 @@ export default {
           })
           .on('receipt', function(receipt){
               console.log('receipt console:', receipt);
-              _this.checkTransaction(receipt.transactionHash, cid)
+              _this.checkTransaction(receipt.transactionHash)
               _this.txHash = receipt.transactionHash
           })
           .on('error', function(error){

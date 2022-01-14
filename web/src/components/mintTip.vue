@@ -80,6 +80,7 @@
                             var formData = new FormData()
                             formData.append('file', fileBlob, `${that.ruleForm.name}.json`)
                             formData.append('duration', 180)
+                            formData.append('file_type', 1)
                             formData.append('wallet_address', that.metaAddress)
 
                             const metadataUploadResponse = await that.sendPostRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/storage/ipfs/upload`, formData)

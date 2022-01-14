@@ -32,8 +32,15 @@ func SendDealManager(router *gin.RouterGroup) {
 }
 
 type UpdateSourceFileParam struct {
-	PayloadCid string          `json:"payload_cid"`
-	MaxPrice   decimal.Decimal `json:"max_price"`
+	SourceFileId int64           `json:"source_file_id"`
+	MaxPrice     decimal.Decimal `json:"max_price"`
+}
+
+type UploadResult struct {
+	SourceFileId int64  `json:"source_file_id"`
+	PayloadCid   string `json:"payload_cid"`
+	IpfsUrl      string `json:"ipfs_url"`
+	NeedPay      int    `json:"need_pay"`
 }
 
 func UpdateSourceFile(c *gin.Context) {
@@ -46,7 +53,7 @@ func UpdateSourceFile(c *gin.Context) {
 		return
 	}
 
-	err = UpdateSourceFileMaxPrice(updateSourceFileParam.PayloadCid, updateSourceFileParam.MaxPrice)
+	err = UpdateSourceFileMaxPrice(updateSourceFileParam.SourceFileId, updateSourceFileParam.MaxPrice)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.AbortWithStatusJSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.UPDATE_DATA_TO_DB_ERROR_CODE))
@@ -320,11 +327,4 @@ func GetDealListFromLocal(c *gin.Context) {
 	}
 	pageInfo.TotalRecordCount = strconv.FormatInt(totalCount, 10)
 	c.JSON(http.StatusOK, common.NewSuccessResponseWithPageInfo(infoList, pageInfo))
-}
-
-type UploadResult struct {
-	SourceFileId int64  `json:"source_file_id"`
-	PayloadCid   string `json:"payload_cid"`
-	IpfsUrl      string `json:"ipfs_url"`
-	NeedPay      int    `json:"need_pay"`
 }

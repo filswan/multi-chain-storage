@@ -29,8 +29,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func UpdateSourceFileMaxPrice(payloadCid string, maxPrice decimal.Decimal) error {
-	err := models.UpdateSourceFileMaxPrice(payloadCid, maxPrice)
+func UpdateSourceFileMaxPrice(id int64, maxPrice decimal.Decimal) error {
+	err := models.UpdateSourceFileMaxPrice(id, maxPrice)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err

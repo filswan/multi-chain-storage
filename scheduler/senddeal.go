@@ -48,22 +48,24 @@ func DoSendDealScheduler() error {
 		LotusClientAccessToken: config.GetConfig().Lotus.ClientAccessToken,
 		SenderWallet:           config.GetConfig().FileCoinWallet,
 	}
+	cmdAutoBidDeal.DealSourceIds = append(cmdAutoBidDeal.DealSourceIds, libconstants.TASK_SOURCE_ID_SWAN_PAYMENT)
 
 	for _, deal := range dealList {
 		cmdAutoBidDeal.OutputDir = filepath.Dir(deal.CarFilePath)
 		logs.GetLogger().Info("start to send deal for task:", deal.TaskUuid)
-		dealCid, err := sendDeal(deal.TaskUuid, deal)
+
+		_, fileDescs, err := cmdAutoBidDeal.SendAutoBidDealsByTaskUuid(deal.TaskUuid)
 		if err != nil {
 			logs.GetLogger().Error(err)
-			deal.SendDealStatus = constants.SEND_DEAL_STATUS_FAIL
-			err = database.SaveOne(deal)
-			if err != nil {
-				logs.GetLogger().Error(err)
-				continue
-			}
 			continue
 		}
-		deal.DealCid = dealCid
+
+		if len(fileDescs) == 0 {
+			logs.GetLogger().Info("no deals sent")
+			continue
+		}
+
+		deal.DealCid = fileDescs[0].Deals[0].DealCid
 
 		deal.SendDealStatus = constants.SEND_DEAL_STATUS_SUCCESS
 		deal.ClientWalletAddress = cmdAutoBidDeal.SenderWallet

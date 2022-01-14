@@ -6,6 +6,7 @@ import (
 	"payment-bridge/common/constants"
 	"payment-bridge/common/utils"
 	"payment-bridge/database"
+	"payment-bridge/models"
 	models2 "payment-bridge/models"
 	"strconv"
 	"sync"
@@ -45,7 +46,7 @@ func ScanEventFromChainAndSaveDataToDbForPolygon() {
 		}
 
 		blockScanRecord := new(models2.BlockScanRecord)
-		blockScanRecordList, err := blockScanRecord.FindLastCurrentBlockNumber(whereCondition)
+		blockScanRecordList, err := models.FindLastCurrentBlockNumber(whereCondition)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			startScanBlockNo = GetConfig().PolygonMainnetNode.StartFromBlockNo

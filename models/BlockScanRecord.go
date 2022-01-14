@@ -11,7 +11,7 @@ type BlockScanRecord struct {
 	UpdateAt               int64 `json:"update_at"`
 }
 
-func (self *BlockScanRecord) FindLastCurrentBlockNumber(whereCondition string) ([]*BlockScanRecord, error) {
+func FindLastCurrentBlockNumber(whereCondition string) ([]*BlockScanRecord, error) {
 	db := database.GetDB()
 	var models []*BlockScanRecord
 	err := db.Where(whereCondition).Find(&models).Error

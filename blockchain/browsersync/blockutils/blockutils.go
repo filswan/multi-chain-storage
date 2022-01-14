@@ -2,6 +2,7 @@ package blockutils
 
 import (
 	"payment-bridge/common/constants"
+	"payment-bridge/models"
 	models2 "payment-bridge/models"
 	"strconv"
 
@@ -37,8 +38,7 @@ func GetStartBlockNo(networkName string, startBlockNoInConfig int64) int64 {
 		startScanBlockNo = startBlockNoInConfig
 	}
 
-	blockScanRecord := new(models2.BlockScanRecord)
-	blockScanRecordList, err := blockScanRecord.FindLastCurrentBlockNumber(whereCondition)
+	blockScanRecordList, err := models.FindLastCurrentBlockNumber(whereCondition)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		startScanBlockNo = startBlockNoInConfig

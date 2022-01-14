@@ -6,6 +6,7 @@ import (
 	"payment-bridge/common/constants"
 	common2 "payment-bridge/common/utils"
 	"payment-bridge/database"
+	"payment-bridge/models"
 	models2 "payment-bridge/models"
 	"sync"
 	"time"
@@ -37,7 +38,7 @@ func ScanEventFromChainAndSaveDataToDbForGoerli() {
 
 		blockScanRecord := new(models2.BlockScanRecord)
 		whereCondition := "network_type='" + constants.NETWORK_TYPE_GOERLI + "'"
-		blockScanRecordList, err := blockScanRecord.FindLastCurrentBlockNumber(whereCondition)
+		blockScanRecordList, err := models.FindLastCurrentBlockNumber(whereCondition)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			startScanBlockNo = GetConfig().GoerliMainnetNode.StartFromBlockNo

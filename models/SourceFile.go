@@ -62,12 +62,12 @@ func GetSourceFilesNeed2Car() ([]*SourceFile, error) {
 	return sourceFiles, nil
 }
 
-func UpdateSourceFileMaxPrice(id int64, maxPrice decimal.Decimal) error {
-	sql := "update source_file set max_price=? where id=?"
+func UpdateSourceFileMaxPrice(payloadCid string, maxPrice decimal.Decimal) error {
+	sql := "update source_file set max_price=? where payload_cid=?"
 
 	params := []interface{}{}
 	params = append(params, maxPrice)
-	params = append(params, id)
+	params = append(params, payloadCid)
 
 	err := database.GetDB().Exec(sql, params...).Error
 

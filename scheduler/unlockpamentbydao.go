@@ -25,6 +25,7 @@ import (
 
 func DAOUnlockPaymentSchedule() {
 	c := cron.New()
+
 	err := c.AddFunc(config.GetConfig().ScheduleRule.UnlockPaymentRule, func() {
 		logs.GetLogger().Info("unlocking payment scheduler")
 		err := UnlockPaymentByDao()
@@ -32,8 +33,9 @@ func DAOUnlockPaymentSchedule() {
 			logs.GetLogger().Error(err)
 		}
 	})
+
 	if err != nil {
-		logs.GetLogger().Error(err)
+		logs.GetLogger().Fatal(err)
 	}
 	c.Start()
 }

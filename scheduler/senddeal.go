@@ -1,15 +1,10 @@
 package scheduler
 
 import (
-	"encoding/json"
-
 	"github.com/filswan/go-swan-client/command"
 
-	"net/http"
-	"os"
 	"path/filepath"
 	"payment-bridge/common/constants"
-	"payment-bridge/common/httpClient"
 	"payment-bridge/config"
 	"payment-bridge/database"
 	"payment-bridge/models"
@@ -18,7 +13,6 @@ import (
 	"github.com/filswan/go-swan-lib/logs"
 
 	libconstants "github.com/filswan/go-swan-lib/constants"
-	libutils "github.com/filswan/go-swan-lib/utils"
 	"github.com/robfig/cron"
 )
 
@@ -46,37 +40,31 @@ func DoSendDealScheduler() error {
 		return err
 	}
 	for _, deal := range dealList {
-		taskInfo, err := GetTaskStatusByUuid(deal.TaskUuid)
+		logs.GetLogger().Info("start to send deal for task:", deal.TaskUuid)
+		deal.SendDealStatus = constants.SEND_DEAL_STATUS_SUCCESS
+		deal.ClientWalletAddress = config.GetConfig().FileCoinWallet
+		dealCid, err := sendDeal(deal.TaskUuid, deal)
 		if err != nil {
 			logs.GetLogger().Error(err)
-			continue
-		}
-		if taskInfo.Data.Task.Status == constants.TASK_STATUS_ASSIGNED {
-			logs.GetLogger().Println("################################## start to send deal ##################################")
-			logs.GetLogger().Println(" task uuid : ", deal.TaskUuid)
-			deal.SendDealStatus = constants.SEND_DEAL_STATUS_SUCCESS
-			deal.MinerFid = taskInfo.Data.Miner.MinerID
-			deal.ClientWalletAddress = config.GetConfig().FileCoinWallet
-			dealCid, err := sendDeal(deal.TaskUuid, deal)
-			if err != nil {
-				logs.GetLogger().Error(err)
-				deal.SendDealStatus = constants.SEND_DEAL_STATUS_FAIL
-				err = database.SaveOne(deal)
-				if err != nil {
-					logs.GetLogger().Error(err)
-					continue
-				}
-				continue
-			}
-			logs.GetLogger().Println("################################## end to send deal ##################################")
-			deal.DealCid = dealCid
+			deal.SendDealStatus = constants.SEND_DEAL_STATUS_FAIL
 			err = database.SaveOne(deal)
 			if err != nil {
 				logs.GetLogger().Error(err)
 				continue
 			}
+			continue
+		}
+		logs.GetLogger().Println("################################## end to send deal ##################################")
+		deal.DealCid = dealCid
+
+		//deal.MinerFid = taskInfo.Data.Miner.MinerID
+		err = database.SaveOne(deal)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			continue
 		}
 	}
+
 	return nil
 }
 
@@ -91,26 +79,6 @@ func GetTaskListShouldBeSendDealFromLocal() ([]*models.DealFile, error) {
 }
 
 func sendDeal(taskUuid string, file *models.DealFile) (string, error) {
-	//startEpochIntervalHours := config.GetConfig().SwanTask.StartEpochHours
-	//startEpoch := libutils.GetCurrentEpoch() + (startEpochIntervalHours+1)*libconstants.EPOCH_PER_HOUR
-
-	homedir, err := os.UserHomeDir()
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return "", err
-	}
-	temDirDeal := config.GetConfig().SwanTask.DirDeal
-	temDirDeal = filepath.Join(homedir, temDirDeal[2:])
-	err = libutils.CreateDir(temDirDeal)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return "", err
-	}
-
-	timeStr := time.Now().Format("20060102_150405")
-	temDirDeal = filepath.Join(temDirDeal, timeStr)
-	carDir := filepath.Join(temDirDeal, "car")
-
 	cmdAutoBidDeal := &command.CmdAutoBidDeal{
 		SwanApiUrl:             config.GetConfig().SwanApi.ApiUrl,
 		SwanApiKey:             config.GetConfig().SwanApi.ApiKey,
@@ -118,7 +86,7 @@ func sendDeal(taskUuid string, file *models.DealFile) (string, error) {
 		LotusClientApiUrl:      config.GetConfig().Lotus.ClientApiUrl,
 		LotusClientAccessToken: config.GetConfig().Lotus.ClientAccessToken,
 		SenderWallet:           config.GetConfig().FileCoinWallet,
-		OutputDir:              carDir,
+		OutputDir:              filepath.Dir(file.CarFilePath),
 	}
 	cmdAutoBidDeal.DealSourceIds = append(cmdAutoBidDeal.DealSourceIds, libconstants.TASK_SOURCE_ID_SWAN_PAYMENT)
 
@@ -132,23 +100,6 @@ func sendDeal(taskUuid string, file *models.DealFile) (string, error) {
 	//logs.GetLogger().Info("csvFilePath = ", csvFilePath)
 	//logs.GetLogger().Info("carFiles = ", carFiles)
 	return fileDesc[0].PayloadCid, nil
-}
-
-func GetTaskStatusByUuid(taskUuid string) (*TaskDetailResult, error) {
-	url := config.GetConfig().SwanApi.ApiUrl + "/tasks/" + taskUuid
-	response, err := httpClient.SendRequestAndGetBytes(http.MethodGet, url, nil, nil)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-
-	var taskInfo *TaskDetailResult
-	err = json.Unmarshal(response, &taskInfo)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-	return taskInfo, nil
 }
 
 type TaskDetailResult struct {

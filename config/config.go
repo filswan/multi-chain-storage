@@ -36,7 +36,6 @@ type database struct {
 type lotus struct {
 	ClientApiUrl      string `toml:"client_api_url"`
 	ClientAccessToken string `toml:"client_access_token"`
-	FinalStatusList   string `toml:"final_status_list"`
 }
 
 type swanTask struct {
@@ -119,7 +118,6 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 
 		{"lotus", "client_api_url"},
 		{"lotus", "client_access_token"},
-		{"lotus", "final_status_list"},
 
 		{"ipfs_server", "download_url_prefix"},
 		{"ipfs_server", "upload_url_prefix"},

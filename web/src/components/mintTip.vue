@@ -78,7 +78,7 @@
                             })
 
                             var formData = new FormData()
-                            formData.append('file', fileBlob, `${that.ruleForm.name}`)
+                            formData.append('file', fileBlob, `${that.ruleForm.name}.json`)
                             formData.append('duration', 180)
                             formData.append('wallet_address', that.metaAddress)
 
@@ -112,7 +112,8 @@
                             let mintInfoJson = {
                                 payload_cid: that.cid,
                                 tx_hash: that.nftHash,
-                                token_id: that.tokenId
+                                token_id: that.tokenId,
+                                mint_address: that.$root.MINT_CONTRACT
                             }
                             const mintInfoResponse = await that.sendPostRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/storage/mint/info`, mintInfoJson)
                             

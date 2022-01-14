@@ -43,13 +43,13 @@ func GetDealInfoByLotusClientAndUpdateInfoToDB() error {
 		return err
 	}
 
-	for _, v := range dealList {
+	for _, deal := range dealList {
 		lotusClient, err := lotus.LotusGetClient(config.GetConfig().Lotus.ClientApiUrl, config.GetConfig().Lotus.ClientAccessToken)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			return err
 		}
-		dealInfo, err := lotusClient.LotusClientGetDealInfo(v.DealCid)
+		dealInfo, err := lotusClient.LotusClientGetDealInfo(deal.DealCid)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			return err
@@ -62,13 +62,13 @@ func GetDealInfoByLotusClientAndUpdateInfoToDB() error {
 		} else {
 			paymentStatus = constants.LOCK_PAYMENT_STATUS_PROCESSING
 		}
-		v.Verified = dealInfo.Verified
-		v.DealStatus = dealInfo.Status
-		v.DealId = dealInfo.DealId
-		v.Cost = dealInfo.CostComputed
-		v.LockPaymentStatus = paymentStatus
-		v.UpdateAt = utils.GetCurrentUtcMilliSecond()
-		err = database.SaveOne(v)
+		deal.Verified = dealInfo.Verified
+		deal.DealStatus = dealInfo.Status
+		deal.DealId = dealInfo.DealId
+		deal.Cost = dealInfo.CostComputed
+		deal.LockPaymentStatus = paymentStatus
+		deal.UpdateAt = utils.GetCurrentUtcMilliSecond()
+		err = database.SaveOne(deal)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			return err

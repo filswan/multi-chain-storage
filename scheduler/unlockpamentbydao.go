@@ -2,7 +2,6 @@ package scheduler
 
 import (
 	"context"
-	"log"
 	"math/big"
 	"os"
 	"payment-bridge/blockchain/browsersync/scanlockpayment/polygon"
@@ -14,7 +13,6 @@ import (
 	"payment-bridge/on-chain/goBind"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -28,7 +26,7 @@ import (
 func DAOUnlockPaymentSchedule() {
 	c := cron.New()
 	err := c.AddFunc(config.GetConfig().ScheduleRule.UnlockPaymentRule, func() {
-		log.Println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^unlock payment scheduler is running at " + time.Now().Format("2006-01-02 15:04:05"))
+		logs.GetLogger().Info("unlocking payment scheduler")
 		err := UnlockPaymentByDao()
 		if err != nil {
 			logs.GetLogger().Error(err)

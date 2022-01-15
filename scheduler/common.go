@@ -28,7 +28,7 @@ func GetSrcDir() string {
 	return srcDir
 }
 
-func init() {
+func InitScheduler() {
 	createDir()
 	createScheduleJob()
 }

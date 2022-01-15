@@ -38,7 +38,7 @@ func createScheduleJob() {
 		{Name: "create task", Rule: confScheduleRule.CreateTaskRule, Func: createTask},
 		{Name: "send deal", Rule: confScheduleRule.SendDealRule, Func: sendDeal},
 		{Name: "scan deal", Rule: confScheduleRule.ScanDealStatusRule, Func: scanDeal},
-		{Name: "unlock payment", Rule: confScheduleRule.UnlockPaymentRule, Func: unlockPayment},
+		{Name: "unlock payment", Rule: confScheduleRule.UnlockPaymentRule, Func: UnlockPayment},
 	}
 
 	for _, scheduleJob := range scheduleJobs {

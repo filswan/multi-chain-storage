@@ -22,7 +22,7 @@ import (
 	"github.com/filswan/go-swan-lib/logs"
 )
 
-func unlockPayment() error {
+func UnlockPayment() error {
 	threshHold, err := GetThreshHold()
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -34,8 +34,8 @@ func unlockPayment() error {
 		logs.GetLogger().Error(err)
 		return err
 	}
-	for _, v := range daoSigResult {
-		daoEventLogList, err := models.FindDaoEventLog(&models.EventDaoSignature{PayloadCid: v.PayloadCid, DealId: v.DealId, SignatureUnlockStatus: constants.SIGNATURE_DEFAULT_VALUE}, "id desc", "10", "0")
+	for _, daoSig := range daoSigResult {
+		daoEventLogList, err := models.FindDaoEventLog(&models.EventDaoSignature{PayloadCid: daoSig.PayloadCid, DealId: daoSig.DealId, SignatureUnlockStatus: constants.SIGNATURE_DEFAULT_VALUE}, "id desc", "10", "0")
 		if err != nil {
 			logs.GetLogger().Error(err)
 			continue
@@ -43,8 +43,8 @@ func unlockPayment() error {
 
 		if len(daoEventLogList) > 0 {
 			parm := goBind.IPaymentMinimalunlockPaymentParam{}
-			parm.Id = v.PayloadCid
-			parm.DealId = strconv.FormatInt(v.DealId, 10)
+			parm.Id = daoSig.PayloadCid
+			parm.DealId = strconv.FormatInt(daoSig.DealId, 10)
 			parm.Amount = big.NewInt(0)
 			parm.Recipient = common.HexToAddress(daoEventLogList[0].Recipient)
 			parm.OrderId = ""

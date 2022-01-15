@@ -15,32 +15,11 @@ import (
 	"github.com/filswan/go-swan-lib/logs"
 	libmodel "github.com/filswan/go-swan-lib/model"
 	libutils "github.com/filswan/go-swan-lib/utils"
-	"github.com/robfig/cron"
 )
 
 const (
 	DURATION = 500
 )
-
-func CreateCarScheduler() {
-	c := cron.New()
-
-	err := c.AddFunc(config.GetConfig().ScheduleRule.CreateCarRule, func() {
-		logs.GetLogger().Info("start")
-
-		creatingCarMutex.Lock()
-		createCar()
-		creatingCarMutex.Unlock()
-
-		logs.GetLogger().Info("end")
-	})
-
-	if err != nil {
-		logs.GetLogger().Fatal(err)
-	}
-
-	c.Start()
-}
 
 func createCar() error {
 	currentTimeStr := time.Now().Format("2006-01-02T15:04:05")

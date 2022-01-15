@@ -12,7 +12,6 @@ import (
 	"payment-bridge/routers/billing"
 	"payment-bridge/routers/common"
 	"payment-bridge/routers/storage"
-	"payment-bridge/scheduler"
 	"time"
 
 	"github.com/filswan/go-swan-lib/logs"
@@ -33,12 +32,6 @@ func main() {
 	browsersync.Init()
 
 	models.RunAllTheScan()
-
-	scheduler.CreateCarScheduler()
-	scheduler.CreateTaskScheduler()
-	scheduler.SendDealScheduler()
-	scheduler.DAOUnlockPaymentSchedule()
-	scheduler.ScanDealInfoScheduler()
 
 	createGinServer()
 }

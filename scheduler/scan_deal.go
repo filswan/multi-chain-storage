@@ -10,25 +10,7 @@ import (
 	"github.com/filswan/go-swan-lib/logs"
 
 	"github.com/filswan/go-swan-lib/client/lotus"
-	"github.com/robfig/cron"
 )
-
-func ScanDealInfoScheduler() {
-	c := cron.New()
-	err := c.AddFunc(config.GetConfig().ScheduleRule.ScanDealStatusRule, func() {
-		logs.GetLogger().Info("scanning deal info from chain scheduler")
-		err := scanDeal()
-		if err != nil {
-			logs.GetLogger().Error(err)
-			return
-		}
-	})
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return
-	}
-	c.Start()
-}
 
 func scanDeal() error {
 	whereCondition := "deal_cid != '' and task_uuid != '' and lower(lock_payment_status) not in (lower('" + constants.LOCK_PAYMENT_STATUS_SUCCESS + "'), lower('" + constants.LOCK_PAYMENT_STATUS_REFUNDED + "'))"

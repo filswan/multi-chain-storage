@@ -9,33 +9,14 @@ import (
 	"payment-bridge/database"
 	"payment-bridge/models"
 	"payment-bridge/routers/billing"
-	"time"
 
 	"github.com/filswan/go-swan-lib/logs"
 
 	"github.com/filswan/go-swan-client/command"
 	libconstants "github.com/filswan/go-swan-lib/constants"
 	libutils "github.com/filswan/go-swan-lib/utils"
-	"github.com/robfig/cron"
 	"github.com/shopspring/decimal"
 )
-
-func CreateTaskScheduler() {
-	c := cron.New()
-	err := c.AddFunc(config.GetConfig().ScheduleRule.CreateTaskRule, func() {
-		logs.GetLogger().Info("create task scheduler is running at " + time.Now().Format("2006-01-02 15:04:05"))
-		err := createTask()
-		if err != nil {
-			logs.GetLogger().Error(err)
-			return
-		}
-	})
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return
-	}
-	c.Start()
-}
 
 func CheckIfHaveLockPayment(payloadCid string) ([]*models.EventLockPayment, error) {
 	polygonEventList, err := models.FindEventLockPayment(&models.EventLockPayment{PayloadCid: payloadCid}, "id desc", "", "0")

@@ -8,30 +8,11 @@ import (
 	"payment-bridge/config"
 	"payment-bridge/database"
 	"payment-bridge/models"
-	"time"
 
 	"github.com/filswan/go-swan-lib/logs"
 
 	libconstants "github.com/filswan/go-swan-lib/constants"
-	"github.com/robfig/cron"
 )
-
-func SendDealScheduler() {
-	c := cron.New()
-	err := c.AddFunc(config.GetConfig().ScheduleRule.SendDealRule, func() {
-		logs.GetLogger().Println("send deal scheduler is running at " + time.Now().Format("2006-01-02 15:04:05"))
-		err := sendDeal()
-		if err != nil {
-			logs.GetLogger().Error(err)
-			return
-		}
-	})
-	if err != nil {
-		logs.GetLogger().Fatal(err)
-		return
-	}
-	c.Start()
-}
 
 func sendDeal() error {
 	whereCondition := "send_deal_status ='' and lower(lock_payment_status)=lower('" + constants.LOCK_PAYMENT_STATUS_PROCESSING + "') and task_uuid != '' "

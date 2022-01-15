@@ -20,25 +20,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/filswan/go-swan-lib/logs"
-	"github.com/robfig/cron"
 )
-
-func DAOUnlockPaymentSchedule() {
-	c := cron.New()
-
-	err := c.AddFunc(config.GetConfig().ScheduleRule.UnlockPaymentRule, func() {
-		logs.GetLogger().Info("unlocking payment scheduler")
-		err := unlockPayment()
-		if err != nil {
-			logs.GetLogger().Error(err)
-		}
-	})
-
-	if err != nil {
-		logs.GetLogger().Fatal(err)
-	}
-	c.Start()
-}
 
 func unlockPayment() error {
 	threshHold, err := GetThreshHold()

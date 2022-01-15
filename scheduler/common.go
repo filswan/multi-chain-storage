@@ -13,14 +13,16 @@ import (
 )
 
 type Schedule struct {
-	Name string
-	Rule string
-	Func func() error
+	Name  string
+	Rule  string
+	Func  func() error
+	Mutex sync.Mutex
 }
 
 var carDir string
 var srcDir string
-var creatingCarMutex sync.Mutex
+
+//var creatingCarMutex sync.Mutex
 
 func GetSrcDir() string {
 	return srcDir
@@ -46,9 +48,11 @@ func createScheduleJob() {
 		err := c.AddFunc(scheduleJob.Rule, func() {
 			logs.GetLogger().Info(scheduleJob.Name + " start")
 
-			creatingCarMutex.Lock()
+			scheduleJob.Mutex.Lock()
+			//creatingCarMutex.Lock()
 			scheduleJob.Func()
-			creatingCarMutex.Unlock()
+			//creatingCarMutex.Unlock()
+			scheduleJob.Mutex.Unlock()
 
 			logs.GetLogger().Info(scheduleJob.Name + " end")
 		})

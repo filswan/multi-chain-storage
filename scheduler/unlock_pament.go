@@ -28,6 +28,7 @@ func unlockPayment() error {
 		logs.GetLogger().Error(err)
 		return err
 	}
+
 	daoSigResult, err := models.GetDaoSignatureEventsSholdBeUnlock(threshHold)
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -195,19 +196,16 @@ func saveUnlockEventLogToDB(logsInChain []*types.Log, recipient string, unlockSt
 }
 
 func GetThreshHold() (uint8, error) {
-	daoAddress := common.HexToAddress(polygon.GetConfig().PolygonMainnetNode.DaoSwanOracleAddress)
-	client := polygon.WebConn.ConnWeb
-
 	pk := os.Getenv("privateKeyOnPolygon")
 	if strings.HasPrefix(strings.ToLower(pk), "0x") {
 		pk = pk[2:]
 	}
 
 	callOpts := new(bind.CallOpts)
-	callOpts.From = daoAddress
+	callOpts.From = common.HexToAddress(polygon.GetConfig().PolygonMainnetNode.DaoSwanOracleAddress)
 	callOpts.Context = context.Background()
 
-	daoOracleContractInstance, err := goBind.NewFilswanOracle(daoAddress, client)
+	daoOracleContractInstance, err := goBind.NewFilswanOracle(callOpts.From, polygon.WebConn.ConnWeb)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return 0, err
@@ -218,6 +216,7 @@ func GetThreshHold() (uint8, error) {
 		logs.GetLogger().Error(err)
 		return 0, err
 	}
+
 	logs.GetLogger().Info("dao threshHold is : ", threshHold)
 	return threshHold, nil
 }

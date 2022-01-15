@@ -20,7 +20,7 @@ func SendDealScheduler() {
 	c := cron.New()
 	err := c.AddFunc(config.GetConfig().ScheduleRule.SendDealRule, func() {
 		logs.GetLogger().Println("send deal scheduler is running at " + time.Now().Format("2006-01-02 15:04:05"))
-		err := sendDeals()
+		err := sendDeal()
 		if err != nil {
 			logs.GetLogger().Error(err)
 			return
@@ -33,7 +33,7 @@ func SendDealScheduler() {
 	c.Start()
 }
 
-func sendDeals() error {
+func sendDeal() error {
 	whereCondition := "send_deal_status ='' and lower(lock_payment_status)=lower('" + constants.LOCK_PAYMENT_STATUS_PROCESSING + "') and task_uuid != '' "
 	dealList, err := models.FindDealFileList(whereCondition, "create_at desc", "50", "0")
 	if err != nil {

@@ -17,7 +17,7 @@ func ScanDealInfoScheduler() {
 	c := cron.New()
 	err := c.AddFunc(config.GetConfig().ScheduleRule.ScanDealStatusRule, func() {
 		logs.GetLogger().Info("scanning deal info from chain scheduler")
-		err := scanDeals()
+		err := scanDeal()
 		if err != nil {
 			logs.GetLogger().Error(err)
 			return
@@ -30,7 +30,7 @@ func ScanDealInfoScheduler() {
 	c.Start()
 }
 
-func scanDeals() error {
+func scanDeal() error {
 	whereCondition := "deal_cid != '' and task_uuid != '' and lower(lock_payment_status) not in (lower('" + constants.LOCK_PAYMENT_STATUS_SUCCESS + "'), lower('" + constants.LOCK_PAYMENT_STATUS_REFUNDED + "'))"
 	//" and deal_status not in (" + inList + ")"
 	dealList, err := models.FindDealFileList(whereCondition, "create_at desc", "100", "0")

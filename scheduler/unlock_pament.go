@@ -28,7 +28,7 @@ func DAOUnlockPaymentSchedule() {
 
 	err := c.AddFunc(config.GetConfig().ScheduleRule.UnlockPaymentRule, func() {
 		logs.GetLogger().Info("unlocking payment scheduler")
-		err := UnlockPaymentByDao()
+		err := unlockPayment()
 		if err != nil {
 			logs.GetLogger().Error(err)
 		}
@@ -40,7 +40,7 @@ func DAOUnlockPaymentSchedule() {
 	c.Start()
 }
 
-func UnlockPaymentByDao() error {
+func unlockPayment() error {
 	threshHold, err := GetThreshHold()
 	if err != nil {
 		logs.GetLogger().Error(err)

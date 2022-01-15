@@ -9,7 +9,6 @@ import (
 	"payment-bridge/config"
 	"payment-bridge/database"
 	"payment-bridge/models"
-	"sync"
 	"time"
 
 	"github.com/filswan/go-swan-client/command"
@@ -22,49 +21,6 @@ import (
 const (
 	DURATION = 500
 )
-
-var carDir string
-var srcDir string
-var creatingCarMutex sync.Mutex
-
-func init() {
-	dealDir := config.GetConfig().SwanTask.DirDeal
-	homedir, err := os.UserHomeDir()
-	if err != nil {
-		logs.GetLogger().Fatal(err)
-	}
-
-	if len(dealDir) < 2 {
-		err := fmt.Errorf("deal directory config error, please contact administrator")
-		logs.GetLogger().Fatal(err)
-	}
-
-	dealDir = filepath.Join(homedir, dealDir[2:])
-
-	err = libutils.CreateDir(dealDir)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		logs.GetLogger().Fatal("creating dir:", dealDir, " failed")
-	}
-
-	srcDir = filepath.Join(dealDir, "src")
-	err = libutils.CreateDir(srcDir)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		logs.GetLogger().Fatal("creating dir:", srcDir, " failed")
-	}
-
-	carDir = filepath.Join(dealDir, "car")
-	err = libutils.CreateDir(srcDir)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		logs.GetLogger().Fatal("creating dir:", carDir, " failed")
-	}
-}
-
-func GetSrcDir() string {
-	return srcDir
-}
 
 func CreateCarScheduler() {
 	c := cron.New()

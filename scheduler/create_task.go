@@ -24,7 +24,7 @@ func CreateTaskScheduler() {
 	c := cron.New()
 	err := c.AddFunc(config.GetConfig().ScheduleRule.CreateTaskRule, func() {
 		logs.GetLogger().Info("create task scheduler is running at " + time.Now().Format("2006-01-02 15:04:05"))
-		err := DoCreateTask()
+		err := createTask()
 		if err != nil {
 			logs.GetLogger().Error(err)
 			return
@@ -46,7 +46,7 @@ func CheckIfHaveLockPayment(payloadCid string) ([]*models.EventLockPayment, erro
 	return polygonEventList, nil
 }
 
-func DoCreateTask() error {
+func createTask() error {
 	whereCondition := "lower(lock_payment_status)=lower('" + constants.LOCK_PAYMENT_STATUS_PROCESSING + "') and task_uuid = '' and is_deleted=false "
 	dealList, err := models.FindDealFileList(whereCondition, "create_at desc", "50", "0")
 	if err != nil {

@@ -22,8 +22,6 @@ type Schedule struct {
 var carDir string
 var srcDir string
 
-//var creatingCarMutex sync.Mutex
-
 func GetSrcDir() string {
 	return srcDir
 }

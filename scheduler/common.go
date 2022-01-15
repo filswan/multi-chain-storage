@@ -33,12 +33,13 @@ func InitScheduler() {
 
 func createScheduleJob() {
 	confScheduleRule := config.GetConfig().ScheduleRule
-	scheduleJobs := []Schedule{}
-	scheduleJobs = append(scheduleJobs, Schedule{Name: "create car", Rule: confScheduleRule.CreateCarRule, Func: createCar, Mutex: &sync.Mutex{}})
-	scheduleJobs = append(scheduleJobs, Schedule{Name: "create task", Rule: confScheduleRule.CreateTaskRule, Func: createTask})
-	scheduleJobs = append(scheduleJobs, Schedule{Name: "send deal", Rule: confScheduleRule.SendDealRule, Func: sendDeal})
-	scheduleJobs = append(scheduleJobs, Schedule{Name: "scan deal", Rule: confScheduleRule.ScanDealStatusRule, Func: scanDeal})
-	scheduleJobs = append(scheduleJobs, Schedule{Name: "unlock payment", Rule: confScheduleRule.UnlockPaymentRule, Func: unlockPayment})
+	scheduleJobs := []Schedule{
+		{Name: "create car", Rule: confScheduleRule.CreateCarRule, Func: createCar, Mutex: &sync.Mutex{}},
+		{Name: "create task", Rule: confScheduleRule.CreateTaskRule, Func: createTask},
+		{Name: "send deal", Rule: confScheduleRule.SendDealRule, Func: sendDeal},
+		{Name: "scan deal", Rule: confScheduleRule.ScanDealStatusRule, Func: scanDeal},
+		{Name: "unlock payment", Rule: confScheduleRule.UnlockPaymentRule, Func: unlockPayment},
+	}
 
 	for _, scheduleJob := range scheduleJobs {
 		c := cron.New()

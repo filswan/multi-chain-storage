@@ -83,9 +83,8 @@ func doUnlockPaymentOnContract(daoEvent *models.EventDaoSignature, unlockParams 
 		logs.GetLogger().Error(err)
 		return err
 	}
-	callOpts, _ := bind.NewKeyedTransactorWithChainID(privateKey, chainId)
 
-	//callOpts := new(bind.TransactOpts)
+	callOpts, _ := bind.NewKeyedTransactorWithChainID(privateKey, chainId)
 	callOpts.Nonce = big.NewInt(int64(nonce))
 	callOpts.GasPrice = gasPrice
 	callOpts.GasLimit = uint64(polygon.GetConfig().PolygonMainnetNode.GasLimit)

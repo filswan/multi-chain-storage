@@ -16,7 +16,7 @@ type Schedule struct {
 	Name  string
 	Rule  string
 	Func  func() error
-	Mutex sync.Mutex
+	Mutex *sync.Mutex
 }
 
 var carDir string
@@ -36,7 +36,7 @@ func InitScheduler() {
 func createScheduleJob() {
 	confScheduleRule := config.GetConfig().ScheduleRule
 	scheduleJobs := []Schedule{}
-	scheduleJobs = append(scheduleJobs, Schedule{Name: "create car", Rule: confScheduleRule.CreateCarRule, Func: createCar})
+	scheduleJobs = append(scheduleJobs, Schedule{Name: "create car", Rule: confScheduleRule.CreateCarRule, Func: createCar, Mutex: &sync.Mutex{}})
 	scheduleJobs = append(scheduleJobs, Schedule{Name: "create task", Rule: confScheduleRule.CreateTaskRule, Func: createTask})
 	scheduleJobs = append(scheduleJobs, Schedule{Name: "send deal", Rule: confScheduleRule.SendDealRule, Func: sendDeal})
 	scheduleJobs = append(scheduleJobs, Schedule{Name: "scan deal", Rule: confScheduleRule.ScanDealStatusRule, Func: scanDeal})
@@ -48,11 +48,15 @@ func createScheduleJob() {
 		err := c.AddFunc(scheduleJob.Rule, func() {
 			logs.GetLogger().Info(scheduleJob.Name + " start")
 
-			scheduleJob.Mutex.Lock()
-			//creatingCarMutex.Lock()
+			if scheduleJob.Mutex != nil {
+				scheduleJob.Mutex.Lock()
+			}
+
 			scheduleJob.Func()
-			//creatingCarMutex.Unlock()
-			scheduleJob.Mutex.Unlock()
+
+			if scheduleJob.Mutex != nil {
+				scheduleJob.Mutex.Unlock()
+			}
 
 			logs.GetLogger().Info(scheduleJob.Name + " end")
 		})

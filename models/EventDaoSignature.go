@@ -48,12 +48,9 @@ func FindDaoEventLog(whereCondition interface{}, orderCondition, limit, offset s
 }
 
 func GetDaoSignatureEventsSholdBeUnlock(threshHold uint8) ([]*DaoSignatureResult, error) {
-	sql := " select * from ( " +
-		" SELECT payload_cid,deal_id,count(*) as threshold FROM event_dao_signature " +
-		" WHERE (signature_unlock_status = '0' and deal_id > 0 ) " +
-		" GROUP BY payload_cid,deal_id HAVING (threshold >=2) " +
-		" ) a  where a.deal_id  in ( " +
-		" 	select distinct deal_id from event_dao_signature where signature_unlock_status=0 ) "
+	sql := " SELECT payload_cid,deal_id,count(*) as threshold FROM event_dao_signature " +
+		" WHERE signature_unlock_status = '0' and deal_id > 0 " +
+		" GROUP BY payload_cid,deal_id HAVING (threshold>=2) "
 
 	var models []*DaoSignatureResult
 	err := database.GetDB().Raw(sql).Scan(&models).Limit(constants.DEFAULT_SELECT_LIMIT).Offset(0).Error

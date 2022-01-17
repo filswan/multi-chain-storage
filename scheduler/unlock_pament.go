@@ -23,13 +23,13 @@ import (
 )
 
 func UnlockPayment() error {
-	threshHold, err := GetThreshHold()
+	threshold, err := GetThreshold()
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
 	}
 
-	daoSigResult, err := models.GetDaoSignatureEventsSholdBeUnlock(threshHold)
+	daoSigResult, err := models.GetDaoSignatureEventsSholdBeUnlock(threshold)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
@@ -195,7 +195,7 @@ func saveUnlockEventLogToDB(logsInChain []*types.Log, recipient string, unlockSt
 	return nil
 }
 
-func GetThreshHold() (uint8, error) {
+func GetThreshold() (uint8, error) {
 	pk := os.Getenv("privateKeyOnPolygon")
 	if strings.HasPrefix(strings.ToLower(pk), "0x") {
 		pk = pk[2:]

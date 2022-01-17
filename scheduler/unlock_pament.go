@@ -29,13 +29,13 @@ func UnlockPayment() error {
 		return err
 	}
 
-	daoSigResult, err := models.GetDaoSignatureEventsSholdBeUnlock(threshold)
+	deals, err := models.GetDeal2BeUnlocked(threshold)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
 	}
-	for _, daoSig := range daoSigResult {
-		daoEventLogList, err := models.FindDaoEventLog(&models.EventDaoSignature{PayloadCid: daoSig.PayloadCid, DealId: daoSig.DealId, SignatureUnlockStatus: constants.SIGNATURE_DEFAULT_VALUE}, "id desc", "10", "0")
+	for _, deal := range deals {
+		daoEventLogList, err := models.FindDaoEventLog(&models.EventDaoSignature{PayloadCid: deal.PayloadCid, DealId: deal.DealId, SignatureUnlockStatus: constants.SIGNATURE_DEFAULT_VALUE}, "id desc", "10", "0")
 		if err != nil {
 			logs.GetLogger().Error(err)
 			continue
@@ -43,8 +43,8 @@ func UnlockPayment() error {
 
 		if len(daoEventLogList) > 0 {
 			parm := goBind.IPaymentMinimalunlockPaymentParam{}
-			parm.Id = daoSig.PayloadCid
-			parm.DealId = strconv.FormatInt(daoSig.DealId, 10)
+			parm.Id = deal.PayloadCid
+			parm.DealId = strconv.FormatInt(deal.DealId, 10)
 			parm.Amount = big.NewInt(0)
 			parm.Recipient = common.HexToAddress(daoEventLogList[0].Recipient)
 			parm.OrderId = ""
@@ -68,6 +68,7 @@ func doUnlockPaymentOnContract(daoEvent *models.EventDaoSignature, unlockParams 
 		logs.GetLogger().Error(err)
 		return err
 	}
+
 	gasPrice, err := client.SuggestGasPrice(context.Background())
 	if err != nil {
 		logs.GetLogger().Error(err)

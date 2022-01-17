@@ -24,13 +24,10 @@ type EventDaoSignature struct {
 	TxHashUnlock          string `json:"tx_hash_unlock"`
 }
 
-type DaoSignatureResult struct {
-	Recipient  string `json:"recipient"`
+type DealUnlockable struct {
 	PayloadCid string `json:"payload_cid"`
-	OrderId    string `json:"order_id"`
-	DealCid    string `json:"deal_cid"`
 	DealId     int64  `json:"deal_id"`
-	Threshold  string `json:"threshold"`
+	SignCount  string `json:"sign_count"`
 }
 
 // FindDaoEventLog (&DaoEventLog{Id: "0xadeaCC802D0f2DFd31bE4Fa7434F15782Fd720ac"},"id desc","10","0")
@@ -47,13 +44,13 @@ func FindDaoEventLog(whereCondition interface{}, orderCondition, limit, offset s
 	return models, err
 }
 
-func GetDaoSignatureEventsSholdBeUnlock(threshHold uint8) ([]*DaoSignatureResult, error) {
-	sql := " SELECT payload_cid,deal_id,count(*) as threshold FROM event_dao_signature " +
+func GetDeal2BeUnlocked(threshHold uint8) ([]*DealUnlockable, error) {
+	sql := " SELECT payload_cid,deal_id,count(*) as sign_count FROM event_dao_signature " +
 		" WHERE signature_unlock_status = '0' and deal_id > 0 " +
-		" GROUP BY payload_cid,deal_id HAVING (threshold>=2) "
+		" GROUP BY payload_cid,deal_id HAVING (sign_count>=?) "
 
-	var models []*DaoSignatureResult
-	err := database.GetDB().Raw(sql).Scan(&models).Limit(constants.DEFAULT_SELECT_LIMIT).Offset(0).Error
+	var models []*DealUnlockable
+	err := database.GetDB().Raw(sql, threshHold).Scan(&models).Limit(constants.DEFAULT_SELECT_LIMIT).Offset(0).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err

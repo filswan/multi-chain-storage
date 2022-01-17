@@ -2,6 +2,7 @@ package scheduler
 
 import (
 	"fmt"
+	"math/big"
 	"os"
 	"path/filepath"
 	"payment-bridge/blockchain/browsersync/scanlockpayment/polygon"
@@ -17,6 +18,7 @@ import (
 	"github.com/filswan/go-swan-lib/logs"
 	libmodel "github.com/filswan/go-swan-lib/model"
 	libutils "github.com/filswan/go-swan-lib/utils"
+	"github.com/shopspring/decimal"
 )
 
 func createCar() error {
@@ -37,36 +39,31 @@ func createCar() error {
 		return err
 	}
 
+	if len(srcFiles) == 0 {
+		logs.GetLogger().Info("no source file to be created to car file")
+		return nil
+	}
+
 	totalSize := int64(0)
 	currentUtcMilliSec := utils.GetCurrentUtcMilliSecond()
 	createdTimeMin := currentUtcMilliSec
+	var maxPrice *decimal.Decimal
 	for _, srcFile := range srcFiles {
 		if srcFile.CreateAt < createdTimeMin {
-			totalLockFee, err := models.GetTotalLockFeeByCarPayloadCid(srcFile.PayloadCid)
-			if err != nil {
-				logs.GetLogger().Error(err)
-				continue
-			}
-
-			lockedFee := totalLockFee.IntPart()
-
-			fileCoinPriceInUsdc, err := billing.GetWfilPriceFromSushiPrice(polygon.WebConn.ConnWeb, "1")
-			if err != nil {
-				logs.GetLogger().Error(err)
-				return err
-			}
-			maxPrice, err := GetMaxPriceForCreateTask(fileCoinPriceInUsdc, lockedFee, DURATION, srcFile.FileSize)
-			if err != nil {
-				logs.GetLogger().Error(err)
-				continue
-			}
-			logs.GetLogger().Println("payload cid ", srcFile.PayloadCid, " max price is ", maxPrice)
-
-			if maxPrice.Cmp(config.GetConfig().SwanTask.MaxPrice) < 0 {
-				*maxPrice = config.GetConfig().SwanTask.MaxPrice
-			}
-
 			createdTimeMin = srcFile.CreateAt
+		}
+
+		maxPriceTemp, err := getMaxPrice(*srcFile)
+		if err != nil {
+			os.RemoveAll(carSrcDir)
+			logs.GetLogger().Error(err)
+			return err
+		}
+
+		if maxPrice == nil {
+			maxPrice = maxPriceTemp
+		} else if maxPrice.Cmp(config.GetConfig().SwanTask.MaxPrice) < 0 {
+			*maxPrice = config.GetConfig().SwanTask.MaxPrice
 		}
 
 		srcFilepathTemp := filepath.Join(carSrcDir, srcFile.FileName)
@@ -119,7 +116,7 @@ func createCar() error {
 		return err
 	}
 
-	err = saveCarInfo2DB(fileDesc, srcFiles)
+	err = saveCarInfo2DB(fileDesc, srcFiles, *maxPrice)
 	if err != nil {
 		os.RemoveAll(carSrcDir)
 		os.RemoveAll(carDestDir)
@@ -134,6 +131,42 @@ func createCar() error {
 	}
 
 	return nil
+}
+
+func getMaxPrice(srcFile models.SourceFile) (*decimal.Decimal, error) {
+	totalLockFee, err := models.GetTotalLockFeeByCarPayloadCid(srcFile.PayloadCid)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	lockedFee := totalLockFee.IntPart()
+
+	fileCoinPriceInUsdc, err := billing.GetWfilPriceFromSushiPrice(polygon.WebConn.ConnWeb, "1")
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+	maxPrice, err := GetMaxPriceForCreateTask(fileCoinPriceInUsdc, lockedFee, DURATION, srcFile.FileSize)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+	logs.GetLogger().Println("payload cid ", srcFile.PayloadCid, " max price is ", maxPrice)
+
+	if maxPrice.Cmp(config.GetConfig().SwanTask.MaxPrice) < 0 {
+		*maxPrice = config.GetConfig().SwanTask.MaxPrice
+	}
+
+	return maxPrice, nil
+}
+
+func GetMaxPriceForCreateTask(rate *big.Int, lockedFee int64, duration int, carFileSize int64) (*decimal.Decimal, error) {
+	_, sectorSize := libutils.CalculatePieceSize(carFileSize)
+	lockedFeeDecimal := decimal.NewFromInt(lockedFee)
+	lockedFeeInFileCoin := lockedFeeDecimal.Div(decimal.NewFromFloat(constants.LOTUS_PRICE_MULTIPLE_1E18)).Div(decimal.NewFromInt(rate.Int64()))
+	maxPrice := lockedFeeInFileCoin.Div(decimal.NewFromFloat(sectorSize).Div(decimal.NewFromInt(10204 * 1024 * 1024))).Div(decimal.NewFromInt(int64(duration)))
+	return &maxPrice, nil
 }
 
 func createCarFile(srcDir, carDir string) (*libmodel.FileDesc, error) {
@@ -159,7 +192,7 @@ func createCarFile(srcDir, carDir string) (*libmodel.FileDesc, error) {
 	return fileDesc, nil
 }
 
-func saveCarInfo2DB(fileDesc *libmodel.FileDesc, srcFiles []*models.SourceFile) error {
+func saveCarInfo2DB(fileDesc *libmodel.FileDesc, srcFiles []*models.SourceFile, maxPrice decimal.Decimal) error {
 	db := database.GetDBTransaction()
 	dealFile := new(models.DealFile)
 	dealFile.CarFileName = fileDesc.CarFileName
@@ -173,6 +206,7 @@ func saveCarInfo2DB(fileDesc *libmodel.FileDesc, srcFiles []*models.SourceFile) 
 	dealFile.Duration = DURATION
 	dealFile.LockPaymentStatus = constants.LOCK_PAYMENT_STATUS_WAITING
 	dealFile.IsDeleted = utils.GetBoolPointer(false)
+	dealFile.MaxPrice = maxPrice
 	err := database.SaveOneInTransaction(db, dealFile)
 	if err != nil {
 		db.Rollback()

@@ -1,7 +1,6 @@
 package scheduler
 
 import (
-	"math/big"
 	"path/filepath"
 	"payment-bridge/common/constants"
 	"payment-bridge/config"
@@ -12,8 +11,6 @@ import (
 
 	"github.com/filswan/go-swan-client/command"
 	libconstants "github.com/filswan/go-swan-lib/constants"
-	libutils "github.com/filswan/go-swan-lib/utils"
-	"github.com/shopspring/decimal"
 )
 
 func CheckIfHaveLockPayment(payloadCid string) ([]*models.EventLockPayment, error) {
@@ -94,12 +91,4 @@ func createTask() error {
 		}
 	}
 	return nil
-}
-
-func GetMaxPriceForCreateTask(rate *big.Int, lockedFee int64, duration int, carFileSize int64) (*decimal.Decimal, error) {
-	_, sectorSize := libutils.CalculatePieceSize(carFileSize)
-	lockedFeeDecimal := decimal.NewFromInt(lockedFee)
-	lockedFeeInFileCoin := lockedFeeDecimal.Div(decimal.NewFromFloat(constants.LOTUS_PRICE_MULTIPLE_1E18)).Div(decimal.NewFromInt(rate.Int64()))
-	maxPrice := lockedFeeInFileCoin.Div(decimal.NewFromFloat(sectorSize).Div(decimal.NewFromInt(10204 * 1024 * 1024))).Div(decimal.NewFromInt(int64(duration)))
-	return &maxPrice, nil
 }

@@ -134,7 +134,7 @@ func createCar() error {
 }
 
 func getMaxPrice(srcFile models.SourceFile) (*decimal.Decimal, error) {
-	totalLockFee, err := models.GetTotalLockFeeByCarPayloadCid(srcFile.PayloadCid)
+	totalLockFee, err := models.GetTotalLockFeeBySrcPayloadCid(srcFile.PayloadCid)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err

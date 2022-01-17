@@ -65,7 +65,6 @@ type ipfsServer struct {
 
 type ScheduleRule struct {
 	UnlockPaymentRule  string `toml:"unlock_payment_rule"`
-	CreateCarRule      string `toml:"create_car_rule"`
 	CreateTaskRule     string `toml:"create_task_rule"`
 	SendDealRule       string `toml:"send_deal_rule"`
 	ScanDealStatusRule string `toml:"scan_deal_status_rule"`
@@ -135,7 +134,6 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 		{"swan_task", "min_file_size_mb"},
 
 		{"schedule_rule", "unlock_payment_rule"},
-		{"schedule_rule", "create_car_rule"},
 		{"schedule_rule", "create_task_rule"},
 		{"schedule_rule", "send_deal_rule"},
 		{"schedule_rule", "scan_deal_status_rule"},

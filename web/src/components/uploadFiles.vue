@@ -30,7 +30,7 @@
                                 <img src="@/assets/images/info.png"/>
                             </el-tooltip>
                         </template>
-                        <el-input-number v-model="ruleForm.duration" controls-position="right" :min="180" :max="540" :step-strictly="true"></el-input-number> &nbsp; {{$t('components.day')}}<small> {{$t('components.interval')}}</small>
+                        <el-input-number v-model="ruleForm.duration" @change="calculation" controls-position="right" :min="180" :max="540" :step-strictly="true"></el-input-number> &nbsp; {{$t('components.day')}}<small> {{$t('components.interval')}}</small>
                         <!-- <el-input v-model="ruleForm.duration" type="number" style="max-width:130px"></el-input> &nbsp; {{$t('components.day')}} <small> {{$t('components.interval')}}</small> -->
                     </el-form-item>
                     <el-form-item prop="storage_cost">

@@ -4,21 +4,19 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"payment-bridge/blockchain/browsersync/scanlockpayment/polygon"
 	"payment-bridge/common/constants"
 	"payment-bridge/common/utils"
 	"payment-bridge/config"
 	"payment-bridge/database"
 	"payment-bridge/models"
+	"payment-bridge/routers/billing"
 	"time"
 
 	"github.com/filswan/go-swan-client/command"
 	"github.com/filswan/go-swan-lib/logs"
 	libmodel "github.com/filswan/go-swan-lib/model"
 	libutils "github.com/filswan/go-swan-lib/utils"
-)
-
-const (
-	DURATION = 500
 )
 
 func createCar() error {
@@ -44,6 +42,30 @@ func createCar() error {
 	createdTimeMin := currentUtcMilliSec
 	for _, srcFile := range srcFiles {
 		if srcFile.CreateAt < createdTimeMin {
+			totalLockFee, err := models.GetTotalLockFeeByCarPayloadCid(srcFile.PayloadCid)
+			if err != nil {
+				logs.GetLogger().Error(err)
+				continue
+			}
+
+			lockedFee := totalLockFee.IntPart()
+
+			fileCoinPriceInUsdc, err := billing.GetWfilPriceFromSushiPrice(polygon.WebConn.ConnWeb, "1")
+			if err != nil {
+				logs.GetLogger().Error(err)
+				return err
+			}
+			maxPrice, err := GetMaxPriceForCreateTask(fileCoinPriceInUsdc, lockedFee, DURATION, srcFile.FileSize)
+			if err != nil {
+				logs.GetLogger().Error(err)
+				continue
+			}
+			logs.GetLogger().Println("payload cid ", srcFile.PayloadCid, " max price is ", maxPrice)
+
+			if maxPrice.Cmp(config.GetConfig().SwanTask.MaxPrice) < 0 {
+				*maxPrice = config.GetConfig().SwanTask.MaxPrice
+			}
+
 			createdTimeMin = srcFile.CreateAt
 		}
 

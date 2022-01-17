@@ -12,6 +12,10 @@ import (
 	"github.com/robfig/cron"
 )
 
+const (
+	DURATION = 500
+)
+
 type Schedule struct {
 	Name  string
 	Rule  string

@@ -84,7 +84,7 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration int, walle
 
 		sourceFile := models.SourceFile{
 			FileName:      srcFile.Filename,
-			FileSize:      strconv.FormatInt(srcFile.Size, 10),
+			FileSize:      srcFile.Size,
 			ResourceUri:   srcFilepath,
 			Status:        constants.SOURCE_FILE_STATUS_CREATED,
 			CreateAt:      utils.GetCurrentUtcMilliSecond(),
@@ -144,7 +144,7 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration int, walle
 
 	sourceFile := models.SourceFile{
 		FileName:      srcFile.Filename,
-		FileSize:      strconv.FormatInt(srcFile.Size, 10),
+		FileSize:      srcFile.Size,
 		ResourceUri:   sourceFiles[0].ResourceUri,
 		Status:        constants.SOURCE_FILE_STATUS_CREATED,
 		CreateAt:      utils.GetCurrentUtcMilliSecond(),

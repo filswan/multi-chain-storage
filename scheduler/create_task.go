@@ -3,12 +3,10 @@ package scheduler
 import (
 	"math/big"
 	"path/filepath"
-	"payment-bridge/blockchain/browsersync/scanlockpayment/polygon"
 	"payment-bridge/common/constants"
 	"payment-bridge/config"
 	"payment-bridge/database"
 	"payment-bridge/models"
-	"payment-bridge/routers/billing"
 
 	"github.com/filswan/go-swan-lib/logs"
 
@@ -35,29 +33,6 @@ func createTask() error {
 		return err
 	}
 	for _, deal := range dealList {
-		totalLockFee, err := models.GetTotalLockFeeByCarPayloadCid(deal.PayloadCid)
-		if err != nil {
-			logs.GetLogger().Error(err)
-			continue
-		}
-
-		lockedFee := totalLockFee.IntPart()
-
-		fileCoinPriceInUsdc, err := billing.GetWfilPriceFromSushiPrice(polygon.WebConn.ConnWeb, "1")
-		if err != nil {
-			logs.GetLogger().Error(err)
-			return err
-		}
-		maxPrice, err := GetMaxPriceForCreateTask(fileCoinPriceInUsdc, lockedFee, deal.Duration, deal.CarFileSize)
-		if err != nil {
-			logs.GetLogger().Error(err)
-			continue
-		}
-		logs.GetLogger().Println("payload cid ", deal.PayloadCid, " max price is ", maxPrice)
-
-		if maxPrice.Cmp(config.GetConfig().SwanTask.MaxPrice) < 0 {
-			*maxPrice = config.GetConfig().SwanTask.MaxPrice
-		}
 
 		cmdUpload := command.CmdUpload{
 			StorageServerType:           libconstants.STORAGE_SERVER_TYPE_IPFS_SERVER,
@@ -87,7 +62,7 @@ func createTask() error {
 			VerifiedDeal:               config.GetConfig().SwanTask.VerifiedDeal,
 			OfflineMode:                false,
 			FastRetrieval:              config.GetConfig().SwanTask.FastRetrieval,
-			MaxPrice:                   *maxPrice,
+			MaxPrice:                   deal.MaxPrice,
 			StorageServerType:          libconstants.STORAGE_SERVER_TYPE_IPFS_SERVER,
 			WebServerDownloadUrlPrefix: config.GetConfig().IpfsServer.DownloadUrlPrefix,
 			ExpireDays:                 config.GetConfig().SwanTask.ExpireDays,
@@ -97,7 +72,7 @@ func createTask() error {
 			Description:                taskDescription,
 			StartEpochHours:            startEpochIntervalHours,
 			SourceId:                   constants.SOURCE_ID_OF_PAYMENT,
-			Duration:                   deal.Duration,
+			Duration:                   DURATION,
 			MaxAutoBidCopyNumber:       5,
 		}
 

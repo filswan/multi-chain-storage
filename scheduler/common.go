@@ -38,7 +38,6 @@ func InitScheduler() {
 func createScheduleJob() {
 	confScheduleRule := config.GetConfig().ScheduleRule
 	scheduleJobs := []Schedule{
-		{Name: "create car", Rule: confScheduleRule.CreateCarRule, Func: createCar, Mutex: &sync.Mutex{}},
 		{Name: "create task", Rule: confScheduleRule.CreateTaskRule, Func: createTask},
 		{Name: "send deal", Rule: confScheduleRule.SendDealRule, Func: sendDeal},
 		{Name: "scan deal", Rule: confScheduleRule.ScanDealStatusRule, Func: scanDeal},

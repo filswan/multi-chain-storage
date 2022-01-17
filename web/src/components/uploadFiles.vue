@@ -30,7 +30,8 @@
                                 <img src="@/assets/images/info.png"/>
                             </el-tooltip>
                         </template>
-                        <el-input v-model="ruleForm.duration" type="number" style="max-width:130px"></el-input> &nbsp; {{$t('components.day')}} <small> {{$t('components.interval')}}</small>
+                        <el-input-number v-model="ruleForm.duration" @change="calculation" controls-position="right" :min="180" :max="540" :step-strictly="true"></el-input-number> &nbsp; {{$t('components.day')}}<small> {{$t('components.interval')}}</small>
+                        <!-- <el-input v-model="ruleForm.duration" type="number" style="max-width:130px"></el-input> &nbsp; {{$t('components.day')}} <small> {{$t('components.interval')}}</small> -->
                     </el-form-item>
                     <el-form-item prop="storage_cost">
                         <template slot="label">
@@ -836,12 +837,15 @@
                         align-items: center;
                         width: auto;
                         margin: 0.15rem auto;
+                        @media screen and (max-width:441px){ 
+                            flex-wrap: wrap;
+                        }
                         .el-form-item__label{
                             display: flex;
                             justify-content: flex-end;
                             align-items: center;
-                            width: 47%;
-                            padding: 0 3% 0 0;
+                            width: 45%;
+                            padding: 0 2% 0 0;
                             // max-width: 2rem;
                             line-height: 1.5;
                             text-align: left;
@@ -860,21 +864,41 @@
                             &::before{
                                 display: none;
                             }
+                            @media screen and (max-width:441px){ 
+                                width: 100%;
+                                padding-bottom: 0.05rem;
+                                justify-content: center;
+                            }
                         }
                         .el-form-item__content{
                             display: flex;
                             align-items: center;
+                            width: 53%;
                             font-size: 0.14rem;
                             white-space: normal;
                             word-break: break-word;
                             line-height: 1.5;
                             color: #666;
-                            @media screen and (max-width:600px){
+                            @media screen and (max-width:1024px){
+                                flex-wrap: wrap;
+                            }
+                            @media screen and (max-width:768px){
                                 font-size: 14px;
                             }
+                            @media screen and (max-width:441px){ 
+                                flex-wrap: wrap;
+                                width: 100%;
+                                justify-content: center;
+                            }
                             small{
-                                margin: 2px 5px 0;
+                                margin: 2px 0 0 5px;
                                 font-size: 12px;
+                                @media screen and (max-width:1024px){
+                                    width: 100%;
+                                }
+                                @media screen and (max-width:441px){
+                                    text-align: center;
+                                }
                             }
                             h4{
                                 width: 100%;
@@ -899,13 +923,21 @@
                             .el-input{
                                 width: auto;
                                 .el-input__inner{
-                                    height: 0.32rem;
+                                    height: 35px;
                                     font-size: inherit;
-                                    line-height: 0.32rem;
+                                    line-height: 34px;
                                 }
                                 .el-input__suffix{
                                     display: none;
                                 }
+                            }
+                            .el-input-number{
+                                max-width: 140px;
+                                line-height: 34px;
+                            }
+                            .el-input-number.is-controls-right .el-input-number__decrease, 
+                            .el-input-number.is-controls-right .el-input-number__increase{
+                                line-height: 17px;
                             }
                             .el-form-item__error {
                                 padding-top: 0;
@@ -1149,17 +1181,6 @@
     //     background: #f2f2f2;
     //     border-radius: 0.08rem;
     // }
-    @media screen and (max-width: 1024px) {
-        #Create{
-            .upload {
-                .upload_form {
-                    .el-form {
-                        width: 48%;
-                    }
-                }
-            }
-        } 
-    }
     @media screen and (max-width: 999px) {
         #Create {
             padding: 0.1rem;
@@ -1201,21 +1222,6 @@
                  }
                  .upload_form {
                      width: 100%;
-                     .el-form /deep/{
-                         .el-form-item{
-                             flex-wrap: wrap;
-                             .el-form-item__label{
-                                width: 100%;
-                                padding-bottom: 0.05rem;
-                                justify-content: center;
-                             }
-                             .el-form-item__content{
-                                flex-wrap: wrap;
-                                width: 100%;
-                                justify-content: center;
-                             }
-                         }
-                     }
                  }
                  .upload_plan {
                      width: 95%;

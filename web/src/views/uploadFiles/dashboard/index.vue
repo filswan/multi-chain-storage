@@ -584,15 +584,15 @@ export default {
               _this.txHash = hash
           })
           .on('confirmation', function(confirmationNumber, receipt){
-              console.log('confirmationNumber console:', confirmationNumber, receipt);
+              // console.log('confirmationNumber console:', confirmationNumber, receipt);
           })
           .on('receipt', function(receipt){
-              console.log('receipt console:', receipt);
+              // console.log('receipt console:', receipt);
               _this.checkTransaction(receipt.transactionHash)
               _this.txHash = receipt.transactionHash
           })
           .on('error', function(error){
-              console.log('error console:', error)
+              // console.log('error console:', error)
               _this.loading = false
               _this.failTransaction = true
           }); 

@@ -253,7 +253,7 @@ export default {
         no: '否',
         Task_expected: '任务预计完成时间',
         day: '天',
-        interval: '(最少: 180 - 最多: 540)',
+        interval: '(最少: 180 - 最多: 540，最小时间单位 1天)',
         accepted: '从接受任务的那一刻算起。',
         upload_re_upload: '请重新上传.csv文件，包括deal cid和start epoch。',
         upload_Download: '下载示例。',

@@ -254,7 +254,7 @@ export default {
         no: 'No',
         Task_expected: 'Task Expected Complete in',
         day: 'days',
-        interval: '(min: 180 - max: 540)',
+        interval: '(Min: 180 - Max: 540; Minimum time unit: 1 day)',
         accepted: 'Counting from the moment the task is accepted.',
         upload_re_upload: 'Please re-upload the .csv file including deal cid and start-epoch.',
         upload_Download: 'Download Example.',

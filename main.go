@@ -31,14 +31,14 @@ func main() {
 
 	models.RunAllTheScan()
 
-	//scheduler.CreateTaskScheduler()
+	scheduler.CreateTaskScheduler()
 
-	//scheduler.SendDealScheduler()
+	scheduler.SendDealScheduler()
 
 	scheduler.DAOUnlockPaymentSchedule()
 	scheduler.RefundUnlockPaymentSchedule()
 
-	//scheduler.ScanDealInfoScheduler()
+	scheduler.ScanDealInfoScheduler()
 
 	defer func() {
 		err := db.Close()

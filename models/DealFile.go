@@ -73,3 +73,7 @@ func DeleteDealFile(whereCondition interface{}) error {
 
 	return err
 }
+
+func UpdateLockPaymentStatusByPayloadCid(payloadCid string, status string) error {
+	return UpdateDealFile(DealFile{PayloadCid: payloadCid}, DealFile{LockPaymentStatus: status})
+}

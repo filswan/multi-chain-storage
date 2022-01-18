@@ -2,8 +2,6 @@ package scheduler
 
 import (
 	"fmt"
-	"github.com/filswan/go-swan-lib/client/lotus"
-	"github.com/robfig/cron"
 	"payment-bridge/common/constants"
 	"payment-bridge/common/utils"
 	"payment-bridge/config"
@@ -13,6 +11,9 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/filswan/go-swan-lib/client/lotus"
+	"github.com/robfig/cron"
 )
 
 func ScanDealInfoScheduler() {
@@ -35,7 +36,7 @@ func ScanDealInfoScheduler() {
 func GetDealInfoByLotusClientAndUpdateInfoToDB() error {
 	inList := "'" + strings.Join(strings.Split(config.GetConfig().Lotus.FinalStatusList, ","), "', '") + "'"
 	fmt.Println(inList)
-	whereCondition := "deal_cid != '' and task_uuid != '' and lower(lock_payment_status) not in (lower('" + constants.LOCK_PAYMENT_STATUS_SUCCESS + "'), lower('" + constants.LOCK_PAYMENT_STATUS_REFUNDED + "'))"
+	whereCondition := "deal_cid != '' and task_uuid != '' and lower(lock_payment_status) not in (lower('" + constants.LOCK_PAYMENT_STATUS_SUCCESS + "'), lower('" + constants.LOCK_PAYMENT_STATUS_REFUNDED + "'), lower('" + constants.LOCK_PAYMENT_STATUS_REFUNDING + "'))"
 	//" and deal_status not in (" + inList + ")"
 	dealList, err := models.FindDealFileList(whereCondition, "create_at desc", "100", "0")
 	if err != nil {
@@ -58,7 +59,17 @@ func GetDealInfoByLotusClientAndUpdateInfoToDB() error {
 		if strings.ToLower(dealInfo.Status) == strings.ToLower(constants.DEAL_STATUS_ACTIVE) {
 			paymentStatus = constants.LOCK_PAYMENT_STATUS_SUCCESS
 		} else if strings.ToLower(dealInfo.Status) == strings.ToLower(constants.DEAL_STATUS_ERROR) {
-			paymentStatus = constants.LOCK_PAYMENT_STATUS_REFUNDED
+			eventExpireList, err := models.FindEventExpirePayments(&models.EventExpirePayment{PayloadCid: v.PayloadCid}, "id desc", "10", "0")
+			if err != nil {
+				logs.GetLogger().Error(err)
+				return err
+			}
+			paymentStatus = constants.LOCK_PAYMENT_STATUS_REFUNDING
+			for _, e := range eventExpireList {
+				if e.ExpireUserAmount != "0" && e.ExpireUserAmount != "" {
+					paymentStatus = constants.LOCK_PAYMENT_STATUS_REFUNDED
+				}
+			}
 		} else {
 			paymentStatus = constants.LOCK_PAYMENT_STATUS_PROCESSING
 		}

@@ -1,9 +1,10 @@
 package polygon
 
 import (
-	"github.com/BurntSushi/toml"
 	"log"
 	"time"
+
+	"github.com/BurntSushi/toml"
 )
 
 type ConfigurationForPolygon struct {
@@ -24,6 +25,7 @@ type PolygonMainnetNode struct {
 	GasLimit                                       int64         `toml:"gas_limit"`
 	RouterAddressOfSushiswapOnPolygon              string        `toml:"router_address_of_sushiswap_on_polygon"`
 	PairAddressBetweenWfilUsdcOfSushiswapOnPolygon string        `toml:"pair_address_between_wfil_usdc_of_sushiswap_on_polygon"`
+	ExpireEventFunctionSignature                   string        `toml:"expire_event_function_signature"`
 }
 
 var polygonConfig *ConfigurationForPolygon

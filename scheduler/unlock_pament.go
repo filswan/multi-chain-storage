@@ -2,7 +2,6 @@ package scheduler
 
 import (
 	"context"
-	"log"
 	"math/big"
 	"os"
 	"payment-bridge/blockchain/browsersync/scanlockpayment/polygon"
@@ -14,7 +13,6 @@ import (
 	"payment-bridge/on-chain/goBind"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -22,36 +20,22 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/filswan/go-swan-lib/logs"
-	"github.com/robfig/cron"
 )
 
-func DAOUnlockPaymentSchedule() {
-	c := cron.New()
-	err := c.AddFunc(config.GetConfig().ScheduleRule.UnlockPaymentRule, func() {
-		log.Println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^unlock payment scheduler is running at " + time.Now().Format("2006-01-02 15:04:05"))
-		err := UnlockPaymentByDao()
-		if err != nil {
-			logs.GetLogger().Error(err)
-		}
-	})
-	if err != nil {
-		logs.GetLogger().Error(err)
-	}
-	c.Start()
-}
-func UnlockPaymentByDao() error {
-	threshHold, err := GetThreshHold()
+func UnlockPayment() error {
+	threshold, err := GetThreshold()
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
 	}
-	daoSigResult, err := models.GetDaoSignatureEventsSholdBeUnlock(threshHold)
+
+	deals, err := models.GetDeal2BeUnlocked(threshold)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
 	}
-	for _, v := range daoSigResult {
-		daoEventLogList, err := models.FindDaoEventLog(&models.EventDaoSignature{PayloadCid: v.PayloadCid, DealId: v.DealId, SignatureUnlockStatus: constants.SIGNATURE_DEFAULT_VALUE}, "id desc", "10", "0")
+	for _, deal := range deals {
+		daoEventLogList, err := models.FindDaoEventLog(&models.EventDaoSignature{PayloadCid: deal.PayloadCid, DealId: deal.DealId, SignatureUnlockStatus: constants.SIGNATURE_DEFAULT_VALUE}, "id desc", "10", "0")
 		if err != nil {
 			logs.GetLogger().Error(err)
 			continue
@@ -59,17 +43,12 @@ func UnlockPaymentByDao() error {
 
 		if len(daoEventLogList) > 0 {
 			parm := goBind.IPaymentMinimalunlockPaymentParam{}
-			parm.Id = v.PayloadCid
-			parm.DealId = strconv.FormatInt(v.DealId, 10)
+			parm.Id = deal.PayloadCid
+			parm.DealId = strconv.FormatInt(deal.DealId, 10)
 			parm.Amount = big.NewInt(0)
 			parm.Recipient = common.HexToAddress(daoEventLogList[0].Recipient)
 			parm.OrderId = ""
-			/*parm := goBind.IPaymentMinimalunlockPaymentParam{}
-			parm.Id = "12321434534lkdlfg"
-			parm.DealId ="1234"
-			parm.Amount = big.NewInt(0)
-			parm.Recipient = common.HexToAddress(daoEventLogList[0].Recipient)
-			parm.OrderId = ""*/
+
 			err = doUnlockPaymentOnContract(daoEventLogList[0], parm)
 			if err != nil {
 				logs.GetLogger().Error(err)
@@ -89,6 +68,7 @@ func doUnlockPaymentOnContract(daoEvent *models.EventDaoSignature, unlockParams 
 		logs.GetLogger().Error(err)
 		return err
 	}
+
 	gasPrice, err := client.SuggestGasPrice(context.Background())
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -105,9 +85,8 @@ func doUnlockPaymentOnContract(daoEvent *models.EventDaoSignature, unlockParams 
 		logs.GetLogger().Error(err)
 		return err
 	}
-	callOpts, _ := bind.NewKeyedTransactorWithChainID(privateKey, chainId)
 
-	//callOpts := new(bind.TransactOpts)
+	callOpts, _ := bind.NewKeyedTransactorWithChainID(privateKey, chainId)
 	callOpts.Nonce = big.NewInt(int64(nonce))
 	callOpts.GasPrice = gasPrice
 	callOpts.GasLimit = uint64(polygon.GetConfig().PolygonMainnetNode.GasLimit)
@@ -158,10 +137,8 @@ func doUnlockPaymentOnContract(daoEvent *models.EventDaoSignature, unlockParams 
 }
 
 func saveUnlockEventLogToDB(logsInChain []*types.Log, recipient string, unlockStatus string) error {
-	//paymentAbiString, err := utils.ReadContractAbiJsonFile(goBind.SwanPaymentMetaData.ABI)
 	paymentAbiString := goBind.SwanPaymentMetaData.ABI
 
-	//SwanPayment contract function signature
 	contractUnlockFunctionSignature := polygon.GetConfig().PolygonMainnetNode.ContractUnlockFunctionSignature
 	contractAbi, err := abi.JSON(strings.NewReader(paymentAbiString))
 	if err != nil {
@@ -217,20 +194,17 @@ func saveUnlockEventLogToDB(logsInChain []*types.Log, recipient string, unlockSt
 	return nil
 }
 
-func GetThreshHold() (uint8, error) {
-	daoAddress := common.HexToAddress(polygon.GetConfig().PolygonMainnetNode.DaoSwanOracleAddress)
-	client := polygon.WebConn.ConnWeb
-
+func GetThreshold() (uint8, error) {
 	pk := os.Getenv("privateKeyOnPolygon")
 	if strings.HasPrefix(strings.ToLower(pk), "0x") {
 		pk = pk[2:]
 	}
 
 	callOpts := new(bind.CallOpts)
-	callOpts.From = daoAddress
+	callOpts.From = common.HexToAddress(polygon.GetConfig().PolygonMainnetNode.DaoSwanOracleAddress)
 	callOpts.Context = context.Background()
 
-	daoOracleContractInstance, err := goBind.NewFilswanOracle(daoAddress, client)
+	daoOracleContractInstance, err := goBind.NewFilswanOracle(callOpts.From, polygon.WebConn.ConnWeb)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return 0, err
@@ -241,6 +215,7 @@ func GetThreshHold() (uint8, error) {
 		logs.GetLogger().Error(err)
 		return 0, err
 	}
+
 	logs.GetLogger().Info("dao threshHold is : ", threshHold)
 	return threshHold, nil
 }

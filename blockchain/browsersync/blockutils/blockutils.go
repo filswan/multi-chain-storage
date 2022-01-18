@@ -2,7 +2,7 @@ package blockutils
 
 import (
 	"payment-bridge/common/constants"
-	models2 "payment-bridge/models"
+	"payment-bridge/models"
 	"strconv"
 
 	"github.com/filswan/go-swan-lib/logs"
@@ -25,7 +25,7 @@ func GetStartBlockNo(networkName string, startBlockNoInConfig int64) int64 {
 		uuid = constants.NETWORK_TYPE_ETH_UUID
 	}
 	var whereCondition string
-	networkId, err := models2.FindNetworkIdByUUID(uuid)
+	networkId, err := models.FindNetworkIdByUUID(uuid)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		startScanBlockNo = startBlockNoInConfig
@@ -37,8 +37,7 @@ func GetStartBlockNo(networkName string, startBlockNoInConfig int64) int64 {
 		startScanBlockNo = startBlockNoInConfig
 	}
 
-	blockScanRecord := new(models2.BlockScanRecord)
-	blockScanRecordList, err := blockScanRecord.FindLastCurrentBlockNumber(whereCondition)
+	blockScanRecordList, err := models.FindLastCurrentBlockNumber(whereCondition)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		startScanBlockNo = startBlockNoInConfig

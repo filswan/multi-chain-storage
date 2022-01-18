@@ -114,7 +114,7 @@ func DecodeJwtToken(tokenStr string) (jwt.MapClaims, error) {
 	claims, _ := token.Claims.(jwt.MapClaims)
 
 	for key, element := range claims {
-		fmt.Println("Key:", key, "=>", "Element:", element)
+		logs.GetLogger().Info("Key:", key, "=>", "Element:", element)
 	}
 
 	return claims, nil

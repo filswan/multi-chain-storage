@@ -20,7 +20,6 @@ access_token = ""
 [lotus]
 client_api_url="http://[ip]:[port]/rpc/v0"   # Url of lotus web api
 client_access_token=""   # Access token of lotus web api
-final_status_list="StorageDealError,StorageDealActive,StorageDealStaged,StorageDealPulished"
 
 [ipfs_server]
 download_url_prefix = "http://[ip]:[port]"
@@ -41,7 +40,6 @@ min_file_size_mb = 1024   # unit: MB
 
 [schedule_rule]
 unlock_payment_rule = "0 */5 * * * ?"  #every minute
-create_car_rule = "0 */2 * * * ?"
 create_task_rule = "0 */2 * * * ?"
 send_deal_rule = "0 */3 * * * ?"  #every minute
 scan_deal_status_rule = "0 */4 * * * ?"

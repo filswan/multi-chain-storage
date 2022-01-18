@@ -5,6 +5,7 @@ import (
 	"payment-bridge/common/constants"
 	"payment-bridge/common/utils"
 	"payment-bridge/database"
+	"payment-bridge/models"
 	models2 "payment-bridge/models"
 	"sync"
 	"time"
@@ -36,7 +37,7 @@ func ScanEventFromChainAndSaveDataToDbForBsc() {
 
 		blockScanRecord := new(models2.BlockScanRecord)
 		whereCondition := "network_type='" + constants.NETWORK_TYPE_BSC + "'"
-		blockScanRecordList, err := blockScanRecord.FindLastCurrentBlockNumber(whereCondition)
+		blockScanRecordList, err := models.FindLastCurrentBlockNumber(whereCondition)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			startScanBlockNo = GetConfig().BscMainnetNode.StartFromBlockNo
@@ -96,9 +97,9 @@ func getStartBlockNo() int64 {
 	if GetConfig().BscMainnetNode.StartFromBlockNo > 0 {
 		startScanBlockNo = GetConfig().BscMainnetNode.StartFromBlockNo
 	}
-	blockScanRecord := new(models2.BlockScanRecord)
+
 	whereCondition := "network_type='" + constants.NETWORK_TYPE_BSC + "'"
-	blockScanRecordList, err := blockScanRecord.FindLastCurrentBlockNumber(whereCondition)
+	blockScanRecordList, err := models.FindLastCurrentBlockNumber(whereCondition)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		startScanBlockNo = GetConfig().BscMainnetNode.StartFromBlockNo

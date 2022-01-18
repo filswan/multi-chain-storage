@@ -17,16 +17,50 @@ import (
 	"strings"
 
 	"github.com/filswan/go-swan-lib/logs"
+	"github.com/shopspring/decimal"
 
 	"github.com/gin-gonic/gin"
 )
 
 func SendDealManager(router *gin.RouterGroup) {
 	router.POST("/ipfs/upload", UploadFileToIpfs)
+	router.PUT("/ipfs/update_source_file", UpdateSourceFile)
 	router.GET("/tasks/deals", GetDealListFromLocal)
 	router.GET("/deal/detail/:deal_id", GetDealListFromFilink)
 	router.GET("/dao/signature/deals", GetDealListForDaoToSign)
 	router.PUT("/dao/signature/deals", RecordDealListThatHaveBeenSignedByDao)
+}
+
+type UpdateSourceFileParam struct {
+	SourceFileId int64           `json:"source_file_id"`
+	MaxPrice     decimal.Decimal `json:"max_price"`
+}
+
+type UploadResult struct {
+	SourceFileId int64  `json:"source_file_id"`
+	PayloadCid   string `json:"payload_cid"`
+	IpfsUrl      string `json:"ipfs_url"`
+	NeedPay      int    `json:"need_pay"`
+}
+
+func UpdateSourceFile(c *gin.Context) {
+	var updateSourceFileParam UpdateSourceFileParam
+
+	err := c.BindJSON(&updateSourceFileParam)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		c.AbortWithStatusJSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARSER_RESPONSE_TO_STRUCT_ERROR_CODE))
+		return
+	}
+
+	err = UpdateSourceFileMaxPrice(updateSourceFileParam.SourceFileId, updateSourceFileParam.MaxPrice)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		c.AbortWithStatusJSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.UPDATE_DATA_TO_DB_ERROR_CODE))
+		return
+	}
+
+	c.JSON(http.StatusOK, common.CreateSuccessResponse(""))
 }
 
 func RecordDealListThatHaveBeenSignedByDao(c *gin.Context) {
@@ -225,17 +259,19 @@ func UploadFileToIpfs(c *gin.Context) {
 	}
 	durationInt = durationInt * 24 * 60 * 60 / 30
 
-	payloadCid, ipfsDownloadPath, needPay, err := SaveFile(c, file, durationInt, walletAddress)
+	srcFileId, payloadCid, ipfsDownloadPath, needPay, err := SaveFile(c, file, durationInt, walletAddress)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.SAVE_FILE_ERROR))
 		return
 	}
 
-	uploadResult := new(uploadResult)
-	logs.GetLogger().Info("payload_cid: ", payloadCid)
-	uploadResult.PayloadCid = *payloadCid
-	uploadResult.NeedPay = *needPay
-	uploadResult.IpfsUrl = *ipfsDownloadPath
+	uploadResult := UploadResult{
+		SourceFileId: *srcFileId,
+		PayloadCid:   *payloadCid,
+		NeedPay:      *needPay,
+		IpfsUrl:      *ipfsDownloadPath,
+	}
+
 	c.JSON(http.StatusOK, common.CreateSuccessResponse(uploadResult))
 }
 
@@ -291,11 +327,4 @@ func GetDealListFromLocal(c *gin.Context) {
 	}
 	pageInfo.TotalRecordCount = strconv.FormatInt(totalCount, 10)
 	c.JSON(http.StatusOK, common.NewSuccessResponseWithPageInfo(infoList, pageInfo))
-}
-
-type uploadResult struct {
-	VrfRand    string `json:"vrf_rand"`
-	PayloadCid string `json:"payload_cid"`
-	IpfsUrl    string `json:"ipfs_url"`
-	NeedPay    int    `json:"need_pay"`
 }

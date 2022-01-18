@@ -24,14 +24,6 @@ type EventGoerli struct {
 	CreateAt        int64  `json:"create_at"`
 }
 
-func (self *EventGoerli) FindOneEventGoerli(condition interface{}) (*EventGoerli, error) {
-	db := database.GetDB()
-	tx := db.Begin()
-	tx.Where(condition).First(&self)
-	err := tx.Commit().Error
-	return self, err
-}
-
 // FindEvents (&Event{Id: "0xadeaCC802D0f2DFd31bE4Fa7434F15782Fd720ac"},"id desc","10","0")
 func FindEventGoerlis(whereCondition interface{}, orderCondition, limit, offset string) ([]*EventGoerli, error) {
 	db := database.GetDB()

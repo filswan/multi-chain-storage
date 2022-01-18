@@ -5,6 +5,7 @@ import (
 	"payment-bridge/database"
 
 	"github.com/filswan/go-swan-lib/logs"
+	"github.com/shopspring/decimal"
 )
 
 type SourceFile struct {
@@ -12,7 +13,7 @@ type SourceFile struct {
 	FileName      string `json:"file_name"`
 	ResourceUri   string `json:"resource_uri"`
 	Status        string `json:"status"`
-	FileSize      string `json:"file_size"`
+	FileSize      int64  `json:"file_size"`
 	Dataset       string `json:"dataset"`
 	CreateAt      int64  `json:"create_at"`
 	IpfsUrl       string `json:"ipfs_url"`
@@ -58,4 +59,32 @@ func GetSourceFilesNeed2Car() ([]*SourceFile, error) {
 	}
 
 	return sourceFiles, nil
+}
+
+func UpdateSourceFileMaxPrice(id int64, maxPrice decimal.Decimal) error {
+	sql := "update source_file set max_price=? where id=?"
+
+	params := []interface{}{}
+	params = append(params, maxPrice)
+	params = append(params, id)
+
+	err := database.GetDB().Exec(sql, params...).Error
+
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	return nil
+}
+
+func CreateSourceFile(sourceFile SourceFile) (*SourceFile, error) {
+	value, err := database.SaveOneWithResult(&sourceFile)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+	sourceFileCreated := value.(*SourceFile)
+
+	return sourceFileCreated, nil
 }

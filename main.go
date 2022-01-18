@@ -34,11 +34,9 @@ func main() {
 
 	models.RunAllTheScan()
 
-	scheduler.CreateCarScheduler()
-	scheduler.CreateTaskScheduler()
-	scheduler.SendDealScheduler()
-	scheduler.DAOUnlockPaymentSchedule()
-	scheduler.ScanDealInfoScheduler()
+	scheduler.UnlockPayment()
+
+	scheduler.InitScheduler()
 
 	createGinServer()
 }

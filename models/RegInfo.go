@@ -1,6 +1,6 @@
 package models
 
-import "fmt"
+import "github.com/filswan/go-swan-lib/logs"
 
 var Registry = make(map[string]*RegInfo)
 
@@ -15,7 +15,7 @@ func Register(info *RegInfo) {
 }
 
 func RunAllTheScan() {
-	fmt.Println(Registry)
+	logs.GetLogger().Info(Registry)
 	for _, v := range Registry {
 		go v.ScanEventFromChainAndSaveDataToDb()
 	}

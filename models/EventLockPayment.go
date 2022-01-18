@@ -30,14 +30,6 @@ type EventLockPayment struct {
 	UnlockTime      string `json:"unlock_time"`
 }
 
-func (self *EventLockPayment) FindOneEventPolygon(condition interface{}) (*EventLockPayment, error) {
-	db := database.GetDB()
-	tx := db.Begin()
-	tx.Where(condition).First(&self)
-	err := tx.Commit().Error
-	return self, err
-}
-
 // FindEvents (&Event{Id: "0xadeaCC802D0f2DFd31bE4Fa7434F15782Fd720ac"},"id desc","10","0")
 func FindEventLockPayment(whereCondition interface{}, orderCondition, limit, offset string) ([]*EventLockPayment, error) {
 	db := database.GetDB()
@@ -64,12 +56,11 @@ func UpdateEventLockPayment(whereCondition interface{}, updateFields interface{}
 	return err
 }
 
-func GetEventLockPaymentByCarPayloadCid(carFilePayloadCid string) ([]*EventLockPayment, error) {
+func GetEventLockPaymentBySrcPayloadCid(srcFilePayloadCid string) ([]*EventLockPayment, error) {
 	var eventLockPayments []*EventLockPayment
-	sql := "select * from event_lock_payment a, source_file b, source_file_deal_file_map c, deal_file d"
-	sql = sql + "where d.payload_cid=? and d.id=c.deal_file_id and c.source_file_id=b.id and a.payload_cid=b.payload_cid"
+	sql := "select * from event_lock_payment a where a.payload_cid=?"
 
-	query := database.GetDB().Raw(sql, carFilePayloadCid).Scan(&eventLockPayments)
+	query := database.GetDB().Raw(sql, srcFilePayloadCid).Scan(&eventLockPayments)
 
 	err := query.Error
 
@@ -81,8 +72,8 @@ func GetEventLockPaymentByCarPayloadCid(carFilePayloadCid string) ([]*EventLockP
 	return eventLockPayments, nil
 }
 
-func GetTotalLockFeeByCarPayloadCid(carFilePayloadCid string) (*decimal.Decimal, error) {
-	eventLockPayments, err := GetEventLockPaymentByCarPayloadCid(carFilePayloadCid)
+func GetTotalLockFeeBySrcPayloadCid(carFilePayloadCid string) (*decimal.Decimal, error) {
+	eventLockPayments, err := GetEventLockPaymentBySrcPayloadCid(carFilePayloadCid)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err

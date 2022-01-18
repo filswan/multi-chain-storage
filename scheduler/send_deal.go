@@ -52,7 +52,15 @@ func sendDeal() error {
 		deal.DealCid = fileDescs[0].Deals[0].DealCid
 		deal.MinerFid = fileDescs[0].Deals[0].MinerFid
 
-		err = database.SaveOne(deal)
+		offlineDeal := models.OfflineDeal{
+			DealFileId:   deal.ID,
+			DealCid:      fileDescs[0].Deals[0].DealCid,
+			MinerFid:     fileDescs[0].Deals[0].MinerFid,
+			StartEpoch:   fileDescs[0].Deals[0].StartEpoch,
+			SenderWallet: cmdAutoBidDeal.SenderWallet,
+		}
+
+		err = database.SaveOne(offlineDeal)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			continue

@@ -59,7 +59,17 @@ func GetDealInfoByLotusClientAndUpdateInfoToDB() error {
 		if strings.ToLower(dealInfo.Status) == strings.ToLower(constants.DEAL_STATUS_ACTIVE) {
 			paymentStatus = constants.LOCK_PAYMENT_STATUS_SUCCESS
 		} else if strings.ToLower(dealInfo.Status) == strings.ToLower(constants.DEAL_STATUS_ERROR) {
+			eventExpireList, err := models.FindEventExpirePayments(&models.EventExpirePayment{PayloadCid: v.PayloadCid}, "id desc", "10", "0")
+			if err != nil {
+				logs.GetLogger().Error(err)
+				return err
+			}
 			paymentStatus = constants.LOCK_PAYMENT_STATUS_REFUNDING
+			for _, e := range eventExpireList {
+				if e.ExpireUserAmount != "0" && e.ExpireUserAmount != "" {
+					paymentStatus = constants.LOCK_PAYMENT_STATUS_REFUNDED
+				}
+			}
 		} else {
 			paymentStatus = constants.LOCK_PAYMENT_STATUS_PROCESSING
 		}

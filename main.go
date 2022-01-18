@@ -2,9 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
-	cors "github.com/itsjamie/gin-cors"
-	"github.com/joho/godotenv"
 	"os"
 	"payment-bridge/blockchain/browsersync"
 	"payment-bridge/common/constants"
@@ -18,6 +15,10 @@ import (
 	"payment-bridge/routers/storage"
 	"payment-bridge/scheduler"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	cors "github.com/itsjamie/gin-cors"
+	"github.com/joho/godotenv"
 )
 
 func main() {
@@ -30,13 +31,14 @@ func main() {
 
 	models.RunAllTheScan()
 
-	scheduler.CreateTaskScheduler()
+	//scheduler.CreateTaskScheduler()
 
-	scheduler.SendDealScheduler()
+	//scheduler.SendDealScheduler()
 
 	scheduler.DAOUnlockPaymentSchedule()
+	scheduler.RefundUnlockPaymentSchedule()
 
-	scheduler.ScanDealInfoScheduler()
+	//scheduler.ScanDealInfoScheduler()
 
 	defer func() {
 		err := db.Close()

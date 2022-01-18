@@ -2,8 +2,10 @@ package models
 
 import (
 	"payment-bridge/common/constants"
+	"payment-bridge/common/utils"
 	"payment-bridge/database"
 	"payment-bridge/logs"
+	"strconv"
 )
 
 type EventLockPayment struct {
@@ -26,6 +28,13 @@ type EventLockPayment struct {
 	UnlockTxHash    string `json:"unlock_tx_hash"`
 	UnlockTxStatus  string `json:"unlock_tx_status"`
 	UnlockTime      string `json:"unlock_time"`
+}
+
+type EventLockPaymentQuery struct {
+	PayloadCid string `json:"payload_cid"`
+	DealId     string `json:"deal_id"`
+	Recipient  string `json:"recipent"`
+	DealFileId string `json:"deal_file_id"`
 }
 
 func (self *EventLockPayment) FindOneEventPolygon(condition interface{}) (*EventLockPayment, error) {
@@ -60,4 +69,20 @@ func UpdateEventLockPayment(whereCondition interface{}, updateFields interface{}
 		logs.GetLogger().Error(err)
 	}
 	return err
+}
+
+func FindExpiredLockPayment() ([]*EventLockPaymentQuery, error) {
+	sql :=
+		"SELECT b.id as deal_file_id, a.payload_cid, b.deal_id, a.address_from as receipent " +
+			"FROM event_lock_payment a, deal_file b " +
+			"WHERE a.payload_cid = b.payload_cid and lock_payment_status = '" + constants.LOCK_PAYMENT_STATUS_REFUNDING +
+			"' and a.deadline < " + strconv.FormatInt(utils.GetEpochInMillis(), 10)
+	db := database.GetDB()
+	var models []*EventLockPaymentQuery
+	err := db.Raw(sql).Scan(&models).Limit(constants.DEFAULT_SELECT_LIMIT).Offset(0).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+	return models, nil
 }

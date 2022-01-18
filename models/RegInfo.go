@@ -18,5 +18,6 @@ func RunAllTheScan() {
 	fmt.Println(Registry)
 	for _, v := range Registry {
 		go v.ScanEventFromChainAndSaveDataToDb()
+		//v.ScanEventFromChainAndSaveDataToDb()
 	}
 }

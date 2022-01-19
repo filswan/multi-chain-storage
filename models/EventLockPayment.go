@@ -2,10 +2,10 @@ package models
 
 import (
 	"payment-bridge/common/constants"
-	"payment-bridge/common/utils"
 	"payment-bridge/database"
 	"payment-bridge/logs"
 	"strconv"
+	"time"
 )
 
 type EventLockPayment struct {
@@ -75,8 +75,8 @@ func FindExpiredLockPayment() ([]*EventLockPaymentQuery, error) {
 	sql :=
 		"SELECT b.id as deal_file_id, a.payload_cid, b.deal_id, a.address_from as recipient " +
 			"FROM event_lock_payment a, deal_file b " +
-			"WHERE a.payload_cid = b.payload_cid and lock_payment_status <> '" + constants.LOCK_PAYMENT_STATUS_REFUNDED +
-			"' and a.deadline < " + strconv.FormatInt(utils.GetEpochInMillis(), 10)
+			"WHERE a.payload_cid = b.payload_cid and a.payload_cid not in (SELECT payload_cid FROM event_unlock_payment c) and lock_payment_status <> '" + constants.LOCK_PAYMENT_STATUS_REFUNDED +
+			"' and a.deadline < " + strconv.FormatInt(time.Now().Unix(), 10)
 	db := database.GetDB()
 	var models []*EventLockPaymentQuery
 	err := db.Raw(sql).Scan(&models).Limit(constants.DEFAULT_SELECT_LIMIT).Offset(0).Error

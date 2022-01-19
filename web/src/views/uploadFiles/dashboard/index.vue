@@ -55,7 +55,7 @@
               <el-button type="danger" class="statusStyle" v-if="scope.row.status&&scope.row.status.toLowerCase()=='failed'">
                   {{ languageMcp == "en" ? "Fail" : '失败'}}
               </el-button>
-              <el-button type="warning" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='pending'">
+              <el-button type="pending" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='pending'">
                   {{ languageMcp == "en" ? "Pending" : '待支付'}}
               </el-button>
               <el-button type="primary" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='processing'">
@@ -66,6 +66,9 @@
               </el-button>
               <el-button type="info" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='refunded'">
                   {{ languageMcp == "en" ? "Refunded" : '已退款'}}
+              </el-button>
+              <el-button type="refunding" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='refunding'">
+                  {{ languageMcp == "en" ? "Refunding" : '可退款'}}
               </el-button>
               <el-button type="info" plain class="statusStyle" v-else>
                   {{scope.row.status}}
@@ -285,8 +288,13 @@
                   {{$t('uploadFile.pay')}}
                 </el-button>
                 <el-button class="uploadBtn blue" type="primary"
-                  v-else-if="tableData[scope.$index].status.toLowerCase()=='refunded'"
+                  v-else-if="tableData[scope.$index].status.toLowerCase()=='refunding'"
                   @click.stop="refundClick(scope.row)">
+                  {{$t('uploadFile.refund')}}
+                </el-button>
+                <el-button class="uploadBtn grey opacity"
+                  v-else-if="tableData[scope.$index].status.toLowerCase()=='refunded'"
+                  :disabled="true">
                   {{$t('uploadFile.refund')}}
                 </el-button>
                 <el-button 
@@ -1555,6 +1563,16 @@ export default {
         span{
           white-space: normal;
         }
+      }
+      .el-button--refunding{
+        color: #FFF;
+        background-color: #f9d54b;
+        border-color: #f9d54b;
+      }
+      .el-button--pending{
+        color: #FFF;
+        background-color: #f2a942;
+        border-color: #f2a942;
       }
 
       .el-table /deep/ {

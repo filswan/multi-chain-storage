@@ -21,7 +21,7 @@ import (
 func SendDealScheduler() {
 	Mutex := &sync.Mutex{}
 	c := cron.New()
-	err := c.AddFunc(config.GetConfig().ScheduleRule.CreateTaskRule, func() {
+	err := c.AddFunc(config.GetConfig().ScheduleRule.SendDealRule, func() {
 		logs.GetLogger().Info("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ create task  scheduler is running at " + time.Now().Format("2006-01-02 15:04:05"))
 		Mutex.Lock()
 		err := SendDeal()

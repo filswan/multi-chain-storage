@@ -6,7 +6,6 @@ import (
 	"os"
 	"path/filepath"
 	"payment-bridge/blockchain/browsersync/scanlockpayment/polygon"
-	"payment-bridge/common"
 	"payment-bridge/common/constants"
 	"payment-bridge/common/utils"
 	"payment-bridge/config"
@@ -172,20 +171,20 @@ func GetSourceFileAndDealFileInfoByPayloadCid(payloadCid string) ([]*SourceFileA
 	return results, nil
 }
 
-func GetSourceFiles(limit, offset string, walletAddress, payloadCid string) ([]*SourceFileAndDealFileInfo, error) {
+func GetSourceFiles(limit, offset string, walletAddress, payloadCid string) ([]*models.SourceFile, error) {
 	sql := "select s.file_name,s.file_size,s.pin_status,s.create_at,s.payload_cid from source_file s "
-	sql = sql + "\n" + "where wallet_address=?"
+	sql = sql + "where wallet_address=?"
 
 	params := []interface{}{}
 	params = append(params, walletAddress)
 
 	if strings.Trim(payloadCid, " ") != "" {
-		sql = sql + "\n" + " and s.payload_cid=?"
+		sql = sql + " and s.payload_cid=?"
 		params = append(params, payloadCid)
 	}
 
-	var results []*SourceFileAndDealFileInfo
-	logs.GetLogger().Info(sql, params)
+	var results []*models.SourceFile
+
 	err := database.GetDB().Raw(sql, params...).Order("create_at desc").Limit(limit).Offset(offset).Scan(&results).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -194,18 +193,15 @@ func GetSourceFiles(limit, offset string, walletAddress, payloadCid string) ([]*
 	return results, nil
 }
 
-func GetSourceFileAndDealFileInfoCount(walletAddress string) (int64, error) {
-	sql := "select count(1) as total_record from  source_file s " +
-		" inner join source_file_deal_file_map sfdfm on s.id = sfdfm.source_file_id" +
-		" inner join deal_file df on sfdfm.deal_file_id = df.id" +
-		" where s.wallet_address='" + walletAddress + "'"
-	var recordCount common.RecordCount
-	err := database.GetDB().Raw(sql).Scan(&recordCount).Error
+func GetSourceFilesCount(walletAddress string) (int64, error) {
+	sql := "select 1 from  source_file s where s.wallet_address=?"
+	var count int64
+	err := database.GetDB().Raw(sql, walletAddress).Count(count).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return 0, err
 	}
-	return recordCount.TotalRecord, nil
+	return count, nil
 }
 
 func GetDealListThanGreaterDealID(dealId int64, offset, limit int) ([]*DaoDealResult, error) {

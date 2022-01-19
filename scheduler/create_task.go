@@ -22,7 +22,7 @@ import (
 	"github.com/shopspring/decimal"
 )
 
-func createTask() error {
+func CreateTask() error {
 	currentTimeStr := time.Now().Format("2006-01-02T15:04:05")
 	carSrcDir := filepath.Join(carDir, "src_"+currentTimeStr)
 	carDestDir := filepath.Join(carDir, "car_"+currentTimeStr)

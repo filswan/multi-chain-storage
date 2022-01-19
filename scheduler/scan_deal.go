@@ -12,7 +12,7 @@ import (
 	"github.com/filswan/go-swan-lib/client/lotus"
 )
 
-func scanDeal() error {
+func ScanDeal() error {
 	whereCondition := "deal_cid != '' and task_uuid != '' and lower(lock_payment_status) not in (lower('" + constants.LOCK_PAYMENT_STATUS_SUCCESS + "'), lower('" + constants.LOCK_PAYMENT_STATUS_REFUNDED + "'))"
 	//" and deal_status not in (" + inList + ")"
 	dealList, err := models.FindDealFileList(whereCondition, "create_at desc", "100", "0")

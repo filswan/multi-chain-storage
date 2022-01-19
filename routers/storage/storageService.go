@@ -194,9 +194,8 @@ func GetSourceFiles(limit, offset string, walletAddress, payloadCid string) ([]*
 }
 
 func GetSourceFilesCount(walletAddress string) (int64, error) {
-	sql := "select 1 from  source_file s where s.wallet_address=?"
 	var count int64
-	err := database.GetDB().Raw(sql, walletAddress).Count(count).Error
+	err := database.GetDB().Table("source_file").Where("wallet_address = ?", walletAddress).Count(&count).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return 0, err

@@ -49,12 +49,6 @@ func UnlockPaymentAsRefund() error {
 		parm.Amount = big.NewInt(0)
 		parm.Recipient = common.HexToAddress(v.Recipient)
 		parm.OrderId = ""
-		/*parm := goBind.IPaymentMinimalunlockPaymentParam{}
-		parm.Id = "12321434534lkdlfg"
-		parm.DealId ="1234"
-		parm.Amount = big.NewInt(0)
-		parm.Recipient = common.HexToAddress(daoEventLogList[0].Recipient)
-		parm.OrderId = ""*/
 		err = doUnlockPaymentforRefund(v, parm)
 		if err != nil {
 			logs.GetLogger().Error(err)
@@ -106,6 +100,8 @@ func doUnlockPaymentforRefund(paymentEvent *models.EventLockPaymentQuery, unlock
 	}
 
 	tx, err := swanPaymentContractInstance.UnlockTokenPayment(callOpts, unlockParams)
+	txHash := tx.Hash().Hex()
+	logs.GetLogger().Println("Unlock Tx ! txHash=" + txHash)
 	unlockTxStatus := ""
 	if err != nil {
 		logs.GetLogger().Error(err)

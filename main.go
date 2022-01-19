@@ -36,9 +36,9 @@ func main() {
 	scheduler.SendDealScheduler()
 
 	scheduler.DAOUnlockPaymentSchedule()
-	scheduler.RefundUnlockPaymentSchedule()
-
+	//scheduler.RefundUnlockPaymentSchedule()
 	scheduler.ScanDealInfoScheduler()
+	scheduler.ScanExpiredDealInfoScheduler()
 
 	defer func() {
 		err := db.Close()

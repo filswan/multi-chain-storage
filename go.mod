@@ -12,7 +12,7 @@ require (
 require (
 	github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
-	github.com/filswan/go-swan-client v0.0.52
+	github.com/filswan/go-swan-client v0.0.54
 	github.com/filswan/go-swan-lib v0.2.116
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/gin-gonic/gin v1.3.0

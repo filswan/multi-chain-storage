@@ -12,6 +12,7 @@ import (
 	"payment-bridge/database"
 	"payment-bridge/models"
 	"payment-bridge/routers/billing"
+	"sync"
 	"time"
 
 	"github.com/filswan/go-swan-client/command"
@@ -19,8 +20,29 @@ import (
 	"github.com/filswan/go-swan-lib/logs"
 	libmodel "github.com/filswan/go-swan-lib/model"
 	libutils "github.com/filswan/go-swan-lib/utils"
+	"github.com/robfig/cron"
 	"github.com/shopspring/decimal"
 )
+
+func CreateTaskScheduler() {
+	Mutex := &sync.Mutex{}
+	c := cron.New()
+	err := c.AddFunc(config.GetConfig().ScheduleRule.CreateTaskRule, func() {
+		logs.GetLogger().Info("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ create task  scheduler is running at " + time.Now().Format("2006-01-02 15:04:05"))
+		Mutex.Lock()
+		err := CreateTask()
+		Mutex.Unlock()
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return
+		}
+	})
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return
+	}
+	c.Start()
+}
 
 func CreateTask() error {
 	currentTimeStr := time.Now().Format("2006-01-02T15:04:05")
@@ -190,8 +212,7 @@ func createTask4SrcFiles(srcDir, carDir string, maxPrice decimal.Decimal) (*libm
 		StorageServerType:           libconstants.STORAGE_SERVER_TYPE_IPFS_SERVER,
 		IpfsServerDownloadUrlPrefix: config.GetConfig().IpfsServer.DownloadUrlPrefix,
 		IpfsServerUploadUrlPrefix:   config.GetConfig().IpfsServer.UploadUrlPrefix,
-		InputDir:                    filepath.Dir(carDir),
-		OutputDir:                   filepath.Dir(carDir),
+		InputDir:                    carDir,
 	}
 
 	_, err = cmdUpload.UploadCarFiles()
@@ -210,6 +231,7 @@ func createTask4SrcFiles(srcDir, carDir string, maxPrice decimal.Decimal) (*libm
 		SwanToken:                  "",
 		SwanApiKey:                 config.GetConfig().SwanApi.ApiKey,
 		SwanAccessToken:            config.GetConfig().SwanApi.AccessToken,
+		LotusClientApiUrl:          config.GetConfig().Lotus.ClientApiUrl,
 		BidMode:                    libconstants.TASK_BID_MODE_AUTO,
 		VerifiedDeal:               config.GetConfig().SwanTask.VerifiedDeal,
 		OfflineMode:                false,
@@ -218,8 +240,8 @@ func createTask4SrcFiles(srcDir, carDir string, maxPrice decimal.Decimal) (*libm
 		StorageServerType:          libconstants.STORAGE_SERVER_TYPE_IPFS_SERVER,
 		WebServerDownloadUrlPrefix: config.GetConfig().IpfsServer.DownloadUrlPrefix,
 		ExpireDays:                 config.GetConfig().SwanTask.ExpireDays,
-		OutputDir:                  filepath.Dir(carDir),
-		InputDir:                   filepath.Dir(carDir),
+		InputDir:                   carDir,
+		OutputDir:                  carDir,
 		Dataset:                    taskDataset,
 		Description:                taskDescription,
 		StartEpochHours:            startEpochIntervalHours,

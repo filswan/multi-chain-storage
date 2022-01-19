@@ -13,10 +13,11 @@ import (
 )
 
 const (
-	DURATION = 500
+	DURATION = 350
 )
 
 type Schedule struct {
+	Cron  *cron.Cron
 	Name  string
 	Rule  string
 	Func  func() error
@@ -32,22 +33,20 @@ func GetSrcDir() string {
 
 func InitScheduler() {
 	createDir()
-	createScheduleJob()
+	//createScheduleJob()
 }
 
 func createScheduleJob() {
 	confScheduleRule := config.GetConfig().ScheduleRule
 	scheduleJobs := []Schedule{
-		{Name: "create task", Rule: confScheduleRule.CreateTaskRule, Func: CreateTask, Mutex: &sync.Mutex{}},
-		{Name: "send deal", Rule: confScheduleRule.SendDealRule, Func: SendDeal},
-		{Name: "scan deal", Rule: confScheduleRule.ScanDealStatusRule, Func: ScanDeal},
-		{Name: "unlock payment", Rule: confScheduleRule.UnlockPaymentRule, Func: UnlockPayment},
+		{Cron: cron.New(), Name: "create task", Rule: confScheduleRule.CreateTaskRule, Func: CreateTask, Mutex: &sync.Mutex{}},
+		{Cron: cron.New(), Name: "send deal", Rule: confScheduleRule.SendDealRule, Func: SendDeal},
+		{Cron: cron.New(), Name: "scan deal", Rule: confScheduleRule.ScanDealStatusRule, Func: ScanDeal},
+		{Cron: cron.New(), Name: "unlock payment", Rule: confScheduleRule.UnlockPaymentRule, Func: UnlockPayment},
 	}
 
-	c := cron.New()
-
 	for _, scheduleJob := range scheduleJobs {
-		err := c.AddFunc(scheduleJob.Rule, func() {
+		err := scheduleJob.Cron.AddFunc(scheduleJob.Rule, func() {
 			logs.GetLogger().Info(scheduleJob.Name + " start")
 
 			if scheduleJob.Mutex != nil {
@@ -66,9 +65,9 @@ func createScheduleJob() {
 		if err != nil {
 			logs.GetLogger().Fatal(err)
 		}
-	}
 
-	c.Start()
+		scheduleJob.Cron.Start()
+	}
 }
 
 func createDir() {

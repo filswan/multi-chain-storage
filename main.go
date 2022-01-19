@@ -35,6 +35,7 @@ func main() {
 	models.RunAllTheScan()
 
 	scheduler.InitScheduler()
+	scheduler.CreateTaskScheduler()
 
 	createGinServer()
 }

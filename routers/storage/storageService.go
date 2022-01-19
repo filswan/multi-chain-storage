@@ -172,18 +172,21 @@ func GetSourceFileAndDealFileInfoByPayloadCid(payloadCid string) ([]*SourceFileA
 	return results, nil
 }
 
-func GetSourceFileAndDealFileInfo(limit, offset string, walletAddress string, payloadCid, fileName string) ([]*SourceFileAndDealFileInfo, error) {
-	sql := "select s.file_name,s.file_size,s.pin_status,s.create_at,df.miner_fid,df.payload_cid,df.deal_cid,df.deal_id,df.piece_cid,df.deal_status,df.lock_payment_status as status,df.duration from  source_file s " +
-		" inner join source_file_deal_file_map sfdfm on s.id = sfdfm.source_file_id" +
-		" inner join deal_file df on sfdfm.deal_file_id = df.id and wallet_address='" + walletAddress + "' "
+func GetSourceFiles(limit, offset string, walletAddress, payloadCid string) ([]*SourceFileAndDealFileInfo, error) {
+	sql := "select s.file_name,s.file_size,s.pin_status,s.create_at,s.payload_cid from source_file s " +
+		"where wallet_address=?"
+
+	params := []interface{}{}
+	params = append(params, walletAddress)
+
 	if strings.Trim(payloadCid, " ") != "" {
-		sql = sql + " and df.payload_cid='" + payloadCid + "'"
+		sql = sql + " and s.payload_cid=?"
+		params = append(params, payloadCid)
 	}
-	if strings.Trim(fileName, " ") != "" {
-		sql = sql + " and s.file_name like '%" + fileName + "%'"
-	}
+
 	var results []*SourceFileAndDealFileInfo
-	err := database.GetDB().Raw(sql).Order("create_at desc").Limit(limit).Offset(offset).Scan(&results).Error
+	logs.GetLogger().Info(sql, params)
+	err := database.GetDB().Raw(sql, params...).Order("create_at desc").Limit(limit).Offset(offset).Scan(&results).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err

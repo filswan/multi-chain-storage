@@ -309,7 +309,7 @@ func GetDealListFromLocal(c *gin.Context) {
 		return
 	}
 	payloadCid := strings.Trim(URL.Get("payload_cid"), " ")
-	infoList, err := GetSourceFiles(pageSize, strconv.FormatInt(offset, 10), walletAddress, payloadCid)
+	infoList, err := models.GetSourceFiles(pageSize, strconv.FormatInt(offset, 10), walletAddress, payloadCid)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE, "get source file and deal info from db occurred error"))
@@ -318,7 +318,7 @@ func GetDealListFromLocal(c *gin.Context) {
 	pageInfo := new(common.PageInfo)
 	pageInfo.PageSize = pageSize
 	pageInfo.PageNumber = pageNumber
-	totalCount, err := GetSourceFilesCount(walletAddress)
+	totalCount, err := models.GetSourceFilesCount(walletAddress)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_COUNT_ERROR_CODE, "get source file and deal info total record number from db occurred error"))

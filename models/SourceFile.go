@@ -3,6 +3,7 @@ package models
 import (
 	"payment-bridge/common/constants"
 	"payment-bridge/database"
+	"strings"
 
 	"github.com/filswan/go-swan-lib/logs"
 	"github.com/shopspring/decimal"
@@ -87,4 +88,36 @@ func CreateSourceFile(sourceFile SourceFile) (*SourceFile, error) {
 	sourceFileCreated := value.(*SourceFile)
 
 	return sourceFileCreated, nil
+}
+
+func GetSourceFiles(limit, offset string, walletAddress, payloadCid string) ([]*SourceFile, error) {
+	sql := "select s.file_name,s.file_size,s.pin_status,s.create_at,s.payload_cid from source_file s "
+	sql = sql + "where wallet_address=?"
+
+	params := []interface{}{}
+	params = append(params, walletAddress)
+
+	if strings.Trim(payloadCid, " ") != "" {
+		sql = sql + " and s.payload_cid=?"
+		params = append(params, payloadCid)
+	}
+
+	var results []*SourceFile
+
+	err := database.GetDB().Raw(sql, params...).Order("create_at desc").Limit(limit).Offset(offset).Scan(&results).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+	return results, nil
+}
+
+func GetSourceFilesCount(walletAddress string) (int64, error) {
+	var count int64
+	err := database.GetDB().Table("source_file").Where("wallet_address = ?", walletAddress).Count(&count).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return 0, err
+	}
+	return count, nil
 }

@@ -80,8 +80,6 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration int, walle
 
 	// not uploaded by anyone yet
 	if len(sourceFiles) == 0 {
-		needPay = 1
-
 		sourceFile := models.SourceFile{
 			FileName:      srcFile.Filename,
 			FileSize:      srcFile.Size,

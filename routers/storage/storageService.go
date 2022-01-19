@@ -173,14 +173,14 @@ func GetSourceFileAndDealFileInfoByPayloadCid(payloadCid string) ([]*SourceFileA
 }
 
 func GetSourceFiles(limit, offset string, walletAddress, payloadCid string) ([]*SourceFileAndDealFileInfo, error) {
-	sql := "select s.file_name,s.file_size,s.pin_status,s.create_at,s.payload_cid from source_file s " +
-		"where wallet_address=?"
+	sql := "select s.file_name,s.file_size,s.pin_status,s.create_at,s.payload_cid from source_file s "
+	sql = sql + "\n" + "where wallet_address=?"
 
 	params := []interface{}{}
 	params = append(params, walletAddress)
 
 	if strings.Trim(payloadCid, " ") != "" {
-		sql = sql + " and s.payload_cid=?"
+		sql = sql + "\n" + " and s.payload_cid=?"
 		params = append(params, payloadCid)
 	}
 

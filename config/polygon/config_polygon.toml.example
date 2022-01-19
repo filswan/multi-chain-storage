@@ -6,6 +6,7 @@ contract_lock_function_signature = ""
 contract_unlock_function_signature = ""
 dao_swan_oracle_address = ""
 dao_event_function_signature = ""
+expire_event_function_signature =""
 router_address_of_sushiswap_on_polygon = ""
 pair_address_between_wfil_usdc_of_sushiswap_on_polygon = ""
 pairAddress

@@ -170,7 +170,7 @@ func getMaxPrice(srcFile models.SourceFile) (*decimal.Decimal, error) {
 		logs.GetLogger().Error(err)
 		return nil, err
 	}
-	maxPrice, err := GetMaxPriceForCreateTask(fileCoinPriceInUsdc, lockedFee, DURATION, srcFile.FileSize)
+	maxPrice, err := GetMaxPriceForCreateTask(fileCoinPriceInUsdc, lockedFee, DURATION_DAYS, srcFile.FileSize)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
@@ -226,6 +226,7 @@ func createTask4SrcFiles(srcDir, carDir string, maxPrice decimal.Decimal) (*libm
 	taskDescription := config.GetConfig().SwanTask.Description
 	startEpochIntervalHours := config.GetConfig().SwanTask.StartEpochHours
 
+	durationEpoch := DURATION_DAYS * 24 * 60 * 2
 	cmdTask := command.CmdTask{
 		SwanApiUrl:                 config.GetConfig().SwanApi.ApiUrl,
 		SwanToken:                  "",
@@ -246,7 +247,7 @@ func createTask4SrcFiles(srcDir, carDir string, maxPrice decimal.Decimal) (*libm
 		Description:                taskDescription,
 		StartEpochHours:            startEpochIntervalHours,
 		SourceId:                   constants.SOURCE_ID_OF_PAYMENT,
-		Duration:                   DURATION,
+		Duration:                   durationEpoch,
 		MaxAutoBidCopyNumber:       5,
 	}
 
@@ -274,7 +275,7 @@ func saveCarInfo2DB(fileDesc *libmodel.FileDesc, srcFiles []*models.SourceFile, 
 	dealFile.PieceCid = fileDesc.PieceCid
 	dealFile.CreateAt = utils.GetCurrentUtcMilliSecond()
 	dealFile.UpdateAt = dealFile.CreateAt
-	dealFile.Duration = DURATION
+	dealFile.Duration = DURATION_DAYS
 	dealFile.LockPaymentStatus = constants.LOCK_PAYMENT_STATUS_WAITING
 	dealFile.IsDeleted = utils.GetBoolPointer(false)
 	dealFile.MaxPrice = maxPrice
@@ -293,7 +294,7 @@ func saveCarInfo2DB(fileDesc *libmodel.FileDesc, srcFiles []*models.SourceFile, 
 		filepMap.FileIndex = 0
 		filepMap.CreateAt = dealFile.CreateAt
 		filepMap.UpdateAt = dealFile.CreateAt
-		err = database.SaveOne(filepMap)
+		err = database.SaveOneInTransaction(db, filepMap)
 		if err != nil {
 			db.Rollback()
 			logs.GetLogger().Error(err)

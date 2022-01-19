@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	DURATION = 350
+	DURATION_DAYS = 350
 )
 
 type Schedule struct {

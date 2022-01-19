@@ -243,7 +243,7 @@ create table if not exists event_expire_payment
 	contract_address varchar(255) null,
 	user_address varchar(255) null,
 	expire_user_amount varchar(255) null,
-	refund_time varchar(64) null,
+	block_time varchar(64) null,
 	create_at varchar(64) null,
 	network_id bigint null,
 	coin_id bigint null,

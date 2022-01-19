@@ -33,10 +33,27 @@ func ScanDealInfoScheduler() {
 	c.Start()
 }
 
+func ScanExpiredDealInfoScheduler() {
+	c := cron.New()
+	err := c.AddFunc(config.GetConfig().ScheduleRule.UpdatePayStatusRule, func() {
+		logs.GetLogger().Info("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ scan expired deal info scheduler is running at " + time.Now().Format("2006-01-02 15:04:05"))
+		err := GetExpiredDealInfoAndUpdateInfoToDB()
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return
+		}
+	})
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return
+	}
+	c.Start()
+}
+
 func GetDealInfoByLotusClientAndUpdateInfoToDB() error {
 	inList := "'" + strings.Join(strings.Split(config.GetConfig().Lotus.FinalStatusList, ","), "', '") + "'"
 	fmt.Println(inList)
-	whereCondition := "deal_cid != '' and task_uuid != '' and lower(lock_payment_status) not in (lower('" + constants.LOCK_PAYMENT_STATUS_SUCCESS + "'), lower('" + constants.LOCK_PAYMENT_STATUS_REFUNDED + "'), lower('" + constants.LOCK_PAYMENT_STATUS_REFUNDING + "'))"
+	whereCondition := "deal_cid != '' and task_uuid != '' and lower(lock_payment_status) not in (lower('" + constants.LOCK_PAYMENT_STATUS_SUCCESS + "'), lower('" + constants.LOCK_PAYMENT_STATUS_REFUNDED + "'))"
 	//" and deal_status not in (" + inList + ")"
 	dealList, err := models.FindDealFileList(whereCondition, "create_at desc", "100", "0")
 	if err != nil {
@@ -59,17 +76,12 @@ func GetDealInfoByLotusClientAndUpdateInfoToDB() error {
 		if strings.ToLower(dealInfo.Status) == strings.ToLower(constants.DEAL_STATUS_ACTIVE) {
 			paymentStatus = constants.LOCK_PAYMENT_STATUS_SUCCESS
 		} else if strings.ToLower(dealInfo.Status) == strings.ToLower(constants.DEAL_STATUS_ERROR) {
-			eventExpireList, err := models.FindEventExpirePayments(&models.EventExpirePayment{PayloadCid: v.PayloadCid}, "id desc", "10", "0")
 			if err != nil {
 				logs.GetLogger().Error(err)
 				return err
 			}
 			paymentStatus = constants.LOCK_PAYMENT_STATUS_REFUNDING
-			for _, e := range eventExpireList {
-				if e.ExpireUserAmount != "0" && e.ExpireUserAmount != "" {
-					paymentStatus = constants.LOCK_PAYMENT_STATUS_REFUNDED
-				}
-			}
+
 		} else {
 			paymentStatus = constants.LOCK_PAYMENT_STATUS_PROCESSING
 		}
@@ -80,6 +92,39 @@ func GetDealInfoByLotusClientAndUpdateInfoToDB() error {
 		v.LockPaymentStatus = paymentStatus
 		v.UpdateAt = strconv.FormatInt(utils.GetEpochInMillis(), 10)
 		err = database.SaveOne(v)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return err
+		}
+	}
+	return nil
+}
+
+func GetExpiredDealInfoAndUpdateInfoToDB() error {
+	eventLockPayment, err := models.FindExpiredLockPayment()
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+	for _, v := range eventLockPayment {
+		_dealFileId := v.DealFileId
+		paymentStatus := constants.LOCK_PAYMENT_STATUS_REFUNDING
+		eventExpireList, err := models.FindEventExpirePayments(&models.EventExpirePayment{PayloadCid: v.PayloadCid}, "id desc", "10", "0")
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return err
+		}
+		for _, e := range eventExpireList {
+			lockAmount, err := strconv.ParseInt(e.ExpireUserAmount, 10, 64)
+			if err != nil {
+				logs.GetLogger().Error(err)
+				return err
+			}
+			if lockAmount > 0 {
+				paymentStatus = constants.LOCK_PAYMENT_STATUS_REFUNDED
+			}
+		}
+		err = models.UpdateDealFile(&models.DealFile{ID: _dealFileId}, &models.DealFile{LockPaymentStatus: paymentStatus, UpdateAt: strconv.FormatInt(utils.GetEpochInMillis(), 10)})
 		if err != nil {
 			logs.GetLogger().Error(err)
 			return err

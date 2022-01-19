@@ -33,8 +33,8 @@ type EventLockPayment struct {
 type EventLockPaymentQuery struct {
 	PayloadCid string `json:"payload_cid"`
 	DealId     string `json:"deal_id"`
-	Recipient  string `json:"recipent"`
-	DealFileId string `json:"deal_file_id"`
+	Recipient  string `json:"recipient"`
+	DealFileId int64  `json:"deal_file_id"`
 }
 
 func (self *EventLockPayment) FindOneEventPolygon(condition interface{}) (*EventLockPayment, error) {
@@ -73,9 +73,9 @@ func UpdateEventLockPayment(whereCondition interface{}, updateFields interface{}
 
 func FindExpiredLockPayment() ([]*EventLockPaymentQuery, error) {
 	sql :=
-		"SELECT b.id as deal_file_id, a.payload_cid, b.deal_id, a.address_from as receipent " +
+		"SELECT b.id as deal_file_id, a.payload_cid, b.deal_id, a.address_from as recipient " +
 			"FROM event_lock_payment a, deal_file b " +
-			"WHERE a.payload_cid = b.payload_cid and lock_payment_status = '" + constants.LOCK_PAYMENT_STATUS_REFUNDING +
+			"WHERE a.payload_cid = b.payload_cid and lock_payment_status <> '" + constants.LOCK_PAYMENT_STATUS_REFUNDED +
 			"' and a.deadline < " + strconv.FormatInt(utils.GetEpochInMillis(), 10)
 	db := database.GetDB()
 	var models []*EventLockPaymentQuery

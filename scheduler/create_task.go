@@ -275,7 +275,7 @@ func saveCarInfo2DB(fileDesc *libmodel.FileDesc, srcFiles []*models.SourceFile, 
 	dealFile.CreateAt = utils.GetCurrentUtcMilliSecond()
 	dealFile.UpdateAt = dealFile.CreateAt
 	dealFile.Duration = DURATION_DAYS
-	dealFile.LockPaymentStatus = constants.LOCK_PAYMENT_STATUS_WAITING
+	dealFile.LockPaymentStatus = constants.LOCK_PAYMENT_STATUS_PROCESSING
 	dealFile.IsDeleted = utils.GetBoolPointer(false)
 	dealFile.MaxPrice = maxPrice
 	dealFile.TaskUuid = fileDesc.Uuid

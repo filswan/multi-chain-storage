@@ -123,18 +123,10 @@ func CreateTask() error {
 		return err
 	}
 
-	fileDesc, err := createTask4SrcFiles(carSrcDir, carDestDir, *maxPrice)
+	fileDesc, err := createTask4SrcFiles(carSrcDir, carDestDir, *maxPrice, createAnyway, fileSizeMin)
 	if err != nil {
 		os.RemoveAll(carSrcDir)
 		os.RemoveAll(carDestDir)
-		logs.GetLogger().Error(err)
-		return err
-	}
-
-	if !createAnyway && fileDesc.CarFileSize < fileSizeMin {
-		os.RemoveAll(carSrcDir)
-		os.RemoveAll(carDestDir)
-		err := fmt.Errorf("car file size is less than %d", fileSizeMin)
 		logs.GetLogger().Error(err)
 		return err
 	}
@@ -192,7 +184,7 @@ func GetMaxPriceForCreateTask(rate *big.Int, lockedFee int64, duration int, carF
 	return &maxPrice, nil
 }
 
-func createTask4SrcFiles(srcDir, carDir string, maxPrice decimal.Decimal) (*libmodel.FileDesc, error) {
+func createTask4SrcFiles(srcDir, carDir string, maxPrice decimal.Decimal, createAnyway bool, fileSizeMin int64) (*libmodel.FileDesc, error) {
 	cmdIpfsCar := &command.CmdIpfsCar{
 		LotusClientApiUrl:         config.GetConfig().Lotus.ClientApiUrl,
 		LotusClientAccessToken:    config.GetConfig().Lotus.ClientAccessToken,
@@ -202,8 +194,15 @@ func createTask4SrcFiles(srcDir, carDir string, maxPrice decimal.Decimal) (*libm
 		IpfsServerUploadUrlPrefix: config.GetConfig().IpfsServer.UploadUrlPrefix,
 	}
 
-	_, err := cmdIpfsCar.CreateIpfsCarFiles()
+	fileDescs, err := cmdIpfsCar.CreateIpfsCarFiles()
 	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	fileDesc := fileDescs[0]
+	if !createAnyway && fileDesc.CarFileSize < fileSizeMin {
+		err := fmt.Errorf("car file size is less than %d", fileSizeMin)
 		logs.GetLogger().Error(err)
 		return nil, err
 	}
@@ -251,13 +250,13 @@ func createTask4SrcFiles(srcDir, carDir string, maxPrice decimal.Decimal) (*libm
 		MaxAutoBidCopyNumber:       5,
 	}
 
-	_, fileDescs, _, err := cmdTask.CreateTask(nil)
+	_, fileDescs, _, err = cmdTask.CreateTask(nil)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
 	}
 
-	fileDesc := fileDescs[0]
+	fileDesc = fileDescs[0]
 
 	logs.GetLogger().Info("car files created in ", carDir, "payload_cid=", fileDesc.PayloadCid)
 

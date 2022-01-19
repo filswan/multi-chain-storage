@@ -44,9 +44,9 @@ func createScheduleJob() {
 		{Name: "unlock payment", Rule: confScheduleRule.UnlockPaymentRule, Func: UnlockPayment},
 	}
 
-	for _, scheduleJob := range scheduleJobs {
-		c := cron.New()
+	c := cron.New()
 
+	for _, scheduleJob := range scheduleJobs {
 		err := c.AddFunc(scheduleJob.Rule, func() {
 			logs.GetLogger().Info(scheduleJob.Name + " start")
 
@@ -66,9 +66,9 @@ func createScheduleJob() {
 		if err != nil {
 			logs.GetLogger().Fatal(err)
 		}
-
-		c.Start()
 	}
+
+	c.Start()
 }
 
 func createDir() {

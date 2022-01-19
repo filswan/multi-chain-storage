@@ -12,6 +12,7 @@ import (
 	"payment-bridge/database"
 	"payment-bridge/models"
 	"payment-bridge/routers/billing"
+	"sync"
 	"time"
 
 	"github.com/filswan/go-swan-client/command"
@@ -19,10 +20,31 @@ import (
 	"github.com/filswan/go-swan-lib/logs"
 	libmodel "github.com/filswan/go-swan-lib/model"
 	libutils "github.com/filswan/go-swan-lib/utils"
+	"github.com/robfig/cron"
 	"github.com/shopspring/decimal"
 )
 
-func createTask() error {
+func CreateTaskScheduler() {
+	Mutex := &sync.Mutex{}
+	c := cron.New()
+	err := c.AddFunc(config.GetConfig().ScheduleRule.CreateTaskRule, func() {
+		logs.GetLogger().Info("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ create task  scheduler is running at " + time.Now().Format("2006-01-02 15:04:05"))
+		Mutex.Lock()
+		err := CreateTask()
+		Mutex.Unlock()
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return
+		}
+	})
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return
+	}
+	c.Start()
+}
+
+func CreateTask() error {
 	currentTimeStr := time.Now().Format("2006-01-02T15:04:05")
 	carSrcDir := filepath.Join(carDir, "src_"+currentTimeStr)
 	carDestDir := filepath.Join(carDir, "car_"+currentTimeStr)
@@ -101,18 +123,10 @@ func createTask() error {
 		return err
 	}
 
-	fileDesc, err := createTask4SrcFiles(carSrcDir, carDestDir, *maxPrice)
+	fileDesc, err := createTask4SrcFiles(carSrcDir, carDestDir, *maxPrice, createAnyway, fileSizeMin)
 	if err != nil {
 		os.RemoveAll(carSrcDir)
 		os.RemoveAll(carDestDir)
-		logs.GetLogger().Error(err)
-		return err
-	}
-
-	if !createAnyway && fileDesc.CarFileSize < fileSizeMin {
-		os.RemoveAll(carSrcDir)
-		os.RemoveAll(carDestDir)
-		err := fmt.Errorf("car file size is less than %d", fileSizeMin)
 		logs.GetLogger().Error(err)
 		return err
 	}
@@ -148,7 +162,7 @@ func getMaxPrice(srcFile models.SourceFile) (*decimal.Decimal, error) {
 		logs.GetLogger().Error(err)
 		return nil, err
 	}
-	maxPrice, err := GetMaxPriceForCreateTask(fileCoinPriceInUsdc, lockedFee, DURATION, srcFile.FileSize)
+	maxPrice, err := GetMaxPriceForCreateTask(fileCoinPriceInUsdc, lockedFee, DURATION_DAYS, srcFile.FileSize)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
@@ -170,7 +184,7 @@ func GetMaxPriceForCreateTask(rate *big.Int, lockedFee int64, duration int, carF
 	return &maxPrice, nil
 }
 
-func createTask4SrcFiles(srcDir, carDir string, maxPrice decimal.Decimal) (*libmodel.FileDesc, error) {
+func createTask4SrcFiles(srcDir, carDir string, maxPrice decimal.Decimal, createAnyway bool, fileSizeMin int64) (*libmodel.FileDesc, error) {
 	cmdIpfsCar := &command.CmdIpfsCar{
 		LotusClientApiUrl:         config.GetConfig().Lotus.ClientApiUrl,
 		LotusClientAccessToken:    config.GetConfig().Lotus.ClientAccessToken,
@@ -180,8 +194,15 @@ func createTask4SrcFiles(srcDir, carDir string, maxPrice decimal.Decimal) (*libm
 		IpfsServerUploadUrlPrefix: config.GetConfig().IpfsServer.UploadUrlPrefix,
 	}
 
-	_, err := cmdIpfsCar.CreateIpfsCarFiles()
+	fileDescs, err := cmdIpfsCar.CreateIpfsCarFiles()
 	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	fileDesc := fileDescs[0]
+	if !createAnyway && fileDesc.CarFileSize < fileSizeMin {
+		err := fmt.Errorf("car file size is less than %d", fileSizeMin)
 		logs.GetLogger().Error(err)
 		return nil, err
 	}
@@ -190,8 +211,7 @@ func createTask4SrcFiles(srcDir, carDir string, maxPrice decimal.Decimal) (*libm
 		StorageServerType:           libconstants.STORAGE_SERVER_TYPE_IPFS_SERVER,
 		IpfsServerDownloadUrlPrefix: config.GetConfig().IpfsServer.DownloadUrlPrefix,
 		IpfsServerUploadUrlPrefix:   config.GetConfig().IpfsServer.UploadUrlPrefix,
-		InputDir:                    filepath.Dir(carDir),
-		OutputDir:                   filepath.Dir(carDir),
+		InputDir:                    carDir,
 	}
 
 	_, err = cmdUpload.UploadCarFiles()
@@ -205,11 +225,13 @@ func createTask4SrcFiles(srcDir, carDir string, maxPrice decimal.Decimal) (*libm
 	taskDescription := config.GetConfig().SwanTask.Description
 	startEpochIntervalHours := config.GetConfig().SwanTask.StartEpochHours
 
+	durationEpoch := DURATION_DAYS * 24 * 60 * 2
 	cmdTask := command.CmdTask{
 		SwanApiUrl:                 config.GetConfig().SwanApi.ApiUrl,
 		SwanToken:                  "",
 		SwanApiKey:                 config.GetConfig().SwanApi.ApiKey,
 		SwanAccessToken:            config.GetConfig().SwanApi.AccessToken,
+		LotusClientApiUrl:          config.GetConfig().Lotus.ClientApiUrl,
 		BidMode:                    libconstants.TASK_BID_MODE_AUTO,
 		VerifiedDeal:               config.GetConfig().SwanTask.VerifiedDeal,
 		OfflineMode:                false,
@@ -218,23 +240,23 @@ func createTask4SrcFiles(srcDir, carDir string, maxPrice decimal.Decimal) (*libm
 		StorageServerType:          libconstants.STORAGE_SERVER_TYPE_IPFS_SERVER,
 		WebServerDownloadUrlPrefix: config.GetConfig().IpfsServer.DownloadUrlPrefix,
 		ExpireDays:                 config.GetConfig().SwanTask.ExpireDays,
-		OutputDir:                  filepath.Dir(carDir),
-		InputDir:                   filepath.Dir(carDir),
+		InputDir:                   carDir,
+		OutputDir:                  carDir,
 		Dataset:                    taskDataset,
 		Description:                taskDescription,
 		StartEpochHours:            startEpochIntervalHours,
 		SourceId:                   constants.SOURCE_ID_OF_PAYMENT,
-		Duration:                   DURATION,
+		Duration:                   durationEpoch,
 		MaxAutoBidCopyNumber:       5,
 	}
 
-	_, fileDescs, _, err := cmdTask.CreateTask(nil)
+	_, fileDescs, _, err = cmdTask.CreateTask(nil)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
 	}
 
-	fileDesc := fileDescs[0]
+	fileDesc = fileDescs[0]
 
 	logs.GetLogger().Info("car files created in ", carDir, "payload_cid=", fileDesc.PayloadCid)
 
@@ -252,8 +274,8 @@ func saveCarInfo2DB(fileDesc *libmodel.FileDesc, srcFiles []*models.SourceFile, 
 	dealFile.PieceCid = fileDesc.PieceCid
 	dealFile.CreateAt = utils.GetCurrentUtcMilliSecond()
 	dealFile.UpdateAt = dealFile.CreateAt
-	dealFile.Duration = DURATION
-	dealFile.LockPaymentStatus = constants.LOCK_PAYMENT_STATUS_WAITING
+	dealFile.Duration = DURATION_DAYS
+	dealFile.LockPaymentStatus = constants.LOCK_PAYMENT_STATUS_PROCESSING
 	dealFile.IsDeleted = utils.GetBoolPointer(false)
 	dealFile.MaxPrice = maxPrice
 	dealFile.TaskUuid = fileDesc.Uuid
@@ -271,7 +293,7 @@ func saveCarInfo2DB(fileDesc *libmodel.FileDesc, srcFiles []*models.SourceFile, 
 		filepMap.FileIndex = 0
 		filepMap.CreateAt = dealFile.CreateAt
 		filepMap.UpdateAt = dealFile.CreateAt
-		err = database.SaveOne(filepMap)
+		err = database.SaveOneInTransaction(db, filepMap)
 		if err != nil {
 			db.Rollback()
 			logs.GetLogger().Error(err)

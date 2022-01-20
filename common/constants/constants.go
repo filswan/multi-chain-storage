@@ -61,9 +61,6 @@ const (
 	LOCK_PAYMENT_STATUS_SUCCESS    = "Active"     //lock payment active
 	LOCK_PAYMENT_STATUS_REFUNDED   = "Refunded"
 
-	SEND_DEAL_STATUS_SUCCESS = "Success"
-	SEND_DEAL_STATUS_FAIL    = "Fail"
-
 	DEAL_STATUS_ACTIVE = "StorageDealActive"
 	DEAL_STATUS_ERROR  = "StorageDealError"
 

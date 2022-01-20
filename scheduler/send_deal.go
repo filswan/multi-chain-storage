@@ -71,10 +71,12 @@ func SendDeal() error {
 			continue
 		}
 
-		carFile.SendDealStatus = constants.SEND_DEAL_STATUS_SUCCESS
+		carFile.SendDealStatus = constants.DEAL_FILE_STATUS_DEAL_SENT
 		carFile.ClientWalletAddress = cmdAutoBidDeal.SenderWallet
-		carFile.DealCid = fileDescs[0].Deals[0].DealCid
-		carFile.MinerFid = fileDescs[0].Deals[0].MinerFid
+		err = database.SaveOne(carFile)
+		if err != nil {
+			logs.GetLogger().Error(err)
+		}
 
 		for _, deal := range fileDescs[0].Deals {
 			offlineDeal := models.OfflineDeal{

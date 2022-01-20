@@ -107,7 +107,7 @@ func CreateTask() error {
 		createAnyway = true
 	}
 
-	fileSizeMin := config.GetConfig().SwanTask.MinFileSizeMb * 1024 * 1024
+	fileSizeMin := config.GetConfig().SwanTask.MinFileSize
 
 	if !createAnyway && totalSize < fileSizeMin {
 		os.RemoveAll(carSrcDir)

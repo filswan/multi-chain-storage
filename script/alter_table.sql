@@ -34,7 +34,7 @@ alter table source_file_deal_file_map modify create_at bigint;
 alter table source_file_deal_file_map modify update_at bigint;
 
 
-create table ofline_deal (
+create table offline_deal (
     id            bigint       not null,
     deal_file_id  bigint       not null,
     deal_cid      varchar(100) not null,

@@ -279,6 +279,7 @@ func saveCarInfo2DB(fileDesc *libmodel.FileDesc, srcFiles []*models.SourceFile, 
 	dealFile.IsDeleted = utils.GetBoolPointer(false)
 	dealFile.MaxPrice = maxPrice
 	dealFile.TaskUuid = fileDesc.Uuid
+	dealFile.SendDealStatus = constants.DEAL_FILE_STATUS_CREATED
 	err := database.SaveOneInTransaction(db, dealFile)
 	if err != nil {
 		db.Rollback()

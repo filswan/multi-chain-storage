@@ -79,4 +79,7 @@ const (
 
 	SOURCE_FILE_STATUS_CREATED      = "Created"
 	SOURCE_FILE_STATUS_TASK_CREATED = "TaskCreated"
+
+	DEAL_FILE_STATUS_CREATED   = "Created"
+	DEAL_FILE_STATUS_DEAL_SENT = "DealSent"
 )

@@ -399,7 +399,7 @@
             <h3>{{$t('uploadFile.View_Your_NFT_tips')}}</h3>
             <a :href="'https://mumbai.polygonscan.com/tx/'+txHash" target="_blank">{{txHash}}</a>
             <br />
-            <a :href="'https://testnets.opensea.io/assets/mumbai/'+mintContractAddress+'/'+tokenId" target="_blank">{{$t('uploadFile.View_Your_NFT_OpenSea')}}</a>
+            <a :href="'https://testnets.opensea.io/assets/mumbai/'+mint_address+'/'+tokenId" target="_blank">{{$t('uploadFile.View_Your_NFT_OpenSea')}}</a>
             <h3>{{$t('uploadFile.View_Your_NFT_Note')}}</h3>
             <a class="a-close" @click="mintTransaction=false">{{$t('uploadFile.CLOSE')}}</a>
         </el-dialog>
@@ -460,6 +460,7 @@ export default {
       fileSize: '',
       mintContractAddress: this.$root.MINT_CONTRACT,
       tokenId: '',
+      mint_address: '',
       toAddress: '',
       storage: 0,
       centerDialogVisible: false,
@@ -562,6 +563,7 @@ export default {
     },
     mintViewFunction(row){
       this.tokenId = row.token_id
+      this.mint_address = row.mint_address
       this.txHash = row.nft_tx_hash
       this.mintTransaction=true
     },
@@ -749,6 +751,7 @@ export default {
           _this.getData()
           _this.tokenId = tokenId
           _this.txHash = nftHash
+          _this.mint_address = _this.mintContractAddress
           _this.mintTransaction = true
         }
     },

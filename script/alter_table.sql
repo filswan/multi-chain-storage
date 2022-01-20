@@ -22,8 +22,6 @@ alter table deal_file modify delete_at bigint;
 
 alter table deal_file add max_price   double;
 
-
-
 alter table event_lock_payment modify create_at bigint;
 
 alter table event_unlock_payment modify create_at bigint;
@@ -34,8 +32,8 @@ alter table source_file_deal_file_map modify create_at bigint;
 alter table source_file_deal_file_map modify update_at bigint;
 
 
-create table ofline_deal (
-    id            bigint       not null,
+create table offline_deal (
+    id            bigint       not null auto_increment,
     deal_file_id  bigint       not null,
     deal_cid      varchar(100) not null,
     miner_fid     varchar(45)  not null,

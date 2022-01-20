@@ -39,7 +39,7 @@ func SendDealScheduler() {
 }
 
 func SendDeal() error {
-	whereCondition := "send_deal_status ='' and lock_payment_status='" + constants.LOCK_PAYMENT_STATUS_PROCESSING + "' and task_uuid != '' "
+	whereCondition := "send_deal_status ='" + constants.DEAL_FILE_STATUS_CREATED + "' and lock_payment_status='" + constants.LOCK_PAYMENT_STATUS_PROCESSING + "' and task_uuid != '' "
 	dealList, err := models.FindDealFileList(whereCondition, "create_at desc", "50", "0")
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -56,11 +56,11 @@ func SendDeal() error {
 		DealSourceIds:          []int{libconstants.TASK_SOURCE_ID_SWAN_PAYMENT},
 	}
 
-	for _, deal := range dealList {
-		logs.GetLogger().Info("start to send deal for task:", deal.TaskUuid)
-		cmdAutoBidDeal.OutputDir = filepath.Dir(deal.CarFilePath)
+	for _, carFile := range dealList {
+		logs.GetLogger().Info("start to send deal for task:", carFile.TaskUuid)
+		cmdAutoBidDeal.OutputDir = filepath.Dir(carFile.CarFilePath)
 
-		_, fileDescs, err := cmdAutoBidDeal.SendAutoBidDealsByTaskUuid(deal.TaskUuid)
+		_, fileDescs, err := cmdAutoBidDeal.SendAutoBidDealsByTaskUuid(carFile.TaskUuid)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			continue
@@ -71,23 +71,27 @@ func SendDeal() error {
 			continue
 		}
 
-		deal.SendDealStatus = constants.SEND_DEAL_STATUS_SUCCESS
-		deal.ClientWalletAddress = cmdAutoBidDeal.SenderWallet
-		deal.DealCid = fileDescs[0].Deals[0].DealCid
-		deal.MinerFid = fileDescs[0].Deals[0].MinerFid
-
-		offlineDeal := models.OfflineDeal{
-			DealFileId:   deal.ID,
-			DealCid:      fileDescs[0].Deals[0].DealCid,
-			MinerFid:     fileDescs[0].Deals[0].MinerFid,
-			StartEpoch:   fileDescs[0].Deals[0].StartEpoch,
-			SenderWallet: cmdAutoBidDeal.SenderWallet,
-		}
-
-		err = database.SaveOne(offlineDeal)
+		carFile.SendDealStatus = constants.DEAL_FILE_STATUS_DEAL_SENT
+		carFile.ClientWalletAddress = cmdAutoBidDeal.SenderWallet
+		err = database.SaveOne(carFile)
 		if err != nil {
 			logs.GetLogger().Error(err)
-			continue
+		}
+
+		for _, deal := range fileDescs[0].Deals {
+			offlineDeal := models.OfflineDeal{
+				DealFileId:   carFile.ID,
+				DealCid:      deal.DealCid,
+				MinerFid:     deal.MinerFid,
+				StartEpoch:   deal.StartEpoch,
+				SenderWallet: cmdAutoBidDeal.SenderWallet,
+			}
+
+			err = database.SaveOne(&offlineDeal)
+			if err != nil {
+				logs.GetLogger().Error(err)
+				continue
+			}
 		}
 	}
 

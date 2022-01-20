@@ -107,7 +107,7 @@ func CreateTask() error {
 		createAnyway = true
 	}
 
-	fileSizeMin := config.GetConfig().SwanTask.MinFileSizeMb * 1024 * 1024
+	fileSizeMin := config.GetConfig().SwanTask.MinFileSize
 
 	if !createAnyway && totalSize < fileSizeMin {
 		os.RemoveAll(carSrcDir)
@@ -279,6 +279,7 @@ func saveCarInfo2DB(fileDesc *libmodel.FileDesc, srcFiles []*models.SourceFile, 
 	dealFile.IsDeleted = utils.GetBoolPointer(false)
 	dealFile.MaxPrice = maxPrice
 	dealFile.TaskUuid = fileDesc.Uuid
+	dealFile.SendDealStatus = constants.DEAL_FILE_STATUS_CREATED
 	err := database.SaveOneInTransaction(db, dealFile)
 	if err != nil {
 		db.Rollback()

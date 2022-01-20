@@ -61,9 +61,6 @@ const (
 	LOCK_PAYMENT_STATUS_SUCCESS    = "Active"     //lock payment active
 	LOCK_PAYMENT_STATUS_REFUNDED   = "Refunded"
 
-	SEND_DEAL_STATUS_SUCCESS = "Success"
-	SEND_DEAL_STATUS_FAIL    = "Fail"
-
 	DEAL_STATUS_ACTIVE = "StorageDealActive"
 	DEAL_STATUS_ERROR  = "StorageDealError"
 
@@ -79,4 +76,7 @@ const (
 
 	SOURCE_FILE_STATUS_CREATED      = "Created"
 	SOURCE_FILE_STATUS_TASK_CREATED = "TaskCreated"
+
+	DEAL_FILE_STATUS_CREATED   = "Created"
+	DEAL_FILE_STATUS_DEAL_SENT = "DealSent"
 )

@@ -311,15 +311,15 @@
           <el-table-column prop="MINT" width="100" :label="$t('uploadFile.MINT')">
             <template slot-scope="scope">
               <div class="hot-cold-box">
+                <el-button class="uploadBtn blue" type="primary"
+                  v-if="tableData[scope.$index].token_id"
+                  @click.stop="mintViewFunction(scope.row)">{{$t('uploadFile.mint_view')}}</el-button>
                 <el-button
                   class="uploadBtn grey opacity"
-                  v-if="tableData[scope.$index].status.toLowerCase()=='pending' || tableData[scope.$index].status.toLowerCase()=='failed'"
+                  v-else-if="tableData[scope.$index].status.toLowerCase()=='pending' || tableData[scope.$index].status.toLowerCase()=='failed' || tableData[scope.$index].status.toLowerCase()=='refunding' || tableData[scope.$index].status.toLowerCase()=='refunded'"
                   :disabled="true">
                   {{$t('uploadFile.MINT')}}
                 </el-button>
-                <el-button class="uploadBtn blue" type="primary"
-                  v-else-if="tableData[scope.$index].token_id"
-                  @click.stop="mintViewFunction(scope.row)">{{$t('uploadFile.mint_view')}}</el-button>
                 <el-button  class="uploadBtn blue" type="primary"
                   v-else
                   @click.stop="mintFunction(scope.row)">{{$t('uploadFile.MINT')}}</el-button>
@@ -1581,6 +1581,11 @@ export default {
       .el-table /deep/ {
         overflow: visible;
         overflow-x: scroll;
+        .el-loading-mask{
+          .el-loading-spinner{
+            top: 50%;
+          }
+        }
         .el-table__body-wrapper,
         .el-table__header-wrapper {
           overflow: visible;

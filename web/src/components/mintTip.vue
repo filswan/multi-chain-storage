@@ -2,7 +2,7 @@
 <div>
     <el-dialog :title="$t('uploadFile.nft_title')+'NFT'" :width="widthDia" :visible.sync="mineVisible"
         :before-close="closeDia">
-        <div v-loading="hashload" :element-loading-text="isload?$t('uploadFile.payment_tip'):''">
+        <div v-loading="hashload" :element-loading-text="isload?$t('uploadFile.payment_tip_deal'):''">
             <el-form :model="ruleForm" :rules="rules" ref="ruleForm">
                 <el-form-item :label="'NFT'+$t('uploadFile.nft_Name')" prop="name">
                     <el-input v-model="ruleForm.name" placeholder=""></el-input>

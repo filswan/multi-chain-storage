@@ -24,7 +24,6 @@ import (
 
 func SendDealManager(router *gin.RouterGroup) {
 	router.POST("/ipfs/upload", UploadFileToIpfs)
-	router.PUT("/ipfs/update_source_file", UpdateSourceFile)
 	router.GET("/tasks/deals", GetDealListFromLocal)
 	router.GET("/deal/detail/:deal_id", GetDealListFromFilink)
 	router.GET("/dao/signature/deals", GetDealListForDaoToSign)
@@ -41,26 +40,6 @@ type UploadResult struct {
 	PayloadCid   string `json:"payload_cid"`
 	IpfsUrl      string `json:"ipfs_url"`
 	NeedPay      int    `json:"need_pay"`
-}
-
-func UpdateSourceFile(c *gin.Context) {
-	var updateSourceFileParam UpdateSourceFileParam
-
-	err := c.BindJSON(&updateSourceFileParam)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		c.AbortWithStatusJSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARSER_RESPONSE_TO_STRUCT_ERROR_CODE))
-		return
-	}
-
-	err = UpdateSourceFileMaxPrice(updateSourceFileParam.SourceFileId, updateSourceFileParam.MaxPrice)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		c.AbortWithStatusJSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.UPDATE_DATA_TO_DB_ERROR_CODE))
-		return
-	}
-
-	c.JSON(http.StatusOK, common.CreateSuccessResponse(""))
 }
 
 func RecordDealListThatHaveBeenSignedByDao(c *gin.Context) {

@@ -484,6 +484,7 @@ export default {
         search_title: 'Search by File Name',
         data_tooltip: 'The content identifier for a file or a piece of data.',
         payment_tip: 'Please wait until the process of locking funds completed.',
+        payment_tip_deal: 'Please wait until the process completed.',
         COMPLETED: "Completed", 
         SUCCESS: "Your transaction has been submitted successfully. Check more detail in your transaction history. ",
         CLOSE:"Close",

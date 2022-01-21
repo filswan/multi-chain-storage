@@ -489,6 +489,7 @@ export default {
         search_title: '按文件名称搜索',
         data_tooltip: '文件或数据块的内容标识符。',
         payment_tip: '请等待资金锁定流程完成。',
+        payment_tip_deal: '请耐心等待该过程完成。',
         COMPLETED: "转账成功", 
         SUCCESS: "您已转账成功，请查看转账历史记录。",
         CLOSE: "关闭",

@@ -29,6 +29,7 @@ func SendDealManager(router *gin.RouterGroup) {
 	router.GET("/deal/detail/:deal_id", GetDealListFromFilink)
 	router.GET("/dao/signature/deals", GetDealListForDaoToSign)
 	router.PUT("/dao/signature/deals", RecordDealListThatHaveBeenSignedByDao)
+	router.POST("/mint/info", RecordMintInfo)
 }
 
 type UpdateSourceFileParam struct {
@@ -326,4 +327,43 @@ func GetDealListFromLocal(c *gin.Context) {
 	}
 	pageInfo.TotalRecordCount = strconv.FormatInt(totalCount, 10)
 	c.JSON(http.StatusOK, common.NewSuccessResponseWithPageInfo(infoList, pageInfo))
+}
+
+func RecordMintInfo(c *gin.Context) {
+	var model mintInfoUpload
+	c.BindJSON(&model)
+
+	payloadCid := model.PayloadCid
+	nftTxHash := model.TxHash
+	tokenId := model.TokenId
+	mintAddress := model.MintAddress
+
+	if payloadCid == "" || nftTxHash == "" || tokenId == "" || mintAddress == "" {
+		errMsg := "payload_cid, tx_hash, token_id and mint_address cannot be nil"
+		err := errors.New(errMsg)
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_CODE, errMsg))
+		return
+	}
+
+	sourceFile, err := models.GetSourceFilesByPayloadCid(payloadCid)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.SAVE_DATA_TO_DB_ERROR_CODE))
+		return
+	} else {
+		file := sourceFile[0]
+		file.NftTxHash = nftTxHash
+		file.TokenId = tokenId
+		file.MintAddress = mintAddress
+		database.SaveOneWithTransaction(file)
+		c.JSON(http.StatusOK, common.CreateSuccessResponse(file))
+	}
+}
+
+type mintInfoUpload struct {
+	PayloadCid  string `json:"payload_cid"`
+	TxHash 	    string `json:"tx_hash"`
+	TokenId     string `json:"token_id"`
+	MintAddress string `json:"mint_address"`
 }

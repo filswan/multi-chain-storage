@@ -21,11 +21,6 @@ func BillingManager(router *gin.RouterGroup) {
 	router.GET("", GetUserBillingHistory)
 	router.GET("/price/filecoin", GetFileCoinLastestPrice)
 	router.GET("/deal/lockpayment/info", GetLockPaymentInfoByPayloadCid)
-	router.GET("/deal/lockpayment", LockPaymentForUser)
-}
-
-func LockPaymentForUser(c *gin.Context) {
-
 }
 
 func GetLockPaymentInfoByPayloadCid(c *gin.Context) {

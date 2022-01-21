@@ -24,7 +24,6 @@ import (
 
 func SendDealManager(router *gin.RouterGroup) {
 	router.POST("/ipfs/upload", UploadFileToIpfs)
-	router.PUT("/ipfs/update_source_file", UpdateSourceFile)
 	router.GET("/tasks/deals", GetDealListFromLocal)
 	router.GET("/deal/detail/:deal_id", GetDealListFromFilink)
 	router.GET("/dao/signature/deals", GetDealListForDaoToSign)
@@ -42,26 +41,6 @@ type UploadResult struct {
 	PayloadCid   string `json:"payload_cid"`
 	IpfsUrl      string `json:"ipfs_url"`
 	NeedPay      int    `json:"need_pay"`
-}
-
-func UpdateSourceFile(c *gin.Context) {
-	var updateSourceFileParam UpdateSourceFileParam
-
-	err := c.BindJSON(&updateSourceFileParam)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		c.AbortWithStatusJSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARSER_RESPONSE_TO_STRUCT_ERROR_CODE))
-		return
-	}
-
-	err = UpdateSourceFileMaxPrice(updateSourceFileParam.SourceFileId, updateSourceFileParam.MaxPrice)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		c.AbortWithStatusJSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.UPDATE_DATA_TO_DB_ERROR_CODE))
-		return
-	}
-
-	c.JSON(http.StatusOK, common.CreateSuccessResponse(""))
 }
 
 func RecordDealListThatHaveBeenSignedByDao(c *gin.Context) {
@@ -282,12 +261,12 @@ func GetDealListFromLocal(c *gin.Context) {
 	pageSize := URL.Get("page_size")
 	walletAddress := URL.Get("wallet_address")
 	if strings.Trim(walletAddress, " ") == "" {
-		errMsg := "wallet_address can not be null"
-		err := errors.New(errMsg)
+		err := fmt.Errorf("wallet_address is required")
 		logs.GetLogger().Error(err)
-		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_CODE, errMsg))
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_CODE, err.Error()))
 		return
 	}
+
 	if (strings.Trim(pageNumber, " ") == "") || (strings.Trim(pageNumber, " ") == "0") {
 		pageNumber = "1"
 	} else {

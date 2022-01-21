@@ -45,19 +45,8 @@ func CreateTaskScheduler() {
 }
 
 func CreateTask() error {
-	currentTimeStr := time.Now().Format("2006-01-02T15:04:05")
-	carSrcDir := filepath.Join(carDir, "src_"+currentTimeStr)
-	carDestDir := filepath.Join(carDir, "car_"+currentTimeStr)
-
-	err := libutils.CreateDir(carSrcDir)
-	if err != nil {
-		logs.GetLogger().Error("creating dir:", carSrcDir, " failed,", err)
-		return err
-	}
-
 	srcFiles, err := models.GetSourceFilesNeed2Car()
 	if err != nil {
-		os.RemoveAll(carSrcDir)
 		logs.GetLogger().Error(err)
 		return err
 	}
@@ -65,6 +54,16 @@ func CreateTask() error {
 	if len(srcFiles) == 0 {
 		logs.GetLogger().Info("no source file to be created to car file")
 		return nil
+	}
+
+	currentTimeStr := time.Now().Format("2006-01-02T15:04:05")
+	carSrcDir := filepath.Join(carDir, "src_"+currentTimeStr)
+	carDestDir := filepath.Join(carDir, "car_"+currentTimeStr)
+
+	err = libutils.CreateDir(carSrcDir)
+	if err != nil {
+		logs.GetLogger().Error("creating dir:", carSrcDir, " failed,", err)
+		return err
 	}
 
 	totalSize := int64(0)
@@ -142,7 +141,6 @@ func CreateTask() error {
 	err = os.RemoveAll(carSrcDir)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return err
 	}
 
 	return nil

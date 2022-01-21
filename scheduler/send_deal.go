@@ -90,7 +90,6 @@ func SendDeal() error {
 			err = database.SaveOne(&offlineDeal)
 			if err != nil {
 				logs.GetLogger().Error(err)
-				continue
 			}
 		}
 	}

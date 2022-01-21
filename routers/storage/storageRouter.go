@@ -260,12 +260,12 @@ func GetDealListFromLocal(c *gin.Context) {
 	pageSize := URL.Get("page_size")
 	walletAddress := URL.Get("wallet_address")
 	if strings.Trim(walletAddress, " ") == "" {
-		errMsg := "wallet_address can not be null"
-		err := errors.New(errMsg)
+		err := fmt.Errorf("wallet_address is required")
 		logs.GetLogger().Error(err)
-		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_CODE, errMsg))
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_CODE, err.Error()))
 		return
 	}
+
 	if (strings.Trim(pageNumber, " ") == "") || (strings.Trim(pageNumber, " ") == "0") {
 		pageNumber = "1"
 	} else {

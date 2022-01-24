@@ -45,6 +45,12 @@ func GetOfflineDealsBySourceFileId(sourceFileId int64) ([]*OfflineDealOut, error
 
 	var offlineDealsOut []*OfflineDealOut
 
+	lotusClient, err := lotus.LotusGetClient(config.GetConfig().Lotus.ClientApiUrl, config.GetConfig().Lotus.ClientAccessToken)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
 	for _, offlineDeal := range offlineDeals {
 		offlineDealOut := &OfflineDealOut{}
 		offlineDealOut.Id = offlineDeal.Id
@@ -54,13 +60,6 @@ func GetOfflineDealsBySourceFileId(sourceFileId int64) ([]*OfflineDealOut, error
 		offlineDealOut.StartEpoch = offlineDeal.StartEpoch
 		offlineDealOut.SenderWallet = offlineDeal.SenderWallet
 
-		offlineDealsOut = append(offlineDealsOut, offlineDealOut)
-		lotusClient, err := lotus.LotusGetClient(config.GetConfig().Lotus.ClientApiUrl, config.GetConfig().Lotus.ClientAccessToken)
-		if err != nil {
-			logs.GetLogger().Error(err)
-			return nil, err
-		}
-
 		dealInfo, err := lotusClient.LotusClientGetDealInfo(offlineDeal.DealCid)
 		if err != nil {
 			logs.GetLogger().Error(err)
@@ -69,7 +68,8 @@ func GetOfflineDealsBySourceFileId(sourceFileId int64) ([]*OfflineDealOut, error
 
 		offlineDealOut.DealId = dealInfo.DealId
 		offlineDealOut.Status = dealInfo.Status
-		logs.GetLogger().Info(dealInfo.DealId)
+
+		offlineDealsOut = append(offlineDealsOut, offlineDealOut)
 	}
 
 	return offlineDealsOut, nil
@@ -141,6 +141,11 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration int, walle
 		sourceFileCreated, err := models.CreateSourceFile(sourceFile)
 		if err != nil {
 			logs.GetLogger().Error(err)
+			err = os.Remove(srcFilepath)
+			if err != nil {
+				logs.GetLogger().Error(err)
+				return nil, nil, nil, nil, err
+			}
 			return nil, nil, nil, nil, err
 		}
 
@@ -201,6 +206,27 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration int, walle
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, nil, nil, nil, err
+	}
+
+	srcFileDealFileMaps, err := models.GetSourceFileDealFileMapBySourceFilePayloadCid(*ipfsFileHash)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, nil, nil, nil, err
+	}
+	if len(srcFileDealFileMaps) > 0 {
+		srcFileDealFileMap := models.SourceFileDealFileMap{
+			SourceFileId: sourceFileCreated.ID,
+			DealFileId:   srcFileDealFileMaps[0].DealFileId,
+			CreateAt:     utils.GetCurrentUtcMilliSecond(),
+			UpdateAt:     utils.GetCurrentUtcMilliSecond(),
+			FileIndex:    0,
+		}
+
+		err = database.SaveOne(srcFileDealFileMap)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return nil, nil, nil, nil, err
+		}
 	}
 
 	return &sourceFileCreated.ID, &sourceFile.PayloadCid, &sourceFile.IpfsUrl, &needPay, nil

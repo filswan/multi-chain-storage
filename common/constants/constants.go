@@ -79,4 +79,5 @@ const (
 
 	DEAL_FILE_STATUS_CREATED   = "Created"
 	DEAL_FILE_STATUS_DEAL_SENT = "DealSent"
+	DEAL_FILE_STATUS_CANCELLED = "Cancelled"
 )

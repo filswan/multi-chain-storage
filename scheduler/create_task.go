@@ -286,17 +286,26 @@ func saveCarInfo2DB(fileDesc *libmodel.FileDesc, srcFiles []*models.SourceFile, 
 	}
 
 	for _, srcFile := range srcFiles {
-		filepMap := new(models.SourceFileDealFileMap)
-		filepMap.SourceFileId = srcFile.ID
-		filepMap.DealFileId = dealFile.ID
-		filepMap.FileIndex = 0
-		filepMap.CreateAt = dealFile.CreateAt
-		filepMap.UpdateAt = dealFile.CreateAt
-		err = database.SaveOneInTransaction(db, filepMap)
+		sourceFiles, err := models.GetSourceFilesByPayloadCid(srcFile.PayloadCid)
 		if err != nil {
 			db.Rollback()
 			logs.GetLogger().Error(err)
 			return err
+		}
+
+		for _, sourceFile := range sourceFiles {
+			filepMap := new(models.SourceFileDealFileMap)
+			filepMap.SourceFileId = sourceFile.ID
+			filepMap.DealFileId = dealFile.ID
+			filepMap.FileIndex = 0
+			filepMap.CreateAt = dealFile.CreateAt
+			filepMap.UpdateAt = dealFile.CreateAt
+			err = database.SaveOneInTransaction(db, filepMap)
+			if err != nil {
+				db.Rollback()
+				logs.GetLogger().Error(err)
+				return err
+			}
 		}
 
 		sql := "update source_file set status=? where id=?"
@@ -305,7 +314,7 @@ func saveCarInfo2DB(fileDesc *libmodel.FileDesc, srcFiles []*models.SourceFile, 
 		params = append(params, constants.SOURCE_FILE_STATUS_TASK_CREATED)
 		params = append(params, srcFile.ID)
 
-		err := db.Exec(sql, params...).Error
+		err = db.Exec(sql, params...).Error
 		if err != nil {
 			db.Rollback()
 			logs.GetLogger().Error(err)

@@ -13,6 +13,8 @@ import (
 	"payment-bridge/database"
 	"payment-bridge/models"
 
+	"payment-bridge/common/utils"
+
 	"github.com/filswan/go-swan-lib/logs"
 
 	libconstants "github.com/filswan/go-swan-lib/constants"
@@ -40,7 +42,7 @@ func SendDealScheduler() {
 
 func SendDeal() error {
 	whereCondition := "send_deal_status ='" + constants.DEAL_FILE_STATUS_CREATED + "' and lock_payment_status='" + constants.LOCK_PAYMENT_STATUS_PROCESSING + "' and task_uuid != '' "
-	dealList, err := models.FindDealFileList(whereCondition, "create_at desc", "50", "0")
+	dealFiles, err := models.FindDealFileList(whereCondition, "create_at desc", "50", "0")
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
@@ -56,11 +58,22 @@ func SendDeal() error {
 		DealSourceIds:          []int{libconstants.TASK_SOURCE_ID_SWAN_PAYMENT},
 	}
 
-	for _, carFile := range dealList {
-		logs.GetLogger().Info("start to send deal for task:", carFile.TaskUuid)
-		cmdAutoBidDeal.OutputDir = filepath.Dir(carFile.CarFilePath)
+	currentUtcMilliSec := utils.GetCurrentUtcMilliSecond()
+	for _, dealFile := range dealFiles {
+		if currentUtcMilliSec-dealFile.CreateAt > 3*24*60*60*1000 {
+			dealFile.SendDealStatus = constants.DEAL_FILE_STATUS_CANCELLED
+			err = database.SaveOne(dealFile)
+			if err != nil {
+				logs.GetLogger().Error(err)
+			}
 
-		_, fileDescs, err := cmdAutoBidDeal.SendAutoBidDealsByTaskUuid(carFile.TaskUuid)
+			continue
+		}
+
+		logs.GetLogger().Info("start to send deal for task:", dealFile.TaskUuid)
+		cmdAutoBidDeal.OutputDir = filepath.Dir(dealFile.CarFilePath)
+
+		_, fileDescs, err := cmdAutoBidDeal.SendAutoBidDealsByTaskUuid(dealFile.TaskUuid)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			continue
@@ -71,16 +84,16 @@ func SendDeal() error {
 			continue
 		}
 
-		carFile.SendDealStatus = constants.DEAL_FILE_STATUS_DEAL_SENT
-		carFile.ClientWalletAddress = cmdAutoBidDeal.SenderWallet
-		err = database.SaveOne(carFile)
+		dealFile.SendDealStatus = constants.DEAL_FILE_STATUS_DEAL_SENT
+		dealFile.ClientWalletAddress = cmdAutoBidDeal.SenderWallet
+		err = database.SaveOne(dealFile)
 		if err != nil {
 			logs.GetLogger().Error(err)
 		}
 
 		for _, deal := range fileDescs[0].Deals {
 			offlineDeal := models.OfflineDeal{
-				DealFileId:   carFile.ID,
+				DealFileId:   dealFile.ID,
 				DealCid:      deal.DealCid,
 				MinerFid:     deal.MinerFid,
 				StartEpoch:   deal.StartEpoch,

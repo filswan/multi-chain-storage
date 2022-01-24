@@ -25,3 +25,16 @@ func UpdateSourceFileDealFileMap(whereCondition interface{}, updateFields interf
 	}
 	return err
 }
+
+func GetSourceFileDealFileMapBySourceFilePayloadCid(sourceFilePayloadCid string) ([]*SourceFileDealFileMap, error) {
+	var sourceFileDealFileMap []*SourceFileDealFileMap
+	sql := "select a.* from source_file_deal_file_map a, source_file b where a.source_file_id=b.id and b.payload_cid=?"
+	err := database.GetDB().Raw(sql, sourceFilePayloadCid).Scan(&sourceFileDealFileMap).Error
+
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	return sourceFileDealFileMap, nil
+}

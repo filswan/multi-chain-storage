@@ -32,15 +32,15 @@ import (
 
 type OfflineDealOut struct {
 	models.OfflineDeal
-	Status string
-	DealId int64
+	Status string `json:"status"`
+	DealId int64  `json:"deal_id"`
 }
 
-func GetOfflineDealsBySourceFileId(sourceFileId int64) ([]*OfflineDealOut, error) {
+func GetOfflineDealsBySourceFileId(sourceFileId int64) ([]*OfflineDealOut, *models.SourceFile, error) {
 	offlineDeals, err := models.GetOfflineDealsBySourceFileId(sourceFileId)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return nil, err
+		return nil, nil, err
 	}
 
 	var offlineDealsOut []*OfflineDealOut
@@ -48,7 +48,7 @@ func GetOfflineDealsBySourceFileId(sourceFileId int64) ([]*OfflineDealOut, error
 	lotusClient, err := lotus.LotusGetClient(config.GetConfig().Lotus.ClientApiUrl, config.GetConfig().Lotus.ClientAccessToken)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return nil, err
+		return nil, nil, err
 	}
 
 	for _, offlineDeal := range offlineDeals {
@@ -63,7 +63,7 @@ func GetOfflineDealsBySourceFileId(sourceFileId int64) ([]*OfflineDealOut, error
 		dealInfo, err := lotusClient.LotusClientGetDealInfo(offlineDeal.DealCid)
 		if err != nil {
 			logs.GetLogger().Error(err)
-			return nil, err
+			return nil, nil, err
 		}
 
 		offlineDealOut.DealId = dealInfo.DealId
@@ -72,7 +72,13 @@ func GetOfflineDealsBySourceFileId(sourceFileId int64) ([]*OfflineDealOut, error
 		offlineDealsOut = append(offlineDealsOut, offlineDealOut)
 	}
 
-	return offlineDealsOut, nil
+	sourceFile, err := models.GetSourceFileById(sourceFileId)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, nil, err
+	}
+
+	return offlineDealsOut, sourceFile, nil
 }
 
 func UpdateSourceFileMaxPrice(id int64, maxPrice decimal.Decimal) error {
@@ -271,8 +277,8 @@ func GetLockFoundInfoByPayloadCid(payloadCid string) (*LockFound, error) {
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
-
 	}
+
 	lockFound := new(LockFound)
 	if len(lockEventList) > 0 {
 		lockFound.PayloadCid = lockEventList[0].PayloadCid

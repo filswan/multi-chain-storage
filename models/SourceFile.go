@@ -97,7 +97,6 @@ func GetSourceFiles(limit, offset string, walletAddress, payloadCid string) ([]*
 	sql := "select s.file_name,s.file_size,s.pin_status,s.create_at,s.payload_cid,df.lock_payment_status as status,df.duration, evpm.locked_fee from source_file s "
 	sql = sql + "left join source_file_deal_file_map sfdfm on s.id = sfdfm.source_file_id "
 	sql = sql + "left join deal_file df on sfdfm.deal_file_id = df.id "
-	sql = sql + "left outer join event_lock_payment evpm on evpm.payload_cid = s.payload_cid "
 
 	params := []interface{}{}
 
@@ -106,6 +105,8 @@ func GetSourceFiles(limit, offset string, walletAddress, payloadCid string) ([]*
 		params = append(params, payloadCid)
 	}
 
+
+	sql = sql + "left outer join event_lock_payment evpm on evpm.payload_cid = s.payload_cid "
 	sql = sql + "where wallet_address=?"
 	params = append(params, walletAddress)
 

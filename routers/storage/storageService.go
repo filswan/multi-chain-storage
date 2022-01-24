@@ -141,6 +141,11 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration int, walle
 		sourceFileCreated, err := models.CreateSourceFile(sourceFile)
 		if err != nil {
 			logs.GetLogger().Error(err)
+			err = os.Remove(srcFilepath)
+			if err != nil {
+				logs.GetLogger().Error(err)
+				return nil, nil, nil, nil, err
+			}
 			return nil, nil, nil, nil, err
 		}
 
@@ -201,6 +206,27 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration int, walle
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, nil, nil, nil, err
+	}
+
+	srcFileDealFileMaps, err := models.GetSourceFileDealFileMapBySourceFilePayloadCid(*ipfsFileHash)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, nil, nil, nil, err
+	}
+	if len(srcFileDealFileMaps) > 0 {
+		srcFileDealFileMap := models.SourceFileDealFileMap{
+			SourceFileId: sourceFileCreated.ID,
+			DealFileId:   srcFileDealFileMaps[0].DealFileId,
+			CreateAt:     utils.GetCurrentUtcMilliSecond(),
+			UpdateAt:     utils.GetCurrentUtcMilliSecond(),
+			FileIndex:    0,
+		}
+
+		err = database.SaveOne(srcFileDealFileMap)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return nil, nil, nil, nil, err
+		}
 	}
 
 	return &sourceFileCreated.ID, &sourceFile.PayloadCid, &sourceFile.IpfsUrl, &needPay, nil

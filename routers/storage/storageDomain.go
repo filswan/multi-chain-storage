@@ -82,7 +82,6 @@ type DaoSignResult struct {
 
 type LockFound struct {
 	PayloadCid          string `json:"payload_cid"`
-	ClientWalletAddress string `json:"client_wallet_address"`
 	CreateAt            string `json:"create_at"`
 	LockedFee           string `json:"locked_fee"`
 }

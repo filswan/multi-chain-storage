@@ -68,7 +68,9 @@ func GetDeals4SourceFile(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, common.CreateSuccessResponse(offlineDeals))
+	c.JSON(http.StatusOK, common.CreateSuccessResponse(gin.H{
+		"deals": offlineDeals,
+	}))
 }
 
 func RecordDealListThatHaveBeenSignedByDao(c *gin.Context) {

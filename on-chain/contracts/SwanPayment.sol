@@ -229,7 +229,7 @@ contract SwanPayment is IPaymentMinimal, Initializable {
 
         TxInfo storage t = txMap[param.id];
         require(t._isExisted, "Transaction does not exist");
-
+        uint256 lockedFee = t.lockedFee;
         // if passed deadline, pay back to user
         if (block.timestamp > t.deadline) {
             require(
@@ -239,12 +239,10 @@ contract SwanPayment is IPaymentMinimal, Initializable {
             t._isExisted = false;
             t.minPayment = 0;
             t.lockedFee = 0;
-            //payable(address(t.owner)).transfer(t.lockedFee);
-            IERC20(_ERC20_TOKEN).transfer(t.owner, t.lockedFee);
-            emit ExpirePayment(param.id, _ERC20_TOKEN, t.lockedFee, t.owner);
-        } else {
-            
 
+            IERC20(_ERC20_TOKEN).transfer(t.owner, lockedFee);
+            emit ExpirePayment(param.id, _ERC20_TOKEN, lockedFee, t.owner);
+        } else {
             require(
                 FilswanOracle(_oracle).isPaymentAvailable(
                     param.id,
@@ -265,11 +263,10 @@ contract SwanPayment is IPaymentMinimal, Initializable {
             }
             
             t._isExisted = false;
-            uint256 tmp = t.lockedFee;
 
             if (t.lockedFee > tokenAmount) {
                 t.lockedFee = 0; // prevent re-entrying
-                IERC20(_ERC20_TOKEN).transfer(t.owner, tmp - tokenAmount);
+                IERC20(_ERC20_TOKEN).transfer(t.owner, lockedFee - tokenAmount);
                 
             } else {
                 tokenAmount = t.lockedFee;
@@ -277,7 +274,7 @@ contract SwanPayment is IPaymentMinimal, Initializable {
             }
             IERC20(_ERC20_TOKEN).transfer(param.recipient, tokenAmount);
 
-            emit UnlockPayment(param.id, _ERC20_TOKEN, tokenAmount, tmp - tokenAmount, param.recipient, t.owner);
+            emit UnlockPayment(param.id, _ERC20_TOKEN, tokenAmount, lockedFee - tokenAmount, param.recipient, t.owner);
         }
 
         return true;

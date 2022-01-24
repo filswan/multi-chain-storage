@@ -26,6 +26,7 @@ func SendDealManager(router *gin.RouterGroup) {
 	router.POST("/ipfs/upload", UploadFileToIpfs)
 	router.GET("/tasks/deals", GetDealListFromLocal)
 	router.GET("/deal/detail/:deal_id", GetDealListFromFilink)
+	router.GET("/deal/file/:source_file_id", GetDeals4SourceFile)
 	router.GET("/dao/signature/deals", GetDealListForDaoToSign)
 	router.PUT("/dao/signature/deals", RecordDealListThatHaveBeenSignedByDao)
 	router.POST("/mint/info", RecordMintInfo)
@@ -41,6 +42,35 @@ type UploadResult struct {
 	PayloadCid   string `json:"payload_cid"`
 	IpfsUrl      string `json:"ipfs_url"`
 	NeedPay      int    `json:"need_pay"`
+}
+
+func GetDeals4SourceFile(c *gin.Context) {
+	sourceFileIdStr := strings.Trim(c.Params.ByName("source_file_id"), " ")
+	if sourceFileIdStr == "" {
+		errMsg := "source file id can not be null"
+		logs.GetLogger().Error(errMsg)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAM_TYPE_ERROR_CODE, errMsg))
+		return
+	}
+
+	sourceFileId, err := strconv.ParseInt(sourceFileIdStr, 10, 64)
+	if err != nil {
+		errMsg := "source file id should be a valid number"
+		logs.GetLogger().Error(errMsg)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAM_TYPE_ERROR_CODE, errMsg))
+		return
+	}
+
+	offlineDeals, err := GetOfflineDealsBySourceFileId(sourceFileId)
+	if err != nil {
+		logs.GetLogger().Error(err.Error())
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE, err.Error()))
+		return
+	}
+
+	c.JSON(http.StatusOK, common.CreateSuccessResponse(gin.H{
+		"deals": offlineDeals,
+	}))
 }
 
 func RecordDealListThatHaveBeenSignedByDao(c *gin.Context) {
@@ -342,7 +372,7 @@ func RecordMintInfo(c *gin.Context) {
 
 type mintInfoUpload struct {
 	PayloadCid  string `json:"payload_cid"`
-	TxHash 	    string `json:"tx_hash"`
+	TxHash      string `json:"tx_hash"`
 	TokenId     string `json:"token_id"`
 	MintAddress string `json:"mint_address"`
 }

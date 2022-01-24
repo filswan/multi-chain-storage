@@ -45,6 +45,12 @@ func GetOfflineDealsBySourceFileId(sourceFileId int64) ([]*OfflineDealOut, error
 
 	var offlineDealsOut []*OfflineDealOut
 
+	lotusClient, err := lotus.LotusGetClient(config.GetConfig().Lotus.ClientApiUrl, config.GetConfig().Lotus.ClientAccessToken)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
 	for _, offlineDeal := range offlineDeals {
 		offlineDealOut := &OfflineDealOut{}
 		offlineDealOut.Id = offlineDeal.Id
@@ -54,13 +60,6 @@ func GetOfflineDealsBySourceFileId(sourceFileId int64) ([]*OfflineDealOut, error
 		offlineDealOut.StartEpoch = offlineDeal.StartEpoch
 		offlineDealOut.SenderWallet = offlineDeal.SenderWallet
 
-		offlineDealsOut = append(offlineDealsOut, offlineDealOut)
-		lotusClient, err := lotus.LotusGetClient(config.GetConfig().Lotus.ClientApiUrl, config.GetConfig().Lotus.ClientAccessToken)
-		if err != nil {
-			logs.GetLogger().Error(err)
-			return nil, err
-		}
-
 		dealInfo, err := lotusClient.LotusClientGetDealInfo(offlineDeal.DealCid)
 		if err != nil {
 			logs.GetLogger().Error(err)
@@ -69,7 +68,8 @@ func GetOfflineDealsBySourceFileId(sourceFileId int64) ([]*OfflineDealOut, error
 
 		offlineDealOut.DealId = dealInfo.DealId
 		offlineDealOut.Status = dealInfo.Status
-		logs.GetLogger().Info(dealInfo.DealId)
+
+		offlineDealsOut = append(offlineDealsOut, offlineDealOut)
 	}
 
 	return offlineDealsOut, nil

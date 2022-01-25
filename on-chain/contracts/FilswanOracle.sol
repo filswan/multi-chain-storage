@@ -17,7 +17,10 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
     mapping(string => mapping(address => TxOracleInfo)) txInfoMap;
     mapping(bytes32 => uint8) txVoteMap;
 
+    mapping(string => string[]) cidListMap;
+
     address private _filinkAddress;
+
     struct TxOracleInfo {
         uint256 paid;
         uint256 terms;
@@ -27,7 +30,7 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
     }
 
     event SignTransaction(
-        string cid,
+        string[] cidList,
         string dealId,
         address recipient
     );
@@ -74,11 +77,11 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
     }
 
     function signTransaction(
-        string memory cid,
+        string[] memory cidList,
         string memory dealId,
         address recipient
     ) public onlyRole(DAO_ROLE) {
-        string memory key = concatenate(cid, dealId);
+        string memory key = dealId;
 
         require(
             txInfoMap[key][msg.sender].flag == false,
@@ -89,30 +92,35 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
         txInfoMap[key][msg.sender].flag = true;
 
         bytes32 voteKey = keccak256(
-            abi.encodePacked(cid, dealId, recipient)
+            abi.encodePacked(dealId, recipient)
         );
 
         txVoteMap[voteKey] = txVoteMap[voteKey] + 1;
+
+        bytes32 dealCidKey = keccak256(
+            abi.encodePacked(dealId, cidList[0])
+        );
+
+        txVoteMap[dealCidKey] = txVoteMap[dealCidKey] + 1;
         // todo: if vote is greater than threshold, call chainlink oracle to save price
 
-        if(txVoteMap[voteKey] == _threshold && _filinkAddress != address(0)){
+        if(txVoteMap[voteKey] == _threshold && txVoteMap[dealCidKey] == _threshold && _filinkAddress != address(0)){
             FilinkConsumer(_filinkAddress).requestDealInfo(dealId);
         }
 
         emit SignTransaction(
-            cid,
+            cidList,
             dealId,
             recipient
         );
     }
 
     function isPaymentAvailable(
-        string memory cid,
         string memory dealId,
         address recipient
     ) public view returns (bool) {
         bytes32 voteKey = keccak256(
-            abi.encodePacked(cid, dealId, recipient)
+            abi.encodePacked(dealId, recipient)
         );
         return txVoteMap[voteKey] >= _threshold;
     }
@@ -120,5 +128,9 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
 
     function getThreshold() public view returns (uint8) {
         return _threshold;
+    }
+
+    function getCidList(string memory dealId) public view returns (string[] memory) {
+         return cidListMap[dealId];
     }
 }

@@ -98,9 +98,9 @@
     "inputs": [
       {
         "indexed": false,
-        "internalType": "string",
-        "name": "cid",
-        "type": "string"
+        "internalType": "string[]",
+        "name": "cidList",
+        "type": "string[]"
       },
       {
         "indexed": false,
@@ -139,6 +139,25 @@
         "internalType": "bytes32",
         "name": "",
         "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "dealId",
+        "type": "string"
+      }
+    ],
+    "name": "getCidList",
+    "outputs": [
+      {
+        "internalType": "string[]",
+        "name": "",
+        "type": "string[]"
       }
     ],
     "stateMutability": "view",
@@ -238,11 +257,6 @@
   },
   {
     "inputs": [
-      {
-        "internalType": "string",
-        "name": "cid",
-        "type": "string"
-      },
       {
         "internalType": "string",
         "name": "dealId",
@@ -362,9 +376,9 @@
   {
     "inputs": [
       {
-        "internalType": "string",
-        "name": "cid",
-        "type": "string"
+        "internalType": "string[]",
+        "name": "cidList",
+        "type": "string[]"
       },
       {
         "internalType": "string",

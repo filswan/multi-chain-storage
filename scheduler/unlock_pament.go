@@ -185,11 +185,11 @@ func saveUnlockEventLogToDB(logsInChain []*types.Log, recipient string, unlockSt
 				}
 				event.PayloadCid = dataList[0].(string)
 				event.TxHash = vLog.TxHash.Hex()
-				neoworkId, err := models.FindNetworkIdByUUID(constants.NETWORK_TYPE_POLYGON_UUID)
+				networkId, err := models.FindNetworkIdByUUID(constants.NETWORK_TYPE_POLYGON_UUID)
 				if err != nil {
 					logs.GetLogger().Error(err)
 				} else {
-					event.NetworkId = neoworkId
+					event.NetworkId = networkId
 				}
 				coinId, err := models.FindCoinIdByUUID(constants.COIN_TYPE_USDC_ON_POLYGON_UUID)
 				if err != nil {

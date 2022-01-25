@@ -71,6 +71,16 @@ func CreateTask() error {
 	createdTimeMin := currentUtcMilliSec
 	var maxPrice *decimal.Decimal
 	for _, srcFile := range srcFiles {
+		srcFilepathTemp := filepath.Join(carSrcDir, srcFile.FileName)
+
+		bytesCopied, err := libutils.CopyFile(srcFile.ResourceUri, srcFilepathTemp)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			continue
+		}
+
+		totalSize = totalSize + bytesCopied
+
 		if srcFile.CreateAt < createdTimeMin {
 			createdTimeMin = srcFile.CreateAt
 		}
@@ -87,17 +97,12 @@ func CreateTask() error {
 		} else if maxPrice.Cmp(config.GetConfig().SwanTask.MaxPrice) < 0 {
 			*maxPrice = config.GetConfig().SwanTask.MaxPrice
 		}
+	}
 
-		srcFilepathTemp := filepath.Join(carSrcDir, srcFile.FileName)
-
-		bytesCopied, err := libutils.CopyFile(srcFile.ResourceUri, srcFilepathTemp)
-		if err != nil {
-			os.RemoveAll(carSrcDir)
-			logs.GetLogger().Error(err)
-			return err
-		}
-
-		totalSize = totalSize + bytesCopied
+	if totalSize == 0 {
+		os.RemoveAll(carSrcDir)
+		logs.GetLogger().Info("no source files to be merged to car file")
+		return nil
 	}
 
 	passedMilliSec := currentUtcMilliSec - createdTimeMin

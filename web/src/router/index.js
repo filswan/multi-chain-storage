@@ -84,7 +84,7 @@ export default new Router({
                     }
                 },
                 {
-                    path: '/my_files/detail/:file_name',
+                    path: '/my_files/detail/:id',
                     name: 'my_files_filename',
                     component: my_files_filename,
                     beforeEnter: (to, from, next) => {

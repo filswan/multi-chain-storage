@@ -7,22 +7,22 @@
         <div class="upload">
             <div class="title">{{file_name}}</div>
             <el-row :gutter="30">
-                <el-col :span="6" v-for="o in 4" :key="o">
+                <el-col :span="6" v-for="(item, o) in dealsData" :key="o">
                     <el-card class="box-card">
                         <div slot="header" class="clearfix">
-                            <span>f00000</span>
+                            <span>{{item.miner_fid}}</span>
                         </div>
                         <div class="text item">
                             <label>{{$t('uploadFile.deal_id')}}:</label>
-                            <p><span @click="toDetail">{{dealID}}</span></p>
+                            <p><span @click="toDetail(item.deal_id, item.deal_cid)">{{item.deal_id}}</span></p>
                         </div>
                         <div class="text item">
                             <label>{{$t('deal.form_select_title01')}}</label>
-                            <p>deal status</p>
+                            <p>{{item.status}}</p>
                         </div>
                         <div class="text item">
                             <label>{{$t('uploadFile.update_time')}}</label>
-                            <p>update time</p>
+                            <p>{{item.update_at}}</p>
                         </div>
                     </el-card>
                 </el-col>
@@ -45,6 +45,7 @@ export default {
             loading: false,
             bodyWidth: document.documentElement.clientWidth<1024?true:false,
             file_name: '',
+            dealsData: [],
             dealCont: {
                 deal: {},
                 found: {}
@@ -61,8 +62,8 @@ export default {
         },
     },
     methods: {
-        toDetail(){
-            this.$router.push({name: 'my_files_detail', params: {id: this.dealID, cid: this.payloadCID}})
+        toDetail(id, cid){
+            this.$router.push({name: 'my_files_detail', params: {id: id, cid: cid}})
         },
         back(){
             this.$router.go(-1);//返回上一层
@@ -71,18 +72,26 @@ export default {
             let _this = this
             _this.loading = true
 
-            let dataCid = {
-                payload_cid: _this.$route.params.cid,
-                wallet_address: _this.$store.getters.metaAddress
-            }
-            axios.get(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/storage/deal/detail/${_this.dealID}?${QS.stringify(dataCid)}`, {headers: {
-            // axios.get(`./static/detail_page_response.json`, {headers: {
-                    // 'Authorization':"Bearer "
-            }}).then((response) => {
+            axios.get(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/storage/deal/file/${_this.dealID}`)
+            // axios.get(`./static/pay-filename-response.json`)
+            .then((response) => {
                 let json = response.data
                 _this.loading = false
                 if (json.status == 'success') {
                     if(!json.data) return false
+                    _this.file_name = json.source_file.file_name
+                    _this.dealsData = json.data.deals
+                    _this.dealsData.map(item => {
+                        item.update_at = item.update_at
+                        ? item.update_at.length < 13
+                        ? moment(new Date(parseInt(item.update_at * 1000))).format(
+                            "YYYY-MM-DD HH:mm:ss"
+                            )
+                        : moment(new Date(parseInt(item.update_at))).format(
+                            "YYYY-MM-DD HH:mm:ss"
+                            )
+                        : "-";
+                    })
                 }else{
                     _this.$message.error(json.message);
                     return false
@@ -97,7 +106,7 @@ export default {
     mounted() {
         let _this = this
         _this.file_name = _this.$route.params.file_name
-        // _this.getData()
+        _this.getData()
         document.getElementById("content-box").scrollTop = 0;
         _this.$store.dispatch("setRouterMenu", 1);
         _this.$store.dispatch("setHeadertitle", _this.$t('navbar.swan_share'));

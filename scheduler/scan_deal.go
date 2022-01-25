@@ -1,7 +1,6 @@
 package scheduler
 
 import (
-	"payment-bridge/common/constants"
 	"payment-bridge/common/utils"
 	"payment-bridge/config"
 	"payment-bridge/database"
@@ -13,9 +12,7 @@ import (
 )
 
 func ScanDeal() error {
-	whereCondition := "deal_cid != '' and task_uuid != '' and lower(lock_payment_status) not in (lower('" + constants.LOCK_PAYMENT_STATUS_SUCCESS + "'), lower('" + constants.LOCK_PAYMENT_STATUS_REFUNDED + "'))"
-	//" and deal_status not in (" + inList + ")"
-	dealList, err := models.FindDealFileList(whereCondition, "create_at desc", "100", "0")
+	dealList, err := models.GetOfflineDeals2BeScanned()
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
@@ -34,24 +31,15 @@ func ScanDeal() error {
 			return err
 		}
 
-		switch dealInfo.Status {
-		case constants.DEAL_STATUS_ACTIVE:
-			deal.LockPaymentStatus = constants.LOCK_PAYMENT_STATUS_SUCCESS
-		case constants.DEAL_STATUS_ERROR:
-			deal.LockPaymentStatus = constants.LOCK_PAYMENT_STATUS_REFUNDED
-		default:
-			deal.LockPaymentStatus = constants.LOCK_PAYMENT_STATUS_PROCESSING
-		}
-
-		deal.Verified = dealInfo.Verified
-		deal.DealStatus = dealInfo.Status
-		deal.DealId = dealInfo.DealId
-		deal.Cost = dealInfo.CostComputed
-		deal.UpdateAt = utils.GetCurrentUtcMilliSecond()
-		err = database.SaveOne(deal)
-		if err != nil {
-			logs.GetLogger().Error(err)
-			return err
+		if deal.Status != dealInfo.Status || deal.DealId != dealInfo.DealId {
+			deal.Status = dealInfo.Status
+			deal.DealId = dealInfo.DealId
+			deal.UpdateAt = utils.GetCurrentUtcMilliSecond()
+			err = database.SaveOne(deal)
+			if err != nil {
+				logs.GetLogger().Error(err)
+				return err
+			}
 		}
 	}
 	return nil

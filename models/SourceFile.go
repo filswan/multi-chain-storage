@@ -22,7 +22,7 @@ type SourceFile struct {
 	WalletAddress string `json:"wallet_address"`
 	PayloadCid    string `json:"payload_cid"`
 	NftTxHash     string `json:"nft_tx_hash"`
-	TokenId 	  string `json:"token_id"`
+	TokenId       string `json:"token_id"`
 	MintAddress   string `json:"mint_address"`
 }
 
@@ -38,6 +38,18 @@ func FindSourceFileList(whereCondition interface{}, orderCondition, limit, offse
 	var models []*SourceFile
 	err := db.Where(whereCondition).Offset(offset).Limit(limit).Order(orderCondition).Find(&models).Error
 	return models, err
+}
+
+func GetSourceFileById(id int64) (*SourceFile, error) {
+	var sourceFile SourceFile
+
+	err := database.GetDB().Where("id=?", id).First(&sourceFile).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	return &sourceFile, nil
 }
 
 func GetSourceFilesByPayloadCid(payloadCid string) ([]*SourceFile, error) {
@@ -94,7 +106,7 @@ func CreateSourceFile(sourceFile SourceFile) (*SourceFile, error) {
 }
 
 func GetSourceFiles(limit, offset string, walletAddress, payloadCid string) ([]*SourceFile, error) {
-	sql := "select s.file_name,s.file_size,s.pin_status,s.create_at,s.payload_cid,df.lock_payment_status as status,df.duration, evpm.locked_fee from source_file s "
+	sql := "select s.id, s.file_name,s.file_size,s.pin_status,s.create_at,s.payload_cid,df.lock_payment_status as status,df.duration, evpm.locked_fee from source_file s "
 	sql = sql + "left join source_file_deal_file_map sfdfm on s.id = sfdfm.source_file_id "
 	sql = sql + "left join deal_file df on sfdfm.deal_file_id = df.id "
 
@@ -104,7 +116,6 @@ func GetSourceFiles(limit, offset string, walletAddress, payloadCid string) ([]*
 		sql = sql + " and s.payload_cid=?"
 		params = append(params, payloadCid)
 	}
-
 
 	sql = sql + "left outer join event_lock_payment evpm on evpm.payload_cid = s.payload_cid "
 	sql = sql + "where wallet_address=?"

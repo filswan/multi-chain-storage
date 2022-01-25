@@ -15,6 +15,7 @@ import (
 
 	"payment-bridge/common/utils"
 
+	"github.com/filswan/go-swan-lib/client/lotus"
 	"github.com/filswan/go-swan-lib/logs"
 
 	libconstants "github.com/filswan/go-swan-lib/constants"
@@ -91,13 +92,30 @@ func SendDeal() error {
 			logs.GetLogger().Error(err)
 		}
 
+		lotusClient, err := lotus.LotusGetClient(config.GetConfig().Lotus.ClientApiUrl, config.GetConfig().Lotus.ClientAccessToken)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			continue
+		}
+
+		currentUtcMilliSec := utils.GetCurrentUtcMilliSecond()
 		for _, deal := range fileDescs[0].Deals {
+			dealInfo, err := lotusClient.LotusClientGetDealInfo(deal.DealCid)
+			if err != nil {
+				logs.GetLogger().Error(err)
+				continue
+			}
+
 			offlineDeal := models.OfflineDeal{
 				DealFileId:   dealFile.ID,
 				DealCid:      deal.DealCid,
 				MinerFid:     deal.MinerFid,
 				StartEpoch:   deal.StartEpoch,
 				SenderWallet: cmdAutoBidDeal.SenderWallet,
+				Status:       dealInfo.Status,
+				DealId:       dealFile.DealId,
+				CreateAt:     currentUtcMilliSec,
+				UpdateAt:     currentUtcMilliSec,
 			}
 
 			err = database.SaveOne(&offlineDeal)

@@ -61,7 +61,7 @@ func GetDeals4SourceFile(c *gin.Context) {
 		return
 	}
 
-	offlineDeals, err := GetOfflineDealsBySourceFileId(sourceFileId)
+	offlineDeals, sourceFile, err := GetOfflineDealsBySourceFileId(sourceFileId)
 	if err != nil {
 		logs.GetLogger().Error(err.Error())
 		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE, err.Error()))
@@ -69,7 +69,8 @@ func GetDeals4SourceFile(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, common.CreateSuccessResponse(gin.H{
-		"deals": offlineDeals,
+		"source_file": sourceFile,
+		"deals":       offlineDeals,
 	}))
 }
 

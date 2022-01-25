@@ -78,7 +78,7 @@ export default {
                 _this.loading = false
                 if (json.status == 'success') {
                     if(!json.data) return false
-                    _this.file_name = json.source_file.file_name
+                    _this.file_name = json.data.source_file.file_name
                     _this.dealsData = json.data.deals
                     _this.dealsData.map(item => {
                         item.update_at = item.update_at

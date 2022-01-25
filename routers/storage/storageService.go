@@ -26,50 +26,14 @@ import (
 
 	libutils "github.com/filswan/go-swan-lib/utils"
 
-	"github.com/filswan/go-swan-lib/client/lotus"
 	"github.com/gin-gonic/gin"
 )
 
-type OfflineDealOut struct {
-	models.OfflineDeal
-	Status string `json:"status"`
-	DealId int64  `json:"deal_id"`
-}
-
-func GetOfflineDealsBySourceFileId(sourceFileId int64) ([]*OfflineDealOut, *models.SourceFile, error) {
+func GetOfflineDealsBySourceFileId(sourceFileId int64) ([]*models.OfflineDeal, *models.SourceFile, error) {
 	offlineDeals, err := models.GetOfflineDealsBySourceFileId(sourceFileId)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, nil, err
-	}
-
-	var offlineDealsOut []*OfflineDealOut
-
-	lotusClient, err := lotus.LotusGetClient(config.GetConfig().Lotus.ClientApiUrl, config.GetConfig().Lotus.ClientAccessToken)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, nil, err
-	}
-
-	for _, offlineDeal := range offlineDeals {
-		offlineDealOut := &OfflineDealOut{}
-		offlineDealOut.Id = offlineDeal.Id
-		offlineDealOut.DealFileId = offlineDeal.DealFileId
-		offlineDealOut.DealCid = offlineDeal.DealCid
-		offlineDealOut.MinerFid = offlineDeal.MinerFid
-		offlineDealOut.StartEpoch = offlineDeal.StartEpoch
-		offlineDealOut.SenderWallet = offlineDeal.SenderWallet
-
-		dealInfo, err := lotusClient.LotusClientGetDealInfo(offlineDeal.DealCid)
-		if err != nil {
-			logs.GetLogger().Error(err)
-			return nil, nil, err
-		}
-
-		offlineDealOut.DealId = dealInfo.DealId
-		offlineDealOut.Status = dealInfo.Status
-
-		offlineDealsOut = append(offlineDealsOut, offlineDealOut)
 	}
 
 	sourceFile, err := models.GetSourceFileById(sourceFileId)
@@ -78,7 +42,7 @@ func GetOfflineDealsBySourceFileId(sourceFileId int64) ([]*OfflineDealOut, *mode
 		return nil, nil, err
 	}
 
-	return offlineDealsOut, sourceFile, nil
+	return offlineDeals, sourceFile, nil
 }
 
 func UpdateSourceFileMaxPrice(id int64, maxPrice decimal.Decimal) error {

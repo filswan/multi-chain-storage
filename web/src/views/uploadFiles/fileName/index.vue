@@ -50,14 +50,13 @@ export default {
                 deal: {},
                 found: {}
             },
-            dealID: localStorage.getItem('files_deal_id'),
-            payloadCID: localStorage.getItem('files_payload_cid')
+            dealID: NaN,
       };
     },
     computed: {},
     watch: {
         $route: function (to, from) {
-            this.file_name = to.params.file_name
+            this.dealID = to.params.id
             // this.getData()
         },
     },
@@ -71,7 +70,7 @@ export default {
         getData() {
             let _this = this
             _this.loading = true
-
+            
             axios.get(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/storage/deal/file/${_this.dealID}`)
             // axios.get(`./static/pay-filename-response.json`)
             .then((response) => {
@@ -105,7 +104,7 @@ export default {
     },
     mounted() {
         let _this = this
-        _this.file_name = _this.$route.params.file_name
+        _this.dealID = _this.$route.params.id
         _this.getData()
         document.getElementById("content-box").scrollTop = 0;
         _this.$store.dispatch("setRouterMenu", 1);

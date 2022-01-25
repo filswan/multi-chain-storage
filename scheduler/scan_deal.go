@@ -28,7 +28,7 @@ func ScanDeal() error {
 		dealInfo, err := lotusClient.LotusClientGetDealInfo(deal.DealCid)
 		if err != nil {
 			logs.GetLogger().Error(err)
-			return err
+			continue
 		}
 
 		if deal.Status != dealInfo.Status || deal.DealId != dealInfo.DealId {

@@ -177,13 +177,21 @@ func doUnlockPaymentOnContract(daoEvent *models.EventDaoSignature, dealId int64)
 				srcFilePayloadCids = append(srcFilePayloadCids, srcFile.PayloadCid)
 			}
 
+			refundStatusAfterUnlock := constants.REFUND_STATUS_AFTER_UNLOCK_REFUNDED
 			tx, err := swanPaymentContractInstance.Refund(callOpts, srcFilePayloadCids)
 			if err != nil {
+				refundStatusAfterUnlock = constants.REFUND_STATUS_AFTER_UNLOCK_REFUNDFAILED
 				logs.GetLogger().Error(err)
-				return err
 			}
 
 			logs.GetLogger().Info(tx)
+
+			currrentTime := utils.GetCurrentUtcMilliSecond()
+			err = models.UpdateDealFile(models.DealFile{ID: offlineDeal.DealFileId},
+				map[string]interface{}{"refund_status_after_unlock": refundStatusAfterUnlock, "update_at": currrentTime})
+			if err != nil {
+				logs.GetLogger().Error(err)
+			}
 		}
 	}
 

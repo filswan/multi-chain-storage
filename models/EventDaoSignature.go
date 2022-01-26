@@ -45,9 +45,9 @@ func FindDaoEventLog(whereCondition interface{}, orderCondition, limit, offset s
 }
 
 func GetDeal2BeUnlocked(threshHold uint8) ([]*DealUnlockable, error) {
-	sql := " SELECT payload_cid,deal_id,count(*) as sign_count FROM event_dao_signature " +
+	sql := " SELECT deal_id,count(*) as sign_count FROM event_dao_signature " +
 		" WHERE signature_unlock_status = '0' and deal_id > 0 " +
-		" GROUP BY payload_cid,deal_id HAVING (sign_count>=?) "
+		" GROUP BY deal_id HAVING (sign_count>=?) "
 
 	var models []*DealUnlockable
 	err := database.GetDB().Raw(sql, threshHold).Scan(&models).Limit(constants.DEFAULT_SELECT_LIMIT).Offset(0).Error

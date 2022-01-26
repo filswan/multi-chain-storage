@@ -58,20 +58,16 @@ func UnlockPayment() error {
 		return err
 	}
 	for _, deal := range deals {
-		daoEventLogList, err := models.FindDaoEventLog(&models.EventDaoSignature{PayloadCid: deal.PayloadCid, DealId: deal.DealId, SignatureUnlockStatus: constants.SIGNATURE_DEFAULT_VALUE}, "id desc", "10", "0")
+		daoEventLogList, err := models.FindDaoEventLog(&models.EventDaoSignature{DealId: deal.DealId, SignatureUnlockStatus: constants.SIGNATURE_DEFAULT_VALUE}, "id desc", "10", "0")
 		if err != nil {
 			logs.GetLogger().Error(err)
 			continue
 		}
 
 		if len(daoEventLogList) > 0 {
-			parm := goBind.IPaymentMinimalunlockPaymentParam{}
-			parm.DealId = strconv.FormatInt(deal.DealId, 10)
-			parm.Amount = big.NewInt(0)
-			parm.Recipient = common.HexToAddress(daoEventLogList[0].Recipient)
-			parm.OrderId = ""
+			dealId := strconv.FormatInt(deal.DealId, 10)
 
-			err = doUnlockPaymentOnContract(daoEventLogList[0], parm)
+			err = doUnlockPaymentOnContract(daoEventLogList[0], dealId)
 			if err != nil {
 				logs.GetLogger().Error(err)
 				continue
@@ -81,7 +77,7 @@ func UnlockPayment() error {
 	return err
 }
 
-func doUnlockPaymentOnContract(daoEvent *models.EventDaoSignature, unlockParams goBind.IPaymentMinimalunlockPaymentParam) error {
+func doUnlockPaymentOnContract(daoEvent *models.EventDaoSignature, dealId string) error {
 	pk := os.Getenv("privateKeyOnPolygon")
 	adminAddress := common.HexToAddress(config.GetConfig().AdminWalletOnPolygon) //pay for gas
 	client := polygon.WebConn.ConnWeb
@@ -121,7 +117,7 @@ func doUnlockPaymentOnContract(daoEvent *models.EventDaoSignature, unlockParams 
 		return err
 	}
 
-	tx, err := swanPaymentContractInstance.UnlockCarPayment(callOpts, unlockParams.DealId, swanPaymentContractAddress)
+	tx, err := swanPaymentContractInstance.UnlockCarPayment(callOpts, dealId, swanPaymentContractAddress)
 	//tx, err := swanPaymentContractInstance.UnlockTokenPayment(callOpts, unlockParams)
 	unlockTxStatus := ""
 	if err != nil {

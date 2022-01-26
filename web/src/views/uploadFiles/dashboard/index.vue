@@ -536,9 +536,7 @@ export default {
       window.open(`https://calibration.filscout.com/en/miner/${id}`)
     },
     toDetail(row){
-      this.$router.push({name: 'my_files_filename', params: {file_name: row.file_name}})
-      localStorage.setItem('files_deal_id', row.deal_id)
-      localStorage.setItem('files_payload_cid', row.payload_cid)
+      this.$router.push({name: 'my_files_filename', params: {id: row.id}})
       // this.$router.push({name: 'my_files_detail', params: {id: id, cid: cid}})
     },
     clickRowHandle(row, column, event) {

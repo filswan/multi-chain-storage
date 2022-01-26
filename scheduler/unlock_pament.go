@@ -66,7 +66,6 @@ func UnlockPayment() error {
 
 		if len(daoEventLogList) > 0 {
 			parm := goBind.IPaymentMinimalunlockPaymentParam{}
-			parm.Id = deal.PayloadCid
 			parm.DealId = strconv.FormatInt(deal.DealId, 10)
 			parm.Amount = big.NewInt(0)
 			parm.Recipient = common.HexToAddress(daoEventLogList[0].Recipient)
@@ -116,13 +115,14 @@ func doUnlockPaymentOnContract(daoEvent *models.EventDaoSignature, unlockParams 
 	callOpts.Context = context.Background()
 
 	swanPaymentContractAddress := common.HexToAddress(polygon.GetConfig().PolygonMainnetNode.PaymentContractAddress) //payment gateway on polygon
-	swanPaymentContractInstance, err := goBind.NewSwanPayment(swanPaymentContractAddress, client)
+	swanPaymentContractInstance, err := goBind.NewSwanPaymentTransactor(swanPaymentContractAddress, client)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
 	}
 
-	tx, err := swanPaymentContractInstance.UnlockTokenPayment(callOpts, unlockParams)
+	tx, err := swanPaymentContractInstance.UnlockCarPayment(callOpts, unlockParams.DealId, swanPaymentContractAddress)
+	//tx, err := swanPaymentContractInstance.UnlockTokenPayment(callOpts, unlockParams)
 	unlockTxStatus := ""
 	if err != nil {
 		logs.GetLogger().Error(err)

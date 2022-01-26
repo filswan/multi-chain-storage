@@ -154,13 +154,29 @@ func GetDealListFromFilink(c *gin.Context) {
 	}
 
 	URL := c.Request.URL.Query()
-	var payloadCid = URL.Get("payload_cid")
-	if strings.Trim(payloadCid, " ") == "" {
+	var srcFilePayloadCid = URL.Get("payload_cid")
+	if strings.Trim(srcFilePayloadCid, " ") == "" {
 		errMsg := "payload_cid can not be null"
 		logs.GetLogger().Error(errMsg)
 		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAM_TYPE_ERROR_CODE, errMsg))
 		return
 	}
+
+	dealFiles, err := models.GetDealFileBySourceFilePayloadCid(srcFilePayloadCid)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE))
+		return
+	}
+	if len(dealFiles) < 1 {
+		err := fmt.Errorf("no deal got for source file:", srcFilePayloadCid)
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE))
+		return
+	}
+
+	payloadCid := dealFiles[0].PayloadCid
+
 	url := config.GetConfig().FilinkUrl
 	parameter := new(filinkParams)
 	//todo
@@ -200,7 +216,7 @@ func GetDealListFromFilink(c *gin.Context) {
 			signedDaoCount++
 		}
 	}
-	foundInfo, err := GetLockFoundInfoByPayloadCid(payloadCid)
+	foundInfo, err := GetLockFoundInfoByPayloadCid(srcFilePayloadCid)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE, errorinfo.GET_RECORD_lIST_ERROR_CODE+": get lock found info from db occurred error"))

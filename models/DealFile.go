@@ -75,3 +75,18 @@ func DeleteDealFile(whereCondition interface{}) error {
 
 	return err
 }
+
+func GetDealFileBySourceFilePayloadCid(srcFilePayloadCid string) ([]*DealFile, error) {
+	sql := "select a.* from deal_file a, source_file_deal_file_map b, source_file c where c.payload_cid=? and c.id=b.source_file_id and b.deal_file_id=a.id"
+
+	var dealFiles []*DealFile
+
+	err := database.GetDB().Raw(sql, srcFilePayloadCid).Scan(&dealFiles).Error
+
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	return dealFiles, nil
+}

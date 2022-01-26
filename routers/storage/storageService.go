@@ -253,15 +253,35 @@ func GetLockFoundInfoByPayloadCid(payloadCid string) (*LockFound, error) {
 }
 
 func GetShoulBeSignDealListFromDB() ([]*DealForDaoSignResult, error) {
-	finalSql := "select deal_id,deal_cid,piece_cid,payload_cid,cost,verified,miner_fid,duration,client_wallet_address,create_at from deal_file where deal_id not in  ( " +
-		"     select  deal_id from dao_fetched_deal ) " +
-		" and deal_id > 0 order by create_at desc"
+	finalSql := "select a.id as deal_file_id, b.deal_id,a.deal_cid,a.piece_cid,a.payload_cid,a.cost,a.verified,a.miner_fid,duration,a.client_wallet_address,a.create_at from deal_file a left join offline_deal b on a.id = b.deal_file_id" +
+		" where a.deal_id not in  ( " +
+		" select  deal_id from dao_fetched_deal ) " +
+		" and a.deal_id > 0 order by a.create_at desc"
 	var dealForDaoSignResultList []*DealForDaoSignResult
 	err := database.GetDB().Raw(finalSql).Scan(&dealForDaoSignResultList).Limit(0).Offset(constants.DEFAULT_SELECT_LIMIT).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
 
+	}
+	sourceSQL := "select a.id, a.payload_cid, b.deal_file_id from source_file a, source_file_deal_file_map b where a.id = b.source_file_id"
+	var sourceFileExt []*models.SourceFileExt
+	err = database.GetDB().Raw(sourceSQL).Scan(&sourceFileExt).Limit(0).Offset(constants.DEFAULT_SELECT_LIMIT).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+
+	}
+	for _, deal := range dealForDaoSignResultList {
+		var cids []string
+		for _, file := range sourceFileExt {
+			if deal.DealFileId == file.DealFileId && file.PayloadCid != "" {
+				cids = append(cids, file.PayloadCid)
+			}
+		}
+		if len(cids) > 0 {
+			deal.SourceFilePayloadCids = cids
+		}
 	}
 	return dealForDaoSignResultList, nil
 }

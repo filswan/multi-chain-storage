@@ -26,6 +26,24 @@ type SourceFile struct {
 	MintAddress   string `json:"mint_address"`
 }
 
+type SourceFileExt struct {
+	ID            int64  `json:"id"`
+	FileName      string `json:"file_name"`
+	ResourceUri   string `json:"resource_uri"`
+	Status        string `json:"status"`
+	FileSize      int64  `json:"file_size"`
+	Dataset       string `json:"dataset"`
+	CreateAt      int64  `json:"create_at"`
+	IpfsUrl       string `json:"ipfs_url"`
+	PinStatus     string `json:"pin_status"`
+	WalletAddress string `json:"wallet_address"`
+	PayloadCid    string `json:"payload_cid"`
+	NftTxHash     string `json:"nft_tx_hash"`
+	TokenId       string `json:"token_id"`
+	MintAddress   string `json:"mint_address"`
+	DealFileId    int64  `json:"deal_file_id"`
+}
+
 // FindSourceFileList (&SourceFile{Id: "0xadeaCC802D0f2DFd31bE4Fa7434F15782Fd720ac"},"id desc","10","0")
 func FindSourceFileList(whereCondition interface{}, orderCondition, limit, offset string) ([]*SourceFile, error) {
 	db := database.GetDB()

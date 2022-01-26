@@ -81,22 +81,24 @@ type DaoSignResult struct {
 }
 
 type LockFound struct {
-	PayloadCid          string `json:"payload_cid"`
-	CreateAt            string `json:"create_at"`
-	LockedFee           string `json:"locked_fee"`
+	PayloadCid string `json:"payload_cid"`
+	CreateAt   string `json:"create_at"`
+	LockedFee  string `json:"locked_fee"`
 }
 
 type DealForDaoSignResult struct {
-	PayloadCid          string `json:"payload_cid"`
-	DealCid             string `json:"deal_cid"`
-	DealId              int64  `json:"deal_id"`
-	PieceCid            string `json:"piece_cid"`
-	MinerFid            string `json:"miner_fid"`
-	Duration            int    `json:"duration"`
-	Cost                string `json:"cost"`
-	CreateAt            string `json:"create_at"`
-	Verified            bool   `json:"verified"`
-	ClientWalletAddress string `json:"client_wallet_address"`
+	DealFileId            int64    `json:"deal_file_id"`
+	PayloadCid            string   `json:"payload_cid"`
+	DealCid               string   `json:"deal_cid"`
+	DealId                int64    `json:"deal_id"`
+	PieceCid              string   `json:"piece_cid"`
+	MinerFid              string   `json:"miner_fid"`
+	Duration              int      `json:"duration"`
+	Cost                  string   `json:"cost"`
+	CreateAt              string   `json:"create_at"`
+	Verified              bool     `json:"verified"`
+	ClientWalletAddress   string   `json:"client_wallet_address"`
+	SourceFilePayloadCids []string `json:"payload_cids_source"`
 }
 
 type DealIdList struct {

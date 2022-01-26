@@ -17,9 +17,8 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
     mapping(string => mapping(address => TxOracleInfo)) txInfoMap;
     mapping(bytes32 => uint8) txVoteMap;
 
-    mapping(string => string[]) cidListMap;
-
     address private _filinkAddress;
+    mapping(string => string[]) cidListMap;
 
     struct TxOracleInfo {
         uint256 paid;
@@ -92,19 +91,13 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
         txInfoMap[key][msg.sender].flag = true;
 
         bytes32 voteKey = keccak256(
-            abi.encodePacked(dealId, recipient)
+            abi.encodeWithSignature("f(string,address,string[])",dealId, recipient, cidList)
         );
 
         txVoteMap[voteKey] = txVoteMap[voteKey] + 1;
 
-        bytes32 dealCidKey = keccak256(
-            abi.encodePacked(dealId, cidList[0])
-        );
-
-        txVoteMap[dealCidKey] = txVoteMap[dealCidKey] + 1;
-        // todo: if vote is greater than threshold, call chainlink oracle to save price
-
-        if(txVoteMap[voteKey] == _threshold && txVoteMap[dealCidKey] == _threshold && _filinkAddress != address(0)){
+        if(txVoteMap[voteKey] == _threshold && _filinkAddress != address(0)){
+            cidListMap[key] = cidList;
             FilinkConsumer(_filinkAddress).requestDealInfo(dealId);
         }
 

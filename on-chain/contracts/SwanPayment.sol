@@ -25,7 +25,13 @@ contract SwanPayment is IPaymentMinimal, Initializable {
     uint256 private lockTime;
     mapping(string => TxInfo) private txMap;
 
-    function initialize(address owner, address ERC20_TOKEN, address oracle, address priceFeed, address chainlinkOracle) public initializer {
+    function initialize(
+        address owner,
+        address ERC20_TOKEN,
+        address oracle,
+        address priceFeed,
+        address chainlinkOracle
+    ) public initializer {
         _owner = owner;
         _ERC20_TOKEN = ERC20_TOKEN;
         _oracle = oracle;
@@ -47,7 +53,11 @@ contract SwanPayment is IPaymentMinimal, Initializable {
         return true;
     }
 
-    function setChainlinkOracle(address _chainlinkOracle) public onlyOwner returns (bool) {
+    function setChainlinkOracle(address _chainlinkOracle)
+        public
+        onlyOwner
+        returns (bool)
+    {
         _chainlinkOracle = _chainlinkOracle;
         return true;
     }
@@ -86,7 +96,12 @@ contract SwanPayment is IPaymentMinimal, Initializable {
         address owner // who lock the token
     );
 
-    event ExpirePayment(string id, address token, uint256 amount, address owner);
+    event ExpirePayment(
+        string id,
+        address token,
+        uint256 amount,
+        address owner
+    );
 
     /// @notice Deposits the amount of token for specific transaction
     /// @param param The transaction information for which to deposit balance
@@ -105,8 +120,16 @@ contract SwanPayment is IPaymentMinimal, Initializable {
             "payment should greater than min payment"
         );
 
-        require(IERC20(_ERC20_TOKEN).allowance(msg.sender, address(this)) >= param.amount, "please approve spending token");
-        IERC20(_ERC20_TOKEN).transferFrom(msg.sender, address(this), param.amount);
+        require(
+            IERC20(_ERC20_TOKEN).allowance(msg.sender, address(this)) >=
+                param.amount,
+            "please approve spending token"
+        );
+        IERC20(_ERC20_TOKEN).transferFrom(
+            msg.sender,
+            address(this),
+            param.amount
+        );
 
         TxInfo storage t = txMap[param.id];
         t.owner = msg.sender;
@@ -130,16 +153,16 @@ contract SwanPayment is IPaymentMinimal, Initializable {
         return true;
     }
 
-
     /// @notice real fee is greater than tx.fee, take tx.fee
     /// real fee is less than tx.minPayment, take minPayment, return tx.fee - minPayment to tx.owner
     /// otherwise, take real fee, return tx.fee - real fee to tx.owner
     /// @param param data
     /// @return Returns true for a successful payment, false for an unsuccessful payment
-    function unlockTokenPayment(
-        unlockPaymentParam calldata param
-    ) public override returns (bool){
-
+    function unlockTokenPayment(unlockPaymentParam calldata param)
+        public
+        override
+        returns (bool)
+    {
         TxInfo storage t = txMap[param.id];
         require(t._isExisted, "Transaction does not exist");
         uint256 lockedFee = t.lockedFee;
@@ -155,7 +178,7 @@ contract SwanPayment is IPaymentMinimal, Initializable {
 
             IERC20(_ERC20_TOKEN).transfer(t.owner, lockedFee);
             emit ExpirePayment(param.id, _ERC20_TOKEN, lockedFee, t.owner);
-        } 
+        }
         // else {
         //     require(
         //         FilswanOracle(_oracle).isPaymentAvailable(
@@ -174,13 +197,13 @@ contract SwanPayment is IPaymentMinimal, Initializable {
         //             tokenAmount = t.minPayment;
         //         }
         //     }
-            
+
         //     t._isExisted = false;
 
         //     if (t.lockedFee > tokenAmount) {
         //         t.lockedFee = 0; // prevent re-entrying
         //         IERC20(_ERC20_TOKEN).transfer(t.owner, lockedFee - tokenAmount);
-                
+
         //     } else {
         //         tokenAmount = t.lockedFee;
         //         t.lockedFee = 0; // prevent re-entrying
@@ -193,39 +216,55 @@ contract SwanPayment is IPaymentMinimal, Initializable {
         return true;
     }
 
+    function unlockCarPayment(string calldata dealId, address recipient)
+        public
+        override
+        returns (bool)
+    {
+        require(
+            FilswanOracle(_oracle).isPaymentAvailable(dealId, recipient),
+            "illegal unlock action"
+        );
 
-    function unlockCarPayment(
-        string calldata dealId, address recipient
-    ) public override returns (bool){
+        uint256 tokenAmount = 0;
+        // get spend token amount
+        uint256 serviceCost = FilinkConsumer(_chainlinkOracle).getPrice(dealId);
 
-        // TxInfo storage t = txMap[param.id];
-        // require(t._isExisted, "Transaction does not exist");
-        // uint256 lockedFee = t.lockedFee;
+        // get cid list
+        string[] memory cidList = FilswanOracle(_oracle).getCidList(dealId);
 
-            require(
-                FilswanOracle(_oracle).isPaymentAvailable(
-                    dealId,
-                    recipient
-                ),
-                "illegal unlock action"
+        if (serviceCost > 0) {
+            tokenAmount = IPriceFeed(_priceFeed).consult(
+                _ERC20_TOKEN,
+                serviceCost
             );
-
-            uint256 tokenAmount = 0;
-            // get spend token amount
-            uint256 serviceCost = FilinkConsumer(_chainlinkOracle).getPrice(dealId);
-
-            // get cid list
-            string[] memory cidList = FilswanOracle(_oracle).getCidList(dealId);
-
-            if(serviceCost > 0){
-                tokenAmount = IPriceFeed(_priceFeed).consult(_ERC20_TOKEN, serviceCost);
-                // if (tokenAmount < t.minPayment) {
-                //     tokenAmount = t.minPayment;
-                // }
+            uint256 size = 0;
+            for (uint8 i = 0; i < cidList.length; i++) {
+                TxInfo storage t = txMap[cidList[i]];
+                if (t._isExisted) {
+                    continue;
+                } else {
+                    size += t.size;
+                }
             }
+
+            require(size > 0, "file size should be greater than 0");
+
+            uint256 unitPrice = tokenAmount / size;
+            for (uint8 i = 0; i < cidList.length; i++) {
+                TxInfo storage t = txMap[cidList[i]];
+                t._isExisted = false;
+                uint256 cost = unitPrice * t.size;
+                uint256 lockedFee = t.lockedFee;
+                t.lockedFee = 0;
+                if (t.lockedFee > cost) {
+                    IERC20(_ERC20_TOKEN).transfer(t.owner, lockedFee - cost);
+                }
+            }
+
+            IERC20(_ERC20_TOKEN).transfer(recipient, tokenAmount);
+        }
 
         return true;
     }
-
-    
 }

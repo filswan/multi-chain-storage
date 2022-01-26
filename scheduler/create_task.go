@@ -70,7 +70,22 @@ func CreateTask() error {
 	currentUtcMilliSec := utils.GetCurrentUtcMilliSecond()
 	createdTimeMin := currentUtcMilliSec
 	var maxPrice *decimal.Decimal
+
+	var srcFiles2Merged []*models.SourceFile
 	for _, srcFile := range srcFiles {
+		srcFilepathTemp := filepath.Join(carSrcDir, srcFile.FileName)
+
+		bytesCopied, err := libutils.CopyFile(srcFile.ResourceUri, srcFilepathTemp)
+		if err != nil {
+			os.Remove(srcFilepathTemp)
+			logs.GetLogger().Error(err)
+			continue
+		}
+
+		srcFiles2Merged = append(srcFiles2Merged, srcFile)
+
+		totalSize = totalSize + bytesCopied
+
 		if srcFile.CreateAt < createdTimeMin {
 			createdTimeMin = srcFile.CreateAt
 		}
@@ -87,17 +102,12 @@ func CreateTask() error {
 		} else if maxPrice.Cmp(config.GetConfig().SwanTask.MaxPrice) < 0 {
 			*maxPrice = config.GetConfig().SwanTask.MaxPrice
 		}
+	}
 
-		srcFilepathTemp := filepath.Join(carSrcDir, srcFile.FileName)
-
-		bytesCopied, err := libutils.CopyFile(srcFile.ResourceUri, srcFilepathTemp)
-		if err != nil {
-			os.RemoveAll(carSrcDir)
-			logs.GetLogger().Error(err)
-			return err
-		}
-
-		totalSize = totalSize + bytesCopied
+	if totalSize == 0 {
+		os.RemoveAll(carSrcDir)
+		logs.GetLogger().Info("no source files to be merged to car file")
+		return nil
 	}
 
 	passedMilliSec := currentUtcMilliSec - createdTimeMin
@@ -130,7 +140,7 @@ func CreateTask() error {
 		return err
 	}
 
-	err = saveCarInfo2DB(fileDesc, srcFiles, *maxPrice)
+	err = saveCarInfo2DB(fileDesc, srcFiles2Merged, *maxPrice)
 	if err != nil {
 		os.RemoveAll(carSrcDir)
 		os.RemoveAll(carDestDir)
@@ -263,21 +273,24 @@ func createTask4SrcFiles(srcDir, carDir string, maxPrice decimal.Decimal, create
 
 func saveCarInfo2DB(fileDesc *libmodel.FileDesc, srcFiles []*models.SourceFile, maxPrice decimal.Decimal) error {
 	db := database.GetDBTransaction()
-	dealFile := new(models.DealFile)
-	dealFile.CarFileName = fileDesc.CarFileName
-	dealFile.CarFilePath = fileDesc.CarFilePath
-	dealFile.CarFileSize = fileDesc.CarFileSize
-	dealFile.CarMd5 = fileDesc.CarFileMd5
-	dealFile.PayloadCid = fileDesc.PayloadCid
-	dealFile.PieceCid = fileDesc.PieceCid
-	dealFile.CreateAt = utils.GetCurrentUtcMilliSecond()
-	dealFile.UpdateAt = dealFile.CreateAt
-	dealFile.Duration = DURATION_DAYS
-	dealFile.LockPaymentStatus = constants.LOCK_PAYMENT_STATUS_PROCESSING
-	dealFile.IsDeleted = utils.GetBoolPointer(false)
-	dealFile.MaxPrice = maxPrice
-	dealFile.TaskUuid = fileDesc.Uuid
-	dealFile.SendDealStatus = constants.DEAL_FILE_STATUS_CREATED
+	currentUtcMilliSecond := utils.GetCurrentUtcMilliSecond()
+	dealFile := models.DealFile{
+		CarFileName:       fileDesc.CarFileName,
+		CarFilePath:       fileDesc.CarFilePath,
+		CarFileSize:       fileDesc.CarFileSize,
+		CarMd5:            fileDesc.CarFileMd5,
+		PayloadCid:        fileDesc.PayloadCid,
+		PieceCid:          fileDesc.PieceCid,
+		CreateAt:          currentUtcMilliSecond,
+		UpdateAt:          currentUtcMilliSecond,
+		Duration:          DURATION_DAYS,
+		LockPaymentStatus: constants.LOCK_PAYMENT_STATUS_PROCESSING,
+		IsDeleted:         utils.GetBoolPointer(false),
+		MaxPrice:          maxPrice,
+		TaskUuid:          fileDesc.Uuid,
+		SendDealStatus:    constants.DEAL_FILE_STATUS_CREATED,
+	}
+
 	err := database.SaveOneInTransaction(db, dealFile)
 	if err != nil {
 		db.Rollback()
@@ -294,12 +307,13 @@ func saveCarInfo2DB(fileDesc *libmodel.FileDesc, srcFiles []*models.SourceFile, 
 		}
 
 		for _, sourceFile := range sourceFiles {
-			filepMap := new(models.SourceFileDealFileMap)
-			filepMap.SourceFileId = sourceFile.ID
-			filepMap.DealFileId = dealFile.ID
-			filepMap.FileIndex = 0
-			filepMap.CreateAt = dealFile.CreateAt
-			filepMap.UpdateAt = dealFile.CreateAt
+			filepMap := models.SourceFileDealFileMap{
+				SourceFileId: sourceFile.ID,
+				DealFileId:   dealFile.ID,
+				FileIndex:    0,
+				CreateAt:     currentUtcMilliSecond,
+				UpdateAt:     currentUtcMilliSecond,
+			}
 			err = database.SaveOneInTransaction(db, filepMap)
 			if err != nil {
 				db.Rollback()

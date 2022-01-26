@@ -13,6 +13,8 @@ import (
 	"payment-bridge/on-chain/goBind"
 	"strconv"
 	"strings"
+	"sync"
+	"time"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -20,7 +22,28 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/filswan/go-swan-lib/logs"
+	"github.com/robfig/cron"
 )
+
+func CreateUnlockScheduler() {
+	Mutex := &sync.Mutex{}
+	c := cron.New()
+	err := c.AddFunc(config.GetConfig().ScheduleRule.UnlockPaymentRule, func() {
+		logs.GetLogger().Info("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ create task  scheduler is running at " + time.Now().Format("2006-01-02 15:04:05"))
+		Mutex.Lock()
+		err := UnlockPayment()
+		Mutex.Unlock()
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return
+		}
+	})
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return
+	}
+	c.Start()
+}
 
 func UnlockPayment() error {
 	threshold, err := GetThreshold()
@@ -162,11 +185,11 @@ func saveUnlockEventLogToDB(logsInChain []*types.Log, recipient string, unlockSt
 				}
 				event.PayloadCid = dataList[0].(string)
 				event.TxHash = vLog.TxHash.Hex()
-				neoworkId, err := models.FindNetworkIdByUUID(constants.NETWORK_TYPE_POLYGON_UUID)
+				networkId, err := models.FindNetworkIdByUUID(constants.NETWORK_TYPE_POLYGON_UUID)
 				if err != nil {
 					logs.GetLogger().Error(err)
 				} else {
-					event.NetworkId = neoworkId
+					event.NetworkId = networkId
 				}
 				coinId, err := models.FindCoinIdByUUID(constants.COIN_TYPE_USDC_ON_POLYGON_UUID)
 				if err != nil {

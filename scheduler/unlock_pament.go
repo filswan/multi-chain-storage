@@ -118,7 +118,6 @@ func doUnlockPaymentOnContract(daoEvent *models.EventDaoSignature, dealId string
 	}
 
 	tx, err := swanPaymentContractInstance.UnlockCarPayment(callOpts, dealId, swanPaymentContractAddress)
-	//tx, err := swanPaymentContractInstance.UnlockTokenPayment(callOpts, unlockParams)
 	unlockTxStatus := ""
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -146,7 +145,7 @@ func doUnlockPaymentOnContract(daoEvent *models.EventDaoSignature, dealId string
 		}
 	}
 	//update unlock status in event_dao_signature
-	err = models.UpdateDaoEventLog(&models.EventDaoSignature{PayloadCid: daoEvent.PayloadCid, DealId: daoEvent.DealId},
+	err = models.UpdateDaoEventLog(&models.EventDaoSignature{DealId: daoEvent.DealId},
 		map[string]interface{}{"tx_hash_unlock": tx.Hash().Hex(), "signature_unlock_status": unlockTxStatus})
 	if err != nil {
 		logs.GetLogger().Error(err)

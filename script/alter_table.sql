@@ -25,6 +25,7 @@ alter table deal_file add max_price   double;
 alter table event_lock_payment modify create_at bigint;
 
 alter table event_unlock_payment modify create_at bigint;
+alter table event_unlock_payment add deal_id bigint;
 
 
 alter table source_file_deal_file_map modify create_at bigint;

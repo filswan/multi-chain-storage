@@ -158,3 +158,17 @@ func GetSourceFilesCount(walletAddress string) (int64, error) {
 	}
 	return count, nil
 }
+
+func GetSourceFilesByDealFileId(dealFileId int64) ([]*SourceFile, error) {
+	var sourceFiles []*SourceFile
+
+	sql := "select a.* from source_file a, source_file_deal_file_map b where a.id=b.source_file_id and b.deal_file_id=?"
+
+	err := database.GetDB().Raw(sql, dealFileId).Scan(&sourceFiles).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	return sourceFiles, nil
+}

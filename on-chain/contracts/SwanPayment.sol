@@ -267,4 +267,14 @@ contract SwanPayment is IPaymentMinimal, Initializable {
 
         return true;
     }
+
+    function refund(string[] memory cidList) public {
+        for (uint8 i = 0; i < cidList.length; i++) {
+            TxInfo storage t = txMap[cidList[i]];
+            if (t._isExisted) {
+                t._isExisted = false;
+                IERC20(_ERC20_TOKEN).transfer(t.owner, t.lockedFee);
+            }
+        }
+    }
 }

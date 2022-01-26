@@ -288,6 +288,19 @@
   {
     "inputs": [
       {
+        "internalType": "string[]",
+        "name": "cidList",
+        "type": "string[]"
+      }
+    ],
+    "name": "refund",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "address",
         "name": "_chainlinkOracle",
         "type": "address"

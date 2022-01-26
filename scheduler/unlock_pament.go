@@ -160,7 +160,7 @@ func doUnlockPaymentOnContract(daoEvent *models.EventDaoSignature, unlockParams 
 }
 
 func saveUnlockEventLogToDB(logsInChain []*types.Log, recipient string, unlockStatus string) error {
-	paymentAbiString := goBind.SwanPaymentMetaData.ABI
+	paymentAbiString := goBind.SwanPaymentABI
 
 	contractUnlockFunctionSignature := polygon.GetConfig().PolygonMainnetNode.ContractUnlockFunctionSignature
 	contractAbi, err := abi.JSON(strings.NewReader(paymentAbiString))

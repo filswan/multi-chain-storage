@@ -83,8 +83,7 @@ contract SwanPayment is IPaymentMinimal, Initializable {
         uint256 lockedFee,
         uint256 minPayment,
         address recipient,
-        uint256 deadline,
-        uint256 size
+        uint256 deadline
     );
 
     event UnlockPayment(
@@ -147,8 +146,7 @@ contract SwanPayment is IPaymentMinimal, Initializable {
             t.lockedFee,
             param.minPayment,
             param.recipient,
-            t.deadline,
-            t.size
+            t.deadline
         );
         return true;
     }
@@ -179,39 +177,40 @@ contract SwanPayment is IPaymentMinimal, Initializable {
             IERC20(_ERC20_TOKEN).transfer(t.owner, lockedFee);
             emit ExpirePayment(param.id, _ERC20_TOKEN, lockedFee, t.owner);
         }
-        // else {
-        //     require(
-        //         FilswanOracle(_oracle).isPaymentAvailable(
-        //             param.dealId,
-        //             param.recipient
-        //         ),
-        //         "illegal unlock action"
-        //     );
+        else {
+            require(
+                FilswanOracle(_oracle).isPaymentAvailable(
+                    param.id,
+                    param.dealId,
+                    param.recipient
+                ),
+                "illegal unlock action"
+            );
 
-        //     uint256 tokenAmount = t.minPayment;
-        //     // get spend token amount
-        //     uint256 serviceCost = FilinkConsumer(_chainlinkOracle).getPrice(param.dealId);
-        //     if(serviceCost > 0){
-        //         tokenAmount = IPriceFeed(_priceFeed).consult(_ERC20_TOKEN, serviceCost);
-        //         if (tokenAmount < t.minPayment) {
-        //             tokenAmount = t.minPayment;
-        //         }
-        //     }
+            uint256 tokenAmount = t.minPayment;
+            // get spend token amount
+            uint256 serviceCost = FilinkConsumer(_chainlinkOracle).getPrice(param.dealId);
+            if(serviceCost > 0){
+                tokenAmount = IPriceFeed(_priceFeed).consult(_ERC20_TOKEN, serviceCost);
+                if (tokenAmount < t.minPayment) {
+                    tokenAmount = t.minPayment;
+                }
+            }
 
-        //     t._isExisted = false;
+            t._isExisted = false;
 
-        //     if (t.lockedFee > tokenAmount) {
-        //         t.lockedFee = 0; // prevent re-entrying
-        //         IERC20(_ERC20_TOKEN).transfer(t.owner, lockedFee - tokenAmount);
+            if (t.lockedFee > tokenAmount) {
+                t.lockedFee = 0; // prevent re-entrying
+                IERC20(_ERC20_TOKEN).transfer(t.owner, lockedFee - tokenAmount);
 
-        //     } else {
-        //         tokenAmount = t.lockedFee;
-        //         t.lockedFee = 0; // prevent re-entrying
-        //     }
-        //     IERC20(_ERC20_TOKEN).transfer(param.recipient, tokenAmount);
+            } else {
+                tokenAmount = t.lockedFee;
+                t.lockedFee = 0; // prevent re-entrying
+            }
+            IERC20(_ERC20_TOKEN).transfer(param.recipient, tokenAmount);
 
-        //     emit UnlockPayment(param.id, _ERC20_TOKEN, tokenAmount, lockedFee - tokenAmount, param.recipient, t.owner);
-        // }
+            emit UnlockPayment(param.id, _ERC20_TOKEN, tokenAmount, lockedFee - tokenAmount, param.recipient, t.owner);
+        }
 
         return true;
     }
@@ -222,7 +221,7 @@ contract SwanPayment is IPaymentMinimal, Initializable {
         returns (bool)
     {
         require(
-            FilswanOracle(_oracle).isPaymentAvailable(dealId, recipient),
+            FilswanOracle(_oracle).isCarPaymentAvailable(dealId, recipient),
             "illegal unlock action"
         );
 
@@ -253,12 +252,11 @@ contract SwanPayment is IPaymentMinimal, Initializable {
             uint256 unitPrice = tokenAmount / size;
             for (uint8 i = 0; i < cidList.length; i++) {
                 TxInfo storage t = txMap[cidList[i]];
-                t._isExisted = false;
                 uint256 cost = unitPrice * t.size;
-                uint256 lockedFee = t.lockedFee;
-                t.lockedFee = 0;
-                if (t.lockedFee > cost) {
-                    IERC20(_ERC20_TOKEN).transfer(t.owner, lockedFee - cost);
+
+                t.lockedFee = t.lockedFee - cost;
+                if(t.lockedFee < 0){
+                    t.lockedFee = 0;
                 }
             }
 
@@ -273,7 +271,9 @@ contract SwanPayment is IPaymentMinimal, Initializable {
             TxInfo storage t = txMap[cidList[i]];
             if (t._isExisted) {
                 t._isExisted = false;
-                IERC20(_ERC20_TOKEN).transfer(t.owner, t.lockedFee);
+                if(t.lockedFee > 0){
+                    IERC20(_ERC20_TOKEN).transfer(t.owner, t.lockedFee);
+                }
             }
         }
     }

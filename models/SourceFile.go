@@ -27,21 +27,10 @@ type SourceFile struct {
 }
 
 type SourceFileExt struct {
-	ID            int64  `json:"id"`
-	FileName      string `json:"file_name"`
-	ResourceUri   string `json:"resource_uri"`
-	Status        string `json:"status"`
-	FileSize      int64  `json:"file_size"`
-	Dataset       string `json:"dataset"`
-	CreateAt      int64  `json:"create_at"`
-	IpfsUrl       string `json:"ipfs_url"`
-	PinStatus     string `json:"pin_status"`
-	WalletAddress string `json:"wallet_address"`
-	PayloadCid    string `json:"payload_cid"`
-	NftTxHash     string `json:"nft_tx_hash"`
-	TokenId       string `json:"token_id"`
-	MintAddress   string `json:"mint_address"`
-	DealFileId    int64  `json:"deal_file_id"`
+	SourceFile
+	DealFileId int64  `json:"deal_file_id"`
+	Duration   int    `json:"duration"`
+	LockedFee  string `json:"locked_fee"`
 }
 
 // FindSourceFileList (&SourceFile{Id: "0xadeaCC802D0f2DFd31bE4Fa7434F15782Fd720ac"},"id desc","10","0")
@@ -123,8 +112,8 @@ func CreateSourceFile(sourceFile SourceFile) (*SourceFile, error) {
 	return sourceFileCreated, nil
 }
 
-func GetSourceFiles(limit, offset string, walletAddress, payloadCid string) ([]*SourceFile, error) {
-	sql := "select s.id, s.file_name,s.file_size,s.pin_status,s.create_at,s.payload_cid,df.lock_payment_status as status,df.duration, evpm.locked_fee from source_file s "
+func GetSourceFiles(limit, offset string, walletAddress, payloadCid string) ([]*SourceFileExt, error) {
+	sql := "select s.id, s.file_name,s.file_size,s.pin_status,s.create_at,s.payload_cid,s.ipfs_url,s.wallet_address,df.lock_payment_status as status,df.duration, evpm.locked_fee from source_file s "
 	sql = sql + "left join source_file_deal_file_map sfdfm on s.id = sfdfm.source_file_id "
 	sql = sql + "left join deal_file df on sfdfm.deal_file_id = df.id "
 
@@ -139,12 +128,17 @@ func GetSourceFiles(limit, offset string, walletAddress, payloadCid string) ([]*
 	sql = sql + "where wallet_address=?"
 	params = append(params, walletAddress)
 
-	var results []*SourceFile
+	var results []*SourceFileExt
 
 	err := database.GetDB().Raw(sql, params...).Order("create_at desc").Limit(limit).Offset(offset).Scan(&results).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
+	}
+	for _, srcFile := range results {
+		if len(strings.Trim(srcFile.Status, " ")) == 0 {
+			srcFile.Status = constants.LOCK_PAYMENT_STATUS_WAITING
+		}
 	}
 	return results, nil
 }

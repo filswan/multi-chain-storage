@@ -130,12 +130,6 @@ func doUnlockPaymentOnContract(dealId int64) error {
 			}
 		}
 	}
-	//update unlock status in event_dao_signature
-	err = models.UpdateDaoEventLog(&models.EventDaoSignature{DealId: dealId},
-		map[string]interface{}{"tx_hash_unlock": tx.Hash().Hex(), "signature_unlock_status": unlockTxStatus})
-	if err != nil {
-		logs.GetLogger().Error(err)
-	}
 
 	offlineDeals, err := models.GetOfflineDealByDealId(dealId)
 	if err != nil {

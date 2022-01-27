@@ -52,7 +52,7 @@ func UnlockPayment() error {
 		return err
 	}
 	for _, offlineDeal := range offlineDeals {
-		err := doUnlockPaymentOnContract(offlineDeal.DealId)
+		err := doUnlockPaymentOnContract(offlineDeal.DealId, offlineDeal.DealFileId)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			continue
@@ -61,7 +61,7 @@ func UnlockPayment() error {
 	return err
 }
 
-func doUnlockPaymentOnContract(dealId int64) error {
+func doUnlockPaymentOnContract(dealId, dealFileId int64) error {
 	pk := os.Getenv("privateKeyOnPolygon")
 	adminAddress := common.HexToAddress(config.GetConfig().AdminWalletOnPolygon) //pay for gas
 	client := polygon.WebConn.ConnWeb
@@ -131,47 +131,36 @@ func doUnlockPaymentOnContract(dealId int64) error {
 		}
 	}
 
-	offlineDeals, err := models.GetOfflineDealByDealId(dealId)
+	offlineDealsNotUnlocked, err := models.GetOfflineDealsNotUnlockedByDealFileId(dealFileId)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
 	}
 
-	if len(offlineDeals) > 0 {
-		offlineDeal := offlineDeals[0]
-		offlineDealsNotUnlocked, err := models.GetOfflineDealsNotUnlockedByDealFileId(offlineDeal.DealFileId)
+	if len(offlineDealsNotUnlocked) == 0 {
+		var srcFilePayloadCids []string
+		srcFiles, err := models.GetSourceFilesByDealFileId(dealFileId)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			return err
 		}
 
-		if len(offlineDealsNotUnlocked) == 0 {
-			var srcFilePayloadCids []string
-			srcFiles, err := models.GetSourceFilesByDealFileId(offlineDeal.DealFileId)
-			if err != nil {
-				logs.GetLogger().Error(err)
-				return err
-			}
+		for _, srcFile := range srcFiles {
+			srcFilePayloadCids = append(srcFilePayloadCids, srcFile.PayloadCid)
+		}
 
-			for _, srcFile := range srcFiles {
-				srcFilePayloadCids = append(srcFilePayloadCids, srcFile.PayloadCid)
-			}
+		lockPaymentStatus := constants.LOCK_PAYMENT_STATUS_UNLOCK_REFUNDED
+		_, err = swanPaymentContractInstance.Refund(callOpts, srcFilePayloadCids)
+		if err != nil {
+			lockPaymentStatus = constants.LOCK_PAYMENT_STATUS_UNLOCK_REFUNDFAILED
+			logs.GetLogger().Error(err)
+		}
 
-			refundStatusAfterUnlock := constants.LOCK_PAYMENT_STATUS_UNLOCK_REFUNDED
-			tx, err := swanPaymentContractInstance.Refund(callOpts, srcFilePayloadCids)
-			if err != nil {
-				refundStatusAfterUnlock = constants.LOCK_PAYMENT_STATUS_UNLOCK_REFUNDFAILED
-				logs.GetLogger().Error(err)
-			}
-
-			logs.GetLogger().Info(tx)
-
-			currrentTime := utils.GetCurrentUtcMilliSecond()
-			err = models.UpdateDealFile(models.DealFile{ID: offlineDeal.DealFileId},
-				map[string]interface{}{"lock_payment_status": refundStatusAfterUnlock, "update_at": currrentTime})
-			if err != nil {
-				logs.GetLogger().Error(err)
-			}
+		currrentTime := utils.GetCurrentUtcMilliSecond()
+		err = models.UpdateDealFile(models.DealFile{ID: dealFileId},
+			map[string]interface{}{"lock_payment_status": lockPaymentStatus, "update_at": currrentTime})
+		if err != nil {
+			logs.GetLogger().Error(err)
 		}
 	}
 

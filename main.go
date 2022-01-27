@@ -7,6 +7,7 @@ import (
 	"payment-bridge/common/constants"
 	"payment-bridge/config"
 	"payment-bridge/database"
+	"payment-bridge/models"
 	"payment-bridge/routers"
 	"payment-bridge/routers/billing"
 	"payment-bridge/routers/common"
@@ -29,7 +30,7 @@ func main() {
 
 	browsersync.Init()
 
-	//models.RunAllTheScan()
+	models.RunAllTheScan()
 
 	scheduler.InitScheduler()
 	scheduler.CreateTaskScheduler()

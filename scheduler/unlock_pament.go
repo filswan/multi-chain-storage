@@ -116,7 +116,7 @@ func UnlockPayment() error {
 	}
 
 	for _, offlineDeal := range offlineDeals {
-		err = unlock4Deal(offlineDeal.DealId, offlineDeal.DealFileId, client, swanPaymentTransactor, callOpts, recipient)
+		err = unlock4Deal(offlineDeal.Id, offlineDeal.DealId, offlineDeal.DealFileId, client, swanPaymentTransactor, callOpts, recipient)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			continue
@@ -125,7 +125,7 @@ func UnlockPayment() error {
 	return err
 }
 
-func unlock4Deal(dealId, dealFileId int64, client *ethclient.Client, swanPaymentTransactor *goBind.SwanPaymentTransactor, callOpts *bind.TransactOpts, recipient common.Address) error {
+func unlock4Deal(offlineDealId, dealId, dealFileId int64, client *ethclient.Client, swanPaymentTransactor *goBind.SwanPaymentTransactor, callOpts *bind.TransactOpts, recipient common.Address) error {
 	dealIdStr := strconv.FormatInt(dealId, 10)
 	tx, err := swanPaymentTransactor.UnlockCarPayment(callOpts, dealIdStr, recipient)
 	if err != nil {
@@ -143,6 +143,13 @@ func unlock4Deal(dealId, dealFileId int64, client *ethclient.Client, swanPayment
 	if txReceipt.Status == uint64(1) {
 		unlockTxStatus = constants.TRANSACTION_STATUS_SUCCESS
 		logs.GetLogger().Println("unlock success! txHash=" + tx.Hash().Hex())
+
+		err := models.UpdateOfflineDealUnlockStatus(offlineDealId, constants.OFFLINE_DEAL_UNLOCK_STATUS_UNLOCKED)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return err
+		}
+
 		if len(txReceipt.Logs) > 0 {
 			eventLogs := txReceipt.Logs
 			err = saveUnlockEventLogToDB(eventLogs, unlockTxStatus, dealId)

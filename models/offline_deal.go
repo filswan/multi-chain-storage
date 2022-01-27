@@ -85,3 +85,19 @@ func GetOfflineDealsNotUnlockedByDealFileId(dealFileId int64) ([]*OfflineDeal, e
 
 	return offlineDeals, nil
 }
+
+func UpdateOfflineDealUnlockStatus(id int64, unlockStatus string) error {
+	sql := "update offline_deal set unlock_status=? where id=?"
+
+	params := []interface{}{}
+	params = append(params, unlockStatus)
+	params = append(params, id)
+
+	err := database.GetDB().Exec(sql, params...).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	return nil
+}

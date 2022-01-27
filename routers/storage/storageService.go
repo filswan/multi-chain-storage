@@ -39,8 +39,6 @@ func GetSourceFiles(pageSize, offset string, walletAddress, payloadCid string) (
 
 	for _, srcFile := range srcFiles {
 		if len(strings.Trim(srcFile.Status, " ")) == 0 {
-			//srcFile.Status = constants.LOCK_PAYMENT_STATUS_WAITING
-
 			eventPayment, err := services.GetPaymentInfo(srcFile.PayloadCid)
 			if err != nil {
 				logs.GetLogger().Error(err)

@@ -28,9 +28,10 @@ type SourceFile struct {
 
 type SourceFileExt struct {
 	SourceFile
-	DealFileId int64  `json:"deal_file_id"`
-	Duration   int    `json:"duration"`
-	LockedFee  string `json:"locked_fee"`
+	DealFileId   int64          `json:"deal_file_id"`
+	Duration     int            `json:"duration"`
+	LockedFee    string         `json:"locked_fee"`
+	OfflineDeals []*OfflineDeal `json:"offline_deals"`
 }
 
 // FindSourceFileList (&SourceFile{Id: "0xadeaCC802D0f2DFd31bE4Fa7434F15782Fd720ac"},"id desc","10","0")
@@ -113,7 +114,7 @@ func CreateSourceFile(sourceFile SourceFile) (*SourceFile, error) {
 }
 
 func GetSourceFiles(limit, offset string, walletAddress, payloadCid string) ([]*SourceFileExt, error) {
-	sql := "select s.id, s.file_name,s.file_size,s.pin_status,s.create_at,s.payload_cid,s.ipfs_url,s.wallet_address,df.lock_payment_status as status,df.duration, evpm.locked_fee from source_file s "
+	sql := "select s.id, s.file_name,s.file_size,s.pin_status,s.create_at,s.payload_cid,s.ipfs_url,s.wallet_address,df.id deal_file_id,df.lock_payment_status status,df.duration, evpm.locked_fee from source_file s "
 	sql = sql + "left join source_file_deal_file_map sfdfm on s.id = sfdfm.source_file_id "
 	sql = sql + "left join deal_file df on sfdfm.deal_file_id = df.id "
 

@@ -51,6 +51,6 @@ create table offline_deal (
 );
 
 
-
+create index ind_offline_deal_deal_file_id on offline_deal(deal_file_id)
 
 

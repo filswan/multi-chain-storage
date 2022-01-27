@@ -3,6 +3,8 @@ package models
 import (
 	"payment-bridge/common/constants"
 	"payment-bridge/database"
+	"strconv"
+	"strings"
 
 	"github.com/filswan/go-swan-lib/logs"
 )
@@ -77,6 +79,39 @@ func GetOfflineDealsNotUnlockedByDealFileId(dealFileId int64) ([]*OfflineDeal, e
 	var offlineDeals []*OfflineDeal
 	sql := "select a.* from offline_deal a left outer join event_unlock_payment b on a.deal_id=b.deal_id where a.deal_file_id=? and b.deal_id is null"
 	err := database.GetDB().Raw(sql, dealFileId).Scan(&offlineDeals).Error
+
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	return offlineDeals, nil
+}
+
+func GetOfflineDealsByDealFileId(dealFileId int64) ([]*OfflineDeal, error) {
+	var offlineDeals []*OfflineDeal
+	sql := "select a.* from offline_deal a where a.deal_file_id=?"
+	err := database.GetDB().Raw(sql, dealFileId).Scan(&offlineDeals).Error
+
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	return offlineDeals, nil
+}
+
+func GetOfflineDealsByDealFileIds(dealFileIds []int64) ([]*OfflineDeal, error) {
+	dealFileIdsStr := ""
+	for _, dealFileId := range dealFileIds {
+		dealFileIdsStr = dealFileIdsStr + "," + strconv.FormatInt(dealFileId, 10)
+	}
+	dealFileIdsStr = strings.Trim(dealFileIdsStr, ",")
+	dealFileIdsStr = "(" + dealFileIdsStr + ")"
+
+	var offlineDeals []*OfflineDeal
+	sql := "select a.* from offline_deal a where a.deal_file_id in " + dealFileIdsStr
+	err := database.GetDB().Raw(sql).Scan(&offlineDeals).Error
 
 	if err != nil {
 		logs.GetLogger().Error(err)

@@ -99,12 +99,12 @@ func UnlockPayment() error {
 	}
 
 	for _, offlineDeal := range offlineDeals {
-		err = refund(offlineDeal.DealId, offlineDeal.DealFileId, client, swanPaymentTransactor, callOpts, recipient)
+		err = unlock4Deal(offlineDeal.DealId, offlineDeal.DealFileId, client, swanPaymentTransactor, callOpts, recipient)
 	}
 	return err
 }
 
-func refund(dealId, dealFileId int64, client *ethclient.Client, swanPaymentTransactor *goBind.SwanPaymentTransactor, callOpts *bind.TransactOpts, recipient common.Address) error {
+func unlock4Deal(dealId, dealFileId int64, client *ethclient.Client, swanPaymentTransactor *goBind.SwanPaymentTransactor, callOpts *bind.TransactOpts, recipient common.Address) error {
 	dealIdStr := strconv.FormatInt(dealId, 10)
 	tx, err := swanPaymentTransactor.UnlockCarPayment(callOpts, dealIdStr, recipient)
 	if err != nil {

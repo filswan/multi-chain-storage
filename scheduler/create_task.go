@@ -11,6 +11,7 @@ import (
 	"payment-bridge/config"
 	"payment-bridge/database"
 	"payment-bridge/models"
+	"payment-bridge/on-chain/services"
 	"payment-bridge/routers/billing"
 	"sync"
 	"time"
@@ -73,6 +74,16 @@ func CreateTask() error {
 
 	var srcFiles2Merged []*models.SourceFile
 	for _, srcFile := range srcFiles {
+		eventPayment, err := services.GetPaymentInfo(srcFile.PayloadCid)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			continue
+		}
+
+		if eventPayment == nil {
+			continue
+		}
+
 		srcFilepathTemp := filepath.Join(carSrcDir, srcFile.FileName)
 
 		bytesCopied, err := libutils.CopyFile(srcFile.ResourceUri, srcFilepathTemp)
@@ -81,8 +92,6 @@ func CreateTask() error {
 			logs.GetLogger().Error(err)
 			continue
 		}
-
-		srcFiles2Merged = append(srcFiles2Merged, srcFile)
 
 		totalSize = totalSize + bytesCopied
 
@@ -102,6 +111,8 @@ func CreateTask() error {
 		} else if maxPrice.Cmp(config.GetConfig().SwanTask.MaxPrice) < 0 {
 			*maxPrice = config.GetConfig().SwanTask.MaxPrice
 		}
+
+		srcFiles2Merged = append(srcFiles2Merged, srcFile)
 	}
 
 	if totalSize == 0 {

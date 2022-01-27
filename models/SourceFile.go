@@ -135,11 +135,7 @@ func GetSourceFiles(limit, offset string, walletAddress, payloadCid string) ([]*
 		logs.GetLogger().Error(err)
 		return nil, err
 	}
-	for _, srcFile := range results {
-		if len(strings.Trim(srcFile.Status, " ")) == 0 {
-			srcFile.Status = constants.LOCK_PAYMENT_STATUS_WAITING
-		}
-	}
+
 	return results, nil
 }
 

@@ -45,3 +45,29 @@ func GetOfflineDeals2BeScanned() ([]*OfflineDeal, error) {
 
 	return offlineDeals, nil
 }
+
+func GetOfflineDealByDealId(dealId int64) ([]*OfflineDeal, error) {
+	var offlineDeals []*OfflineDeal
+	sql := "select a.* from offline_deal a where a.deal_id=?"
+	err := database.GetDB().Raw(sql, dealId).Scan(&offlineDeals).Error
+
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	return offlineDeals, nil
+}
+
+func GetOfflineDealsNotUnlockedByDealFileId(dealFileId int64) ([]*OfflineDeal, error) {
+	var offlineDeals []*OfflineDeal
+	sql := "select a.* from offline_deal a left outer join event_unlock_payment b on a.deal_id=b.deal_id where a.deal_file_id=? and b.deal_id is null"
+	err := database.GetDB().Raw(sql, dealFileId).Scan(&offlineDeals).Error
+
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	return offlineDeals, nil
+}

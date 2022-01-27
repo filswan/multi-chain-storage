@@ -9,6 +9,7 @@ type EventUnlockPayment struct {
 	ID                   int64  `json:"id"`
 	TxHash               string `json:"tx_hash"`
 	PayloadCid           string `json:"payload_cid"`
+	DealId               int64  `json:"deal_id"`
 	BlockNo              string `json:"block_no"`
 	NetworkId            int64  `json:"network"`
 	TokenAddress         string `json:"token_address"`

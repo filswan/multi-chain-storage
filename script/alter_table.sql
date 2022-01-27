@@ -14,6 +14,7 @@ alter table deal_file modify create_at bigint;
 SET SQL_SAFE_UPDATES = 0;
 update deal_file set update_at=null where update_at='';
 alter table deal_file modify update_at bigint;
+alter table deal_file add refund_status_after_unlock varchar(45);
 
 
 SET SQL_SAFE_UPDATES = 0;
@@ -25,6 +26,7 @@ alter table deal_file add max_price   double;
 alter table event_lock_payment modify create_at bigint;
 
 alter table event_unlock_payment modify create_at bigint;
+alter table event_unlock_payment add deal_id bigint;
 
 
 alter table source_file_deal_file_map modify create_at bigint;

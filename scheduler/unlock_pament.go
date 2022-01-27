@@ -58,21 +58,14 @@ func UnlockPayment() error {
 		return err
 	}
 	for _, deal := range deals {
-		daoEventLogList, err := models.FindDaoEventLog(&models.EventDaoSignature{PayloadCid: deal.PayloadCid, DealId: deal.DealId, SignatureUnlockStatus: constants.SIGNATURE_DEFAULT_VALUE}, "id desc", "10", "0")
+		daoEventLogList, err := models.FindDaoEventLog(&models.EventDaoSignature{DealId: deal.DealId, SignatureUnlockStatus: constants.SIGNATURE_DEFAULT_VALUE}, "id desc", "10", "0")
 		if err != nil {
 			logs.GetLogger().Error(err)
 			continue
 		}
 
 		if len(daoEventLogList) > 0 {
-			parm := goBind.IPaymentMinimalunlockPaymentParam{}
-			parm.Id = deal.PayloadCid
-			parm.DealId = strconv.FormatInt(deal.DealId, 10)
-			parm.Amount = big.NewInt(0)
-			parm.Recipient = common.HexToAddress(daoEventLogList[0].Recipient)
-			parm.OrderId = ""
-
-			err = doUnlockPaymentOnContract(daoEventLogList[0], parm)
+			err = doUnlockPaymentOnContract(daoEventLogList[0], deal.DealId)
 			if err != nil {
 				logs.GetLogger().Error(err)
 				continue
@@ -82,7 +75,7 @@ func UnlockPayment() error {
 	return err
 }
 
-func doUnlockPaymentOnContract(daoEvent *models.EventDaoSignature, unlockParams goBind.IPaymentMinimalunlockPaymentParam) error {
+func doUnlockPaymentOnContract(daoEvent *models.EventDaoSignature, dealId int64) error {
 	pk := os.Getenv("privateKeyOnPolygon")
 	adminAddress := common.HexToAddress(config.GetConfig().AdminWalletOnPolygon) //pay for gas
 	client := polygon.WebConn.ConnWeb
@@ -116,13 +109,15 @@ func doUnlockPaymentOnContract(daoEvent *models.EventDaoSignature, unlockParams 
 	callOpts.Context = context.Background()
 
 	swanPaymentContractAddress := common.HexToAddress(polygon.GetConfig().PolygonMainnetNode.PaymentContractAddress) //payment gateway on polygon
-	swanPaymentContractInstance, err := goBind.NewSwanPayment(swanPaymentContractAddress, client)
+	swanPaymentContractInstance, err := goBind.NewSwanPaymentTransactor(swanPaymentContractAddress, client)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
 	}
 
-	tx, err := swanPaymentContractInstance.UnlockTokenPayment(callOpts, unlockParams)
+	dealIdStr := strconv.FormatInt(dealId, 10)
+
+	tx, err := swanPaymentContractInstance.UnlockCarPayment(callOpts, dealIdStr, swanPaymentContractAddress)
 	unlockTxStatus := ""
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -137,7 +132,7 @@ func doUnlockPaymentOnContract(daoEvent *models.EventDaoSignature, unlockParams 
 				logs.GetLogger().Println("unlock success! txHash=" + tx.Hash().Hex())
 				if len(txReceipt.Logs) > 0 {
 					eventLogs := txReceipt.Logs
-					err = saveUnlockEventLogToDB(eventLogs, daoEvent.Recipient, unlockTxStatus)
+					err = saveUnlockEventLogToDB(eventLogs, daoEvent.Recipient, unlockTxStatus, dealId)
 					if err != nil {
 						logs.GetLogger().Error(err)
 						return err
@@ -150,16 +145,61 @@ func doUnlockPaymentOnContract(daoEvent *models.EventDaoSignature, unlockParams 
 		}
 	}
 	//update unlock status in event_dao_signature
-	err = models.UpdateDaoEventLog(&models.EventDaoSignature{PayloadCid: daoEvent.PayloadCid, DealId: daoEvent.DealId},
+	err = models.UpdateDaoEventLog(&models.EventDaoSignature{DealId: daoEvent.DealId},
 		map[string]interface{}{"tx_hash_unlock": tx.Hash().Hex(), "signature_unlock_status": unlockTxStatus})
 	if err != nil {
 		logs.GetLogger().Error(err)
 	}
+
+	offlineDeals, err := models.GetOfflineDealByDealId(dealId)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	if len(offlineDeals) > 0 {
+		offlineDeal := offlineDeals[0]
+		offlineDealsNotUnlocked, err := models.GetOfflineDealsNotUnlockedByDealFileId(offlineDeal.DealFileId)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return err
+		}
+
+		if len(offlineDealsNotUnlocked) == 0 {
+			var srcFilePayloadCids []string
+			srcFiles, err := models.GetSourceFilesByDealFileId(offlineDeal.DealFileId)
+			if err != nil {
+				logs.GetLogger().Error(err)
+				return err
+			}
+
+			for _, srcFile := range srcFiles {
+				srcFilePayloadCids = append(srcFilePayloadCids, srcFile.PayloadCid)
+			}
+
+			refundStatusAfterUnlock := constants.REFUND_STATUS_AFTER_UNLOCK_REFUNDED
+			tx, err := swanPaymentContractInstance.Refund(callOpts, srcFilePayloadCids)
+			if err != nil {
+				refundStatusAfterUnlock = constants.REFUND_STATUS_AFTER_UNLOCK_REFUNDFAILED
+				logs.GetLogger().Error(err)
+			}
+
+			logs.GetLogger().Info(tx)
+
+			currrentTime := utils.GetCurrentUtcMilliSecond()
+			err = models.UpdateDealFile(models.DealFile{ID: offlineDeal.DealFileId},
+				map[string]interface{}{"refund_status_after_unlock": refundStatusAfterUnlock, "update_at": currrentTime})
+			if err != nil {
+				logs.GetLogger().Error(err)
+			}
+		}
+	}
+
 	logs.GetLogger().Info("unlock tx hash=", tx.Hash().Hex(), " for payloadCid=", daoEvent.PayloadCid, " and deal_id=", daoEvent.DealId)
 	return nil
 }
 
-func saveUnlockEventLogToDB(logsInChain []*types.Log, recipient string, unlockStatus string) error {
+func saveUnlockEventLogToDB(logsInChain []*types.Log, recipient string, unlockStatus string, dealId int64) error {
 	paymentAbiString := goBind.SwanPaymentABI
 
 	contractUnlockFunctionSignature := polygon.GetConfig().PolygonMainnetNode.ContractUnlockFunctionSignature
@@ -183,7 +223,7 @@ func saveUnlockEventLogToDB(logsInChain []*types.Log, recipient string, unlockSt
 					logs.GetLogger().Error(err)
 					continue
 				}
-				event.PayloadCid = dataList[0].(string)
+				event.DealId = dealId
 				event.TxHash = vLog.TxHash.Hex()
 				networkId, err := models.FindNetworkIdByUUID(constants.NETWORK_TYPE_POLYGON_UUID)
 				if err != nil {

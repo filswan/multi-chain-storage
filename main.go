@@ -27,6 +27,8 @@ func main() {
 	defer database.CloseDB(db)
 
 	scheduler.InitScheduler()
+	//	scheduler.CreateTask()
+
 	scheduler.CreateTaskScheduler()
 	scheduler.SendDealScheduler()
 	scheduler.CreateScanScheduler()

@@ -84,6 +84,10 @@ func CreateTask() error {
 			continue
 		}
 
+		if eventPayment.AddressFrom != srcFile.WalletAddress {
+			continue
+		}
+
 		srcFilepathTemp := filepath.Join(carSrcDir, srcFile.FileName)
 
 		bytesCopied, err := libutils.CopyFile(srcFile.ResourceUri, srcFilepathTemp)
@@ -302,13 +306,14 @@ func saveCarInfo2DB(fileDesc *libmodel.FileDesc, srcFiles []*models.SourceFile, 
 		SendDealStatus:    constants.DEAL_FILE_STATUS_CREATED,
 	}
 
-	err := database.SaveOneInTransaction(db, dealFile)
+	err := database.SaveOneInTransaction(db, &dealFile)
 	if err != nil {
 		db.Rollback()
 		logs.GetLogger().Error(err)
 		return err
 	}
 
+	var srcFileIds []int64
 	for _, srcFile := range srcFiles {
 		sourceFiles, err := models.GetSourceFilesByPayloadCid(srcFile.PayloadCid)
 		if err != nil {
@@ -318,26 +323,40 @@ func saveCarInfo2DB(fileDesc *libmodel.FileDesc, srcFiles []*models.SourceFile, 
 		}
 
 		for _, sourceFile := range sourceFiles {
-			filepMap := models.SourceFileDealFileMap{
-				SourceFileId: sourceFile.ID,
-				DealFileId:   dealFile.ID,
-				FileIndex:    0,
-				CreateAt:     currentUtcMilliSecond,
-				UpdateAt:     currentUtcMilliSecond,
+			srcFileExists := false
+			for _, srcFileId := range srcFileIds {
+				if srcFileId == sourceFile.ID {
+					srcFileExists = true
+					break
+				}
 			}
-			err = database.SaveOneInTransaction(db, filepMap)
-			if err != nil {
-				db.Rollback()
-				logs.GetLogger().Error(err)
-				return err
+
+			if !srcFileExists {
+				srcFileIds = append(srcFileIds, sourceFile.ID)
 			}
+		}
+	}
+
+	for _, srcFileId := range srcFileIds {
+		filepMap := models.SourceFileDealFileMap{
+			SourceFileId: srcFileId,
+			DealFileId:   dealFile.ID,
+			FileIndex:    0,
+			CreateAt:     currentUtcMilliSecond,
+			UpdateAt:     currentUtcMilliSecond,
+		}
+		err = database.SaveOneInTransaction(db, filepMap)
+		if err != nil {
+			db.Rollback()
+			logs.GetLogger().Error(err)
+			return err
 		}
 
 		sql := "update source_file set status=? where id=?"
 
 		params := []interface{}{}
 		params = append(params, constants.SOURCE_FILE_STATUS_TASK_CREATED)
-		params = append(params, srcFile.ID)
+		params = append(params, srcFileId)
 
 		err = db.Exec(sql, params...).Error
 		if err != nil {

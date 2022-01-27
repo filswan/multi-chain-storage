@@ -5,7 +5,7 @@
             <span style="font-size:0.18rem;margin-left:0.05rem">{{$t('deal.backto')}}</span>
         </div>
         <div class="upload">
-            <div class="title">{{file_name}}</div>
+            <div class="title">{{source_file.file_name}}</div>
             <el-row :gutter="30">
                 <el-col :span="6" v-for="(item, o) in dealsData" :key="o">
                     <el-card class="box-card">
@@ -14,7 +14,7 @@
                         </div>
                         <div class="text item">
                             <label>{{$t('uploadFile.deal_id')}}:</label>
-                            <p><span @click="toDetail(item.deal_id, item.deal_cid)">{{item.deal_id}}</span></p>
+                            <p><span @click="toDetail(item.deal_id)">{{item.deal_id}}</span></p>
                         </div>
                         <div class="text item">
                             <label>{{$t('deal.form_select_title01')}}</label>
@@ -44,7 +44,10 @@ export default {
       return {
             loading: false,
             bodyWidth: document.documentElement.clientWidth<1024?true:false,
-            file_name: '',
+            source_file: {
+                file_name: '',
+                payload_cid: ''
+            },
             dealsData: [],
             dealCont: {
                 deal: {},
@@ -61,8 +64,8 @@ export default {
         },
     },
     methods: {
-        toDetail(id, cid){
-            this.$router.push({name: 'my_files_detail', params: {id: id, cid: cid}})
+        toDetail(id){
+            this.$router.push({name: 'my_files_detail', params: {id: id, cid: this.source_file.payload_cid}})
         },
         back(){
             this.$router.go(-1);//返回上一层
@@ -78,7 +81,7 @@ export default {
                 _this.loading = false
                 if (json.status == 'success') {
                     if(!json.data) return false
-                    _this.file_name = json.data.source_file.file_name
+                    _this.source_file = json.data.source_file
                     _this.dealsData = json.data.deals
                     _this.dealsData.map(item => {
                         item.update_at = item.update_at

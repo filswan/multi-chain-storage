@@ -320,7 +320,6 @@
                                 _this.loading = true
                                 _this.fileUploadVisible = true
 
-
                                 let xhr = new XMLHttpRequest()
                                 xhr.open("POST", `${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/storage/ipfs/upload`, true);   // 设置xhr得请求方式和url。
                                 xhr.withCredentials = false
@@ -387,59 +386,23 @@
                                             let percentIn = Math.floor(event.loaded / event.total * 100);
                                             // 设置进度显示
                                             _this.percentIn = percentIn+'%'
-                                            console.log(percentIn+'%-')
+                                            // console.log(percentIn+'%-')
                                         }
                                     })
                                 };
                                 // 获取上传进度
                                 xhr.upload.onprogress = function(event) { 
-                                    console.log('event.loaded', event.loaded)
-                                    console.log('event.total', event.total)
+                                    // console.log('event.loaded', event.loaded)
+                                    // console.log('event.total', event.total)
                                     if (event.lengthComputable) {
                                         let percentIn = Math.floor(event.loaded / event.total * 100);
                                         // 设置进度显示
                                         _this.percentIn = percentIn+'%'
-                                        console.log(percentIn+'%')
+                                        // console.log(percentIn+'%')
                                     }
                                 };
                                 xhr.send(formData);
                                 return false
-
-                                // 发起请求
-                                // axios.post(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/storage/ipfs/upload `, formData,{
-                                //     headers: {
-                                //     'Authorization': "Bearer "+_this.$store.getters.accessToken
-                                //     },
-                                // })
-                                // .then((res) => {
-                                //     // console.log('_RequestUploads_', res)
-                                //     _this.fileUploadVisible = false
-                                //     if (res.data.status == "success") {
-                                //         if(!res.data.data.need_pay){
-                                //             _this.paymentPopup = true
-                                //             _this.loading = false
-                                //             return false
-                                //         }
-                                //         contract_erc20.methods.allowance(_this.gatewayContractAddress, _this.metaAddress).call()
-                                //         .then(resultUSDC => {
-                                //             console.log('allowance：'+ resultUSDC);
-                                //             if(resultUSDC < web3.utils.toWei(_this.ruleForm.amount, 'ether')){
-                                //                 contract_erc20.methods.approve(_this.gatewayContractAddress, web3.utils.toWei(_this.ruleForm.amount, 'ether')).send({from:  _this.metaAddress})
-                                //                 .then(receipt => {
-                                //                     // console.log(receipt)
-                                //                 })
-                                //             }
-                                //             _this.contractSend(res.data.data.payload_cid)
-                                //         })
-                                //         // _this.$router.push({name: 'my_files'})
-                                //     } else {
-                                //         _this.$message.error('Fail')
-                                //     }
-                                // }).catch(error => {
-                                //     console.log(error)
-                                //     _this.loading = false
-                                //     _this.fileUploadVisible = false
-                                // })
                             })
                         }
                     } else {
@@ -469,12 +432,13 @@
                     amount: web3.utils.toWei(_this.ruleForm.amount, 'ether'),
                     lockTime: 86400 * Number(_this.$root.LOCK_TIME), // one day
                     recipient: _this.recipientAddress, //todo:
+                    size: _this._file.size
                 }
-                
+                console.log(lockObj)
                 contract_instance.methods.lockTokenPayment(lockObj)
                 .send(payObject)
                 .on('transactionHash', function(hash){
-                    // console.log('hash console:', hash);
+                    console.log('hash console:', hash);
                     _this.loadMetamaskPay = true
                     _this.loading = false
                     _this.txHash = hash

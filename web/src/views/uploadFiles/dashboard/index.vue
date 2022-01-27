@@ -559,6 +559,7 @@ export default {
       }
       // console.log(row)
       _this.payRow = row
+      _this.payRow.file_size = row.file_size
       _this.payRow.storage_cost = row.file_size_byte * row.duration * _this.storage / 365
       _this.payRow.amount_minprice = Number(_this.payRow.storage_cost * _this.biling_price).toFixed(9)
       _this.cost.storage_cost_low = Number(_this.payRow.storage_cost * _this.biling_price * 2).toFixed(9)
@@ -703,8 +704,9 @@ export default {
             amount: payAmount,
             lockTime: 86400 * Number(_this.$root.LOCK_TIME), // one day
             recipient: _this.recipientAddress, //todo:
+            size: _this.payRow.file_size
         }
-        
+        console.log('deals:', lockObj)
         contract_instance.methods.lockTokenPayment(lockObj)
         .send(payObject)
         .on('transactionHash', function(hash){

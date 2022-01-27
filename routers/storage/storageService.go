@@ -30,13 +30,19 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GetSourceFiles(pageSize, offset string, walletAddress, payloadCid string) ([]*models.SourceFileExt, error) {
+type SourceFile struct {
+	SourceFile   *models.SourceFileExt `json:"source_file"`
+	OffLineDeals []*models.OfflineDeal `json:"offline_deals"`
+}
+
+func GetSourceFiles(pageSize, offset string, walletAddress, payloadCid string) ([]*SourceFile, error) {
 	srcFiles, err := models.GetSourceFiles(pageSize, offset, walletAddress, payloadCid)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
 	}
 
+	var sourceFiles []*SourceFile
 	for _, srcFile := range srcFiles {
 		if len(strings.Trim(srcFile.Status, " ")) == 0 {
 			eventPayment, err := services.GetPaymentInfo(srcFile.PayloadCid)
@@ -52,9 +58,22 @@ func GetSourceFiles(pageSize, offset string, walletAddress, payloadCid string) (
 				srcFile.LockedFee = eventPayment.LockedFee
 			}
 		}
+
+		offlineDeals, err := models.GetOfflineDealsBySourceFileId(srcFile.ID)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return nil, err
+		}
+
+		sourceFile := &SourceFile{
+			SourceFile:   srcFile,
+			OffLineDeals: offlineDeals,
+		}
+
+		sourceFiles = append(sourceFiles, sourceFile)
 	}
 
-	return srcFiles, nil
+	return sourceFiles, nil
 }
 
 func GetOfflineDealsBySourceFileId(sourceFileId int64) ([]*models.OfflineDeal, *models.SourceFile, error) {

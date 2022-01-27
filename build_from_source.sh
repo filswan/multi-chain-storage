@@ -27,6 +27,6 @@ done
 echo $CONF_FILE_PATH
 
 git submodule update --init --recursive
-#make ffi
-#make
+make ffi
+make
 

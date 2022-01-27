@@ -46,36 +46,22 @@ func CreateUnlockScheduler() {
 }
 
 func UnlockPayment() error {
-	threshold, err := GetThreshold()
+	offlineDeals, err := models.GetOfflineDeals2BeUnlocked()
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
 	}
-
-	deals, err := models.GetDeal2BeUnlocked(threshold)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
-	for _, deal := range deals {
-		daoEventLogList, err := models.FindDaoEventLog(&models.EventDaoSignature{DealId: deal.DealId, SignatureUnlockStatus: constants.SIGNATURE_DEFAULT_VALUE}, "id desc", "10", "0")
+	for _, offlineDeal := range offlineDeals {
+		err := doUnlockPaymentOnContract(offlineDeal.DealId)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			continue
-		}
-
-		if len(daoEventLogList) > 0 {
-			err = doUnlockPaymentOnContract(daoEventLogList[0], deal.DealId)
-			if err != nil {
-				logs.GetLogger().Error(err)
-				continue
-			}
 		}
 	}
 	return err
 }
 
-func doUnlockPaymentOnContract(daoEvent *models.EventDaoSignature, dealId int64) error {
+func doUnlockPaymentOnContract(dealId int64) error {
 	pk := os.Getenv("privateKeyOnPolygon")
 	adminAddress := common.HexToAddress(config.GetConfig().AdminWalletOnPolygon) //pay for gas
 	client := polygon.WebConn.ConnWeb
@@ -132,7 +118,7 @@ func doUnlockPaymentOnContract(daoEvent *models.EventDaoSignature, dealId int64)
 				logs.GetLogger().Println("unlock success! txHash=" + tx.Hash().Hex())
 				if len(txReceipt.Logs) > 0 {
 					eventLogs := txReceipt.Logs
-					err = saveUnlockEventLogToDB(eventLogs, daoEvent.Recipient, unlockTxStatus, dealId)
+					err = saveUnlockEventLogToDB(eventLogs, unlockTxStatus, dealId)
 					if err != nil {
 						logs.GetLogger().Error(err)
 						return err
@@ -145,7 +131,7 @@ func doUnlockPaymentOnContract(daoEvent *models.EventDaoSignature, dealId int64)
 		}
 	}
 	//update unlock status in event_dao_signature
-	err = models.UpdateDaoEventLog(&models.EventDaoSignature{DealId: daoEvent.DealId},
+	err = models.UpdateDaoEventLog(&models.EventDaoSignature{DealId: dealId},
 		map[string]interface{}{"tx_hash_unlock": tx.Hash().Hex(), "signature_unlock_status": unlockTxStatus})
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -177,10 +163,10 @@ func doUnlockPaymentOnContract(daoEvent *models.EventDaoSignature, dealId int64)
 				srcFilePayloadCids = append(srcFilePayloadCids, srcFile.PayloadCid)
 			}
 
-			refundStatusAfterUnlock := constants.REFUND_STATUS_AFTER_UNLOCK_REFUNDED
+			refundStatusAfterUnlock := constants.LOCK_PAYMENT_STATUS_UNLOCK_REFUNDED
 			tx, err := swanPaymentContractInstance.Refund(callOpts, srcFilePayloadCids)
 			if err != nil {
-				refundStatusAfterUnlock = constants.REFUND_STATUS_AFTER_UNLOCK_REFUNDFAILED
+				refundStatusAfterUnlock = constants.LOCK_PAYMENT_STATUS_UNLOCK_REFUNDFAILED
 				logs.GetLogger().Error(err)
 			}
 
@@ -188,18 +174,17 @@ func doUnlockPaymentOnContract(daoEvent *models.EventDaoSignature, dealId int64)
 
 			currrentTime := utils.GetCurrentUtcMilliSecond()
 			err = models.UpdateDealFile(models.DealFile{ID: offlineDeal.DealFileId},
-				map[string]interface{}{"refund_status_after_unlock": refundStatusAfterUnlock, "update_at": currrentTime})
+				map[string]interface{}{"lock_payment_status": refundStatusAfterUnlock, "update_at": currrentTime})
 			if err != nil {
 				logs.GetLogger().Error(err)
 			}
 		}
 	}
 
-	logs.GetLogger().Info("unlock tx hash=", tx.Hash().Hex(), " for payloadCid=", daoEvent.PayloadCid, " and deal_id=", daoEvent.DealId)
 	return nil
 }
 
-func saveUnlockEventLogToDB(logsInChain []*types.Log, recipient string, unlockStatus string, dealId int64) error {
+func saveUnlockEventLogToDB(logsInChain []*types.Log, unlockStatus string, dealId int64) error {
 	paymentAbiString := goBind.SwanPaymentABI
 
 	contractUnlockFunctionSignature := polygon.GetConfig().PolygonMainnetNode.ContractUnlockFunctionSignature
@@ -255,30 +240,4 @@ func saveUnlockEventLogToDB(logsInChain []*types.Log, recipient string, unlockSt
 		}
 	}
 	return nil
-}
-
-func GetThreshold() (uint8, error) {
-	pk := os.Getenv("privateKeyOnPolygon")
-	if strings.HasPrefix(strings.ToLower(pk), "0x") {
-		pk = pk[2:]
-	}
-
-	callOpts := new(bind.CallOpts)
-	callOpts.From = common.HexToAddress(polygon.GetConfig().PolygonMainnetNode.DaoSwanOracleAddress)
-	callOpts.Context = context.Background()
-
-	daoOracleContractInstance, err := goBind.NewFilswanOracle(callOpts.From, polygon.WebConn.ConnWeb)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return 0, err
-	}
-
-	threshHold, err := daoOracleContractInstance.GetThreshold(callOpts)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return 0, err
-	}
-
-	logs.GetLogger().Info("dao threshHold is : ", threshHold)
-	return threshHold, nil
 }

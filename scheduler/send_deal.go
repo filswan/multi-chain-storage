@@ -114,6 +114,7 @@ func SendDeal() error {
 				SenderWallet: cmdAutoBidDeal.SenderWallet,
 				Status:       dealInfo.Status,
 				DealId:       dealFile.DealId,
+				UnlockStatus: constants.OFFLINE_DEAL_UNLOCK_STATUS_NOT_UNLOCKED,
 				CreateAt:     currentUtcMilliSec,
 				UpdateAt:     currentUtcMilliSec,
 			}

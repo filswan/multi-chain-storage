@@ -16,6 +16,7 @@ type OfflineDeal struct {
 	SenderWallet string `json:"sender_wallet"`
 	Status       string `json:"status"`
 	DealId       int64  `json:"deal_id"`
+	UnlockStatus string `json:"unlock_status"`
 	CreateAt     int64  `json:"create_at"`
 	UpdateAt     int64  `json:"update_at"`
 }
@@ -50,6 +51,19 @@ func GetOfflineDealByDealId(dealId int64) ([]*OfflineDeal, error) {
 	var offlineDeals []*OfflineDeal
 	sql := "select a.* from offline_deal a where a.deal_id=?"
 	err := database.GetDB().Raw(sql, dealId).Scan(&offlineDeals).Error
+
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	return offlineDeals, nil
+}
+
+func GetOfflineDeals2BeUnlocked() ([]*OfflineDeal, error) {
+	var offlineDeals []*OfflineDeal
+	sql := "select a.* from offline_deal a where a.deal_id>0 and a.unlock_status=?"
+	err := database.GetDB().Raw(sql, constants.OFFLINE_DEAL_UNLOCK_STATUS_NOT_UNLOCKED).Scan(&offlineDeals).Error
 
 	if err != nil {
 		logs.GetLogger().Error(err)

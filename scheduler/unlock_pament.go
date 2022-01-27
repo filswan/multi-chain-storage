@@ -2,6 +2,7 @@ package scheduler
 
 import (
 	"context"
+	"fmt"
 	"math/big"
 	"os"
 	"payment-bridge/blockchain/browsersync/scanlockpayment/polygon"
@@ -53,8 +54,18 @@ func UnlockPayment() error {
 		return err
 	}
 
-	pk := os.Getenv("privateKeyOnPolygon")
-	adminAddress := common.HexToAddress(config.GetConfig().AdminWalletOnPolygon) //pay for gas
+	privateKeyOnPolygon := os.Getenv("privateKeyOnPolygon")
+	if len(privateKeyOnPolygon) <= 0 {
+		err := fmt.Errorf("env variable privateKeyOnPolygon is not defined")
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	if strings.HasPrefix(strings.ToLower(privateKeyOnPolygon), "0x") {
+		privateKeyOnPolygon = privateKeyOnPolygon[2:]
+	}
+
+	adminAddress := common.HexToAddress(config.GetConfig().AdminWalletOnPolygon)
 
 	client, err := ethclient.Dial(config.GetConfig().PolygonRpcUrl)
 	if err != nil {
@@ -74,24 +85,30 @@ func UnlockPayment() error {
 		return err
 	}
 
-	if strings.HasPrefix(strings.ToLower(pk), "0x") {
-		pk = pk[2:]
+	privateKey, err := crypto.HexToECDSA(privateKeyOnPolygon)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
 	}
 
-	privateKey, _ := crypto.HexToECDSA(pk)
 	chainId, err := client.ChainID(context.Background())
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
 	}
 
-	callOpts, _ := bind.NewKeyedTransactorWithChainID(privateKey, chainId)
+	callOpts, err := bind.NewKeyedTransactorWithChainID(privateKey, chainId)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
 	callOpts.Nonce = big.NewInt(int64(nonce))
 	callOpts.GasPrice = gasPrice
 	callOpts.GasLimit = uint64(polygon.GetConfig().PolygonMainnetNode.GasLimit)
 	callOpts.Context = context.Background()
 
-	recipient := common.HexToAddress(polygon.GetConfig().PolygonMainnetNode.PaymentContractAddress) //payment gateway on polygon
+	recipient := common.HexToAddress(polygon.GetConfig().PolygonMainnetNode.PaymentContractAddress)
 	swanPaymentTransactor, err := goBind.NewSwanPaymentTransactor(recipient, client)
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -100,6 +117,10 @@ func UnlockPayment() error {
 
 	for _, offlineDeal := range offlineDeals {
 		err = unlock4Deal(offlineDeal.DealId, offlineDeal.DealFileId, client, swanPaymentTransactor, callOpts, recipient)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			continue
+		}
 	}
 	return err
 }

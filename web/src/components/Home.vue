@@ -31,7 +31,7 @@
                         <a href="https://discord.gg/MSXGzVsSYf" target="_block"><img :src="share_img10" alt=""></a>
                     </div>
                     <div class="fes-icon-copy">
-                        <span>© 2021 FilSwan Canada</span>
+                        <span>© 2022 FilSwan Canada</span>
                         <el-divider direction="vertical"></el-divider>
                         <a href="https://www.filswan.com/" target="_block">filswan.com</a>
 

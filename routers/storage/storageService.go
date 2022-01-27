@@ -29,6 +29,34 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func GetSourceFiles(pageSize, offset string, walletAddress, payloadCid string) ([]*models.SourceFileExt, error) {
+	srcFiles, err := models.GetSourceFiles(pageSize, offset, walletAddress, payloadCid)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	for _, srcFile := range srcFiles {
+		if len(strings.Trim(srcFile.Status, " ")) == 0 {
+			srcFile.Status = constants.LOCK_PAYMENT_STATUS_WAITING
+
+			//eventPayment, err := services.GetPaymentInfo(srcFile.PayloadCid)
+			//if err != nil {
+			//	logs.GetLogger().Error(err)
+			//	return nil, err
+			//}
+			//
+			//if eventPayment == nil {
+			//	srcFile.Status = constants.LOCK_PAYMENT_STATUS_WAITING
+			//} else {
+			//	srcFile.LockedFee = eventPayment.LockedFee
+			//}
+		}
+	}
+
+	return srcFiles, nil
+}
+
 func GetOfflineDealsBySourceFileId(sourceFileId int64) ([]*models.OfflineDeal, *models.SourceFile, error) {
 	offlineDeals, err := models.GetOfflineDealsBySourceFileId(sourceFileId)
 	if err != nil {

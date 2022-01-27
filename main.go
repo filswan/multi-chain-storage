@@ -25,6 +25,11 @@ import (
 func main() {
 	LoadEnv()
 
+	//err := services.GetPaymentInfo("QmXT4fqGPt6rhAGyvfTzVUkrxevAwJPzuc7VbUP2hdSisCd")
+	//if err != nil {
+	//	logs.GetLogger().Error(err)
+	//	return
+	//}
 	db := database.Init()
 	defer database.CloseDB(db)
 

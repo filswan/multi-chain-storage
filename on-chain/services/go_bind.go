@@ -2,6 +2,7 @@ package services
 
 import (
 	"payment-bridge/blockchain/browsersync/scanlockpayment/polygon"
+	"payment-bridge/common/constants"
 	"payment-bridge/database"
 	"payment-bridge/models"
 	"payment-bridge/on-chain/goBind"
@@ -45,7 +46,25 @@ func GetPaymentInfo(srcFilePayloadCid string) (*models.EventLockPayment, error) 
 		event.AddressFrom = paymentInfo.Owner.String()
 		event.AddressTo = paymentInfo.Recipient.String()
 		event.LockedFee = paymentInfo.LockedFee.String()
-		database.SaveOne(event)
+		event.PayloadCid = srcFilePayloadCid
+		usdcCoinId, err := models.FindCoinIdByUUID(constants.COIN_TYPE_USDC_ON_POLYGON_UUID)
+		if err != nil {
+			logs.GetLogger().Error(err)
+		} else {
+			event.CoinId = usdcCoinId
+		}
+		networkId, err := models.FindNetworkIdByUUID(constants.NETWORK_TYPE_POLYGON_UUID)
+		if err != nil {
+			logs.GetLogger().Error(err)
+		} else {
+			event.NetworkId = networkId
+		}
+
+		err = database.SaveOne(event)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return nil, err
+		}
 	}
 
 	return event, nil

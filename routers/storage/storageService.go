@@ -12,6 +12,7 @@ import (
 	"payment-bridge/database"
 	"payment-bridge/models"
 	"payment-bridge/on-chain/goBind"
+	"payment-bridge/on-chain/services"
 	"payment-bridge/scheduler"
 	"strconv"
 	"strings"
@@ -38,19 +39,20 @@ func GetSourceFiles(pageSize, offset string, walletAddress, payloadCid string) (
 
 	for _, srcFile := range srcFiles {
 		if len(strings.Trim(srcFile.Status, " ")) == 0 {
-			srcFile.Status = constants.LOCK_PAYMENT_STATUS_WAITING
+			//srcFile.Status = constants.LOCK_PAYMENT_STATUS_WAITING
 
-			//eventPayment, err := services.GetPaymentInfo(srcFile.PayloadCid)
-			//if err != nil {
-			//	logs.GetLogger().Error(err)
-			//	return nil, err
-			//}
-			//
-			//if eventPayment == nil {
-			//	srcFile.Status = constants.LOCK_PAYMENT_STATUS_WAITING
-			//} else {
-			//	srcFile.LockedFee = eventPayment.LockedFee
-			//}
+			eventPayment, err := services.GetPaymentInfo(srcFile.PayloadCid)
+			if err != nil {
+				logs.GetLogger().Error(err)
+				return nil, err
+			}
+
+			if eventPayment == nil {
+				srcFile.Status = constants.LOCK_PAYMENT_STATUS_WAITING
+			} else {
+				srcFile.Status = constants.LOCK_PAYMENT_STATUS_PROCESSING
+				srcFile.LockedFee = eventPayment.LockedFee
+			}
 		}
 	}
 

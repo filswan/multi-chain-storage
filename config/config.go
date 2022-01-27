@@ -16,6 +16,7 @@ type Configuration struct {
 	AdminWalletOnPolygon string       `toml:"admin_wallet_on_polygon"`
 	FileCoinWallet       string       `toml:"file_coin_wallet"`
 	FilinkUrl            string       `toml:"filink_url"`
+	PolygonRpcUrl        string       `toml:"polygon_rpc_url"`
 	Database             database     `toml:"database"`
 	SwanApi              swanApi      `toml:"swan_api"`
 	Lotus                lotus        `toml:"lotus"`
@@ -103,6 +104,7 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 		{"admin_wallet_on_polygon"},
 		{"file_coin_wallet"},
 		{"filink_url"},
+		{"polygon_rpc_url"},
 
 		{"database", "db_host"},
 		{"database", "db_port"},

@@ -3,6 +3,7 @@ package services
 import (
 	"payment-bridge/blockchain/browsersync/scanlockpayment/polygon"
 	"payment-bridge/common/constants"
+	"payment-bridge/config"
 	"payment-bridge/database"
 	"payment-bridge/models"
 	"payment-bridge/on-chain/goBind"
@@ -13,7 +14,7 @@ import (
 )
 
 func GetPaymentInfo(srcFilePayloadCid string) (*models.EventLockPayment, error) {
-	rpcUrl := "https://polygon-mumbai.g.alchemy.com/v2/XnUfDZGQd7ACRbi5G33aUBjQ5KmlsHm-" // config.GetConfig().PolygonMainnetNode.RpcUrl
+	rpcUrl := config.GetConfig().PolygonRpcUrl
 	client, err := ethclient.Dial(rpcUrl)
 	if err != nil {
 		logs.GetLogger().Error("Try to reconnect block chain node" + rpcUrl + " ...")

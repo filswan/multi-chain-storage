@@ -3,11 +3,9 @@ package main
 import (
 	"os"
 	"path/filepath"
-	"payment-bridge/blockchain/browsersync"
 	"payment-bridge/common/constants"
 	"payment-bridge/config"
 	"payment-bridge/database"
-	"payment-bridge/models"
 	"payment-bridge/routers"
 	"payment-bridge/routers/billing"
 	"payment-bridge/routers/common"
@@ -25,17 +23,8 @@ import (
 func main() {
 	LoadEnv()
 
-	//err := services.GetPaymentInfo("QmXT4fqGPt6rhAGyvfTzVUkrxevAwJPzuc7VbUP2hdSisCd")
-	//if err != nil {
-	//	logs.GetLogger().Error(err)
-	//	return
-	//}
 	db := database.Init()
 	defer database.CloseDB(db)
-
-	browsersync.Init()
-
-	models.RunAllTheScan()
 
 	scheduler.InitScheduler()
 	scheduler.CreateTaskScheduler()

@@ -21,6 +21,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/filswan/go-swan-lib/logs"
 	"github.com/robfig/cron"
 )
@@ -51,20 +52,16 @@ func UnlockPayment() error {
 		logs.GetLogger().Error(err)
 		return err
 	}
-	for _, offlineDeal := range offlineDeals {
-		err := doUnlockPaymentOnContract(offlineDeal.DealId, offlineDeal.DealFileId)
-		if err != nil {
-			logs.GetLogger().Error(err)
-			continue
-		}
-	}
-	return err
-}
 
-func doUnlockPaymentOnContract(dealId, dealFileId int64) error {
 	pk := os.Getenv("privateKeyOnPolygon")
 	adminAddress := common.HexToAddress(config.GetConfig().AdminWalletOnPolygon) //pay for gas
-	client := polygon.WebConn.ConnWeb
+
+	client, err := ethclient.Dial(config.GetConfig().PolygonRpcUrl)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
 	nonce, err := client.PendingNonceAt(context.Background(), adminAddress)
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -94,41 +91,48 @@ func doUnlockPaymentOnContract(dealId, dealFileId int64) error {
 	callOpts.GasLimit = uint64(polygon.GetConfig().PolygonMainnetNode.GasLimit)
 	callOpts.Context = context.Background()
 
-	swanPaymentContractAddress := common.HexToAddress(polygon.GetConfig().PolygonMainnetNode.PaymentContractAddress) //payment gateway on polygon
-	swanPaymentContractInstance, err := goBind.NewSwanPaymentTransactor(swanPaymentContractAddress, client)
+	recipient := common.HexToAddress(polygon.GetConfig().PolygonMainnetNode.PaymentContractAddress) //payment gateway on polygon
+	swanPaymentTransactor, err := goBind.NewSwanPaymentTransactor(recipient, client)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
 	}
 
-	dealIdStr := strconv.FormatInt(dealId, 10)
+	for _, offlineDeal := range offlineDeals {
+		err = refund(offlineDeal.DealId, offlineDeal.DealFileId, client, swanPaymentTransactor, callOpts, recipient)
+	}
+	return err
+}
 
-	tx, err := swanPaymentContractInstance.UnlockCarPayment(callOpts, dealIdStr, swanPaymentContractAddress)
-	unlockTxStatus := ""
+func refund(dealId, dealFileId int64, client *ethclient.Client, swanPaymentTransactor *goBind.SwanPaymentTransactor, callOpts *bind.TransactOpts, recipient common.Address) error {
+	dealIdStr := strconv.FormatInt(dealId, 10)
+	tx, err := swanPaymentTransactor.UnlockCarPayment(callOpts, dealIdStr, recipient)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		unlockTxStatus = constants.TRANSACTION_STATUS_FAIL
-	} else {
-		txReceipt, err := utils.CheckTx(client, tx)
-		if err != nil {
-			logs.GetLogger().Error(err)
-		} else {
-			if txReceipt.Status == uint64(1) {
-				unlockTxStatus = constants.TRANSACTION_STATUS_SUCCESS
-				logs.GetLogger().Println("unlock success! txHash=" + tx.Hash().Hex())
-				if len(txReceipt.Logs) > 0 {
-					eventLogs := txReceipt.Logs
-					err = saveUnlockEventLogToDB(eventLogs, unlockTxStatus, dealId)
-					if err != nil {
-						logs.GetLogger().Error(err)
-						return err
-					}
-				}
-			} else {
-				unlockTxStatus = constants.TRANSACTION_STATUS_FAIL
-				logs.GetLogger().Println("unlock failed! txHash=" + tx.Hash().Hex())
+		return err
+	}
+
+	txReceipt, err := utils.CheckTx(client, tx)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	unlockTxStatus := ""
+	if txReceipt.Status == uint64(1) {
+		unlockTxStatus = constants.TRANSACTION_STATUS_SUCCESS
+		logs.GetLogger().Println("unlock success! txHash=" + tx.Hash().Hex())
+		if len(txReceipt.Logs) > 0 {
+			eventLogs := txReceipt.Logs
+			err = saveUnlockEventLogToDB(eventLogs, unlockTxStatus, dealId)
+			if err != nil {
+				logs.GetLogger().Error(err)
+				return err
 			}
 		}
+	} else {
+		unlockTxStatus = constants.TRANSACTION_STATUS_FAIL
+		logs.GetLogger().Println("unlock failed! txHash=" + tx.Hash().Hex())
 	}
 
 	offlineDealsNotUnlocked, err := models.GetOfflineDealsNotUnlockedByDealFileId(dealFileId)
@@ -150,7 +154,7 @@ func doUnlockPaymentOnContract(dealId, dealFileId int64) error {
 		}
 
 		lockPaymentStatus := constants.LOCK_PAYMENT_STATUS_UNLOCK_REFUNDED
-		_, err = swanPaymentContractInstance.Refund(callOpts, srcFilePayloadCids)
+		_, err = swanPaymentTransactor.Refund(callOpts, srcFilePayloadCids)
 		if err != nil {
 			lockPaymentStatus = constants.LOCK_PAYMENT_STATUS_UNLOCK_REFUNDFAILED
 			logs.GetLogger().Error(err)

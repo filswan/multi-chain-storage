@@ -139,28 +139,28 @@ func unlock4Deal(offlineDealId, dealId, dealFileId int64, client *ethclient.Clie
 		return err
 	}
 
-	unlockTxStatus := ""
-	if txReceipt.Status == uint64(1) {
-		unlockTxStatus = constants.TRANSACTION_STATUS_SUCCESS
-		logs.GetLogger().Println("unlock success! txHash=" + tx.Hash().Hex())
+	if txReceipt.Status != uint64(1) {
+		err := fmt.Errorf("unlock failed! txHash=" + tx.Hash().Hex())
+		logs.GetLogger().Error(err)
+		return err
+	}
 
-		err := models.UpdateOfflineDealUnlockStatus(offlineDealId, constants.OFFLINE_DEAL_UNLOCK_STATUS_UNLOCKED)
+	unlockTxStatus := constants.TRANSACTION_STATUS_SUCCESS
+	logs.GetLogger().Println("unlock success! txHash=" + tx.Hash().Hex())
+
+	err = models.UpdateOfflineDealUnlockStatus(offlineDealId, constants.OFFLINE_DEAL_UNLOCK_STATUS_UNLOCKED)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	if len(txReceipt.Logs) > 0 {
+		eventLogs := txReceipt.Logs
+		err = saveUnlockEventLogToDB(eventLogs, unlockTxStatus, dealId)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			return err
 		}
-
-		if len(txReceipt.Logs) > 0 {
-			eventLogs := txReceipt.Logs
-			err = saveUnlockEventLogToDB(eventLogs, unlockTxStatus, dealId)
-			if err != nil {
-				logs.GetLogger().Error(err)
-				return err
-			}
-		}
-	} else {
-		unlockTxStatus = constants.TRANSACTION_STATUS_FAIL
-		logs.GetLogger().Println("unlock failed! txHash=" + tx.Hash().Hex())
 	}
 
 	offlineDealsNotUnlocked, err := models.GetOfflineDealsNotUnlockedByDealFileId(dealFileId)

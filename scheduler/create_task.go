@@ -11,7 +11,6 @@ import (
 	"payment-bridge/config"
 	"payment-bridge/database"
 	"payment-bridge/models"
-	"payment-bridge/on-chain/services"
 	"payment-bridge/routers/billing"
 	"sync"
 	"time"
@@ -74,7 +73,7 @@ func CreateTask() error {
 
 	var srcFiles2Merged []*models.SourceFile
 	for _, srcFile := range srcFiles {
-		eventPayment, err := services.GetPaymentInfo(srcFile.PayloadCid)
+		eventPayment, err := GetPaymentInfo(srcFile.PayloadCid)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			continue

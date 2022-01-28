@@ -101,9 +101,9 @@ func GetOfflineDealsByDealFileId(dealFileId int64) ([]*OfflineDeal, error) {
 	return offlineDeals, nil
 }
 
-func GetOfflineDealsByDealFileIds(dealFileIds []int64) ([]*OfflineDeal, error) {
+func GetOfflineDealsByDealFileIds(dealFileIds map[int64]bool) ([]*OfflineDeal, error) {
 	dealFileIdsStr := ""
-	for _, dealFileId := range dealFileIds {
+	for dealFileId, _ := range dealFileIds {
 		dealFileIdsStr = dealFileIdsStr + "," + strconv.FormatInt(dealFileId, 10)
 	}
 	dealFileIdsStr = strings.Trim(dealFileIdsStr, ",")

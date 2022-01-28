@@ -119,7 +119,7 @@
                 }
             },
             payCom() {
-                if(!this.pay.lock_plan){
+                if(!this.pay.lock_plan || parseFloat(this.pay.amount)<=0){
                     this.pay.lock_plan_tip = true
                     return false
                 }else{

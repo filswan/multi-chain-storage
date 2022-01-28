@@ -37,6 +37,7 @@ func GetSourceFiles(pageSize, offset string, walletAddress, payloadCid string) (
 	}
 
 	dealFileIds := map[int64]bool{}
+
 	for _, srcFile := range srcFiles {
 		dealFileIds[srcFile.DealFileId] = true
 		if len(strings.Trim(srcFile.LockedFee, " ")) == 0 {
@@ -76,16 +77,18 @@ func GetSourceFiles(pageSize, offset string, walletAddress, payloadCid string) (
 		//}
 	}
 
-	offlineDeals, err := models.GetOfflineDealsByDealFileIds(dealFileIds)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
+	if len(dealFileIds) > 0 {
+		offlineDeals, err := models.GetOfflineDealsByDealFileIds(dealFileIds)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return nil, err
+		}
 
-	for _, srcFile := range srcFiles {
-		for _, offlineDeal := range offlineDeals {
-			if offlineDeal.DealFileId == srcFile.DealFileId {
-				srcFile.OfflineDeals = append(srcFile.OfflineDeals, offlineDeal)
+		for _, srcFile := range srcFiles {
+			for _, offlineDeal := range offlineDeals {
+				if offlineDeal.DealFileId == srcFile.DealFileId {
+					srcFile.OfflineDeals = append(srcFile.OfflineDeals, offlineDeal)
+				}
 			}
 		}
 	}

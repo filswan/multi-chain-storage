@@ -60,7 +60,7 @@ func UnlockPayment() error {
 
 	adminAddress := common.HexToAddress(config.GetConfig().AdminWalletOnPolygon)
 
-	err = DialEthClient()
+	ethClient, err := DialEthClient()
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err

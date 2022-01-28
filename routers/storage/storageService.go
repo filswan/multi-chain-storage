@@ -119,7 +119,7 @@ func UpdateSourceFileMaxPrice(id int64, maxPrice decimal.Decimal) error {
 	return nil
 }
 
-func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration int, walletAddress string) (*int64, *string, *string, *int, error) {
+func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType int, walletAddress string) (*int64, *string, *string, *int, error) {
 	srcDir := scheduler.GetSrcDir()
 
 	filename := srcFile.Filename
@@ -170,6 +170,7 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration int, walle
 			PinStatus:     constants.IPFS_File_PINNED_STATUS,
 			WalletAddress: walletAddress,
 			PayloadCid:    *ipfsFileHash,
+			FileType:      fileType,
 		}
 
 		sourceFileCreated, err := models.CreateSourceFile(sourceFile)
@@ -235,6 +236,7 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration int, walle
 		PinStatus:     constants.IPFS_File_PINNED_STATUS,
 		WalletAddress: walletAddress,
 		PayloadCid:    sourceFiles[0].PayloadCid,
+		FileType:      fileType,
 	}
 	sourceFileCreated, err := models.CreateSourceFile(sourceFile)
 	if err != nil {

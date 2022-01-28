@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"math/big"
-	"os"
 	"payment-bridge/blockchain/browsersync/scanlockpayment/polygon"
 	"payment-bridge/common/constants"
 	"payment-bridge/common/utils"
@@ -54,32 +53,26 @@ func UnlockPayment() error {
 		return err
 	}
 
-	privateKeyOnPolygon := os.Getenv("privateKeyOnPolygon")
-	if len(privateKeyOnPolygon) <= 0 {
-		err := fmt.Errorf("env variable privateKeyOnPolygon is not defined")
-		logs.GetLogger().Error(err)
-		return err
-	}
-
-	if strings.HasPrefix(strings.ToLower(privateKeyOnPolygon), "0x") {
-		privateKeyOnPolygon = privateKeyOnPolygon[2:]
+	if len(offlineDeals) == 0 {
+		logs.GetLogger().Info("no deal to be unlocked")
+		return nil
 	}
 
 	adminAddress := common.HexToAddress(config.GetConfig().AdminWalletOnPolygon)
 
-	client, err := ethclient.Dial(config.GetConfig().PolygonRpcUrl)
+	err = DialEthClient()
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
 	}
 
-	nonce, err := client.PendingNonceAt(context.Background(), adminAddress)
+	nonce, err := ethClient.PendingNonceAt(context.Background(), adminAddress)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
 	}
 
-	gasPrice, err := client.SuggestGasPrice(context.Background())
+	gasPrice, err := ethClient.SuggestGasPrice(context.Background())
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
@@ -91,7 +84,7 @@ func UnlockPayment() error {
 		return err
 	}
 
-	chainId, err := client.ChainID(context.Background())
+	chainId, err := ethClient.ChainID(context.Background())
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
@@ -109,14 +102,14 @@ func UnlockPayment() error {
 	callOpts.Context = context.Background()
 
 	recipient := common.HexToAddress(polygon.GetConfig().PolygonMainnetNode.PaymentContractAddress)
-	swanPaymentTransactor, err := goBind.NewSwanPaymentTransactor(recipient, client)
+	swanPaymentTransactor, err := goBind.NewSwanPaymentTransactor(recipient, ethClient)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
 	}
 
 	for _, offlineDeal := range offlineDeals {
-		err = unlock4Deal(offlineDeal.Id, offlineDeal.DealId, offlineDeal.DealFileId, client, swanPaymentTransactor, callOpts, recipient)
+		err = unlock4Deal(offlineDeal.Id, offlineDeal.DealId, offlineDeal.DealFileId, ethClient, swanPaymentTransactor, callOpts, recipient)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			continue

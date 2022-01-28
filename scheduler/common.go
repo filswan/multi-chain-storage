@@ -10,6 +10,7 @@ import (
 	"payment-bridge/database"
 	"payment-bridge/models"
 	"payment-bridge/on-chain/goBind"
+	"strings"
 	"sync"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -17,10 +18,6 @@ import (
 	"github.com/filswan/go-swan-lib/logs"
 	libutils "github.com/filswan/go-swan-lib/utils"
 	"github.com/robfig/cron"
-)
-
-const (
-	DURATION_DAYS = 350
 )
 
 type Schedule struct {
@@ -35,6 +32,7 @@ var carDir string
 var srcDir string
 
 var ethClient *ethclient.Client
+var privateKeyOnPolygon string
 
 func GetSrcDir() string {
 	return srcDir
@@ -43,6 +41,16 @@ func GetSrcDir() string {
 func InitScheduler() {
 	createDir()
 	//createScheduleJob()
+
+	privateKeyOnPolygon = os.Getenv("privateKeyOnPolygon")
+	if len(privateKeyOnPolygon) <= 0 {
+		err := fmt.Errorf("env variable privateKeyOnPolygon is not defined")
+		logs.GetLogger().Fatal(err)
+	}
+
+	if strings.HasPrefix(strings.ToLower(privateKeyOnPolygon), "0x") {
+		privateKeyOnPolygon = privateKeyOnPolygon[2:]
+	}
 }
 
 func createScheduleJob() {

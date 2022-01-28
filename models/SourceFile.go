@@ -24,6 +24,7 @@ type SourceFile struct {
 	NftTxHash     string `json:"nft_tx_hash"`
 	TokenId       string `json:"token_id"`
 	MintAddress   string `json:"mint_address"`
+	FileType      int    `json:"file_type"`
 }
 
 type SourceFileExt struct {

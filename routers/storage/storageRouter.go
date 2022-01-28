@@ -286,7 +286,18 @@ func UploadFileToIpfs(c *gin.Context) {
 	}
 	durationInt = durationInt * 24 * 60 * 60 / 30
 
-	srcFileId, payloadCid, ipfsDownloadPath, needPay, err := SaveFile(c, file, durationInt, walletAddress)
+	fileType := c.PostForm("file_type")
+	if strings.Trim(fileType, " ") == "" {
+		fileType = "0"
+		return
+	}
+
+	fileTypeInt, err := strconv.Atoi(fileType)
+	if err != nil {
+		fileTypeInt = 0
+	}
+
+	srcFileId, payloadCid, ipfsDownloadPath, needPay, err := SaveFile(c, file, durationInt, fileTypeInt, walletAddress)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.SAVE_FILE_ERROR))
 		return

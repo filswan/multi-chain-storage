@@ -31,7 +31,6 @@ type Schedule struct {
 var carDir string
 var srcDir string
 
-var ethClient *ethclient.Client
 var privateKeyOnPolygon string
 
 func GetSrcDir() string {
@@ -122,25 +121,19 @@ func createDir() {
 	}
 }
 
-func DialEthClient() error {
-	if ethClient != nil {
-		return nil
-	}
-
+func DialEthClient() (*ethclient.Client, error) {
 	polygonRpcUrl := config.GetConfig().PolygonRpcUrl
-	client, err := ethclient.Dial(polygonRpcUrl)
+	ethClient, err := ethclient.Dial(polygonRpcUrl)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return err
+		return nil, err
 	}
 
-	ethClient = client
-
-	return nil
+	return ethClient, nil
 }
 
 func GetPaymentSession() (*goBind.SwanPaymentSession, error) {
-	err := DialEthClient()
+	ethClient, err := DialEthClient()
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err

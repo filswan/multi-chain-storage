@@ -411,7 +411,7 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="create_at" :label="$t('uploadFile.create_time')" min-width="90">
+          <el-table-column prop="create_at" :label="$t('uploadFile.create_time')" width="100">
             <template slot-scope="scope">
               {{ scope.row.create_at }}
             </template>

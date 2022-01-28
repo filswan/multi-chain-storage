@@ -318,9 +318,9 @@ func GetLockFoundInfoByPayloadCid(payloadCid string) (*LockFound, error) {
 
 func GetShoulBeSignDealListFromDB() ([]*DealForDaoSignResult, error) {
 	finalSql := "select a.id as deal_file_id, b.deal_id,a.deal_cid,a.piece_cid,a.payload_cid,a.cost,a.verified,a.miner_fid,duration,a.client_wallet_address,a.create_at from deal_file a left join offline_deal b on a.id = b.deal_file_id" +
-		" where a.deal_id not in  ( " +
+		" where b.deal_id not in  ( " +
 		" select  deal_id from dao_fetched_deal ) " +
-		" and a.deal_id > 0 order by a.create_at desc"
+		" and b.deal_id > 0 order by a.create_at desc"
 	var dealForDaoSignResultList []*DealForDaoSignResult
 	err := database.GetDB().Raw(finalSql).Scan(&dealForDaoSignResultList).Limit(0).Offset(constants.DEFAULT_SELECT_LIMIT).Error
 	if err != nil {

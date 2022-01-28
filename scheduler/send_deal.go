@@ -59,6 +59,12 @@ func SendDeal() error {
 		DealSourceIds:          []int{libconstants.TASK_SOURCE_ID_SWAN_PAYMENT},
 	}
 
+	lotusClient, err := lotus.LotusGetClient(config.GetConfig().Lotus.ClientApiUrl, config.GetConfig().Lotus.ClientAccessToken)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
 	currentUtcMilliSec := utils.GetCurrentUtcMilliSecond()
 	for _, dealFile := range dealFiles {
 		if currentUtcMilliSec-dealFile.CreateAt > 3*24*60*60*1000 {
@@ -90,12 +96,6 @@ func SendDeal() error {
 		err = database.SaveOne(dealFile)
 		if err != nil {
 			logs.GetLogger().Error(err)
-		}
-
-		lotusClient, err := lotus.LotusGetClient(config.GetConfig().Lotus.ClientApiUrl, config.GetConfig().Lotus.ClientAccessToken)
-		if err != nil {
-			logs.GetLogger().Error(err)
-			continue
 		}
 
 		currentUtcMilliSec := utils.GetCurrentUtcMilliSecond()

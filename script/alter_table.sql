@@ -14,7 +14,9 @@ alter table deal_file modify create_at bigint;
 SET SQL_SAFE_UPDATES = 0;
 update deal_file set update_at=null where update_at='';
 alter table deal_file modify update_at bigint;
-alter table deal_file add refund_status_after_unlock varchar(45);
+#--alter table deal_file add refund_status_after_unlock varchar(45);
+
+update deal_file set duration=duration/2880;
 
 
 SET SQL_SAFE_UPDATES = 0;

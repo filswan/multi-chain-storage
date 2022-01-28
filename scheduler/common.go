@@ -6,10 +6,12 @@ import (
 	"path/filepath"
 	"payment-bridge/blockchain/browsersync/scanlockpayment/polygon"
 	"payment-bridge/common/constants"
+	"payment-bridge/common/utils"
 	"payment-bridge/config"
 	"payment-bridge/database"
 	"payment-bridge/models"
 	"payment-bridge/on-chain/goBind"
+	"strconv"
 	"strings"
 	"sync"
 
@@ -175,6 +177,7 @@ func GetPaymentInfo(srcFilePayloadCid string) (*models.EventLockPayment, error) 
 		event.AddressTo = paymentInfo.Recipient.String()
 		event.LockedFee = paymentInfo.LockedFee.String()
 		event.PayloadCid = srcFilePayloadCid
+		event.LockPaymentTime = strconv.FormatInt(utils.GetCurrentUtcMilliSecond(), 10)
 		usdcCoinId, err := models.FindCoinIdByUUID(constants.COIN_TYPE_USDC_ON_POLYGON_UUID)
 		if err != nil {
 			logs.GetLogger().Error(err)

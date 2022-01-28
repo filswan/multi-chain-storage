@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"payment-bridge/blockchain/browsersync/scanlockpayment/polygon"
+	"payment-bridge/common"
 	"payment-bridge/common/constants"
 	"payment-bridge/common/utils"
 	"payment-bridge/config"
@@ -278,6 +279,41 @@ func GetSourceFileAndDealFileInfoByPayloadCid(payloadCid string) ([]*SourceFileA
 	return results, nil
 }
 
+func GetSourceFileAndDealFileInfo(limit, offset string, walletAddress string, payloadCid, fileName string) ([]*SourceFileAndDealFileInfoExtend, error) {
+	sql := "select s.file_name,s.file_size,s.pin_status,s.create_at,df.miner_fid,df.payload_cid,df.deal_cid,df.deal_id,df.piece_cid,df.deal_status,df.lock_payment_status as status,df.duration, evpm.locked_fee as locked_fee, s.nft_tx_hash, s.token_id, s.mint_address from source_file s " +
+		" inner join source_file_deal_file_map sfdfm on s.id = sfdfm.source_file_id" +
+		" inner join deal_file df on sfdfm.deal_file_id = df.id and wallet_address='" + walletAddress + "' "
+	if strings.Trim(payloadCid, " ") != "" {
+		sql = sql + " and df.payload_cid='" + payloadCid + "'"
+	}
+	if strings.Trim(fileName, " ") != "" {
+		sql = sql + " and s.file_name like '%" + fileName + "%'"
+	}
+	sql = sql + " left outer join event_lock_payment evpm on evpm.payload_cid = df.payload_cid"
+	sql = sql + " where IFNULL(s.file_type,'0') <>'1'"
+	var results []*SourceFileAndDealFileInfoExtend
+	err := database.GetDB().Raw(sql).Order("create_at desc").Limit(limit).Offset(offset).Scan(&results).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+	return results, nil
+}
+
+func GetSourceFileAndDealFileInfoCount(walletAddress string) (int64, error) {
+	sql := "select count(1) as total_record from  source_file s " +
+		" inner join source_file_deal_file_map sfdfm on s.id = sfdfm.source_file_id" +
+		" inner join deal_file df on sfdfm.deal_file_id = df.id" +
+		" where s.wallet_address='" + walletAddress + "'"
+	var recordCount common.RecordCount
+	err := database.GetDB().Raw(sql).Scan(&recordCount).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return 0, err
+	}
+	return recordCount.TotalRecord, nil
+}
+
 func GetDealListThanGreaterDealID(dealId int64, offset, limit int) ([]*DaoDealResult, error) {
 	whereCondition := "deal_id > " + strconv.FormatInt(dealId, 10)
 	var results []*DaoDealResult
@@ -318,9 +354,9 @@ func GetLockFoundInfoByPayloadCid(payloadCid string) (*LockFound, error) {
 
 func GetShoulBeSignDealListFromDB() ([]*DealForDaoSignResult, error) {
 	finalSql := "select a.id as deal_file_id, b.deal_id,a.deal_cid,a.piece_cid,a.payload_cid,a.cost,a.verified,a.miner_fid,duration,a.client_wallet_address,a.create_at from deal_file a left join offline_deal b on a.id = b.deal_file_id" +
-		" where a.deal_id not in  ( " +
+		" where b.deal_id not in  ( " +
 		" select  deal_id from dao_fetched_deal ) " +
-		" and a.deal_id > 0 order by a.create_at desc"
+		" and b.deal_id > 0 order by a.create_at desc"
 	var dealForDaoSignResultList []*DealForDaoSignResult
 	err := database.GetDB().Raw(finalSql).Scan(&dealForDaoSignResultList).Limit(0).Offset(constants.DEFAULT_SELECT_LIMIT).Error
 	if err != nil {

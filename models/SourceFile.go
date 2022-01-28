@@ -143,7 +143,7 @@ func GetSourceFiles(limit, offset string, walletAddress, payloadCid string) ([]*
 
 func GetSourceFilesCount(walletAddress string) (int64, error) {
 	var count int64
-	err := database.GetDB().Table("source_file").Where("wallet_address = ?", walletAddress).Count(&count).Error
+	err := database.GetDB().Table("source_file").Where("wallet_address=? and file_type=?", walletAddress, constants.SOURCE_FILE_TYPE_NORMAL).Count(&count).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return 0, err

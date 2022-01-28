@@ -90,3 +90,19 @@ func GetDealFileBySourceFilePayloadCid(srcFilePayloadCid string) ([]*DealFile, e
 
 	return dealFiles, nil
 }
+
+func UpdateDealFileLockPaymentStatus(id int64, lockPaymentStatus string) error {
+	sql := "update deal_file set lock_payment_status=? where id=?"
+
+	params := []interface{}{}
+	params = append(params, lockPaymentStatus)
+	params = append(params, id)
+
+	err := database.GetDB().Exec(sql, params...).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	return nil
+}

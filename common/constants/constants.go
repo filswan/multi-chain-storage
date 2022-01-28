@@ -54,12 +54,10 @@ const (
 	SOURCE_ID_OF_PAYMENT = 4
 	TASK_STATUS_ASSIGNED = "Assigned"
 
-	LOCK_PAYMENT_STATUS_FREE       = "Free"
-	LOCK_PAYMENT_STATUS_WAITING    = "Pending"    //wait for lock payment
-	LOCK_PAYMENT_STATUS_PAID       = "Paid"       //lock payment paid
-	LOCK_PAYMENT_STATUS_PROCESSING = "Processing" //lock payment fail
-	LOCK_PAYMENT_STATUS_SUCCESS    = "Active"     //lock payment active
-	LOCK_PAYMENT_STATUS_REFUNDED   = "Refunded"
+	LOCK_PAYMENT_STATUS_WAITING             = "Pending"    //wait for lock payment
+	LOCK_PAYMENT_STATUS_PROCESSING          = "Processing" //lock payment fail
+	LOCK_PAYMENT_STATUS_UNLOCK_REFUNDED     = "UnlockRefundSucceeded"
+	LOCK_PAYMENT_STATUS_UNLOCK_REFUNDFAILED = "UnlockRefundFailed"
 
 	DEAL_STATUS_ACTIVE = "StorageDealActive"
 	DEAL_STATUS_ERROR  = "StorageDealError"
@@ -81,6 +79,6 @@ const (
 	DEAL_FILE_STATUS_DEAL_SENT = "DealSent"
 	DEAL_FILE_STATUS_CANCELLED = "Cancelled"
 
-	REFUND_STATUS_AFTER_UNLOCK_REFUNDED     = "Refunded"
-	REFUND_STATUS_AFTER_UNLOCK_REFUNDFAILED = "RefundFailed"
+	OFFLINE_DEAL_UNLOCK_STATUS_NOT_UNLOCKED = "NotUnlocked"
+	OFFLINE_DEAL_UNLOCK_STATUS_UNLOCKED     = "Unlocked"
 )

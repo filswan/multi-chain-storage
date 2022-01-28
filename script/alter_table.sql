@@ -43,6 +43,7 @@ create table offline_deal (
     sender_wallet varchar(200) not null,
     status        varchar(45)  not null,
 	deal_id       bigint       not null,
+    unlock_status varchar(45)  not null,
 	create_at     bigint       not null,
 	update_at     bigint       not null,
     primary key pk_ofline_deal(id),
@@ -50,6 +51,6 @@ create table offline_deal (
 );
 
 
-
+create index ind_offline_deal_deal_file_id on offline_deal(deal_file_id)
 
 

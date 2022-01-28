@@ -37,7 +37,10 @@ func GetSourceFiles(pageSize, offset string, walletAddress, payloadCid string) (
 		return nil, err
 	}
 
+	var dealFileIds []int64
 	for _, srcFile := range srcFiles {
+		dealFileIds = append(dealFileIds, srcFile.DealFileId)
+
 		if len(strings.Trim(srcFile.Status, " ")) == 0 {
 			eventPayment, err := services.GetPaymentInfo(srcFile.PayloadCid)
 			if err != nil {
@@ -50,6 +53,22 @@ func GetSourceFiles(pageSize, offset string, walletAddress, payloadCid string) (
 			} else {
 				srcFile.Status = constants.LOCK_PAYMENT_STATUS_PROCESSING
 				srcFile.LockedFee = eventPayment.LockedFee
+			}
+		}
+
+		srcFile.OfflineDeals = []*models.OfflineDeal{}
+	}
+
+	offlineDeals, err := models.GetOfflineDealsByDealFileIds(dealFileIds)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	for _, srcFile := range srcFiles {
+		for _, offlineDeal := range offlineDeals {
+			if offlineDeal.DealFileId == srcFile.DealFileId {
+				srcFile.OfflineDeals = append(srcFile.OfflineDeals, offlineDeal)
 			}
 		}
 	}

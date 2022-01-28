@@ -31,6 +31,9 @@ alter table event_unlock_payment modify create_at bigint;
 alter table event_unlock_payment add deal_id bigint;
 
 
+create unique index un_event_lock_payment on event_lock_payment(payload_cid, address_from);
+
+
 alter table source_file_deal_file_map modify create_at bigint;
 
 alter table source_file_deal_file_map modify update_at bigint;

@@ -43,7 +43,6 @@ func GetSourceFiles(pageSize, offset string, walletAddress, payloadCid string) (
 			eventPayment, err := scheduler.GetPaymentInfo(srcFile.PayloadCid)
 			if err != nil {
 				logs.GetLogger().Error(err)
-				return nil, err
 			}
 
 			if eventPayment != nil {

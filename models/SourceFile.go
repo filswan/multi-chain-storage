@@ -115,7 +115,7 @@ func CreateSourceFile(sourceFile SourceFile) (*SourceFile, error) {
 }
 
 func GetSourceFiles(limit, offset string, walletAddress, payloadCid string) ([]*SourceFileExt, error) {
-	sql := "select s.id, s.file_name,s.file_size,s.pin_status,s.create_at,s.payload_cid,s.ipfs_url,s.wallet_address,df.id deal_file_id,df.lock_payment_status status,df.duration, evpm.locked_fee from source_file s "
+	sql := "select s.id, s.file_name,s.file_size,s.pin_status,s.create_at,s.payload_cid,s.ipfs_url,s.wallet_address,s.mint_address, s.nft_tx_hash, s.token_id,df.id deal_file_id,df.lock_payment_status status,df.duration, evpm.locked_fee from source_file s "
 	sql = sql + "left join source_file_deal_file_map sfdfm on s.id = sfdfm.source_file_id "
 	sql = sql + "left join deal_file df on sfdfm.deal_file_id = df.id "
 
@@ -127,8 +127,8 @@ func GetSourceFiles(limit, offset string, walletAddress, payloadCid string) ([]*
 	}
 
 	sql = sql + "left outer join event_lock_payment evpm on evpm.payload_cid = s.payload_cid "
-	sql = sql + "where wallet_address=?"
-	params = append(params, walletAddress)
+	sql = sql + "where wallet_address=? and file_type=?"
+	params = append(params, walletAddress, constants.SOURCE_FILE_TYPE_NORMAL)
 
 	var results []*SourceFileExt
 

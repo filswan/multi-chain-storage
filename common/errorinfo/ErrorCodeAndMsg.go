@@ -6,31 +6,19 @@ const (
 
 	//http request
 	HTTP_REQUEST_PARAMS_JSON_FORMAT_ERROR_CODE        = "500002001"
-	HTTP_REQUEST_PARAMS_JSON_FORMAT_ERROR_MSG         = "Request JSON format was error"
 	HTTP_REQUEST_PARAMS_NULL_ERROR_CODE               = "500002002"
-	HTTP_REQUEST_PARAMS_NULL_ERROR_MSG                = "Request params value can not be null"
 	PAGE_NUMBER_OR_SIZE_FORMAT_ERROR_CODE             = "500002003"
-	PAGE_NUMBER_OR_SIZE_FORMAT_ERROR_MSG              = "Page number or page size format was wrong"
 	HTTP_REQUEST_SEND_REQUEST_RETUREN_ERROR_CODE      = "500002004"
-	HTTP_REQUEST_SEND_REQUEST_RETUREN_ERROR_MSG       = "Return error when sending http request"
 	HTTP_REQUEST_PARSER_RESPONSE_TO_STRUCT_ERROR_CODE = "500002005"
-	HTTP_REQUEST_PARSER_RESPONSE_TO_STRUCT_ERROR_MSG  = "Parse http request to structure occurred error"
 	HTTP_REQUEST_PARSER_STRUCT_TO_REQUEST_ERROR_CODE  = "500002006"
-	HTTP_REQUEST_PARSER_STRUCT_TO_REQUEST_ERROR_MSG   = "Parse structure to http request request occurred error"
 	HTTP_REQUEST_GET_RESPONSE_ERROR_CODE              = "500002007"
-	HTTP_REQUEST_GET_RESPONSE_ERROR_MSG               = "Get http response occurred error"
 	HTTP_REQUEST_PARAM_TYPE_ERROR_CODE                = "500002008"
-	HTTP_REQUEST_PARAM_TYPE_ERROR_MSG                 = "Http request param type is error"
 
 	//database err 003
 	GET_RECORD_COUNT_ERROR_CODE  = "500003001"
-	GET_RECORD_COUNT_ERROR_MSG   = "Get data total count from db occurred error"
 	GET_RECORD_lIST_ERROR_CODE   = "500003002"
-	GET_RECORD_lIST_ERROR_MSG    = "Get data records from db occurred error"
 	SAVE_DATA_TO_DB_ERROR_CODE   = "500003003"
-	SAVE_DATA_TO_DB_ERROR_MSG    = "Saving data to database occurred error"
 	UPDATE_DATA_TO_DB_ERROR_CODE = "500003004"
-	UPDATE_DATA_TO_DB_ERROR_MSG  = "Updating data to database occurred error"
 
 	//lotus send deal err  005
 	SAVE_FILE_ERROR                         = "500005001"

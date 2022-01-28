@@ -170,6 +170,7 @@ func GetPaymentInfo(srcFilePayloadCid string) (*models.EventLockPayment, error) 
 	var event *models.EventLockPayment
 	if paymentInfo.IsExisted {
 		event = new(models.EventLockPayment)
+		event.TxHash = paymentInfo.Token.Hex()
 		event.AddressFrom = paymentInfo.Owner.String()
 		event.AddressTo = paymentInfo.Recipient.String()
 		event.LockedFee = paymentInfo.LockedFee.String()

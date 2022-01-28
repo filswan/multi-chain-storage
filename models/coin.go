@@ -34,3 +34,18 @@ func FindCoinIdByUUID(uuid string) (int64, error) {
 		return 0, err
 	}
 }
+
+func FindCoinIdById(id int64) (*Coin, error) {
+	var coins []*Coin
+	err := database.GetDB().Where("id=?", id).Find(&coins).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	if len(coins) > 0 {
+		return coins[0], nil
+	}
+
+	return nil, nil
+}

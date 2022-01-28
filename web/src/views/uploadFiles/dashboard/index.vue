@@ -36,10 +36,19 @@
           :empty-text="$t('deal.formNotData')"
            v-loading="loading"
         >
-          <el-table-column prop="file_name" :label="$t('uploadFile.file_name')" min-width="120">
+          <el-table-column prop="file_name" min-width="120">
+            <template slot="header" slot-scope="scope">
+              <div class="tips">
+                {{$t('uploadFile.file_name')}}
+                    
+                <el-tooltip effect="dark" :content="$t('uploadFile.file_name_tooltip')" placement="top">
+                    <img src="@/assets/images/info.png"/>
+                </el-tooltip>
+              </div>
+            </template>
             <template slot-scope="scope">
-              <div class="hot-cold-box" @click="toDetail(scope.row)" style="text-decoration: underline;">
-                {{ scope.row.file_name }}
+              <div class="hot-cold-box" style="text-decoration: underline;">
+                <a :href="scope.row.ipfs_url" target="_blank" style="color: inherit;">{{ scope.row.file_name }}</a>
               </div>
             </template>
           </el-table-column>
@@ -123,7 +132,7 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="miner_fid" width="120">
+          <el-table-column prop="miner_fid" width="220">
             <template slot="header" slot-scope="scope">
               <div class="tips">
                 {{$t('uploadFile.w3ss_id')}}
@@ -134,9 +143,140 @@
               </div>
             </template>
             <template slot-scope="scope">
-              <div class="hot-cold-box">
+              <div class="hot-cold-box hot-miner">
                 <div class="elTips">
                   <el-popover
+                      v-for="(miner, i) in scope.row.offline_deals" :key="i"
+                      placement="top"
+                      trigger="hover" popper-class="elPopMiner"
+                      v-model="scope.row.payloadAct">
+                      <div class="upload_form_right">
+                          <div
+                            class="statusStyle"
+                            v-if="miner.status == 'Created'"
+                            :style="$status_color.Task_color('Created')">
+                            {{ languageMcp == "en" ? "Created" : "已创建" }}
+                          </div>
+                          <div
+                            class="statusStyle"
+                            v-else-if="miner.status == 'Assigned'"
+                            :style="$status_color.Task_color('Assigned')"
+                          >
+                            {{ languageMcp == "en" ? "Assigned" : "已分配" }}
+                          </div>
+                          <div
+                            class="statusStyle"
+                            v-else-if="miner.status == 'Accepted'"
+                            :style="$status_color.Task_color('Accepted')"
+                          >
+                            {{ languageMcp == "en" ? "Accepted" : "已接受" }}
+                          </div>
+                          <div
+                            class="statusStyle"
+                            v-else-if="miner.status == 'Completed'"
+                            :style="$status_color.Task_color('Completed')"
+                          >
+                            {{ languageMcp == "en" ? "Completed" : "已完成" }}
+                          </div>
+                          <div
+                            class="statusStyle"
+                            v-else-if="miner.status == 'Failed'"
+                            :style="$status_color.Task_color('Failed')"
+                          >
+                            {{ languageMcp == "en" ? "Failed" : "已失败" }}
+                          </div>
+                          <div
+                            class="statusStyle"
+                            v-else-if="miner.status == 'Cancelled'"
+                            :style="$status_color.Task_color('Cancelled')"
+                          >
+                            {{ languageMcp == "en" ? "Cancelled" : "已取消" }}
+                          </div>
+                          <div
+                            class="statusStyle"
+                            v-else-if="miner.status == 'Closed'"
+                            :style="$status_color.Task_color('Closed')"
+                          >
+                            {{ languageMcp == "en" ? "Closed" : "已关闭" }}
+                          </div>
+                          <div
+                            class="statusStyle"
+                            v-else-if="miner.status == 'Expired'"
+                            :style="$status_color.Task_color('Expired')"
+                          >
+                            {{ languageMcp == "en" ? "Expired" : "已过期" }}
+                          </div>
+                          <div
+                              class="statusStyle"
+                              v-else-if="miner.status == 'ActionRequired'"
+                              :style="$status_color.Task_color('ActionRequired')">
+                              {{ languageMcp == 'en' ? 'ActionRequired' : '需要操作' }}
+                          </div>
+                          <div
+                              class="statusStyle"
+                              v-else-if="miner.status == 'DealSent'"
+                              :style="$status_color.Task_color('DealSent')">
+                              {{ languageMcp == 'en' ? 'DealSent' : '交易已发送' }}
+                          </div>
+                          <div class="statusStyle"
+                                v-else-if="miner.status == 'FileImporting'"
+                                :style="$status_color.Task_color('FileImporting')">
+                              {{ languageMcp == 'en' ? 'FileImporting' : '文件导入中' }}
+                          </div>
+                          <div class="statusStyle"
+                                v-else-if="miner.status == 'FileImported'"
+                                :style="$status_color.Task_color('FileImported')">
+                              {{ languageMcp == 'en' ? 'FileImported' : '文件已导入' }}
+                          </div>
+                          <div class="statusStyle"
+                                v-else-if="miner.status == 'ImportFailed'"
+                                :style="$status_color.Task_color('ImportFailed')">
+                              {{ languageMcp == 'en' ? 'ImportFailed' : '导入失败' }}
+                          </div>
+                          <div class="statusStyle"
+                                v-else-if="miner.status == 'Downloading'"
+                                :style="$status_color.Task_color('Downloading')">
+                              {{ languageMcp == 'en' ? 'Downloading' : '下载中' }}
+                          </div>
+                          <div class="statusStyle"
+                                v-else-if="miner.status == 'DownloadFailed'"
+                                :style="$status_color.Task_color('DownloadFailed')">
+                              {{ languageMcp == 'en' ? 'DownloadFailed' : '下载失败' }}
+                          </div>
+                          <div class="statusStyle"
+                                v-else-if="miner.status == 'DealActive'"
+                                :style="$status_color.Task_color('DealActive')">
+                              {{ languageMcp == 'en' ? 'DealActive' : '有效交易' }}
+                          </div>
+                          <div class="statusStyle"
+                                v-else-if="miner.status == 'Waiting'"
+                                :style="$status_color.Task_color('Waiting')">
+                              {{ languageMcp == 'en' ? 'Waiting' : '等待中' }}
+                          </div>
+                          <div class="statusStyle"
+                                v-else-if="miner.status == 'ReadyForImport'"
+                                :style="$status_color.Task_color('ReadyForImport')">
+                              {{ languageMcp == 'en' ? 'ReadyForImport' : '准备导入' }}
+                          </div>
+                          <div
+                              class="statusStyle"
+                              v-else-if="miner.status == ''">
+                              -
+                          </div>
+                          <div
+                              class="statusStyle"
+                              v-else>
+                              {{ miner.status }}
+                          </div>
+                      </div>
+                       <!-- @click="minerIdLink(scope.row.miner_fid)" -->
+                      <el-button slot="reference" @click="toDetail(miner.deal_id, scope.row.payload_cid)">
+                          {{miner.miner_fid}}<small v-if="i<scope.row.offline_deals.length-1">,&nbsp;</small>
+                      </el-button>
+                  </el-popover>
+                        
+                  <el-popover
+                      v-if="!(scope.row.offline_deals&&scope.row.offline_deals.length>0)"
                       placement="top"
                       trigger="hover" popper-class="elPopMiner"
                       v-model="scope.row.payloadAct">
@@ -259,17 +399,14 @@
                               {{ scope.row.deal_status }}
                           </div>
                       </div>
-                      <el-button slot="reference" v-if="scope.row.miner_fid" @click="minerIdLink(scope.row.miner_fid)">
-                          {{scope.row.miner_fid}}
-                      </el-button>
-                      <div v-else slot="reference">
+                      <div slot="reference" style="display: flex;align-items: center;">
                         {{$t('uploadFile.w3ss_id_nothing')}}
+                        
+                        <el-tooltip effect="dark" :content="$t('uploadFile.w3ss_id_nothing_tooltip')" placement="top">
+                            {{$t('uploadFile.w3ss_id_nothing')}}<img src="@/assets/images/info.png"/>
+                        </el-tooltip>
                       </div>
                   </el-popover>
-                        
-                  <el-tooltip v-if="!scope.row.miner_fid" effect="dark" :content="$t('uploadFile.w3ss_id_nothing_tooltip')" placement="top">
-                      <img src="@/assets/images/info.png"/>
-                  </el-tooltip>
                 </div>
               </div>
             </template>
@@ -535,9 +672,8 @@ export default {
     minerIdLink(id){
       window.open(`https://calibration.filscout.com/en/miner/${id}`)
     },
-    toDetail(row){
-      this.$router.push({name: 'my_files_filename', params: {id: row.id}})
-      // this.$router.push({name: 'my_files_detail', params: {id: id, cid: cid}})
+    toDetail(id, cid){
+      this.$router.push({name: 'my_files_detail', params: {id: id, cid: cid}})
     },
     clickRowHandle(row, column, event) {
       if (this.expands.includes(row.uuid)) {
@@ -1060,7 +1196,7 @@ export default {
             _this.tableData = response.data.data;
             _this.tableData.map((item,s) => {
               item.payloadAct = false
-              item.duration = item.duration/2880
+              item.duration = item.duration
               item.file_size_byte = _this.byteChange(item.file_size)
               item.create_at = item.create_at
                 ? item.create_at.length < 13
@@ -1137,7 +1273,7 @@ export default {
     let _this = this;
     document.getElementById("content-box").scrollTop = 0;
     _this.$store.dispatch("setRouterMenu", 1);
-    _this.$store.dispatch("setHeadertitle", _this.$t('navbar.deal'));
+    _this.$store.dispatch("setHeadertitle", _this.$t('route.Deal'));
     _this.stats()
     document.onkeydown = function (e) {
       if (e.keyCode === 13) {
@@ -1697,10 +1833,11 @@ export default {
                     display: flex;
                     align-items: center;
                     justify-content: center;
+                    flex-wrap: wrap;
                     padding: 0 0.1rem;
                     line-height: 1.5;
                     text-align: center;
-                    white-space: normal;
+                    // white-space: normal;
                     color: inherit;
                     text-shadow: 0 0 black;
                     text-indent: 0;
@@ -1836,6 +1973,13 @@ export default {
                 .opacity{
                   box-shadow: none;
                   color: #b8b8b8;
+                }
+              }
+              .hot-miner{
+                .el-button{
+                  span{
+                    white-space: nowrap;
+                  }
                 }
               }
 

@@ -14,7 +14,9 @@ alter table deal_file modify create_at bigint;
 SET SQL_SAFE_UPDATES = 0;
 update deal_file set update_at=null where update_at='';
 alter table deal_file modify update_at bigint;
-alter table deal_file add refund_status_after_unlock varchar(45);
+#--alter table deal_file add refund_status_after_unlock varchar(45);
+
+update deal_file set duration=duration/2880;
 
 
 SET SQL_SAFE_UPDATES = 0;
@@ -43,6 +45,7 @@ create table offline_deal (
     sender_wallet varchar(200) not null,
     status        varchar(45)  not null,
 	deal_id       bigint       not null,
+    unlock_status varchar(45)  not null,
 	create_at     bigint       not null,
 	update_at     bigint       not null,
     primary key pk_ofline_deal(id),
@@ -50,6 +53,6 @@ create table offline_deal (
 );
 
 
-
+create index ind_offline_deal_deal_file_id on offline_deal(deal_file_id)
 
 

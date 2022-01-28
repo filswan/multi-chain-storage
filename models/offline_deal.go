@@ -3,6 +3,8 @@ package models
 import (
 	"payment-bridge/common/constants"
 	"payment-bridge/database"
+	"strconv"
+	"strings"
 
 	"github.com/filswan/go-swan-lib/logs"
 )
@@ -16,6 +18,7 @@ type OfflineDeal struct {
 	SenderWallet string `json:"sender_wallet"`
 	Status       string `json:"status"`
 	DealId       int64  `json:"deal_id"`
+	UnlockStatus string `json:"unlock_status"`
 	CreateAt     int64  `json:"create_at"`
 	UpdateAt     int64  `json:"update_at"`
 }
@@ -59,6 +62,19 @@ func GetOfflineDealByDealId(dealId int64) ([]*OfflineDeal, error) {
 	return offlineDeals, nil
 }
 
+func GetOfflineDeals2BeUnlocked() ([]*OfflineDeal, error) {
+	var offlineDeals []*OfflineDeal
+	sql := "select a.* from offline_deal a where a.deal_id>0 and a.unlock_status=?"
+	err := database.GetDB().Raw(sql, constants.OFFLINE_DEAL_UNLOCK_STATUS_NOT_UNLOCKED).Scan(&offlineDeals).Error
+
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	return offlineDeals, nil
+}
+
 func GetOfflineDealsNotUnlockedByDealFileId(dealFileId int64) ([]*OfflineDeal, error) {
 	var offlineDeals []*OfflineDeal
 	sql := "select a.* from offline_deal a left outer join event_unlock_payment b on a.deal_id=b.deal_id where a.deal_file_id=? and b.deal_id is null"
@@ -70,4 +86,53 @@ func GetOfflineDealsNotUnlockedByDealFileId(dealFileId int64) ([]*OfflineDeal, e
 	}
 
 	return offlineDeals, nil
+}
+
+func GetOfflineDealsByDealFileId(dealFileId int64) ([]*OfflineDeal, error) {
+	var offlineDeals []*OfflineDeal
+	sql := "select a.* from offline_deal a where a.deal_file_id=?"
+	err := database.GetDB().Raw(sql, dealFileId).Scan(&offlineDeals).Error
+
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	return offlineDeals, nil
+}
+
+func GetOfflineDealsByDealFileIds(dealFileIds map[int64]bool) ([]*OfflineDeal, error) {
+	dealFileIdsStr := ""
+	for dealFileId, _ := range dealFileIds {
+		dealFileIdsStr = dealFileIdsStr + "," + strconv.FormatInt(dealFileId, 10)
+	}
+	dealFileIdsStr = strings.Trim(dealFileIdsStr, ",")
+	dealFileIdsStr = "(" + dealFileIdsStr + ")"
+
+	var offlineDeals []*OfflineDeal
+	sql := "select a.* from offline_deal a where a.deal_file_id in " + dealFileIdsStr
+	err := database.GetDB().Raw(sql).Scan(&offlineDeals).Error
+
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	return offlineDeals, nil
+}
+
+func UpdateOfflineDealUnlockStatus(id int64, unlockStatus string) error {
+	sql := "update offline_deal set unlock_status=? where id=?"
+
+	params := []interface{}{}
+	params = append(params, unlockStatus)
+	params = append(params, id)
+
+	err := database.GetDB().Exec(sql, params...).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	return nil
 }

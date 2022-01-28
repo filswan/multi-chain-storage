@@ -11,7 +11,6 @@ import (
 	"payment-bridge/config"
 	"payment-bridge/database"
 	"payment-bridge/models"
-	"payment-bridge/on-chain/services"
 	"payment-bridge/routers/billing"
 	"sync"
 	"time"
@@ -74,7 +73,7 @@ func CreateTask() error {
 
 	var srcFiles2Merged []*models.SourceFile
 	for _, srcFile := range srcFiles {
-		eventPayment, err := services.GetPaymentInfo(srcFile.PayloadCid)
+		eventPayment, err := GetPaymentInfo(srcFile.PayloadCid)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			continue
@@ -185,7 +184,7 @@ func getMaxPrice(srcFile models.SourceFile) (*decimal.Decimal, error) {
 		logs.GetLogger().Error(err)
 		return nil, err
 	}
-	maxPrice, err := GetMaxPriceForCreateTask(fileCoinPriceInUsdc, lockedFee, DURATION_DAYS, srcFile.FileSize)
+	maxPrice, err := GetMaxPriceForCreateTask(fileCoinPriceInUsdc, lockedFee, constants.DURATION_DAYS_DEFAULT, srcFile.FileSize)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
@@ -248,7 +247,7 @@ func createTask4SrcFiles(srcDir, carDir string, maxPrice decimal.Decimal, create
 	taskDescription := config.GetConfig().SwanTask.Description
 	startEpochIntervalHours := config.GetConfig().SwanTask.StartEpochHours
 
-	durationEpoch := DURATION_DAYS * 24 * 60 * 2
+	durationEpoch := constants.DURATION_DAYS_DEFAULT * 24 * 60 * 2
 	cmdTask := command.CmdTask{
 		SwanApiUrl:                 config.GetConfig().SwanApi.ApiUrl,
 		SwanToken:                  "",
@@ -298,7 +297,7 @@ func saveCarInfo2DB(fileDesc *libmodel.FileDesc, srcFiles []*models.SourceFile, 
 		PieceCid:          fileDesc.PieceCid,
 		CreateAt:          currentUtcMilliSecond,
 		UpdateAt:          currentUtcMilliSecond,
-		Duration:          DURATION_DAYS,
+		Duration:          constants.DURATION_DAYS_DEFAULT,
 		LockPaymentStatus: constants.LOCK_PAYMENT_STATUS_PROCESSING,
 		IsDeleted:         utils.GetBoolPointer(false),
 		MaxPrice:          maxPrice,

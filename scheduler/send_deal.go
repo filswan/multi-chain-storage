@@ -59,6 +59,12 @@ func SendDeal() error {
 		DealSourceIds:          []int{libconstants.TASK_SOURCE_ID_SWAN_PAYMENT},
 	}
 
+	lotusClient, err := lotus.LotusGetClient(config.GetConfig().Lotus.ClientApiUrl, config.GetConfig().Lotus.ClientAccessToken)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
 	currentUtcMilliSec := utils.GetCurrentUtcMilliSecond()
 	for _, dealFile := range dealFiles {
 		if currentUtcMilliSec-dealFile.CreateAt > 3*24*60*60*1000 {
@@ -92,12 +98,6 @@ func SendDeal() error {
 			logs.GetLogger().Error(err)
 		}
 
-		lotusClient, err := lotus.LotusGetClient(config.GetConfig().Lotus.ClientApiUrl, config.GetConfig().Lotus.ClientAccessToken)
-		if err != nil {
-			logs.GetLogger().Error(err)
-			continue
-		}
-
 		currentUtcMilliSec := utils.GetCurrentUtcMilliSecond()
 		for _, deal := range fileDescs[0].Deals {
 			dealInfo, err := lotusClient.LotusClientGetDealInfo(deal.DealCid)
@@ -114,6 +114,7 @@ func SendDeal() error {
 				SenderWallet: cmdAutoBidDeal.SenderWallet,
 				Status:       dealInfo.Status,
 				DealId:       dealFile.DealId,
+				UnlockStatus: constants.OFFLINE_DEAL_UNLOCK_STATUS_NOT_UNLOCKED,
 				CreateAt:     currentUtcMilliSec,
 				UpdateAt:     currentUtcMilliSec,
 			}

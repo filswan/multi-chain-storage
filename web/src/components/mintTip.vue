@@ -44,7 +44,7 @@
                     image: '',
                     description: '',
                     tx_hash: '',
-                    attributes: [{ trait_type: 'Size', value: parseInt(this.fileSize) }]
+                    attributes: [{ trait_type: 'Size', value: parseInt(this.mintRow.file_size) }]
                 },
                 rules: {
                     name: [
@@ -58,7 +58,7 @@
                 tokenId: ''
             };
         },
-        props: ['mineVisible', 'cid', 'dealID', 'fileSize'],
+        props: ['mintRow', 'mineVisible'],
         components: {},
         computed: {
             metaAddress() {
@@ -111,7 +111,7 @@
                             that.tokenId = await nftContract.methods.totalSupply().call()                            
                             
                             let mintInfoJson = {
-                                payload_cid: that.cid,
+                                payload_cid: that.mintRow.payload_cid,
                                 tx_hash: that.nftHash,
                                 token_id: that.tokenId,
                                 mint_address: that.$root.MINT_CONTRACT
@@ -131,12 +131,11 @@
             },
             async init(){
                 that.hashload = true
+                
+                that.ruleForm.name = that.mintRow.file_name
+                that.ruleForm.image = that.mintRow.ipfs_url
 
-                const response = await that.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/storage/deal/detail/${that.dealID}?payload_cid=${that.cid}&wallet_address=${that.metaAddress}`)
-                that.ruleForm.name = response.data.deal.file_name
-                that.ruleForm.image = response.data.deal.ipfs_url
-
-                const hashRes = await that.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/billing/deal/lockpayment/info?payload_cid=${that.cid}&wallet_address=${that.metaAddress}`)
+                const hashRes = await that.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/billing/deal/lockpayment/info?payload_cid=${that.mintRow.payload_cid}&wallet_address=${that.metaAddress}`)
                 that.ruleForm.tx_hash = hashRes.data.tx_hash
 
                 that.hashload = false

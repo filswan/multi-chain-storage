@@ -289,7 +289,6 @@ func UploadFileToIpfs(c *gin.Context) {
 	fileType := c.PostForm("file_type")
 	if strings.Trim(fileType, " ") == "" {
 		fileType = "0"
-		return
 	}
 
 	fileTypeInt, err := strconv.Atoi(fileType)

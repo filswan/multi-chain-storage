@@ -540,8 +540,8 @@
             <h3>{{$t('uploadFile.View_Your_NFT_Note')}}</h3>
             <a class="a-close" @click="mintTransaction=false">{{$t('uploadFile.CLOSE')}}</a>
         </el-dialog>
-    <mint-tip v-if="mineVisible" :mineVisible="mineVisible" :cid="mintCID" :dealID="dealID" :fileSize="fileSize"
-                @getMintDialog="getMintDialog"></mint-tip>
+
+        <mint-tip v-if="mineVisible" :mineVisible="mineVisible" :mintRow="mintRow" @getMintDialog="getMintDialog"></mint-tip>
       
     <!-- 回到顶部 -->
     <el-backtop target=".content-box" :bottom="40" :right="20"></el-backtop>
@@ -592,9 +592,7 @@ export default {
       exChangeList: [],
       payVisible: false,
       mineVisible: false,
-      mintCID: '',
-      dealID: '',
-      fileSize: '',
+      mintRow: {},
       mintContractAddress: this.$root.MINT_CONTRACT,
       tokenId: '',
       mint_address: '',
@@ -706,9 +704,7 @@ export default {
       return false
     },
     mintFunction(row){
-      this.mintCID = row.payload_cid
-      this.dealID = row.deal_id
-      this.fileSize = row.file_size
+      this.mintRow = row
       this.mineVisible=true
     },
     mintViewFunction(row){

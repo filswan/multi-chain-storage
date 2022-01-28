@@ -23,7 +23,7 @@ async function main() {
 
   const gatewayContractAddress = "0x12EDC75CE16d778Dc450960d5f1a744477ee49a0";
 
-  const cid = "abcd2bzacedh6keeksywaoa3wjryqzihqixyfekqgfljfosrcoyaj1";
+  const cid = "abcd2bzacedh6keeksywaoa3wjryqzihqixyfekqgfljfosrcoyaja";
 
   const [payer] = await ethers.getSigners();
 
@@ -41,7 +41,8 @@ async function main() {
     minPayment: one,
     amount: ten,
     lockTime: 60, // 6 days
-    recipient: recipientAddress, //todo:
+    recipient: recipientAddress,
+    size:0,
   }, overrides);
 
   await tx.wait();

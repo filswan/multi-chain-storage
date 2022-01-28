@@ -31,9 +31,9 @@ interface IPaymentMinimal {
     }
 
     /// @notice Returns the locked balance of caller in specific transaction
-    /// @param txId The transaction for which to look up the balance it has
+    /// @param cId The transaction for which to look up the balance it has
     /// @return tx The transaction object
-    function getLockedPaymentInfo(string calldata txId)
+    function getLockedPaymentInfo(string calldata cId)
         external
         view
         returns (TxInfo memory tx);

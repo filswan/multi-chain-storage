@@ -81,7 +81,20 @@ func UnlockPayment() error {
 	}
 
 	for _, offlineDeal := range offlineDeals {
-		err = unlock4Deal(filswanOracleSession, offlineDeal, ethClient, swanPaymentTransactor, tansactOpts, *recipient)
+		dealIdStr := strconv.FormatInt(offlineDeal.DealId, 10)
+
+		isPaymentAvailable, err := filswanOracleSession.IsCarPaymentAvailable(dealIdStr, *recipient)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return err
+		}
+
+		if !isPaymentAvailable {
+			logs.GetLogger().Info(fmt.Sprintf("payment is not available for deal:%s,recipient:%s", dealIdStr, recipient))
+			continue
+		}
+
+		err = unlockDeal(offlineDeal, ethClient, swanPaymentTransactor, tansactOpts, *recipient)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			continue
@@ -90,20 +103,8 @@ func UnlockPayment() error {
 	return nil
 }
 
-func unlock4Deal(filswanOracleSession *goBind.FilswanOracleSession, offlineDeal *models.OfflineDeal, ethClient *ethclient.Client, swanPaymentTransactor *goBind.SwanPaymentTransactor, tansactOpts *bind.TransactOpts, recipient common.Address) error {
+func unlockDeal(offlineDeal *models.OfflineDeal, ethClient *ethclient.Client, swanPaymentTransactor *goBind.SwanPaymentTransactor, tansactOpts *bind.TransactOpts, recipient common.Address) error {
 	dealIdStr := strconv.FormatInt(offlineDeal.DealId, 10)
-
-	isPaymentAvailable, err := filswanOracleSession.IsCarPaymentAvailable(dealIdStr, recipient)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
-
-	if !isPaymentAvailable {
-		msg := fmt.Sprintf("payment is not available for deal:%s,recipient:%s", dealIdStr, recipient)
-		logs.GetLogger().Info(msg)
-		return nil
-	}
 
 	tx, err := swanPaymentTransactor.UnlockCarPayment(tansactOpts, dealIdStr, recipient)
 	if err != nil {
@@ -141,6 +142,10 @@ func unlock4Deal(filswanOracleSession *goBind.FilswanOracleSession, offlineDeal 
 		}
 	}
 
+	return nil
+}
+
+func refund(offlineDeal *models.OfflineDeal, swanPaymentTransactor *goBind.SwanPaymentTransactor, tansactOpts *bind.TransactOpts) error {
 	offlineDealsNotUnlocked, err := models.GetOfflineDealsNotUnlockedByDealFileId(offlineDeal.DealFileId)
 	if err != nil {
 		logs.GetLogger().Error(err)

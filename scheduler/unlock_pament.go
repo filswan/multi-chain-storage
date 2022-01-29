@@ -19,6 +19,7 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
+	common2 "github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -108,18 +109,41 @@ func UnlockPayment() error {
 		return err
 	}
 
+	daoAddress := common2.HexToAddress(polygon.GetConfig().PolygonMainnetNode.DaoSwanOracleAddress)
+	daoOracleContractInstance, err := goBind.NewFilswanOracle(daoAddress, ethClient)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	filswanOracleSession := &goBind.FilswanOracleSession{}
+	filswanOracleSession.Contract = daoOracleContractInstance
+
 	for _, offlineDeal := range offlineDeals {
-		err = unlock4Deal(offlineDeal.Id, offlineDeal.DealId, offlineDeal.DealFileId, ethClient, swanPaymentTransactor, callOpts, recipient)
+		err = unlock4Deal(filswanOracleSession, offlineDeal.Id, offlineDeal.DealId, offlineDeal.DealFileId, ethClient, swanPaymentTransactor, callOpts, recipient)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			continue
 		}
 	}
-	return err
+	return nil
 }
 
-func unlock4Deal(offlineDealId, dealId, dealFileId int64, client *ethclient.Client, swanPaymentTransactor *goBind.SwanPaymentTransactor, callOpts *bind.TransactOpts, recipient common.Address) error {
+func unlock4Deal(filswanOracleSession *goBind.FilswanOracleSession, offlineDealId, dealId, dealFileId int64, client *ethclient.Client, swanPaymentTransactor *goBind.SwanPaymentTransactor, callOpts *bind.TransactOpts, recipient common.Address) error {
 	dealIdStr := strconv.FormatInt(dealId, 10)
+
+	isPaymentAvailable, err := filswanOracleSession.IsCarPaymentAvailable(dealIdStr, recipient)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	if !isPaymentAvailable {
+		msg := fmt.Sprintf("payment is not available for deal:%s,recipient:%s", dealIdStr, recipient)
+		logs.GetLogger().Info(msg)
+		return nil
+	}
+
 	tx, err := swanPaymentTransactor.UnlockCarPayment(callOpts, dealIdStr, recipient)
 	if err != nil {
 		logs.GetLogger().Error(err)

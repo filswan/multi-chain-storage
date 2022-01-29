@@ -28,7 +28,7 @@ func main() {
 
 	scheduler.InitScheduler()
 	//	scheduler.CreateTask()
-	scheduler.UnlockPayment()
+	//scheduler.UnlockPayment()
 
 	scheduler.CreateTaskScheduler()
 	scheduler.SendDealScheduler()

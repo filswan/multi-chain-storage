@@ -8,6 +8,7 @@ import (
 	"payment-bridge/common/constants"
 	"payment-bridge/common/errorinfo"
 	"payment-bridge/common/utils"
+	"payment-bridge/database"
 	"payment-bridge/models"
 	"strconv"
 	"strings"
@@ -21,6 +22,40 @@ func BillingManager(router *gin.RouterGroup) {
 	router.GET("", GetUserBillingHistory)
 	router.GET("/price/filecoin", GetFileCoinLastestPrice)
 	router.GET("/deal/lockpayment/info", GetLockPaymentInfoByPayloadCid)
+	router.POST("/deal/lockpayment", WriteLockPayment)
+}
+
+func WriteLockPayment(c *gin.Context) {
+	var event models.EventLockPayment
+	err := c.BindJSON(&event)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusOK, common.CreateErrorResponse(err.Error()))
+		return
+	}
+
+	usdcCoinId, err := models.FindCoinIdByUUID(constants.COIN_TYPE_USDC_ON_POLYGON_UUID)
+	if err != nil {
+		logs.GetLogger().Error(err)
+	} else {
+		event.CoinId = usdcCoinId
+	}
+
+	networkId, err := models.FindNetworkIdByUUID(constants.NETWORK_TYPE_POLYGON_UUID)
+	if err != nil {
+		logs.GetLogger().Error(err)
+	} else {
+		event.NetworkId = networkId
+	}
+
+	err = database.GetDB().Save(&event).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(err.Error()))
+		return
+	}
+
+	c.JSON(http.StatusOK, common.CreateSuccessResponse(""))
 }
 
 func GetLockPaymentInfoByPayloadCid(c *gin.Context) {

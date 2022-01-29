@@ -1,7 +1,9 @@
 package scheduler
 
 import (
+	"context"
 	"fmt"
+	"math/big"
 	"os"
 	"path/filepath"
 	"payment-bridge/blockchain/browsersync/scanlockpayment/polygon"
@@ -15,7 +17,10 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
+	common2 "github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/filswan/go-swan-lib/logs"
 	libutils "github.com/filswan/go-swan-lib/utils"
@@ -33,8 +38,6 @@ type Schedule struct {
 var carDir string
 var srcDir string
 
-var privateKeyOnPolygon string
-
 func GetSrcDir() string {
 	return srcDir
 }
@@ -42,16 +45,6 @@ func GetSrcDir() string {
 func InitScheduler() {
 	createDir()
 	//createScheduleJob()
-
-	privateKeyOnPolygon = os.Getenv("privateKeyOnPolygon")
-	if len(privateKeyOnPolygon) <= 0 {
-		err := fmt.Errorf("env variable privateKeyOnPolygon is not defined")
-		logs.GetLogger().Fatal(err)
-	}
-
-	if strings.HasPrefix(strings.ToLower(privateKeyOnPolygon), "0x") {
-		privateKeyOnPolygon = privateKeyOnPolygon[2:]
-	}
 }
 
 func createScheduleJob() {
@@ -132,6 +125,81 @@ func DialEthClient() (*ethclient.Client, error) {
 	}
 
 	return ethClient, nil
+}
+
+func GetSwanPaymentTransactor(ethClient *ethclient.Client) (*common.Address, *goBind.SwanPaymentTransactor, error) {
+	recipient := common.HexToAddress(polygon.GetConfig().PolygonMainnetNode.PaymentContractAddress)
+	swanPaymentTransactor, err := goBind.NewSwanPaymentTransactor(recipient, ethClient)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, nil, err
+	}
+
+	return &recipient, swanPaymentTransactor, nil
+}
+
+func GetFilswanOracleSession(ethClient *ethclient.Client) (*goBind.FilswanOracleSession, error) {
+	daoAddress := common2.HexToAddress(polygon.GetConfig().PolygonMainnetNode.DaoSwanOracleAddress)
+	daoOracleContractInstance, err := goBind.NewFilswanOracle(daoAddress, ethClient)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	filswanOracleSession := &goBind.FilswanOracleSession{}
+	filswanOracleSession.Contract = daoOracleContractInstance
+
+	return filswanOracleSession, nil
+}
+
+func GetTransactOpts(ethClient *ethclient.Client) (*bind.TransactOpts, error) {
+	privateKeyOnPolygon := os.Getenv("privateKeyOnPolygon")
+	if len(privateKeyOnPolygon) <= 0 {
+		err := fmt.Errorf("env variable privateKeyOnPolygon is not defined")
+		logs.GetLogger().Fatal(err)
+	}
+
+	if strings.HasPrefix(strings.ToLower(privateKeyOnPolygon), "0x") {
+		privateKeyOnPolygon = privateKeyOnPolygon[2:]
+	}
+
+	privateKey, err := crypto.HexToECDSA(privateKeyOnPolygon)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	adminAddress := common.HexToAddress(config.GetConfig().AdminWalletOnPolygon)
+	nonce, err := ethClient.PendingNonceAt(context.Background(), adminAddress)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	gasPrice, err := ethClient.SuggestGasPrice(context.Background())
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	chainId, err := ethClient.ChainID(context.Background())
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	transactOpts, err := bind.NewKeyedTransactorWithChainID(privateKey, chainId)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	transactOpts.Nonce = big.NewInt(int64(nonce))
+	transactOpts.GasPrice = gasPrice
+	transactOpts.GasLimit = uint64(polygon.GetConfig().PolygonMainnetNode.GasLimit)
+	transactOpts.Context = context.Background()
+
+	return transactOpts, nil
 }
 
 func GetPaymentSession() (*goBind.SwanPaymentSession, error) {

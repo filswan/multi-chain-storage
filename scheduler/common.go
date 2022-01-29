@@ -116,7 +116,7 @@ func createDir() {
 	}
 }
 
-func DialEthClient() (*ethclient.Client, error) {
+func GetEthClient() (*ethclient.Client, error) {
 	polygonRpcUrl := config.GetConfig().PolygonRpcUrl
 	ethClient, err := ethclient.Dial(polygonRpcUrl)
 	if err != nil {
@@ -203,7 +203,7 @@ func GetTransactOpts(ethClient *ethclient.Client) (*bind.TransactOpts, error) {
 }
 
 func GetPaymentSession() (*goBind.SwanPaymentSession, error) {
-	ethClient, err := DialEthClient()
+	ethClient, err := GetEthClient()
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err

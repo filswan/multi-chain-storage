@@ -56,7 +56,7 @@ func UnlockPayment() error {
 		return nil
 	}
 
-	ethClient, err := DialEthClient()
+	ethClient, err := GetEthClient()
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err

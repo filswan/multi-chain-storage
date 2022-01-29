@@ -91,6 +91,12 @@ func UnlockPayment() error {
 			logs.GetLogger().Info(fmt.Sprintf("deal:%d, not unlocked", offlineDeal.Id))
 			continue
 		}
+
+		err = refund(offlineDeal, swanPaymentTransactor, tansactOpts)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			continue
+		}
 	}
 	return nil
 }
@@ -154,31 +160,34 @@ func refund(offlineDeal *models.OfflineDeal, swanPaymentTransactor *goBind.SwanP
 		return err
 	}
 
-	if len(offlineDealsNotUnlocked) == 0 {
-		var srcFilePayloadCids []string
-		srcFiles, err := models.GetSourceFilesByDealFileId(offlineDeal.DealFileId)
-		if err != nil {
-			logs.GetLogger().Error(err)
-			return err
-		}
+	if len(offlineDealsNotUnlocked) > 0 {
+		logs.GetLogger().Info(fmt.Sprintf("still has deal not unlocked, unable to refund for deal:%d", offlineDeal.DealId))
+		return nil
+	}
 
-		for _, srcFile := range srcFiles {
-			srcFilePayloadCids = append(srcFilePayloadCids, srcFile.PayloadCid)
-		}
+	var srcFilePayloadCids []string
+	srcFiles, err := models.GetSourceFilesByDealFileId(offlineDeal.DealFileId)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
 
-		lockPaymentStatus := constants.LOCK_PAYMENT_STATUS_UNLOCK_REFUNDED
-		_, err = swanPaymentTransactor.Refund(tansactOpts, srcFilePayloadCids)
-		if err != nil {
-			lockPaymentStatus = constants.LOCK_PAYMENT_STATUS_UNLOCK_REFUNDFAILED
-			logs.GetLogger().Error(err)
-		}
+	for _, srcFile := range srcFiles {
+		srcFilePayloadCids = append(srcFilePayloadCids, srcFile.PayloadCid)
+	}
 
-		currrentTime := utils.GetCurrentUtcMilliSecond()
-		err = models.UpdateDealFile(models.DealFile{ID: offlineDeal.DealFileId},
-			map[string]interface{}{"lock_payment_status": lockPaymentStatus, "update_at": currrentTime})
-		if err != nil {
-			logs.GetLogger().Error(err)
-		}
+	lockPaymentStatus := constants.LOCK_PAYMENT_STATUS_UNLOCK_REFUNDED
+	_, err = swanPaymentTransactor.Refund(tansactOpts, srcFilePayloadCids)
+	if err != nil {
+		lockPaymentStatus = constants.LOCK_PAYMENT_STATUS_UNLOCK_REFUNDFAILED
+		logs.GetLogger().Error(err)
+	}
+
+	currrentTime := utils.GetCurrentUtcMilliSecond()
+	err = models.UpdateDealFile(models.DealFile{ID: offlineDeal.DealFileId},
+		map[string]interface{}{"lock_payment_status": lockPaymentStatus, "update_at": currrentTime})
+	if err != nil {
+		logs.GetLogger().Error(err)
 	}
 
 	return nil

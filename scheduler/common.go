@@ -17,6 +17,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	common2 "github.com/ethereum/go-ethereum/common"
@@ -222,6 +223,18 @@ func GetPaymentSession() (*goBind.SwanPaymentSession, error) {
 	swanPaymentSession.Contract = paymentGatewayInstance
 
 	return swanPaymentSession, nil
+}
+
+func GetContractAbi() (*abi.ABI, error) {
+	paymentAbiString := goBind.SwanPaymentABI
+
+	contractAbi, err := abi.JSON(strings.NewReader(paymentAbiString))
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	return &contractAbi, nil
 }
 
 func GetPaymentInfo(srcFilePayloadCid string) (*models.EventLockPayment, error) {

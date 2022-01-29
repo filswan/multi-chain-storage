@@ -29,6 +29,8 @@ alter table event_lock_payment modify create_at bigint;
 
 alter table event_unlock_payment modify create_at bigint;
 alter table event_unlock_payment add deal_id bigint;
+alter table event_unlock_payment add source_file_id bigint;
+alter table event_unlock_payment add foreign key fk_event_unlock_payment_source_file_id(source_file_id) references source_file(id)
 
 
 create unique index un_event_lock_payment on event_lock_payment(payload_cid, address_from);

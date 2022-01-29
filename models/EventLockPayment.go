@@ -28,6 +28,7 @@ type EventLockPayment struct {
 	UnlockTxHash    string `json:"unlock_tx_hash"`
 	UnlockTxStatus  string `json:"unlock_tx_status"`
 	UnlockTime      string `json:"unlock_time"`
+	SourceFileId    *int64 `json:"source_file_id"`
 }
 
 // FindEvents (&Event{Id: "0xadeaCC802D0f2DFd31bE4Fa7434F15782Fd720ac"},"id desc","10","0")

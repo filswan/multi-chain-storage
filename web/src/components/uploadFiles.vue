@@ -465,7 +465,7 @@
                 web3.eth.getTransactionReceipt(txHash).then(
                     async res => {
                         console.log('checking ... ');
-                        if (!res) { return _this.timer = setTimeout(() => { _this.checkTransaction(txHash, resData); }, 2000); }
+                        if (!res) { return _this.timer = setTimeout(() => { _this.checkTransaction(txHash, resData, lockObj); }, 2000); }
                         else {
                             const lockPaymentTime = await new Date().getTime();
                             _this.sendPayment(txHash, resData, lockObj, lockPaymentTime)

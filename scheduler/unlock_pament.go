@@ -81,7 +81,7 @@ func UnlockPayment() error {
 	}
 
 	for _, offlineDeal := range offlineDeals {
-		err = unlock4Deal(filswanOracleSession, offlineDeal.Id, offlineDeal.DealId, offlineDeal.DealFileId, ethClient, swanPaymentTransactor, tansactOpts, *recipient)
+		err = unlock4Deal(filswanOracleSession, offlineDeal, ethClient, swanPaymentTransactor, tansactOpts, *recipient)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			continue
@@ -90,8 +90,8 @@ func UnlockPayment() error {
 	return nil
 }
 
-func unlock4Deal(filswanOracleSession *goBind.FilswanOracleSession, offlineDealId, dealId, dealFileId int64, client *ethclient.Client, swanPaymentTransactor *goBind.SwanPaymentTransactor, tansactOpts *bind.TransactOpts, recipient common.Address) error {
-	dealIdStr := strconv.FormatInt(dealId, 10)
+func unlock4Deal(filswanOracleSession *goBind.FilswanOracleSession, offlineDeal *models.OfflineDeal, ethClient *ethclient.Client, swanPaymentTransactor *goBind.SwanPaymentTransactor, tansactOpts *bind.TransactOpts, recipient common.Address) error {
+	dealIdStr := strconv.FormatInt(offlineDeal.DealId, 10)
 
 	isPaymentAvailable, err := filswanOracleSession.IsCarPaymentAvailable(dealIdStr, recipient)
 	if err != nil {
@@ -111,7 +111,7 @@ func unlock4Deal(filswanOracleSession *goBind.FilswanOracleSession, offlineDealI
 		return err
 	}
 
-	txReceipt, err := utils.CheckTx(client, tx)
+	txReceipt, err := utils.CheckTx(ethClient, tx)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
@@ -126,7 +126,7 @@ func unlock4Deal(filswanOracleSession *goBind.FilswanOracleSession, offlineDealI
 	unlockTxStatus := constants.TRANSACTION_STATUS_SUCCESS
 	logs.GetLogger().Println("unlock success! txHash=" + tx.Hash().Hex())
 
-	err = models.UpdateOfflineDealUnlockStatus(offlineDealId, constants.OFFLINE_DEAL_UNLOCK_STATUS_UNLOCKED)
+	err = models.UpdateOfflineDealUnlockStatus(offlineDeal.Id, constants.OFFLINE_DEAL_UNLOCK_STATUS_UNLOCKED)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
@@ -134,14 +134,14 @@ func unlock4Deal(filswanOracleSession *goBind.FilswanOracleSession, offlineDealI
 
 	if len(txReceipt.Logs) > 0 {
 		eventLogs := txReceipt.Logs
-		err = saveUnlockEventLogToDB(eventLogs, unlockTxStatus, dealId)
+		err = saveUnlockEventLogToDB(eventLogs, unlockTxStatus, offlineDeal.DealId)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			return err
 		}
 	}
 
-	offlineDealsNotUnlocked, err := models.GetOfflineDealsNotUnlockedByDealFileId(dealFileId)
+	offlineDealsNotUnlocked, err := models.GetOfflineDealsNotUnlockedByDealFileId(offlineDeal.DealFileId)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
@@ -149,7 +149,7 @@ func unlock4Deal(filswanOracleSession *goBind.FilswanOracleSession, offlineDealI
 
 	if len(offlineDealsNotUnlocked) == 0 {
 		var srcFilePayloadCids []string
-		srcFiles, err := models.GetSourceFilesByDealFileId(dealFileId)
+		srcFiles, err := models.GetSourceFilesByDealFileId(offlineDeal.DealFileId)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			return err
@@ -167,7 +167,7 @@ func unlock4Deal(filswanOracleSession *goBind.FilswanOracleSession, offlineDealI
 		}
 
 		currrentTime := utils.GetCurrentUtcMilliSecond()
-		err = models.UpdateDealFile(models.DealFile{ID: dealFileId},
+		err = models.UpdateDealFile(models.DealFile{ID: offlineDeal.DealFileId},
 			map[string]interface{}{"lock_payment_status": lockPaymentStatus, "update_at": currrentTime})
 		if err != nil {
 			logs.GetLogger().Error(err)

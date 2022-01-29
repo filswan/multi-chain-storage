@@ -32,7 +32,7 @@
         <!-- @row-click="tableTrClick" highlight-current-row  -->
         <el-table
           :data="tableData" ref="singleTable"  stripe
-          style="width: 100%"
+          style="width: 100%" max-height="380"
           :empty-text="$t('deal.formNotData')"
            v-loading="loading"
         >
@@ -469,6 +469,7 @@
           <div class="pagination">
             <el-pagination
               :total="parma.total"
+              :page-sizes="[10, 20, 30]"
               :page-size="parma.limit"
               :current-page="parma.offset"
               :pager-count="bodyWidth ? 5 : 7"
@@ -476,10 +477,16 @@
               :layout="
                 bodyWidth
                   ? 'prev, pager, next'
-                  : 'total, prev, pager, next, jumper'
+                  : 'total, sizes, prev, pager, next'
               "
               @current-change="handleCurrentChange"
+              @size-change="handleSizeChange"
             />
+            <div class="span" v-if="!bodyWidth">
+              <span>{{$t('uploadFile.goTo')}}</span>
+              <el-input class="paginaInput" @change="pageSizeChange" v-model.number="parma.jumperOffset" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')" autocomplete="off"></el-input>
+              <span>{{$t('uploadFile.goTopage')}}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -574,6 +581,7 @@ export default {
         offset: 1,
         locationValue: "",
         total: 0,
+        jumperOffset: 1
       },
       parmaChild: {
         limit: 10,
@@ -625,6 +633,7 @@ export default {
       failTransaction: false,
       loadMetamaskPay: false,
       payRow: {},
+      resData: {},
       storage: 0,
       biling_price: 0,
       cost: {
@@ -655,6 +664,7 @@ export default {
       let _this = this
       _this.parma.limit = 10
       _this.parma.offset = 1
+      _this.parma.jumperOffset = 1
       _this.parmaChild.limit = 10
       _this.parmaChild.offset = 1
       _this.getData()
@@ -838,11 +848,11 @@ export default {
             recipient: _this.recipientAddress, //todo:
             size: _this.payRow.file_size
         }
-        console.log('deals:', lockObj)
+        
         contract_instance.methods.lockTokenPayment(lockObj)
         .send(payObject)
         .on('transactionHash', function(hash){
-            // console.log('hash console:', hash);
+            console.log('hash console:', hash);
             _this.loadMetamaskPay = true
             _this.loading = false
             _this.txHash = hash
@@ -853,7 +863,7 @@ export default {
         .on('receipt', function(receipt){
             // receipt example
             // console.log('receipt console:', receipt);
-            _this.checkTransaction(receipt.transactionHash, cid)
+            _this.checkTransaction(receipt.transactionHash, cid, _this.payRow, lockObj)
             _this.txHash = receipt.transactionHash
         })
         .on('error', function(error){
@@ -864,13 +874,17 @@ export default {
             _this.failTransaction = true
         }); 
     },
-    checkTransaction(txHash, cid) {
+    checkTransaction(txHash, cid, resData, lockObj) {
         let _this = this
         web3.eth.getTransactionReceipt(txHash).then(
-            res => {
+            async res => {
                 console.log('checking ... ');
-                if (!res) { return _this.timer = setTimeout(() => { _this.checkTransaction(txHash, cid); }, 2000); }
+                if (!res) { return _this.timer = setTimeout(() => { _this.checkTransaction(txHash, cid, resData, lockObj); }, 2000); }
                 else {
+                    if(resData){
+                      const lockPaymentTime = await new Date().getTime();
+                      _this.sendPayment(txHash, resData, lockObj, lockPaymentTime)
+                    }
                     clearTimeout(_this.timer)
                     setTimeout(function(){
                       _this.loading = false
@@ -881,6 +895,32 @@ export default {
             },
             err => { console.error(err); }
         );
+    },
+    sendPayment(txHash, resData, lockObj, lockPaymentTime) {
+        let lockParam = {
+            "tx_hash": txHash,
+            "payload_cid": resData.payload_cid,
+            "token_address":"",
+            "min_payment": lockObj.minPayment,
+            "contract_address": this.gatewayContractAddress,
+            "locked_fee":"",
+            "deadline":"",
+            "block_no":"",
+            "miner_address":"",
+            "address_from": this.metaAddress,
+            "address_to": this.gatewayContractAddress,
+            "lock_payment_time": lockPaymentTime,
+            "unlock_tx_hash":"",
+            "unlock_tx_status":"",
+            "unlock_time":"",
+            "source_file_id":resData.id
+        }
+
+        axios.post(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/billing/deal/lockpayment`, lockParam)
+        .then((res) => {
+        }).catch(error => {
+            console.log(error)
+        })
     },
     finishClose(){
         this.finishTransaction = false
@@ -1107,6 +1147,7 @@ export default {
       _this.parma.limit = 10;
       _this.paginationShow = true;
       _this.parma.offset = 1;
+      _this.parma.jumperOffset = 1;
       _this.getData();
     },
     clearAll() {
@@ -1114,11 +1155,33 @@ export default {
       _this.searchValue = "";
       _this.parma.limit = 10;
       _this.parma.offset = 1;
+      _this.parma.jumperOffset = 1;
       _this.getData();
     },
     handleCurrentChange(val) {
-      this.parma.offset = val;
+      this.parma.offset = Number(val);
+      this.parma.jumperOffset = String(val)
       this.getData();
+    },
+    handleSizeChange (val){
+      this.parma.limit = Number(val);
+      this.parma.offset = 1;
+      this.parma.jumperOffset = 1;
+      this.getData();
+    },
+    pageSizeChange(recordPage=parseInt(this.parma.jumperOffset), MaxPagenumber=Math.ceil(this.parma.total/this.parma.limit)) {
+      if((recordPage > MaxPagenumber) && (MaxPagenumber > 0)){ 
+        recordPage = MaxPagenumber; 
+      }else if(MaxPagenumber<=0){
+        recordPage = 1;  
+      }else if(recordPage < 1){ 
+        recordPage = 1;           
+      }else if(this.parma.jumperOffset==NaN || this.parma.jumperOffset==""){  
+        recordPage = 1;
+      }
+      this.parma.offset = Number(recordPage);
+      this.parma.jumperOffset = recordPage;
+      this.getData(); 
     },
     stats(){
         let _this = this
@@ -1603,24 +1666,6 @@ export default {
             line-height: 0.24rem;
           }
         }
-
-        .el-select /deep/ {
-          float: right;
-          // width: 30%;
-          .el-input__inner {
-            border-radius: 0.08rem;
-            border: 1px solid #f8f8f8;
-            color: #737373;
-            font-size: 0.12rem;
-            height: 0.24rem;
-            line-height: 0.24rem;
-            padding: 0 0.1rem;
-          }
-
-          .el-input__icon {
-            line-height: 0.24rem;
-          }
-        }
       }
       .search_file{
         display: flex;
@@ -1712,7 +1757,7 @@ export default {
 
       .el-table /deep/ {
         overflow: visible;
-        overflow-x: scroll;
+        // overflow-x: scroll;
         .el-loading-mask{
           .el-loading-spinner{
             top: 50%;
@@ -1720,7 +1765,7 @@ export default {
         }
         .el-table__body-wrapper,
         .el-table__header-wrapper {
-          overflow: visible;
+          // overflow: visible;
         }
 
         tr {
@@ -2278,50 +2323,6 @@ export default {
         }
       }
 
-      .el-select /deep/ {
-        position: relative;
-        cursor: pointer;
-        color: transparent;
-
-        .el-input {
-          background: transparent;
-          color: transparent;
-
-          .el-input__inner {
-            height: 0.27rem;
-            line-height: 0.27rem;
-            padding: 0 0.07rem;
-            background: transparent;
-            color: transparent;
-            border-color: #f7f7f7;
-            border-radius: 0.08rem;
-          }
-
-          .el-input__suffix {
-            display: none;
-          }
-
-          input::-webkit-input-placeholder {
-            color: transparent;
-          }
-
-          input::-moz-placeholder {
-            /* Mozilla Firefox 19+ */
-            color: transparent;
-          }
-
-          input:-moz-placeholder {
-            /* Mozilla Firefox 4 to 18 */
-            color: transparent;
-          }
-
-          input:-ms-input-placeholder {
-            /* Internet Explorer 10-11 */
-            color: transparent;
-          }
-        }
-      }
-
       .actionStyle {
         position: relative;
         display: flex;
@@ -2424,11 +2425,39 @@ export default {
       height: 0.35rem;
       text-align: center;
       margin: 0.05rem 0;
+      padding: 0 5% 0 0;
+      @media screen and (max-width: 1024px){
+        padding: 0;
+      }
       .pagination {
         display: flex;
         align-items: center;
         font-size: 0.1372rem;
         color: #000;
+        .el-select /deep/{
+          max-width: 100px;
+          margin-right: 0.15rem;
+          .el-input__inner, .el-input__icon{
+            height: 30px;
+            line-height: 30px;
+          }
+        }
+        .span{
+          margin: 0 0 0 10px;
+          font-size: 13px;
+          font-weight: 400;
+          color: #606266;
+          white-space: nowrap;
+        }
+        .paginaInput /deep/{
+          max-width: 50px;
+          .el-input__inner, .el-input__icon{
+            padding: 0 3px;
+            height: 30px;
+            line-height: 30px;
+            text-align: center;
+          }
+        }
 
         .pagination_left {
           width: 0.24rem;
@@ -2669,12 +2698,6 @@ export default {
           }
 
           .search_right {
-
-            .el-select /deep/ {
-              .el-input__inner {
-                font-size: 0.1372rem;
-              }
-            }
 
             .el-button /deep/ {
               padding: 0 0.2rem;

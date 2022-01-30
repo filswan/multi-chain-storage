@@ -2,12 +2,9 @@ package scheduler
 
 import (
 	"fmt"
-	"math/big"
-	"payment-bridge/blockchain/browsersync/scanlockpayment/polygon"
 	"payment-bridge/common/constants"
 	"payment-bridge/common/utils"
 	"payment-bridge/config"
-	"payment-bridge/database"
 	"payment-bridge/models"
 	"payment-bridge/on-chain/client"
 	"payment-bridge/on-chain/goBind"
@@ -17,7 +14,6 @@ import (
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/filswan/go-swan-lib/logs"
 	"github.com/robfig/cron"
@@ -140,16 +136,17 @@ func unlockDeal(filswanOracleSession *goBind.FilswanOracleSession, offlineDeal *
 		return false, err
 	}
 
-	if len(txReceipt.Logs) > 0 {
-		eventLogs := txReceipt.Logs
-		err = saveUnlockEventLogToDB(eventLogs, unlockTxStatus, offlineDeal.DealId)
-		if err != nil {
-			logs.GetLogger().Error(err)
-			return false, err
-		}
+	if len(txReceipt.Logs) == 0 {
+		return true, nil
 	}
 
-	return false, nil
+	err = client.SaveEventUnlockPayment(txReceipt.Logs, unlockTxStatus, offlineDeal.DealId)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return false, err
+	}
+
+	return true, nil
 }
 
 func refund(offlineDeal *models.OfflineDeal, swanPaymentTransactor *goBind.SwanPaymentTransactor, tansactOpts *bind.TransactOpts) error {
@@ -189,63 +186,5 @@ func refund(offlineDeal *models.OfflineDeal, swanPaymentTransactor *goBind.SwanP
 		logs.GetLogger().Error(err)
 	}
 
-	return nil
-}
-
-func saveUnlockEventLogToDB(logsInChain []*types.Log, unlockStatus string, dealId int64) error {
-	contractUnlockFunctionSignature := polygon.GetConfig().PolygonMainnetNode.ContractUnlockFunctionSignature
-
-	contractAbi, err := client.GetContractAbi()
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
-
-	for _, vLog := range logsInChain {
-		//if log have this contractor function signer
-		if vLog.Topics[0].Hex() == contractUnlockFunctionSignature {
-			eventList, err := models.FindEventUnlockPayments(&models.EventUnlockPayment{TxHash: vLog.TxHash.Hex(), BlockNo: strconv.FormatUint(vLog.BlockNumber, 10)}, "id desc", "10", "0")
-			if err != nil {
-				logs.GetLogger().Error(err)
-				continue
-			}
-			if len(eventList) <= 0 {
-				event := new(models.EventUnlockPayment)
-				dataList, err := contractAbi.Unpack("UnlockPayment", vLog.Data)
-				if err != nil {
-					logs.GetLogger().Error(err)
-					continue
-				}
-				event.DealId = dealId
-				event.TxHash = vLog.TxHash.Hex()
-				networkId, err := models.FindNetworkIdByUUID(constants.NETWORK_TYPE_POLYGON_UUID)
-				if err != nil {
-					logs.GetLogger().Error(err)
-				} else {
-					event.NetworkId = networkId
-				}
-				coinId, err := models.FindCoinIdByUUID(constants.COIN_TYPE_USDC_ON_POLYGON_UUID)
-				if err != nil {
-					logs.GetLogger().Error(err)
-				} else {
-					event.CoinId = coinId
-				}
-				event.TokenAddress = dataList[1].(common.Address).Hex()
-				event.UnlockToAdminAmount = dataList[2].(*big.Int).String()
-				event.UnlockToUserAmount = dataList[3].(*big.Int).String()
-				event.UnlockToAdminAddress = dataList[4].(common.Address).Hex()
-				event.UnlockToUserAddress = dataList[5].(common.Address).Hex()
-				event.UnlockTime = strconv.FormatInt(utils.GetCurrentUtcMilliSecond(), 10)
-				event.BlockNo = strconv.FormatUint(vLog.BlockNumber, 10)
-				event.CreateAt = utils.GetCurrentUtcMilliSecond()
-				event.UnlockStatus = unlockStatus
-				err = database.SaveOneWithTransaction(event)
-				if err != nil {
-					logs.GetLogger().Error(err)
-				}
-
-			}
-		}
-	}
 	return nil
 }

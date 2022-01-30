@@ -5,6 +5,7 @@ import (
 	"payment-bridge/blockchain/browsersync/scanlockpayment/polygon"
 	"payment-bridge/common/constants"
 	"payment-bridge/common/utils"
+	"payment-bridge/database"
 	"payment-bridge/models"
 	"strconv"
 
@@ -13,16 +14,15 @@ import (
 	"github.com/filswan/go-swan-lib/logs"
 )
 
-func GetEventUnlockPayment(logsInChain []*types.Log, unlockStatus string, dealId int64) (*models.EventUnlockPayment, error) {
+func SaveEventUnlockPayment(logsInChain []*types.Log, unlockStatus string, dealId int64) error {
 	contractUnlockFunctionSignature := polygon.GetConfig().PolygonMainnetNode.ContractUnlockFunctionSignature
 
 	contractAbi, err := GetContractAbi()
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return nil, err
+		return err
 	}
 
-	var event *models.EventUnlockPayment
 	for _, vLog := range logsInChain {
 		if vLog.Topics[0].Hex() != contractUnlockFunctionSignature {
 			continue
@@ -57,7 +57,13 @@ func GetEventUnlockPayment(logsInChain []*types.Log, unlockStatus string, dealId
 		event.BlockNo = strconv.FormatUint(vLog.BlockNumber, 10)
 		event.CreateAt = utils.GetCurrentUtcMilliSecond()
 		event.UnlockStatus = unlockStatus
+
+		err = database.SaveOneWithTransaction(event)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return err
+		}
 	}
 
-	return event, nil
+	return nil
 }

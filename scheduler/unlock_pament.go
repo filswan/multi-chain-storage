@@ -9,13 +9,12 @@ import (
 	"payment-bridge/config"
 	"payment-bridge/database"
 	"payment-bridge/models"
+	"payment-bridge/on-chain/client"
 	"payment-bridge/on-chain/goBind"
 	"strconv"
-	"strings"
 	"sync"
 	"time"
 
-	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -56,25 +55,25 @@ func UnlockPayment() error {
 		return nil
 	}
 
-	ethClient, err := GetEthClient()
+	ethClient, err := client.GetEthClient()
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
 	}
 
-	recipient, swanPaymentTransactor, err := GetSwanPaymentTransactor(ethClient)
+	recipient, swanPaymentTransactor, err := client.GetSwanPaymentTransactor(ethClient)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
 	}
 
-	filswanOracleSession, err := GetFilswanOracleSession(ethClient)
+	filswanOracleSession, err := client.GetFilswanOracleSession(ethClient)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
 	}
 
-	tansactOpts, err := GetTransactOpts(ethClient)
+	tansactOpts, err := client.GetTransactOpts(ethClient)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
@@ -194,14 +193,14 @@ func refund(offlineDeal *models.OfflineDeal, swanPaymentTransactor *goBind.SwanP
 }
 
 func saveUnlockEventLogToDB(logsInChain []*types.Log, unlockStatus string, dealId int64) error {
-	paymentAbiString := goBind.SwanPaymentABI
-
 	contractUnlockFunctionSignature := polygon.GetConfig().PolygonMainnetNode.ContractUnlockFunctionSignature
-	contractAbi, err := abi.JSON(strings.NewReader(paymentAbiString))
+
+	contractAbi, err := client.GetContractAbi()
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
 	}
+
 	for _, vLog := range logsInChain {
 		//if log have this contractor function signer
 		if vLog.Topics[0].Hex() == contractUnlockFunctionSignature {

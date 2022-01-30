@@ -11,6 +11,7 @@ import (
 	"payment-bridge/config"
 	"payment-bridge/database"
 	"payment-bridge/models"
+	"payment-bridge/on-chain/client"
 	"payment-bridge/on-chain/goBind"
 	"payment-bridge/scheduler"
 	"strconv"
@@ -41,7 +42,7 @@ func GetSourceFiles(pageSize, offset string, walletAddress, payloadCid string) (
 	for _, srcFile := range srcFiles {
 		dealFileIds[srcFile.DealFileId] = true
 		if len(strings.Trim(srcFile.LockedFee, " ")) == 0 {
-			eventPayment, err := scheduler.GetPaymentInfo(srcFile.PayloadCid)
+			eventPayment, err := client.GetPaymentInfo(srcFile.PayloadCid)
 			if err != nil {
 				logs.GetLogger().Error(err)
 			}

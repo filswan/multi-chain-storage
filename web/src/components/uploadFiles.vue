@@ -458,6 +458,7 @@
                     amount: web3.utils.toWei(_this.ruleForm.amount, 'ether'),
                     lockTime: 86400 * Number(_this.$root.LOCK_TIME), // one day
                     recipient: _this.recipientAddress, //todo:
+                    size: 0
                 }
                 
                 contract_instance.methods.lockTokenPayment(lockObj)
@@ -610,7 +611,7 @@
         filters: {
             NumStorage(value) {
                 if (!value) return "-";
-                return value.toFixed(8);
+                return value.toFixed(10);
             },
         },
         computed: {

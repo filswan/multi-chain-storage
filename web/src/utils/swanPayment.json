@@ -17,6 +17,37 @@
       {
         "indexed": false,
         "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      }
+    ],
+    "name": "ExpirePayment",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "id",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
         "name": "lockedFee",
         "type": "uint256"
       },
@@ -43,6 +74,49 @@
     "type": "event"
   },
   {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "id",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "cost",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "restToken",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "recipient",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      }
+    ],
+    "name": "UnlockPayment",
+    "type": "event"
+  },
+  {
     "inputs": [],
     "name": "NATIVE_TOKEN",
     "outputs": [
@@ -59,7 +133,7 @@
     "inputs": [
       {
         "internalType": "string",
-        "name": "txId",
+        "name": "cId",
         "type": "string"
       }
     ],
@@ -106,6 +180,11 @@
             "internalType": "bool",
             "name": "_isExisted",
             "type": "bool"
+          },
+          {
+            "internalType": "uint256",
+            "name": "size",
+            "type": "uint256"
           }
         ],
         "internalType": "struct IPaymentMinimal.TxInfo",
@@ -136,6 +215,11 @@
       {
         "internalType": "address",
         "name": "priceFeed",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "chainlinkOracle",
         "type": "address"
       }
     ],
@@ -172,52 +256,11 @@
             "internalType": "address",
             "name": "recipient",
             "type": "address"
-          }
-        ],
-        "internalType": "struct IPaymentMinimal.lockPaymentParam",
-        "name": "param",
-        "type": "tuple"
-      }
-    ],
-    "name": "lockPayment",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "components": [
-          {
-            "internalType": "string",
-            "name": "id",
-            "type": "string"
           },
           {
             "internalType": "uint256",
-            "name": "minPayment",
+            "name": "size",
             "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "amount",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "lockTime",
-            "type": "uint256"
-          },
-          {
-            "internalType": "address",
-            "name": "recipient",
-            "type": "address"
           }
         ],
         "internalType": "struct IPaymentMinimal.lockPaymentParam",
@@ -226,6 +269,38 @@
       }
     ],
     "name": "lockTokenPayment",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string[]",
+        "name": "cidList",
+        "type": "string[]"
+      }
+    ],
+    "name": "refund",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_chainlinkOracle",
+        "type": "address"
+      }
+    ],
+    "name": "setChainlinkOracle",
     "outputs": [
       {
         "internalType": "bool",
@@ -278,11 +353,16 @@
     "inputs": [
       {
         "internalType": "string",
-        "name": "txId",
+        "name": "dealId",
         "type": "string"
+      },
+      {
+        "internalType": "address",
+        "name": "recipient",
+        "type": "address"
       }
     ],
-    "name": "unlockPayment",
+    "name": "unlockCarPayment",
     "outputs": [
       {
         "internalType": "bool",

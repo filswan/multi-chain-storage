@@ -690,6 +690,7 @@ export default {
             amount: payAmount,
             lockTime: 86400 * Number(_this.$root.LOCK_TIME), // one day
             recipient: _this.recipientAddress, //todo:
+            size: 0
         }
         
         contract_instance.methods.lockTokenPayment(lockObj)
@@ -973,7 +974,7 @@ export default {
       this.parma.offset = val;
       this.getData();
     },
-    stats(){
+    async stats(){
         let _this = this
         _this.loading = true
         if(_this.$root.SWAN_PAYMENT_CONTRACT_ADDRESS){
@@ -982,37 +983,26 @@ export default {
             _this.recipientAddress = _this.$root.RECIPIENT
             _this.mintContractAddress = _this.$root.MINT_CONTRACT
             
-            let stats_api = `${process.env.BASE_API}stats/storage?wallet_address=${_this.metaAddress}`
-            axios.get(stats_api, {
-                headers: {
-                    // 'Authorization': "Bearer "+ _this.$store.getters.accessToken
-                },
-            }).then(res => {
-                if(res.data.data){
-                    let cost = res.data.data.average_price_per_GB_per_year.split(" ")
-                    if(cost[0]) _this.storage = cost[0]
-                }
-            }).catch(error => {
-                console.log(error)
-            })
-            
-            let billing_api = `${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/billing/price/filecoin?wallet_address=${_this.metaAddress}`
-            axios.get(billing_api, {
-                headers: {
-                    // 'Authorization': "Bearer "+ _this.$store.getters.accessToken
-                },
-            }).then(res => {
-                if(res.data.data){
-                    _this.biling_price = res.data.data
-                }
-            }).catch(error => {
-                console.log(error)
-            })
+            const storageRes = await _this.sendRequest(`${process.env.BASE_API}stats/storage?wallet_address=${_this.metaAddress}`)
+            let cost = storageRes.data.average_price_per_GB_per_year.split(" ")
+            if(cost[0]) _this.storage = cost[0]
+
+            const bilingRes = await _this.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/billing/price/filecoin?wallet_address=${_this.metaAddress}`)
+            _this.biling_price = bilingRes.data
+
             _this.getData()
         }else {
             setTimeout(function(){
                 _this.stats()
             }, 1000)
+        }
+    },
+    async sendRequest(apilink) {
+        try {
+            const response = await axios.get(apilink)
+            return response.data
+        } catch (err) {
+            console.error(err)
         }
     },
     getData() {

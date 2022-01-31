@@ -5,7 +5,6 @@ import (
 	"payment-bridge/common/utils"
 	"payment-bridge/database"
 	"payment-bridge/models"
-	"strconv"
 
 	"github.com/filswan/go-swan-lib/logs"
 )
@@ -31,7 +30,7 @@ func GetPaymentInfo(srcFilePayloadCid string) (*models.EventLockPayment, error) 
 		event.AddressTo = paymentInfo.Recipient.String()
 		event.LockedFee = paymentInfo.LockedFee.String()
 		event.PayloadCid = srcFilePayloadCid
-		event.LockPaymentTime = strconv.FormatInt(utils.GetCurrentUtcMilliSecond(), 10)
+		event.LockPaymentTime = utils.GetCurrentUtcMilliSecond()
 		usdcCoinId, err := models.FindCoinIdByUUID(constants.COIN_TYPE_USDC_ON_POLYGON_UUID)
 		if err != nil {
 			logs.GetLogger().Error(err)

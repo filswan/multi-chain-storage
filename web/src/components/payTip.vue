@@ -136,7 +136,7 @@
         filters: {
             NumStorage(value) {
                 if (!value) return "-";
-                return value.toFixed(8);
+                return value.toFixed(10);
             },
             sizeChange(bytes){
                 if (!bytes) return "-";

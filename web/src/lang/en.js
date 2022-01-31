@@ -548,7 +548,9 @@ export default {
         View_Your_NFT: 'View Your NFT',
         View_Your_NFT_tips: 'Your NFT has been minted! You can view the transaction here:',
         View_Your_NFT_OpenSea: 'Click here to view your NFT on OpenSea',
-        View_Your_NFT_Note: 'Note: The NFT will take some time to load on Opensea.'
+        View_Your_NFT_Note: 'Note: The NFT will take some time to load on Opensea.',
+        goTo: 'Go to',
+        goTopage: ''
     },
     billing: {
         search_placeholder: 'Search by TX HASH',

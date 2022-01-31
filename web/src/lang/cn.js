@@ -553,7 +553,9 @@ export default {
         View_Your_NFT: '查看您的NFT',
         View_Your_NFT_tips: '您的NFT已经成功铸造！您可以在这里查看该交易：',
         View_Your_NFT_OpenSea: '点击到OpenSea查看您的NFT',
-        View_Your_NFT_Note: '注意：OpenSea需要一些时间加载您的NFT。'
+        View_Your_NFT_Note: '注意：OpenSea需要一些时间加载您的NFT。',
+        goTo: '前往',
+        goTopage: '页'
     },
     billing: {
         search_placeholder: '按交易哈希搜索',

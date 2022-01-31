@@ -353,7 +353,7 @@
                                                                     // console.log('errorerrorerror', error)
                                                                 })
                                                             }
-                                                            _this.contractSend(res.data.payload_cid)
+                                                            _this.contractSend(res.data)
                                                         })
                                                     }else if(res.data.need_pay == 3){
                                                         _this.paymentPopup01 = true
@@ -411,7 +411,7 @@
                     }
                 });
             },
-            contractSend(cid){
+            contractSend(resData){
                 let _this = this
                 // 合约转账
                 let contract_instance = new web3.eth.Contract( first_contract_json );
@@ -427,14 +427,14 @@
                 };
                 
                 let lockObj = {
-                    id: cid,
+                    id: resData.payload_cid,
                     minPayment: web3.utils.toWei(String(_this.ruleForm.amount_minprice), 'ether'),
                     amount: web3.utils.toWei(_this.ruleForm.amount, 'ether'),
                     lockTime: 86400 * Number(_this.$root.LOCK_TIME), // one day
                     recipient: _this.recipientAddress, //todo:
                     size: _this._file.size
                 }
-                console.log(lockObj)
+                
                 contract_instance.methods.lockTokenPayment(lockObj)
                 .send(payObject)
                 .on('transactionHash', function(hash){
@@ -449,7 +449,7 @@
                 .on('receipt', function(receipt){
                     // receipt example
                     // console.log('receipt console:', receipt);
-                    _this.checkTransaction(receipt.transactionHash, cid)
+                    _this.checkTransaction(receipt.transactionHash, resData, lockObj)
                     _this.txHash = receipt.transactionHash
                 })
                 .on('error', function(error){
@@ -460,13 +460,15 @@
                     _this.failTransaction = true
                 }); 
             },
-            checkTransaction(txHash, cid) {
+            checkTransaction(txHash, resData, lockObj) {
                 let _this = this
                 web3.eth.getTransactionReceipt(txHash).then(
-                    res => {
+                    async res => {
                         console.log('checking ... ');
-                        if (!res) { return _this.timer = setTimeout(() => { _this.checkTransaction(txHash, cid); }, 2000); }
+                        if (!res) { return _this.timer = setTimeout(() => { _this.checkTransaction(txHash, resData, lockObj); }, 2000); }
                         else {
+                            const lockPaymentTime = await new Date().getTime();
+                            _this.sendPayment(txHash, resData, lockObj, lockPaymentTime)
                             setTimeout(function(){
                                 _this.loading = false
                                 _this.loadMetamaskPay = false
@@ -477,6 +479,32 @@
                     },
                     err => { console.error(err); }
                 );
+            },
+            sendPayment(txHash, resData, lockObj, lockPaymentTime) {
+                let lockParam = {
+                    "tx_hash": txHash,
+                    "payload_cid": resData.payload_cid,
+                    "token_address":"",
+                    "min_payment": lockObj.minPayment,
+                    "contract_address": this.gatewayContractAddress,
+                    "locked_fee":"",
+                    "deadline":"",
+                    "block_no":"",
+                    "miner_address":"",
+                    "address_from": this.metaAddress,
+                    "address_to": this.gatewayContractAddress,
+                    "lock_payment_time": lockPaymentTime,
+                    "unlock_tx_hash":"",
+                    "unlock_tx_status":"",
+                    "unlock_time":"",
+                    "source_file_id":resData.source_file_id
+                }
+
+                axios.post(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/billing/deal/lockpayment`, lockParam)
+                .then((res) => {
+                }).catch(error => {
+                    console.log(error)
+                })
             },
             finishClose(){
                 this.finishTransaction = false
@@ -585,7 +613,7 @@
         filters: {
             NumStorage(value) {
                 if (!value) return "-";
-                return value.toFixed(8);
+                return value.toFixed(10);
             },
         },
         computed: {

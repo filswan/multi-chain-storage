@@ -78,28 +78,6 @@ func CreateTask() error {
 		return err
 	}
 	for _, srcFile := range srcFiles {
-		if srcFile.LockedFee == nil {
-			eventPayment, err := client.GetPaymentInfo(srcFile.PayloadCid)
-			if err != nil {
-				logs.GetLogger().Error(err)
-				continue
-			}
-
-			if eventPayment == nil {
-				continue
-			}
-
-			err = database.GetDB().Save(&eventPayment).Error
-			if err != nil {
-				logs.GetLogger().Error(err)
-				continue
-			}
-
-			if eventPayment.SourceFileId != srcFile.ID {
-				continue
-			}
-		}
-
 		srcFilepathTemp := filepath.Join(carSrcDir, srcFile.FileName)
 
 		bytesCopied, err := libutils.CopyFile(srcFile.ResourceUri, srcFilepathTemp)

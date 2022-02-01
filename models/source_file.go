@@ -94,7 +94,7 @@ func GetSourceFileByPayloadCidWalletAddress(payloadCid, walletAddress string) (*
 
 func GetSourceFilesNeed2Car() ([]*SourceFileExt, error) {
 	var sourceFiles []*SourceFileExt
-	sql := "select a.* from source_file a left outer join event_lock_payment b on b.source_file_id=a.id where a.status=? and a.file_type=?"
+	sql := "select a.* from source_file a, event_lock_payment b where b.source_file_id=a.id and a.status=? and a.file_type=?"
 	err := database.GetDB().Raw(sql, constants.SOURCE_FILE_STATUS_CREATED, constants.SOURCE_FILE_TYPE_NORMAL).Scan(&sourceFiles).Error
 
 	if err != nil {

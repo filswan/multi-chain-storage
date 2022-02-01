@@ -70,13 +70,13 @@ func CreateTask() error {
 	createdTimeMin := currentUtcMilliSec
 	var maxPrice *decimal.Decimal
 
-	var srcFiles2Merged []*models.SourceFileExt
-
 	fileCoinPriceInUsdc, err := client.GetWfilPriceFromSushiPrice("1")
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
 	}
+
+	var srcFiles2Merged []*models.SourceFile
 	for _, srcFile := range srcFiles {
 		srcFilepathTemp := filepath.Join(carSrcDir, srcFile.FileName)
 
@@ -161,7 +161,7 @@ func CreateTask() error {
 	return nil
 }
 
-func getMaxPrice(srcFile models.SourceFileExt, fileCoinPriceInUsdc *big.Int) (*decimal.Decimal, error) {
+func getMaxPrice(srcFile models.SourceFile, fileCoinPriceInUsdc *big.Int) (*decimal.Decimal, error) {
 	totalLockFee, err := models.GetTotalLockFeeBySrcPayloadCid(srcFile.PayloadCid)
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -272,7 +272,7 @@ func createTask4SrcFiles(srcDir, carDir string, maxPrice decimal.Decimal, create
 	return fileDesc, nil
 }
 
-func saveCarInfo2DB(fileDesc *libmodel.FileDesc, srcFiles []*models.SourceFileExt, maxPrice decimal.Decimal) error {
+func saveCarInfo2DB(fileDesc *libmodel.FileDesc, srcFiles []*models.SourceFile, maxPrice decimal.Decimal) error {
 	db := database.GetDBTransaction()
 	currentUtcMilliSecond := utils.GetCurrentUtcMilliSecond()
 	dealFile := models.DealFile{

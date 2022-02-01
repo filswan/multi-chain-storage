@@ -92,8 +92,8 @@ func GetSourceFileByPayloadCidWalletAddress(payloadCid, walletAddress string) (*
 	return nil, err
 }
 
-func GetSourceFilesNeed2Car() ([]*SourceFileExt, error) {
-	var sourceFiles []*SourceFileExt
+func GetSourceFilesNeed2Car() ([]*SourceFile, error) {
+	var sourceFiles []*SourceFile
 	sql := "select a.* from source_file a, event_lock_payment b where b.source_file_id=a.id and a.status=? and a.file_type=?"
 	err := database.GetDB().Raw(sql, constants.SOURCE_FILE_STATUS_CREATED, constants.SOURCE_FILE_TYPE_NORMAL).Scan(&sourceFiles).Error
 

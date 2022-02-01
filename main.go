@@ -27,14 +27,14 @@ func main() {
 	defer database.CloseDB(db)
 
 	scheduler.InitScheduler()
-	scheduler.CreateTask()
+	//scheduler.CreateTask()
 	//scheduler.SendDeal()
 	//scheduler.UnlockPayment()
 
-	//scheduler.CreateTaskScheduler()
-	//scheduler.SendDealScheduler()
-	//scheduler.CreateScanScheduler()
-	//scheduler.CreateUnlockScheduler()
+	scheduler.CreateTaskScheduler()
+	scheduler.SendDealScheduler()
+	scheduler.CreateScanScheduler()
+	scheduler.CreateUnlockScheduler()
 
 	createGinServer()
 }

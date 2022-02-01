@@ -26,11 +26,13 @@ type Configuration struct {
 }
 
 type polygon struct {
-	PolygonRpcUrl                   string `toml:"polygon_rpc_url"`
-	DaoSwanOracleAddress            string `toml:"dao_swan_oracle_address"`
-	ContractUnlockFunctionSignature string `toml:"contract_unlock_function_signature"`
-	PaymentContractAddress          string `toml:"payment_contract_address"`
-	GasLimit                        uint64 `toml:"gas_limit"`
+	PolygonRpcUrl                                  string `toml:"polygon_rpc_url"`
+	DaoSwanOracleAddress                           string `toml:"dao_swan_oracle_address"`
+	ContractUnlockFunctionSignature                string `toml:"contract_unlock_function_signature"`
+	PaymentContractAddress                         string `toml:"payment_contract_address"`
+	GasLimit                                       uint64 `toml:"gas_limit"`
+	RouterAddressOfSushiswapOnPolygon              string `toml:"router_address_of_sushiswap_on_polygon"`
+	PairAddressBetweenWfilUsdcOfSushiswapOnPolygon string `toml:"pair_address_between_wfil_usdc_of_sushiswap_on_polygon"`
 }
 
 type database struct {

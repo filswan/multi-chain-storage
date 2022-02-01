@@ -9,6 +9,7 @@ polygon_rpc_url=""
 dao_swan_oracle_address = ""
 contract_unlock_function_signature = ""
 payment_contract_address = ""
+router_address_of_sushiswap_on_polygon = ""
 gas_limit = 8000000
 
 [database]

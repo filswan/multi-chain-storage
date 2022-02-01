@@ -54,8 +54,9 @@ const (
 	SOURCE_ID_OF_PAYMENT = 4
 	TASK_STATUS_ASSIGNED = "Assigned"
 
-	LOCK_PAYMENT_STATUS_WAITING             = "Pending"    //wait for lock payment
-	LOCK_PAYMENT_STATUS_PROCESSING          = "Processing" //lock payment fail
+	LOCK_PAYMENT_STATUS_WAITING             = "Pending" //wait for lock payment
+	LOCK_PAYMENT_STATUS_PROCESSING          = "Processing"
+	LOCK_PAYMENT_STATUS_DEAL_SENT_FAILED    = "DealSentFailed"
 	LOCK_PAYMENT_STATUS_UNLOCK_REFUNDED     = "UnlockRefundSucceeded"
 	LOCK_PAYMENT_STATUS_UNLOCK_REFUNDFAILED = "UnlockRefundFailed"
 
@@ -78,6 +79,7 @@ const (
 	DEAL_FILE_STATUS_CREATED   = "Created"
 	DEAL_FILE_STATUS_DEAL_SENT = "DealSent"
 	DEAL_FILE_STATUS_CANCELLED = "Cancelled"
+	DEAL_FILE_STATUS_FAILED    = "Failed"
 
 	OFFLINE_DEAL_UNLOCK_STATUS_NOT_UNLOCKED = "NotUnlocked"
 	OFFLINE_DEAL_UNLOCK_STATUS_UNLOCKED     = "Unlocked"

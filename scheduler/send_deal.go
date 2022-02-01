@@ -82,6 +82,13 @@ func SendDeal() error {
 
 		_, fileDescs, err := cmdAutoBidDeal.SendAutoBidDealsByTaskUuid(dealFile.TaskUuid)
 		if err != nil {
+			dealFile.SendDealStatus = constants.DEAL_FILE_STATUS_FAILED
+			dealFile.ClientWalletAddress = cmdAutoBidDeal.SenderWallet
+			dealFile.LockPaymentStatus = constants.LOCK_PAYMENT_STATUS_DEAL_SENT_FAILED
+			err = database.SaveOne(dealFile)
+			if err != nil {
+				logs.GetLogger().Error(err)
+			}
 			logs.GetLogger().Error(err)
 			continue
 		}

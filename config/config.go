@@ -11,21 +11,21 @@ import (
 )
 
 type Configuration struct {
-	Port                 string       `toml:"port"`
-	Release              bool         `toml:"release"`
-	AdminWalletOnPolygon string       `toml:"admin_wallet_on_polygon"`
-	FileCoinWallet       string       `toml:"file_coin_wallet"`
-	FilinkUrl            string       `toml:"filink_url"`
-	Polygon              polygon      `toml:"polygon"`
-	Database             database     `toml:"database"`
-	SwanApi              swanApi      `toml:"swan_api"`
-	Lotus                lotus        `toml:"lotus"`
-	IpfsServer           ipfsServer   `toml:"ipfs_server"`
-	SwanTask             swanTask     `toml:"swan_task"`
-	ScheduleRule         ScheduleRule `toml:"schedule_rule"`
+	Port           string       `toml:"port"`
+	Release        bool         `toml:"release"`
+	FileCoinWallet string       `toml:"file_coin_wallet"`
+	FilinkUrl      string       `toml:"filink_url"`
+	Polygon        polygon      `toml:"polygon"`
+	Database       database     `toml:"database"`
+	SwanApi        swanApi      `toml:"swan_api"`
+	Lotus          lotus        `toml:"lotus"`
+	IpfsServer     ipfsServer   `toml:"ipfs_server"`
+	SwanTask       swanTask     `toml:"swan_task"`
+	ScheduleRule   ScheduleRule `toml:"schedule_rule"`
 }
 
 type polygon struct {
+	AdminWalletOnPolygon                           string `toml:"admin_wallet_on_polygon"`
 	PolygonRpcUrl                                  string `toml:"polygon_rpc_url"`
 	DaoSwanOracleAddress                           string `toml:"dao_swan_oracle_address"`
 	ContractUnlockFunctionSignature                string `toml:"contract_unlock_function_signature"`
@@ -111,7 +111,6 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 	requiredFields := [][]string{
 		{"port"},
 		{"release"},
-		{"admin_wallet_on_polygon"},
 		{"file_coin_wallet"},
 		{"filink_url"},
 
@@ -149,6 +148,7 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 		{"schedule_rule", "send_deal_rule"},
 		{"schedule_rule", "scan_deal_status_rule"},
 
+		{"polygon", "admin_wallet_on_polygon"},
 		{"polygon", "polygon_rpc_url"},
 		{"polygon", "dao_swan_oracle_address"},
 		{"polygon", "contract_unlock_function_signature"},

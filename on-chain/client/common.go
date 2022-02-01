@@ -30,7 +30,7 @@ func GetEthClient() (*ethclient.Client, error) {
 }
 
 func GetSwanPaymentTransactor(ethClient *ethclient.Client) (*common.Address, *goBind.SwanPaymentTransactor, error) {
-	recipient := common.HexToAddress(config.GetConfig().Polygon.PaymentContractAddress)
+	recipient := common.HexToAddress(config.GetConfig().Polygon.AdminWalletOnPolygon)
 	swanPaymentTransactor, err := goBind.NewSwanPaymentTransactor(recipient, ethClient)
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -71,7 +71,7 @@ func GetTransactOpts(ethClient *ethclient.Client) (*bind.TransactOpts, error) {
 		return nil, err
 	}
 
-	adminAddress := common.HexToAddress(config.GetConfig().AdminWalletOnPolygon)
+	adminAddress := common.HexToAddress(config.GetConfig().Polygon.AdminWalletOnPolygon)
 	nonce, err := ethClient.PendingNonceAt(context.Background(), adminAddress)
 	if err != nil {
 		logs.GetLogger().Error(err)

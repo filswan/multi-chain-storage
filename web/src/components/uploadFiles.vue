@@ -487,6 +487,7 @@
                     "token_address":"",
                     "min_payment": lockObj.minPayment,
                     "contract_address": this.gatewayContractAddress,
+                    "locked_fee":0,
                     "deadline":"",
                     "block_no":0,
                     "miner_address":"",

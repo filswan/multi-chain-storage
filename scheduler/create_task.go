@@ -70,39 +70,24 @@ func CreateTask() error {
 	createdTimeMin := currentUtcMilliSec
 	var maxPrice *decimal.Decimal
 
-	var srcFiles2Merged []*models.SourceFileExt
-
 	fileCoinPriceInUsdc, err := client.GetWfilPriceFromSushiPrice("1")
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
 	}
+
+	var srcFiles2Merged []*models.SourceFileExt
 	for _, srcFile := range srcFiles {
-		if srcFile.LockedFee == nil {
-			eventPayment, err := client.GetPaymentInfo(srcFile.PayloadCid)
-			if err != nil {
-				logs.GetLogger().Error(err)
-				continue
-			}
-
-			if eventPayment == nil {
-				continue
-			}
-
-			err = database.GetDB().Save(&eventPayment).Error
-			if err != nil {
-				logs.GetLogger().Error(err)
-				continue
-			}
-
-			if eventPayment.SourceFileId != srcFile.ID {
-				continue
-			}
-		}
-
 		srcFilepathTemp := filepath.Join(carSrcDir, srcFile.FileName)
 
 		bytesCopied, err := libutils.CopyFile(srcFile.ResourceUri, srcFilepathTemp)
+		if err != nil {
+			os.Remove(srcFilepathTemp)
+			logs.GetLogger().Error(err)
+			continue
+		}
+
+		maxPriceTemp, err := getMaxPrice(*srcFile, fileCoinPriceInUsdc)
 		if err != nil {
 			os.Remove(srcFilepathTemp)
 			logs.GetLogger().Error(err)
@@ -113,13 +98,6 @@ func CreateTask() error {
 
 		if srcFile.CreateAt < createdTimeMin {
 			createdTimeMin = srcFile.CreateAt
-		}
-
-		maxPriceTemp, err := getMaxPrice(*srcFile, fileCoinPriceInUsdc)
-		if err != nil {
-			os.RemoveAll(carSrcDir)
-			logs.GetLogger().Error(err)
-			return err
 		}
 
 		if maxPrice == nil {
@@ -184,13 +162,7 @@ func CreateTask() error {
 }
 
 func getMaxPrice(srcFile models.SourceFileExt, fileCoinPriceInUsdc *big.Int) (*decimal.Decimal, error) {
-	totalLockFee, err := models.GetTotalLockFeeBySrcPayloadCid(srcFile.PayloadCid)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-
-	lockedFee := totalLockFee.IntPart()
+	lockedFee := srcFile.LockedFee.IntPart()
 
 	maxPrice, err := GetMaxPriceForCreateTask(fileCoinPriceInUsdc, lockedFee, constants.DURATION_DAYS_DEFAULT, srcFile.FileSize)
 	if err != nil {

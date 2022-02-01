@@ -2,9 +2,9 @@ package client
 
 import (
 	"math/big"
-	"payment-bridge/blockchain/browsersync/scanlockpayment/polygon"
 	"payment-bridge/common/constants"
 	"payment-bridge/common/utils"
+	"payment-bridge/config"
 	"payment-bridge/database"
 	"payment-bridge/models"
 	"strconv"
@@ -15,7 +15,7 @@ import (
 )
 
 func SaveEventUnlockPayment(logsInChain []*types.Log, unlockStatus string, dealId int64) error {
-	contractUnlockFunctionSignature := polygon.GetConfig().PolygonMainnetNode.ContractUnlockFunctionSignature
+	contractUnlockFunctionSignature := config.GetConfig().Polygon.ContractUnlockFunctionSignature
 
 	contractAbi, err := GetContractAbi()
 	if err != nil {
@@ -59,7 +59,7 @@ func SaveEventUnlockPayment(logsInChain []*types.Log, unlockStatus string, dealI
 			event.CoinId = coin.ID
 		}
 
-		err = database.SaveOneWithTransaction(event)
+		err = database.SaveOne(event)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			return err

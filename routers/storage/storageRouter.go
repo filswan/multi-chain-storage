@@ -13,6 +13,7 @@ import (
 	"payment-bridge/config"
 	"payment-bridge/database"
 	"payment-bridge/models"
+	"payment-bridge/on-chain/client"
 	"strconv"
 	"strings"
 
@@ -232,7 +233,7 @@ func GetDealListFromFilink(c *gin.Context) {
 		result.Data.Data.Deal.IpfsUrl = fileList[0].IpfsUrl
 		result.Data.Data.Deal.FileName = fileList[0].FileName
 	}
-	threshHold, err := GetThreshHold()
+	threshHold, err := client.GetThreshHold()
 	if err != nil {
 		logs.GetLogger().Error(err)
 	}

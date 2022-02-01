@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"math/big"
 	"os"
-	"payment-bridge/blockchain/browsersync/scanlockpayment/polygon"
 	"payment-bridge/config"
 	"payment-bridge/on-chain/goBind"
 	"strings"
@@ -20,7 +19,7 @@ import (
 )
 
 func GetEthClient() (*ethclient.Client, error) {
-	polygonRpcUrl := config.GetConfig().PolygonRpcUrl
+	polygonRpcUrl := config.GetConfig().Polygon.PolygonRpcUrl
 	ethClient, err := ethclient.Dial(polygonRpcUrl)
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -31,7 +30,7 @@ func GetEthClient() (*ethclient.Client, error) {
 }
 
 func GetSwanPaymentTransactor(ethClient *ethclient.Client) (*common.Address, *goBind.SwanPaymentTransactor, error) {
-	recipient := common.HexToAddress(polygon.GetConfig().PolygonMainnetNode.PaymentContractAddress)
+	recipient := common.HexToAddress(config.GetConfig().Polygon.PaymentContractAddress)
 	swanPaymentTransactor, err := goBind.NewSwanPaymentTransactor(recipient, ethClient)
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -42,7 +41,7 @@ func GetSwanPaymentTransactor(ethClient *ethclient.Client) (*common.Address, *go
 }
 
 func GetFilswanOracleSession(ethClient *ethclient.Client) (*goBind.FilswanOracleSession, error) {
-	daoAddress := common.HexToAddress(polygon.GetConfig().PolygonMainnetNode.DaoSwanOracleAddress)
+	daoAddress := common.HexToAddress(config.GetConfig().Polygon.DaoSwanOracleAddress)
 	daoOracleContractInstance, err := goBind.NewFilswanOracle(daoAddress, ethClient)
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -99,7 +98,7 @@ func GetTransactOpts(ethClient *ethclient.Client) (*bind.TransactOpts, error) {
 
 	transactOpts.Nonce = big.NewInt(int64(nonce))
 	transactOpts.GasPrice = gasPrice
-	transactOpts.GasLimit = uint64(polygon.GetConfig().PolygonMainnetNode.GasLimit)
+	transactOpts.GasLimit = config.GetConfig().Polygon.GasLimit
 	transactOpts.Context = context.Background()
 
 	return transactOpts, nil
@@ -114,7 +113,7 @@ func GetPaymentSession() (*goBind.SwanPaymentSession, error) {
 
 	swanPaymentSession := &goBind.SwanPaymentSession{}
 
-	paymentGatewayAddress := common.HexToAddress(polygon.GetConfig().PolygonMainnetNode.PaymentContractAddress)
+	paymentGatewayAddress := common.HexToAddress(config.GetConfig().Polygon.PaymentContractAddress)
 
 	paymentGatewayInstance, err := goBind.NewSwanPayment(paymentGatewayAddress, ethClient)
 	if err != nil {

@@ -1,26 +1,20 @@
 package storage
 
 import (
-	"context"
 	"mime/multipart"
 	"os"
 	"path/filepath"
-	"payment-bridge/blockchain/browsersync/scanlockpayment/polygon"
 	"payment-bridge/common/constants"
 	"payment-bridge/common/utils"
 	"payment-bridge/config"
 	"payment-bridge/database"
 	"payment-bridge/models"
-	"payment-bridge/on-chain/goBind"
 	"payment-bridge/scheduler"
 	"strconv"
 	"strings"
 
 	"github.com/filswan/go-swan-lib/logs"
 	"github.com/shopspring/decimal"
-
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	common2 "github.com/ethereum/go-ethereum/common"
 
 	"github.com/filswan/go-swan-lib/client/ipfs"
 
@@ -350,32 +344,4 @@ func GetDaoSignEventByDealId(dealId int64) ([]*DaoInfoResult, error) {
 		return nil, err
 	}
 	return daoInfoResult, nil
-}
-
-func GetThreshHold() (uint8, error) {
-	daoAddress := common2.HexToAddress(polygon.GetConfig().PolygonMainnetNode.DaoSwanOracleAddress)
-	client := polygon.WebConn.ConnWeb
-
-	pk := os.Getenv("privateKeyOnPolygon")
-	if strings.HasPrefix(strings.ToLower(pk), "0x") {
-		pk = pk[2:]
-	}
-
-	callOpts := new(bind.CallOpts)
-	callOpts.From = daoAddress
-	callOpts.Context = context.Background()
-
-	daoOracleContractInstance, err := goBind.NewFilswanOracle(daoAddress, client)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return 0, err
-	}
-
-	threshHold, err := daoOracleContractInstance.GetThreshold(callOpts)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return 0, err
-	}
-	logs.GetLogger().Info("dao threshHold is : ", threshHold)
-	return threshHold, nil
 }

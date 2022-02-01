@@ -6,10 +6,6 @@ mkdir -p ${CONF_FILE_DIR_DEST}
 CONF_FILE_NAMES=(
     .env
     config.toml
-    config_polygon.toml
-    config_nbai.toml
-    config_goerli.toml
-    config_bsc.toml
     )
 
 for CONF_FILE_NAME in ${CONF_FILE_NAMES[@]}; do

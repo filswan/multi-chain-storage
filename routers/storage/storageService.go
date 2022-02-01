@@ -51,6 +51,11 @@ func GetSourceFiles(pageSize, offset string, walletAddress, payloadCid string) (
 	}
 
 	if len(dealFileIds) > 0 {
+		keys := make([]int64, 0, len(dealFileIds))
+		for k := range dealFileIds {
+			keys = append(keys, k)
+		}
+
 		offlineDeals, err := models.GetOfflineDealsByDealFileIds(dealFileIds)
 		if err != nil {
 			logs.GetLogger().Error(err)

@@ -1,9 +1,7 @@
 package billing
 
 import (
-	"math/big"
 	"net/http"
-	"payment-bridge/blockchain/browsersync/scanlockpayment/polygon"
 	common "payment-bridge/common"
 	"payment-bridge/common/constants"
 	"payment-bridge/common/errorinfo"
@@ -146,12 +144,12 @@ func GetUserBillingHistory(c *gin.Context) {
 }
 
 func GetFileCoinLastestPrice(c *gin.Context) {
-	price, err := GetWfilPriceFromSushiPrice(polygon.WebConn.ConnWeb, "1")
+	latestPrice, err := client.GetFileCoinLastestPrice()
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_LATEST_PRICE_OF_FILECOIN_ERROR_CODE))
 		return
 	}
-	priceFloat, _ := new(big.Float).SetInt(price).Float64()
-	c.JSON(http.StatusOK, common.CreateSuccessResponse(priceFloat))
+
+	c.JSON(http.StatusOK, common.CreateSuccessResponse(*latestPrice))
 }

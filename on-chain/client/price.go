@@ -37,3 +37,21 @@ func GetWfilPriceFromSushiPrice(client *ethclient.Client, wfilPrice string) (*bi
 	}
 	return dyByContract, nil
 }
+
+func GetFileCoinLastestPrice() (*float64, error) {
+	ethClient, err := GetEthClient()
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	price, err := GetWfilPriceFromSushiPrice(ethClient, "1")
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	priceFloat, _ := new(big.Float).SetInt(price).Float64()
+
+	return &priceFloat, nil
+}

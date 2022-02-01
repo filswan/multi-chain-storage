@@ -16,13 +16,23 @@ type Configuration struct {
 	AdminWalletOnPolygon string       `toml:"admin_wallet_on_polygon"`
 	FileCoinWallet       string       `toml:"file_coin_wallet"`
 	FilinkUrl            string       `toml:"filink_url"`
-	PolygonRpcUrl        string       `toml:"polygon_rpc_url"`
+	Polygon              polygon      `toml:"polygon"`
 	Database             database     `toml:"database"`
 	SwanApi              swanApi      `toml:"swan_api"`
 	Lotus                lotus        `toml:"lotus"`
 	IpfsServer           ipfsServer   `toml:"ipfs_server"`
 	SwanTask             swanTask     `toml:"swan_task"`
 	ScheduleRule         ScheduleRule `toml:"schedule_rule"`
+}
+
+type polygon struct {
+	PolygonRpcUrl                                  string `toml:"polygon_rpc_url"`
+	DaoSwanOracleAddress                           string `toml:"dao_swan_oracle_address"`
+	ContractUnlockFunctionSignature                string `toml:"contract_unlock_function_signature"`
+	PaymentContractAddress                         string `toml:"payment_contract_address"`
+	GasLimit                                       uint64 `toml:"gas_limit"`
+	RouterAddressOfSushiswapOnPolygon              string `toml:"router_address_of_sushiswap_on_polygon"`
+	PairAddressBetweenWfilUsdcOfSushiswapOnPolygon string `toml:"pair_address_between_wfil_usdc_of_sushiswap_on_polygon"`
 }
 
 type database struct {
@@ -104,7 +114,6 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 		{"admin_wallet_on_polygon"},
 		{"file_coin_wallet"},
 		{"filink_url"},
-		{"polygon_rpc_url"},
 
 		{"database", "db_host"},
 		{"database", "db_port"},
@@ -139,6 +148,14 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 		{"schedule_rule", "create_task_rule"},
 		{"schedule_rule", "send_deal_rule"},
 		{"schedule_rule", "scan_deal_status_rule"},
+
+		{"polygon", "polygon_rpc_url"},
+		{"polygon", "dao_swan_oracle_address"},
+		{"polygon", "contract_unlock_function_signature"},
+		{"polygon", "payment_contract_address"},
+		{"polygon", "gas_limit"},
+		{"polygon", "router_address_of_sushiswap_on_polygon"},
+		{"polygon", "pair_address_between_wfil_usdc_of_sushiswap_on_polygon"},
 	}
 
 	for _, v := range requiredFields {

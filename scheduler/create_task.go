@@ -5,13 +5,12 @@ import (
 	"math/big"
 	"os"
 	"path/filepath"
-	"payment-bridge/blockchain/browsersync/scanlockpayment/polygon"
 	"payment-bridge/common/constants"
 	"payment-bridge/common/utils"
 	"payment-bridge/config"
 	"payment-bridge/database"
 	"payment-bridge/models"
-	"payment-bridge/routers/billing"
+	"payment-bridge/on-chain/client"
 	"sync"
 	"time"
 
@@ -71,20 +70,34 @@ func CreateTask() error {
 	createdTimeMin := currentUtcMilliSec
 	var maxPrice *decimal.Decimal
 
-	var srcFiles2Merged []*models.SourceFile
+	var srcFiles2Merged []*models.SourceFileExt
+
+	fileCoinPriceInUsdc, err := client.GetWfilPriceFromSushiPrice("1")
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
 	for _, srcFile := range srcFiles {
-		eventPayment, err := GetPaymentInfo(srcFile.PayloadCid)
-		if err != nil {
-			logs.GetLogger().Error(err)
-			continue
-		}
+		if srcFile.LockedFee == nil {
+			eventPayment, err := client.GetPaymentInfo(srcFile.PayloadCid)
+			if err != nil {
+				logs.GetLogger().Error(err)
+				continue
+			}
 
-		if eventPayment == nil {
-			continue
-		}
+			if eventPayment == nil {
+				continue
+			}
 
-		if eventPayment.AddressFrom != srcFile.WalletAddress {
-			continue
+			err = database.GetDB().Save(&eventPayment).Error
+			if err != nil {
+				logs.GetLogger().Error(err)
+				continue
+			}
+
+			if eventPayment.SourceFileId != srcFile.ID {
+				continue
+			}
 		}
 
 		srcFilepathTemp := filepath.Join(carSrcDir, srcFile.FileName)
@@ -102,7 +115,7 @@ func CreateTask() error {
 			createdTimeMin = srcFile.CreateAt
 		}
 
-		maxPriceTemp, err := getMaxPrice(*srcFile)
+		maxPriceTemp, err := getMaxPrice(*srcFile, fileCoinPriceInUsdc)
 		if err != nil {
 			os.RemoveAll(carSrcDir)
 			logs.GetLogger().Error(err)
@@ -170,7 +183,7 @@ func CreateTask() error {
 	return nil
 }
 
-func getMaxPrice(srcFile models.SourceFile) (*decimal.Decimal, error) {
+func getMaxPrice(srcFile models.SourceFileExt, fileCoinPriceInUsdc *big.Int) (*decimal.Decimal, error) {
 	totalLockFee, err := models.GetTotalLockFeeBySrcPayloadCid(srcFile.PayloadCid)
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -179,16 +192,12 @@ func getMaxPrice(srcFile models.SourceFile) (*decimal.Decimal, error) {
 
 	lockedFee := totalLockFee.IntPart()
 
-	fileCoinPriceInUsdc, err := billing.GetWfilPriceFromSushiPrice(polygon.WebConn.ConnWeb, "1")
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
 	maxPrice, err := GetMaxPriceForCreateTask(fileCoinPriceInUsdc, lockedFee, constants.DURATION_DAYS_DEFAULT, srcFile.FileSize)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
 	}
+
 	logs.GetLogger().Println("payload cid ", srcFile.PayloadCid, " max price is ", maxPrice)
 
 	if maxPrice.Cmp(config.GetConfig().SwanTask.MaxPrice) < 0 {
@@ -285,7 +294,7 @@ func createTask4SrcFiles(srcDir, carDir string, maxPrice decimal.Decimal, create
 	return fileDesc, nil
 }
 
-func saveCarInfo2DB(fileDesc *libmodel.FileDesc, srcFiles []*models.SourceFile, maxPrice decimal.Decimal) error {
+func saveCarInfo2DB(fileDesc *libmodel.FileDesc, srcFiles []*models.SourceFileExt, maxPrice decimal.Decimal) error {
 	db := database.GetDBTransaction()
 	currentUtcMilliSecond := utils.GetCurrentUtcMilliSecond()
 	dealFile := models.DealFile{

@@ -1,15 +1,14 @@
 package billing
 
 import (
-	"math/big"
 	"net/http"
-	"payment-bridge/blockchain/browsersync/scanlockpayment/polygon"
 	common "payment-bridge/common"
 	"payment-bridge/common/constants"
 	"payment-bridge/common/errorinfo"
 	"payment-bridge/common/utils"
 	"payment-bridge/database"
 	"payment-bridge/models"
+	"payment-bridge/on-chain/client"
 	"strconv"
 	"strings"
 
@@ -34,18 +33,32 @@ func WriteLockPayment(c *gin.Context) {
 		return
 	}
 
-	usdcCoinId, err := models.FindCoinIdByUUID(constants.COIN_TYPE_USDC_ON_POLYGON_UUID)
+	eventFromOnChainApi, err := client.GetPaymentInfo(event.PayloadCid)
 	if err != nil {
 		logs.GetLogger().Error(err)
-	} else {
-		event.CoinId = usdcCoinId
-	}
+		usdcCoin, err := models.FindCoinByUuid(constants.COIN_TYPE_USDC_ON_POLYGON_UUID)
+		if err != nil {
+			logs.GetLogger().Error(err)
+		} else {
+			event.CoinId = usdcCoin.ID
+			event.TokenAddress = usdcCoin.CoinAddress
+		}
 
-	networkId, err := models.FindNetworkIdByUUID(constants.NETWORK_TYPE_POLYGON_UUID)
-	if err != nil {
-		logs.GetLogger().Error(err)
+		networkId, err := models.FindNetworkIdByUUID(constants.NETWORK_TYPE_POLYGON_UUID)
+		if err != nil {
+			logs.GetLogger().Error(err)
+		} else {
+			event.NetworkId = networkId
+		}
 	} else {
-		event.NetworkId = networkId
+		event.Deadline = eventFromOnChainApi.Deadline
+		event.TokenAddress = eventFromOnChainApi.TokenAddress
+		event.AddressFrom = eventFromOnChainApi.AddressFrom
+		event.AddressTo = eventFromOnChainApi.AddressTo
+		event.LockedFee = eventFromOnChainApi.LockedFee
+		event.SourceFileId = eventFromOnChainApi.SourceFileId
+		event.CoinId = eventFromOnChainApi.CoinId
+		event.NetworkId = eventFromOnChainApi.NetworkId
 	}
 
 	err = database.GetDB().Save(&event).Error
@@ -131,12 +144,12 @@ func GetUserBillingHistory(c *gin.Context) {
 }
 
 func GetFileCoinLastestPrice(c *gin.Context) {
-	price, err := GetWfilPriceFromSushiPrice(polygon.WebConn.ConnWeb, "1")
+	latestPrice, err := client.GetFileCoinLastestPrice()
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_LATEST_PRICE_OF_FILECOIN_ERROR_CODE))
 		return
 	}
-	priceFloat, _ := new(big.Float).SetInt(price).Float64()
-	c.JSON(http.StatusOK, common.CreateSuccessResponse(priceFloat))
+
+	c.JSON(http.StatusOK, common.CreateSuccessResponse(*latestPrice))
 }

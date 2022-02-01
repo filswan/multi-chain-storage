@@ -3,13 +3,12 @@ package billing
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"math/big"
 	"net/http"
-	"payment-bridge/blockchain/browsersync/scanlockpayment/polygon"
 	common2 "payment-bridge/common"
 	"payment-bridge/common/httpClient"
 	"payment-bridge/common/utils"
+	"payment-bridge/config"
 	"payment-bridge/database"
 	"payment-bridge/on-chain/goBind"
 	"strings"
@@ -90,7 +89,7 @@ func GetTaskDealsService(url string) (*PriceResult, error) {
 }
 
 func LockPaymentService(client *ethclient.Client, userWalletAddress, privateKeyOfUser, payloadCid string, lockedFee *big.Int) error {
-	paymentGatewayAddress := common.HexToAddress(polygon.GetConfig().PolygonMainnetNode.PaymentContractAddress)
+	paymentGatewayAddress := common.HexToAddress(config.GetConfig().Polygon.PaymentContractAddress)
 	nonce, err := client.PendingNonceAt(context.Background(), common.HexToAddress(userWalletAddress))
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -117,7 +116,7 @@ func LockPaymentService(client *ethclient.Client, userWalletAddress, privateKeyO
 	//callOpts := new(bind.TransactOpts)
 	callOpts.Nonce = big.NewInt(int64(nonce))
 	callOpts.GasPrice = gasPrice
-	callOpts.GasLimit = uint64(polygon.GetConfig().PolygonMainnetNode.GasLimit)
+	callOpts.GasLimit = uint64(config.GetConfig().Polygon.GasLimit)
 	callOpts.Context = context.Background()
 
 	paymentGatewayInstance, err := goBind.NewSwanPayment(paymentGatewayAddress, client)
@@ -149,30 +148,4 @@ func LockPaymentService(client *ethclient.Client, userWalletAddress, privateKeyO
 	}
 
 	return err
-}
-func GetWfilPriceFromSushiPrice(client *ethclient.Client, wfilPrice string) (*big.Int, error) {
-	//routerAddress sushiswap mumbai address
-	routerAddress := polygon.GetConfig().PolygonMainnetNode.RouterAddressOfSushiswapOnPolygon
-
-	//pairAddress sushiswap mumbai address
-	pairAddress := polygon.GetConfig().PolygonMainnetNode.PairAddressBetweenWfilUsdcOfSushiswapOnPolygon
-
-	contractRouter, _ := goBind.NewRouter(common.HexToAddress(routerAddress), client)
-	contractPool, _ := goBind.NewPair(common.HexToAddress(pairAddress), client)
-
-	reserves, _ := contractPool.GetReserves(nil)
-
-	//amt,_:=  new(big.Int).SetString("1000000000000000000", 10)
-	amt, flag := new(big.Int).SetString(wfilPrice, 10)
-	if flag == false {
-		err := errors.New("calculating filecoin to usdc pring occurred error")
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-	dyByContract, err := contractRouter.GetAmountOut(nil, amt, reserves.Reserve0, reserves.Reserve1)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-	return dyByContract, nil
 }

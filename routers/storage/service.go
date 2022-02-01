@@ -1,26 +1,20 @@
 package storage
 
 import (
-	"context"
 	"mime/multipart"
 	"os"
 	"path/filepath"
-	"payment-bridge/blockchain/browsersync/scanlockpayment/polygon"
 	"payment-bridge/common/constants"
 	"payment-bridge/common/utils"
 	"payment-bridge/config"
 	"payment-bridge/database"
 	"payment-bridge/models"
-	"payment-bridge/on-chain/goBind"
 	"payment-bridge/scheduler"
 	"strconv"
 	"strings"
 
 	"github.com/filswan/go-swan-lib/logs"
 	"github.com/shopspring/decimal"
-
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	common2 "github.com/ethereum/go-ethereum/common"
 
 	"github.com/filswan/go-swan-lib/client/ipfs"
 
@@ -40,19 +34,9 @@ func GetSourceFiles(pageSize, offset string, walletAddress, payloadCid string) (
 
 	for _, srcFile := range srcFiles {
 		dealFileIds[srcFile.DealFileId] = true
-		if len(strings.Trim(srcFile.LockedFee, " ")) == 0 {
-			eventPayment, err := scheduler.GetPaymentInfo(srcFile.PayloadCid)
-			if err != nil {
-				logs.GetLogger().Error(err)
-			}
-
-			if eventPayment != nil {
-				srcFile.LockedFee = eventPayment.LockedFee
-			}
-		}
 
 		if len(strings.Trim(srcFile.Status, " ")) == 0 {
-			if len(strings.Trim(srcFile.LockedFee, " ")) == 0 {
+			if srcFile.LockedFee == nil {
 				srcFile.Status = constants.LOCK_PAYMENT_STATUS_WAITING
 			} else {
 				srcFile.Status = constants.LOCK_PAYMENT_STATUS_PROCESSING
@@ -64,21 +48,15 @@ func GetSourceFiles(pageSize, offset string, walletAddress, payloadCid string) (
 		}
 
 		srcFile.OfflineDeals = []*models.OfflineDeal{}
-		//offlineDeals, err := models.GetOfflineDealsByDealFileId(srcFile.DealFileId)
-		//if err != nil {
-		//	logs.GetLogger().Error(err)
-		//	return nil, err
-		//}
-		//
-		//if offlineDeals != nil {
-		//	srcFile.OfflineDeals = offlineDeals
-		//} else {
-		//	srcFile.OfflineDeals = []*models.OfflineDeal{}
-		//}
 	}
 
 	if len(dealFileIds) > 0 {
-		offlineDeals, err := models.GetOfflineDealsByDealFileIds(dealFileIds)
+		dealFileIdList := make([]int64, 0, len(dealFileIds))
+		for dealFileId := range dealFileIds {
+			dealFileIdList = append(dealFileIdList, dealFileId)
+		}
+
+		offlineDeals, err := models.GetOfflineDealsByDealFileIds(dealFileIdList)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			return nil, err
@@ -371,32 +349,4 @@ func GetDaoSignEventByDealId(dealId int64) ([]*DaoInfoResult, error) {
 		return nil, err
 	}
 	return daoInfoResult, nil
-}
-
-func GetThreshHold() (uint8, error) {
-	daoAddress := common2.HexToAddress(polygon.GetConfig().PolygonMainnetNode.DaoSwanOracleAddress)
-	client := polygon.WebConn.ConnWeb
-
-	pk := os.Getenv("privateKeyOnPolygon")
-	if strings.HasPrefix(strings.ToLower(pk), "0x") {
-		pk = pk[2:]
-	}
-
-	callOpts := new(bind.CallOpts)
-	callOpts.From = daoAddress
-	callOpts.Context = context.Background()
-
-	daoOracleContractInstance, err := goBind.NewFilswanOracle(daoAddress, client)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return 0, err
-	}
-
-	threshHold, err := daoOracleContractInstance.GetThreshold(callOpts)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return 0, err
-	}
-	logs.GetLogger().Info("dao threshHold is : ", threshHold)
-	return threshHold, nil
 }

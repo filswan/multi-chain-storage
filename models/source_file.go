@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"payment-bridge/common/constants"
 	"payment-bridge/database"
 	"strings"
@@ -31,7 +32,7 @@ type SourceFileExt struct {
 	SourceFile
 	DealFileId   int64          `json:"deal_file_id"`
 	Duration     int            `json:"duration"`
-	LockedFee    string         `json:"locked_fee"`
+	LockedFee    *string        `json:"locked_fee"`
 	OfflineDeals []*OfflineDeal `json:"offline_deals"`
 }
 
@@ -73,9 +74,27 @@ func GetSourceFilesByPayloadCid(payloadCid string) ([]*SourceFile, error) {
 	return sourceFiles, nil
 }
 
-func GetSourceFilesNeed2Car() ([]*SourceFile, error) {
+func GetSourceFileByPayloadCidWalletAddress(payloadCid, walletAddress string) (*SourceFile, error) {
 	var sourceFiles []*SourceFile
-	sql := "select a.* from source_file a where a.status=? and file_type=?"
+
+	err := database.GetDB().Where("payload_cid=? and wallet_address=?", payloadCid, walletAddress).Order("create_at").Find(&sourceFiles).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	if len(sourceFiles) > 0 {
+		return sourceFiles[0], nil
+	}
+
+	err = fmt.Errorf("source file with payload_cid:%s, wallet_address:%s not exists", payloadCid, walletAddress)
+	logs.GetLogger().Error(err)
+	return nil, err
+}
+
+func GetSourceFilesNeed2Car() ([]*SourceFileExt, error) {
+	var sourceFiles []*SourceFileExt
+	sql := "select a.* from source_file a left outer join event_lock_payment b on b.source_file_id=a.id where a.status=? and a.file_type=?"
 	err := database.GetDB().Raw(sql, constants.SOURCE_FILE_STATUS_CREATED, constants.SOURCE_FILE_TYPE_NORMAL).Scan(&sourceFiles).Error
 
 	if err != nil {

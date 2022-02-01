@@ -30,10 +30,10 @@ type SourceFile struct {
 
 type SourceFileExt struct {
 	SourceFile
-	DealFileId   int64          `json:"deal_file_id"`
-	Duration     int            `json:"duration"`
-	LockedFee    *string        `json:"locked_fee"`
-	OfflineDeals []*OfflineDeal `json:"offline_deals"`
+	DealFileId   int64            `json:"deal_file_id"`
+	Duration     int              `json:"duration"`
+	LockedFee    *decimal.Decimal `json:"locked_fee"`
+	OfflineDeals []*OfflineDeal   `json:"offline_deals"`
 }
 
 // FindSourceFileList (&SourceFile{Id: "0xadeaCC802D0f2DFd31bE4Fa7434F15782Fd720ac"},"id desc","10","0")
@@ -92,9 +92,9 @@ func GetSourceFileByPayloadCidWalletAddress(payloadCid, walletAddress string) (*
 	return nil, err
 }
 
-func GetSourceFilesNeed2Car() ([]*SourceFile, error) {
-	var sourceFiles []*SourceFile
-	sql := "select a.* from source_file a, event_lock_payment b where b.source_file_id=a.id and a.status=? and a.file_type=?"
+func GetSourceFilesNeed2Car() ([]*SourceFileExt, error) {
+	var sourceFiles []*SourceFileExt
+	sql := "select a.*,b.locked_fee from source_file a, event_lock_payment b where b.source_file_id=a.id and a.status=? and a.file_type=?"
 	err := database.GetDB().Raw(sql, constants.SOURCE_FILE_STATUS_CREATED, constants.SOURCE_FILE_TYPE_NORMAL).Scan(&sourceFiles).Error
 
 	if err != nil {

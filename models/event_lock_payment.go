@@ -9,26 +9,26 @@ import (
 )
 
 type EventLockPayment struct {
-	ID              int64  `json:"id"`
-	TxHash          string `json:"tx_hash"`
-	PayloadCid      string `json:"payload_cid"`
-	TokenAddress    string `json:"token_address"`
-	MinPayment      string `json:"min_payment"`
-	ContractAddress string `json:"contract_address"`
-	LockedFee       string `json:"locked_fee"`
-	Deadline        string `json:"deadline"`
-	BlockNo         uint64 `json:"block_no"`
-	MinerAddress    string `json:"miner_address"`
-	AddressFrom     string `json:"address_from"`
-	AddressTo       string `json:"address_to"`
-	CoinId          int64  `json:"coin_id"`
-	NetworkId       int64  `json:"network_id"`
-	LockPaymentTime int64  `json:"lock_payment_time"`
-	CreateAt        int64  `json:"create_at"`
-	UnlockTxHash    string `json:"unlock_tx_hash"`
-	UnlockTxStatus  string `json:"unlock_tx_status"`
-	UnlockTime      string `json:"unlock_time"`
-	SourceFileId    int64  `json:"source_file_id"`
+	ID              int64           `json:"id"`
+	TxHash          string          `json:"tx_hash"`
+	PayloadCid      string          `json:"payload_cid"`
+	TokenAddress    string          `json:"token_address"`
+	MinPayment      string          `json:"min_payment"`
+	ContractAddress string          `json:"contract_address"`
+	LockedFee       decimal.Decimal `json:"locked_fee"`
+	Deadline        string          `json:"deadline"`
+	BlockNo         uint64          `json:"block_no"`
+	MinerAddress    string          `json:"miner_address"`
+	AddressFrom     string          `json:"address_from"`
+	AddressTo       string          `json:"address_to"`
+	CoinId          int64           `json:"coin_id"`
+	NetworkId       int64           `json:"network_id"`
+	LockPaymentTime int64           `json:"lock_payment_time"`
+	CreateAt        int64           `json:"create_at"`
+	UnlockTxHash    string          `json:"unlock_tx_hash"`
+	UnlockTxStatus  string          `json:"unlock_tx_status"`
+	UnlockTime      string          `json:"unlock_time"`
+	SourceFileId    int64           `json:"source_file_id"`
 }
 
 // FindEvents (&Event{Id: "0xadeaCC802D0f2DFd31bE4Fa7434F15782Fd720ac"},"id desc","10","0")
@@ -71,26 +71,6 @@ func GetEventLockPaymentBySrcPayloadCid(srcFilePayloadCid string) ([]*EventLockP
 	}
 
 	return eventLockPayments, nil
-}
-
-func GetTotalLockFeeBySrcPayloadCid(carFilePayloadCid string) (*decimal.Decimal, error) {
-	eventLockPayments, err := GetEventLockPaymentBySrcPayloadCid(carFilePayloadCid)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-
-	totalLockFee := decimal.NewFromFloat(0.0)
-	for _, localPayment := range eventLockPayments {
-		lockFee, err := decimal.NewFromString(localPayment.LockedFee)
-		if err != nil {
-			logs.GetLogger().Error(err)
-			return nil, err
-		}
-		totalLockFee = totalLockFee.Add(lockFee)
-	}
-
-	return &totalLockFee, nil
 }
 
 func GetEventLockPaymentByPayloadCidWallet(payloadCid, walletAddress string) ([]*EventLockPayment, error) {

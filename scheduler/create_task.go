@@ -76,7 +76,7 @@ func CreateTask() error {
 		return err
 	}
 
-	var srcFiles2Merged []*models.SourceFile
+	var srcFiles2Merged []*models.SourceFileExt
 	for _, srcFile := range srcFiles {
 		srcFilepathTemp := filepath.Join(carSrcDir, srcFile.FileName)
 
@@ -87,17 +87,17 @@ func CreateTask() error {
 			continue
 		}
 
+		maxPriceTemp, err := getMaxPrice(*srcFile, fileCoinPriceInUsdc)
+		if err != nil {
+			os.Remove(srcFilepathTemp)
+			logs.GetLogger().Error(err)
+			continue
+		}
+
 		totalSize = totalSize + bytesCopied
 
 		if srcFile.CreateAt < createdTimeMin {
 			createdTimeMin = srcFile.CreateAt
-		}
-
-		maxPriceTemp, err := getMaxPrice(*srcFile, fileCoinPriceInUsdc)
-		if err != nil {
-			os.RemoveAll(carSrcDir)
-			logs.GetLogger().Error(err)
-			return err
 		}
 
 		if maxPrice == nil {
@@ -161,14 +161,8 @@ func CreateTask() error {
 	return nil
 }
 
-func getMaxPrice(srcFile models.SourceFile, fileCoinPriceInUsdc *big.Int) (*decimal.Decimal, error) {
-	totalLockFee, err := models.GetTotalLockFeeBySrcPayloadCid(srcFile.PayloadCid)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-
-	lockedFee := totalLockFee.IntPart()
+func getMaxPrice(srcFile models.SourceFileExt, fileCoinPriceInUsdc *big.Int) (*decimal.Decimal, error) {
+	lockedFee := srcFile.LockedFee.IntPart()
 
 	maxPrice, err := GetMaxPriceForCreateTask(fileCoinPriceInUsdc, lockedFee, constants.DURATION_DAYS_DEFAULT, srcFile.FileSize)
 	if err != nil {
@@ -272,7 +266,7 @@ func createTask4SrcFiles(srcDir, carDir string, maxPrice decimal.Decimal, create
 	return fileDesc, nil
 }
 
-func saveCarInfo2DB(fileDesc *libmodel.FileDesc, srcFiles []*models.SourceFile, maxPrice decimal.Decimal) error {
+func saveCarInfo2DB(fileDesc *libmodel.FileDesc, srcFiles []*models.SourceFileExt, maxPrice decimal.Decimal) error {
 	db := database.GetDBTransaction()
 	currentUtcMilliSecond := utils.GetCurrentUtcMilliSecond()
 	dealFile := models.DealFile{

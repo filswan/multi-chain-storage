@@ -37,6 +37,11 @@ alter table event_unlock_payment add foreign key fk_event_unlock_payment_source_
 alter table event_lock_payment add source_file_id bigint;
 alter table event_lock_payment add foreign key fk_event_lock_payment_source_file_id(source_file_id) references source_file(id)
 
+alter table event_lock_payment modify locked_fee double;
+
+
+
+
 SET SQL_SAFE_UPDATES = 0;
 update event_lock_payment set lock_payment_time='0' where lock_payment_time='';
 alter table event_lock_payment modify lock_payment_time bigint;

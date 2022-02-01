@@ -7,6 +7,7 @@ import (
 	"payment-bridge/models"
 
 	"github.com/filswan/go-swan-lib/logs"
+	"github.com/shopspring/decimal"
 )
 
 func GetPaymentInfo(srcFilePayloadCid string) (*models.EventLockPayment, error) {
@@ -31,11 +32,19 @@ func GetPaymentInfo(srcFilePayloadCid string) (*models.EventLockPayment, error) 
 	var event *models.EventLockPayment
 	if paymentInfo.IsExisted {
 		event = new(models.EventLockPayment)
+
+		lockedFee, err := decimal.NewFromString(paymentInfo.LockedFee.String())
+		if err != nil {
+			logs.GetLogger().Error(err)
+		} else {
+			event.LockedFee = lockedFee
+		}
+
 		event.Deadline = paymentInfo.Deadline.String()
 		event.TokenAddress = paymentInfo.Token.Hex()
 		event.AddressFrom = paymentInfo.Owner.String()
 		event.AddressTo = paymentInfo.Recipient.String()
-		event.LockedFee = paymentInfo.LockedFee.String()
+
 		event.PayloadCid = srcFilePayloadCid
 		event.LockPaymentTime = utils.GetCurrentUtcMilliSecond()
 		coin, err := models.FindCoinByCoinAddress(event.TokenAddress)

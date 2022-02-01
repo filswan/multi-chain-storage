@@ -489,7 +489,7 @@
                     "contract_address": this.gatewayContractAddress,
                     "locked_fee":"",
                     "deadline":"",
-                    "block_no":"",
+                    "block_no":0,
                     "miner_address":"",
                     "address_from": this.metaAddress,
                     "address_to": this.gatewayContractAddress,

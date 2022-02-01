@@ -11,21 +11,18 @@ import (
 )
 
 type Configuration struct {
-	Port                            string       `toml:"port"`
-	Release                         bool         `toml:"release"`
-	AdminWalletOnPolygon            string       `toml:"admin_wallet_on_polygon"`
-	FileCoinWallet                  string       `toml:"file_coin_wallet"`
-	FilinkUrl                       string       `toml:"filink_url"`
-	PolygonRpcUrl                   string       `toml:"polygon_rpc_url"`
-	PaymentContractAddress          string       `toml:"payment_contract_address"`
-	ContractLockFunctionSignature   string       `toml:"contract_lock_function_signature"`
-	ContractUnlockFunctionSignature string       `toml:"contract_unlock_function_signature"`
-	Database                        database     `toml:"database"`
-	SwanApi                         swanApi      `toml:"swan_api"`
-	Lotus                           lotus        `toml:"lotus"`
-	IpfsServer                      ipfsServer   `toml:"ipfs_server"`
-	SwanTask                        swanTask     `toml:"swan_task"`
-	ScheduleRule                    ScheduleRule `toml:"schedule_rule"`
+	Port                 string       `toml:"port"`
+	Release              bool         `toml:"release"`
+	AdminWalletOnPolygon string       `toml:"admin_wallet_on_polygon"`
+	FileCoinWallet       string       `toml:"file_coin_wallet"`
+	FilinkUrl            string       `toml:"filink_url"`
+	PolygonRpcUrl        string       `toml:"polygon_rpc_url"`
+	Database             database     `toml:"database"`
+	SwanApi              swanApi      `toml:"swan_api"`
+	Lotus                lotus        `toml:"lotus"`
+	IpfsServer           ipfsServer   `toml:"ipfs_server"`
+	SwanTask             swanTask     `toml:"swan_task"`
+	ScheduleRule         ScheduleRule `toml:"schedule_rule"`
 }
 
 type database struct {

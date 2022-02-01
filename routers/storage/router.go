@@ -170,7 +170,7 @@ func GetDealListFromFilink(c *gin.Context) {
 		return
 	}
 	if len(dealFiles) < 1 {
-		err := fmt.Errorf("no deal got for source file:", srcFilePayloadCid)
+		err := fmt.Errorf("no deal got for source file with payload_cid:%s", srcFilePayloadCid)
 		logs.GetLogger().Error(err)
 		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE))
 		return

@@ -4,14 +4,6 @@ admin_wallet_on_polygon=""
 file_coin_wallet=""
 filink_url=""
 
-[polygon]
-polygon_rpc_url=""
-dao_swan_oracle_address = ""
-contract_unlock_function_signature = ""
-payment_contract_address = ""
-router_address_of_sushiswap_on_polygon = ""
-gas_limit = 8000000
-
 [database]
 db_host="localhost"
 db_port="3306"
@@ -51,4 +43,12 @@ unlock_payment_rule = "0 */5 * * * ?"  #every minute
 create_task_rule = "0 */2 * * * ?"
 send_deal_rule = "0 */3 * * * ?"  #every minute
 scan_deal_status_rule = "0 */4 * * * ?"
+
+[polygon]
+polygon_rpc_url=""
+dao_swan_oracle_address = ""
+contract_unlock_function_signature = ""
+payment_contract_address = ""
+router_address_of_sushiswap_on_polygon = ""
+gas_limit = 8000000
 

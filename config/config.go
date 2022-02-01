@@ -114,7 +114,6 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 		{"admin_wallet_on_polygon"},
 		{"file_coin_wallet"},
 		{"filink_url"},
-		{"polygon_rpc_url"},
 
 		{"database", "db_host"},
 		{"database", "db_port"},
@@ -149,6 +148,14 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 		{"schedule_rule", "create_task_rule"},
 		{"schedule_rule", "send_deal_rule"},
 		{"schedule_rule", "scan_deal_status_rule"},
+
+		{"polygon", "polygon_rpc_url"},
+		{"polygon", "dao_swan_oracle_address"},
+		{"polygon", "contract_unlock_function_signature"},
+		{"polygon", "payment_contract_address"},
+		{"polygon", "gas_limit"},
+		{"polygon", "router_address_of_sushiswap_on_polygon"},
+		{"polygon", "pair_address_between_wfil_usdc_of_sushiswap_on_polygon"},
 	}
 
 	for _, v := range requiredFields {

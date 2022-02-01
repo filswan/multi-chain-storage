@@ -72,20 +72,28 @@ func CreateTask() error {
 	createdTimeMin := currentUtcMilliSec
 	var maxPrice *decimal.Decimal
 
-	var srcFiles2Merged []*models.SourceFile
+	var srcFiles2Merged []*models.SourceFileExt
 	for _, srcFile := range srcFiles {
-		eventPayment, err := client.GetPaymentInfo(srcFile.PayloadCid)
-		if err != nil {
-			logs.GetLogger().Error(err)
-			continue
-		}
+		if srcFile.LockedFee == nil {
+			eventPayment, err := client.GetPaymentInfo(srcFile.PayloadCid)
+			if err != nil {
+				logs.GetLogger().Error(err)
+				continue
+			}
 
-		if eventPayment == nil {
-			continue
-		}
+			if eventPayment == nil {
+				continue
+			}
 
-		if eventPayment.AddressFrom != srcFile.WalletAddress {
-			continue
+			err = database.GetDB().Save(&eventPayment).Error
+			if err != nil {
+				logs.GetLogger().Error(err)
+				continue
+			}
+
+			if eventPayment.SourceFileId != srcFile.ID {
+				continue
+			}
 		}
 
 		srcFilepathTemp := filepath.Join(carSrcDir, srcFile.FileName)
@@ -171,7 +179,7 @@ func CreateTask() error {
 	return nil
 }
 
-func getMaxPrice(srcFile models.SourceFile) (*decimal.Decimal, error) {
+func getMaxPrice(srcFile models.SourceFileExt) (*decimal.Decimal, error) {
 	totalLockFee, err := models.GetTotalLockFeeBySrcPayloadCid(srcFile.PayloadCid)
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -286,7 +294,7 @@ func createTask4SrcFiles(srcDir, carDir string, maxPrice decimal.Decimal, create
 	return fileDesc, nil
 }
 
-func saveCarInfo2DB(fileDesc *libmodel.FileDesc, srcFiles []*models.SourceFile, maxPrice decimal.Decimal) error {
+func saveCarInfo2DB(fileDesc *libmodel.FileDesc, srcFiles []*models.SourceFileExt, maxPrice decimal.Decimal) error {
 	db := database.GetDBTransaction()
 	currentUtcMilliSecond := utils.GetCurrentUtcMilliSecond()
 	dealFile := models.DealFile{

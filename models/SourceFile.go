@@ -32,7 +32,7 @@ type SourceFileExt struct {
 	SourceFile
 	DealFileId   int64          `json:"deal_file_id"`
 	Duration     int            `json:"duration"`
-	LockedFee    string         `json:"locked_fee"`
+	LockedFee    *string        `json:"locked_fee"`
 	OfflineDeals []*OfflineDeal `json:"offline_deals"`
 }
 
@@ -92,9 +92,9 @@ func GetSourceFileByPayloadCidWalletAddress(payloadCid, walletAddress string) (*
 	return nil, err
 }
 
-func GetSourceFilesNeed2Car() ([]*SourceFile, error) {
-	var sourceFiles []*SourceFile
-	sql := "select a.* from source_file a where a.status=? and file_type=?"
+func GetSourceFilesNeed2Car() ([]*SourceFileExt, error) {
+	var sourceFiles []*SourceFileExt
+	sql := "select a.* from source_file a left outer join event_lock_payment b on b.source_file_id=a.id where a.status=? and a.file_type=?"
 	err := database.GetDB().Raw(sql, constants.SOURCE_FILE_STATUS_CREATED, constants.SOURCE_FILE_TYPE_NORMAL).Scan(&sourceFiles).Error
 
 	if err != nil {

@@ -11,7 +11,6 @@ import (
 	"payment-bridge/config"
 	"payment-bridge/database"
 	"payment-bridge/models"
-	"payment-bridge/on-chain/client"
 	"payment-bridge/on-chain/goBind"
 	"payment-bridge/scheduler"
 	"strconv"
@@ -41,19 +40,9 @@ func GetSourceFiles(pageSize, offset string, walletAddress, payloadCid string) (
 
 	for _, srcFile := range srcFiles {
 		dealFileIds[srcFile.DealFileId] = true
-		if len(strings.Trim(srcFile.LockedFee, " ")) == 0 {
-			eventPayment, err := client.GetPaymentInfo(srcFile.PayloadCid)
-			if err != nil {
-				logs.GetLogger().Error(err)
-			}
-
-			if eventPayment != nil {
-				srcFile.LockedFee = eventPayment.LockedFee
-			}
-		}
 
 		if len(strings.Trim(srcFile.Status, " ")) == 0 {
-			if len(strings.Trim(srcFile.LockedFee, " ")) == 0 {
+			if srcFile.LockedFee == nil {
 				srcFile.Status = constants.LOCK_PAYMENT_STATUS_WAITING
 			} else {
 				srcFile.Status = constants.LOCK_PAYMENT_STATUS_PROCESSING
@@ -65,17 +54,6 @@ func GetSourceFiles(pageSize, offset string, walletAddress, payloadCid string) (
 		}
 
 		srcFile.OfflineDeals = []*models.OfflineDeal{}
-		//offlineDeals, err := models.GetOfflineDealsByDealFileId(srcFile.DealFileId)
-		//if err != nil {
-		//	logs.GetLogger().Error(err)
-		//	return nil, err
-		//}
-		//
-		//if offlineDeals != nil {
-		//	srcFile.OfflineDeals = offlineDeals
-		//} else {
-		//	srcFile.OfflineDeals = []*models.OfflineDeal{}
-		//}
 	}
 
 	if len(dealFileIds) > 0 {

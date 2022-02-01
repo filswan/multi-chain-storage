@@ -7,19 +7,24 @@ import (
 	"payment-bridge/on-chain/goBind"
 
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/filswan/go-swan-lib/logs"
 )
 
-func GetWfilPriceFromSushiPrice(client *ethclient.Client, wfilPrice string) (*big.Int, error) {
+func GetWfilPriceFromSushiPrice(wfilPrice string) (*big.Int, error) {
+	ethClient, err := GetEthClient()
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
 	//routerAddress sushiswap mumbai address
 	routerAddress := config.GetConfig().Polygon.RouterAddressOfSushiswapOnPolygon
 
 	//pairAddress sushiswap mumbai address
 	pairAddress := config.GetConfig().Polygon.PairAddressBetweenWfilUsdcOfSushiswapOnPolygon
 
-	contractRouter, _ := goBind.NewRouter(common.HexToAddress(routerAddress), client)
-	contractPool, _ := goBind.NewPair(common.HexToAddress(pairAddress), client)
+	contractRouter, _ := goBind.NewRouter(common.HexToAddress(routerAddress), ethClient)
+	contractPool, _ := goBind.NewPair(common.HexToAddress(pairAddress), ethClient)
 
 	reserves, _ := contractPool.GetReserves(nil)
 
@@ -39,13 +44,7 @@ func GetWfilPriceFromSushiPrice(client *ethclient.Client, wfilPrice string) (*bi
 }
 
 func GetFileCoinLastestPrice() (*float64, error) {
-	ethClient, err := GetEthClient()
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-
-	price, err := GetWfilPriceFromSushiPrice(ethClient, "1")
+	price, err := GetWfilPriceFromSushiPrice("1")
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err

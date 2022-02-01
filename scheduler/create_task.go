@@ -5,14 +5,12 @@ import (
 	"math/big"
 	"os"
 	"path/filepath"
-	"payment-bridge/blockchain/browsersync/scanlockpayment/polygon"
 	"payment-bridge/common/constants"
 	"payment-bridge/common/utils"
 	"payment-bridge/config"
 	"payment-bridge/database"
 	"payment-bridge/models"
 	"payment-bridge/on-chain/client"
-	"payment-bridge/routers/billing"
 	"sync"
 	"time"
 
@@ -73,6 +71,12 @@ func CreateTask() error {
 	var maxPrice *decimal.Decimal
 
 	var srcFiles2Merged []*models.SourceFileExt
+
+	fileCoinPriceInUsdc, err := client.GetWfilPriceFromSushiPrice("1")
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
 	for _, srcFile := range srcFiles {
 		if srcFile.LockedFee == nil {
 			eventPayment, err := client.GetPaymentInfo(srcFile.PayloadCid)
@@ -111,7 +115,7 @@ func CreateTask() error {
 			createdTimeMin = srcFile.CreateAt
 		}
 
-		maxPriceTemp, err := getMaxPrice(*srcFile)
+		maxPriceTemp, err := getMaxPrice(*srcFile, fileCoinPriceInUsdc)
 		if err != nil {
 			os.RemoveAll(carSrcDir)
 			logs.GetLogger().Error(err)
@@ -179,7 +183,7 @@ func CreateTask() error {
 	return nil
 }
 
-func getMaxPrice(srcFile models.SourceFileExt) (*decimal.Decimal, error) {
+func getMaxPrice(srcFile models.SourceFileExt, fileCoinPriceInUsdc *big.Int) (*decimal.Decimal, error) {
 	totalLockFee, err := models.GetTotalLockFeeBySrcPayloadCid(srcFile.PayloadCid)
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -188,16 +192,12 @@ func getMaxPrice(srcFile models.SourceFileExt) (*decimal.Decimal, error) {
 
 	lockedFee := totalLockFee.IntPart()
 
-	fileCoinPriceInUsdc, err := billing.GetWfilPriceFromSushiPrice(polygon.WebConn.ConnWeb, "1")
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
 	maxPrice, err := GetMaxPriceForCreateTask(fileCoinPriceInUsdc, lockedFee, constants.DURATION_DAYS_DEFAULT, srcFile.FileSize)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
 	}
+
 	logs.GetLogger().Println("payload cid ", srcFile.PayloadCid, " max price is ", maxPrice)
 
 	if maxPrice.Cmp(config.GetConfig().SwanTask.MaxPrice) < 0 {

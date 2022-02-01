@@ -53,11 +53,14 @@ func WriteLockPayment(c *gin.Context) {
 			event.NetworkId = networkId
 		}
 	} else {
-		eventFromOnChainApi.TxHash = event.TxHash
-		eventFromOnChainApi.ContractAddress = event.ContractAddress
-		eventFromOnChainApi.MinPayment = event.MinPayment
-		eventFromOnChainApi.LockPaymentTime = event.LockPaymentTime
-		eventFromOnChainApi.SourceFileId = event.SourceFileId
+		event.Deadline = eventFromOnChainApi.Deadline
+		event.TokenAddress = eventFromOnChainApi.TokenAddress
+		event.AddressFrom = eventFromOnChainApi.AddressFrom
+		event.AddressTo = eventFromOnChainApi.AddressTo
+		event.LockedFee = eventFromOnChainApi.LockedFee
+		event.SourceFileId = eventFromOnChainApi.SourceFileId
+		event.CoinId = eventFromOnChainApi.CoinId
+		event.NetworkId = eventFromOnChainApi.NetworkId
 	}
 
 	err = database.GetDB().Save(&event).Error

@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"payment-bridge/common/constants"
 	"payment-bridge/database"
 	"strings"
@@ -71,6 +72,24 @@ func GetSourceFilesByPayloadCid(payloadCid string) ([]*SourceFile, error) {
 	}
 
 	return sourceFiles, nil
+}
+
+func GetSourceFileByPayloadCidWalletAddress(payloadCid, walletAddress string) (*SourceFile, error) {
+	var sourceFiles []*SourceFile
+
+	err := database.GetDB().Where("payload_cid=? and wallet_address=?", payloadCid, walletAddress).Order("create_at").Find(&sourceFiles).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	if len(sourceFiles) > 0 {
+		return sourceFiles[0], nil
+	}
+
+	err = fmt.Errorf("source file with payload_cid:%s, wallet_address:%s not exists", payloadCid, walletAddress)
+	logs.GetLogger().Error(err)
+	return nil, err
 }
 
 func GetSourceFilesNeed2Car() ([]*SourceFile, error) {

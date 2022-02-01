@@ -1,6 +1,7 @@
 package client
 
 import (
+	"fmt"
 	"payment-bridge/common/constants"
 	"payment-bridge/common/utils"
 	"payment-bridge/models"
@@ -17,6 +18,12 @@ func GetPaymentInfo(srcFilePayloadCid string) (*models.EventLockPayment, error) 
 
 	paymentInfo, err := swanPaymentSession.GetLockedPaymentInfo(srcFilePayloadCid)
 	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	if !paymentInfo.IsExisted {
+		err := fmt.Errorf("payment for source file with payload_cid:%s not exists", srcFilePayloadCid)
 		logs.GetLogger().Error(err)
 		return nil, err
 	}
@@ -43,6 +50,13 @@ func GetPaymentInfo(srcFilePayloadCid string) (*models.EventLockPayment, error) 
 			logs.GetLogger().Error(err)
 		} else {
 			event.NetworkId = networkId
+		}
+
+		srcFile, err := models.GetSourceFileByPayloadCidWalletAddress(srcFilePayloadCid, event.AddressFrom)
+		if err != nil {
+			logs.GetLogger().Error(err)
+		} else {
+			event.SourceFileId = srcFile.ID
 		}
 
 		//err = database.SaveOne(event)

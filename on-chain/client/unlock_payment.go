@@ -36,18 +36,6 @@ func SaveEventUnlockPayment(logsInChain []*types.Log, unlockStatus string, dealI
 		}
 		event.DealId = dealId
 		event.TxHash = vLog.TxHash.Hex()
-		networkId, err := models.FindNetworkIdByUUID(constants.NETWORK_TYPE_POLYGON_UUID)
-		if err != nil {
-			logs.GetLogger().Error(err)
-		} else {
-			event.NetworkId = networkId
-		}
-		coinId, err := models.FindCoinIdByUUID(constants.COIN_TYPE_USDC_ON_POLYGON_UUID)
-		if err != nil {
-			logs.GetLogger().Error(err)
-		} else {
-			event.CoinId = coinId
-		}
 		event.TokenAddress = dataList[1].(common.Address).Hex()
 		event.UnlockToAdminAmount = dataList[2].(*big.Int).String()
 		event.UnlockToUserAmount = dataList[3].(*big.Int).String()
@@ -57,6 +45,19 @@ func SaveEventUnlockPayment(logsInChain []*types.Log, unlockStatus string, dealI
 		event.BlockNo = strconv.FormatUint(vLog.BlockNumber, 10)
 		event.CreateAt = utils.GetCurrentUtcMilliSecond()
 		event.UnlockStatus = unlockStatus
+
+		networkId, err := models.FindNetworkIdByUUID(constants.NETWORK_TYPE_POLYGON_UUID)
+		if err != nil {
+			logs.GetLogger().Error(err)
+		} else {
+			event.NetworkId = networkId
+		}
+		coin, err := models.FindCoinByCoinAddress(event.TokenAddress)
+		if err != nil {
+			logs.GetLogger().Error(err)
+		} else {
+			event.CoinId = coin.ID
+		}
 
 		err = database.SaveOneWithTransaction(event)
 		if err != nil {

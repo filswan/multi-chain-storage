@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"fmt"
 	"payment-bridge/database"
 
 	"github.com/filswan/go-swan-lib/logs"
@@ -48,4 +49,21 @@ func FindCoinIdById(id int64) (*Coin, error) {
 	}
 
 	return nil, nil
+}
+
+func FindCoinByCoinAddress(coinAddress string) (*Coin, error) {
+	var coins []*Coin
+	err := database.GetDB().Where("coin_address=?", coinAddress).Find(&coins).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	if len(coins) > 0 {
+		return coins[0], nil
+	}
+
+	err = fmt.Errorf("coin:%s not exists", coinAddress)
+	logs.GetLogger().Error(err)
+	return nil, err
 }

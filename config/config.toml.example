@@ -4,6 +4,10 @@ admin_wallet_on_polygon=""
 file_coin_wallet=""
 filink_url=""
 polygon_rpc_url=""
+payment_contract_address = ""
+contract_lock_function_signature = ""
+contract_unlock_function_signature = ""
+
 
 [database]
 db_host="localhost"

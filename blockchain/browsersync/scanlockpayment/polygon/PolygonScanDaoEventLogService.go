@@ -101,11 +101,11 @@ func ScanDaoEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) erro
 					event.DaoAddress = addrInfo.AddrFrom
 				}
 
-				wfilCoinId, err := models.FindCoinIdByUUID(constants.COIN_TYPE_WFIL_ON_POLYGON_UUID)
+				wfilCoin, err := models.FindCoinByUuid(constants.COIN_TYPE_WFIL_ON_POLYGON_UUID)
 				if err != nil {
 					logs.GetLogger().Error(err)
 				} else {
-					event.CoinId = wfilCoinId
+					event.CoinId = wfilCoin.ID
 				}
 				networkId, err := models.FindNetworkIdByUUID(constants.NETWORK_TYPE_POLYGON_UUID)
 				if err != nil {

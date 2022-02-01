@@ -10,6 +10,7 @@ import (
 	"payment-bridge/common/utils"
 	"payment-bridge/database"
 	"payment-bridge/models"
+	"payment-bridge/on-chain/client"
 	"strconv"
 	"strings"
 
@@ -34,18 +35,29 @@ func WriteLockPayment(c *gin.Context) {
 		return
 	}
 
-	usdcCoinId, err := models.FindCoinIdByUUID(constants.COIN_TYPE_USDC_ON_POLYGON_UUID)
+	eventFromOnChainApi, err := client.GetPaymentInfo(event.PayloadCid)
 	if err != nil {
 		logs.GetLogger().Error(err)
-	} else {
-		event.CoinId = usdcCoinId
-	}
+		usdcCoin, err := models.FindCoinByUuid(constants.COIN_TYPE_USDC_ON_POLYGON_UUID)
+		if err != nil {
+			logs.GetLogger().Error(err)
+		} else {
+			event.CoinId = usdcCoin.ID
+			event.TokenAddress = usdcCoin.CoinAddress
+		}
 
-	networkId, err := models.FindNetworkIdByUUID(constants.NETWORK_TYPE_POLYGON_UUID)
-	if err != nil {
-		logs.GetLogger().Error(err)
+		networkId, err := models.FindNetworkIdByUUID(constants.NETWORK_TYPE_POLYGON_UUID)
+		if err != nil {
+			logs.GetLogger().Error(err)
+		} else {
+			event.NetworkId = networkId
+		}
 	} else {
-		event.NetworkId = networkId
+		eventFromOnChainApi.TxHash = event.TxHash
+		eventFromOnChainApi.ContractAddress = event.ContractAddress
+		eventFromOnChainApi.MinPayment = event.MinPayment
+		eventFromOnChainApi.LockPaymentTime = event.LockPaymentTime
+		eventFromOnChainApi.SourceFileId = event.SourceFileId
 	}
 
 	err = database.GetDB().Save(&event).Error

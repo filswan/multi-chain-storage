@@ -97,11 +97,12 @@ func ScanPolygonLockPaymentEventFromChainAndSaveEventLogData(blockNoFrom, blockN
 					event.AddressTo = addrInfo.AddrTo
 				}
 				event.BlockNo = vLog.BlockNumber
-				usdcCoinId, err := models.FindCoinIdByUUID(constants.COIN_TYPE_USDC_ON_POLYGON_UUID)
+				usdcCoin, err := models.FindCoinByUuid(constants.COIN_TYPE_USDC_ON_POLYGON_UUID)
 				if err != nil {
 					logs.GetLogger().Error(err)
 				} else {
-					event.CoinId = usdcCoinId
+					event.CoinId = usdcCoin.ID
+					event.TokenAddress = usdcCoin.CoinAddress
 				}
 				networkId, err := models.FindNetworkIdByUUID(constants.NETWORK_TYPE_POLYGON_UUID)
 				if err != nil {

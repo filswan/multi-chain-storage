@@ -128,6 +128,7 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType 
 
 	needPay := 0
 
+	currentUtcMilliSec := utils.GetCurrentUtcMilliSecond()
 	// not uploaded by anyone yet
 	if len(sourceFiles) == 0 {
 		sourceFile := models.SourceFile{
@@ -135,12 +136,13 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType 
 			FileSize:      srcFile.Size,
 			ResourceUri:   srcFilepath,
 			Status:        constants.SOURCE_FILE_STATUS_CREATED,
-			CreateAt:      utils.GetCurrentUtcMilliSecond(),
 			IpfsUrl:       ipfsUrl,
 			PinStatus:     constants.IPFS_File_PINNED_STATUS,
 			WalletAddress: walletAddress,
 			PayloadCid:    *ipfsFileHash,
 			FileType:      fileType,
+			CreateAt:      currentUtcMilliSec,
+			UpdateAt:      currentUtcMilliSec,
 		}
 
 		sourceFileCreated, err := models.CreateSourceFile(sourceFile)
@@ -201,12 +203,13 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType 
 		FileSize:      srcFile.Size,
 		ResourceUri:   sourceFiles[0].ResourceUri,
 		Status:        constants.SOURCE_FILE_STATUS_CREATED,
-		CreateAt:      utils.GetCurrentUtcMilliSecond(),
 		IpfsUrl:       sourceFiles[0].IpfsUrl,
 		PinStatus:     constants.IPFS_File_PINNED_STATUS,
 		WalletAddress: walletAddress,
 		PayloadCid:    sourceFiles[0].PayloadCid,
 		FileType:      fileType,
+		CreateAt:      currentUtcMilliSec,
+		UpdateAt:      currentUtcMilliSec,
 	}
 	sourceFileCreated, err := models.CreateSourceFile(sourceFile)
 	if err != nil {
@@ -223,8 +226,8 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType 
 		srcFileDealFileMap := models.SourceFileDealFileMap{
 			SourceFileId: sourceFileCreated.ID,
 			DealFileId:   srcFileDealFileMaps[0].DealFileId,
-			CreateAt:     utils.GetCurrentUtcMilliSecond(),
-			UpdateAt:     utils.GetCurrentUtcMilliSecond(),
+			CreateAt:     currentUtcMilliSec,
+			UpdateAt:     currentUtcMilliSec,
 			FileIndex:    0,
 		}
 

@@ -24,7 +24,7 @@ import (
 )
 
 func SendDealManager(router *gin.RouterGroup) {
-	router.POST("/ipfs/upload", UploadFileToIpfs)
+	router.POST("/ipfs/upload", UploadFile)
 	router.GET("/tasks/deals", GetDealListFromLocal)
 	router.GET("/deal/detail/:deal_id", GetDealListFromFilink)
 	router.GET("/deal/file/:source_file_id", GetDeals4SourceFile)
@@ -257,7 +257,7 @@ func GetDealListFromFilink(c *gin.Context) {
 	}))
 }
 
-func UploadFileToIpfs(c *gin.Context) {
+func UploadFile(c *gin.Context) {
 	walletAddress := c.PostForm("wallet_address")
 	if strings.Trim(walletAddress, " ") == "" {
 		err := fmt.Errorf("wallet_address can not be null")

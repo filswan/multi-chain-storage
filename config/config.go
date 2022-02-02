@@ -26,6 +26,7 @@ type Configuration struct {
 
 type polygon struct {
 	AdminWalletOnPolygon                           string `toml:"admin_wallet_on_polygon"`
+	Recipient                                      string `toml:"recipient"`
 	PolygonRpcUrl                                  string `toml:"polygon_rpc_url"`
 	DaoSwanOracleAddress                           string `toml:"dao_swan_oracle_address"`
 	ContractUnlockFunctionSignature                string `toml:"contract_unlock_function_signature"`

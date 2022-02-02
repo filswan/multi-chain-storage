@@ -1,6 +1,5 @@
 port="8888"
 release = true              # when work in release mode: set this to true, otherwise to false and enviornment variable GIN_MODE not to release
-admin_wallet_on_polygon=""
 file_coin_wallet=""
 filink_url=""
 
@@ -45,7 +44,9 @@ send_deal_rule = "0 */3 * * * ?"  #every minute
 scan_deal_status_rule = "0 */4 * * * ?"
 
 [polygon]
-polygon_rpc_url=""
+admin_wallet_on_polygon = ""
+recipient = ""
+polygon_rpc_url = ""
 dao_swan_oracle_address = ""
 contract_unlock_function_signature = ""
 payment_contract_address = ""

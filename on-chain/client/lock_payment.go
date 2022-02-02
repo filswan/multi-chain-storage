@@ -54,7 +54,7 @@ func GetPaymentInfo(srcFilePayloadCid string) (*models.EventLockPayment, error) 
 			event.CoinId = coin.ID
 		}
 
-		network, err := models.GetNetworkByUUID(constants.NETWORK_TYPE_POLYGON_UUID)
+		network, err := models.GetNetworkByName(constants.NETWORK_NAME_POLYGON)
 		if err != nil {
 			logs.GetLogger().Error(err)
 		} else {

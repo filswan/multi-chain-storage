@@ -36,7 +36,7 @@ func WriteLockPayment(c *gin.Context) {
 	eventFromOnChainApi, err := client.GetPaymentInfo(event.PayloadCid)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		usdcCoin, err := models.FindCoinByUuid(constants.COIN_TYPE_USDC_ON_POLYGON_UUID)
+		usdcCoin, err := models.FindCoinByFullName(constants.COIN_NAME_USDC)
 		if err != nil {
 			logs.GetLogger().Error(err)
 		} else {
@@ -44,7 +44,7 @@ func WriteLockPayment(c *gin.Context) {
 			event.TokenAddress = usdcCoin.CoinAddress
 		}
 
-		network, err := models.GetNetworkByUUID(constants.NETWORK_TYPE_POLYGON_UUID)
+		network, err := models.GetNetworkByName(constants.NETWORK_NAME_POLYGON)
 		if err != nil {
 			logs.GetLogger().Error(err)
 		} else {

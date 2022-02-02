@@ -16,9 +16,9 @@ type Network struct {
 	Description string `json:"description"`
 }
 
-func GetNetworkByUUID(uuid string) (*Network, error) {
+func GetNetworkByName(name string) (*Network, error) {
 	var networks []*Network
-	err := database.GetDB().Where("uuid=?", uuid).Find(&networks).Error
+	err := database.GetDB().Where("network_name=?", name).Find(&networks).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
@@ -28,7 +28,7 @@ func GetNetworkByUUID(uuid string) (*Network, error) {
 		return networks[0], nil
 	}
 
-	err = fmt.Errorf("no network for uuid:%s", uuid)
+	err = fmt.Errorf("no network for name:%s", name)
 
 	return nil, err
 }

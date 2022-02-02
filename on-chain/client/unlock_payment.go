@@ -46,7 +46,7 @@ func SaveEventUnlockPayment(logsInChain []*types.Log, unlockStatus string, dealI
 		event.CreateAt = utils.GetCurrentUtcMilliSecond()
 		event.UnlockStatus = unlockStatus
 
-		network, err := models.GetNetworkByUUID(constants.NETWORK_TYPE_POLYGON_UUID)
+		network, err := models.GetNetworkByName(constants.NETWORK_NAME_POLYGON)
 		if err != nil {
 			logs.GetLogger().Error(err)
 		} else {

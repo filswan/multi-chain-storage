@@ -19,9 +19,9 @@ type Coin struct {
 	Description string `json:"description"`
 }
 
-func FindCoinByUuid(coinUuid string) (*Coin, error) {
+func FindCoinByFullName(fullName string) (*Coin, error) {
 	var coins []*Coin
-	err := database.GetDB().Where("coin_address=?", coinUuid).Find(&coins).Error
+	err := database.GetDB().Where("full_name=?", fullName).Find(&coins).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
@@ -31,24 +31,9 @@ func FindCoinByUuid(coinUuid string) (*Coin, error) {
 		return coins[0], nil
 	}
 
-	err = fmt.Errorf("coin:%s not exists", coinUuid)
+	err = fmt.Errorf("coin:%s not exists", fullName)
 	logs.GetLogger().Error(err)
 	return nil, err
-}
-
-func FindCoinIdById(id int64) (*Coin, error) {
-	var coins []*Coin
-	err := database.GetDB().Where("id=?", id).Find(&coins).Error
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-
-	if len(coins) > 0 {
-		return coins[0], nil
-	}
-
-	return nil, nil
 }
 
 func FindCoinByCoinAddress(coinAddress string) (*Coin, error) {

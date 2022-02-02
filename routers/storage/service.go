@@ -14,7 +14,6 @@ import (
 	"strings"
 
 	"github.com/filswan/go-swan-lib/logs"
-	"github.com/shopspring/decimal"
 
 	"github.com/filswan/go-swan-lib/client/ipfs"
 
@@ -88,16 +87,6 @@ func GetOfflineDealsBySourceFileId(sourceFileId int64) ([]*models.OfflineDeal, *
 	}
 
 	return offlineDeals, sourceFile, nil
-}
-
-func UpdateSourceFileMaxPrice(id int64, maxPrice decimal.Decimal) error {
-	err := models.UpdateSourceFileMaxPrice(id, maxPrice)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
-
-	return nil
 }
 
 func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType int, walletAddress string) (*int64, *string, *string, *int, error) {

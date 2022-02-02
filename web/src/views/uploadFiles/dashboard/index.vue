@@ -1,29 +1,15 @@
 <template>
   <div id="dealManagement">
-    <div class="tabTaskStyle">
-      <div class="createTask">
-        <!-- name: 'upload_file' -->
-        <router-link :to="{name: 'upload_file'}">
-            {{$t('uploadFile.Upload_More_Files')}}
-        </router-link>
-      </div>
-    </div>
     <div class="form">
       <div class="form_top">
-        <div class="upload_title">{{$t('uploadFile.topTip')}}</div>
         <div class="search_file">
-          <p>{{$t('uploadFile.search_title')}}</p>
-
           <div class="search_right">
             <el-input
-              :placeholder="$t('uploadFile.search_input')"
+              :placeholder="$t('uploadFile.search_title')"
               prefix-icon="el-icon-search"
-              v-model="searchValue"
+              v-model="searchValue" clearable
             >
             </el-input>
-            <el-button type="primary" style="background-color: #0b318f" @click="clearAll">
-                        {{ $t("deal.Clear_all") }}
-            </el-button>
           </div>
         </div>
       </div>
@@ -48,7 +34,7 @@
             </template>
             <template slot-scope="scope">
               <div class="hot-cold-box" style="text-decoration: underline;">
-                <a :href="scope.row.ipfs_url" target="_blank" style="color: inherit;">{{ scope.row.file_name }}</a>
+                <a :href="scope.row.ipfs_url" @click="toDetail(scope.row.deal_id, scope.row.payload_cid)" target="_blank" style="color: inherit;font-weight:600;">{{ scope.row.file_name }}</a>
               </div>
             </template>
           </el-table-column>
@@ -135,7 +121,7 @@
           <el-table-column prop="miner_fid" width="220">
             <template slot="header" slot-scope="scope">
               <div class="tips">
-                {{$t('uploadFile.w3ss_id')}}
+                {{$t('uploadFile.w3ss_ids')}}
                     
                 <el-tooltip effect="dark" :content="$t('uploadFile.w3ss_id_tooltip')" placement="top">
                     <img src="@/assets/images/info.png"/>
@@ -270,7 +256,7 @@
                           </div>
                       </div>
                        <!-- @click="minerIdLink(scope.row.miner_fid)" -->
-                      <el-button slot="reference" @click="toDetail(miner.deal_id, scope.row.payload_cid)">
+                      <el-button slot="reference" @click="minerIdLink(miner.miner_fid)">
                           {{miner.miner_fid}}<small v-if="i<scope.row.offline_deals.length-1">,&nbsp;</small>
                       </el-button>
                   </el-popover>
@@ -900,19 +886,11 @@ export default {
         let lockParam = {
             "tx_hash": txHash,
             "payload_cid": resData.payload_cid,
-            "token_address":"",
             "min_payment": lockObj.minPayment,
             "contract_address": this.gatewayContractAddress,
-            "locked_fee":"",
-            "deadline":"",
-            "block_no":0,
-            "miner_address":"",
             "address_from": this.metaAddress,
             "address_to": this.gatewayContractAddress,
             "lock_payment_time": lockPaymentTime,
-            "unlock_tx_hash":"",
-            "unlock_tx_status":"",
-            "unlock_time":"",
             "source_file_id":resData.id
         }
 
@@ -1659,7 +1637,7 @@ export default {
       .search_file{
         display: flex;
         align-items: center;
-        justify-content: space-between;
+        justify-content: flex-end;
         width: 100%;
         height: 0.42rem;
         p{
@@ -1693,8 +1671,6 @@ export default {
             height: 0.3rem;
             line-height: 0.3rem;
             padding: 0 0.27rem;
-            border-top-right-radius: 0;
-            border-bottom-right-radius: 0;
           }
 
           .el-input__icon {

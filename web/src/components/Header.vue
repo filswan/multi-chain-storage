@@ -2,7 +2,13 @@
     <div class="header" :class="{'content-collapse': collapseLocal}">
         <div class="header_arera">
             <div class="header_left">
-                <span v-if="!bodyWidth">{{headertitle}}</span>
+                <div v-if="!bodyWidth" class="createTask">
+                    {{headertitle}}
+                    <router-link :to="{name: 'upload_file'}" v-if="$route.path === '/my_files'">
+                        <span>{{$t('uploadFile.Upload_More_Files')}}</span>
+                        <i class="el-icon-s-upload"></i>
+                    </router-link>
+                </div>
                 <img v-else src="@/assets/images/MCP_logo.png" alt="">
                 <!-- <span v-else>{{$t('navbar.sidebar_header')}}</span> -->
             </div>
@@ -839,6 +845,9 @@ export default {
     padding: 0 0.2rem;
     margin: 0.35rem 0.55rem 0 0.48rem;
     border-bottom: 1px solid #e6e6e6;
+    @media screen and (max-width: 1260px) {
+        margin: 0.35rem 0.15rem 0 0.18rem;
+    }
 }
 .header_arera_hidd{
     width: calc(100% - 1rem);
@@ -854,6 +863,47 @@ export default {
     color: #0b318f;
     line-height: 0.42rem;
     text-transform: uppercase;
+    .createTask {
+        display: flex;
+        align-items: center;
+        a{
+            display: block;
+            padding: 0.05rem 0.1rem;
+            margin: 0 0.15rem;
+            background-color: #4326ab;
+            line-height: 1;
+            border-radius: 0.08rem;
+            text-align: center;
+            color: #fff;
+            font-size: 0.18rem;
+            border: 0;
+            outline: none;
+            .el-icon-s-upload{
+                display: none;
+                width: 24px;
+                height: 24px;
+                position: relative;
+                &::before{
+                    position: absolute;
+                    left: 0;
+                    top: 0;
+                    width: 100%;
+                    height: 100%;
+                    content: '';
+                    background-size: 17px !important;
+                    background: url(../assets/images/menuIcon/uploadFile.png) no-repeat center;
+                }
+            }
+            @media screen and (max-width: 1024px) {
+                span{
+                    display: none;
+                }
+                .el-icon-s-upload{
+                    display: block;
+                }
+            }
+        }
+    }
     img{
         height: 0.35rem;
     }

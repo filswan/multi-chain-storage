@@ -30,7 +30,7 @@
                                 <img src="@/assets/images/info.png"/>
                             </el-tooltip>
                         </template>
-                        <el-input v-model="ruleForm.duration" disabled type="number" style="max-width:130px"></el-input>
+                        <el-input v-model="ruleForm.duration" disabled type="number" style="max-width:130px"></el-input> &nbsp; {{$t('components.day')}}
                     </el-form-item>
                     <el-form-item prop="storage_copy">
                         <template slot="label">
@@ -50,7 +50,7 @@
                                 <img src="@/assets/images/info.png"/>
                             </el-tooltip>
                         </template>
-                        <span  style="color:#ce2f21">{{ruleForm.storage_cost | NumStorage}} FIL</span> 
+                        <span  style="color:#4326ab">{{ruleForm.storage_cost | NumStorage}} FIL</span> 
                     </el-form-item>
                 </el-form>
                 <div class="upload_plan">
@@ -185,7 +185,7 @@
                     payload_cid: ''
                 },
                 ruleForm: {
-                    duration: '535',
+                    duration: '525',
                     storage_copy: '5',
                     fileList: [],
                     file_size: '',
@@ -484,19 +484,11 @@
                 let lockParam = {
                     "tx_hash": txHash,
                     "payload_cid": resData.payload_cid,
-                    "token_address":"",
                     "min_payment": lockObj.minPayment,
                     "contract_address": this.gatewayContractAddress,
-                    "locked_fee":"",
-                    "deadline":"",
-                    "block_no":0,
-                    "miner_address":"",
                     "address_from": this.metaAddress,
                     "address_to": this.gatewayContractAddress,
                     "lock_payment_time": lockPaymentTime,
-                    "unlock_tx_hash":"",
-                    "unlock_tx_status":"",
-                    "unlock_time":"",
                     "source_file_id":resData.source_file_id
                 }
 

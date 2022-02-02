@@ -125,7 +125,7 @@ func unlockDeal(filswanOracleSession *goBind.FilswanOracleSession, offlineDeal *
 	if err != nil {
 		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 
-		err = models.UpdateOfflineDealUnlockStatus(offlineDeal.Id, constants.OFFLINE_DEAL_UNLOCK_STATUS_UNLOCK_FAILED, tx.Hash().Hex(), err.Error())
+		err = models.UpdateOfflineDealUnlockStatus(offlineDeal.Id, constants.OFFLINE_DEAL_UNLOCK_STATUS_UNLOCK_FAILED, err.Error())
 		if err != nil {
 			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 			return false, err

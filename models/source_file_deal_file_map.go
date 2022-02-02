@@ -14,18 +14,6 @@ type SourceFileDealFileMap struct {
 	UpdateAt     int64 `json:"update_at"`
 }
 
-//condition :&models.SourceFileDealFileMap{DealCid: "123"}
-//updateFields: map[string]interface{}{"processing_time": taskT.ProcessingTime, "worker_reward": taskT.WorkerReward}
-func UpdateSourceFileDealFileMap(whereCondition interface{}, updateFields interface{}) error {
-	db := database.GetDB()
-	sdfMap := SourceFileDealFileMap{}
-	err := db.Model(&sdfMap).Where(whereCondition).Update(updateFields).Error
-	if err != nil {
-		logs.GetLogger().Error(err)
-	}
-	return err
-}
-
 func GetSourceFileDealFileMapBySourceFilePayloadCid(sourceFilePayloadCid string) ([]*SourceFileDealFileMap, error) {
 	var sourceFileDealFileMap []*SourceFileDealFileMap
 	sql := "select a.* from source_file_deal_file_map a, source_file b where a.source_file_id=b.id and b.payload_cid=?"

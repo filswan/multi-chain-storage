@@ -2,6 +2,7 @@ package models
 
 import (
 	"payment-bridge/common/constants"
+	"payment-bridge/common/utils"
 	"payment-bridge/database"
 	"strconv"
 	"strings"
@@ -124,10 +125,11 @@ func GetOfflineDealsByDealFileIds(dealFileIds []int64) ([]*OfflineDeal, error) {
 }
 
 func UpdateOfflineDealUnlockStatus(id int64, unlockStatus string) error {
-	sql := "update offline_deal set unlock_status=? where id=?"
+	sql := "update offline_deal set unlock_status=?,update_at=? where id=?"
 
 	params := []interface{}{}
 	params = append(params, unlockStatus)
+	params = append(params, utils.GetCurrentUtcMilliSecond())
 	params = append(params, id)
 
 	err := database.GetDB().Exec(sql, params...).Error

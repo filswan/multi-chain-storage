@@ -237,7 +237,7 @@ func GetDealListFromFilink(c *gin.Context) {
 	if err != nil {
 		logs.GetLogger().Error(err)
 	}
-	eventList, err := models.FindEventUnlockPayments(&models.EventUnlockPayment{PayloadCid: payloadCid}, "", "10", "0")
+	eventList, err := models.GetEventUnlockPaymentsByPayloadCid(payloadCid, "10", "0")
 	if err != nil {
 		logs.GetLogger().Error(err)
 	}

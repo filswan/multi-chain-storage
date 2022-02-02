@@ -45,18 +45,6 @@ func FindEventLockPayment(whereCondition interface{}, orderCondition, limit, off
 	return models, err
 }
 
-//condition :&models.EventPolygon{Ip: "192.168.88.80"}
-//updateFields: map[string]interface{}{"processing_time": taskT.ProcessingTime, "worker_reward": taskT.WorkerReward}
-func UpdateEventLockPayment(whereCondition interface{}, updateFields interface{}) error {
-	db := database.GetDB()
-	hardware := EventLockPayment{}
-	err := db.Model(&hardware).Where(whereCondition).Update(updateFields).Error
-	if err != nil {
-		logs.GetLogger().Error(err)
-	}
-	return err
-}
-
 func GetEventLockPaymentBySrcPayloadCid(srcFilePayloadCid string) ([]*EventLockPayment, error) {
 	var eventLockPayments []*EventLockPayment
 	sql := "select * from event_lock_payment a where a.payload_cid=?"

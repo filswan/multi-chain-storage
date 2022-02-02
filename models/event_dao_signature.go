@@ -1,7 +1,6 @@
 package models
 
 import (
-	"payment-bridge/common/constants"
 	"payment-bridge/database"
 
 	"github.com/filswan/go-swan-lib/logs"
@@ -28,20 +27,6 @@ type DealUnlockable struct {
 	PayloadCid string `json:"payload_cid"`
 	DealId     int64  `json:"deal_id"`
 	SignCount  string `json:"sign_count"`
-}
-
-// FindDaoEventLog (&DaoEventLog{Id: "0xadeaCC802D0f2DFd31bE4Fa7434F15782Fd720ac"},"id desc","10","0")
-func FindDaoEventLog(whereCondition interface{}, orderCondition, limit, offset string) ([]*EventDaoSignature, error) {
-	db := database.GetDB()
-	if offset == "" {
-		offset = "0"
-	}
-	if limit == "" {
-		limit = constants.DEFAULT_SELECT_LIMIT
-	}
-	var models []*EventDaoSignature
-	err := db.Where(whereCondition).Offset(offset).Limit(limit).Order(orderCondition).Find(&models).Error
-	return models, err
 }
 
 //updateFields: map[string]interface{}{"processing_time": taskT.ProcessingTime, "worker_reward": taskT.WorkerReward}

@@ -46,11 +46,11 @@ func SaveEventUnlockPayment(logsInChain []*types.Log, unlockStatus string, dealI
 		event.CreateAt = utils.GetCurrentUtcMilliSecond()
 		event.UnlockStatus = unlockStatus
 
-		networkId, err := models.FindNetworkIdByUUID(constants.NETWORK_TYPE_POLYGON_UUID)
+		network, err := models.GetNetworkByUUID(constants.NETWORK_TYPE_POLYGON_UUID)
 		if err != nil {
 			logs.GetLogger().Error(err)
 		} else {
-			event.NetworkId = networkId
+			event.NetworkId = network.ID
 		}
 		coin, err := models.FindCoinByCoinAddress(event.TokenAddress)
 		if err != nil {

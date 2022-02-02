@@ -77,18 +77,18 @@ func UnlockPayment() error {
 	for _, offlineDeal := range offlineDeals {
 		unlocked, err := unlockDeal(filswanOracleSession, offlineDeal, ethClient, swanPaymentTransactor, tansactOpts, *recipient)
 		if err != nil {
-			logs.GetLogger().Error(err)
+			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 			continue
 		}
 
 		if !unlocked {
-			logs.GetLogger().Info(fmt.Sprintf("deal:%d, not unlocked", offlineDeal.Id))
+			logs.GetLogger().Info(getLog(offlineDeal, "not unlocked"))
 			continue
 		}
 
 		err = refund(offlineDeal, swanPaymentTransactor, tansactOpts)
 		if err != nil {
-			logs.GetLogger().Error(err)
+			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 			continue
 		}
 	}

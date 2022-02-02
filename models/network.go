@@ -3,7 +3,8 @@ package models
 import (
 	"errors"
 	"payment-bridge/database"
-	"payment-bridge/logs"
+
+	"github.com/filswan/go-swan-lib/logs"
 )
 
 type Network struct {

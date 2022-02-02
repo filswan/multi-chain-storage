@@ -9,10 +9,11 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"payment-bridge/logs"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/filswan/go-swan-lib/logs"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/ethereum/go-ethereum"
@@ -23,7 +24,7 @@ import (
 )
 
 // GetEpochInMillis get current timestamp
-func GetEpochInMillis() (millis int64) {
+func GetCurrentUtcMilliSecond() (millis int64) {
 	nanos := time.Now().UnixNano()
 	millis = nanos / 1000000
 	return
@@ -113,7 +114,7 @@ func DecodeJwtToken(tokenStr string) (jwt.MapClaims, error) {
 	claims, _ := token.Claims.(jwt.MapClaims)
 
 	for key, element := range claims {
-		fmt.Println("Key:", key, "=>", "Element:", element)
+		logs.GetLogger().Info("Key:", key, "=>", "Element:", element)
 	}
 
 	return claims, nil

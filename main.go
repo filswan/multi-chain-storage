@@ -1,20 +1,19 @@
 package main
 
 import (
-	"fmt"
 	"os"
-	"payment-bridge/blockchain/browsersync"
+	"path/filepath"
 	"payment-bridge/common/constants"
 	"payment-bridge/config"
 	"payment-bridge/database"
-	"payment-bridge/logs"
-	"payment-bridge/models"
 	"payment-bridge/routers"
 	"payment-bridge/routers/billing"
 	"payment-bridge/routers/common"
 	"payment-bridge/routers/storage"
 	"payment-bridge/scheduler"
 	"time"
+
+	"github.com/filswan/go-swan-lib/logs"
 
 	"github.com/gin-gonic/gin"
 	cors "github.com/itsjamie/gin-cors"
@@ -23,29 +22,24 @@ import (
 
 func main() {
 	LoadEnv()
-	// init database
+
 	db := database.Init()
+	defer database.CloseDB(db)
 
-	initMethod()
-	browsersync.Init()
-
-	models.RunAllTheScan()
+	scheduler.InitScheduler()
+	//scheduler.CreateTask()
+	//scheduler.SendDeal()
+	//scheduler.UnlockPayment()
 
 	scheduler.CreateTaskScheduler()
-
 	scheduler.SendDealScheduler()
+	scheduler.CreateScanScheduler()
+	scheduler.CreateUnlockScheduler()
 
-	scheduler.DAOUnlockPaymentSchedule()
+	createGinServer()
+}
 
-	scheduler.ScanDealInfoScheduler()
-
-	defer func() {
-		err := db.Close()
-		if err != nil {
-			logs.GetLogger().Error(err)
-		}
-	}()
-
+func createGinServer() {
 	r := gin.Default()
 	r.Use(cors.Middleware(cors.Config{
 		Origins:         "*",
@@ -67,18 +61,20 @@ func main() {
 	if err != nil {
 		logs.GetLogger().Fatal(err)
 	}
-
-}
-
-func initMethod() string {
-	config.InitConfig("")
-	return ""
 }
 
 func LoadEnv() {
-	err := godotenv.Load(".env")
+	homedir, err := os.UserHomeDir()
 	if err != nil {
-		logs.GetLogger().Error(err)
+		logs.GetLogger().Fatal("Cannot get home directory.")
 	}
-	fmt.Println("name: ", os.Getenv("privateKey"))
+
+	envFile := filepath.Join(homedir, ".swan/mcp/.env")
+	err = godotenv.Load(envFile)
+	if err != nil {
+		logs.GetLogger().Fatal(err)
+	}
+
+	keyName := "privateKeyOnPolygon"
+	logs.GetLogger().Info(keyName, ":", os.Getenv(keyName))
 }

@@ -17,7 +17,6 @@ type SourceFile struct {
 	Status        string `json:"status"`
 	FileSize      int64  `json:"file_size"`
 	Dataset       string `json:"dataset"`
-	CreateAt      int64  `json:"create_at"`
 	IpfsUrl       string `json:"ipfs_url"`
 	PinStatus     string `json:"pin_status"`
 	WalletAddress string `json:"wallet_address"`
@@ -26,6 +25,8 @@ type SourceFile struct {
 	TokenId       string `json:"token_id"`
 	MintAddress   string `json:"mint_address"`
 	FileType      int    `json:"file_type"`
+	CreateAt      int64  `json:"create_at"`
+	UpdateAt      int64  `json:"update_at"`
 }
 
 type SourceFileExt struct {

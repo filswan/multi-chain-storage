@@ -1,6 +1,7 @@
 alter table source_file add payload_cid varchar(100) not null default '';
 alter table source_file modify file_size bigint;
 alter table source_file modify create_at bigint;
+alter table source_file add update_at bigint;
 
 alter table event_lock_payment add vrf_rand    varchar(100) not null default '';
 

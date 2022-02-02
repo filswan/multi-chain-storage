@@ -40,40 +40,17 @@ type DealFile struct {
 	MaxPrice            decimal.Decimal `json:"max_price"`
 }
 
-// FindDealFileList (&DealFile{Id: "0xadeaCC802D0f2DFd31bE4Fa7434F15782Fd720ac"},"id desc","10","0")
-func FindDealFileList(whereCondition interface{}, orderCondition, limit, offset string) ([]*DealFile, error) {
-	db := database.GetDB()
-	if offset == "" {
-		offset = "0"
-	}
-	if limit == "" {
-		limit = constants.PAGE_SIZE_DEFAULT_VALUE
-	}
-	var models []*DealFile
-	err := db.Where(whereCondition).Offset(offset).Limit(limit).Order(orderCondition).Find(&models).Error
-	return models, err
-}
+func GetDeal2Send() ([]*DealFile, error) {
+	var dealFiles []*DealFile
 
-//condition :&models.DealFile{DealCid: "123"}
-//updateFields: map[string]interface{}{"processing_time": taskT.ProcessingTime, "worker_reward": taskT.WorkerReward}
-func UpdateDealFile(whereCondition interface{}, updateFields interface{}) error {
-	db := database.GetDB()
-	hardware := DealFile{}
-	err := db.Model(&hardware).Where(whereCondition).Update(updateFields).Error
+	err := database.GetDB().Where("send_deal_status=? and lock_payment_status=? and task_uuid != ''", constants.DEAL_FILE_STATUS_CREATED, constants.LOCK_PAYMENT_STATUS_PROCESSING).Find(&dealFiles).Error
+
 	if err != nil {
 		logs.GetLogger().Error(err)
+		return nil, err
 	}
-	return err
-}
 
-//ex: domain.DeleteDiskInfo("ipmi_sn", "uid1")
-func DeleteDealFile(whereCondition interface{}) error {
-	db := database.GetDB()
-	var dealFile *DealFile
-	deleteTime := utils.GetCurrentUtcMilliSecond()
-	err := db.Model(&dealFile).Where(whereCondition).UpdateColumns(&DealFile{IsDeleted: utils.GetBoolPointer(true), DeleteAt: deleteTime}).Error
-
-	return err
+	return dealFiles, nil
 }
 
 func GetDealFileBySourceFilePayloadCid(srcFilePayloadCid string) ([]*DealFile, error) {
@@ -92,10 +69,11 @@ func GetDealFileBySourceFilePayloadCid(srcFilePayloadCid string) ([]*DealFile, e
 }
 
 func UpdateDealFileLockPaymentStatus(id int64, lockPaymentStatus string) error {
-	sql := "update deal_file set lock_payment_status=? where id=?"
+	sql := "update deal_file set lock_payment_status=?,update_at=? where id=?"
 
 	params := []interface{}{}
 	params = append(params, lockPaymentStatus)
+	params = append(params, utils.GetCurrentUtcMilliSecond())
 	params = append(params, id)
 
 	err := database.GetDB().Exec(sql, params...).Error

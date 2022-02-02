@@ -38,8 +38,6 @@ func GetFileCoinLastestPriceService() (*PriceResult, error) {
 }
 
 func getBillingCount(walletAddress, txHash string) (int64, error) {
-	/*sql := "select  count(* ) as total_record " +
-	"from event_lock_payment ep left join event_unlock_payment eup   on eup.payload_cid = ep.payload_cid where ep.address_from='" + walletAddress + "'"*/
 	sql := " select count(* ) as total_record from ( " +
 		"     select ep.* from event_lock_payment ep " +
 		"     left join event_unlock_payment eup   on eup.payload_cid = ep.payload_cid " +

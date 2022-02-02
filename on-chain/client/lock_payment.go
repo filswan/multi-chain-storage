@@ -54,11 +54,11 @@ func GetPaymentInfo(srcFilePayloadCid string) (*models.EventLockPayment, error) 
 			event.CoinId = coin.ID
 		}
 
-		networkId, err := models.FindNetworkIdByUUID(constants.NETWORK_TYPE_POLYGON_UUID)
+		network, err := models.GetNetworkByName(constants.NETWORK_NAME_POLYGON)
 		if err != nil {
 			logs.GetLogger().Error(err)
 		} else {
-			event.NetworkId = networkId
+			event.NetworkId = network.ID
 		}
 
 		srcFile, err := models.GetSourceFileByPayloadCidWalletAddress(srcFilePayloadCid, event.AddressFrom)

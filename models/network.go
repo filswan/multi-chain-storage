@@ -1,7 +1,7 @@
 package models
 
 import (
-	"errors"
+	"fmt"
 	"payment-bridge/database"
 
 	"github.com/filswan/go-swan-lib/logs"
@@ -16,18 +16,19 @@ type Network struct {
 	Description string `json:"description"`
 }
 
-func FindNetworkIdByUUID(uuid string) (int64, error) {
-	db := database.GetDB()
-	var models []*Network
-	err := db.Where("uuid='" + uuid + "'").Find(&models).Error
+func GetNetworkByName(name string) (*Network, error) {
+	var networks []*Network
+	err := database.GetDB().Where("network_name=?", name).Find(&networks).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return 0, nil
+		return nil, err
 	}
-	if len(models) > 0 {
-		return models[0].ID, nil
-	} else {
-		err = errors.New("There is no network info by uuid :" + uuid)
-		return 0, err
+
+	if len(networks) > 0 {
+		return networks[0], nil
 	}
+
+	err = fmt.Errorf("no network for name:%s", name)
+
+	return nil, err
 }

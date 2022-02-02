@@ -17,7 +17,6 @@ type SourceFile struct {
 	Status        string `json:"status"`
 	FileSize      int64  `json:"file_size"`
 	Dataset       string `json:"dataset"`
-	CreateAt      int64  `json:"create_at"`
 	IpfsUrl       string `json:"ipfs_url"`
 	PinStatus     string `json:"pin_status"`
 	WalletAddress string `json:"wallet_address"`
@@ -26,6 +25,8 @@ type SourceFile struct {
 	TokenId       string `json:"token_id"`
 	MintAddress   string `json:"mint_address"`
 	FileType      int    `json:"file_type"`
+	CreateAt      int64  `json:"create_at"`
+	UpdateAt      int64  `json:"update_at"`
 }
 
 type SourceFileExt struct {
@@ -34,20 +35,6 @@ type SourceFileExt struct {
 	Duration     int              `json:"duration"`
 	LockedFee    *decimal.Decimal `json:"locked_fee"`
 	OfflineDeals []*OfflineDeal   `json:"offline_deals"`
-}
-
-// FindSourceFileList (&SourceFile{Id: "0xadeaCC802D0f2DFd31bE4Fa7434F15782Fd720ac"},"id desc","10","0")
-func FindSourceFileList(whereCondition interface{}, orderCondition, limit, offset string) ([]*SourceFile, error) {
-	db := database.GetDB()
-	if offset == "" {
-		offset = "0"
-	}
-	if limit == "" {
-		limit = constants.PAGE_SIZE_DEFAULT_VALUE
-	}
-	var models []*SourceFile
-	err := db.Where(whereCondition).Offset(offset).Limit(limit).Order(orderCondition).Find(&models).Error
-	return models, err
 }
 
 func GetSourceFileById(id int64) (*SourceFile, error) {
@@ -103,23 +90,6 @@ func GetSourceFilesNeed2Car() ([]*SourceFileExt, error) {
 	}
 
 	return sourceFiles, nil
-}
-
-func UpdateSourceFileMaxPrice(id int64, maxPrice decimal.Decimal) error {
-	sql := "update source_file set max_price=? where id=?"
-
-	params := []interface{}{}
-	params = append(params, maxPrice)
-	params = append(params, id)
-
-	err := database.GetDB().Exec(sql, params...).Error
-
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
-
-	return nil
 }
 
 func CreateSourceFile(sourceFile SourceFile) (*SourceFile, error) {

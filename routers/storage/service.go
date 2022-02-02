@@ -14,7 +14,6 @@ import (
 	"strings"
 
 	"github.com/filswan/go-swan-lib/logs"
-	"github.com/shopspring/decimal"
 
 	"github.com/filswan/go-swan-lib/client/ipfs"
 
@@ -90,16 +89,6 @@ func GetOfflineDealsBySourceFileId(sourceFileId int64) ([]*models.OfflineDeal, *
 	return offlineDeals, sourceFile, nil
 }
 
-func UpdateSourceFileMaxPrice(id int64, maxPrice decimal.Decimal) error {
-	err := models.UpdateSourceFileMaxPrice(id, maxPrice)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
-
-	return nil
-}
-
 func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType int, walletAddress string) (*int64, *string, *string, *int, error) {
 	srcDir := scheduler.GetSrcDir()
 
@@ -139,6 +128,7 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType 
 
 	needPay := 0
 
+	currentUtcMilliSec := utils.GetCurrentUtcMilliSecond()
 	// not uploaded by anyone yet
 	if len(sourceFiles) == 0 {
 		sourceFile := models.SourceFile{
@@ -146,12 +136,13 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType 
 			FileSize:      srcFile.Size,
 			ResourceUri:   srcFilepath,
 			Status:        constants.SOURCE_FILE_STATUS_CREATED,
-			CreateAt:      utils.GetCurrentUtcMilliSecond(),
 			IpfsUrl:       ipfsUrl,
 			PinStatus:     constants.IPFS_File_PINNED_STATUS,
 			WalletAddress: walletAddress,
 			PayloadCid:    *ipfsFileHash,
 			FileType:      fileType,
+			CreateAt:      currentUtcMilliSec,
+			UpdateAt:      currentUtcMilliSec,
 		}
 
 		sourceFileCreated, err := models.CreateSourceFile(sourceFile)
@@ -212,12 +203,13 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType 
 		FileSize:      srcFile.Size,
 		ResourceUri:   sourceFiles[0].ResourceUri,
 		Status:        constants.SOURCE_FILE_STATUS_CREATED,
-		CreateAt:      utils.GetCurrentUtcMilliSecond(),
 		IpfsUrl:       sourceFiles[0].IpfsUrl,
 		PinStatus:     constants.IPFS_File_PINNED_STATUS,
 		WalletAddress: walletAddress,
 		PayloadCid:    sourceFiles[0].PayloadCid,
 		FileType:      fileType,
+		CreateAt:      currentUtcMilliSec,
+		UpdateAt:      currentUtcMilliSec,
 	}
 	sourceFileCreated, err := models.CreateSourceFile(sourceFile)
 	if err != nil {
@@ -230,12 +222,13 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType 
 		logs.GetLogger().Error(err)
 		return nil, nil, nil, nil, err
 	}
+
 	if len(srcFileDealFileMaps) > 0 {
 		srcFileDealFileMap := models.SourceFileDealFileMap{
 			SourceFileId: sourceFileCreated.ID,
 			DealFileId:   srcFileDealFileMaps[0].DealFileId,
-			CreateAt:     utils.GetCurrentUtcMilliSecond(),
-			UpdateAt:     utils.GetCurrentUtcMilliSecond(),
+			CreateAt:     currentUtcMilliSec,
+			UpdateAt:     currentUtcMilliSec,
 			FileIndex:    0,
 		}
 
@@ -284,7 +277,7 @@ func GetDaoSignatureInfoByDealId(dealId int64) ([]*DaoSignResult, error) {
 }
 
 func GetLockFoundInfoByPayloadCid(payloadCid string) (*LockFound, error) {
-	lockEventList, err := models.FindEventLockPayment(&models.EventLockPayment{PayloadCid: payloadCid}, "", "10", "0")
+	lockEventList, err := models.GetEventLockPaymentBySrcPayloadCid(payloadCid)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err

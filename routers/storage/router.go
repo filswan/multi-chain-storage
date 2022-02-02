@@ -24,7 +24,7 @@ import (
 )
 
 func SendDealManager(router *gin.RouterGroup) {
-	router.POST("/ipfs/upload", UploadFileToIpfs)
+	router.POST("/ipfs/upload", UploadFile)
 	router.GET("/tasks/deals", GetDealListFromLocal)
 	router.GET("/deal/detail/:deal_id", GetDealListFromFilink)
 	router.GET("/deal/file/:source_file_id", GetDeals4SourceFile)
@@ -237,7 +237,7 @@ func GetDealListFromFilink(c *gin.Context) {
 	if err != nil {
 		logs.GetLogger().Error(err)
 	}
-	eventList, err := models.FindEventUnlockPayments(&models.EventUnlockPayment{PayloadCid: payloadCid}, "", "10", "0")
+	eventList, err := models.GetEventUnlockPaymentsByPayloadCid(payloadCid, "10", "0")
 	if err != nil {
 		logs.GetLogger().Error(err)
 	}
@@ -257,7 +257,7 @@ func GetDealListFromFilink(c *gin.Context) {
 	}))
 }
 
-func UploadFileToIpfs(c *gin.Context) {
+func UploadFile(c *gin.Context) {
 	walletAddress := c.PostForm("wallet_address")
 	if strings.Trim(walletAddress, " ") == "" {
 		err := fmt.Errorf("wallet_address can not be null")

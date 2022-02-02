@@ -3,6 +3,8 @@ package models
 import (
 	"payment-bridge/common/constants"
 	"payment-bridge/database"
+
+	"github.com/filswan/go-swan-lib/logs"
 )
 
 type SystemConfigParam struct {
@@ -12,16 +14,20 @@ type SystemConfigParam struct {
 	Module     string `json:"module"`
 }
 
-// FindSystemConfigParam (&SystemConfigParam{Id: "0xadeaCC802D0f2DFd31bE4Fa7434F15782Fd720ac"},"id desc","10","0")
-func FindSystemConfigParam(whereCondition interface{}, orderCondition, limit, offset string) ([]*SystemConfigParam, error) {
-	db := database.GetDB()
+func GetSystemConfigParams(limit, offset string) ([]*SystemConfigParam, error) {
 	if offset == "" {
 		offset = "0"
 	}
 	if limit == "" {
 		limit = constants.PAGE_SIZE_DEFAULT_VALUE
 	}
-	var models []*SystemConfigParam
-	err := db.Where(whereCondition).Offset(offset).Limit(limit).Order(orderCondition).Find(&models).Error
-	return models, err
+
+	var systemConfigParams []*SystemConfigParam
+	err := database.GetDB().Offset(offset).Limit(limit).Order("id desc").Find(&systemConfigParams).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	return systemConfigParams, err
 }

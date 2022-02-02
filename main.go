@@ -6,7 +6,6 @@ import (
 	"payment-bridge/common/constants"
 	"payment-bridge/config"
 	"payment-bridge/database"
-	"payment-bridge/routers"
 	"payment-bridge/routers/billing"
 	"payment-bridge/routers/common"
 	"payment-bridge/routers/storage"
@@ -53,7 +52,6 @@ func createGinServer() {
 
 	v1 := r.Group("/api/v1")
 	common.HostManager(v1.Group(constants.URL_HOST_GET_COMMON))
-	routers.EventLogManager(v1.Group(constants.URL_EVENT_PREFIX))
 	billing.BillingManager(v1.Group(constants.URL_BILLING_PREFIX))
 	storage.SendDealManager(v1.Group(constants.URL_STORAGE_PREFIX))
 

@@ -98,16 +98,16 @@ func UnlockPayment() error {
 
 func unlockDeal(filswanOracleSession *goBind.FilswanOracleSession, offlineDeal *models.OfflineDeal, ethClient *ethclient.Client, swanPaymentTransactor *goBind.SwanPaymentTransactor, tansactOpts *bind.TransactOpts, recipient common.Address) (bool, error) {
 	dealIdStr := strconv.FormatInt(offlineDeal.DealId, 10)
-	//isPaymentAvailable, err := filswanOracleSession.IsCarPaymentAvailable(dealIdStr, recipient)
-	//if err != nil {
-	//	logs.GetLogger().Error(err)
-	//	return false, err
-	//}
-	//
-	//if !isPaymentAvailable {
-	//	logs.GetLogger().Info(fmt.Sprintf("payment is not available for deal:%s,recipient:%s", dealIdStr, recipient))
-	//	return false, nil
-	//}
+	isPaymentAvailable, err := filswanOracleSession.IsCarPaymentAvailable(dealIdStr, recipient)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return false, err
+	}
+
+	if !isPaymentAvailable {
+		logs.GetLogger().Info(fmt.Sprintf("payment is not available for deal:%s,recipient:%s", dealIdStr, recipient))
+		return false, nil
+	}
 
 	tx, err := swanPaymentTransactor.UnlockCarPayment(tansactOpts, dealIdStr, recipient)
 	if err != nil {

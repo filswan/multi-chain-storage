@@ -99,6 +99,7 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
 
         txVoteMap[voteKey] = txVoteMap[voteKey] + 1;
 
+        // todo: check cidList each time.
         if (txVoteMap[voteKey] == _threshold && _filinkAddress != address(0)) {
             cidListMap[key] = cidList;
             FilinkConsumer(_filinkAddress).requestDealInfo(dealId);
@@ -110,8 +111,33 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
         view
         returns (bool)
     {
-        bytes32 voteKey = keccak256(abi.encodePacked(dealId, recipient));
+        string[] memory cidList = cidListMap[dealId];
+        bytes32 voteKey = keccak256(
+            abi.encodeWithSignature(
+                "f(string,address,string[])",
+                dealId,
+                recipient,
+                cidList
+            )
+        );
         return txVoteMap[voteKey] >= _threshold;
+    }
+
+    function getCarPaymentVotes(string memory dealId, address recipient)
+        public
+        view
+        returns (uint8)
+    {
+        string[] memory cidList = cidListMap[dealId];
+        bytes32 voteKey = keccak256(
+            abi.encodeWithSignature(
+                "f(string,address,string[])",
+                dealId,
+                recipient,
+                cidList
+            )
+        );
+        return txVoteMap[voteKey];
     }
 
     function getThreshold() public view returns (uint8) {

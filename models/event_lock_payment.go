@@ -1,7 +1,6 @@
 package models
 
 import (
-	"payment-bridge/common/constants"
 	"payment-bridge/database"
 
 	"github.com/filswan/go-swan-lib/logs"
@@ -29,20 +28,6 @@ type EventLockPayment struct {
 	UnlockTxStatus  string          `json:"unlock_tx_status"`
 	UnlockTime      string          `json:"unlock_time"`
 	SourceFileId    int64           `json:"source_file_id"`
-}
-
-// FindEvents (&Event{Id: "0xadeaCC802D0f2DFd31bE4Fa7434F15782Fd720ac"},"id desc","10","0")
-func FindEventLockPayment(whereCondition interface{}, orderCondition, limit, offset string) ([]*EventLockPayment, error) {
-	db := database.GetDB()
-	if offset == "" {
-		offset = "0"
-	}
-	if limit == "" {
-		limit = constants.DEFAULT_SELECT_LIMIT
-	}
-	var models []*EventLockPayment
-	err := db.Where(whereCondition).Offset(offset).Limit(limit).Order(orderCondition).Find(&models).Error
-	return models, err
 }
 
 func GetEventLockPaymentBySrcPayloadCid(srcFilePayloadCid string) ([]*EventLockPayment, error) {

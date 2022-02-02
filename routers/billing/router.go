@@ -80,7 +80,7 @@ func GetLockPaymentInfoByPayloadCid(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAM_TYPE_ERROR_CODE, errMsg))
 		return
 	}
-	lockPaymentList, err := models.FindEventLockPayment(&models.EventLockPayment{PayloadCid: payloadCid}, "create_at desc", "10", "0")
+	lockPaymentList, err := models.GetEventLockPaymentBySrcPayloadCid(payloadCid)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE))

@@ -96,7 +96,7 @@ func UnlockPayment() error {
 }
 
 func getLog(offlineDeal *models.OfflineDeal, messages ...string) string {
-	text := fmt.Sprintf("deal id:%d,deal file id:%d,", offlineDeal.DealId, offlineDeal.DealFileId)
+	text := fmt.Sprintf("id:%d,deal id:%d, deal file id:%d,", offlineDeal.Id, offlineDeal.DealId, offlineDeal.DealFileId)
 	if messages == nil {
 		return text
 	}

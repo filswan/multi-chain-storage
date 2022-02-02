@@ -180,6 +180,7 @@ func unlockDeal(filswanOracleSession *goBind.FilswanOracleSession, offlineDeal *
 		return false, err
 	}
 
+	logs.GetLogger().Info(getLog(offlineDeal, "unlock successfully"))
 	return true, nil
 }
 
@@ -217,8 +218,10 @@ func refund(offlineDeal *models.OfflineDeal, swanPaymentTransactor *goBind.SwanP
 	err = models.UpdateDealFileLockPaymentStatus(offlineDeal.Id, lockPaymentStatus)
 	if err != nil {
 		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
-		return nil
+		return err
 	}
+
+	logs.GetLogger().Info(getLog(offlineDeal, "refund successfully"))
 
 	return nil
 }

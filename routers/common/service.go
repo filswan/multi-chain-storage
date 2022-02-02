@@ -18,7 +18,7 @@ func getSwanMinerHostInfo() *common.HostInfo {
 }
 
 func getSystemConfigParams(limit string) ([]*models.SystemConfigParam, error) {
-	sysconfigs, err := models.FindSystemConfigParam("", "id desc", limit, "0")
+	sysconfigs, err := models.GetSystemConfigParams(limit, "0")
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err

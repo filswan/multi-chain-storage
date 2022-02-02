@@ -1,8 +1,8 @@
 package constants
 
 const (
-	SWAN_PAYMENT_ABI_JSON = "on-chain/contracts/abi/SwanPayment.json"
-	DEFAULT_SELECT_LIMIT  = "100"
+	DEFAULT_SELECT_LIMIT    = "100"
+	PAGE_SIZE_DEFAULT_VALUE = "10"
 
 	URL_EVENT_PREFIX   = "events"
 	URL_BILLING_PREFIX = "billing"
@@ -28,16 +28,7 @@ const (
 	URL_HOST_GET_HOST_INFO   = "/host/info"
 	URL_SYSTEM_CONFIG_PARAMS = "/system/params"
 
-	TABLE_NAME_EVENT_BSC     = "event_bsc"
-	TABLE_NAME_EVENT_GOERLI  = "event_goerli"
-	TABLE_NAME_EVENT_POLYGON = "event_polygon"
-
-	PAGE_SIZE_DEFAULT_VALUE = "10"
-
-	EVENT_NAME_LOCAK_PAYMENT = "LockPayment"
-
 	SOURCE_ID_OF_PAYMENT = 4
-	TASK_STATUS_ASSIGNED = "Assigned"
 
 	LOCK_PAYMENT_STATUS_WAITING             = "Pending" //wait for lock payment
 	LOCK_PAYMENT_STATUS_PROCESSING          = "Processing"

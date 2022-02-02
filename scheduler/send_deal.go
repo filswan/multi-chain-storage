@@ -42,8 +42,7 @@ func SendDealScheduler() {
 }
 
 func SendDeal() error {
-	whereCondition := "send_deal_status ='" + constants.DEAL_FILE_STATUS_CREATED + "' and lock_payment_status='" + constants.LOCK_PAYMENT_STATUS_PROCESSING + "' and task_uuid != '' "
-	dealFiles, err := models.FindDealFileList(whereCondition, "create_at desc", "50", "0")
+	dealFiles, err := models.GetDeal2Send()
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err

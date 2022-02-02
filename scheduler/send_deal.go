@@ -99,6 +99,7 @@ func SendDeal() error {
 
 		dealFile.SendDealStatus = constants.DEAL_FILE_STATUS_DEAL_SENT
 		dealFile.ClientWalletAddress = cmdAutoBidDeal.SenderWallet
+		dealFile.UpdateAt = currentUtcMilliSec
 		err = database.SaveOne(dealFile)
 		if err != nil {
 			logs.GetLogger().Error(err)

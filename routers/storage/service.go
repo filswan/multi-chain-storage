@@ -222,6 +222,7 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType 
 		logs.GetLogger().Error(err)
 		return nil, nil, nil, nil, err
 	}
+
 	if len(srcFileDealFileMaps) > 0 {
 		srcFileDealFileMap := models.SourceFileDealFileMap{
 			SourceFileId: sourceFileCreated.ID,

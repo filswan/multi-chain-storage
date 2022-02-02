@@ -10,7 +10,6 @@ import (
 	"payment-bridge/on-chain/goBind"
 	"strconv"
 	"sync"
-	"time"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
@@ -23,14 +22,14 @@ func CreateUnlockScheduler() {
 	Mutex := &sync.Mutex{}
 	c := cron.New()
 	err := c.AddFunc(config.GetConfig().ScheduleRule.UnlockPaymentRule, func() {
-		logs.GetLogger().Info("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ create task  scheduler is running at " + time.Now().Format("2006-01-02 15:04:05"))
+		logs.GetLogger().Info("start")
 		Mutex.Lock()
 		err := UnlockPayment()
 		Mutex.Unlock()
 		if err != nil {
 			logs.GetLogger().Error(err)
-			return
 		}
+		logs.GetLogger().Info("end")
 	})
 	if err != nil {
 		logs.GetLogger().Error(err)

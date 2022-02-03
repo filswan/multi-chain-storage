@@ -58,15 +58,9 @@
 
 ## Prerequisites
 - OS: Ubuntu 20.04 LTS
-- Ansible: Version 2.12+
-- Python 3.6+
-- Golang1.16+
 - Mysql5.5+
 - [Lotus Node](#Lotus-Node)
 - [IPFS Client](https://docs.ipfs.io/install/)
-
-If python3 or ansible is not yet installed in the system, please run `install_pre-requisite.sh` script first
-You can get this script from our payment-bridge source code which will be introduced below 
 
 ### Lotus Node
 - Lotus node is used for making car files and sending offline deals
@@ -164,9 +158,8 @@ Currently, USDC is supported for payment. Take polygon network as an example to 
 **Step:one:** Users upload a file they want to backup to filecoin network, then use the currencies we support to send tokens
 to our contract address.<br>
 **Step:two:** MCP scans the events of the above transactions<br>
-**Step:three:** When the event data that get in second step meet the conditions, and then the user can perform the filecoin
-network storage function<br>
-**Step:four:** when the user's storage is successful, it will be scanned by the dao organization, and then dao signed to
+**Step:three:** When the event data got in Step:two: meet the conditions, the user can perform the filecoin network storage function<br>
+**Step:four:** When the user's storage is successful, it will be scanned by DAO organization, and then DAO signed to
 agree to unlock the user's payment.<br>
 **Step:five:** If more than half of the dao agree, the payment bridge will unlock the user's payment, deduct the user's
 storage fee, and the remaining locked virtual currency Is returned to the customer's wallet<br>

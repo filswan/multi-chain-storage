@@ -1,53 +1,66 @@
 package config
 
 import (
-	"log"
-	"strings"
+	"os"
+	"path/filepath"
+
+	"github.com/filswan/go-swan-lib/logs"
 
 	"github.com/BurntSushi/toml"
 	"github.com/shopspring/decimal"
 )
 
 type Configuration struct {
-	Port                 string       `toml:"port"`
-	Database             database     `toml:"database"`
-	Dev                  bool         `toml:"dev"`
-	SwanApi              swanApi      `toml:"swan_api"`
-	IpfsServer           ipfsServer   `toml:"ipfs_server"`
-	Lotus                lotus        `toml:"lotus"`
-	SwanTask             swanTask     `toml:"swan_task"`
-	ScheduleRule         ScheduleRule `toml:"schedule_rule"`
-	AdminWalletOnPolygon string       `toml:"admin_wallet_on_polygon"`
-	FileCoinWallet       string       `toml:"file_coin_wallet"`
-	FilinkUrl            string       `toml:"filink_url"`
+	Port           string       `toml:"port"`
+	Release        bool         `toml:"release"`
+	FileCoinWallet string       `toml:"file_coin_wallet"`
+	FilinkUrl      string       `toml:"filink_url"`
+	Polygon        polygon      `toml:"polygon"`
+	Database       database     `toml:"database"`
+	SwanApi        swanApi      `toml:"swan_api"`
+	Lotus          lotus        `toml:"lotus"`
+	IpfsServer     ipfsServer   `toml:"ipfs_server"`
+	SwanTask       swanTask     `toml:"swan_task"`
+	ScheduleRule   ScheduleRule `toml:"schedule_rule"`
+}
+
+type polygon struct {
+	AdminWalletOnPolygon                           string `toml:"admin_wallet_on_polygon"`
+	PolygonRpcUrl                                  string `toml:"polygon_rpc_url"`
+	DaoSwanOracleAddress                           string `toml:"dao_swan_oracle_address"`
+	ContractUnlockFunctionSignature                string `toml:"contract_unlock_function_signature"`
+	PaymentContractAddress                         string `toml:"payment_contract_address"`
+	GasLimit                                       uint64 `toml:"gas_limit"`
+	RouterAddressOfSushiswapOnPolygon              string `toml:"router_address_of_sushiswap_on_polygon"`
+	PairAddressBetweenWfilUsdcOfSushiswapOnPolygon string `toml:"pair_address_between_wfil_usdc_of_sushiswap_on_polygon"`
 }
 
 type database struct {
-	DbUsername   string `toml:"db_username"`
-	DbPwd        string `toml:"db_pwd"`
 	DbHost       string `toml:"db_host"`
 	DbPort       string `toml:"db_port"`
 	DbSchemaName string `toml:"db_schema_name"`
+	DbUsername   string `toml:"db_username"`
+	DbPassword   string `toml:"db_password"`
 	DbArgs       string `toml:"db_args"`
 }
 
 type lotus struct {
 	ClientApiUrl      string `toml:"client_api_url"`
 	ClientAccessToken string `toml:"client_access_token"`
-	FinalStatusList   string `toml:"final_status_list"`
 }
 
 type swanTask struct {
-	DirDeal         string          `toml:"dir_deal"`
-	Description     string          `toml:"description"`
-	CuratedDataset  string          `toml:"curated_dataset"`
-	Tags            string          `toml:"tags"`
-	MaxPrice        decimal.Decimal `toml:"max_price"`
-	ExpireDays      int             `toml:"expire_days"`
-	VerifiedDeal    bool            `toml:"verified_deal"`
-	FastRetrieval   bool            `toml:"fast_retrieval"`
-	StartEpochHours int             `toml:"start_epoch_hours"`
-	MinerId         string          `toml:"miner_id"`
+	DirDeal              string          `toml:"dir_deal"`
+	Description          string          `toml:"description"`
+	CuratedDataset       string          `toml:"curated_dataset"`
+	Tags                 string          `toml:"tags"`
+	MaxPrice             decimal.Decimal `toml:"max_price"`
+	ExpireDays           int             `toml:"expire_days"`
+	VerifiedDeal         bool            `toml:"verified_deal"`
+	FastRetrieval        bool            `toml:"fast_retrieval"`
+	StartEpochHours      int             `toml:"start_epoch_hours"`
+	MaxAutoBidCopyNumber int             `toml:"max_auto_bid_copy_number"`
+	MinFileSize          int64           `toml:"min_file_size"`
 }
 
 type swanApi struct {
@@ -62,31 +75,34 @@ type ipfsServer struct {
 }
 
 type ScheduleRule struct {
-	UnlockPaymentRule   string `toml:"unlock_payment_rule"`
-	SendDealRule        string `toml:"send_deal_rule"`
-	CreateTaskRule      string `toml:"create_task_rule"`
-	ScanDealStatusRule  string `toml:"scan_deal_status_rule"`
-	UpdatePayStatusRule string `toml:"update_pay_status_rule"`
+	UnlockPaymentRule  string `toml:"unlock_payment_rule"`
+	CreateTaskRule     string `toml:"create_task_rule"`
+	SendDealRule       string `toml:"send_deal_rule"`
+	ScanDealStatusRule string `toml:"scan_deal_status_rule"`
 }
 
 var config *Configuration
 
-func InitConfig(configFile string) {
-	if strings.Trim(configFile, " ") == "" {
-		configFile = "./config/config.toml"
+func InitConfig() {
+	homedir, err := os.UserHomeDir()
+	if err != nil {
+		logs.GetLogger().Fatal("Cannot get home directory.")
 	}
+
+	configFile := filepath.Join(homedir, ".swan/mcp/config.toml")
+
 	if metaData, err := toml.DecodeFile(configFile, &config); err != nil {
-		log.Fatal("error:", err)
+		logs.GetLogger().Fatal("error:", err)
 	} else {
 		if !requiredFieldsAreGiven(metaData) {
-			log.Fatal("required fields not given")
+			logs.GetLogger().Fatal("required fields not given")
 		}
 	}
 }
 
 func GetConfig() Configuration {
 	if config == nil {
-		InitConfig("")
+		InitConfig()
 	}
 	return *config
 }
@@ -94,31 +110,57 @@ func GetConfig() Configuration {
 func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 	requiredFields := [][]string{
 		{"port"},
-		{"admin_wallet_on_polygon"},
+		{"release"},
 		{"file_coin_wallet"},
 		{"filink_url"},
 
 		{"database", "db_host"},
 		{"database", "db_port"},
-		{"database", "db_username"},
 		{"database", "db_schema_name"},
-		{"database", "db_pwd"},
+		{"database", "db_username"},
+		{"database", "db_password"},
+		{"database", "db_args"},
 
 		{"swan_api", "api_url"},
 		{"swan_api", "api_key"},
 		{"swan_api", "access_token"},
 
+		{"lotus", "client_api_url"},
+		{"lotus", "client_access_token"},
+
 		{"ipfs_server", "download_url_prefix"},
 		{"ipfs_server", "upload_url_prefix"},
 
-		{"lotus", "client_api_url"},
-		{"lotus", "client_access_token"},
-		{"lotus", "final_status_list"},
+		{"swan_task", "dir_deal"},
+		{"swan_task", "description"},
+		{"swan_task", "curated_dataset"},
+		{"swan_task", "tags"},
+		{"swan_task", "max_price"},
+		{"swan_task", "expire_days"},
+		{"swan_task", "verified_deal"},
+		{"swan_task", "fast_retrieval"},
+		{"swan_task", "start_epoch_hours"},
+		{"swan_task", "max_auto_bid_copy_number"},
+		{"swan_task", "min_file_size"},
+
+		{"schedule_rule", "unlock_payment_rule"},
+		{"schedule_rule", "create_task_rule"},
+		{"schedule_rule", "send_deal_rule"},
+		{"schedule_rule", "scan_deal_status_rule"},
+
+		{"polygon", "admin_wallet_on_polygon"},
+		{"polygon", "polygon_rpc_url"},
+		{"polygon", "dao_swan_oracle_address"},
+		{"polygon", "contract_unlock_function_signature"},
+		{"polygon", "payment_contract_address"},
+		{"polygon", "gas_limit"},
+		{"polygon", "router_address_of_sushiswap_on_polygon"},
+		{"polygon", "pair_address_between_wfil_usdc_of_sushiswap_on_polygon"},
 	}
 
 	for _, v := range requiredFields {
 		if !metaData.IsDefined(v...) {
-			log.Fatal("required fields ", v)
+			logs.GetLogger().Fatal("required fields ", v)
 		}
 	}
 

@@ -1,9 +1,10 @@
 package models
 
 import (
-	"errors"
+	"fmt"
 	"payment-bridge/database"
-	"payment-bridge/logs"
+
+	"github.com/filswan/go-swan-lib/logs"
 )
 
 type Coin struct {
@@ -18,18 +19,51 @@ type Coin struct {
 	Description string `json:"description"`
 }
 
-func FindCoinIdByUUID(uuid string) (int64, error) {
-	db := database.GetDB()
-	var models []*Coin
-	err := db.Where("uuid='" + uuid + "'").Find(&models).Error
+func FindCoinByUuid(coinUuid string) (*Coin, error) {
+	var coins []*Coin
+	err := database.GetDB().Where("coin_address=?", coinUuid).Find(&coins).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return 0, nil
+		return nil, err
 	}
-	if len(models) > 0 {
-		return models[0].ID, nil
-	} else {
-		err = errors.New("There is no this coin info by uuid :" + uuid)
-		return 0, err
+
+	if len(coins) > 0 {
+		return coins[0], nil
 	}
+
+	err = fmt.Errorf("coin:%s not exists", coinUuid)
+	logs.GetLogger().Error(err)
+	return nil, err
+}
+
+func FindCoinIdById(id int64) (*Coin, error) {
+	var coins []*Coin
+	err := database.GetDB().Where("id=?", id).Find(&coins).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	if len(coins) > 0 {
+		return coins[0], nil
+	}
+
+	return nil, nil
+}
+
+func FindCoinByCoinAddress(coinAddress string) (*Coin, error) {
+	var coins []*Coin
+	err := database.GetDB().Where("coin_address=?", coinAddress).Find(&coins).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	if len(coins) > 0 {
+		return coins[0], nil
+	}
+
+	err = fmt.Errorf("coin:%s not exists", coinAddress)
+	logs.GetLogger().Error(err)
+	return nil, err
 }

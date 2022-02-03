@@ -54,15 +54,11 @@ const (
 	SOURCE_ID_OF_PAYMENT = 4
 	TASK_STATUS_ASSIGNED = "Assigned"
 
-	LOCK_PAYMENT_STATUS_FREE       = "Free"
-	LOCK_PAYMENT_STATUS_WAITING    = "Pending"    //wait for lock payment
-	LOCK_PAYMENT_STATUS_PAID       = "Paid"       //lock payment paid
-	LOCK_PAYMENT_STATUS_PROCESSING = "Processing" //lock payment fail
-	LOCK_PAYMENT_STATUS_SUCCESS    = "Active"     //lock payment active
-	LOCK_PAYMENT_STATUS_REFUNDED   = "Refunded"
-
-	SEND_DEAL_STATUS_SUCCESS = "Success"
-	SEND_DEAL_STATUS_FAIL    = "Fail"
+	LOCK_PAYMENT_STATUS_WAITING             = "Pending" //wait for lock payment
+	LOCK_PAYMENT_STATUS_PROCESSING          = "Processing"
+	LOCK_PAYMENT_STATUS_DEAL_SENT_FAILED    = "DealSentFailed"
+	LOCK_PAYMENT_STATUS_UNLOCK_REFUNDED     = "UnlockRefundSucceeded"
+	LOCK_PAYMENT_STATUS_UNLOCK_REFUNDFAILED = "UnlockRefundFailed"
 
 	DEAL_STATUS_ACTIVE = "StorageDealActive"
 	DEAL_STATUS_ERROR  = "StorageDealError"
@@ -76,4 +72,19 @@ const (
 	LOTUS_PRICE_MULTIPLE_1E18 = 1e18 // 10^18
 	FILE_BLOCK_NUMBER_MAX     = 999999999999999
 	TIME_HALF_AN_HOUR         = 30 * 60 * 1000
+
+	SOURCE_FILE_STATUS_CREATED      = "Created"
+	SOURCE_FILE_STATUS_TASK_CREATED = "TaskCreated"
+
+	DEAL_FILE_STATUS_CREATED   = "Created"
+	DEAL_FILE_STATUS_DEAL_SENT = "DealSent"
+	DEAL_FILE_STATUS_CANCELLED = "Cancelled"
+	DEAL_FILE_STATUS_FAILED    = "Failed"
+
+	OFFLINE_DEAL_UNLOCK_STATUS_NOT_UNLOCKED = "NotUnlocked"
+	OFFLINE_DEAL_UNLOCK_STATUS_UNLOCKED     = "Unlocked"
+
+	DURATION_DAYS_DEFAULT = 525
+
+	SOURCE_FILE_TYPE_NORMAL = 0
 )

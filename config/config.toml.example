@@ -1,5 +1,5 @@
 port="8888"
-dev = false
+release = true              # when work in release mode: set this to true, otherwise to false and enviornment variable GIN_MODE not to release
 admin_wallet_on_polygon=""
 file_coin_wallet=""
 filink_url=""
@@ -7,9 +7,9 @@ filink_url=""
 [database]
 db_host="localhost"
 db_port="3306"
-db_schema_name="payment_bridge"
+db_schema_name="mcp_v2"
 db_username="root"
-db_pwd="123456"
+db_password=""
 db_args="charset=utf8mb4&parseTime=True&loc=Local"
 
 [swan_api]
@@ -20,7 +20,6 @@ access_token = ""
 [lotus]
 client_api_url="http://[ip]:[port]/rpc/v0"   # Url of lotus web api
 client_access_token=""   # Access token of lotus web api
-final_status_list="StorageDealError,StorageDealActive,StorageDealStaged,StorageDealPulished"
 
 [ipfs_server]
 download_url_prefix = "http://[ip]:[port]"
@@ -36,10 +35,20 @@ expire_days = 4
 verified_deal = false
 fast_retrieval = true
 start_epoch_hours = 96
+max_auto_bid_copy_number = 5 # max copy number you want to send
+min_file_size = 1024   # unit: byte
 
 [schedule_rule]
 unlock_payment_rule = "0 */5 * * * ?"  #every minute
-send_deal_rule = "0 */3 * * * ?"  #every minute
 create_task_rule = "0 */2 * * * ?"
+send_deal_rule = "0 */3 * * * ?"  #every minute
 scan_deal_status_rule = "0 */4 * * * ?"
+
+[polygon]
+polygon_rpc_url=""
+dao_swan_oracle_address = ""
+contract_unlock_function_signature = ""
+payment_contract_address = ""
+router_address_of_sushiswap_on_polygon = ""
+gas_limit = 8000000
 

@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"math/big"
 	"net/http"
-	common2 "payment-bridge/common"
 	"payment-bridge/common/httpClient"
 	"payment-bridge/common/utils"
 	"payment-bridge/config"
@@ -37,32 +36,27 @@ func GetFileCoinLastestPriceService() (*PriceResult, error) {
 	return price, nil
 }
 
-func getBillingCount(walletAddress, txHash string) (int64, error) {
-	sql := " select count(* ) as total_record from ( " +
-		"     select ep.* from event_lock_payment ep " +
-		"     left join event_unlock_payment eup   on eup.payload_cid = ep.payload_cid " +
-		"     where ep.address_from='" + walletAddress + "'"
-	if txHash != "" {
-		sql = sql + " and ep.tx_hash='" + txHash + "' "
-	}
-	endSql := " ) bh inner join  (select distinct substring_index(source_file_path, '/', -1) as file_name, payload_cid from deal_file) as df " +
-		" on bh.payload_cid=df.payload_cid "
-	finalSql := sql + endSql
-	var recordCount common2.RecordCount
-	err := database.GetDB().Raw(finalSql).Scan(&recordCount).Error
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return 0, err
-	}
-	return recordCount.TotalRecord, nil
-}
-
-func getBillHistoryList(walletAddress, txHash, limit, offset string) ([]*BillingResult, error) {
-	sql := "select a.tx_hash,a.locked_fee,b.cn_name coin_type,d.file_name,d.payload_cid,d.wallet_address address_from,c.network_name network,a.lock_payment_time from event_lock_payment a, coin b, network c, source_file d"
-	sql = sql + " where a.coin_id=b.id and a.network_id=c.id and a.payload_cid=d.payload_cid and a.address_from=d.wallet_address and d.wallet_address=?"
+func getBillHistoryList(walletAddress, limit, offset string) ([]*BillingResult, error) {
+	sql := "select a.tx_hash,a.locked_fee,b.cn_name coin_type,h.file_name,d.payload_cid,h.wallet_address address_from,c.network_name network,a.lock_payment_time"
+	sql = sql + " from event_lock_payment a, coin b, network c, source_file d, source_file_upload_history h"
+	sql = sql + " where a.coin_id=b.id and a.network_id=c.id and a.payload_cid=d.payload_cid and a.address_from=h.wallet_address and h.wallet_address=?"
 
 	var billingResultList []*BillingResult
 	err := database.GetDB().Raw(sql, walletAddress).Limit(limit).Offset(offset).Order("lock_payment_time desc").Scan(&billingResultList).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+
+	}
+	return billingResultList, nil
+}
+func getBillHistoriesByWalletAddress(walletAddress string) ([]*BillingResult, error) {
+	sql := "select a.tx_hash,a.locked_fee,b.cn_name coin_type,h.file_name,d.payload_cid,h.wallet_address address_from,c.network_name network,a.lock_payment_time"
+	sql = sql + " from event_lock_payment a, coin b, network c, source_file d, source_file_upload_history h"
+	sql = sql + " where a.coin_id=b.id and a.network_id=c.id and a.payload_cid=d.payload_cid and a.address_from=h.wallet_address and h.wallet_address=?"
+
+	var billingResultList []*BillingResult
+	err := database.GetDB().Raw(sql, walletAddress).Order("lock_payment_time desc").Scan(&billingResultList).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err

@@ -152,6 +152,7 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 		{"schedule_rule", "scan_deal_status_rule"},
 
 		{"polygon", "admin_wallet_on_polygon"},
+		{"polygon", "recipient"},
 		{"polygon", "polygon_rpc_url"},
 		{"polygon", "dao_swan_oracle_address"},
 		{"polygon", "contract_unlock_function_signature"},
@@ -159,6 +160,7 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 		{"polygon", "gas_limit"},
 		{"polygon", "router_address_of_sushiswap_on_polygon"},
 		{"polygon", "pair_address_between_wfil_usdc_of_sushiswap_on_polygon"},
+		{"polygon", "unlock_interval_minute"},
 	}
 
 	for _, v := range requiredFields {

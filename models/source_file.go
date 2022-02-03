@@ -139,7 +139,7 @@ func CreateSourceFile(sourceFile SourceFile) (*SourceFile, error) {
 	return sourceFileCreated, nil
 }
 
-func GetSourceFiles(limit, offset string, walletAddress, payloadCid string) ([]*SourceFileExt, error) {
+func GetSourceFiles(limit, offset string, walletAddress, payloadCid string, file_name string) ([]*SourceFileExt, error) {
 	sql := "select s.id, h.file_name,s.file_size,s.pin_status,s.create_at,s.payload_cid,s.ipfs_url,h.wallet_address,s.mint_address, s.nft_tx_hash, s.token_id,df.id deal_file_id,df.lock_payment_status status,df.duration, evpm.locked_fee from source_file s "
 	sql = sql + "left join source_file_upload_history h on s.id=h.source_file_id "
 	sql = sql + "left join source_file_deal_file_map sfdfm on s.id = sfdfm.source_file_id "
@@ -154,6 +154,11 @@ func GetSourceFiles(limit, offset string, walletAddress, payloadCid string) ([]*
 
 	sql = sql + "left outer join event_lock_payment evpm on evpm.payload_cid = s.payload_cid "
 	sql = sql + "where h.wallet_address=? and s.file_type=?"
+
+	if strings.Trim(file_name, " '") != "" {
+		sql = sql + " and h.file_name like '%" + file_name + "%'"
+	}
+
 	params = append(params, walletAddress, constants.SOURCE_FILE_TYPE_NORMAL)
 
 	var results []*SourceFileExt

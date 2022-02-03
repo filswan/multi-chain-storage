@@ -25,8 +25,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GetSourceFiles(pageSize, offset string, walletAddress, payloadCid string) ([]*models.SourceFileExt, error) {
-	srcFiles, err := models.GetSourceFiles(pageSize, offset, walletAddress, payloadCid)
+func GetSourceFiles(pageSize, offset string, walletAddress, payloadCid string, file_name string) ([]*models.SourceFileExt, error) {
+	srcFiles, err := models.GetSourceFiles(pageSize, offset, walletAddress, payloadCid, file_name)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err

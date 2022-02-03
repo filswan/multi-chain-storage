@@ -372,14 +372,14 @@ func GetDealListFromLocal(c *gin.Context) {
 	pageInfo := new(common.PageInfo)
 	pageInfo.PageSize = pageSize
 	pageInfo.PageNumber = pageNumber
-	totalCount, err := models.GetSourceFilesCount(walletAddress)
+	sourceFiles, err := models.GetSourceFilesByWalletAddress(walletAddress)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_COUNT_ERROR_CODE, err.Error()))
 
 		return
 	}
-	pageInfo.TotalRecordCount = strconv.FormatInt(totalCount, 10)
+	pageInfo.TotalRecordCount = strconv.Itoa(len(sourceFiles))
 	c.JSON(http.StatusOK, common.NewSuccessResponseWithPageInfo(infoList, pageInfo))
 }
 

@@ -56,7 +56,7 @@ func WriteLockPayment(c *gin.Context) {
 		event.AddressFrom = eventFromOnChainApi.AddressFrom
 		event.AddressTo = eventFromOnChainApi.AddressTo
 		event.LockedFee = eventFromOnChainApi.LockedFee
-		event.SourceFileId = eventFromOnChainApi.SourceFileId
+		//event.SourceFileId = eventFromOnChainApi.SourceFileId
 		event.CoinId = eventFromOnChainApi.CoinId
 		event.NetworkId = eventFromOnChainApi.NetworkId
 	}

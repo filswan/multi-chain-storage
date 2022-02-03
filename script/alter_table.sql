@@ -94,3 +94,7 @@ create table source_file_upload_history (
 )
 
 
+alter table source_file drop column file_name;
+
+alter table source_file drop column wallet_address;
+

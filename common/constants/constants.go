@@ -59,6 +59,10 @@ const (
 	OFFLINE_DEAL_UNLOCK_STATUS_UNLOCKED      = "Unlocked"
 	OFFLINE_DEAL_UNLOCK_STATUS_UNLOCK_FAILED = "UnlockFailed"
 
+	SIGNATURE_DEFAULT_VALUE = "0" //init value,no unlock operation has been performed
+	SIGNATURE_SUCCESS_VALUE = "1" //init value,no unlock operation has been performed
+	SIGNATURE_FAILED_VALUE  = "2" //init value,no unlock operation has been performed
+
 	DURATION_DAYS_DEFAULT = 525
 
 	SOURCE_FILE_TYPE_NORMAL = 0

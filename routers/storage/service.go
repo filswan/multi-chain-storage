@@ -343,7 +343,7 @@ func SaveDaoEventFromTxHash(txHash string, payload_cid string, recipent string, 
 		eventDaoSignature.TxHash = txHash
 		eventDaoSignature.Recipient = recipent
 		eventDaoSignature.PayloadCid = payload_cid
-		wfilCoinId, err := models.FindCoinByUuid(constants.COIN_TYPE_WFIL_ON_POLYGON_UUID)
+		wfilCoinId, err := models.FindCoinByFullName(constants.COIN_NAME_USDC)
 		if err != nil {
 			logs.GetLogger().Error(err)
 		} else {

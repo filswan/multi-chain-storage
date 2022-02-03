@@ -96,6 +96,25 @@ func GetSourceFileByPayloadCid(payloadCid string) (*SourceFile, error) {
 	return nil, err
 }
 
+func GetSourceFileExtByPayloadCid(payloadCid, walletAddress string) (*SourceFileExt, error) {
+	var sourceFiles []*SourceFileExt
+	sql := "select a.*,b.file_name from source_file a, source_file_upload_history b where b.source_file_id=a.id and a.payload_cid=? and b.wallet_address=?"
+	err := database.GetDB().Raw(sql, payloadCid, walletAddress).Scan(&sourceFiles).Error
+
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	if len(sourceFiles) > 0 {
+		return sourceFiles[0], nil
+	}
+	err = fmt.Errorf("source file with payload_cid:%s wallet_address:%s not exists", payloadCid, walletAddress)
+	logs.GetLogger().Error(err)
+
+	return nil, nil
+}
+
 func GetSourceFilesNeed2Car() ([]*SourceFileExt, error) {
 	var sourceFiles []*SourceFileExt
 	sql := "select a.*,b.locked_fee from source_file a, event_lock_payment b where b.source_file_id=a.id and a.status=? and a.file_type=?"

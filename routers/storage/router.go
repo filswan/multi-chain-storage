@@ -178,20 +178,24 @@ func GetDealListFromFilink(c *gin.Context) {
 		return
 	}
 
+	var walletAddress = URL.Get("wallet_address")
+	if strings.Trim(srcFilePayloadCid, " ") == "" {
+		errMsg := "wallet_address can not be null"
+		logs.GetLogger().Error(errMsg)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAM_TYPE_ERROR_CODE, errMsg))
+		return
+	}
+
 	dealFiles, err := models.GetDealFileBySourceFilePayloadCid(srcFilePayloadCid)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE))
 		return
 	}
-	if len(dealFiles) < 1 {
-		err := fmt.Errorf("no deal got for source file with payload_cid:%s", srcFilePayloadCid)
-		logs.GetLogger().Error(err)
-		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE))
-		return
+	payloadCid := ""
+	if len(dealFiles) > 0 {
+		payloadCid = dealFiles[0].PayloadCid
 	}
-
-	payloadCid := dealFiles[0].PayloadCid
 
 	url := config.GetConfig().FilinkUrl
 	parameter := new(filinkParams)
@@ -238,29 +242,33 @@ func GetDealListFromFilink(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE, errorinfo.GET_RECORD_lIST_ERROR_CODE+": get lock found info from db occurred error"))
 		return
 	}
-	fileList, err := GetSourceFileAndDealFileInfoByPayloadCid(payloadCid)
+	fileList, err := models.GetSourceFileExtByPayloadCid(srcFilePayloadCid, walletAddress)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE, errorinfo.GET_RECORD_lIST_ERROR_CODE+": get deal file info from db occurred error"))
 		return
 	}
-	if len(fileList) > 0 {
-		result.Data.Data.Deal.IpfsUrl = fileList[0].IpfsUrl
-		result.Data.Data.Deal.FileName = fileList[0].FileName
+	if fileList != nil {
+		result.Data.Data.Deal.IpfsUrl = fileList.IpfsUrl
+		result.Data.Data.Deal.FileName = fileList.FileName
 	}
 	threshHold, err := client.GetThreshHold()
 	if err != nil {
 		logs.GetLogger().Error(err)
 	}
-	eventList, err := models.GetEventUnlockPaymentsByPayloadCid(payloadCid, "10", "0")
-	if err != nil {
-		logs.GetLogger().Error(err)
-	}
+
 	unlockStatus := false
-	if len(eventList) > 0 {
-		unlockStatus = true
+	if payloadCid != "" {
+		eventList, err := models.GetEventUnlockPaymentsByPayloadCid(payloadCid, "10", "0")
+		if err != nil {
+			logs.GetLogger().Error(err)
+		}
+		if len(eventList) > 0 {
+			unlockStatus = true
+		}
 	}
 
+	result.Data.Data.Deal.CreatedAt = result.Data.Data.Deal.CreatedAt * 1000
 	c.JSON(http.StatusOK, common.CreateSuccessResponse(gin.H{
 		"unlock_status":    unlockStatus,
 		"dao_thresh_hold":  threshHold,

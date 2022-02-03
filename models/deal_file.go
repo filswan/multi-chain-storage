@@ -30,7 +30,7 @@ type DealFile struct {
 func GetDeal2Send() ([]*DealFile, error) {
 	var dealFiles []*DealFile
 
-	err := database.GetDB().Where("status=? and task_uuid != ''", constants.PROCESS_STATUS_TASK_CREATED).Find(&dealFiles).Error
+	err := database.GetDB().Where("lock_payment_status=? and task_uuid != ''", constants.PROCESS_STATUS_TASK_CREATED).Find(&dealFiles).Error
 
 	if err != nil {
 		logs.GetLogger().Error(err)

@@ -78,7 +78,7 @@ func CreateTask() error {
 
 	var srcFiles2Merged []*models.SourceFileExt
 	for _, srcFile := range srcFiles {
-		srcFilepathTemp := filepath.Join(carSrcDir, srcFile.FileName)
+		srcFilepathTemp := filepath.Join(carSrcDir, filepath.Base(srcFile.ResourceUri))
 
 		bytesCopied, err := libutils.CopyFile(srcFile.ResourceUri, srcFilepathTemp)
 		if err != nil {
@@ -293,33 +293,9 @@ func saveCarInfo2DB(fileDesc *libmodel.FileDesc, srcFiles []*models.SourceFileEx
 		return err
 	}
 
-	var srcFileIds []int64
 	for _, srcFile := range srcFiles {
-		sourceFiles, err := models.GetSourceFilesByPayloadCid(srcFile.PayloadCid)
-		if err != nil {
-			db.Rollback()
-			logs.GetLogger().Error(err)
-			return err
-		}
-
-		for _, sourceFile := range sourceFiles {
-			srcFileExists := false
-			for _, srcFileId := range srcFileIds {
-				if srcFileId == sourceFile.ID {
-					srcFileExists = true
-					break
-				}
-			}
-
-			if !srcFileExists {
-				srcFileIds = append(srcFileIds, sourceFile.ID)
-			}
-		}
-	}
-
-	for _, srcFileId := range srcFileIds {
 		filepMap := models.SourceFileDealFileMap{
-			SourceFileId: srcFileId,
+			SourceFileId: srcFile.ID,
 			DealFileId:   dealFile.ID,
 			FileIndex:    0,
 			CreateAt:     currentUtcMilliSecond,
@@ -337,7 +313,7 @@ func saveCarInfo2DB(fileDesc *libmodel.FileDesc, srcFiles []*models.SourceFileEx
 		params := []interface{}{}
 		params = append(params, constants.SOURCE_FILE_STATUS_TASK_CREATED)
 		params = append(params, currentUtcMilliSecond)
-		params = append(params, srcFileId)
+		params = append(params, srcFile.ID)
 
 		err = db.Exec(sql, params...).Error
 		if err != nil {

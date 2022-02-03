@@ -29,6 +29,7 @@ type SourceFile struct {
 
 type SourceFileExt struct {
 	SourceFile
+	FileName     string           `json:"file_name"`
 	DealFileId   int64            `json:"deal_file_id"`
 	Duration     int              `json:"duration"`
 	LockedFee    *decimal.Decimal `json:"locked_fee"`

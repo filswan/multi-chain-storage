@@ -79,9 +79,11 @@ func UnlockPayment() error {
 	logs.GetLogger().Info("unlock interval is ", unlockIntervalMinute, " minutes")
 	for i, offlineDeal := range offlineDeals {
 		if i > 0 {
+			logs.GetLogger().Info(getLog(offlineDeal, "sleeping before unlock"))
 			time.Sleep(unlockIntervalMinute * time.Minute)
 		}
 
+		logs.GetLogger().Info(getLog(offlineDeal, "start to unlock"))
 		unlockStatus, err := unlockDeal(filswanOracleSession, offlineDeal, ethClient, swanPaymentTransactor, tansactOpts, *recipient)
 		if err != nil {
 			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))

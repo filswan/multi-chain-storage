@@ -37,12 +37,10 @@ func GetSourceFiles(pageSize, offset string, walletAddress, payloadCid string) (
 	for _, srcFile := range srcFiles {
 		dealFileIds[srcFile.DealFileId] = true
 
-		if len(strings.Trim(srcFile.Status, " ")) == 0 {
-			if srcFile.LockedFee == nil {
-				srcFile.Status = constants.PROCESS_STATUS_WAITING_PAYMENT
-			} else {
-				srcFile.Status = constants.PROCESS_STATUS_PAID
-			}
+		if len(strings.Trim(srcFile.Status, " ")) == 0 && srcFile.LockedFee == nil {
+			srcFile.Status = constants.PROCESS_STATUS_WAITING_PAYMENT
+		} else {
+			srcFile.Status = constants.PROCESS_STATUS_PROCESSING
 		}
 
 		if srcFile.Duration == 0 {

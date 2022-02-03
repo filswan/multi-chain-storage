@@ -61,7 +61,7 @@ func GetPaymentInfo(srcFilePayloadCid string) (*models.EventLockPayment, error) 
 			event.NetworkId = network.ID
 		}
 
-		srcFile, err := models.GetSourceFileByPayloadCidWalletAddress(srcFilePayloadCid, event.AddressFrom)
+		srcFile, err := models.GetSourceFileByPayloadCid(srcFilePayloadCid)
 		if err != nil {
 			logs.GetLogger().Error(err)
 		} else {

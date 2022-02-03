@@ -306,7 +306,7 @@ func saveCarInfo2DB(fileDesc *libmodel.FileDesc, srcFiles []*models.SourceFileEx
 			return err
 		}
 
-		sql := "update source_file set status=?,update_at where id=?"
+		sql := "update source_file set status=?,update_at=? where id=?"
 
 		params := []interface{}{}
 		params = append(params, constants.SOURCE_FILE_STATUS_TASK_CREATED)

@@ -41,7 +41,7 @@ func GetSourceFiles(pageSize, offset string, walletAddress, payloadCid string) (
 			if srcFile.LockedFee == nil {
 				srcFile.Status = constants.PROCESS_STATUS_WAITING_PAYMENT
 			} else {
-				srcFile.Status = constants.PROCESS_STATUS_WATITING_CREATE_TASK
+				srcFile.Status = constants.PROCESS_STATUS_PROCESSING
 			}
 		}
 
@@ -135,6 +135,7 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType 
 	// not uploaded by anyone yet
 	if len(sourceFiles) == 0 {
 		sourceFile := models.SourceFile{
+
 			FileSize:    srcFile.Size,
 			ResourceUri: srcFilepath,
 			Status:      constants.SOURCE_FILE_STATUS_CREATED,
@@ -166,7 +167,7 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType 
 			UpdateAt:      currentUtcMilliSec,
 		}
 
-		err = database.SaveOne(sourceFileUploadHistory)
+		err = database.SaveOne(&sourceFileUploadHistory)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			err = os.Remove(srcFilepath)
@@ -196,7 +197,7 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType 
 		UpdateAt:      currentUtcMilliSec,
 	}
 
-	err = database.SaveOne(sourceFileUploadHistory)
+	err = database.SaveOne(&sourceFileUploadHistory)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, nil, nil, nil, err

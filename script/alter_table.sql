@@ -12,6 +12,10 @@ alter table dao_info modify create_at bigint;
 
 
 alter table deal_file modify create_at bigint;
+
+alter table deal_file modify lock_payment_status status;
+
+
 SET SQL_SAFE_UPDATES = 0;
 update deal_file set update_at=null where update_at='';
 alter table deal_file modify update_at bigint;
@@ -93,4 +97,8 @@ create table source_file_upload_history (
     constraint fk_source_file_upload_history_source_file_id foreign key (source_file_id) references source_file (id)
 )
 
+
+alter table source_file drop column file_name;
+
+alter table source_file drop column wallet_address;
 

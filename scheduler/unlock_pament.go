@@ -212,14 +212,14 @@ func refund(offlineDeal *models.OfflineDeal, swanPaymentTransactor *goBind.SwanP
 		srcFilePayloadCids = append(srcFilePayloadCids, srcFile.PayloadCid)
 	}
 
-	lockPaymentStatus := constants.LOCK_PAYMENT_STATUS_UNLOCK_REFUNDED
+	status := constants.PROCESS_STATUS_UNLOCK_REFUNDED
 	_, err = swanPaymentTransactor.Refund(tansactOpts, srcFilePayloadCids)
 	if err != nil {
-		lockPaymentStatus = constants.LOCK_PAYMENT_STATUS_UNLOCK_REFUNDFAILED
+		status = constants.PROCESS_STATUS_UNLOCK_REFUNDFAILED
 		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 	}
 
-	err = models.UpdateDealFileLockPaymentStatus(offlineDeal.Id, lockPaymentStatus)
+	err = models.UpdateDealFileStatus(offlineDeal.Id, status)
 	if err != nil {
 		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 		return err

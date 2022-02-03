@@ -14,7 +14,7 @@ import (
 
 func GetThreshHold() (uint8, error) {
 	daoAddress := common.HexToAddress(config.GetConfig().Polygon.DaoSwanOracleAddress)
-	client, err := GetEthClient()
+	client, _, err := GetEthClient()
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return 0, err

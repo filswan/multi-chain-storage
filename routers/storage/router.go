@@ -76,7 +76,7 @@ func GetDeals4SourceFile(c *gin.Context) {
 }
 
 func RecordDealListThatHaveBeenSignedByDao(c *gin.Context) {
-	var dealIdList DealIdList
+	var dealIdList []DealIdList
 	err := c.BindJSON(&dealIdList)
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -84,11 +84,9 @@ func RecordDealListThatHaveBeenSignedByDao(c *gin.Context) {
 		return
 	}
 
-	idList := strings.Split(dealIdList.DealIdList, ",")
-
-	for _, v := range idList {
+	for _, v := range dealIdList {
 		daoFetchedDeal := new(models.DaoFetchedDeal)
-		dealIdIntValue, err := strconv.ParseInt(v, 10, 64)
+		dealIdIntValue, err := strconv.ParseInt(v.DealId, 10, 64)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			continue
@@ -100,7 +98,24 @@ func RecordDealListThatHaveBeenSignedByDao(c *gin.Context) {
 			logs.GetLogger().Error(err)
 			continue
 		}
+		deal_id, err := strconv.ParseInt(v.DealId, 10, 64)
+		if err != nil {
+			logs.GetLogger().Error(err)
+		}
+		err = SaveDaoEventFromTxHash(v.TxHash1, v.PayloadCid, v.Recipent, deal_id)
+		if err != nil {
+			logs.GetLogger().Error(err)
+		}
+		err = SaveDaoEventFromTxHash(v.TxHash2, v.PayloadCid, v.Recipent, deal_id)
+		if err != nil {
+			logs.GetLogger().Error(err)
+		}
+		err = SaveDaoEventFromTxHash(v.TxHash3, v.PayloadCid, v.Recipent, deal_id)
+		if err != nil {
+			logs.GetLogger().Error(err)
+		}
 	}
+
 	c.JSON(http.StatusOK, common.CreateSuccessResponse(""))
 }
 

@@ -4,10 +4,6 @@
             <div class="header_left">
                 <div v-if="!bodyWidth" class="createTask">
                     {{headertitle}}
-                    <router-link :to="{name: 'upload_file'}" v-if="$route.path === '/my_files'">
-                        <span>{{$t('uploadFile.Upload_More_Files')}}</span>
-                        <i class="el-icon-s-upload"></i>
-                    </router-link>
                 </div>
                 <img v-else src="@/assets/images/MCP_logo.png" alt="">
                 <!-- <span v-else>{{$t('navbar.sidebar_header')}}</span> -->

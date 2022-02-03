@@ -2,6 +2,7 @@ package models
 
 import (
 	"payment-bridge/common/constants"
+	"payment-bridge/common/utils"
 	"payment-bridge/database"
 	"strconv"
 	"strings"
@@ -19,6 +20,7 @@ type OfflineDeal struct {
 	Status       string `json:"status"`
 	DealId       int64  `json:"deal_id"`
 	UnlockStatus string `json:"unlock_status"`
+	Note         string `json:"note"`
 	CreateAt     int64  `json:"create_at"`
 	UpdateAt     int64  `json:"update_at"`
 }
@@ -123,11 +125,20 @@ func GetOfflineDealsByDealFileIds(dealFileIds []int64) ([]*OfflineDeal, error) {
 	return offlineDeals, nil
 }
 
-func UpdateOfflineDealUnlockStatus(id int64, unlockStatus string) error {
-	sql := "update offline_deal set unlock_status=? where id=?"
+func UpdateOfflineDealUnlockStatus(id int64, unlockStatus string, messages ...string) error {
+	sql := "update offline_deal set unlock_status=?,note=?,update_at=? where id=?"
+
+	note := ""
+	for _, message := range messages {
+		note = note + "," + message
+	}
+
+	note = strings.Trim(note, ",")
 
 	params := []interface{}{}
 	params = append(params, unlockStatus)
+	params = append(params, note)
+	params = append(params, utils.GetCurrentUtcMilliSecond())
 	params = append(params, id)
 
 	err := database.GetDB().Exec(sql, params...).Error

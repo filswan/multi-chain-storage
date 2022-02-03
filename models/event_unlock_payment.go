@@ -3,6 +3,8 @@ package models
 import (
 	"payment-bridge/common/constants"
 	"payment-bridge/database"
+
+	"github.com/filswan/go-swan-lib/logs"
 )
 
 type EventUnlockPayment struct {
@@ -25,16 +27,22 @@ type EventUnlockPayment struct {
 	SourceFileId         *int64 `json:"source_file_id"`
 }
 
-// FindEventUnlockPayments (&UnlockPaymentEvent{Id: "0xadeaCC802D0f2DFd31bE4Fa7434F15782Fd720ac"},"id desc","10","0")
-func FindEventUnlockPayments(whereCondition interface{}, orderCondition, limit, offset string) ([]*EventUnlockPayment, error) {
-	db := database.GetDB()
+func GetEventUnlockPaymentsByPayloadCid(payloadCid string, limit, offset string) ([]*EventUnlockPayment, error) {
 	if offset == "" {
 		offset = "0"
 	}
 	if limit == "" {
 		limit = constants.DEFAULT_SELECT_LIMIT
 	}
-	var models []*EventUnlockPayment
-	err := db.Where(whereCondition).Offset(offset).Limit(limit).Order(orderCondition).Find(&models).Error
-	return models, err
+
+	var dealFiles []*EventUnlockPayment
+
+	err := database.GetDB().Where("payload_cid=?", payloadCid).Offset(offset).Limit(limit).Find(&dealFiles).Error
+
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	return dealFiles, nil
 }

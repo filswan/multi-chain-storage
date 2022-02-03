@@ -1,6 +1,7 @@
 alter table source_file add payload_cid varchar(100) not null default '';
 alter table source_file modify file_size bigint;
 alter table source_file modify create_at bigint;
+alter table source_file add update_at bigint;
 
 alter table event_lock_payment add vrf_rand    varchar(100) not null default '';
 
@@ -65,6 +66,7 @@ create table offline_deal (
     status        varchar(45)  not null,
 	deal_id       bigint       not null,
     unlock_status varchar(45)  not null,
+    note          text,
 	create_at     bigint       not null,
 	update_at     bigint       not null,
     primary key pk_ofline_deal(id),

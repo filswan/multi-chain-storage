@@ -36,7 +36,7 @@ func WriteLockPayment(c *gin.Context) {
 	eventFromOnChainApi, err := client.GetPaymentInfo(event.PayloadCid)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		usdcCoin, err := models.FindCoinByUuid(constants.COIN_TYPE_USDC_ON_POLYGON_UUID)
+		usdcCoin, err := models.FindCoinByFullName(constants.COIN_NAME_USDC)
 		if err != nil {
 			logs.GetLogger().Error(err)
 		} else {
@@ -44,11 +44,11 @@ func WriteLockPayment(c *gin.Context) {
 			event.TokenAddress = usdcCoin.CoinAddress
 		}
 
-		networkId, err := models.FindNetworkIdByUUID(constants.NETWORK_TYPE_POLYGON_UUID)
+		network, err := models.GetNetworkByName(constants.NETWORK_NAME_POLYGON)
 		if err != nil {
 			logs.GetLogger().Error(err)
 		} else {
-			event.NetworkId = networkId
+			event.NetworkId = network.ID
 		}
 	} else {
 		event.Deadline = eventFromOnChainApi.Deadline
@@ -80,7 +80,7 @@ func GetLockPaymentInfoByPayloadCid(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAM_TYPE_ERROR_CODE, errMsg))
 		return
 	}
-	lockPaymentList, err := models.FindEventLockPayment(&models.EventLockPayment{PayloadCid: payloadCid}, "create_at desc", "10", "0")
+	lockPaymentList, err := models.GetEventLockPaymentBySrcPayloadCid(payloadCid)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE))

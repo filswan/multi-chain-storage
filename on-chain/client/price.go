@@ -11,7 +11,7 @@ import (
 )
 
 func GetWfilPriceFromSushiPrice(wfilPrice string) (*big.Int, error) {
-	ethClient, err := GetEthClient()
+	ethClient, _, err := GetEthClient()
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err

@@ -21,7 +21,7 @@ type Coin struct {
 
 func FindCoinByUuid(coinUuid string) (*Coin, error) {
 	var coins []*Coin
-	err := database.GetDB().Where("coin_address=?", coinUuid).Find(&coins).Error
+	err := database.GetDB().Where("uuid=?", coinUuid).Find(&coins).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err

@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"context"
 	"mime/multipart"
 	"os"
 	"path/filepath"
@@ -9,10 +10,12 @@ import (
 	"payment-bridge/config"
 	"payment-bridge/database"
 	"payment-bridge/models"
+	"payment-bridge/on-chain/client"
 	"payment-bridge/scheduler"
 	"strconv"
 	"strings"
 
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/filswan/go-swan-lib/logs"
 	"github.com/shopspring/decimal"
 
@@ -349,4 +352,66 @@ func GetDaoSignEventByDealId(dealId int64) ([]*DaoInfoResult, error) {
 		return nil, err
 	}
 	return daoInfoResult, nil
+}
+
+func SaveDaoEventFromTxHash(txHash string, payload_cid string, recipent string, deal_id int64) error {
+	ethClient, rpcClient, err := client.GetEthClient()
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	if txHash != "" && strings.HasPrefix(txHash, "0x") {
+		var rpcTransaction *models.RpcTransaction
+		err = rpcClient.CallContext(context.Background(), &rpcTransaction, "eth_getTransactionByHash", common.HexToHash(txHash))
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return err
+		}
+
+		transaction, _, err := ethClient.TransactionByHash(context.Background(), common.HexToHash(txHash))
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return err
+		}
+		var eventDaoSignature models.EventDaoSignature
+		eventDaoSignature.TxHash = txHash
+		eventDaoSignature.Recipient = recipent
+		eventDaoSignature.PayloadCid = payload_cid
+		wfilCoinId, err := models.FindCoinByUuid(constants.COIN_TYPE_WFIL_ON_POLYGON_UUID)
+		if err != nil {
+			logs.GetLogger().Error(err)
+		} else {
+			eventDaoSignature.CoinId = wfilCoinId.ID
+			eventDaoSignature.NetworkId = wfilCoinId.NetworkId
+		}
+		eventDaoSignature.DealId = deal_id
+		block, err := ethClient.BlockByHash(context.Background(), *rpcTransaction.BlockHash)
+		if err != nil {
+			logs.GetLogger().Error(err)
+		} else {
+			eventDaoSignature.BlockTime = strconv.FormatUint(block.Time(), 10)
+			eventDaoSignature.DaoPassTime = strconv.FormatUint(block.Time(), 10)
+		}
+		blockNumberStr := strings.Replace(*rpcTransaction.BlockNumber, "0x", "", -1)
+		blockNumberInt64, err := strconv.ParseUint(blockNumberStr, 16, 64)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return err
+		}
+		eventDaoSignature.BlockNo = blockNumberInt64
+		eventDaoSignature.Status = true
+		eventDaoSignature.SignatureUnlockStatus = constants.SIGNATURE_DEFAULT_VALUE
+		addrInfo, err := utils.GetFromAndToAddressByTxHash(ethClient, transaction.ChainId(), common.HexToHash(txHash))
+		if err != nil {
+			logs.GetLogger().Error(err)
+		} else {
+			eventDaoSignature.DaoAddress = addrInfo.AddrFrom
+		}
+		err = database.SaveOneWithTransaction(eventDaoSignature)
+		if err != nil {
+			logs.GetLogger().Error(err)
+		}
+	}
+	return nil
 }

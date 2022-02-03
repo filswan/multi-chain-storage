@@ -10,7 +10,6 @@ import (
 type Network struct {
 	ID          int64  `json:"id"`
 	NetworkName string `json:"network_name"`
-	Uuid        string `json:"uuid"`
 	RpcUrl      string `json:"rpc_url"`
 	NativeCoin  string `json:"native_coin"`
 	Description string `json:"description"`

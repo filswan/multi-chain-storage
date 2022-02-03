@@ -29,11 +29,12 @@ type SourceFile struct {
 
 type SourceFileExt struct {
 	SourceFile
-	FileName     string           `json:"file_name"`
-	DealFileId   int64            `json:"deal_file_id"`
-	Duration     int              `json:"duration"`
-	LockedFee    *decimal.Decimal `json:"locked_fee"`
-	OfflineDeals []*OfflineDeal   `json:"offline_deals"`
+	DealFilePayloadCid string           `json:"deal_file_payload_cid"`
+	FileName           string           `json:"file_name"`
+	DealFileId         int64            `json:"deal_file_id"`
+	Duration           int              `json:"duration"`
+	LockedFee          *decimal.Decimal `json:"locked_fee"`
+	OfflineDeals       []*OfflineDeal   `json:"offline_deals"`
 }
 
 func GetSourceFileById(id int64) (*SourceFile, error) {
@@ -46,6 +47,23 @@ func GetSourceFileById(id int64) (*SourceFile, error) {
 	}
 
 	return &sourceFile, nil
+}
+
+func GetSourceFilesIn1CarBySourceFileId(sourceFileId int64) ([]*SourceFileExt, error) {
+	var sourceFiles []*SourceFileExt
+	sql := "select b.*,c.payload_cid deal_file_payload_cid from ( " +
+		"select b.source_file_id,b.deal_file_id from source_file_deal_file_map a, source_file_deal_file_map b " +
+		"where a.source_file_id=? and a.deal_file_id=b.deal_file_id " +
+		") a, source_file b, deal_file c " +
+		"where a.source_file_id=b.id and a.deal_file_id=c.id"
+	err := database.GetDB().Raw(sql, sourceFileId).Scan(&sourceFiles).Error
+
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	return sourceFiles, nil
 }
 
 func GetSourceFilesByPayloadCid(payloadCid string) ([]*SourceFile, error) {

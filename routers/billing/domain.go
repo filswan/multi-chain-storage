@@ -14,6 +14,7 @@ type BillingResult struct {
 	UnlockToUserAmount  string `json:"unlock_to_user_amount"`
 	UnlockTime          string `json:"unlock_time"`
 	FileName            string `json:"file_name"`
+	SourceFileId        int64  `json:"source_file_id"`
 }
 
 type BillingRequest struct {

@@ -257,7 +257,7 @@
                 }else if(type && type == 1){
                     this.ruleForm.duration = '180'
                 }
-                this.ruleForm.storage_cost = this.ruleForm.file_size_byte * this.ruleForm.duration * this.storage / 365
+                this.ruleForm.storage_cost = this.ruleForm.file_size_byte * this.ruleForm.duration * this.ruleForm.storage_copy * this.storage / 365
                 this.ruleForm.amount_minprice = Number(this.ruleForm.storage_cost * this.biling_price).toFixed(9)
                 this.storage_cost_low = Number(this.ruleForm.storage_cost * this.biling_price * 2).toFixed(9)
                 this.storage_cost_average = Number(this.ruleForm.storage_cost * this.biling_price * 3).toFixed(9)

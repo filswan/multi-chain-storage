@@ -119,7 +119,7 @@ func SendDeal() error {
 				StartEpoch:   deal.StartEpoch,
 				SenderWallet: cmdAutoBidDeal.SenderWallet,
 				Status:       dealInfo.Status,
-				DealId:       dealFile.DealId,
+				DealId:       dealInfo.DealId,
 				UnlockStatus: constants.OFFLINE_DEAL_UNLOCK_STATUS_NOT_UNLOCKED,
 				CreateAt:     currentUtcMilliSec,
 				UpdateAt:     currentUtcMilliSec,

@@ -41,3 +41,71 @@ create table coin (
 insert into coin(name,address,network_id,gas_price,gas_limit,create_at,update_at) values('USDC','0xe11A86849d99F524cAC3E7A0Ec1241828e332C62',1,0,0,@curUtcMilliSec,@curUtcMilliSec);
 insert into coin(name,address,network_id,gas_price,gas_limit,create_at,update_at) values('WFIL','0x97916e6CC8DD75c6E6982FFd949Fc1768CF8c055',1,0,0,@curUtcMilliSec,@curUtcMilliSec);
 
+
+create table dao_signer (
+	id           bigint        not null auto_increment,
+	name         varchar(60)   not null,
+	address      varchar(200)  not null,
+	order        int           not null,
+    description  varchar(1000),
+    create_at    bigint        not null,
+    update_at    bigint        not null,
+    primary key pk_dao_signer(id),
+    unique key un_dao_signer_name(name),
+    unique key un_dao_signer_address(address)
+);
+
+insert into dao_signer (name,address,order,create_at,update_at) values('Dao1','0x05856015d07F3E24936B7D20cB3CcfCa3D34B41d',1,@curUtcMilliSec,@curUtcMilliSec);
+insert into dao_signer (name,address,order,create_at,update_at) values('Dao2','0x6f2B76024196e82D81c8bC5eDe7cff0B0276c9C1',2,@curUtcMilliSec,@curUtcMilliSec);
+insert into dao_signer (name,address,order,create_at,update_at) values('Dao3','0x800210CfB747992790245eA878D32F188d01a03A',3,@curUtcMilliSec,@curUtcMilliSec);
+
+
+
+create table dao_fetched_deal (
+	id        bigint not null auto_increment,
+	deal_id   bigint not null,
+	create_at bigint not null,
+    primary key pk_dao_fetched_deal(id)
+);
+
+create table car_file (
+	id                    bigint not null auto_increment,
+	name                  varchar(60)   not null,
+	payload_cid           varchar(60)   not null,
+	piece_cid             varchar(60)   not null,
+	file_size             bigint        not null,
+	pin_status            varchar(60)   not null,
+	file_path             varchar(200)  not null,
+	car_md_5              varchar(60)   not null,
+	duration              bigint        not null,
+	task_uuid             varchar(60)   not null,
+	status                varchar(60)   not null,
+	client_wallet_address varchar(60)   not null,
+	max_price             decimal(20,0) not null,
+	create_at             bigint        not null,
+	update_at             bigint        not null,
+    primary key pk_car_file(id),
+    unique key un_car_file_payload_cid(payload_cid)
+);
+
+
+create table offline_deal (
+    id            bigint       not null auto_increment,
+    deal_file_id  bigint       not null,
+    deal_cid      varchar(100) not null,
+    miner_fid     varchar(45)  not null,
+    start_epoch   int          not null,
+    sender_wallet varchar(200) not null,
+    status        varchar(45)  not null,
+	deal_id       bigint       not null,
+    unlock_status varchar(45)  not null,
+    note          text,
+	create_at     bigint       not null,
+	update_at     bigint       not null,
+    primary key pk_ofline_deal(id),
+    constraint fk_ofline_deal_deal_file_id foreign key (deal_file_id) references deal_file (id)
+);
+
+
+
+

@@ -13,22 +13,14 @@ type DealFile struct {
 	ID                  int64           `json:"id"`
 	CarFileName         string          `json:"car_file_name"`
 	PayloadCid          string          `json:"payload_cid"`
-	DealCid             string          `json:"deal_cid"`
-	DealId              int64           `json:"deal_id"`
 	PieceCid            string          `json:"piece_cid"`
 	CarFileSize         int64           `json:"car_file_size"`
-	MinerFid            string          `json:"miner_fid"`
 	PinStatus           string          `json:"pin_status"`
-	SourceFilePath      string          `json:"source_file_path"`
 	CarFilePath         string          `json:"car_file_path"`
 	CarMd5              string          `json:"car_md_5"`
 	Duration            int             `json:"duration"`
 	TaskUuid            string          `json:"task_uuid"`
-	Cost                string          `json:"cost"`
-	LockPaymentTx       string          `json:"lock_payment_tx"`
-	LockPaymentNetwork  int64           `json:"lock_payment_network"`
 	Status              string          `json:"status"`
-	Verified            bool            `json:"verified"`
 	ClientWalletAddress string          `json:"client_wallet_address"`
 	MaxPrice            decimal.Decimal `json:"max_price"`
 	CreateAt            int64           `json:"create_at"`

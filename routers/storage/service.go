@@ -188,16 +188,7 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType 
 		return nil, nil, nil, nil, err
 	}
 
-	sourceFileUploadHistory := models.SourceFileUploadHistory{
-		SourceFileId:  sourceFiles[0].ID,
-		FileName:      srcFile.Filename,
-		WalletAddress: walletAddress,
-		Status:        constants.SOURCE_FILE_UPLOAD_HISTORY_STATUS_CREATED,
-		CreateAt:      currentUtcMilliSec,
-		UpdateAt:      currentUtcMilliSec,
-	}
-
-	err = database.SaveOne(&sourceFileUploadHistory)
+	srcFiles, err := models.GetSourceFileUploadHistoryBySourceFileIdWallet(sourceFiles[0].ID, walletAddress)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, nil, nil, nil, err
@@ -207,6 +198,29 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType 
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, nil, nil, nil, err
+	}
+
+	if len(srcFiles) == 0 {
+		sourceFileUploadHistory := models.SourceFileUploadHistory{
+			SourceFileId:  sourceFiles[0].ID,
+			FileName:      srcFile.Filename,
+			WalletAddress: walletAddress,
+			Status:        constants.SOURCE_FILE_UPLOAD_HISTORY_STATUS_CREATED,
+			CreateAt:      currentUtcMilliSec,
+			UpdateAt:      currentUtcMilliSec,
+		}
+
+		err = database.SaveOne(&sourceFileUploadHistory)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return nil, nil, nil, nil, err
+		}
+
+		if len(eventLockPayments) > 0 { // uploaded and paid by others
+			needPay = 3
+		} else { // uploaded but not paid by
+			needPay = 4
+		}
 	}
 
 	if len(eventLockPayments) > 0 { // uploaded and paid

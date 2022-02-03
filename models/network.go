@@ -9,11 +9,12 @@ import (
 
 type Network struct {
 	ID          int64  `json:"id"`
-	NetworkName string `json:"network_name"`
-	Uuid        string `json:"uuid"`
+	Name        string `json:"name"`
 	RpcUrl      string `json:"rpc_url"`
 	NativeCoin  string `json:"native_coin"`
 	Description string `json:"description"`
+	CreateAt    int64  `json:"create_at"`
+	UpdateAt    int64  `json:"update_at"`
 }
 
 func GetNetworkByName(name string) (*Network, error) {

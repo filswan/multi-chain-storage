@@ -11,22 +11,20 @@ import (
 )
 
 type SourceFile struct {
-	ID            int64  `json:"id"`
-	FileName      string `json:"file_name"`
-	ResourceUri   string `json:"resource_uri"`
-	Status        string `json:"status"`
-	FileSize      int64  `json:"file_size"`
-	Dataset       string `json:"dataset"`
-	IpfsUrl       string `json:"ipfs_url"`
-	PinStatus     string `json:"pin_status"`
-	WalletAddress string `json:"wallet_address"`
-	PayloadCid    string `json:"payload_cid"`
-	NftTxHash     string `json:"nft_tx_hash"`
-	TokenId       string `json:"token_id"`
-	MintAddress   string `json:"mint_address"`
-	FileType      int    `json:"file_type"`
-	CreateAt      int64  `json:"create_at"`
-	UpdateAt      int64  `json:"update_at"`
+	ID          int64  `json:"id"`
+	ResourceUri string `json:"resource_uri"`
+	Status      string `json:"status"`
+	FileSize    int64  `json:"file_size"`
+	Dataset     string `json:"dataset"`
+	IpfsUrl     string `json:"ipfs_url"`
+	PinStatus   string `json:"pin_status"`
+	PayloadCid  string `json:"payload_cid"`
+	NftTxHash   string `json:"nft_tx_hash"`
+	TokenId     string `json:"token_id"`
+	MintAddress string `json:"mint_address"`
+	FileType    int    `json:"file_type"`
+	CreateAt    int64  `json:"create_at"`
+	UpdateAt    int64  `json:"update_at"`
 }
 
 type SourceFileExt struct {
@@ -50,6 +48,18 @@ func GetSourceFileById(id int64) (*SourceFile, error) {
 }
 
 func GetSourceFilesByPayloadCid(payloadCid string) ([]*SourceFile, error) {
+	var sourceFiles []*SourceFile
+
+	err := database.GetDB().Where("payload_cid=?", payloadCid).Order("create_at").Find(&sourceFiles).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	return sourceFiles, nil
+}
+
+func GetSourceFileByPayloadCid(payloadCid string) ([]*SourceFile, error) {
 	var sourceFiles []*SourceFile
 
 	err := database.GetDB().Where("payload_cid=?", payloadCid).Order("create_at").Find(&sourceFiles).Error

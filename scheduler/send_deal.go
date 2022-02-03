@@ -67,7 +67,7 @@ func SendDeal() error {
 	currentUtcMilliSec := utils.GetCurrentUtcMilliSecond()
 	for _, dealFile := range dealFiles {
 		if currentUtcMilliSec-dealFile.CreateAt > 3*24*60*60*1000 {
-			dealFile.SendDealStatus = constants.DEAL_FILE_STATUS_CANCELLED
+			dealFile.LockPaymentStatus = constants.PROCESS_STATUS_DEAL_SEND_CANCELLED
 			err = database.SaveOne(dealFile)
 			if err != nil {
 				logs.GetLogger().Error(err)
@@ -81,9 +81,8 @@ func SendDeal() error {
 
 		_, fileDescs, err := cmdAutoBidDeal.SendAutoBidDealsByTaskUuid(dealFile.TaskUuid)
 		if err != nil {
-			dealFile.SendDealStatus = constants.DEAL_FILE_STATUS_FAILED
+			dealFile.LockPaymentStatus = constants.PROCESS_STATUS_DEAL_SENT_FAILED
 			dealFile.ClientWalletAddress = cmdAutoBidDeal.SenderWallet
-			dealFile.LockPaymentStatus = constants.LOCK_PAYMENT_STATUS_DEAL_SENT_FAILED
 			err = database.SaveOne(dealFile)
 			if err != nil {
 				logs.GetLogger().Error(err)
@@ -97,7 +96,7 @@ func SendDeal() error {
 			continue
 		}
 
-		dealFile.SendDealStatus = constants.DEAL_FILE_STATUS_DEAL_SENT
+		dealFile.LockPaymentStatus = constants.PROCESS_STATUS_DEAL_SENT
 		dealFile.ClientWalletAddress = cmdAutoBidDeal.SenderWallet
 		dealFile.UpdateAt = currentUtcMilliSec
 		err = database.SaveOne(dealFile)
@@ -120,7 +119,7 @@ func SendDeal() error {
 				StartEpoch:   deal.StartEpoch,
 				SenderWallet: cmdAutoBidDeal.SenderWallet,
 				Status:       dealInfo.Status,
-				DealId:       dealFile.DealId,
+				DealId:       dealInfo.DealId,
 				UnlockStatus: constants.OFFLINE_DEAL_UNLOCK_STATUS_NOT_UNLOCKED,
 				CreateAt:     currentUtcMilliSec,
 				UpdateAt:     currentUtcMilliSec,

@@ -30,11 +30,14 @@ const (
 
 	SOURCE_ID_OF_PAYMENT = 4
 
-	LOCK_PAYMENT_STATUS_WAITING             = "Pending" //wait for lock payment
-	LOCK_PAYMENT_STATUS_PROCESSING          = "Processing"
-	LOCK_PAYMENT_STATUS_DEAL_SENT_FAILED    = "DealSentFailed"
-	LOCK_PAYMENT_STATUS_UNLOCK_REFUNDED     = "UnlockRefundSucceeded"
-	LOCK_PAYMENT_STATUS_UNLOCK_REFUNDFAILED = "UnlockRefundFailed"
+	PROCESS_STATUS_WAITING_PAYMENT      = "Pending" //wait for payment
+	PROCESS_STATUS_WATITING_CREATE_TASK = "WaitingCreateTask"
+	PROCESS_STATUS_TASK_CREATED         = "TaskCreated"
+	PROCESS_STATUS_DEAL_SENT            = "DealSent"
+	PROCESS_STATUS_DEAL_SENT_FAILED     = "DealSentFailed"
+	PROCESS_STATUS_DEAL_SEND_CANCELLED  = "DealSendCancelled"
+	PROCESS_STATUS_UNLOCK_REFUNDED      = "UnlockRefundSucceeded"
+	PROCESS_STATUS_UNLOCK_REFUNDFAILED  = "UnlockRefundFailed"
 
 	DEAL_STATUS_ACTIVE = "StorageDealActive"
 	DEAL_STATUS_ERROR  = "StorageDealError"
@@ -52,16 +55,18 @@ const (
 	SOURCE_FILE_STATUS_CREATED      = "Created"
 	SOURCE_FILE_STATUS_TASK_CREATED = "TaskCreated"
 
-	DEAL_FILE_STATUS_CREATED   = "Created"
-	DEAL_FILE_STATUS_DEAL_SENT = "DealSent"
-	DEAL_FILE_STATUS_CANCELLED = "Cancelled"
-	DEAL_FILE_STATUS_FAILED    = "Failed"
-
 	OFFLINE_DEAL_UNLOCK_STATUS_NOT_UNLOCKED  = "NotUnlocked"
 	OFFLINE_DEAL_UNLOCK_STATUS_UNLOCKED      = "Unlocked"
 	OFFLINE_DEAL_UNLOCK_STATUS_UNLOCK_FAILED = "UnlockFailed"
 
+	SIGNATURE_DEFAULT_VALUE = "0" //init value,no unlock operation has been performed
+	SIGNATURE_SUCCESS_VALUE = "1" //init value,no unlock operation has been performed
+	SIGNATURE_FAILED_VALUE  = "2" //init value,no unlock operation has been performed
+
 	DURATION_DAYS_DEFAULT = 525
 
 	SOURCE_FILE_TYPE_NORMAL = 0
+
+	SOURCE_FILE_UPLOAD_HISTORY_STATUS_CREATED = "Created"
+	SOURCE_FILE_UPLOAD_HISTORY_STATUS_DELETED = "Deleted"
 )

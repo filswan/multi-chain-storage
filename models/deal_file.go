@@ -13,37 +13,24 @@ type DealFile struct {
 	ID                  int64           `json:"id"`
 	CarFileName         string          `json:"car_file_name"`
 	PayloadCid          string          `json:"payload_cid"`
-	DealCid             string          `json:"deal_cid"`
-	DealId              int64           `json:"deal_id"`
 	PieceCid            string          `json:"piece_cid"`
 	CarFileSize         int64           `json:"car_file_size"`
-	MinerFid            string          `json:"miner_fid"`
-	DealStatus          string          `json:"deal_status"`
 	PinStatus           string          `json:"pin_status"`
-	SourceFilePath      string          `json:"source_file_path"`
 	CarFilePath         string          `json:"car_file_path"`
 	CarMd5              string          `json:"car_md_5"`
 	Duration            int             `json:"duration"`
 	TaskUuid            string          `json:"task_uuid"`
-	Cost                string          `json:"cost"`
+	LockPaymentStatus   string          `json:"lock_payment_status"`
+	ClientWalletAddress string          `json:"client_wallet_address"`
+	MaxPrice            decimal.Decimal `json:"max_price"`
 	CreateAt            int64           `json:"create_at"`
 	UpdateAt            int64           `json:"update_at"`
-	DeleteAt            int64           `json:"delete_at"`
-	LockPaymentTx       string          `json:"lock_payment_tx"`
-	LockPaymentStatus   string          `json:"lock_payment_status"`
-	LockPaymentNetwork  int64           `json:"lock_payment_network"`
-	DaoSignStatus       string          `json:"dao_sign_status"`
-	SendDealStatus      string          `json:"send_deal_status"`
-	Verified            bool            `json:"verified"`
-	ClientWalletAddress string          `json:"client_wallet_address"`
-	IsDeleted           *bool           `json:"is_deleted"`
-	MaxPrice            decimal.Decimal `json:"max_price"`
 }
 
 func GetDeal2Send() ([]*DealFile, error) {
 	var dealFiles []*DealFile
 
-	err := database.GetDB().Where("send_deal_status=? and lock_payment_status=? and task_uuid != ''", constants.DEAL_FILE_STATUS_CREATED, constants.LOCK_PAYMENT_STATUS_PROCESSING).Find(&dealFiles).Error
+	err := database.GetDB().Where("status=? and task_uuid != ''", constants.PROCESS_STATUS_TASK_CREATED).Find(&dealFiles).Error
 
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -68,11 +55,11 @@ func GetDealFileBySourceFilePayloadCid(srcFilePayloadCid string) ([]*DealFile, e
 	return dealFiles, nil
 }
 
-func UpdateDealFileLockPaymentStatus(id int64, lockPaymentStatus string) error {
-	sql := "update deal_file set lock_payment_status=?,update_at=? where id=?"
+func UpdateDealFileStatus(id int64, status string) error {
+	sql := "update deal_file set status=?,update_at=? where id=?"
 
 	params := []interface{}{}
-	params = append(params, lockPaymentStatus)
+	params = append(params, status)
 	params = append(params, utils.GetCurrentUtcMilliSecond())
 	params = append(params, id)
 

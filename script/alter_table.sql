@@ -26,6 +26,7 @@ alter table deal_file modify delete_at bigint;
 
 alter table deal_file add max_price   double;
 
+
 alter table event_lock_payment modify create_at bigint;
 
 alter table event_unlock_payment modify create_at bigint;
@@ -78,4 +79,18 @@ create index ind_offline_deal_deal_file_id on offline_deal(deal_file_id)
 
 
 alter table source_file add file_type int;
+
+
+create table source_file_upload_history (
+    id             bigint       not null auto_increment,
+    source_file_id bigint       not null,
+    file_name      varchar(200) not null,
+    wallet_address varchar(200) not null,
+    status         varchar(45)  not null,
+	create_at      bigint       not null,
+	update_at      bigint       not null,
+    primary key pk_source_file_upload_history(id),
+    constraint fk_source_file_upload_history_source_file_id foreign key (source_file_id) references source_file (id)
+)
+
 

@@ -10,6 +10,7 @@ import (
 	"payment-bridge/on-chain/goBind"
 	"strconv"
 	"sync"
+	"time"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
@@ -74,7 +75,11 @@ func UnlockPayment() error {
 		return err
 	}
 
-	for _, offlineDeal := range offlineDeals {
+	for i, offlineDeal := range offlineDeals {
+		if i > 0 {
+			time.Sleep(config.GetConfig().Polygon.UnlockIntervalMinute * time.Minute)
+		}
+
 		unlocked, err := unlockDeal(filswanOracleSession, offlineDeal, ethClient, swanPaymentTransactor, tansactOpts, *recipient)
 		if err != nil {
 			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
@@ -207,14 +212,14 @@ func refund(offlineDeal *models.OfflineDeal, swanPaymentTransactor *goBind.SwanP
 		srcFilePayloadCids = append(srcFilePayloadCids, srcFile.PayloadCid)
 	}
 
-	lockPaymentStatus := constants.LOCK_PAYMENT_STATUS_UNLOCK_REFUNDED
+	status := constants.PROCESS_STATUS_UNLOCK_REFUNDED
 	_, err = swanPaymentTransactor.Refund(tansactOpts, srcFilePayloadCids)
 	if err != nil {
-		lockPaymentStatus = constants.LOCK_PAYMENT_STATUS_UNLOCK_REFUNDFAILED
+		status = constants.PROCESS_STATUS_UNLOCK_REFUNDFAILED
 		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 	}
 
-	err = models.UpdateDealFileLockPaymentStatus(offlineDeal.Id, lockPaymentStatus)
+	err = models.UpdateDealFileStatus(offlineDeal.Id, status)
 	if err != nil {
 		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 		return err

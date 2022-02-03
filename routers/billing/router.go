@@ -41,7 +41,7 @@ func WriteLockPayment(c *gin.Context) {
 			logs.GetLogger().Error(err)
 		} else {
 			event.CoinId = usdcCoin.ID
-			event.TokenAddress = usdcCoin.CoinAddress
+			event.TokenAddress = usdcCoin.Address
 		}
 
 		network, err := models.GetNetworkByName(constants.NETWORK_NAME_POLYGON)

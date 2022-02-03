@@ -9,14 +9,14 @@ import (
 
 type Coin struct {
 	ID          int64  `json:"id"`
-	ShortName   string `json:"network_name"`
-	FullName    string `json:"full_name"`
-	CnName      string `json:"cn_name"`
-	CoinAddress string `json:"coin_address"`
+	Name        string `json:"name"`
+	Address     string `json:"address"`
 	NetworkId   int64  `json:"network_id"`
 	GasPrice    int    `json:"gas_price"`
 	GasLimit    int    `json:"gas_limit"`
 	Description string `json:"description"`
+	CreateAt    int64  `json:"create_at"`
+	UpdateAt    int64  `json:"update_at"`
 }
 
 func FindCoinByFullName(fullName string) (*Coin, error) {

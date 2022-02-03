@@ -3,6 +3,7 @@ package config
 import (
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/filswan/go-swan-lib/logs"
 
@@ -25,15 +26,16 @@ type Configuration struct {
 }
 
 type polygon struct {
-	AdminWalletOnPolygon                           string `toml:"admin_wallet_on_polygon"`
-	Recipient                                      string `toml:"recipient"`
-	PolygonRpcUrl                                  string `toml:"polygon_rpc_url"`
-	DaoSwanOracleAddress                           string `toml:"dao_swan_oracle_address"`
-	ContractUnlockFunctionSignature                string `toml:"contract_unlock_function_signature"`
-	PaymentContractAddress                         string `toml:"payment_contract_address"`
-	GasLimit                                       uint64 `toml:"gas_limit"`
-	RouterAddressOfSushiswapOnPolygon              string `toml:"router_address_of_sushiswap_on_polygon"`
-	PairAddressBetweenWfilUsdcOfSushiswapOnPolygon string `toml:"pair_address_between_wfil_usdc_of_sushiswap_on_polygon"`
+	AdminWalletOnPolygon                           string        `toml:"admin_wallet_on_polygon"`
+	Recipient                                      string        `toml:"recipient"`
+	PolygonRpcUrl                                  string        `toml:"polygon_rpc_url"`
+	DaoSwanOracleAddress                           string        `toml:"dao_swan_oracle_address"`
+	ContractUnlockFunctionSignature                string        `toml:"contract_unlock_function_signature"`
+	PaymentContractAddress                         string        `toml:"payment_contract_address"`
+	RouterAddressOfSushiswapOnPolygon              string        `toml:"router_address_of_sushiswap_on_polygon"`
+	PairAddressBetweenWfilUsdcOfSushiswapOnPolygon string        `toml:"pair_address_between_wfil_usdc_of_sushiswap_on_polygon"`
+	GasLimit                                       uint64        `toml:"gas_limit"`
+	UnlockIntervalMinute                           time.Duration `toml:"unlock_interval_minute"`
 }
 
 type database struct {

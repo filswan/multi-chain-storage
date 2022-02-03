@@ -52,4 +52,5 @@ contract_unlock_function_signature = ""
 payment_contract_address = ""
 router_address_of_sushiswap_on_polygon = ""
 gas_limit = 8000000
+unlock_interval_minute = 1
 

@@ -10,6 +10,7 @@ import (
 	"payment-bridge/on-chain/goBind"
 	"strconv"
 	"sync"
+	"time"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
@@ -74,7 +75,11 @@ func UnlockPayment() error {
 		return err
 	}
 
-	for _, offlineDeal := range offlineDeals {
+	for i, offlineDeal := range offlineDeals {
+		if i > 0 {
+			time.Sleep(config.GetConfig().Polygon.UnlockIntervalMinute * time.Minute)
+		}
+
 		unlocked, err := unlockDeal(filswanOracleSession, offlineDeal, ethClient, swanPaymentTransactor, tansactOpts, *recipient)
 		if err != nil {
 			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))

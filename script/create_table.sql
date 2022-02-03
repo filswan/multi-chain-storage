@@ -106,6 +106,58 @@ create table offline_deal (
     constraint fk_ofline_deal_deal_file_id foreign key (deal_file_id) references deal_file (id)
 );
 
+create table source_file (
+	id           bigint        not null auto_increment,
+	resource_uri varchar(1000) not null,
+	status       varchar(60)   not null,
+	file_size    bigint        not null,
+	dataset      varchar(200)  not null,
+	ipfs_url     varchar(1000) not null,
+	pin_status   varchar(60)   not null,
+	payload_cid  varchar(200)  not null,
+	nft_tx_hash  varchar(200)  not null,
+	token_id     varchar(60)   not null,
+	mint_address varchar(200)  not null,
+	file_type    int           not null,
+    car_file_id  bigint,
+	create_at    bigint        not null,
+	update_at    bigint        not null,
+    primary key pk_source_file_id(id),
+    unique key un_source_file_payload_cid(payload_cid),
+    constraint fk_source_file_car_file_id foreign key (car_file_id) references car_file (id)
+);
 
+create table source_file_upload_history (
+    id             bigint       not null auto_increment,
+    source_file_id bigint       not null,
+    file_name      varchar(200) not null,
+    wallet_address varchar(200) not null,
+    status         varchar(45)  not null,
+	create_at      bigint       not null,
+	update_at      bigint       not null,
+    primary key pk_source_file_upload_history(id),
+    constraint fk_source_file_upload_history_source_file_id foreign key (source_file_id) references source_file (id)
+);
+
+
+create table event_dao_signature (
+	id                      bigint       not null auto_increment,
+	tx_hash                 varchar(200) not null,
+	recipient               varchar(200) not null,
+	payload_cid             varchar(200) not null,
+	deal_id                 bigint       not null,
+	dao_pass_time           varchar(200) not null,
+	block_no                bigint       not null,
+	block_time              varchar(200) not null,
+	status                  boolean      not null,
+	network_id              bigint       not null,
+	coin_id                 bigint       not null,
+	dao_address             varchar(200) not null,
+	signature_unlock_status varchar(200) not null,
+	tx_hash_unlock          varchar(200) not null,
+	create_at               bigint       not null,
+	update_at               bigint       not null,
+    primary key pk_event_dao_signature(id),
+);
 
 

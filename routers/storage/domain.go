@@ -102,7 +102,12 @@ type DealForDaoSignResult struct {
 }
 
 type DealIdList struct {
-	DealIdList string `json:"deal_id_list"`
+	DealId     string `json:"deal_id"`
+	PayloadCid string `json:"payload_cid"`
+	Recipent   string `json:"recipent"`
+	TxHash1    string `json:"tx_hash_1"`
+	TxHash2    string `json:"tx_hash_2"`
+	TxHash3    string `json:"tx_hash_3"`
 }
 
 type IpfsReturn struct {

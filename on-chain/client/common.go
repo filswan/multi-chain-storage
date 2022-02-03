@@ -16,17 +16,23 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/ethereum/go-ethereum/rpc"
 )
 
-func GetEthClient() (*ethclient.Client, error) {
+func GetEthClient() (*ethclient.Client, *rpc.Client, error) {
 	polygonRpcUrl := config.GetConfig().Polygon.PolygonRpcUrl
+	rpcClient, err := rpc.DialContext(context.Background(), polygonRpcUrl)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, nil, err
+	}
 	ethClient, err := ethclient.Dial(polygonRpcUrl)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return nil, err
+		return nil, rpcClient, err
 	}
 
-	return ethClient, nil
+	return ethClient, rpcClient, nil
 }
 
 func GetSwanPaymentTransactor(ethClient *ethclient.Client) (*common.Address, *goBind.SwanPaymentTransactor, error) {
@@ -105,7 +111,7 @@ func GetTransactOpts(ethClient *ethclient.Client) (*bind.TransactOpts, error) {
 }
 
 func GetPaymentSession() (*goBind.SwanPaymentSession, error) {
-	ethClient, err := GetEthClient()
+	ethClient, _, err := GetEthClient()
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err

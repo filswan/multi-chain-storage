@@ -50,7 +50,7 @@ func UnlockPayment() error {
 		return nil
 	}
 
-	ethClient, err := client.GetEthClient()
+	ethClient, _, err := client.GetEthClient()
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err

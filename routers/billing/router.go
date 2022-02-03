@@ -99,7 +99,6 @@ func GetUserBillingHistory(c *gin.Context) {
 	walletAddress := URL.Get("wallet_address")
 	pageNumber := URL.Get("page_number")
 	pageSize := URL.Get("page_size")
-	txHash := strings.Trim(URL.Get("tx_hash"), " ")
 
 	if strings.Trim(pageNumber, " ") == "" {
 		pageNumber = "1"
@@ -122,14 +121,14 @@ func GetUserBillingHistory(c *gin.Context) {
 		return
 	}
 
-	recordCount, err := getBillingCount(walletAddress, txHash)
+	totalRecords, err := getBillHistoriesByWalletAddress(walletAddress)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_COUNT_ERROR_CODE))
 		return
 	}
 
-	billingResultList, err := getBillHistoryList(walletAddress, txHash, pageSize, strconv.FormatInt(offset, 10))
+	billingResultList, err := getBillHistoryList(walletAddress, pageSize, strconv.FormatInt(offset, 10))
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE))
@@ -139,7 +138,7 @@ func GetUserBillingHistory(c *gin.Context) {
 	page := new(common.PageInfo)
 	page.PageNumber = pageNumber
 	page.PageSize = pageSize
-	page.TotalRecordCount = strconv.FormatInt(recordCount, 10)
+	page.TotalRecordCount = strconv.Itoa(len(totalRecords))
 	c.JSON(http.StatusOK, common.NewSuccessResponseWithPageInfo(billingResultList, page))
 }
 

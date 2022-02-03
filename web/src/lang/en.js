@@ -481,7 +481,7 @@ export default {
         Live_deal: 'LIVE DEAL',
         live_deal_btn: 'View Deal',
         live_deal_btn_no: 'No link: Error',
-        Upload_More_Files: 'Upload More Files',
+        Upload_More_Files: '+ Upload More',
         topTip: 'Please click on the storage provider ID to view more Deal and DAO details.',
         search_title: 'Search by File Name',
         data_tooltip: 'The content identifier for a file or a piece of data.',

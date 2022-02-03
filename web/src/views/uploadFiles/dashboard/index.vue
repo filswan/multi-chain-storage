@@ -3,6 +3,12 @@
     <div class="form">
       <div class="form_top">
         <div class="search_file">
+          <div class="createTask">
+            <router-link :to="{name: 'upload_file'}">
+                <span>{{$t('uploadFile.Upload_More_Files')}}</span>
+                <i class="el-icon-s-upload"></i>
+            </router-link>
+          </div>
           <div class="search_right">
             <el-input
               :placeholder="$t('uploadFile.search_title')"
@@ -18,7 +24,7 @@
         <!-- @row-click="tableTrClick" highlight-current-row  -->
         <el-table
           :data="tableData" ref="singleTable"  stripe
-          style="width: 100%" max-height="380"
+          style="width: 100%" max-height="580"
           :empty-text="$t('deal.formNotData')"
            v-loading="loading"
         >
@@ -33,8 +39,8 @@
               </div>
             </template>
             <template slot-scope="scope">
-              <div class="hot-cold-box" style="text-decoration: underline;">
-                <a :href="scope.row.ipfs_url" @click="toDetail(scope.row.deal_id, scope.row.payload_cid)" target="_blank" style="color: inherit;font-weight:600;">{{ scope.row.file_name }}</a>
+              <div class="hot-cold-box" style="text-decoration: underline;" @click="toDetail(scope.row)">
+                <span target="_blank" style="color: inherit;font-weight:600;">{{ scope.row.file_name }}</span>
               </div>
             </template>
           </el-table-column>
@@ -666,8 +672,14 @@ export default {
     minerIdLink(id){
       window.open(`https://calibration.filscout.com/en/miner/${id}`)
     },
-    toDetail(id, cid){
-      this.$router.push({name: 'my_files_detail', params: {id: id, cid: cid}})
+    toDetail(row){
+      if(row.offline_deals && row.offline_deals.length>0){
+        this.$router.push({name: 'my_files_detail', params: {id: row.offline_deals[0].deal_id, cid: row.payload_cid}})
+      }else{
+        this.$router.push({name: 'my_files_detail', params: {id: 0, cid: row.payload_cid}})
+      }
+      localStorage.setItem('offlineDeals', row.offline_deals?JSON.stringify(row.offline_deals):[])
+      localStorage.setItem('offlineDealsIndex', '0')
     },
     clickRowHandle(row, column, event) {
       if (this.expands.includes(row.uuid)) {
@@ -1349,25 +1361,6 @@ export default {
     flex-wrap: wrap;
     margin-bottom: 0.2rem;
     overflow: hidden;
-    .createTask {
-      padding: 0.14rem 0;
-      background-color: #fff;
-      border-radius: 0.1rem;
-      a {
-        display: block;
-        height: 0.35rem;
-        padding: 0 0.1rem;
-        margin: 0 0.27rem;
-        background-color: #ffb822;
-        line-height: 0.35rem;
-        border-radius: 0.08rem;
-        text-align: center;
-        color: #fff;
-        font-size: 0.1972rem;
-        border: 0;
-        outline: none;
-      }
-    }
   }
   .upload {
     padding: 0 0.17rem;
@@ -1581,14 +1574,12 @@ export default {
         font-size: 0.13rem;
         color: #222;
       }
-
       .search {
         display: flex;
         align-items: center;
         justify-content: space-between;
         width: 100%;
         height: 0.42rem;
-
         .search_right {
           display: flex;
           align-items: center;
@@ -1637,12 +1628,30 @@ export default {
       .search_file{
         display: flex;
         align-items: center;
-        justify-content: flex-end;
+        justify-content: space-between;
         width: 100%;
         height: 0.42rem;
+        margin: 0.1rem 0 0;
         p{
           font-size: 0.13rem;
           color: #222;
+        }
+        .createTask {
+          background-color: #fff;
+          border-radius: 0.1rem;
+          a {
+            display: block;
+            padding: 0 0.1rem;
+            margin: 0;
+            background-color: #4326ab;
+            line-height: 2;
+            border-radius: 4px;
+            text-align: center;
+            color: #fff;
+            font-size: 0.16rem;
+            border: 0;
+            outline: none;
+          }
         }
         .search_right {
           display: flex;
@@ -2732,9 +2741,10 @@ export default {
       .form_top{
         .search_file{
           flex-wrap: wrap;
+          height: auto;
           .search_right{
             width: 100%;
-            margin: 0.05rem 0 0.2rem;
+            margin: 0.05rem 0 0;
           }
         }
       }

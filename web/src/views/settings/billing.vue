@@ -27,7 +27,7 @@
                             </div>
                         </div>
                         <div class="form_table">
-                            <el-table v-loading="loading" :data="tableData" style="width: 100%" :empty-text="$t('deal.formNotData')" max-height="380">
+                            <el-table v-loading="loading" :data="tableData" style="width: 100%" :empty-text="$t('deal.formNotData')" max-height="580">
                                 <el-table-column prop="tx_hash" :label="$t('billing.TRANSACTION')" min-width="190">
                                     <template slot-scope="scope">
                                         <div class="hot-cold-box">
@@ -392,6 +392,7 @@
                 // if (!Number(value)) return 0;
                 // if (isNaN(value)) return value;
                 // 18 - 单位换算需要 / 1000000000000000000，浮点运算显示有bug
+                value = Number(value)
                 if(String(value).length > 18){
                     let v1 = String(value).substring(0, String(value).length - 18)
                     let v2 = String(value).substring(String(value).length - 18)

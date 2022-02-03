@@ -5,15 +5,17 @@
             <span style="font-size:0.18rem;margin-left:0.05rem">{{$t('deal.backto')}}</span>
         </div>
         <div class="detailStyle">
-            <el-tabs :tab-position="tabPosition" type="card">
-                <el-tab-pane>
-                    <span slot="label"><i class="el-icon-success"></i> t00000</span>
-                </el-tab-pane>
-                <el-tab-pane>
-                    <span slot="label"><i class="el-icon-success"></i> t00001</span>
-                </el-tab-pane>
-                <el-tab-pane>
-                    <span slot="label"><i class="el-icon-success"></i> t00002</span>
+            <el-tabs v-model="activeName" :tab-position="tabPosition" type="card" @tab-click="handleClick">
+                <el-tab-pane v-for="(item, i) in offline_deals_data" :key="i" :name="''+i+''">
+                    <span slot="label">
+                        <!-- <i class="el-icon-success"></i>  -->
+                        <img v-if="!dealCont.found.locked_fee" src="@/assets/images/error.png" />
+                        <img v-else-if="dealCont.signed_dao_count >= dealCont.dao_thresh_hold && dealCont.unlock_status" src="@/assets/images/dao_success.png" />
+                        <img v-else-if="dealCont.signed_dao_count >= dealCont.dao_thresh_hold && !dealCont.unlock_status" src="@/assets/images/dao_waiting.png" />
+                        <img v-else src="@/assets/images/dao_waiting.png" />
+
+                        {{item.miner_fid}}
+                    </span>
                 </el-tab-pane>
             </el-tabs>
             <div v-loading="loading">
@@ -30,7 +32,7 @@
                     </span>
                     <span v-else-if="dealCont.signed_dao_count >= dealCont.dao_thresh_hold && dealCont.unlock_status">
                         <img src="@/assets/images/dao_success.png" />
-                        <span>{{$t('uploadFile.Successfully_unlocked_funds')}}</span>
+                        <span style="color: #3db39e;">{{$t('uploadFile.Successfully_unlocked_funds')}}</span>
                     </span>
                     <span v-else-if="dealCont.signed_dao_count >= dealCont.dao_thresh_hold && !dealCont.unlock_status">
                         <img src="@/assets/images/dao_waiting.png" />
@@ -174,7 +176,9 @@ export default {
                 found: {}
             },
             daoCont: [],
-            copy_filename: ''
+            copy_filename: '',
+            activeName: localStorage.getItem('offlineDealsIndex')?localStorage.getItem('offlineDealsIndex'):'0',
+            offline_deals_data: []
       };
     },
     computed: {},
@@ -185,6 +189,16 @@ export default {
         },
     },
     methods: {
+        handleClick(tab, event) {
+            localStorage.setItem('offlineDealsIndex', tab.index)
+            this.$router.push({
+                name: 'my_files_detail', 
+                params: {
+                    id: this.offline_deals_data[tab.index].deal_id, 
+                    cid: this.$route.params.cid
+                }
+            })
+        },
         networkLink(hash, network) {
             window.open('https://mumbai.polygonscan.com/tx/'+hash)
             // if(network && network.toLowerCase() == 'polygon'){
@@ -223,7 +237,8 @@ export default {
             return false;
         },
         back(){
-            this.$router.go(-1);//返回上一层
+            // this.$router.go(-1);//返回上一层
+            this.$router.push({name: 'my_files'})
         },
         getData() {
             let _this = this
@@ -288,6 +303,7 @@ export default {
     mounted() {
         let _this = this
         _this.dealId = _this.$route.params.id
+        if(localStorage.getItem('offlineDeals')) _this.offline_deals_data = JSON.parse(localStorage.getItem('offlineDeals'))
         _this.getData()
         document.getElementById("content-box").scrollTop = 0;
         _this.$store.dispatch("setRouterMenu", 1);
@@ -342,10 +358,12 @@ export default {
     .detailStyle{
         .el-tabs /deep/{
             float: left;
-            height: 200px;
+            height: auto;
+            @media screen and (min-width: 1024px) {
+                overflow: inherit;
+            }
             @media screen and (max-width: 1024px) {
                 float: none;
-                height: auto;
             }
             .el-tabs__header{
                 margin: 0.34rem 1px 0 0;
@@ -353,18 +371,25 @@ export default {
                 @media screen and (max-width: 1024px) {
                     margin: 0;
                 }
+                .el-tabs__nav-wrap, .el-tabs__nav-scroll{
+                    @media screen and (min-width: 1024px) {
+                        overflow: inherit;
+                    }
+                }
                 .el-tabs__nav{
                     border: 0;
                     @media screen and (max-width: 1024px) {
                         display: flex;
                     }
                     .el-tabs__item{
-                        min-width: 120px;
-                        padding: 0 0.15rem;
+                        min-width: 150px;
+                        height: auto;
+                        padding: 0.03rem 0.15rem;
                         background: #fff;
-                        border-radius: 6px;
-                        overflow: hidden;
-                        border: 1px solid #505050;
+                        border-radius: 0;
+                        border: 0;
+                        border-top: 1px solid #eee;
+                        border-right: 1px solid #eee;
                         text-align: right;
                         color: #4326ab;
                         font-weight: 600;
@@ -372,21 +397,45 @@ export default {
                         @media screen and (max-width: 1024px) {
                             min-width: auto;
                         }
+                        &:first-child{
+                            border-top: 0;
+                        }
                         span{
                             width: 100%;
                             display: flex;
                             justify-content: space-between;
                             align-items: center;
                         }
-                        i{
+                        i, img{
+                            width: 20px;
+                            height: 20px;
+                            margin: 0 5px 0 0;
                             opacity: 0;
                             font-size: 16px;
                             color: #67c23a;
                         }
                     }
+                    .el-tabs__item:hover {
+                        text-decoration: underline;
+                    }
                     .is-active{
+                        position: relative;
                         border-right: 0;
-                        i{
+                        background: #4326ab;
+                        color: #fff;
+                        &::before{
+                            content: " ";
+                            position: absolute;
+                            display: block;
+                            width: 0;
+                            height: 0;
+                            right: -10px;
+                            top: calc(50% - 6px);
+                            border-top: 6px solid transparent;
+                            border-left: 10px solid #4326ab;
+                            border-bottom: 6px solid transparent;
+                        }
+                        i, img{
                             opacity: 1;
                         }
                     }
@@ -401,6 +450,7 @@ export default {
         font-weight: bold;
         line-height: 2;
         @media screen and (max-width:600px){
+            width: 100%;
             font-size: 16px;
             flex-wrap: wrap;
         }

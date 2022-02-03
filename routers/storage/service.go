@@ -219,10 +219,11 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType 
 }
 
 func GetSourceFileAndDealFileInfoByPayloadCid(payloadCid string) ([]*SourceFileAndDealFileInfo, error) {
-	sql := "select s.wallet_address,s.ipfs_url,s.file_name,d.id,d.payload_cid,d.deal_cid,d.deal_id,d.lock_payment_status,s.create_at from source_file s,source_file_deal_file_map m,deal_file d " +
-		" where s.id = m.source_file_id and m.deal_file_id = d.id and d.payload_cid='" + payloadCid + "'"
+	sql := "select h.wallet_address,s.ipfs_url,h.file_name,d.id,d.payload_cid,d.deal_cid,d.deal_id,d.lock_payment_status,s.create_at "
+	sql = sql + "from source_file s,source_file_deal_file_map m,deal_file d, source_file_upload_history h "
+	sql = sql + "where s.id = m.source_file_id and s.id=h.source_file_id and m.deal_file_id = d.id and d.payload_cid=?"
 	var results []*SourceFileAndDealFileInfo
-	err := database.GetDB().Raw(sql).Order("create_at desc").Limit(10).Offset(0).Order("create_at desc").Scan(&results).Error
+	err := database.GetDB().Raw(sql, payloadCid).Order("create_at desc").Limit(10).Offset(0).Order("create_at desc").Scan(&results).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err

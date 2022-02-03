@@ -41,7 +41,7 @@ func GetSourceFiles(pageSize, offset string, walletAddress, payloadCid string) (
 			if srcFile.LockedFee == nil {
 				srcFile.Status = constants.PROCESS_STATUS_WAITING_PAYMENT
 			} else {
-				srcFile.Status = constants.PROCESS_STATUS_PROCESSING
+				srcFile.Status = constants.PROCESS_STATUS_PAID
 			}
 		}
 

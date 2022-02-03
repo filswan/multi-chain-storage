@@ -75,12 +75,12 @@ func UnlockPayment() error {
 		return err
 	}
 
-	unlockIntervalMinute := config.GetConfig().Polygon.UnlockIntervalMinute
-	logs.GetLogger().Info("unlock interval is ", unlockIntervalMinute, " minutes")
+	unlockInterval := config.GetConfig().Polygon.UnlockIntervalMinute * time.Minute
+	logs.GetLogger().Info("unlock interval is ", unlockInterval)
 	for i, offlineDeal := range offlineDeals {
 		if i > 0 {
 			logs.GetLogger().Info(getLog(offlineDeal, "sleeping before unlock"))
-			time.Sleep(unlockIntervalMinute * time.Minute)
+			time.Sleep(unlockInterval * time.Minute)
 		}
 
 		logs.GetLogger().Info(getLog(offlineDeal, "start to unlock"))

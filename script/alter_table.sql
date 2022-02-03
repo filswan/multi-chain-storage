@@ -26,6 +26,7 @@ alter table deal_file modify delete_at bigint;
 
 alter table deal_file add max_price   double;
 
+
 alter table event_lock_payment modify create_at bigint;
 
 alter table event_unlock_payment modify create_at bigint;

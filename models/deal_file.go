@@ -20,7 +20,7 @@ type DealFile struct {
 	CarMd5              string          `json:"car_md_5"`
 	Duration            int             `json:"duration"`
 	TaskUuid            string          `json:"task_uuid"`
-	Status              string          `json:"status"`
+	LockPaymentStatus   string          `json:"lock_payment_status"`
 	ClientWalletAddress string          `json:"client_wallet_address"`
 	MaxPrice            decimal.Decimal `json:"max_price"`
 	CreateAt            int64           `json:"create_at"`

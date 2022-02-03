@@ -270,18 +270,18 @@ func saveCarInfo2DB(fileDesc *libmodel.FileDesc, srcFiles []*models.SourceFileEx
 	db := database.GetDBTransaction()
 	currentUtcMilliSecond := utils.GetCurrentUtcMilliSecond()
 	dealFile := models.DealFile{
-		CarFileName: fileDesc.CarFileName,
-		CarFilePath: fileDesc.CarFilePath,
-		CarFileSize: fileDesc.CarFileSize,
-		CarMd5:      fileDesc.CarFileMd5,
-		PayloadCid:  fileDesc.PayloadCid,
-		PieceCid:    fileDesc.PieceCid,
-		CreateAt:    currentUtcMilliSecond,
-		UpdateAt:    currentUtcMilliSecond,
-		Duration:    constants.DURATION_DAYS_DEFAULT,
-		Status:      constants.PROCESS_STATUS_TASK_CREATED,
-		MaxPrice:    maxPrice,
-		TaskUuid:    fileDesc.Uuid,
+		CarFileName:       fileDesc.CarFileName,
+		CarFilePath:       fileDesc.CarFilePath,
+		CarFileSize:       fileDesc.CarFileSize,
+		CarMd5:            fileDesc.CarFileMd5,
+		PayloadCid:        fileDesc.PayloadCid,
+		PieceCid:          fileDesc.PieceCid,
+		CreateAt:          currentUtcMilliSecond,
+		UpdateAt:          currentUtcMilliSecond,
+		Duration:          constants.DURATION_DAYS_DEFAULT,
+		LockPaymentStatus: constants.PROCESS_STATUS_TASK_CREATED,
+		MaxPrice:          maxPrice,
+		TaskUuid:          fileDesc.Uuid,
 	}
 
 	err := database.SaveOneInTransaction(db, &dealFile)

@@ -62,7 +62,7 @@ func GetEventUnlockPaymentsByPayloadCidUserWallet(sourceFileId int64, userWallet
 	var eventUnlockPayments []*EventUnlockPayment
 	sql := "select payload_cid,unlock_to_user_address, sum(unlock_to_user_amount) unlock_to_user_amount,max(unlock_time) unlock_time,count(*) unlock_times "
 	sql = sql + "from event_unlock_payment "
-	sql = sql + "where payload_cid=? and unlock_to_user_address=? "
+	sql = sql + "where payload_cid=?"
 	sql = sql + "group by payload_cid,unlock_to_user_address"
 	err = database.GetDB().Raw(sql, srcFiles[0].DealFilePayloadCid, userWallet).Scan(&eventUnlockPayments).Error
 	if err != nil {

@@ -65,7 +65,7 @@
                         <el-col :span="8">{{$t('uploadFile.detail_ProposalCID')}}:</el-col>
                         <el-col :span="16">{{dealCont.deal.deal_cid | NumFormat}}</el-col>
                         <el-col :span="8">{{$t('uploadFile.create_time')}}:</el-col>
-                        <el-col :span="16">{{dealCont.found.create_at | NumFormat}}</el-col>
+                        <el-col :span="16">{{dealCont.deal.created_at | NumFormat}}</el-col>
                         <el-col :span="8">{{$t('uploadFile.detail_MessageCID')}}:</el-col>
                         <el-col :span="16">{{dealCont.deal.message_cid | NumFormat}}</el-col>
                         <el-col :span="8">{{$t('uploadFile.detail_PieceCID')}}:</el-col>
@@ -271,6 +271,12 @@ export default {
                     }
 
                     _this.dealCont = json.data
+                    _this.dealCont.deal.created_at = 
+                        _this.dealCont.deal.created_at && _this.dealCont.deal.created_at != 0? 
+                            moment(new Date(parseInt(_this.dealCont.deal.created_at))).format(
+                                "YYYY-MM-DD HH:mm:ss"
+                            )
+                            : "-";
 
                     if(json.data.deal.provider && json.data.found.payload_cid){
                         _this.copy_filename = 'lotus client retrieve --miner '+json.data.deal.provider+' '+json.data.found.payload_cid+' output-file';
@@ -278,16 +284,7 @@ export default {
                         _this.copy_filename = localStorage.getItem('languageMcp') == 'cn'?"还不可用。":"It's not available yet.";
                     }
 
-                    if(!json.data.found){
-                        _this.dealCont.found = {}
-                    }else{
-                        _this.dealCont.found.create_at = 
-                            _this.dealCont.found.create_at? 
-                                moment(new Date(parseInt(_this.dealCont.found.create_at))).format(
-                                    "YYYY-MM-DD HH:mm:ss"
-                                )
-                                : "-";
-                    }
+                    if(!json.data.found) _this.dealCont.found = {}
                 }else{
                     _this.$message.error(json.message);
                     return false

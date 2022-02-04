@@ -528,14 +528,15 @@
             <a class="a-close" @click="metamaskLoginTip=false">{{$t('uploadFile.OK')}}</a>
         </el-dialog>
         
-        <el-dialog title="" :visible.sync="mintTransaction" :width="width"
+        <el-dialog title="" :visible.sync="mintTransaction" :width="widthMint"
             custom-class="completeDia">
             <img src="@/assets/images/alert-icon.png" />
             <h1>{{$t('uploadFile.View_Your_NFT')}}</h1>
             <h3>{{$t('uploadFile.View_Your_NFT_tips')}}</h3>
+            <a :href="'https://testnets.opensea.io/assets/mumbai/'+mint_address+'/'+tokenId" target="_blank">{{$t('uploadFile.View_Your_NFT_OpenSea')}}</a>
+            <h3>{{$t('uploadFile.View_Your_NFT_tips01')}}</h3>
             <a :href="'https://mumbai.polygonscan.com/tx/'+txHash" target="_blank">{{txHash}}</a>
             <br />
-            <a :href="'https://testnets.opensea.io/assets/mumbai/'+mint_address+'/'+tokenId" target="_blank">{{$t('uploadFile.View_Your_NFT_OpenSea')}}</a>
             <h3>{{$t('uploadFile.View_Your_NFT_Note')}}</h3>
             <a class="a-close" @click="mintTransaction=false">{{$t('uploadFile.CLOSE')}}</a>
         </el-dialog>
@@ -601,6 +602,7 @@ export default {
       centerDialogVisible: false,
       center_fail: false,
       width: document.body.clientWidth>600?'400px':'95%',
+      widthMint: document.body.clientWidth>600?'480px':'95%',
       payment: {
         cid: '',
         amount: '',
@@ -670,7 +672,7 @@ export default {
   },
   methods: {
     minerIdLink(id){
-      window.open(`https://calibration.filscout.com/en/miner/${id}`)
+      window.open(`${process.env.BASE_MINERADDRESS}${id}`)
     },
     toDetail(row){
       if(row.offline_deals && row.offline_deals.length>0){
@@ -702,7 +704,7 @@ export default {
       // console.log(row)
       _this.payRow = row
       _this.payRow.file_size = row.file_size
-      _this.payRow.storage_cost = row.file_size_byte * row.duration * _this.storage / 365
+      _this.payRow.storage_cost = row.file_size_byte * row.duration * _this.storage * 5 / 365 //5是Storage Copy
       _this.payRow.amount_minprice = Number(_this.payRow.storage_cost * _this.biling_price).toFixed(9)
       _this.cost.storage_cost_low = Number(_this.payRow.storage_cost * _this.biling_price * 2).toFixed(9)
       _this.cost.storage_cost_average = Number(_this.payRow.storage_cost * _this.biling_price * 3).toFixed(9)

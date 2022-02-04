@@ -112,7 +112,7 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType 
 	}
 	logs.GetLogger().Info("source file saved to ", srcFilepath)
 
-	uploadUrl := utils.UrlJoin(config.GetConfig().IpfsServer.UploadUrlPrefix, "api/v0/add?stream-channels=true&pin=true")
+	uploadUrl := libutils.UrlJoin(config.GetConfig().IpfsServer.UploadUrlPrefix, "api/v0/add?stream-channels=true&pin=true")
 	ipfsFileHash, err := ipfs.IpfsUploadFileByWebApi(uploadUrl, srcFilepath)
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -381,7 +381,7 @@ func SaveDaoEventFromTxHash(txHash string, payload_cid string, recipent string, 
 		eventDaoSignature.BlockNo = blockNumberInt64
 		eventDaoSignature.Status = true
 		eventDaoSignature.SignatureUnlockStatus = constants.SIGNATURE_DEFAULT_VALUE
-		addrInfo, err := utils.GetFromAndToAddressByTxHash(ethClient, transaction.ChainId(), common.HexToHash(txHash))
+		addrInfo, err := client.GetFromAndToAddressByTxHash(ethClient, transaction.ChainId(), common.HexToHash(txHash))
 		if err != nil {
 			logs.GetLogger().Error(err)
 		} else {

@@ -10,15 +10,15 @@ import (
 	"payment-bridge/config"
 	"payment-bridge/database"
 	"payment-bridge/models"
+	"payment-bridge/on-chain/client"
 	"payment-bridge/on-chain/goBind"
 	"strings"
-
-	"github.com/filswan/go-swan-lib/logs"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/filswan/go-swan-lib/logs"
 )
 
 func GetFileCoinLastestPriceService() (*PriceResult, error) {
@@ -101,14 +101,14 @@ func GetTaskDealsService(url string) (*PriceResult, error) {
 	return price, nil
 }
 
-func LockPaymentService(client *ethclient.Client, userWalletAddress, privateKeyOfUser, payloadCid string, lockedFee *big.Int) error {
+func LockPaymentService(ethClient *ethclient.Client, userWalletAddress, privateKeyOfUser, payloadCid string, lockedFee *big.Int) error {
 	paymentGatewayAddress := common.HexToAddress(config.GetConfig().Polygon.PaymentContractAddress)
-	nonce, err := client.PendingNonceAt(context.Background(), common.HexToAddress(userWalletAddress))
+	nonce, err := ethClient.PendingNonceAt(context.Background(), common.HexToAddress(userWalletAddress))
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
 	}
-	gasPrice, err := client.SuggestGasPrice(context.Background())
+	gasPrice, err := ethClient.SuggestGasPrice(context.Background())
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
@@ -119,7 +119,7 @@ func LockPaymentService(client *ethclient.Client, userWalletAddress, privateKeyO
 	}
 
 	privateKey, _ := crypto.HexToECDSA(privateKeyOfUser)
-	chainId, err := client.ChainID(context.Background())
+	chainId, err := ethClient.ChainID(context.Background())
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
@@ -132,7 +132,7 @@ func LockPaymentService(client *ethclient.Client, userWalletAddress, privateKeyO
 	callOpts.GasLimit = uint64(config.GetConfig().Polygon.GasLimit)
 	callOpts.Context = context.Background()
 
-	paymentGatewayInstance, err := goBind.NewSwanPayment(paymentGatewayAddress, client)
+	paymentGatewayInstance, err := goBind.NewSwanPayment(paymentGatewayAddress, ethClient)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
@@ -149,7 +149,7 @@ func LockPaymentService(client *ethclient.Client, userWalletAddress, privateKeyO
 		return err
 	}
 	logs.GetLogger().Info("lock payment tx hash: ", tx.Hash())
-	txRecept, err := utils.CheckTx(client, tx)
+	txRecept, err := client.CheckTx(ethClient, tx)
 	if err != nil {
 		logs.GetLogger().Error(err)
 	} else {

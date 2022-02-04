@@ -3,7 +3,6 @@ package scheduler
 import (
 	"fmt"
 	"payment-bridge/common/constants"
-	"payment-bridge/common/utils"
 	"payment-bridge/config"
 	"payment-bridge/models"
 	"payment-bridge/on-chain/client"
@@ -148,7 +147,7 @@ func unlockDeal(filswanOracleSession *goBind.FilswanOracleSession, offlineDeal *
 
 	logs.GetLogger().Info(tx.Hash().Hex())
 
-	txReceipt, err := utils.CheckTx(ethClient, tx)
+	txReceipt, err := client.CheckTx(ethClient, tx)
 	if err != nil {
 		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 
@@ -174,7 +173,6 @@ func unlockDeal(filswanOracleSession *goBind.FilswanOracleSession, offlineDeal *
 		return &unlockStatusFailed, err
 	}
 
-	unlockTxStatus := constants.TRANSACTION_STATUS_SUCCESS
 	logs.GetLogger().Info(getLog(offlineDeal, "unlock success", "txHash="+tx.Hash().Hex()))
 
 	unlockStatusUnlocked := constants.OFFLINE_DEAL_UNLOCK_STATUS_UNLOCKED
@@ -188,7 +186,7 @@ func unlockDeal(filswanOracleSession *goBind.FilswanOracleSession, offlineDeal *
 		return &unlockStatusUnlocked, nil
 	}
 
-	err = client.SaveEventUnlockPayment(txReceipt, unlockTxStatus, offlineDeal, tx.Hash().Hex())
+	err = client.SaveEventUnlockPayment(txReceipt, offlineDeal, tx.Hash().Hex())
 	if err != nil {
 		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 		return &unlockStatusUnlocked, err

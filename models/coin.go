@@ -9,8 +9,8 @@ import (
 
 type Coin struct {
 	ID          int64  `json:"id"`
-	Name        string `json:"name"`
-	Address     string `json:"address"`
+	Name        string `json:"full_name"`
+	Address     string `json:"coin_address"`
 	NetworkId   int64  `json:"network_id"`
 	GasPrice    int    `json:"gas_price"`
 	GasLimit    int    `json:"gas_limit"`

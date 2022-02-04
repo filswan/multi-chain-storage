@@ -16,49 +16,59 @@
                 </el-form-item>
                 <el-form-item prop="duration">
                     <template slot="label">
-                        Duration 
+                        {{$t('uploadFile.Duration')}}  
                         
-                        <el-tooltip effect="dark" content="Duration refers to the terms in which you want the file to be stored on the Filecoin network." placement="top">
+                        <el-tooltip effect="dark" :content="$t('uploadFile.Duration_tooltip')" placement="top">
                             <img src="@/assets/images/info.png"/>
                         </el-tooltip>
                     </template>
-                    {{payRow.duration}} days
+                    {{payRow.duration}} {{$t('components.day')}}
+                </el-form-item>
+                <el-form-item prop="storage_copy">
+                    <template slot="label">
+                        {{$t('uploadFile.Storage_copy')}} 
+                        
+                        <el-tooltip effect="dark" :content="$t('uploadFile.Storage_copy_tooltip')" placement="top">
+                            <img src="@/assets/images/info.png"/>
+                        </el-tooltip>
+                    </template>
+                    5
                 </el-form-item>
                 <el-form-item prop="storage_cost">
                     <template slot="label">
-                        Estimated Storage Cost 
+                        {{$t('uploadFile.Estimated_Storage_Cost')}} 
                         
-                        <el-tooltip effect="dark" content="The estimated storage cost is calculated according to your file size, the duration you set, and the average provider price." placement="top">
+                        <el-tooltip effect="dark" :content="$t('uploadFile.Estimated_Storage_Cost_tooltip')" placement="top">
                             <img src="@/assets/images/info.png"/>
                         </el-tooltip>
                     </template>
-                    <span  style="color:#ce2f21">{{payRow.storage_cost | NumStorage}} FIL</span> 
+                    <span  style="color:#4326ab">{{payRow.storage_cost | NumStorage}} FIL</span> 
                 </el-form-item>
             </el-form>
             <div class="upload_plan">
                 <div class="title" :style="{'color': pay.lock_plan_tip? '#f67e7e' : '#000'}">
-                    Select Lock Funds Plan
-                    <el-tooltip effect="dark" content="The more funds locked, the sooner your file will be stored on the Filecoin network. The overpaid funds will be returned automatically after the deal is on chain." placement="top">
+                    {{$t('uploadFile.Select_Lock_Funds_Plan')}}
+                    <el-tooltip effect="dark" :content="$t('uploadFile.Select_Lock_Funds_Plan_tooltip')" placement="top">
                         <img src="@/assets/images/info.png"/>
                     </el-tooltip>
                 </div>
-                <div class="desc">The latest exchange rate of FIL to USDC is {{bilingPrice}}.</div>
+                <div class="desc">{{$t('uploadFile.latest_exchange_rate')}} {{bilingPrice}}.</div>
                 <div class="upload_plan_radio">
                     <el-radio-group v-model="pay.lock_plan" @change="agreeChange">
                         <el-radio label="1" border>
-                            <div class="title">Low</div>
+                            <div class="title">{{$t('uploadFile.Low')}}</div>
                             <div class="cont">
                                 {{cost.storage_cost_low}} <br/> USDC
                             </div>
                         </el-radio>
                         <el-radio label="2" border>
-                            <div class="title">Average</div>
+                            <div class="title">{{$t('uploadFile.Average')}}</div>
                             <div class="cont">
                                 {{cost.storage_cost_average}} <br/> USDC
                             </div>
                         </el-radio>
                         <el-radio label="3" border>
-                            <div class="title">High</div>
+                            <div class="title">{{$t('uploadFile.High')}}</div>
                             <div class="cont">
                                 {{cost.storage_cost_high}} <br/> USDC
                             </div>

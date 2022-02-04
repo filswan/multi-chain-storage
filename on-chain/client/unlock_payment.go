@@ -32,10 +32,17 @@ func SaveEventUnlockPayment(receipt *types.Receipt, unlockStatus string, oflineD
 	//		logs.GetLogger().Error("dealId:", oflineDeal.DealId, err)
 	//		continue
 	//	}
+	dealFile, err := models.GetDealFileByDealId(87323)
+	if err == nil {
+		logs.GetLogger().Info(dealFile)
+		return err
+	}
+
 	event := new(models.EventUnlockPayment)
 	event.DealId = oflineDeal.DealId
 	event.TxHash = txHash
 	event.TokenAddress = constants.COIN_ADDRESS_USDC
+	event.PayloadCid = dealFile.PayloadCid
 	//event.UnlockToAdminAmount = dataList[2].(*big.Int).String()
 	//event.UnlockToUserAmount = dataList[3].(*big.Int).String()
 	//event.UnlockToAdminAddress = dataList[4].(common.Address).Hex()

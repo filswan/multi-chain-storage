@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"payment-bridge/common/constants"
 	"payment-bridge/common/utils"
 	"payment-bridge/database"
@@ -25,6 +26,27 @@ type DealFile struct {
 	MaxPrice            decimal.Decimal `json:"max_price"`
 	CreateAt            int64           `json:"create_at"`
 	UpdateAt            int64           `json:"update_at"`
+}
+
+func GetDealFileByDealId(dealId int64) (*DealFile, error) {
+	sql := "select a.* from deal_file a, offline_deal b where a.id=b.deal_file_id and b.deal_id=?"
+
+	var dealFiles []*DealFile
+
+	err := database.GetDB().Raw(sql, dealId).Scan(&dealFiles).Error
+
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	if len(dealFiles) > 0 {
+		return dealFiles[0], nil
+	}
+
+	err = fmt.Errorf("deal with deal_id:%d not exists", dealId)
+	logs.GetLogger().Error(err)
+	return nil, err
 }
 
 func GetDeal2Send() ([]*DealFile, error) {

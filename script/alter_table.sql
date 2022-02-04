@@ -74,6 +74,7 @@ create table offline_deal (
     note          text,
 	create_at     bigint       not null,
 	update_at     bigint       not null,
+    unlock_at     bigint,
     primary key pk_ofline_deal(id),
     constraint fk_ofline_deal_deal_file_id foreign key (deal_file_id) references deal_file (id)
 );

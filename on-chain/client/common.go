@@ -8,9 +8,12 @@ import (
 	"payment-bridge/config"
 	"payment-bridge/on-chain/goBind"
 	"strings"
+	"time"
 
+	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/filswan/go-swan-lib/logs"
 
+	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
@@ -142,4 +145,42 @@ func GetContractAbi() (*abi.ABI, error) {
 	}
 
 	return &contractAbi, nil
+}
+
+func CheckTx(client *ethclient.Client, tx *types.Transaction) (*types.Receipt, error) {
+retry:
+	rp, err := client.TransactionReceipt(context.Background(), tx.Hash())
+	if err != nil {
+		if err == ethereum.NotFound {
+			logs.GetLogger().Error("tx %v not found, check it later", tx.Hash().String())
+			time.Sleep(1 * time.Second)
+			goto retry
+		} else {
+			logs.GetLogger().Error("TransactionReceipt fail: %s", err)
+			return nil, err
+		}
+	}
+	return rp, nil
+}
+
+func GetFromAndToAddressByTxHash(client *ethclient.Client, chainID *big.Int, txHash common.Hash) (*addressInfo, error) {
+	addrInfo := new(addressInfo)
+	tx, _, err := client.TransactionByHash(context.Background(), txHash)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+	addrInfo.AddrTo = tx.To().Hex()
+	txMsg, err := tx.AsMessage(types.LatestSignerForChainID(chainID), nil)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+	addrInfo.AddrFrom = txMsg.From().Hex()
+	return addrInfo, nil
+}
+
+type addressInfo struct {
+	AddrFrom string
+	AddrTo   string
 }

@@ -162,9 +162,7 @@ func CreateTask() error {
 }
 
 func getMaxPrice(srcFile models.SourceFileExt, fileCoinPriceInUsdc *big.Int) (*decimal.Decimal, error) {
-	lockedFee := srcFile.LockedFee.IntPart()
-
-	maxPrice, err := GetMaxPriceForCreateTask(fileCoinPriceInUsdc, lockedFee, constants.DURATION_DAYS_DEFAULT, srcFile.FileSize)
+	maxPrice, err := GetMaxPriceForCreateTask(fileCoinPriceInUsdc, srcFile)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
@@ -179,11 +177,15 @@ func getMaxPrice(srcFile models.SourceFileExt, fileCoinPriceInUsdc *big.Int) (*d
 	return maxPrice, nil
 }
 
-func GetMaxPriceForCreateTask(rate *big.Int, lockedFee int64, duration int, carFileSize int64) (*decimal.Decimal, error) {
-	_, sectorSize := libutils.CalculatePieceSize(carFileSize)
-	lockedFeeDecimal := decimal.NewFromInt(lockedFee)
-	lockedFeeInFileCoin := lockedFeeDecimal.Div(decimal.NewFromFloat(constants.LOTUS_PRICE_MULTIPLE_1E18)).Div(decimal.NewFromInt(rate.Int64()))
-	maxPrice := lockedFeeInFileCoin.Div(decimal.NewFromFloat(sectorSize).Div(decimal.NewFromInt(10204 * 1024 * 1024))).Div(decimal.NewFromInt(int64(duration)))
+func GetMaxPriceForCreateTask(rate *big.Int, srcFile models.SourceFileExt) (*decimal.Decimal, error) {
+	_, sectorSize := libutils.CalculatePieceSize(srcFile.FileSize)
+
+	lockedFeeInFileCoin := srcFile.LockedFee.Div(decimal.NewFromFloat(constants.LOTUS_PRICE_MULTIPLE_1E18)).Div(decimal.NewFromInt(rate.Int64()))
+
+	durationEpoch := decimal.NewFromInt(constants.DURATION_DAYS_DEFAULT * constants.EPOCH_PER_DAY)
+	sectorSizeGB := decimal.NewFromFloat(sectorSize).Div(decimal.NewFromInt(constants.BYTES_1GB))
+
+	maxPrice := lockedFeeInFileCoin.Div(sectorSizeGB).Div(durationEpoch)
 	return &maxPrice, nil
 }
 

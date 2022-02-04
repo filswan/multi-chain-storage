@@ -83,6 +83,11 @@ func UnlockPayment() error {
 			time.Sleep(unlockInterval * time.Minute)
 		}
 
+		//logs.GetLogger().Info(i)
+		//if offlineDeal.DealId != 87310 {
+		//	continue
+		//}
+
 		logs.GetLogger().Info(getLog(offlineDeal, "start to unlock"))
 		unlockStatus, err := unlockDeal(filswanOracleSession, offlineDeal, ethClient, swanPaymentTransactor, tansactOpts, *recipient)
 		if err != nil {
@@ -141,6 +146,8 @@ func unlockDeal(filswanOracleSession *goBind.FilswanOracleSession, offlineDeal *
 		return &unlockStatusFailed, err
 	}
 
+	logs.GetLogger().Info(tx.Hash().Hex())
+
 	txReceipt, err := utils.CheckTx(ethClient, tx)
 	if err != nil {
 		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
@@ -181,7 +188,7 @@ func unlockDeal(filswanOracleSession *goBind.FilswanOracleSession, offlineDeal *
 		return &unlockStatusUnlocked, nil
 	}
 
-	err = client.SaveEventUnlockPayment(txReceipt.Logs, unlockTxStatus, offlineDeal.DealId)
+	err = client.SaveEventUnlockPayment(txReceipt, unlockTxStatus, offlineDeal, tx.Hash().Hex())
 	if err != nil {
 		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 		return &unlockStatusUnlocked, err
@@ -215,20 +222,20 @@ func refund(offlineDeal *models.OfflineDeal, swanPaymentTransactor *goBind.SwanP
 		srcFilePayloadCids = append(srcFilePayloadCids, srcFile.PayloadCid)
 	}
 
-	status := constants.PROCESS_STATUS_UNLOCK_REFUNDED
+	refundStatus := constants.PROCESS_STATUS_UNLOCK_REFUNDED
 	_, err = swanPaymentTransactor.Refund(tansactOpts, srcFilePayloadCids)
 	if err != nil {
-		status = constants.PROCESS_STATUS_UNLOCK_REFUNDFAILED
+		refundStatus = constants.PROCESS_STATUS_UNLOCK_REFUNDFAILED
 		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 	}
 
-	err = models.UpdateDealFileStatus(offlineDeal.DealFileId, status)
+	err = models.UpdateDealFileStatus(offlineDeal.DealFileId, refundStatus)
 	if err != nil {
 		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 		return err
 	}
 
-	logs.GetLogger().Info(getLog(offlineDeal, "refund successfully"))
+	logs.GetLogger().Info(getLog(offlineDeal, "refund with status:"+refundStatus))
 
 	return nil
 }

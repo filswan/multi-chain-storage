@@ -74,7 +74,7 @@ func SaveEventUnlockPayment(receipt *types.Receipt, oflineDeal *models.OfflineDe
 	return nil
 }
 
-func SaveEventUnlockPaymentFromTxHash(receipt *types.Receipt, recipent string, oflineDeal *models.OfflineDeal) error {
+func SaveEventUnlockPaymentFromTxHash(receipt *types.Receipt, recipient common.Address, oflineDeal *models.OfflineDeal) error {
 	ethClient, rpcClient, err := GetEthClient()
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -103,7 +103,7 @@ func SaveEventUnlockPaymentFromTxHash(receipt *types.Receipt, recipent string, o
 	}
 	var unlockPayment models.EventUnlockPayment
 	unlockPayment.TxHash = txHash
-	unlockPayment.UnlockFromAddress = recipent
+	unlockPayment.UnlockFromAddress = recipient.Hex()
 	unlockPayment.PayloadCid = dealFile.PayloadCid
 	wfilCoinId, err := models.FindCoinByFullName(constants.COIN_NAME_USDC)
 	if err != nil {

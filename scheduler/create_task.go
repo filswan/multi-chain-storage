@@ -27,14 +27,14 @@ func CreateTaskScheduler() {
 	Mutex := &sync.Mutex{}
 	c := cron.New()
 	err := c.AddFunc(config.GetConfig().ScheduleRule.CreateTaskRule, func() {
-		logs.GetLogger().Info("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ create task  scheduler is running at " + time.Now().Format("2006-01-02 15:04:05"))
+		logs.GetLogger().Info("start")
 		Mutex.Lock()
 		err := CreateTask()
 		Mutex.Unlock()
 		if err != nil {
 			logs.GetLogger().Error(err)
-			return
 		}
+		logs.GetLogger().Info("end")
 	})
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -161,23 +161,7 @@ func CreateTask() error {
 	return nil
 }
 
-func getMaxPrice(srcFile models.SourceFileExt, fileCoinPriceInUsdc *big.Int) (*decimal.Decimal, error) {
-	maxPrice, err := GetMaxPriceForCreateTask(fileCoinPriceInUsdc, srcFile)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-
-	logs.GetLogger().Println("payload cid ", srcFile.PayloadCid, " max price is ", maxPrice)
-
-	if maxPrice.Cmp(config.GetConfig().SwanTask.MaxPrice) < 0 {
-		*maxPrice = config.GetConfig().SwanTask.MaxPrice
-	}
-
-	return maxPrice, nil
-}
-
-func GetMaxPriceForCreateTask(rate *big.Int, srcFile models.SourceFileExt) (*decimal.Decimal, error) {
+func getMaxPrice(srcFile models.SourceFileExt, rate *big.Int) (*decimal.Decimal, error) {
 	_, sectorSize := libutils.CalculatePieceSize(srcFile.FileSize)
 
 	lockedFeeInFileCoin := srcFile.LockedFee.Div(decimal.NewFromFloat(constants.LOTUS_PRICE_MULTIPLE_1E18)).Div(decimal.NewFromInt(rate.Int64()))
@@ -186,6 +170,15 @@ func GetMaxPriceForCreateTask(rate *big.Int, srcFile models.SourceFileExt) (*dec
 	sectorSizeGB := decimal.NewFromFloat(sectorSize).Div(decimal.NewFromInt(constants.BYTES_1GB))
 
 	maxPrice := lockedFeeInFileCoin.Div(sectorSizeGB).Div(durationEpoch)
+
+	confMaxPrice := config.GetConfig().SwanTask.MaxPrice
+
+	if maxPrice.Cmp(confMaxPrice) > 0 {
+		maxPrice = confMaxPrice
+	}
+
+	logs.GetLogger().Println("payload cid: ", srcFile.PayloadCid, " max price is ", maxPrice)
+
 	return &maxPrice, nil
 }
 

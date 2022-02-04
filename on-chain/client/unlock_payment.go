@@ -32,7 +32,7 @@ func SaveEventUnlockPayment(receipt *types.Receipt, unlockStatus string, oflineD
 	//		logs.GetLogger().Error("dealId:", oflineDeal.DealId, err)
 	//		continue
 	//	}
-	dealFile, err := models.GetDealFileByDealId(87323)
+	dealFile, err := models.GetDealFileByDealId(oflineDeal.DealId)
 	if err == nil {
 		logs.GetLogger().Info(dealFile)
 		return err

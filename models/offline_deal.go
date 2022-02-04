@@ -23,6 +23,7 @@ type OfflineDeal struct {
 	Note         string `json:"note"`
 	CreateAt     int64  `json:"create_at"`
 	UpdateAt     int64  `json:"update_at"`
+	UnlockAt     int64  `json:"unlock_at"`
 }
 
 func GetOfflineDealsBySourceFileId(sourceFileId int64) ([]*OfflineDeal, error) {
@@ -126,7 +127,7 @@ func GetOfflineDealsByDealFileIds(dealFileIds []int64) ([]*OfflineDeal, error) {
 }
 
 func UpdateOfflineDealUnlockStatus(id int64, unlockStatus string, messages ...string) error {
-	sql := "update offline_deal set unlock_status=?,note=?,update_at=? where id=?"
+	sql := "update offline_deal set unlock_status=?,note=?,update_at=?,unlock_at=? where id=?"
 
 	note := ""
 	for _, message := range messages {
@@ -135,10 +136,13 @@ func UpdateOfflineDealUnlockStatus(id int64, unlockStatus string, messages ...st
 
 	note = strings.Trim(note, ",")
 
+	curUtcMilliSec := utils.GetCurrentUtcMilliSecond()
+
 	params := []interface{}{}
 	params = append(params, unlockStatus)
 	params = append(params, note)
-	params = append(params, utils.GetCurrentUtcMilliSecond())
+	params = append(params, curUtcMilliSec)
+	params = append(params, curUtcMilliSec)
 	params = append(params, id)
 
 	err := database.GetDB().Exec(sql, params...).Error

@@ -83,7 +83,7 @@ func UnlockPayment() error {
 		//}
 
 		logs.GetLogger().Info(i)
-		if offlineDeal.DealId != 87302 {
+		if offlineDeal.DealId != 87341 {
 			continue
 		}
 
@@ -174,6 +174,7 @@ func unlockDeal(filswanOracleSession *goBind.FilswanOracleSession, offlineDeal *
 	}
 
 	logs.GetLogger().Info(getLog(offlineDeal, "unlock success", "txHash="+tx.Hash().Hex()))
+	logs.GetLogger().Info(getLog(offlineDeal, "unlock success", "recipient.Hex()="+recipient.Hex()))
 
 	unlockStatusUnlocked := constants.OFFLINE_DEAL_UNLOCK_STATUS_UNLOCKED
 	err = models.UpdateOfflineDealUnlockStatus(offlineDeal.Id, unlockStatusUnlocked)

@@ -13,7 +13,6 @@ import (
 )
 
 type Schedule struct {
-	Cron      *cron.Cron
 	Name      string
 	Rule      string
 	Func      func() error
@@ -64,10 +63,10 @@ func CreateScheduler(name, rule string, func2Run func() error, mutex *sync.Mutex
 func createScheduleJob() {
 	confScheduleRule := config.GetConfig().ScheduleRule
 	scheduleJobs := []Schedule{
-		{Cron: cron.New(), Name: "create task", Rule: confScheduleRule.CreateTaskRule, Func: CreateTask, Mutex: &sync.Mutex{}, IsRunning: false},
-		{Cron: cron.New(), Name: "send deal", Rule: confScheduleRule.SendDealRule, Func: SendDeal, Mutex: &sync.Mutex{}, IsRunning: false},
-		{Cron: cron.New(), Name: "scan deal", Rule: confScheduleRule.ScanDealStatusRule, Func: ScanDeal, Mutex: &sync.Mutex{}, IsRunning: false},
-		{Cron: cron.New(), Name: "unlock payment", Rule: confScheduleRule.UnlockPaymentRule, Func: UnlockPayment, Mutex: &sync.Mutex{}, IsRunning: false},
+		{Name: "create task", Rule: confScheduleRule.CreateTaskRule, Func: CreateTask, Mutex: &sync.Mutex{}, IsRunning: false},
+		{Name: "send deal", Rule: confScheduleRule.SendDealRule, Func: SendDeal, Mutex: &sync.Mutex{}, IsRunning: false},
+		{Name: "scan deal", Rule: confScheduleRule.ScanDealStatusRule, Func: ScanDeal, Mutex: &sync.Mutex{}, IsRunning: false},
+		{Name: "unlock payment", Rule: confScheduleRule.UnlockPaymentRule, Func: UnlockPayment, Mutex: &sync.Mutex{}, IsRunning: false},
 	}
 
 	for _, scheduleJob := range scheduleJobs {

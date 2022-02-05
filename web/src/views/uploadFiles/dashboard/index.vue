@@ -403,7 +403,7 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="create_at" :label="$t('uploadFile.create_time')" width="100">
+          <el-table-column prop="create_at" :label="$t('uploadFile.upload_time')" width="100">
             <template slot-scope="scope">
               {{ scope.row.create_at }}
             </template>
@@ -602,7 +602,7 @@ export default {
       centerDialogVisible: false,
       center_fail: false,
       width: document.body.clientWidth>600?'400px':'95%',
-      widthMint: document.body.clientWidth>600?'480px':'95%',
+      widthMint: document.body.clientWidth>600?'500px':'95%',
       payment: {
         cid: '',
         amount: '',

@@ -469,6 +469,7 @@ export default {
         w3ss_id_nothing: '排队中',
         w3ss_id_nothing_tooltip: '正在整合本次上传的数据，以备存储到Filecoin。Filecoin交易会在上传后48小时内完成。',
         create_time: '创建时间',
+        upload_time: '上传时间',
         deal_id: '交易ID',
         payment: '支付',
         MINT: '铸造',

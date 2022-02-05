@@ -8,7 +8,6 @@ import (
 	"payment-bridge/on-chain/client"
 	"payment-bridge/on-chain/goBind"
 	"strconv"
-	"sync"
 	"time"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -16,13 +15,6 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/filswan/go-swan-lib/logs"
 )
-
-var unlockMutex *sync.Mutex = &sync.Mutex{}
-var unlockRunning bool = false
-
-func CreateUnlockScheduler() {
-	CreateScheduler(config.GetConfig().ScheduleRule.UnlockPaymentRule, UnlockPayment, unlockMutex, &unlockRunning)
-}
 
 func UnlockPayment() error {
 	offlineDeals, err := models.GetOfflineDeals2BeUnlocked()

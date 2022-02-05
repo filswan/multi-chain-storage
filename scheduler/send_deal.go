@@ -1,8 +1,6 @@
 package scheduler
 
 import (
-	"sync"
-
 	"github.com/filswan/go-swan-client/command"
 
 	"path/filepath"
@@ -18,13 +16,6 @@ import (
 
 	libconstants "github.com/filswan/go-swan-lib/constants"
 )
-
-var sendDealMutex *sync.Mutex = &sync.Mutex{}
-var sendDealRunning bool = false
-
-func CreateSendDealScheduler() {
-	CreateScheduler(config.GetConfig().ScheduleRule.SendDealRule, SendDeal, sendDealMutex, &sendDealRunning)
-}
 
 func SendDeal() error {
 	dealFiles, err := models.GetDeal2Send()

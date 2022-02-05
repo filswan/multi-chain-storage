@@ -13,11 +13,12 @@ import (
 )
 
 type Schedule struct {
-	Cron  *cron.Cron
-	Name  string
-	Rule  string
-	Func  func() error
-	Mutex *sync.Mutex
+	Cron      *cron.Cron
+	Name      string
+	Rule      string
+	Func      func() error
+	Mutex     *sync.Mutex
+	IsRunning bool
 }
 
 var carDir string
@@ -29,21 +30,20 @@ func GetSrcDir() string {
 
 func InitScheduler() {
 	createDir()
-	//createScheduleJob()
+	createScheduleJob()
 }
 
-func CreateScheduler(rule string, func2Run func() error, mutex *sync.Mutex, isRunning *bool) {
-
+func CreateScheduler(name, rule string, func2Run func() error, mutex *sync.Mutex, isRunning *bool) {
 	c := cron.New()
 	err := c.AddFunc(rule, func() {
-		logs.GetLogger().Info(func2Run, " start")
+		logs.GetLogger().Info(name, " start")
 		if *isRunning {
-			logs.GetLogger().Info(func2Run, "already running, exit")
+			logs.GetLogger().Info(name, " already running, exit")
 			return
 		}
 
 		mutex.Lock()
-		logs.GetLogger().Info(func2Run, " running")
+		logs.GetLogger().Info(name, " running")
 		*isRunning = true
 		err := func2Run()
 		if err != nil {
@@ -51,7 +51,7 @@ func CreateScheduler(rule string, func2Run func() error, mutex *sync.Mutex, isRu
 		}
 		*isRunning = false
 		mutex.Unlock()
-		logs.GetLogger().Info(func2Run, " end")
+		logs.GetLogger().Info(name, " end")
 	})
 
 	if err != nil {
@@ -64,34 +64,14 @@ func CreateScheduler(rule string, func2Run func() error, mutex *sync.Mutex, isRu
 func createScheduleJob() {
 	confScheduleRule := config.GetConfig().ScheduleRule
 	scheduleJobs := []Schedule{
-		{Cron: cron.New(), Name: "create task", Rule: confScheduleRule.CreateTaskRule, Func: CreateTask, Mutex: &sync.Mutex{}},
-		{Cron: cron.New(), Name: "send deal", Rule: confScheduleRule.SendDealRule, Func: SendDeal},
-		{Cron: cron.New(), Name: "scan deal", Rule: confScheduleRule.ScanDealStatusRule, Func: ScanDeal},
-		{Cron: cron.New(), Name: "unlock payment", Rule: confScheduleRule.UnlockPaymentRule, Func: UnlockPayment},
+		{Cron: cron.New(), Name: "create task", Rule: confScheduleRule.CreateTaskRule, Func: CreateTask, Mutex: &sync.Mutex{}, IsRunning: false},
+		{Cron: cron.New(), Name: "send deal", Rule: confScheduleRule.SendDealRule, Func: SendDeal, Mutex: &sync.Mutex{}, IsRunning: false},
+		{Cron: cron.New(), Name: "scan deal", Rule: confScheduleRule.ScanDealStatusRule, Func: ScanDeal, Mutex: &sync.Mutex{}, IsRunning: false},
+		{Cron: cron.New(), Name: "unlock payment", Rule: confScheduleRule.UnlockPaymentRule, Func: UnlockPayment, Mutex: &sync.Mutex{}, IsRunning: false},
 	}
 
 	for _, scheduleJob := range scheduleJobs {
-		err := scheduleJob.Cron.AddFunc(scheduleJob.Rule, func() {
-			logs.GetLogger().Info(scheduleJob.Name + " start")
-
-			if scheduleJob.Mutex != nil {
-				scheduleJob.Mutex.Lock()
-			}
-
-			scheduleJob.Func()
-
-			if scheduleJob.Mutex != nil {
-				scheduleJob.Mutex.Unlock()
-			}
-
-			logs.GetLogger().Info(scheduleJob.Name + " end")
-		})
-
-		if err != nil {
-			logs.GetLogger().Fatal(err)
-		}
-
-		scheduleJob.Cron.Start()
+		CreateScheduler(scheduleJob.Name, scheduleJob.Rule, scheduleJob.Func, scheduleJob.Mutex, &scheduleJob.IsRunning)
 	}
 }
 

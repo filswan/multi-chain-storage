@@ -11,7 +11,6 @@ import (
 	"payment-bridge/database"
 	"payment-bridge/models"
 	"payment-bridge/on-chain/client"
-	"sync"
 	"time"
 
 	"github.com/filswan/go-swan-client/command"
@@ -21,13 +20,6 @@ import (
 	libutils "github.com/filswan/go-swan-lib/utils"
 	"github.com/shopspring/decimal"
 )
-
-var createTaskMutex *sync.Mutex = &sync.Mutex{}
-var createTaskRunning bool = false
-
-func CreateTaskScheduler() {
-	CreateScheduler(config.GetConfig().ScheduleRule.CreateTaskRule, CreateTask, createTaskMutex, &createTaskRunning)
-}
 
 func CreateTask() error {
 	srcFiles, err := models.GetSourceFilesNeed2Car()

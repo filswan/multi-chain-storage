@@ -5,19 +5,11 @@ import (
 	"payment-bridge/config"
 	"payment-bridge/database"
 	"payment-bridge/models"
-	"sync"
 
 	"github.com/filswan/go-swan-lib/logs"
 
 	"github.com/filswan/go-swan-lib/client/lotus"
 )
-
-var scanDealMutex *sync.Mutex = &sync.Mutex{}
-var scanDealRunning bool = false
-
-func CreateScanDealScheduler() {
-	CreateScheduler(config.GetConfig().ScheduleRule.ScanDealStatusRule, ScanDeal, scanDealMutex, &scanDealRunning)
-}
 
 func ScanDeal() error {
 	dealList, err := models.GetOfflineDeals2BeScanned()

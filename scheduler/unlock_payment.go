@@ -56,8 +56,8 @@ func UnlockPayment() error {
 	logs.GetLogger().Info("unlock interval is ", unlockInterval)
 	for i, offlineDeal := range offlineDeals {
 		if i > 0 {
-			logs.GetLogger().Info(getLog(offlineDeal, "sleeping before unlock"))
-			time.Sleep(unlockInterval * time.Minute)
+			logs.GetLogger().Info(getLog(offlineDeal, "sleeping "+unlockInterval.String()+" before unlock"))
+			time.Sleep(unlockInterval)
 		}
 
 		//logs.GetLogger().Info(i)

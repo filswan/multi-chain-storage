@@ -32,7 +32,21 @@ func InitScheduler() {
 	createScheduleJob()
 }
 
-func CreateScheduler(name, rule string, func2Run func() error, mutex *sync.Mutex, isRunning *bool) {
+func createScheduleJob() {
+	confScheduleRule := config.GetConfig().ScheduleRule
+	scheduleJobs := []Schedule{
+		{Name: "create task", Rule: confScheduleRule.CreateTaskRule, Func: CreateTask, Mutex: &sync.Mutex{}, IsRunning: false},
+		{Name: "send deal", Rule: confScheduleRule.SendDealRule, Func: SendDeal, Mutex: &sync.Mutex{}, IsRunning: false},
+		{Name: "scan deal", Rule: confScheduleRule.ScanDealStatusRule, Func: ScanDeal, Mutex: &sync.Mutex{}, IsRunning: false},
+		{Name: "unlock payment", Rule: confScheduleRule.UnlockPaymentRule, Func: UnlockPayment, Mutex: &sync.Mutex{}, IsRunning: false},
+	}
+
+	for _, scheduleJob := range scheduleJobs {
+		createScheduler(scheduleJob.Name, scheduleJob.Rule, scheduleJob.Func, scheduleJob.Mutex, &scheduleJob.IsRunning)
+	}
+}
+
+func createScheduler(name, rule string, func2Run func() error, mutex *sync.Mutex, isRunning *bool) {
 	c := cron.New()
 	err := c.AddFunc(rule, func() {
 		logs.GetLogger().Info(name, " start")
@@ -58,20 +72,6 @@ func CreateScheduler(name, rule string, func2Run func() error, mutex *sync.Mutex
 	}
 
 	c.Start()
-}
-
-func createScheduleJob() {
-	confScheduleRule := config.GetConfig().ScheduleRule
-	scheduleJobs := []Schedule{
-		{Name: "create task", Rule: confScheduleRule.CreateTaskRule, Func: CreateTask, Mutex: &sync.Mutex{}, IsRunning: false},
-		{Name: "send deal", Rule: confScheduleRule.SendDealRule, Func: SendDeal, Mutex: &sync.Mutex{}, IsRunning: false},
-		{Name: "scan deal", Rule: confScheduleRule.ScanDealStatusRule, Func: ScanDeal, Mutex: &sync.Mutex{}, IsRunning: false},
-		{Name: "unlock payment", Rule: confScheduleRule.UnlockPaymentRule, Func: UnlockPayment, Mutex: &sync.Mutex{}, IsRunning: false},
-	}
-
-	for _, scheduleJob := range scheduleJobs {
-		CreateScheduler(scheduleJob.Name, scheduleJob.Rule, scheduleJob.Func, scheduleJob.Mutex, &scheduleJob.IsRunning)
-	}
 }
 
 func createDir() {

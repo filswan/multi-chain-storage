@@ -33,6 +33,11 @@
 
 * [Token Swap](#Token-Swap)
 * [Payment Lock](#Payment-Lock)
+* [Create Car File](https://github.com/filswan/go-swan-client)
+* [Upload Car File](https://github.com/filswan/go-swan-client)
+* [Create Task](https://github.com/filswan/go-swan-client)
+* [Send Deal](https://github.com/filswan/go-swan-client)
+* [Scan Deal Status](#)
 * [DAO Signature](#DAO-Signature)
 * [Payment Unlock](#Payment-Unlock)
 * [Data DAO](https://github.com/filswan/flink)

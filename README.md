@@ -23,6 +23,7 @@
 - Make payment from multi chain for filecoin storage
 - Backup user's file to filecoin network
 - Supports payment with tokens such as USDC on polygon
+- Currently, USDC is supported for payment.
 
 ## System Design
 
@@ -127,22 +128,16 @@ nohup ./build/multi-chain-payment >> ./build/mcp.log &    #After installation fr
 - **max_price**: Max price willing to pay per GiB/epoch for offline deal
 - **generate_md5**: [true/false] Whether to generate md5 for each car file, note: this is a resource consuming action
 
-### config_polygon.toml
-
-Currently, USDC is supported for payment. Take polygon network as an example to introduce configuration items
-#### polygon_mainnet_node
-
+#### [polygon]
 - **rpc_url:** the polygon network rpc url
 - **payment_contract_address:**  swan payment gateway address on polygon
 - **contract_lock_function_signature:**  swan payment gateway's lock payment event's function signature on polygon
 - **contract_unlock_function_signature:**  swan payment gateway's lock payment event's function signature on polygon
 - **dao_swan_oracle_address:**  swan dao address on polygon
 - **dao_event_function_signature:**  swan dao's signature event's function signature on polygon
--**pair_address_between_wfil_usdc_of_sushiswap_on_polygon**:
+- **pair_address_between_wfil_usdc_of_sushiswap_on_polygon**:
 
 - **scan_step:**  the number of blocks scanned per scan
-- **start_from_blockNo:**  scan data from this block number
-- **start_from_blockNo:**  the time between each scan of the blockchain
 
 ## Payment Process
 

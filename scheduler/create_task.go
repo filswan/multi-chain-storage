@@ -19,28 +19,14 @@ import (
 	"github.com/filswan/go-swan-lib/logs"
 	libmodel "github.com/filswan/go-swan-lib/model"
 	libutils "github.com/filswan/go-swan-lib/utils"
-	"github.com/robfig/cron"
 	"github.com/shopspring/decimal"
 )
 
+var createTaskMutex *sync.Mutex = &sync.Mutex{}
+var createTaskRunning bool = false
+
 func CreateTaskScheduler() {
-	Mutex := &sync.Mutex{}
-	c := cron.New()
-	err := c.AddFunc(config.GetConfig().ScheduleRule.CreateTaskRule, func() {
-		logs.GetLogger().Info("start")
-		Mutex.Lock()
-		err := CreateTask()
-		Mutex.Unlock()
-		if err != nil {
-			logs.GetLogger().Error(err)
-		}
-		logs.GetLogger().Info("end")
-	})
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return
-	}
-	c.Start()
+	CreateScheduler(config.GetConfig().ScheduleRule.CreateTaskRule, CreateTask, createTaskMutex, &createTaskRunning)
 }
 
 func CreateTask() error {

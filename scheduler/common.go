@@ -32,6 +32,35 @@ func InitScheduler() {
 	//createScheduleJob()
 }
 
+func CreateScheduler(rule string, func2Run func() error, mutex *sync.Mutex, isRunning *bool) {
+
+	c := cron.New()
+	err := c.AddFunc(rule, func() {
+		logs.GetLogger().Info(func2Run, " start")
+		if *isRunning {
+			logs.GetLogger().Info(func2Run, "already running, exit")
+			return
+		}
+
+		mutex.Lock()
+		logs.GetLogger().Info(func2Run, " running")
+		*isRunning = true
+		err := func2Run()
+		if err != nil {
+			logs.GetLogger().Error(err)
+		}
+		*isRunning = false
+		mutex.Unlock()
+		logs.GetLogger().Info(func2Run, " end")
+	})
+
+	if err != nil {
+		logs.GetLogger().Fatal(err)
+	}
+
+	c.Start()
+}
+
 func createScheduleJob() {
 	confScheduleRule := config.GetConfig().ScheduleRule
 	scheduleJobs := []Schedule{

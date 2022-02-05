@@ -32,8 +32,8 @@ func main() {
 	//scheduler.UnlockPayment()
 
 	scheduler.CreateTaskScheduler()
-	scheduler.SendDealScheduler()
-	scheduler.CreateScanScheduler()
+	scheduler.CreateSendDealScheduler()
+	scheduler.CreateScanDealScheduler()
 	scheduler.CreateUnlockScheduler()
 
 	createGinServer()

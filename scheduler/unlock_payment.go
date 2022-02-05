@@ -15,27 +15,13 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/filswan/go-swan-lib/logs"
-	"github.com/robfig/cron"
 )
 
+var unlockMutex *sync.Mutex = &sync.Mutex{}
+var unlockRunning bool = false
+
 func CreateUnlockScheduler() {
-	Mutex := &sync.Mutex{}
-	c := cron.New()
-	err := c.AddFunc(config.GetConfig().ScheduleRule.UnlockPaymentRule, func() {
-		logs.GetLogger().Info("start")
-		Mutex.Lock()
-		err := UnlockPayment()
-		Mutex.Unlock()
-		if err != nil {
-			logs.GetLogger().Error(err)
-		}
-		logs.GetLogger().Info("end")
-	})
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return
-	}
-	c.Start()
+	CreateScheduler(config.GetConfig().ScheduleRule.UnlockPaymentRule, UnlockPayment, unlockMutex, &unlockRunning)
 }
 
 func UnlockPayment() error {

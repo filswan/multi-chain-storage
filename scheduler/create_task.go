@@ -22,15 +22,34 @@ import (
 )
 
 func CreateTask() error {
+	for {
+		numSrcFiles, err := createTask()
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return err
+		}
+
+		if numSrcFiles == nil || *numSrcFiles == 0 {
+			logs.GetLogger().Info("0 source file created to car file")
+			return nil
+		}
+
+		logs.GetLogger().Info(*numSrcFiles, " source file(s) created to car file")
+	}
+
+}
+
+func createTask() (*int, error) {
 	srcFiles, err := models.GetSourceFilesNeed2Car()
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return err
+		return nil, err
 	}
 
 	if len(srcFiles) == 0 {
-		logs.GetLogger().Info("no source file to be created to car file")
-		return nil
+		numSrcFiles := 0
+		logs.GetLogger().Info("0 source file to be created to car file")
+		return &numSrcFiles, nil
 	}
 
 	currentTimeStr := time.Now().Format("2006-01-02T15:04:05")
@@ -40,7 +59,7 @@ func CreateTask() error {
 	err = libutils.CreateDir(carSrcDir)
 	if err != nil {
 		logs.GetLogger().Error("creating dir:", carSrcDir, " failed,", err)
-		return err
+		return nil, err
 	}
 
 	totalSize := int64(0)
@@ -51,9 +70,10 @@ func CreateTask() error {
 	fileCoinPriceInUsdc, err := client.GetWfilPriceFromSushiPrice("1")
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return err
+		return nil, err
 	}
 
+	fileSizeMin := config.GetConfig().SwanTask.MinFileSize
 	var srcFiles2Merged []*models.SourceFileExt
 	for _, srcFile := range srcFiles {
 		srcFilepathTemp := filepath.Join(carSrcDir, filepath.Base(srcFile.ResourceUri))
@@ -85,12 +105,17 @@ func CreateTask() error {
 		}
 
 		srcFiles2Merged = append(srcFiles2Merged, srcFile)
+
+		if totalSize >= fileSizeMin {
+			break
+		}
 	}
 
 	if totalSize == 0 {
 		os.RemoveAll(carSrcDir)
-		logs.GetLogger().Info("no source files to be merged to car file")
-		return nil
+		numSrcFiles := 0
+		logs.GetLogger().Info("0 source file to be created to car file")
+		return &numSrcFiles, nil
 	}
 
 	passedMilliSec := currentUtcMilliSec - createdTimeMin
@@ -99,20 +124,18 @@ func CreateTask() error {
 		createAnyway = true
 	}
 
-	fileSizeMin := config.GetConfig().SwanTask.MinFileSize
-
 	if !createAnyway && totalSize < fileSizeMin {
 		os.RemoveAll(carSrcDir)
 		err := fmt.Errorf("source file size is not enough")
 		logs.GetLogger().Error("source file size is not enough")
-		return err
+		return nil, err
 	}
 
 	err = libutils.CreateDir(carDestDir)
 	if err != nil {
 		os.RemoveAll(carSrcDir)
 		logs.GetLogger().Error("creating dir:", carDestDir, " failed,", err)
-		return err
+		return nil, err
 	}
 
 	fileDesc, err := createTask4SrcFiles(carSrcDir, carDestDir, *maxPrice, createAnyway, fileSizeMin)
@@ -120,7 +143,7 @@ func CreateTask() error {
 		os.RemoveAll(carSrcDir)
 		os.RemoveAll(carDestDir)
 		logs.GetLogger().Error(err)
-		return err
+		return nil, err
 	}
 
 	err = saveCarInfo2DB(fileDesc, srcFiles2Merged, *maxPrice)
@@ -128,7 +151,7 @@ func CreateTask() error {
 		os.RemoveAll(carSrcDir)
 		os.RemoveAll(carDestDir)
 		logs.GetLogger().Error(err)
-		return err
+		return nil, err
 	}
 
 	err = os.RemoveAll(carSrcDir)
@@ -136,7 +159,8 @@ func CreateTask() error {
 		logs.GetLogger().Error(err)
 	}
 
-	return nil
+	numSrcFiles := len(srcFiles2Merged)
+	return &numSrcFiles, nil
 }
 
 func getMaxPrice(srcFile models.SourceFileExt, rate *big.Int) (*decimal.Decimal, error) {

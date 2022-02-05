@@ -29,12 +29,12 @@ func main() {
 	//scheduler.CreateTask()
 	//scheduler.SendDeal()
 	//scheduler.ScanDeal()
-	scheduler.UnlockPayment()
+	//scheduler.UnlockPayment()
 
 	scheduler.CreateTaskScheduler()
 	scheduler.SendDealScheduler()
 	scheduler.CreateScanScheduler()
-	//scheduler.CreateUnlockScheduler()
+	scheduler.CreateUnlockScheduler()
 
 	createGinServer()
 }

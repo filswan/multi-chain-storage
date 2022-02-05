@@ -77,15 +77,15 @@ func UnlockPayment() error {
 	unlockInterval := config.GetConfig().Polygon.UnlockIntervalMinute * time.Minute
 	logs.GetLogger().Info("unlock interval is ", unlockInterval)
 	for i, offlineDeal := range offlineDeals {
-		//if i > 0 {
-		//	logs.GetLogger().Info(getLog(offlineDeal, "sleeping before unlock"))
-		//	time.Sleep(unlockInterval * time.Minute)
-		//}
-
-		logs.GetLogger().Info(i)
-		if offlineDeal.DealId != 87341 {
-			continue
+		if i > 0 {
+			logs.GetLogger().Info(getLog(offlineDeal, "sleeping before unlock"))
+			time.Sleep(unlockInterval * time.Minute)
 		}
+
+		//logs.GetLogger().Info(i)
+		//if offlineDeal.DealId != 87341 {
+		//	continue
+		//}
 
 		logs.GetLogger().Info(getLog(offlineDeal, "start to unlock"))
 		unlockStatus, err := unlockDeal(filswanOracleSession, offlineDeal, ethClient, swanPaymentTransactor, tansactOpts, *recipient)

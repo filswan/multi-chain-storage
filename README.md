@@ -91,18 +91,9 @@ git checkout <release_branch>
 ```shell
 vi ~/.swan/mcp/config.toml
 ```
-- To pay on polygon network, you need to check your configuration in `~/.swan/mcp/config_polygon.toml` to ensure it is right.
-```shell
-vi ~/.swan/mcp/config_polygon.toml
-```
-- To pay on goerli network, you need to check your configuration in `~/.swan/mcp/config_goerli.toml` to ensure it is right.
-```shell
-vi ~/.swan/mcp/config_goerli.toml
-```
 - After set your config in the related config files, you can run `multi-chain-payment` in `./build` directory
 ```shell
-cd build
-./multi-chain-payment
+./build/multi-chain-payment
 ```
 ### Note
 - Logs are in directory `./logs`
@@ -112,7 +103,7 @@ cd build
 - Such as:
 ```shell
 nohup ./multi-chain-payment-0.2.1-rc1-unix >> mcp.log &   #After installation from Option 1
-nohup ./build/multi-chain-payment >> mcp.log &            #After installation from Option 2
+nohup ./build/multi-chain-payment >> ./build/mcp.log &    #After installation from Option 2
 ```
 
 ## Configuration

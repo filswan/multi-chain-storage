@@ -134,15 +134,13 @@ nohup ./build/multi-chain-payment >> ./build/mcp.log &    #After installation fr
 - **generate_md5**: [true/false] Whether to generate md5 for each car file, note: this is a resource consuming action
 
 #### [polygon]
-- **rpc_url:** the polygon network rpc url
-- **payment_contract_address:**  swan payment gateway address on polygon
-- **contract_lock_function_signature:**  swan payment gateway's lock payment event's function signature on polygon
-- **contract_unlock_function_signature:**  swan payment gateway's lock payment event's function signature on polygon
-- **dao_swan_oracle_address:**  swan dao address on polygon
-- **dao_event_function_signature:**  swan dao's signature event's function signature on polygon
+- **rpc_url**: the polygon network rpc url
+- **payment_contract_address**:  swan payment gateway address on polygon
+- **contract_lock_function_signature**:  swan payment gateway's lock payment event's function signature on polygon
+- **contract_unlock_function_signature**:  swan payment gateway's lock payment event's function signature on polygon
+- **dao_swan_oracle_address**:  swan dao address on polygon
+- **dao_event_function_signature**:  swan dao's signature event's function signature on polygon
 - **pair_address_between_wfil_usdc_of_sushiswap_on_polygon**:
-
-- **scan_step:**  the number of blocks scanned per scan
 
 ## Payment Process
 

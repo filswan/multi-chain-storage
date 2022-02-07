@@ -8,38 +8,17 @@ import (
 	"payment-bridge/on-chain/client"
 	"payment-bridge/on-chain/goBind"
 	"strconv"
-	"sync"
 	"time"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/filswan/go-swan-lib/logs"
-	"github.com/robfig/cron"
 )
-
-func CreateUnlockScheduler() {
-	Mutex := &sync.Mutex{}
-	c := cron.New()
-	err := c.AddFunc(config.GetConfig().ScheduleRule.UnlockPaymentRule, func() {
-		logs.GetLogger().Info("start")
-		Mutex.Lock()
-		err := UnlockPayment()
-		Mutex.Unlock()
-		if err != nil {
-			logs.GetLogger().Error(err)
-		}
-		logs.GetLogger().Info("end")
-	})
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return
-	}
-	c.Start()
-}
 
 func UnlockPayment() error {
 	offlineDeals, err := models.GetOfflineDeals2BeUnlocked()
+	//offlineDeals, err := models.GetOfflineDealByDealId(87327)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
@@ -77,15 +56,15 @@ func UnlockPayment() error {
 	unlockInterval := config.GetConfig().Polygon.UnlockIntervalMinute * time.Minute
 	logs.GetLogger().Info("unlock interval is ", unlockInterval)
 	for i, offlineDeal := range offlineDeals {
-		//if i > 0 {
-		//	logs.GetLogger().Info(getLog(offlineDeal, "sleeping before unlock"))
-		//	time.Sleep(unlockInterval * time.Minute)
-		//}
-
-		logs.GetLogger().Info(i)
-		if offlineDeal.DealId != 87302 {
-			continue
+		if i > 0 {
+			logs.GetLogger().Info(getLog(offlineDeal, "sleeping "+unlockInterval.String()+" before unlock"))
+			time.Sleep(unlockInterval)
 		}
+
+		//logs.GetLogger().Info(i)
+		//if offlineDeal.DealId != 87341 {
+		//	continue
+		//}
 
 		logs.GetLogger().Info(getLog(offlineDeal, "start to unlock"))
 		unlockStatus, err := unlockDeal(filswanOracleSession, offlineDeal, ethClient, swanPaymentTransactor, tansactOpts, *recipient)
@@ -174,6 +153,7 @@ func unlockDeal(filswanOracleSession *goBind.FilswanOracleSession, offlineDeal *
 	}
 
 	logs.GetLogger().Info(getLog(offlineDeal, "unlock success", "txHash="+tx.Hash().Hex()))
+	logs.GetLogger().Info(getLog(offlineDeal, "unlock success", "recipient.Hex()="+recipient.Hex()))
 
 	unlockStatusUnlocked := constants.OFFLINE_DEAL_UNLOCK_STATUS_UNLOCKED
 	err = models.UpdateOfflineDealUnlockStatus(offlineDeal.Id, unlockStatusUnlocked)

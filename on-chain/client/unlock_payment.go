@@ -35,8 +35,8 @@ func SaveEventUnlockPayment(receipt *types.Receipt, oflineDeal *models.OfflineDe
 	//		continue
 	//	}
 	dealFile, err := models.GetDealFileByDealId(oflineDeal.DealId)
-	if err == nil {
-		logs.GetLogger().Info(dealFile)
+	if err != nil {
+		logs.GetLogger().Info(err)
 		return err
 	}
 
@@ -84,8 +84,8 @@ func SaveEventUnlockPaymentFromTxHash(receipt *types.Receipt, recipient common.A
 	txHash := receipt.TxHash.Hex()
 
 	dealFile, err := models.GetDealFileByDealId(oflineDeal.DealId)
-	if err == nil {
-		logs.GetLogger().Info(dealFile)
+	if err != nil {
+		logs.GetLogger().Info(err)
 		return err
 	}
 

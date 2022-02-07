@@ -23,6 +23,7 @@
 - Make payment from multi chain for filecoin storage
 - Backup user's file to filecoin network
 - Supports payment with tokens such as USDC on polygon
+- Currently, USDC is supported for payment.
 
 ## System Design
 
@@ -32,6 +33,11 @@
 
 * [Token Swap](#Token-Swap)
 * [Payment Lock](#Payment-Lock)
+* [Create Car File](https://github.com/filswan/go-swan-client)
+* [Upload Car File](https://github.com/filswan/go-swan-client)
+* [Create Task](https://github.com/filswan/go-swan-client)
+* [Send Deal](https://github.com/filswan/go-swan-client)
+* [Scan Deal Status](#)
 * [DAO Signature](#DAO-Signature)
 * [Payment Unlock](#Payment-Unlock)
 * [Data DAO](https://github.com/filswan/flink)
@@ -91,18 +97,9 @@ git checkout <release_branch>
 ```shell
 vi ~/.swan/mcp/config.toml
 ```
-- To pay on polygon network, you need to check your configuration in `~/.swan/mcp/config_polygon.toml` to ensure it is right.
-```shell
-vi ~/.swan/mcp/config_polygon.toml
-```
-- To pay on goerli network, you need to check your configuration in `~/.swan/mcp/config_goerli.toml` to ensure it is right.
-```shell
-vi ~/.swan/mcp/config_goerli.toml
-```
 - After set your config in the related config files, you can run `multi-chain-payment` in `./build` directory
 ```shell
-cd build
-./multi-chain-payment
+./build/multi-chain-payment
 ```
 ### Note
 - Logs are in directory `./logs`
@@ -112,7 +109,7 @@ cd build
 - Such as:
 ```shell
 nohup ./multi-chain-payment-0.2.1-rc1-unix >> mcp.log &   #After installation from Option 1
-nohup ./build/multi-chain-payment >> mcp.log &            #After installation from Option 2
+nohup ./build/multi-chain-payment >> ./build/mcp.log &    #After installation from Option 2
 ```
 
 ## Configuration
@@ -136,22 +133,14 @@ nohup ./build/multi-chain-payment >> mcp.log &            #After installation fr
 - **max_price**: Max price willing to pay per GiB/epoch for offline deal
 - **generate_md5**: [true/false] Whether to generate md5 for each car file, note: this is a resource consuming action
 
-### config_polygon.toml
-
-Currently, USDC is supported for payment. Take polygon network as an example to introduce configuration items
-#### polygon_mainnet_node
-
-- **rpc_url:** the polygon network rpc url
-- **payment_contract_address:**  swan payment gateway address on polygon
-- **contract_lock_function_signature:**  swan payment gateway's lock payment event's function signature on polygon
-- **contract_unlock_function_signature:**  swan payment gateway's lock payment event's function signature on polygon
-- **dao_swan_oracle_address:**  swan dao address on polygon
-- **dao_event_function_signature:**  swan dao's signature event's function signature on polygon
--**pair_address_between_wfil_usdc_of_sushiswap_on_polygon**:
-
-- **scan_step:**  the number of blocks scanned per scan
-- **start_from_blockNo:**  scan data from this block number
-- **start_from_blockNo:**  the time between each scan of the blockchain
+#### [polygon]
+- **rpc_url**: the polygon network rpc url
+- **payment_contract_address**:  swan payment gateway address on polygon
+- **contract_lock_function_signature**:  swan payment gateway's lock payment event's function signature on polygon
+- **contract_unlock_function_signature**:  swan payment gateway's lock payment event's function signature on polygon
+- **dao_swan_oracle_address**:  swan dao address on polygon
+- **dao_event_function_signature**:  swan dao's signature event's function signature on polygon
+- **pair_address_between_wfil_usdc_of_sushiswap_on_polygon**:
 
 ## Payment Process
 

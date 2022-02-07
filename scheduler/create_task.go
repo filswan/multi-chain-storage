@@ -11,7 +11,6 @@ import (
 	"payment-bridge/database"
 	"payment-bridge/models"
 	"payment-bridge/on-chain/client"
-	"sync"
 	"time"
 
 	"github.com/filswan/go-swan-client/command"
@@ -19,40 +18,38 @@ import (
 	"github.com/filswan/go-swan-lib/logs"
 	libmodel "github.com/filswan/go-swan-lib/model"
 	libutils "github.com/filswan/go-swan-lib/utils"
-	"github.com/robfig/cron"
 	"github.com/shopspring/decimal"
 )
 
-func CreateTaskScheduler() {
-	Mutex := &sync.Mutex{}
-	c := cron.New()
-	err := c.AddFunc(config.GetConfig().ScheduleRule.CreateTaskRule, func() {
-		logs.GetLogger().Info("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ create task  scheduler is running at " + time.Now().Format("2006-01-02 15:04:05"))
-		Mutex.Lock()
-		err := CreateTask()
-		Mutex.Unlock()
+func CreateTask() error {
+	for {
+		numSrcFiles, err := createTask()
 		if err != nil {
 			logs.GetLogger().Error(err)
-			return
+			return err
 		}
-	})
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return
+
+		if numSrcFiles == nil || *numSrcFiles == 0 {
+			logs.GetLogger().Info("0 source file created to car file")
+			return nil
+		}
+
+		logs.GetLogger().Info(*numSrcFiles, " source file(s) created to car file")
 	}
-	c.Start()
+
 }
 
-func CreateTask() error {
+func createTask() (*int, error) {
 	srcFiles, err := models.GetSourceFilesNeed2Car()
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return err
+		return nil, err
 	}
 
 	if len(srcFiles) == 0 {
-		logs.GetLogger().Info("no source file to be created to car file")
-		return nil
+		numSrcFiles := 0
+		logs.GetLogger().Info("0 source file to be created to car file")
+		return &numSrcFiles, nil
 	}
 
 	currentTimeStr := time.Now().Format("2006-01-02T15:04:05")
@@ -62,7 +59,7 @@ func CreateTask() error {
 	err = libutils.CreateDir(carSrcDir)
 	if err != nil {
 		logs.GetLogger().Error("creating dir:", carSrcDir, " failed,", err)
-		return err
+		return nil, err
 	}
 
 	totalSize := int64(0)
@@ -73,9 +70,10 @@ func CreateTask() error {
 	fileCoinPriceInUsdc, err := client.GetWfilPriceFromSushiPrice("1")
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return err
+		return nil, err
 	}
 
+	fileSizeMin := config.GetConfig().SwanTask.MinFileSize
 	var srcFiles2Merged []*models.SourceFileExt
 	for _, srcFile := range srcFiles {
 		srcFilepathTemp := filepath.Join(carSrcDir, filepath.Base(srcFile.ResourceUri))
@@ -107,12 +105,17 @@ func CreateTask() error {
 		}
 
 		srcFiles2Merged = append(srcFiles2Merged, srcFile)
+
+		if totalSize >= fileSizeMin {
+			break
+		}
 	}
 
 	if totalSize == 0 {
 		os.RemoveAll(carSrcDir)
-		logs.GetLogger().Info("no source files to be merged to car file")
-		return nil
+		numSrcFiles := 0
+		logs.GetLogger().Info("0 source file to be created to car file")
+		return &numSrcFiles, nil
 	}
 
 	passedMilliSec := currentUtcMilliSec - createdTimeMin
@@ -121,20 +124,18 @@ func CreateTask() error {
 		createAnyway = true
 	}
 
-	fileSizeMin := config.GetConfig().SwanTask.MinFileSize
-
 	if !createAnyway && totalSize < fileSizeMin {
 		os.RemoveAll(carSrcDir)
 		err := fmt.Errorf("source file size is not enough")
 		logs.GetLogger().Error("source file size is not enough")
-		return err
+		return nil, err
 	}
 
 	err = libutils.CreateDir(carDestDir)
 	if err != nil {
 		os.RemoveAll(carSrcDir)
 		logs.GetLogger().Error("creating dir:", carDestDir, " failed,", err)
-		return err
+		return nil, err
 	}
 
 	fileDesc, err := createTask4SrcFiles(carSrcDir, carDestDir, *maxPrice, createAnyway, fileSizeMin)
@@ -142,7 +143,7 @@ func CreateTask() error {
 		os.RemoveAll(carSrcDir)
 		os.RemoveAll(carDestDir)
 		logs.GetLogger().Error(err)
-		return err
+		return nil, err
 	}
 
 	err = saveCarInfo2DB(fileDesc, srcFiles2Merged, *maxPrice)
@@ -150,7 +151,7 @@ func CreateTask() error {
 		os.RemoveAll(carSrcDir)
 		os.RemoveAll(carDestDir)
 		logs.GetLogger().Error(err)
-		return err
+		return nil, err
 	}
 
 	err = os.RemoveAll(carSrcDir)
@@ -158,26 +159,11 @@ func CreateTask() error {
 		logs.GetLogger().Error(err)
 	}
 
-	return nil
+	numSrcFiles := len(srcFiles2Merged)
+	return &numSrcFiles, nil
 }
 
-func getMaxPrice(srcFile models.SourceFileExt, fileCoinPriceInUsdc *big.Int) (*decimal.Decimal, error) {
-	maxPrice, err := GetMaxPriceForCreateTask(fileCoinPriceInUsdc, srcFile)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-
-	logs.GetLogger().Println("payload cid ", srcFile.PayloadCid, " max price is ", maxPrice)
-
-	if maxPrice.Cmp(config.GetConfig().SwanTask.MaxPrice) < 0 {
-		*maxPrice = config.GetConfig().SwanTask.MaxPrice
-	}
-
-	return maxPrice, nil
-}
-
-func GetMaxPriceForCreateTask(rate *big.Int, srcFile models.SourceFileExt) (*decimal.Decimal, error) {
+func getMaxPrice(srcFile models.SourceFileExt, rate *big.Int) (*decimal.Decimal, error) {
 	_, sectorSize := libutils.CalculatePieceSize(srcFile.FileSize)
 
 	lockedFeeInFileCoin := srcFile.LockedFee.Div(decimal.NewFromFloat(constants.LOTUS_PRICE_MULTIPLE_1E18)).Div(decimal.NewFromInt(rate.Int64()))
@@ -186,6 +172,15 @@ func GetMaxPriceForCreateTask(rate *big.Int, srcFile models.SourceFileExt) (*dec
 	sectorSizeGB := decimal.NewFromFloat(sectorSize).Div(decimal.NewFromInt(constants.BYTES_1GB))
 
 	maxPrice := lockedFeeInFileCoin.Div(sectorSizeGB).Div(durationEpoch)
+
+	confMaxPrice := config.GetConfig().SwanTask.MaxPrice
+
+	if maxPrice.Cmp(confMaxPrice) > 0 {
+		maxPrice = confMaxPrice
+	}
+
+	logs.GetLogger().Println("payload cid: ", srcFile.PayloadCid, " max price is ", maxPrice)
+
 	return &maxPrice, nil
 }
 

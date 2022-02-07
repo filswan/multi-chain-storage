@@ -1,11 +1,7 @@
 package scheduler
 
 import (
-	"sync"
-	"time"
-
 	"github.com/filswan/go-swan-client/command"
-	"github.com/robfig/cron"
 
 	"path/filepath"
 	"payment-bridge/common/constants"
@@ -20,26 +16,6 @@ import (
 
 	libconstants "github.com/filswan/go-swan-lib/constants"
 )
-
-func SendDealScheduler() {
-	Mutex := &sync.Mutex{}
-	c := cron.New()
-	err := c.AddFunc(config.GetConfig().ScheduleRule.SendDealRule, func() {
-		logs.GetLogger().Info("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ create task  scheduler is running at " + time.Now().Format("2006-01-02 15:04:05"))
-		Mutex.Lock()
-		err := SendDeal()
-		Mutex.Unlock()
-		if err != nil {
-			logs.GetLogger().Error(err)
-			return
-		}
-	})
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return
-	}
-	c.Start()
-}
 
 func SendDeal() error {
 	dealFiles, err := models.GetDeal2Send()

@@ -30,7 +30,7 @@ func GetWfilPriceFromSushiPrice(wfilPrice string) (*big.Int, error) {
 
 	//amt,_:=  new(big.Int).SetString("1000000000000000000", 10)
 	amt, flag := new(big.Int).SetString(wfilPrice, 10)
-	if flag == false {
+	if !flag {
 		err := errors.New("calculating filecoin to usdc pring occurred error")
 		logs.GetLogger().Error(err)
 		return nil, err

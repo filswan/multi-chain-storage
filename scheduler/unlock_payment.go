@@ -305,7 +305,7 @@ func refund(offlineDeal *models.OfflineDeal, swanPaymentTransactor *goBind.SwanP
 			return err
 		}
 
-		err = models.UpdateRefundAmount(srcFile.ID, lockedFee)
+		err = models.UpdateSourceFileRefundAmount(srcFile.ID, lockedFee)
 		if err != nil {
 			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 			return err
@@ -322,7 +322,7 @@ func refund(offlineDeal *models.OfflineDeal, swanPaymentTransactor *goBind.SwanP
 	}
 
 	for _, srcFile := range srcFiles {
-		err = models.UpdateRefundStatus(srcFile.ID, refundStatus, tx.Hash().Hex())
+		err = models.UpdateSourceFileRefundStatus(srcFile.ID, refundStatus, tx.Hash().Hex())
 		if err != nil {
 			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 			continue

@@ -329,5 +329,11 @@ func refund(offlineDeal *models.OfflineDeal, swanPaymentTransactor *goBind.SwanP
 		}
 	}
 
+	err = models.UpdateDealFileStatus(offlineDeal.DealFileId, refundStatus)
+	if err != nil {
+		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
+		return err
+	}
+
 	return nil
 }

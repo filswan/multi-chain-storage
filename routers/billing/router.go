@@ -13,6 +13,7 @@ import (
 	"strings"
 
 	"github.com/filswan/go-swan-lib/logs"
+	"github.com/shopspring/decimal"
 
 	"github.com/gin-gonic/gin"
 )
@@ -33,7 +34,7 @@ func WriteLockPayment(c *gin.Context) {
 		return
 	}
 
-	eventFromOnChainApi, err := client.GetPaymentInfo(event.PayloadCid)
+	paymentInfo, err := client.GetPaymentInfo(event.PayloadCid)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		usdcCoin, err := models.FindCoinByFullName(constants.COIN_NAME_USDC)
@@ -41,24 +42,35 @@ func WriteLockPayment(c *gin.Context) {
 			logs.GetLogger().Error(err)
 		} else {
 			event.CoinId = usdcCoin.ID
+			event.NetworkId = usdcCoin.NetworkId
 			event.TokenAddress = usdcCoin.Address
 		}
-
-		network, err := models.GetNetworkByName(constants.NETWORK_NAME_POLYGON)
+	} else {
+		lockedFee, err := decimal.NewFromString(paymentInfo.LockedFee.String())
 		if err != nil {
 			logs.GetLogger().Error(err)
 		} else {
-			event.NetworkId = network.ID
+			event.LockedFee = lockedFee
 		}
+
+		event.Deadline = paymentInfo.Deadline.String()
+		event.TokenAddress = paymentInfo.Token.Hex()
+		event.AddressFrom = paymentInfo.Owner.String()
+		event.AddressTo = paymentInfo.Recipient.String()
+		event.LockPaymentTime = utils.GetCurrentUtcMilliSecond()
+		coin, err := models.FindCoinByCoinAddress(event.TokenAddress)
+		if err != nil {
+			logs.GetLogger().Error(err)
+		} else {
+			event.CoinId = coin.ID
+			event.NetworkId = coin.NetworkId
+		}
+	}
+	srcFile, err := models.GetSourceFileByPayloadCid(event.PayloadCid)
+	if err != nil {
+		logs.GetLogger().Error(err)
 	} else {
-		event.Deadline = eventFromOnChainApi.Deadline
-		event.TokenAddress = eventFromOnChainApi.TokenAddress
-		event.AddressFrom = eventFromOnChainApi.AddressFrom
-		event.AddressTo = eventFromOnChainApi.AddressTo
-		event.LockedFee = eventFromOnChainApi.LockedFee
-		event.SourceFileId = eventFromOnChainApi.SourceFileId
-		event.CoinId = eventFromOnChainApi.CoinId
-		event.NetworkId = eventFromOnChainApi.NetworkId
+		event.SourceFileId = srcFile.ID
 	}
 
 	err = database.GetDB().Save(&event).Error

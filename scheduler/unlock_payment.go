@@ -3,7 +3,9 @@ package scheduler
 import (
 	"fmt"
 	"payment-bridge/common/constants"
+	"payment-bridge/common/utils"
 	"payment-bridge/config"
+	"payment-bridge/database"
 	"payment-bridge/models"
 	"payment-bridge/on-chain/client"
 	"payment-bridge/on-chain/goBind"
@@ -14,6 +16,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/filswan/go-swan-lib/logs"
+	"github.com/shopspring/decimal"
 )
 
 func UnlockPayment() error {
@@ -61,13 +64,21 @@ func UnlockPayment() error {
 			time.Sleep(unlockInterval)
 		}
 
-		//logs.GetLogger().Info(i)
-		//if offlineDeal.DealId != 87341 {
-		//	continue
-		//}
-
 		logs.GetLogger().Info(getLog(offlineDeal, "start to unlock"))
+
+		err = setUnlockPayment(offlineDeal)
+		if err != nil {
+			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
+			continue
+		}
+
 		unlockStatus, err := unlockDeal(filswanOracleSession, offlineDeal, ethClient, swanPaymentTransactor, tansactOpts, *recipient)
+		if err != nil {
+			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
+			continue
+		}
+
+		err = updateUnlockPayment(offlineDeal)
 		if err != nil {
 			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 		}
@@ -80,6 +91,86 @@ func UnlockPayment() error {
 			}
 		}
 	}
+	return nil
+}
+
+func updateUnlockPayment(offlineDeal *models.OfflineDeal) error {
+	srcFiles, err := models.GetSourceFilesByDealFileId(offlineDeal.DealFileId)
+	if err != nil {
+		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
+		return err
+	}
+
+	for _, srcFile := range srcFiles {
+		paymentInfo, err := client.GetPaymentInfo(srcFile.PayloadCid)
+		if err != nil {
+			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
+			continue
+		}
+
+		lockedFee, err := decimal.NewFromString(paymentInfo.LockedFee.String())
+		if err != nil {
+			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
+			continue
+		}
+
+		err = models.UpdateUnlockAmount(srcFile.ID, offlineDeal.DealId, lockedFee)
+		if err != nil {
+			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
+			continue
+		}
+	}
+
+	return nil
+}
+
+func setUnlockPayment(offlineDeal *models.OfflineDeal) error {
+	srcFiles, err := models.GetSourceFilesByDealFileId(offlineDeal.DealFileId)
+	if err != nil {
+		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
+		return err
+	}
+
+	for _, srcFile := range srcFiles {
+		unlockPayment := models.EventUnlockPayment{
+			PayloadCid:   srcFile.PayloadCid,
+			SourceFileId: &srcFile.ID,
+			DealId:       offlineDeal.DealId,
+		}
+
+		paymentInfo, err := client.GetPaymentInfo(srcFile.PayloadCid)
+		if err != nil {
+			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
+			return err
+		}
+
+		lockedFee, err := decimal.NewFromString(paymentInfo.LockedFee.String())
+		if err != nil {
+			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
+			return err
+		} else {
+			unlockPayment.LockedFeeBeforeUnlock = lockedFee
+		}
+
+		unlockPayment.TokenAddress = paymentInfo.Token.Hex()
+		unlockPayment.UnlockFromAddress = paymentInfo.Owner.String()
+		unlockPayment.UnlockToAdminAddress = paymentInfo.Recipient.String()
+		unlockPayment.UnlockTime = utils.GetCurrentUtcMilliSecond()
+		coin, err := models.FindCoinByCoinAddress(unlockPayment.TokenAddress)
+		if err != nil {
+			logs.GetLogger().Error(err)
+		} else {
+			unlockPayment.CoinId = coin.ID
+			unlockPayment.NetworkId = coin.NetworkId
+		}
+
+		err = database.SaveOne(unlockPayment)
+		if err != nil {
+			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
+			continue
+		}
+	}
+
 	return nil
 }
 

@@ -3,6 +3,7 @@ package models
 import (
 	"fmt"
 	"payment-bridge/common/constants"
+	"payment-bridge/common/utils"
 	"payment-bridge/database"
 	"strings"
 
@@ -210,4 +211,44 @@ func GetSourceFilesByDealFileId(dealFileId int64) ([]*SourceFile, error) {
 	}
 
 	return sourceFiles, nil
+}
+
+func UpdateRefundAmount(srcFileId int64, refundAmount decimal.Decimal) error {
+	sql := "update source_file set refund_amount=?,update_at where id=?"
+
+	curUtcMilliSec := utils.GetCurrentUtcMilliSecond()
+
+	params := []interface{}{}
+	params = append(params, refundAmount)
+	params = append(params, curUtcMilliSec)
+	params = append(params, srcFileId)
+
+	err := database.GetDB().Exec(sql, params...).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	return nil
+}
+
+func UpdateRefundStatus(srcFileId int64, refundStatus string, refundTxHash string) error {
+	sql := "update source_file set refund_status=?,refund_tx_hash=?,refund_at=?,update_at where id=?"
+
+	curUtcMilliSec := utils.GetCurrentUtcMilliSecond()
+
+	params := []interface{}{}
+	params = append(params, refundStatus)
+	params = append(params, refundTxHash)
+	params = append(params, curUtcMilliSec)
+	params = append(params, curUtcMilliSec)
+	params = append(params, srcFileId)
+
+	err := database.GetDB().Exec(sql, params...).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	return nil
 }

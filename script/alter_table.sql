@@ -3,6 +3,11 @@ alter table source_file modify file_size bigint;
 alter table source_file modify create_at bigint;
 alter table source_file add update_at bigint;
 
+alter table source_file add refund_status varchar(60);
+alter table source_file add refund_amount decimal(20,0);
+alter table source_file add refund_at bigint;
+alter table source_file add refund_tx_hash varchar(100);
+
 alter table event_lock_payment add vrf_rand    varchar(100) not null default '';
 
 

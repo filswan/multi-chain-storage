@@ -76,7 +76,7 @@ func UnlockPayment() error {
 			continue
 		}
 
-		txReceipt, unlockStatus, err := unlockDeal(filswanOracleSession, offlineDeal, ethClient, swanPaymentTransactor, tansactOpts, *recipient)
+		txReceipt, err := unlockDeal(filswanOracleSession, offlineDeal, ethClient, swanPaymentTransactor, tansactOpts, *recipient)
 		if err != nil {
 			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 			continue
@@ -87,12 +87,10 @@ func UnlockPayment() error {
 			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 		}
 
-		if unlockStatus != nil {
-			err = refund(offlineDeal, swanPaymentTransactor, tansactOpts)
-			if err != nil {
-				logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
-				continue
-			}
+		err = refund(offlineDeal, swanPaymentTransactor, tansactOpts)
+		if err != nil {
+			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
+			continue
 		}
 	}
 	return nil
@@ -205,17 +203,17 @@ func getLog(offlineDeal *models.OfflineDeal, messages ...string) string {
 	return text
 }
 
-func unlockDeal(filswanOracleSession *goBind.FilswanOracleSession, offlineDeal *models.OfflineDeal, ethClient *ethclient.Client, swanPaymentTransactor *goBind.SwanPaymentTransactor, tansactOpts *bind.TransactOpts, recipient common.Address) (*types.Receipt, *string, error) {
+func unlockDeal(filswanOracleSession *goBind.FilswanOracleSession, offlineDeal *models.OfflineDeal, ethClient *ethclient.Client, swanPaymentTransactor *goBind.SwanPaymentTransactor, tansactOpts *bind.TransactOpts, recipient common.Address) (*types.Receipt, error) {
 	dealIdStr := strconv.FormatInt(offlineDeal.DealId, 10)
 	isPaymentAvailable, err := filswanOracleSession.IsCarPaymentAvailable(dealIdStr, recipient)
 	if err != nil {
 		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
-		return nil, nil, err
+		return nil, err
 	}
 
 	if !isPaymentAvailable {
 		logs.GetLogger().Info(getLog(offlineDeal, "payment is not available for recipient "+recipient.String()))
-		return nil, nil, nil
+		return nil, nil
 	}
 
 	unlockStatusFailed := constants.OFFLINE_DEAL_UNLOCK_STATUS_UNLOCK_FAILED
@@ -227,13 +225,11 @@ func unlockDeal(filswanOracleSession *goBind.FilswanOracleSession, offlineDeal *
 		err = models.UpdateOfflineDealUnlockStatus(offlineDeal.Id, unlockStatusFailed, err.Error())
 		if err != nil {
 			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
-			return nil, nil, err
+			return nil, err
 		}
 
-		return nil, &unlockStatusFailed, err
+		return nil, err
 	}
-
-	logs.GetLogger().Info(tx.Hash().Hex())
 
 	txReceipt, err := client.CheckTx(ethClient, tx)
 	if err != nil {
@@ -242,10 +238,10 @@ func unlockDeal(filswanOracleSession *goBind.FilswanOracleSession, offlineDeal *
 		err = models.UpdateOfflineDealUnlockStatus(offlineDeal.Id, unlockStatusFailed, tx.Hash().Hex(), err.Error())
 		if err != nil {
 			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
-			return nil, nil, err
+			return nil, err
 		}
 
-		return nil, &unlockStatusFailed, err
+		return nil, err
 	}
 
 	if txReceipt.Status != uint64(1) {
@@ -255,10 +251,10 @@ func unlockDeal(filswanOracleSession *goBind.FilswanOracleSession, offlineDeal *
 		err = models.UpdateOfflineDealUnlockStatus(offlineDeal.Id, unlockStatusFailed, tx.Hash().Hex(), err.Error())
 		if err != nil {
 			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
-			return nil, nil, err
+			return nil, err
 		}
 
-		return nil, &unlockStatusFailed, err
+		return nil, err
 	}
 
 	logs.GetLogger().Info(getLog(offlineDeal, "unlock success", "txHash="+tx.Hash().Hex()))
@@ -268,11 +264,11 @@ func unlockDeal(filswanOracleSession *goBind.FilswanOracleSession, offlineDeal *
 	err = models.UpdateOfflineDealUnlockStatus(offlineDeal.Id, unlockStatusUnlocked)
 	if err != nil {
 		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
-		return nil, &unlockStatusUnlocked, err
+		return nil, err
 	}
 
 	logs.GetLogger().Info(getLog(offlineDeal, "unlock successfully"))
-	return txReceipt, &unlockStatusUnlocked, nil
+	return txReceipt, nil
 }
 
 func refund(offlineDeal *models.OfflineDeal, swanPaymentTransactor *goBind.SwanPaymentTransactor, tansactOpts *bind.TransactOpts) error {

@@ -3,6 +3,11 @@ alter table source_file modify file_size bigint;
 alter table source_file modify create_at bigint;
 alter table source_file add update_at bigint;
 
+alter table source_file add refund_status varchar(60);
+alter table source_file add refund_amount decimal(20,0);
+alter table source_file add refund_at bigint;
+alter table source_file add refund_tx_hash varchar(100);
+
 alter table event_lock_payment add vrf_rand    varchar(100) not null default '';
 
 
@@ -34,8 +39,12 @@ alter table deal_file add max_price   double;
 alter table event_lock_payment modify create_at bigint;
 
 alter table event_unlock_payment modify create_at bigint;
+alter table event_unlock_payment modify unlock_time bigint;
+alter table event_unlock_payment add update_at bigint;
 alter table event_unlock_payment add deal_id bigint;
 alter table event_unlock_payment add source_file_id bigint;
+alter table event_unlock_payment add locked_fee_before_unlock decimal(20,0);
+alter table event_unlock_payment add locked_fee_after_unlock decimal(20,0);
 alter table event_unlock_payment add foreign key fk_event_unlock_payment_source_file_id(source_file_id) references source_file(id)
 
 

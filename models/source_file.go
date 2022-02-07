@@ -3,6 +3,7 @@ package models
 import (
 	"fmt"
 	"payment-bridge/common/constants"
+	"payment-bridge/common/utils"
 	"payment-bridge/database"
 	"strings"
 
@@ -11,20 +12,24 @@ import (
 )
 
 type SourceFile struct {
-	ID          int64  `json:"id"`
-	ResourceUri string `json:"resource_uri"`
-	Status      string `json:"status"`
-	FileSize    int64  `json:"file_size"`
-	Dataset     string `json:"dataset"`
-	IpfsUrl     string `json:"ipfs_url"`
-	PinStatus   string `json:"pin_status"`
-	PayloadCid  string `json:"payload_cid"`
-	NftTxHash   string `json:"nft_tx_hash"`
-	TokenId     string `json:"token_id"`
-	MintAddress string `json:"mint_address"`
-	FileType    int    `json:"file_type"`
-	CreateAt    int64  `json:"create_at"`
-	UpdateAt    int64  `json:"update_at"`
+	ID           int64           `json:"id"`
+	ResourceUri  string          `json:"resource_uri"`
+	Status       string          `json:"status"`
+	FileSize     int64           `json:"file_size"`
+	Dataset      string          `json:"dataset"`
+	IpfsUrl      string          `json:"ipfs_url"`
+	PinStatus    string          `json:"pin_status"`
+	PayloadCid   string          `json:"payload_cid"`
+	NftTxHash    string          `json:"nft_tx_hash"`
+	TokenId      string          `json:"token_id"`
+	MintAddress  string          `json:"mint_address"`
+	FileType     int             `json:"file_type"`
+	RefundStatus string          `json:"refund_status"`
+	RefundAmount decimal.Decimal `json:"refund_amount"`
+	RefundAt     int64           `json:"refund_at"`
+	RefundTxHash string          `json:"refund_tx_hash"`
+	CreateAt     int64           `json:"create_at"`
+	UpdateAt     int64           `json:"update_at"`
 }
 
 type SourceFileExt struct {
@@ -206,4 +211,44 @@ func GetSourceFilesByDealFileId(dealFileId int64) ([]*SourceFile, error) {
 	}
 
 	return sourceFiles, nil
+}
+
+func UpdateRefundAmount(srcFileId int64, refundAmount decimal.Decimal) error {
+	sql := "update source_file set refund_amount=?,update_at where id=?"
+
+	curUtcMilliSec := utils.GetCurrentUtcMilliSecond()
+
+	params := []interface{}{}
+	params = append(params, refundAmount)
+	params = append(params, curUtcMilliSec)
+	params = append(params, srcFileId)
+
+	err := database.GetDB().Exec(sql, params...).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	return nil
+}
+
+func UpdateRefundStatus(srcFileId int64, refundStatus string, refundTxHash string) error {
+	sql := "update source_file set refund_status=?,refund_tx_hash=?,refund_at=?,update_at where id=?"
+
+	curUtcMilliSec := utils.GetCurrentUtcMilliSecond()
+
+	params := []interface{}{}
+	params = append(params, refundStatus)
+	params = append(params, refundTxHash)
+	params = append(params, curUtcMilliSec)
+	params = append(params, curUtcMilliSec)
+	params = append(params, srcFileId)
+
+	err := database.GetDB().Exec(sql, params...).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	return nil
 }

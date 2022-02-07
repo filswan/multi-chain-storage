@@ -86,6 +86,7 @@ func UnlockPayment() error {
 		if err != nil {
 			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 		}
+
 		err = refund(offlineDeal, swanPaymentTransactor, tansactOpts)
 		if err != nil {
 			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))

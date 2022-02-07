@@ -105,12 +105,14 @@ func GetEventUnlockPaymentsByPayloadCidUserWallet(sourceFileId int64, userWallet
 	return eventUnlockPayment, nil
 }
 
-func UpdateUnlockAmount(srcFileId, dealId int64, unlockedFee decimal.Decimal) error {
-	sql := "update event_unlock_payment set unlock_to_admin_amount=locked_fee_before_unlock-?,locked_fee_after_unlock=?,update_at=? where source_file_id=? and deal_id=?"
+func UpdateUnlockAmount(srcFileId, dealId int64, txHash, blockNo string, unlockedFee decimal.Decimal) error {
+	sql := "update event_unlock_payment set tx_hash=?,block_no=?,unlock_to_admin_amount=locked_fee_before_unlock-?,locked_fee_after_unlock=?,update_at=? where source_file_id=? and deal_id=?"
 
 	curUtcMilliSec := utils.GetCurrentUtcMilliSecond()
 
 	params := []interface{}{}
+	params = append(params, txHash)
+	params = append(params, blockNo)
 	params = append(params, unlockedFee)
 	params = append(params, unlockedFee)
 	params = append(params, curUtcMilliSec)

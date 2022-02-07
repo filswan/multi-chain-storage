@@ -464,6 +464,7 @@ export default {
         w3ss_id_nothing: 'Queuing',
         w3ss_id_nothing_tooltip: 'The data from this upload is being aggregated for storage on Filecoin. Filecoin deals will be active within 48 hours of upload.',
         create_time: 'Create Time',
+        upload_time: 'Upload Time',
         deal_id: 'Deal ID',
         payment: 'PAYMENT',
         MINT: 'MINT',

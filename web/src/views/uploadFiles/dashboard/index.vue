@@ -403,7 +403,7 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="create_at" :label="$t('uploadFile.create_time')" width="100">
+          <el-table-column prop="create_at" :label="$t('uploadFile.upload_time')" width="100">
             <template slot-scope="scope">
               {{ scope.row.create_at }}
             </template>
@@ -528,7 +528,7 @@
             <a class="a-close" @click="metamaskLoginTip=false">{{$t('uploadFile.OK')}}</a>
         </el-dialog>
         
-        <el-dialog title="" :visible.sync="mintTransaction" :width="widthMint"
+        <el-dialog title="" :visible.sync="mintTransaction" :width="width"
             custom-class="completeDia">
             <img src="@/assets/images/alert-icon.png" />
             <h1>{{$t('uploadFile.View_Your_NFT')}}</h1>
@@ -602,7 +602,6 @@ export default {
       centerDialogVisible: false,
       center_fail: false,
       width: document.body.clientWidth>600?'400px':'95%',
-      widthMint: document.body.clientWidth>600?'480px':'95%',
       payment: {
         cid: '',
         amount: '',
@@ -1331,11 +1330,16 @@ export default {
       return value.toFixed(8) + ' FIL';
     },
     formatbytes: function (bytes) {
+      if (bytes === 0) return '0 B';
       if (!bytes) return "-";
-      if (bytes == 0) return '0 B';
       var k = 1000, // or 1024
           sizes = ['bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
           i = Math.floor(Math.log(bytes) / Math.log(k));
+
+      if (Math.round((bytes / Math.pow(k, i))).toString().length > 3) {
+          // 判断大小是999999999左右，解决会显示成1.00e+3科学计数法
+          i += 1
+      }
       return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];
     },
   },

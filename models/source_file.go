@@ -213,8 +213,8 @@ func GetSourceFilesByDealFileId(dealFileId int64) ([]*SourceFile, error) {
 	return sourceFiles, nil
 }
 
-func UpdateRefundAmount(srcFileId int64, refundAmount decimal.Decimal) error {
-	sql := "update source_file set refund_amount=?,update_at where id=?"
+func UpdateSourceFileRefundAmount(srcFileId int64, refundAmount decimal.Decimal) error {
+	sql := "update source_file set refund_amount=?,update_at=? where id=?"
 
 	curUtcMilliSec := utils.GetCurrentUtcMilliSecond()
 
@@ -232,7 +232,7 @@ func UpdateRefundAmount(srcFileId int64, refundAmount decimal.Decimal) error {
 	return nil
 }
 
-func UpdateRefundStatus(srcFileId int64, refundStatus string, refundTxHash string) error {
+func UpdateSourceFileRefundStatus(srcFileId int64, refundStatus string, refundTxHash string) error {
 	sql := "update source_file set refund_status=?,refund_tx_hash=?,refund_at=?,update_at where id=?"
 
 	curUtcMilliSec := utils.GetCurrentUtcMilliSecond()

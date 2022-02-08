@@ -42,6 +42,7 @@ unlock_payment_rule = "0 */5 * * * ?"  #every minute
 create_task_rule = "0 */2 * * * ?"
 send_deal_rule = "0 */3 * * * ?"  #every minute
 scan_deal_status_rule = "0 */4 * * * ?"
+refund_rule = "0 */5 * * * ?"  #every minute
 
 [polygon]
 admin_wallet_on_polygon = ""

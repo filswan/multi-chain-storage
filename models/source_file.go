@@ -214,7 +214,7 @@ func GetSourceFilesByDealFileId(dealFileId int64) ([]*SourceFile, error) {
 }
 
 func UpdateSourceFileRefundAmount(srcFileId int64, refundAmount decimal.Decimal) error {
-	sql := "update source_file set refund_amount=?,update_at where id=?"
+	sql := "update source_file set refund_amount=?,update_at=? where id=?"
 
 	curUtcMilliSec := utils.GetCurrentUtcMilliSecond()
 

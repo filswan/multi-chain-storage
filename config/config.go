@@ -82,6 +82,7 @@ type ScheduleRule struct {
 	CreateTaskRule     string `toml:"create_task_rule"`
 	SendDealRule       string `toml:"send_deal_rule"`
 	ScanDealStatusRule string `toml:"scan_deal_status_rule"`
+	RefundRule         string `toml:"refund_rule"`
 }
 
 var config *Configuration
@@ -150,6 +151,7 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 		{"schedule_rule", "create_task_rule"},
 		{"schedule_rule", "send_deal_rule"},
 		{"schedule_rule", "scan_deal_status_rule"},
+		{"schedule_rule", "refund_rule"},
 
 		{"polygon", "admin_wallet_on_polygon"},
 		{"polygon", "recipient"},

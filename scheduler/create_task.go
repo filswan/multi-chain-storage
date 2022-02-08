@@ -47,9 +47,8 @@ func createTask() (*int, error) {
 	}
 
 	if len(srcFiles) == 0 {
-		numSrcFiles := 0
 		logs.GetLogger().Info("0 source file to be created to car file")
-		return &numSrcFiles, nil
+		return nil, nil
 	}
 
 	currentTimeStr := time.Now().Format("2006-01-02T15:04:05")
@@ -107,15 +106,15 @@ func createTask() (*int, error) {
 		srcFiles2Merged = append(srcFiles2Merged, srcFile)
 
 		if totalSize >= fileSizeMin {
+			logs.GetLogger().Info("total size is:", totalSize, ", ", len(srcFiles2Merged), " files to be created to car file")
 			break
 		}
 	}
 
 	if totalSize == 0 {
 		os.RemoveAll(carSrcDir)
-		numSrcFiles := 0
 		logs.GetLogger().Info("0 source file to be created to car file")
-		return &numSrcFiles, nil
+		return nil, nil
 	}
 
 	passedMilliSec := currentUtcMilliSec - createdTimeMin

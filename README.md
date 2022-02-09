@@ -111,7 +111,7 @@ nohup ./build/multi-chain-payment >> ./build/mcp.log &    #After installation fr
 
 ### config.toml
 - **port**: Web api port
-- **release**: when work in release mode: set this to true, otherwise to false and enviornment variable GIN_MODE not to release
+- **release**: When work in release mode: set this to true, otherwise to false and enviornment variable GIN_MODE not to release
 - **swan_platform_fil_wallet**: The wallet address used to pay on the filecoin network
 - **filink_url**: Deals data can be searched from here
 #### [lotus]

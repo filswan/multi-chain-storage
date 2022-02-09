@@ -50,7 +50,7 @@ func GetDealFileByDealId(dealId int64) (*DealFile, error) {
 }
 
 func GetDealFiles2Refund() ([]*DealFile, error) {
-	sql := "select a.* from deal_file a where a.lock_payment_status=? or a.lock_payment_status=?"
+	sql := "select a.* from deal_file a where a.lock_payment_status!=? and a.lock_payment_status!=?"
 
 	var dealFiles []*DealFile
 

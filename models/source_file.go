@@ -233,7 +233,7 @@ func UpdateSourceFileRefundAmount(srcFileId int64, refundAmount decimal.Decimal)
 }
 
 func UpdateSourceFileRefundStatus(srcFileId int64, refundStatus string, refundTxHash string) error {
-	sql := "update source_file set refund_status=?,refund_tx_hash=?,refund_at=?,update_at where id=?"
+	sql := "update source_file set refund_status=?,refund_tx_hash=?,refund_at=?,update_at=? where id=?"
 
 	curUtcMilliSec := utils.GetCurrentUtcMilliSecond()
 

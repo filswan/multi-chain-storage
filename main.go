@@ -33,6 +33,7 @@ func main() {
 	//scheduler.SendDeal()
 	//scheduler.ScanDeal()
 	//scheduler.UnlockPayment()
+	scheduler.Refund()
 
 	createGinServer()
 }

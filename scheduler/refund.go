@@ -37,7 +37,7 @@ func Refund() error {
 		return err
 	}
 
-	refund(int64(0), swanPaymentTransactor, tansactOpts)
+	//refund(int64(903), swanPaymentTransactor, tansactOpts)
 
 	dealFiles, err := models.GetDealFiles2Refund()
 	if err != nil {
@@ -110,6 +110,8 @@ func refund(dealFileId int64, swanPaymentTransactor *goBind.SwanPaymentTransacto
 		if tx != nil {
 			txHash = tx.Hash().Hex()
 		}
+
+		logs.GetLogger().Info("refund stats:", refundStatus, " tx hash:", txHash)
 
 		err = models.UpdateSourceFileRefundStatus(srcFile.ID, refundStatus, txHash)
 		if err != nil {

@@ -37,7 +37,7 @@ func Refund() error {
 		return err
 	}
 
-	refund(int64(903), swanPaymentTransactor, tansactOpts)
+	//refund(int64(903), swanPaymentTransactor, tansactOpts)
 
 	dealFiles, err := models.GetDealFiles2Refund()
 	if err != nil {

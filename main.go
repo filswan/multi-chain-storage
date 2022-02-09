@@ -23,8 +23,6 @@ import (
 func main() {
 	LoadEnv()
 
-	//client.GetPrivateKeyPublicKey(constants.PRIVATE_KEY_ON_POLYGON)
-
 	db := database.Init()
 	defer database.CloseDB(db)
 
@@ -33,7 +31,7 @@ func main() {
 	//scheduler.SendDeal()
 	//scheduler.ScanDeal()
 	//scheduler.UnlockPayment()
-	scheduler.Refund()
+	//scheduler.Refund()
 
 	createGinServer()
 }

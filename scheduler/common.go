@@ -28,7 +28,7 @@ func GetSrcDir() string {
 
 func InitScheduler() {
 	createDir()
-	//createScheduleJob()
+	createScheduleJob()
 }
 
 func createScheduleJob() {

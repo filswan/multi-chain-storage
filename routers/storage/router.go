@@ -43,6 +43,7 @@ type UploadResult struct {
 	PayloadCid   string `json:"payload_cid"`
 	IpfsUrl      string `json:"ipfs_url"`
 	NeedPay      int    `json:"need_pay"`
+	FileSize     int64  `json:"file_size"`
 }
 
 func GetDeals4SourceFile(c *gin.Context) {
@@ -320,7 +321,7 @@ func UploadFile(c *gin.Context) {
 		fileTypeInt = 0
 	}
 
-	srcFileId, payloadCid, ipfsDownloadPath, needPay, err := SaveFile(c, file, durationInt, fileTypeInt, walletAddress)
+	srcFileId, payloadCid, ipfsDownloadPath, needPay, srcFileSize, err := SaveFile(c, file, durationInt, fileTypeInt, walletAddress)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.SAVE_FILE_ERROR))
 		return
@@ -331,6 +332,7 @@ func UploadFile(c *gin.Context) {
 		PayloadCid:   *payloadCid,
 		NeedPay:      *needPay,
 		IpfsUrl:      *ipfsDownloadPath,
+		FileSize:     *srcFileSize,
 	}
 
 	c.JSON(http.StatusOK, common.CreateSuccessResponse(uploadResult))

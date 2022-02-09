@@ -19,7 +19,7 @@ func Refund() error {
 		return err
 	}
 
-	_, swanPaymentTransactor, err := client.GetSwanPaymentTransactor(ethClient)
+	swanPaymentTransactor, err := client.GetSwanPaymentTransactor(ethClient)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err

@@ -72,16 +72,15 @@ func GetEthClient() (*ethclient.Client, *rpc.Client, error) {
 	return ethClient, rpcClient, nil
 }
 
-func GetSwanPaymentTransactor(ethClient *ethclient.Client) (*common.Address, *goBind.SwanPaymentTransactor, error) {
+func GetSwanPaymentTransactor(ethClient *ethclient.Client) (*goBind.SwanPaymentTransactor, error) {
 	contractAddress := common.HexToAddress(config.GetConfig().Polygon.PaymentContractAddress)
 	swanPaymentTransactor, err := goBind.NewSwanPaymentTransactor(contractAddress, ethClient)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return nil, nil, err
+		return nil, err
 	}
 
-	recieverAddress := common.HexToAddress(config.GetConfig().Polygon.McpPaymentReceiverAddress)
-	return &recieverAddress, swanPaymentTransactor, nil
+	return swanPaymentTransactor, nil
 }
 
 func GetFilswanOracleSession(ethClient *ethclient.Client) (*goBind.FilswanOracleSession, error) {
@@ -130,28 +129,6 @@ func GetTransactOpts(ethClient *ethclient.Client, privateKey *ecdsa.PrivateKey, 
 	transactOpts.Context = context.Background()
 
 	return transactOpts, nil
-}
-
-func GetPaymentSession() (*goBind.SwanPaymentSession, error) {
-	ethClient, _, err := GetEthClient()
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-
-	swanPaymentSession := &goBind.SwanPaymentSession{}
-
-	paymentContractAddress := common.HexToAddress(config.GetConfig().Polygon.PaymentContractAddress)
-
-	paymentGatewayInstance, err := goBind.NewSwanPayment(paymentContractAddress, ethClient)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-
-	swanPaymentSession.Contract = paymentGatewayInstance
-
-	return swanPaymentSession, nil
 }
 
 func GetContractAbi() (*abi.ABI, error) {

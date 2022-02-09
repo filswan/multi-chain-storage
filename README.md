@@ -145,7 +145,7 @@ nohup ./build/multi-chain-payment >> ./build/mcp.log &    #After installation fr
 
 ## Payment Process
 
-**Step:one:** Users upload a file they want to backup to filecoin network, then use the currencies we support to send tokens
+1. Users upload a file they want to backup to filecoin network, then use the currencies we support to send tokens
 to our contract address.<br>
 **Step:two:** MCP scans the events of the above transactions<br>
 **Step:three:** When the event data got in Step:two: meet the conditions, the user can perform the filecoin network storage function<br>

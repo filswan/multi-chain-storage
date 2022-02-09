@@ -75,9 +75,13 @@ func SendDeal() error {
 		dealFile.LockPaymentStatus = constants.PROCESS_STATUS_DEAL_SENT
 		dealFile.ClientWalletAddress = cmdAutoBidDeal.SenderWallet
 		dealFile.UpdateAt = currentUtcMilliSec
-		err = database.SaveOne(dealFile)
+
+		db := database.GetDBTransaction()
+		err = database.SaveOneInTransaction(db, dealFile)
 		if err != nil {
 			logs.GetLogger().Error(err)
+			db.Rollback()
+			return err
 		}
 
 		currentUtcMilliSec := utils.GetCurrentUtcMilliSecond()
@@ -101,10 +105,18 @@ func SendDeal() error {
 				UpdateAt:     currentUtcMilliSec,
 			}
 
-			err = database.SaveOne(&offlineDeal)
+			err = database.SaveOneInTransaction(db, &offlineDeal)
 			if err != nil {
 				logs.GetLogger().Error(err)
+				db.Rollback()
+				return err
 			}
+		}
+
+		err = db.Commit().Error
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return err
 		}
 	}
 

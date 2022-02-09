@@ -33,10 +33,10 @@
 * [Token Swap](#Token-Swap)
 * [Payment Module](#Payment-Module)
 * [Swan Client API](https://github.com/filswan/go-swan-client)
-* [Scan Deal Status](#)
 * [DAO Signature](#DAO-Signature)
 * [Data DAO](https://github.com/filswan/flink)
-* IPFS/Filecoin Storage
+* [IPFS](https://docs.ipfs.io/)
+* [Filecoin Storage](https://lotus.filecoin.io/docs/set-up/install/)
 
 ### Token Swap
 1. Users pay USDC or other tokens, which are called user tokens, when uploading a file.
@@ -56,11 +56,6 @@
 
 ### DAO Signature
 - If DAO detects that the file uploaded has been chained, it will trigger a signature operation
-
-### Payment Unlock
-- When the deal has been signed by more than half of the DAOs, the unlock operation will be triggered.
-- The part that needs to be paid will be deducted from the locked token.
-- The remaining part will be returned to the user.
 
 ## Prerequisites
 - OS: Ubuntu 20.04 LTS

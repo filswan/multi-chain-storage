@@ -154,7 +154,7 @@ nohup ./build/multi-chain-payment >> ./build/mcp.log &    #After installation fr
       1. create car files, use the minimum max price among the source files to be merged as the max price for the whole car file
       2. upload car files
       3. create task on swan platform
-5. Market Matcher allocate miners for a task created in the last step
+5. Market Matcher allocate miners for the car file created in last step
 6. MCP send deals by calling Swan Client API, see [Swan Client](https://github.com/filswan/go-swan-client)
 7. MCP Scan Scheduler module scan the deal info from lotus
 8. When the user's storage is successful, it will be scanned by DAO organization, and then DAO signed to agree to unlock the user's payment.

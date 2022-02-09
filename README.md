@@ -150,15 +150,15 @@ nohup ./build/multi-chain-payment >> ./build/mcp.log &    #After installation fr
 3. MCP keeps the transaction info to our system
 4. MCP scan those source files uploaded and paid but not yet created to car files, and then do the following steps:
    1. compute the max price for each source file, based on the source file size, token paid, and exchange rate betwee USDC and wFil
-   2. if the scanned source file size sum is more than 1GB or the earliest source file to be merged to car file is more 1 day ago then:
-      1. create car files
+   2. if the scanned source file size sum is more than 1GB or the earliest source file to be merged to car file is more 1 day ago, then MCP will do the following steps by calling Swan Client Api, see [Swan Client](https://github.com/filswan/go-swan-client)
+      1. create car files, use the minimum max price among the source files to be merged as the max price for the whole car file
       2. upload car files
-      3. send tasks to swan platform
-**Step:three:** When the event data got in Step:two: meet the conditions, the user can perform the filecoin network storage function<br>
-**Step:four:** When the user's storage is successful, it will be scanned by DAO organization, and then DAO signed to
-agree to unlock the user's payment.<br>
-**Step:five:** If more than half of the dao agree, the payment bridge will unlock the user's payment, deduct the user's
-storage fee, and the remaining locked virtual currency Is returned to the customer's wallet<br>
+      3. create task on swan platform
+5. Market Matcher allocate miners for a task created in the last step
+6. MCP send deals by calling Swan Client API, see [Swan Client](https://github.com/filswan/go-swan-client)
+7. MCP Scan Scheduler module scan the deal info from lotus
+8. When the user's storage is successful, it will be scanned by DAO organization, and then DAO signed to agree to unlock the user's payment.
+9. If more than half of the dao agree, MCP will unlock the user's payment, release the remaining money to the user wallet.
 
 ## Database Table Introduction
 - You can get db table ddl sql script in `[mcp-source-file-path]/script/dbschema.sql`

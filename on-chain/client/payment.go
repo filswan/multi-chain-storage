@@ -7,9 +7,20 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/filswan/go-swan-lib/logs"
+	"github.com/shopspring/decimal"
 )
 
-func GetPaymentInfo(srcFilePayloadCid string) (*goBind.IPaymentMinimalTxInfo, error) {
+type LockedPayment struct {
+	TokenAddress string
+	MinPayment   string
+	LockedFee    decimal.Decimal
+	AddressFrom  string
+	AddressTo    string
+	Deadline     string
+	Size         int64
+}
+
+func GetLockedPaymentInfo(srcFilePayloadCid string) (*LockedPayment, error) {
 	swanPaymentSession, err := GetSwanPaymentSession()
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -28,7 +39,23 @@ func GetPaymentInfo(srcFilePayloadCid string) (*goBind.IPaymentMinimalTxInfo, er
 		return nil, err
 	}
 
-	return &paymentInfo, nil
+	lockedFee, err := decimal.NewFromString(paymentInfo.LockedFee.String())
+	if err != nil {
+		logs.GetLogger().Error(err)
+		lockedFee = decimal.NewFromInt(-1)
+	}
+
+	lockedPayment := LockedPayment{
+		TokenAddress: paymentInfo.Token.Hex(),
+		MinPayment:   paymentInfo.MinPayment.String(),
+		LockedFee:    lockedFee,
+		AddressFrom:  paymentInfo.Owner.String(),
+		AddressTo:    paymentInfo.Recipient.String(),
+		Deadline:     paymentInfo.Deadline.String(),
+		Size:         paymentInfo.Size.Int64(),
+	}
+
+	return &lockedPayment, nil
 }
 
 func GetSwanPaymentSession() (*goBind.SwanPaymentSession, error) {

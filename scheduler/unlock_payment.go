@@ -19,7 +19,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/filswan/go-swan-lib/logs"
-	"github.com/shopspring/decimal"
 )
 
 func UnlockPayment() error {
@@ -117,13 +116,7 @@ func updateUnlockPayment(offlineDeal *models.OfflineDeal, txHash string, rpcClie
 	}
 
 	for _, srcFile := range srcFiles {
-		paymentInfo, err := client.GetPaymentInfo(srcFile.PayloadCid)
-		if err != nil {
-			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
-			continue
-		}
-
-		lockedFee, err := decimal.NewFromString(paymentInfo.LockedFee.String())
+		lockedPayment, err := client.GetLockedPaymentInfo(srcFile.PayloadCid)
 		if err != nil {
 			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 			continue
@@ -134,7 +127,7 @@ func updateUnlockPayment(offlineDeal *models.OfflineDeal, txHash string, rpcClie
 			blockNo = *rpcTransaction.BlockNumber
 		}
 
-		err = models.UpdateUnlockAmount(srcFile.ID, offlineDeal.DealId, txHash, blockNo, lockedFee)
+		err = models.UpdateUnlockAmount(srcFile.ID, offlineDeal.DealId, txHash, blockNo, lockedPayment.LockedFee)
 		if err != nil {
 			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 			continue
@@ -158,21 +151,15 @@ func setUnlockPayment(offlineDeal *models.OfflineDeal) error {
 			DealId:       offlineDeal.DealId,
 		}
 
-		paymentInfo, err := client.GetPaymentInfo(srcFile.PayloadCid)
+		lockedPayment, err := client.GetLockedPaymentInfo(srcFile.PayloadCid)
 		if err != nil {
 			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 			return err
 		}
 
-		lockedFee, err := decimal.NewFromString(paymentInfo.LockedFee.String())
-		if err != nil {
-			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
-			return err
-		} else {
-			unlockPayment.LockedFeeBeforeUnlock = lockedFee
-		}
+		unlockPayment.LockedFeeBeforeUnlock = lockedPayment.LockedFee
 
-		unlockPayment.TokenAddress = paymentInfo.Token.Hex()
+		unlockPayment.TokenAddress = lockedPayment.TokenAddress
 		//unlockPayment.UnlockFromAddress = paymentInfo.Owner.String()
 		//unlockPayment.UnlockToAdminAddress = paymentInfo.Recipient.String()
 		unlockPayment.UnlockTime = utils.GetCurrentUtcMilliSecond()

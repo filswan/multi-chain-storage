@@ -13,7 +13,6 @@ import (
 	"strings"
 
 	"github.com/filswan/go-swan-lib/logs"
-	"github.com/shopspring/decimal"
 
 	"github.com/gin-gonic/gin"
 )
@@ -34,7 +33,7 @@ func WriteLockPayment(c *gin.Context) {
 		return
 	}
 
-	paymentInfo, err := client.GetPaymentInfo(event.PayloadCid)
+	lockedPayment, err := client.GetLockedPaymentInfo(event.PayloadCid)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		usdcCoin, err := models.FindCoinByFullName(constants.COIN_NAME_USDC)
@@ -46,17 +45,11 @@ func WriteLockPayment(c *gin.Context) {
 			event.TokenAddress = usdcCoin.Address
 		}
 	} else {
-		lockedFee, err := decimal.NewFromString(paymentInfo.LockedFee.String())
-		if err != nil {
-			logs.GetLogger().Error(err)
-		} else {
-			event.LockedFee = lockedFee
-		}
-
-		event.Deadline = paymentInfo.Deadline.String()
-		event.TokenAddress = paymentInfo.Token.Hex()
-		event.AddressFrom = paymentInfo.Owner.String()
-		event.AddressTo = paymentInfo.Recipient.String()
+		event.MinPayment = lockedPayment.MinPayment
+		event.Deadline = lockedPayment.Deadline
+		event.TokenAddress = lockedPayment.TokenAddress
+		event.AddressFrom = lockedPayment.AddressFrom
+		event.AddressTo = lockedPayment.AddressTo
 		event.LockPaymentTime = utils.GetCurrentUtcMilliSecond()
 		coin, err := models.FindCoinByCoinAddress(event.TokenAddress)
 		if err != nil {

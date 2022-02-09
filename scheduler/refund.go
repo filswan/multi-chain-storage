@@ -9,7 +9,6 @@ import (
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/filswan/go-swan-lib/logs"
-	"github.com/shopspring/decimal"
 )
 
 func Refund() error {
@@ -77,19 +76,13 @@ func refund(dealFileId int64, swanPaymentTransactor *goBind.SwanPaymentTransacto
 
 	var srcFilePayloadCids []string
 	for _, srcFile := range srcFiles {
-		paymentInfo, err := client.GetPaymentInfo(srcFile.PayloadCid)
+		lockedPayment, err := client.GetLockedPaymentInfo(srcFile.PayloadCid)
 		if err != nil {
 			logs.GetLogger().Error(err.Error())
 			return err
 		}
 
-		lockedFee, err := decimal.NewFromString(paymentInfo.LockedFee.String())
-		if err != nil {
-			logs.GetLogger().Error(err.Error())
-			return err
-		}
-
-		err = models.UpdateSourceFileRefundAmount(srcFile.ID, lockedFee)
+		err = models.UpdateSourceFileRefundAmount(srcFile.ID, lockedPayment.LockedFee)
 		if err != nil {
 			logs.GetLogger().Error(err.Error())
 			return err

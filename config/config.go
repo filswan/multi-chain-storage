@@ -12,7 +12,7 @@ import (
 )
 
 type Configuration struct {
-	Port                  string       `toml:"port"`
+	Port                  int          `toml:"port"`
 	Release               bool         `toml:"release"`
 	SwanPlatformFilWallet string       `toml:"swan_platform_fil_wallet"`
 	FilinkUrl             string       `toml:"filink_url"`

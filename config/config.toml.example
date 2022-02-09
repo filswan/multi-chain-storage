@@ -1,4 +1,4 @@
-port="8888"
+port = 8888
 release = true              # when work in release mode: set this to true, otherwise to false and enviornment variable GIN_MODE not to release
 swan_platform_fil_wallet = ""
 filink_url=""

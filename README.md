@@ -30,29 +30,29 @@
 ![MCP-MCP Desgin](https://user-images.githubusercontent.com/8363795/143811916-f051ccce-f9b2-49eb-99ab-8da1a0d9f2f2.png)
 
 ## Modules
-
 * [Token Swap](#Token-Swap)
-* [Payment Lock](#Payment-Lock)
-* [Create Car File](https://github.com/filswan/go-swan-client)
-* [Upload Car File](https://github.com/filswan/go-swan-client)
-* [Create Task](https://github.com/filswan/go-swan-client)
-* [Send Deal](https://github.com/filswan/go-swan-client)
+* [Payment Module](#Payment-Module)
+* [Swan Client API](https://github.com/filswan/go-swan-client)
 * [Scan Deal Status](#)
 * [DAO Signature](#DAO-Signature)
-* [Payment Unlock](#Payment-Unlock)
 * [Data DAO](https://github.com/filswan/flink)
 * IPFS/Filecoin Storage
 
 ### Token Swap
-- Users pay USDC or other tokens, which are called user tokens, when uploading a file.
-- MCP uses FIL, which is called wrapped token, to store data to filecoin network.
-- User tokens should be changed to wrapped token by this module and this step is called token exchange(swap).
-- Token exchange(swap) is done through Sushi Swap which is a DEX.
+1. Users pay USDC or other tokens, which are called user tokens, when uploading a file.
+2. MCP uses FIL, which is called wrapped token, to pay when store data to filecoin network.
+3. User tokens should be changed to wrapped token by this module and this step is called token exchange(swap).
+4. Token exchange(swap) is done through Sushi Swap which is a DEX.
 
-### Payment Lock
-- After a file is uploaded, the money to be paid is estimated based on the average price of all the miners on the entire network.
-- Then the estimated amount of money will be locked.
-- The overpayment part that is locked will be returned through the unlock operation later
+### Payment Module
+1. After a file is uploaded, the money to be paid is estimated based on the 
+  1. the average price of all the miners on the entire network.
+  2. file size
+  3. store copy number
+  4. duration
+2. Then the estimated amount of money will be locked to the payment contract address, see [Configuration](#Configuration)
+3. In unlock step, the amount pay to filcoin network by swan platform fil wallet, will be transfered to mcp payment receiver address, see [Configuration](#Configuration)
+4. In refund step, the overpayment part that is locked will be returned to user wallet
 
 ### DAO Signature
 - If DAO detects that the file uploaded has been chained, it will trigger a signature operation
@@ -115,8 +115,9 @@ nohup ./build/multi-chain-payment >> ./build/mcp.log &    #After installation fr
 ## Configuration
 
 ### config.toml
-- **admin_wallet_on_polygon**: The wallet address used to execute contract methods on the polygon network, pay for gas, lock and unlock user fees on polygon
-- **file_coin_wallet**: The wallet address used to pay on the filecoin network
+- **port**: Web api port
+- **release**: when work in release mode: set this to true, otherwise to false and enviornment variable GIN_MODE not to release
+- **swan_platform_fil_wallet**: The wallet address used to pay on the filecoin network
 - **filink_url**: Deals data can be searched from here
 #### [lotus]
 - **client_api_url**:  Url of lotus client web api, such as: `http://[ip]:[port]/rpc/v0`, generally the `[port]` is `1234`. See [Lotus API](https://docs.filecoin.io/reference/lotus-api/#features)
@@ -132,7 +133,6 @@ nohup ./build/multi-chain-payment >> ./build/mcp.log &    #After installation fr
 - **expired_days**: expected completion days for storage provider sealing data
 - **max_price**: Max price willing to pay per GiB/epoch for offline deal
 - **generate_md5**: [true/false] Whether to generate md5 for each car file, note: this is a resource consuming action
-
 #### [polygon]
 - **rpc_url**: your polygon network rpc url
 - **payment_contract_address**:  swan payment gateway address on polygon to lock money

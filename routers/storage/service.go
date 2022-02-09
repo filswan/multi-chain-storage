@@ -90,7 +90,7 @@ func GetOfflineDealsBySourceFileId(sourceFileId int64) ([]*models.OfflineDeal, *
 	return offlineDeals, sourceFile, nil
 }
 
-func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType int, walletAddress string) (*int64, *string, *string, *int, error) {
+func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType int, walletAddress string) (*int64, *string, *string, *int, *int64, error) {
 	srcDir := scheduler.GetSrcDir()
 
 	filename := srcFile.Filename
@@ -108,7 +108,7 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType 
 	err := c.SaveUploadedFile(srcFile, srcFilepath)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return nil, nil, nil, nil, err
+		return nil, nil, nil, nil, nil, err
 	}
 	logs.GetLogger().Info("source file saved to ", srcFilepath)
 
@@ -116,7 +116,7 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType 
 	ipfsFileHash, err := ipfs.IpfsUploadFileByWebApi(uploadUrl, srcFilepath)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return nil, nil, nil, nil, err
+		return nil, nil, nil, nil, nil, err
 	}
 
 	ipfsUrl := libutils.UrlJoin(config.GetConfig().IpfsServer.DownloadUrlPrefix, constants.IPFS_URL_PREFIX_BEFORE_HASH, *ipfsFileHash)
@@ -124,7 +124,7 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType 
 	sourceFiles, err := models.GetSourceFilesByPayloadCid(*ipfsFileHash)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return nil, nil, nil, nil, err
+		return nil, nil, nil, nil, nil, err
 	}
 
 	needPay := 0
@@ -151,9 +151,9 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType 
 			err = os.Remove(srcFilepath)
 			if err != nil {
 				logs.GetLogger().Error(err)
-				return nil, nil, nil, nil, err
+				return nil, nil, nil, nil, nil, err
 			}
-			return nil, nil, nil, nil, err
+			return nil, nil, nil, nil, nil, err
 		}
 
 		sourceFileUploadHistory := models.SourceFileUploadHistory{
@@ -171,31 +171,31 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType 
 			err = os.Remove(srcFilepath)
 			if err != nil {
 				logs.GetLogger().Error(err)
-				return nil, nil, nil, nil, err
+				return nil, nil, nil, nil, nil, err
 			}
-			return nil, nil, nil, nil, err
+			return nil, nil, nil, nil, nil, err
 		}
 
-		return &sourceFileCreated.ID, ipfsFileHash, &ipfsUrl, &needPay, nil
+		return &sourceFileCreated.ID, ipfsFileHash, &ipfsUrl, &needPay, &sourceFileCreated.FileSize, nil
 	}
 
 	// remove the current copy of file
 	err = os.Remove(srcFilepath)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return nil, nil, nil, nil, err
+		return nil, nil, nil, nil, nil, err
 	}
 
 	srcFiles, err := models.GetSourceFileUploadHistoryBySourceFileIdWallet(sourceFiles[0].ID, walletAddress)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return nil, nil, nil, nil, err
+		return nil, nil, nil, nil, nil, err
 	}
 
 	eventLockPayments, err := models.GetEventLockPaymentByPayloadCid(*ipfsFileHash)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return nil, nil, nil, nil, err
+		return nil, nil, nil, nil, nil, err
 	}
 
 	if len(srcFiles) == 0 {
@@ -211,7 +211,7 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType 
 		err = database.SaveOne(&sourceFileUploadHistory)
 		if err != nil {
 			logs.GetLogger().Error(err)
-			return nil, nil, nil, nil, err
+			return nil, nil, nil, nil, nil, err
 		}
 
 		if len(eventLockPayments) > 0 { // uploaded and paid by others
@@ -227,7 +227,7 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType 
 		needPay = 2
 	}
 
-	return &sourceFiles[0].ID, &sourceFiles[0].PayloadCid, &sourceFiles[0].IpfsUrl, &needPay, nil
+	return &sourceFiles[0].ID, &sourceFiles[0].PayloadCid, &sourceFiles[0].IpfsUrl, &needPay, &sourceFiles[0].FileSize, nil
 }
 
 func GetSourceFileAndDealFileInfoByPayloadCid(payloadCid string) ([]*SourceFileAndDealFileInfo, error) {

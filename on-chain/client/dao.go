@@ -12,7 +12,7 @@ import (
 
 func GetThreshHold() (uint8, error) {
 	daoContractAddress := common.HexToAddress(config.GetConfig().Polygon.DaoContractAddress)
-	client, _, err := GetEthClient()
+	ethClient, _, err := GetEthClient()
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return 0, err
@@ -22,13 +22,13 @@ func GetThreshHold() (uint8, error) {
 	callOpts.From = daoContractAddress
 	callOpts.Context = context.Background()
 
-	daoOracleContractInstance, err := goBind.NewFilswanOracle(daoContractAddress, client)
+	filswanOracle, err := goBind.NewFilswanOracle(daoContractAddress, ethClient)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return 0, err
 	}
 
-	threshHold, err := daoOracleContractInstance.GetThreshold(callOpts)
+	threshHold, err := filswanOracle.GetThreshold(callOpts)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return 0, err

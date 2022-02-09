@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"crypto/ecdsa"
 	"fmt"
 	"math/big"
 	"os"
@@ -11,16 +12,48 @@ import (
 	"time"
 
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/filswan/go-swan-lib/logs"
 
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/ethereum/go-ethereum/rpc"
 )
+
+func GetPrivateKeyPublicKey(privateKeyEnvName string) (*ecdsa.PrivateKey, *string, error) {
+	privateKeyOnPolygon := os.Getenv(privateKeyEnvName)
+	if len(privateKeyOnPolygon) <= 0 {
+		err := fmt.Errorf("env variable %s is not defined", privateKeyEnvName)
+		logs.GetLogger().Fatal(err)
+	}
+
+	if strings.HasPrefix(strings.ToLower(privateKeyOnPolygon), "0x") {
+		privateKeyOnPolygon = privateKeyOnPolygon[2:]
+	}
+
+	privateKey, err := crypto.HexToECDSA(privateKeyOnPolygon)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, nil, err
+	}
+
+	publicKey := privateKey.Public()
+	publicKeyECDSA, ok := publicKey.(*ecdsa.PublicKey)
+	if !ok {
+		err := fmt.Errorf("cannot assert type: publicKey is not of type *ecdsa.PublicKey")
+		logs.GetLogger().Error(err)
+		return nil, nil, err
+	}
+
+	publicKeyAddress := crypto.PubkeyToAddress(*publicKeyECDSA).Hex()
+
+	logs.GetLogger().Info(publicKeyAddress)
+
+	return privateKey, &publicKeyAddress, nil
+}
 
 func GetEthClient() (*ethclient.Client, *rpc.Client, error) {
 	polygonRpcUrl := config.GetConfig().Polygon.PolygonRpcUrl
@@ -29,6 +62,7 @@ func GetEthClient() (*ethclient.Client, *rpc.Client, error) {
 		logs.GetLogger().Error(err)
 		return nil, nil, err
 	}
+
 	ethClient, err := ethclient.Dial(polygonRpcUrl)
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -39,18 +73,19 @@ func GetEthClient() (*ethclient.Client, *rpc.Client, error) {
 }
 
 func GetSwanPaymentTransactor(ethClient *ethclient.Client) (*common.Address, *goBind.SwanPaymentTransactor, error) {
-	recipient := common.HexToAddress(config.GetConfig().Polygon.Recipient)
-	swanPaymentTransactor, err := goBind.NewSwanPaymentTransactor(recipient, ethClient)
+	contractAddress := common.HexToAddress(config.GetConfig().Polygon.PaymentContractAddress)
+	swanPaymentTransactor, err := goBind.NewSwanPaymentTransactor(contractAddress, ethClient)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, nil, err
 	}
 
-	return &recipient, swanPaymentTransactor, nil
+	recieverAddress := common.HexToAddress(config.GetConfig().Polygon.McpPaymentReceiverAddress)
+	return &recieverAddress, swanPaymentTransactor, nil
 }
 
 func GetFilswanOracleSession(ethClient *ethclient.Client) (*goBind.FilswanOracleSession, error) {
-	daoAddress := common.HexToAddress(config.GetConfig().Polygon.DaoSwanOracleAddress)
+	daoAddress := common.HexToAddress(config.GetConfig().Polygon.DaoContractAddress)
 	daoOracleContractInstance, err := goBind.NewFilswanOracle(daoAddress, ethClient)
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -80,7 +115,9 @@ func GetTransactOpts(ethClient *ethclient.Client) (*bind.TransactOpts, error) {
 		return nil, err
 	}
 
-	adminAddress := common.HexToAddress(config.GetConfig().Polygon.AdminWalletOnPolygon)
+	adminAddressStr := privateKey.PublicKey.X.String()
+	logs.GetLogger().Info("adminAddress:", adminAddressStr)
+	adminAddress := common.HexToAddress(adminAddressStr)
 	nonce, err := ethClient.PendingNonceAt(context.Background(), adminAddress)
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -105,7 +142,7 @@ func GetTransactOpts(ethClient *ethclient.Client) (*bind.TransactOpts, error) {
 		return nil, err
 	}
 
-	transactOpts.Nonce = big.NewInt(int64(nonce))
+	transactOpts.Nonce = big.NewInt(int64(nonce + 1))
 	transactOpts.GasPrice = gasPrice
 	transactOpts.GasLimit = config.GetConfig().Polygon.GasLimit
 	transactOpts.Context = context.Background()
@@ -122,9 +159,9 @@ func GetPaymentSession() (*goBind.SwanPaymentSession, error) {
 
 	swanPaymentSession := &goBind.SwanPaymentSession{}
 
-	paymentGatewayAddress := common.HexToAddress(config.GetConfig().Polygon.PaymentContractAddress)
+	paymentContractAddress := common.HexToAddress(config.GetConfig().Polygon.PaymentContractAddress)
 
-	paymentGatewayInstance, err := goBind.NewSwanPayment(paymentGatewayAddress, ethClient)
+	paymentGatewayInstance, err := goBind.NewSwanPayment(paymentContractAddress, ethClient)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err

@@ -30,7 +30,7 @@ func SendDeal() error {
 		SwanAccessToken:        config.GetConfig().SwanApi.AccessToken,
 		LotusClientApiUrl:      config.GetConfig().Lotus.ClientApiUrl,
 		LotusClientAccessToken: config.GetConfig().Lotus.ClientAccessToken,
-		SenderWallet:           config.GetConfig().FileCoinWallet,
+		SenderWallet:           config.GetConfig().SwanPlatformFilWallet,
 		DealSourceIds:          []int{libconstants.TASK_SOURCE_ID_SWAN_PAYMENT},
 	}
 

@@ -17,7 +17,6 @@ import (
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/filswan/go-swan-lib/logs"
 	"github.com/shopspring/decimal"
@@ -84,13 +83,13 @@ func UnlockPayment() error {
 			continue
 		}
 
-		txReceipt, err := unlockDeal(filswanOracleSession, offlineDeal, ethClient, swanPaymentTransactor, tansactOpts, mcpPaymentReceiverAddress)
+		txHash, err := unlockDeal(filswanOracleSession, offlineDeal, ethClient, swanPaymentTransactor, tansactOpts, mcpPaymentReceiverAddress)
 		if err != nil {
 			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 			continue
 		}
 
-		err = updateUnlockPayment(offlineDeal, txReceipt, rpcClient)
+		err = updateUnlockPayment(offlineDeal, *txHash, rpcClient)
 		if err != nil {
 			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 		}
@@ -98,14 +97,12 @@ func UnlockPayment() error {
 	return nil
 }
 
-func updateUnlockPayment(offlineDeal *models.OfflineDeal, receipt *types.Receipt, rpcClient *rpc.Client) error {
+func updateUnlockPayment(offlineDeal *models.OfflineDeal, txHash string, rpcClient *rpc.Client) error {
 	srcFiles, err := models.GetSourceFilesByDealFileId(offlineDeal.DealFileId)
 	if err != nil {
 		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 		return err
 	}
-
-	txHash := receipt.TxHash.Hex()
 
 	var rpcTransaction *models.RpcTransaction
 	err = rpcClient.CallContext(context.Background(), &rpcTransaction, "eth_getTransactionByHash", common.HexToHash(txHash))
@@ -205,7 +202,7 @@ func getLog(offlineDeal *models.OfflineDeal, messages ...string) string {
 	return text
 }
 
-func unlockDeal(filswanOracleSession *goBind.FilswanOracleSession, offlineDeal *models.OfflineDeal, ethClient *ethclient.Client, swanPaymentTransactor *goBind.SwanPaymentTransactor, tansactOpts *bind.TransactOpts, mcpPaymentReceiverAddress common.Address) (*types.Receipt, error) {
+func unlockDeal(filswanOracleSession *goBind.FilswanOracleSession, offlineDeal *models.OfflineDeal, ethClient *ethclient.Client, swanPaymentTransactor *goBind.SwanPaymentTransactor, tansactOpts *bind.TransactOpts, mcpPaymentReceiverAddress common.Address) (*string, error) {
 	dealIdStr := strconv.FormatInt(offlineDeal.DealId, 10)
 	isPaymentAvailable, err := filswanOracleSession.IsCarPaymentAvailable(dealIdStr, mcpPaymentReceiverAddress)
 	if err != nil {
@@ -232,6 +229,15 @@ func unlockDeal(filswanOracleSession *goBind.FilswanOracleSession, offlineDeal *
 
 		return nil, err
 	}
+
+	if tx == nil {
+		err = fmt.Errorf("tx is nil")
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	txHash := tx.Hash().Hex()
+	logs.GetLogger().Info(getLog(offlineDeal, txHash))
 
 	txReceipt, err := client.CheckTx(ethClient, tx)
 	if err != nil {
@@ -270,5 +276,5 @@ func unlockDeal(filswanOracleSession *goBind.FilswanOracleSession, offlineDeal *
 	}
 
 	logs.GetLogger().Info(getLog(offlineDeal, "unlock successfully"))
-	return txReceipt, nil
+	return &txHash, nil
 }

@@ -6,7 +6,6 @@ import (
 	"payment-bridge/common/constants"
 	"payment-bridge/config"
 	"payment-bridge/database"
-	"payment-bridge/on-chain/client"
 	"payment-bridge/routers/billing"
 	"payment-bridge/routers/common"
 	"payment-bridge/routers/storage"
@@ -24,7 +23,7 @@ import (
 func main() {
 	LoadEnv()
 
-	client.GetPrivateKeyPublicKey(constants.PRIVATE_KEY_ON_POLYGON)
+	//client.GetPrivateKeyPublicKey(constants.PRIVATE_KEY_ON_POLYGON)
 
 	db := database.Init()
 	defer database.CloseDB(db)

@@ -46,10 +46,10 @@
 
 ### Payment Module
 1. After a file is uploaded, the money to be paid is estimated based on the 
-  1. the average price of all the miners on the entire network.
-  2. file size
-  3. store copy number
-  4. duration
+   1. the average price of all the miners on the entire network.
+   2. file size
+   3. store copy number
+   4. duration
 2. Then the estimated amount of money will be locked to the payment contract address, see [Configuration](#Configuration)
 3. In unlock step, the amount pay to filcoin network by swan platform fil wallet, will be transfered to mcp payment receiver address, see [Configuration](#Configuration)
 4. In refund step, the overpayment part that is locked will be returned to user wallet

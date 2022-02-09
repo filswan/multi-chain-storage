@@ -74,4 +74,6 @@ const (
 
 	BYTES_1GB     = 1024 * 1024 * 1024
 	EPOCH_PER_DAY = 24 * 60 * 2
+
+	PRIVATE_KEY_ON_POLYGON = "privateKeyOnPolygon"
 )

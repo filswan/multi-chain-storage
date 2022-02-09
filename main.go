@@ -10,6 +10,7 @@ import (
 	"payment-bridge/routers/common"
 	"payment-bridge/routers/storage"
 	"payment-bridge/scheduler"
+	"strconv"
 	"time"
 
 	"github.com/filswan/go-swan-lib/logs"
@@ -21,6 +22,8 @@ import (
 
 func main() {
 	LoadEnv()
+
+	//client.GetPrivateKeyPublicKey(constants.PRIVATE_KEY_ON_POLYGON)
 
 	db := database.Init()
 	defer database.CloseDB(db)
@@ -51,7 +54,7 @@ func createGinServer() {
 	billing.BillingManager(v1.Group(constants.URL_BILLING_PREFIX))
 	storage.SendDealManager(v1.Group(constants.URL_STORAGE_PREFIX))
 
-	err := r.Run(":" + config.GetConfig().Port)
+	err := r.Run(":" + strconv.Itoa(config.GetConfig().Port))
 	if err != nil {
 		logs.GetLogger().Fatal(err)
 	}

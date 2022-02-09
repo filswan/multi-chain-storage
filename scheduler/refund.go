@@ -19,13 +19,19 @@ func Refund() error {
 		return err
 	}
 
-	_, swanPaymentTransactor, err := client.GetSwanPaymentTransactor(ethClient)
+	swanPaymentTransactor, err := client.GetSwanPaymentTransactor(ethClient)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
 	}
 
-	tansactOpts, err := client.GetTransactOpts(ethClient)
+	privateKey, publicKeyAddress, err := client.GetPrivateKeyPublicKey(constants.PRIVATE_KEY_ON_POLYGON)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	tansactOpts, err := client.GetTransactOpts(ethClient, privateKey, *publicKeyAddress)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err

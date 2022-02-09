@@ -2,10 +2,8 @@ package client
 
 import (
 	"context"
-	"os"
 	"payment-bridge/config"
 	"payment-bridge/on-chain/goBind"
-	"strings"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
@@ -13,29 +11,24 @@ import (
 )
 
 func GetThreshHold() (uint8, error) {
-	daoAddress := common.HexToAddress(config.GetConfig().Polygon.DaoSwanOracleAddress)
-	client, _, err := GetEthClient()
+	daoContractAddress := common.HexToAddress(config.GetConfig().Polygon.DaoContractAddress)
+	ethClient, _, err := GetEthClient()
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return 0, err
-	}
-
-	pk := os.Getenv("privateKeyOnPolygon")
-	if strings.HasPrefix(strings.ToLower(pk), "0x") {
-		pk = pk[2:]
 	}
 
 	callOpts := new(bind.CallOpts)
-	callOpts.From = daoAddress
+	callOpts.From = daoContractAddress
 	callOpts.Context = context.Background()
 
-	daoOracleContractInstance, err := goBind.NewFilswanOracle(daoAddress, client)
+	filswanOracle, err := goBind.NewFilswanOracle(daoContractAddress, ethClient)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return 0, err
 	}
 
-	threshHold, err := daoOracleContractInstance.GetThreshold(callOpts)
+	threshHold, err := filswanOracle.GetThreshold(callOpts)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return 0, err

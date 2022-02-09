@@ -17,7 +17,6 @@ import (
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/filswan/go-swan-lib/logs"
 	"github.com/shopspring/decimal"
@@ -25,7 +24,7 @@ import (
 
 func UnlockPayment() error {
 	offlineDeals, err := models.GetOfflineDeals2BeUnlocked()
-	//offlineDeals, err := models.GetOfflineDealByDealId(87328)
+	//offlineDeals, err := models.GetOfflineDealByDealId(87329)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
@@ -42,11 +41,13 @@ func UnlockPayment() error {
 		return err
 	}
 
-	recipient, swanPaymentTransactor, err := client.GetSwanPaymentTransactor(ethClient)
+	swanPaymentTransactor, err := client.GetSwanPaymentTransactor(ethClient)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
 	}
+
+	mcpPaymentReceiverAddress := common.HexToAddress(config.GetConfig().Polygon.McpPaymentReceiverAddress)
 
 	filswanOracleSession, err := client.GetFilswanOracleSession(ethClient)
 	if err != nil {
@@ -54,7 +55,13 @@ func UnlockPayment() error {
 		return err
 	}
 
-	tansactOpts, err := client.GetTransactOpts(ethClient)
+	privateKey, publicKeyAddress, err := client.GetPrivateKeyPublicKey(constants.PRIVATE_KEY_ON_POLYGON)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	tansactOpts, err := client.GetTransactOpts(ethClient, privateKey, *publicKeyAddress)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
@@ -76,13 +83,13 @@ func UnlockPayment() error {
 			continue
 		}
 
-		txReceipt, err := unlockDeal(filswanOracleSession, offlineDeal, ethClient, swanPaymentTransactor, tansactOpts, *recipient)
+		txHash, err := unlockDeal(filswanOracleSession, offlineDeal, ethClient, swanPaymentTransactor, tansactOpts, mcpPaymentReceiverAddress)
 		if err != nil {
 			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 			continue
 		}
 
-		err = updateUnlockPayment(offlineDeal, txReceipt, rpcClient)
+		err = updateUnlockPayment(offlineDeal, *txHash, rpcClient)
 		if err != nil {
 			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 		}
@@ -90,14 +97,12 @@ func UnlockPayment() error {
 	return nil
 }
 
-func updateUnlockPayment(offlineDeal *models.OfflineDeal, receipt *types.Receipt, rpcClient *rpc.Client) error {
+func updateUnlockPayment(offlineDeal *models.OfflineDeal, txHash string, rpcClient *rpc.Client) error {
 	srcFiles, err := models.GetSourceFilesByDealFileId(offlineDeal.DealFileId)
 	if err != nil {
 		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 		return err
 	}
-
-	txHash := receipt.TxHash.Hex()
 
 	var rpcTransaction *models.RpcTransaction
 	err = rpcClient.CallContext(context.Background(), &rpcTransaction, "eth_getTransactionByHash", common.HexToHash(txHash))
@@ -163,8 +168,8 @@ func setUnlockPayment(offlineDeal *models.OfflineDeal) error {
 		}
 
 		unlockPayment.TokenAddress = paymentInfo.Token.Hex()
-		unlockPayment.UnlockFromAddress = paymentInfo.Owner.String()
-		unlockPayment.UnlockToAdminAddress = paymentInfo.Recipient.String()
+		//unlockPayment.UnlockFromAddress = paymentInfo.Owner.String()
+		//unlockPayment.UnlockToAdminAddress = paymentInfo.Recipient.String()
 		unlockPayment.UnlockTime = utils.GetCurrentUtcMilliSecond()
 		coin, err := models.FindCoinByCoinAddress(unlockPayment.TokenAddress)
 		if err != nil {
@@ -197,22 +202,22 @@ func getLog(offlineDeal *models.OfflineDeal, messages ...string) string {
 	return text
 }
 
-func unlockDeal(filswanOracleSession *goBind.FilswanOracleSession, offlineDeal *models.OfflineDeal, ethClient *ethclient.Client, swanPaymentTransactor *goBind.SwanPaymentTransactor, tansactOpts *bind.TransactOpts, recipient common.Address) (*types.Receipt, error) {
+func unlockDeal(filswanOracleSession *goBind.FilswanOracleSession, offlineDeal *models.OfflineDeal, ethClient *ethclient.Client, swanPaymentTransactor *goBind.SwanPaymentTransactor, tansactOpts *bind.TransactOpts, mcpPaymentReceiverAddress common.Address) (*string, error) {
 	dealIdStr := strconv.FormatInt(offlineDeal.DealId, 10)
-	isPaymentAvailable, err := filswanOracleSession.IsCarPaymentAvailable(dealIdStr, recipient)
+	isPaymentAvailable, err := filswanOracleSession.IsCarPaymentAvailable(dealIdStr, mcpPaymentReceiverAddress)
 	if err != nil {
 		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 		return nil, err
 	}
 
 	if !isPaymentAvailable {
-		logs.GetLogger().Info(getLog(offlineDeal, "payment is not available for recipient "+recipient.String()))
+		logs.GetLogger().Info(getLog(offlineDeal, "payment is not available for recipient "+mcpPaymentReceiverAddress.String()))
 		return nil, nil
 	}
 
 	unlockStatusFailed := constants.OFFLINE_DEAL_UNLOCK_STATUS_UNLOCK_FAILED
 
-	tx, err := swanPaymentTransactor.UnlockCarPayment(tansactOpts, dealIdStr, recipient)
+	tx, err := swanPaymentTransactor.UnlockCarPayment(tansactOpts, dealIdStr, mcpPaymentReceiverAddress)
 	if err != nil {
 		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 
@@ -224,6 +229,15 @@ func unlockDeal(filswanOracleSession *goBind.FilswanOracleSession, offlineDeal *
 
 		return nil, err
 	}
+
+	if tx == nil {
+		err = fmt.Errorf("tx is nil")
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	txHash := tx.Hash().Hex()
+	logs.GetLogger().Info(getLog(offlineDeal, txHash))
 
 	txReceipt, err := client.CheckTx(ethClient, tx)
 	if err != nil {
@@ -252,7 +266,7 @@ func unlockDeal(filswanOracleSession *goBind.FilswanOracleSession, offlineDeal *
 	}
 
 	logs.GetLogger().Info(getLog(offlineDeal, "unlock success", "txHash="+tx.Hash().Hex()))
-	logs.GetLogger().Info(getLog(offlineDeal, "unlock success", "recipient.Hex()="+recipient.Hex()))
+	logs.GetLogger().Info(getLog(offlineDeal, "unlock success", "recipient.Hex()="+mcpPaymentReceiverAddress.Hex()))
 
 	unlockStatusUnlocked := constants.OFFLINE_DEAL_UNLOCK_STATUS_UNLOCKED
 	err = models.UpdateOfflineDealUnlockStatus(offlineDeal.Id, unlockStatusUnlocked)
@@ -262,5 +276,5 @@ func unlockDeal(filswanOracleSession *goBind.FilswanOracleSession, offlineDeal *
 	}
 
 	logs.GetLogger().Info(getLog(offlineDeal, "unlock successfully"))
-	return txReceipt, nil
+	return &txHash, nil
 }

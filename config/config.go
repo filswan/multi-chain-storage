@@ -12,30 +12,28 @@ import (
 )
 
 type Configuration struct {
-	Port           string       `toml:"port"`
-	Release        bool         `toml:"release"`
-	FileCoinWallet string       `toml:"file_coin_wallet"`
-	FilinkUrl      string       `toml:"filink_url"`
-	Polygon        polygon      `toml:"polygon"`
-	Database       database     `toml:"database"`
-	SwanApi        swanApi      `toml:"swan_api"`
-	Lotus          lotus        `toml:"lotus"`
-	IpfsServer     ipfsServer   `toml:"ipfs_server"`
-	SwanTask       swanTask     `toml:"swan_task"`
-	ScheduleRule   ScheduleRule `toml:"schedule_rule"`
+	Port                  int          `toml:"port"`
+	Release               bool         `toml:"release"`
+	SwanPlatformFilWallet string       `toml:"swan_platform_fil_wallet"`
+	FilinkUrl             string       `toml:"filink_url"`
+	Polygon               polygon      `toml:"polygon"`
+	Database              database     `toml:"database"`
+	SwanApi               swanApi      `toml:"swan_api"`
+	Lotus                 lotus        `toml:"lotus"`
+	IpfsServer            ipfsServer   `toml:"ipfs_server"`
+	SwanTask              swanTask     `toml:"swan_task"`
+	ScheduleRule          ScheduleRule `toml:"schedule_rule"`
 }
 
 type polygon struct {
-	AdminWalletOnPolygon                           string        `toml:"admin_wallet_on_polygon"`
-	Recipient                                      string        `toml:"recipient"`
-	PolygonRpcUrl                                  string        `toml:"polygon_rpc_url"`
-	DaoSwanOracleAddress                           string        `toml:"dao_swan_oracle_address"`
-	ContractUnlockFunctionSignature                string        `toml:"contract_unlock_function_signature"`
-	PaymentContractAddress                         string        `toml:"payment_contract_address"`
-	RouterAddressOfSushiswapOnPolygon              string        `toml:"router_address_of_sushiswap_on_polygon"`
-	PairAddressBetweenWfilUsdcOfSushiswapOnPolygon string        `toml:"pair_address_between_wfil_usdc_of_sushiswap_on_polygon"`
-	GasLimit                                       uint64        `toml:"gas_limit"`
-	UnlockIntervalMinute                           time.Duration `toml:"unlock_interval_minute"`
+	PolygonRpcUrl             string        `toml:"polygon_rpc_url"`
+	PaymentContractAddress    string        `toml:"payment_contract_address"`
+	SushiDexAddress           string        `toml:"sushi_dex_address"`
+	UsdcWFilPoolContract      string        `toml:"usdc_wFil_pool_contract"`
+	DaoContractAddress        string        `toml:"dao_contract_address"`
+	McpPaymentReceiverAddress string        `toml:"mcp_payment_receiver_address"`
+	GasLimit                  uint64        `toml:"gas_limit"`
+	UnlockIntervalMinute      time.Duration `toml:"unlock_interval_minute"`
 }
 
 type database struct {
@@ -115,7 +113,7 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 	requiredFields := [][]string{
 		{"port"},
 		{"release"},
-		{"file_coin_wallet"},
+		{"swan_platform_fil_wallet"},
 		{"filink_url"},
 
 		{"database", "db_host"},
@@ -153,15 +151,13 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 		{"schedule_rule", "scan_deal_status_rule"},
 		{"schedule_rule", "refund_rule"},
 
-		{"polygon", "admin_wallet_on_polygon"},
-		{"polygon", "recipient"},
 		{"polygon", "polygon_rpc_url"},
-		{"polygon", "dao_swan_oracle_address"},
-		{"polygon", "contract_unlock_function_signature"},
 		{"polygon", "payment_contract_address"},
+		{"polygon", "sushi_dex_address"},
+		{"polygon", "usdc_wFil_pool_contract"},
+		{"polygon", "dao_contract_address"},
+		{"polygon", "mcp_payment_receiver_address"},
 		{"polygon", "gas_limit"},
-		{"polygon", "router_address_of_sushiswap_on_polygon"},
-		{"polygon", "pair_address_between_wfil_usdc_of_sushiswap_on_polygon"},
 		{"polygon", "unlock_interval_minute"},
 	}
 

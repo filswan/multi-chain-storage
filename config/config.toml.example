@@ -1,6 +1,6 @@
-port="8888"
+port = 8888
 release = true              # when work in release mode: set this to true, otherwise to false and enviornment variable GIN_MODE not to release
-file_coin_wallet=""
+swan_platform_fil_wallet = ""
 filink_url=""
 
 [database]
@@ -45,13 +45,12 @@ scan_deal_status_rule = "0 */4 * * * ?"
 refund_rule = "0 */5 * * * ?"  #every minute
 
 [polygon]
-admin_wallet_on_polygon = ""
-recipient = ""
 polygon_rpc_url = ""
-dao_swan_oracle_address = ""
-contract_unlock_function_signature = ""
-payment_contract_address = ""
-router_address_of_sushiswap_on_polygon = ""
+payment_contract_address = ""                # user pay from his/her wallet address to this address
+sushi_dex_address = ""
+usdc_wFil_pool_contract = ""
+dao_contract_address = ""
+mcp_payment_receiver_address = ""
 gas_limit = 8000000
 unlock_interval_minute = 1
 

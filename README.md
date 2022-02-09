@@ -16,7 +16,7 @@
 - [Configuration](#Configuration)
 - [Payment Process](#Payment-Process)
 - [Database Table Introduction](#Database-Table-Introduction)
-- [Other Topics](#Other-Topics)
+- [Pay for Filecoin by Polygon](https://www.youtube.com/watch?v=c4Dvidz3plU)
 - [License](#License)
 
 ## Functions
@@ -30,37 +30,32 @@
 ![MCP-MCP Desgin](https://user-images.githubusercontent.com/8363795/143811916-f051ccce-f9b2-49eb-99ab-8da1a0d9f2f2.png)
 
 ## Modules
-
 * [Token Swap](#Token-Swap)
-* [Payment Lock](#Payment-Lock)
-* [Create Car File](https://github.com/filswan/go-swan-client)
-* [Upload Car File](https://github.com/filswan/go-swan-client)
-* [Create Task](https://github.com/filswan/go-swan-client)
-* [Send Deal](https://github.com/filswan/go-swan-client)
-* [Scan Deal Status](#)
+* [Payment Module](#Payment-Module)
+* [Swan Client API](https://github.com/filswan/go-swan-client)
 * [DAO Signature](#DAO-Signature)
-* [Payment Unlock](#Payment-Unlock)
 * [Data DAO](https://github.com/filswan/flink)
-* IPFS/Filecoin Storage
+* [IPFS](https://docs.ipfs.io/)
+* [Filecoin Storage](https://lotus.filecoin.io/docs/set-up/install/)
 
 ### Token Swap
-- Users pay USDC or other tokens, which are called user tokens, when uploading a file.
-- MCP uses FIL, which is called wrapped token, to store data to filecoin network.
-- User tokens should be changed to wrapped token by this module and this step is called token exchange(swap).
-- Token exchange(swap) is done through Sushi Swap which is a DEX.
+1. Users pay USDC or other tokens, which are called user tokens, when uploading a file.
+2. MCP uses FIL, which is called wrapped token, to pay when store data to filecoin network.
+3. User tokens should be changed to wrapped token by this module and this step is called token exchange(swap).
+4. Token exchange(swap) is done through Sushi Swap which is a DEX.
 
-### Payment Lock
-- After a file is uploaded, the money to be paid is estimated based on the average price of all the miners on the entire network.
-- Then the estimated amount of money will be locked.
-- The overpayment part that is locked will be returned through the unlock operation later
+### Payment Module
+1. After a file is uploaded, the money to be paid is estimated based on the 
+   1. the average price of all the miners on the entire network.
+   2. file size
+   3. store copy number
+   4. duration
+2. Then the estimated amount of money will be locked to the payment contract address, see [Configuration](#Configuration)
+3. In unlock step, the amount pay to filcoin network by swan platform fil wallet, will be transfered to mcp payment receiver address, see [Configuration](#Configuration)
+4. In refund step, the overpayment part that is locked will be returned to user wallet
 
 ### DAO Signature
 - If DAO detects that the file uploaded has been chained, it will trigger a signature operation
-
-### Payment Unlock
-- When the deal has been signed by more than half of the DAOs, the unlock operation will be triggered.
-- The part that needs to be paid will be deducted from the locked token.
-- The remaining part will be returned to the user.
 
 ## Prerequisites
 - OS: Ubuntu 20.04 LTS
@@ -115,8 +110,9 @@ nohup ./build/multi-chain-payment >> ./build/mcp.log &    #After installation fr
 ## Configuration
 
 ### config.toml
-- **admin_wallet_on_polygon**: The wallet address used to execute contract methods on the polygon network, pay for gas, lock and unlock user fees on polygon
-- **file_coin_wallet**: The wallet address used to pay on the filecoin network
+- **port**: Web api port
+- **release**: When work in release mode: set this to true, otherwise to false and enviornment variable GIN_MODE not to release
+- **swan_platform_fil_wallet**: The wallet address used to pay on the filecoin network
 - **filink_url**: Deals data can be searched from here
 #### [lotus]
 - **client_api_url**:  Url of lotus client web api, such as: `http://[ip]:[port]/rpc/v0`, generally the `[port]` is `1234`. See [Lotus API](https://docs.filecoin.io/reference/lotus-api/#features)
@@ -132,26 +128,33 @@ nohup ./build/multi-chain-payment >> ./build/mcp.log &    #After installation fr
 - **expired_days**: expected completion days for storage provider sealing data
 - **max_price**: Max price willing to pay per GiB/epoch for offline deal
 - **generate_md5**: [true/false] Whether to generate md5 for each car file, note: this is a resource consuming action
-
 #### [polygon]
-- **rpc_url**: the polygon network rpc url
-- **payment_contract_address**:  swan payment gateway address on polygon
-- **contract_lock_function_signature**:  swan payment gateway's lock payment event's function signature on polygon
-- **contract_unlock_function_signature**:  swan payment gateway's lock payment event's function signature on polygon
-- **dao_swan_oracle_address**:  swan dao address on polygon
-- **dao_event_function_signature**:  swan dao's signature event's function signature on polygon
-- **pair_address_between_wfil_usdc_of_sushiswap_on_polygon**:
+- **rpc_url**: your polygon network rpc url
+- **payment_contract_address**:  swan payment gateway address on polygon to lock money
+- **sushi_dex_address**:  sushi address on polygon
+- **usdc_wFil_pool_contract**:  address to get exchange rate between uscs and wFil from sushi on polygon
+- **dao_contract_address**:  swan dao address on polygon, to receive dao signatures
+- **mcp_payment_receiver_address**:  mcp wallet address to receive money from unlock operation
+- **gas_limit**: gas limit for transaction
+- **unlock_interval_minute**: unlock interval in minutes between 2 unlock operations, in cannot be less than 1
 
 ## Payment Process
 
-**Step:one:** Users upload a file they want to backup to filecoin network, then use the currencies we support to send tokens
-to our contract address.<br>
-**Step:two:** MCP scans the events of the above transactions<br>
-**Step:three:** When the event data got in Step:two: meet the conditions, the user can perform the filecoin network storage function<br>
-**Step:four:** When the user's storage is successful, it will be scanned by DAO organization, and then DAO signed to
-agree to unlock the user's payment.<br>
-**Step:five:** If more than half of the dao agree, the payment bridge will unlock the user's payment, deduct the user's
-storage fee, and the remaining locked virtual currency Is returned to the customer's wallet<br>
+1. Users upload a file they want to backup to filecoin network
+2. User pay currencies we support to send tokens to our payment contract address, see [Configuration](#Configuration)
+3. MCP writes the transaction info to our system
+4. MCP scan those source files uploaded and paid but not yet created to car files, and then do the following steps:
+   1. compute the max price for each source file, based on the source file size, token paid, and exchange rate betwee USDC and wFil
+   2. if the scanned source file size sum is more than 1GB or the earliest source file to be merged to car file is more 1 day ago, then MCP will do the following steps by calling Swan Client API, see [Swan Client](https://github.com/filswan/go-swan-client)
+      1. create car files, use the minimum max price among the source files to be merged as the max price for the whole car file
+      2. upload car files
+      3. create task on swan platform
+5. Market Matcher allocate miners for the car file created in last step
+6. MCP send deals by calling Swan Client API, see [Swan Client](https://github.com/filswan/go-swan-client)
+7. MCP Scan Scheduler module scan the deal info from lotus
+8. When DAO organization find the deal succeeds, and then they will sign to agree to unlock the user's payment.
+9. After more than half of the dao agree and after 1 minute later of the last DAO signature, MCP will unlock the user's payment, release the moeny spent on send deal to mcp payment receiver address, see [Swan Client](https://github.com/filswan/go-swan-client)
+10. After all deals of a car file are unlocked, MCP refund the remaining money to user wallet address used when pay in step 2.
 
 ## Database Table Introduction
 - You can get db table ddl sql script in `[mcp-source-file-path]/script/dbschema.sql`
@@ -188,12 +191,6 @@ Now we can run Payment Bridge as a system service by executing the following com
 cd $GOPATH/src/payment-bridge/script/run_services
 ansible-playbook run_payment_bridge_service.yaml --ask-become-pass -vvv
 ```
-
-
-
-## Other Topics
-
-- [how to pay for filecoin network storage with polygon](https://www.youtube.com/watch?v=c4Dvidz3plU)
 
 ## License
 

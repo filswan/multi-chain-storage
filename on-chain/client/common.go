@@ -23,7 +23,7 @@ import (
 	"github.com/ethereum/go-ethereum/rpc"
 )
 
-func GetPrivateKeyPublicKey(privateKeyEnvName string) (*ecdsa.PrivateKey, *string, error) {
+func GetPrivateKeyPublicKey(privateKeyEnvName string) (*ecdsa.PrivateKey, *common.Address, error) {
 	privateKeyOnPolygon := os.Getenv(privateKeyEnvName)
 	if len(privateKeyOnPolygon) <= 0 {
 		err := fmt.Errorf("env variable %s is not defined", privateKeyEnvName)
@@ -48,9 +48,9 @@ func GetPrivateKeyPublicKey(privateKeyEnvName string) (*ecdsa.PrivateKey, *strin
 		return nil, nil, err
 	}
 
-	publicKeyAddress := crypto.PubkeyToAddress(*publicKeyECDSA).Hex()
+	publicKeyAddress := crypto.PubkeyToAddress(*publicKeyECDSA)
 
-	logs.GetLogger().Info(publicKeyAddress)
+	logs.GetLogger().Info(publicKeyAddress.Hex())
 
 	return privateKey, &publicKeyAddress, nil
 }
@@ -98,27 +98,8 @@ func GetFilswanOracleSession(ethClient *ethclient.Client) (*goBind.FilswanOracle
 	return filswanOracleSession, nil
 }
 
-func GetTransactOpts(ethClient *ethclient.Client) (*bind.TransactOpts, error) {
-	privateKeyOnPolygon := os.Getenv("privateKeyOnPolygon")
-	if len(privateKeyOnPolygon) <= 0 {
-		err := fmt.Errorf("env variable privateKeyOnPolygon is not defined")
-		logs.GetLogger().Fatal(err)
-	}
-
-	if strings.HasPrefix(strings.ToLower(privateKeyOnPolygon), "0x") {
-		privateKeyOnPolygon = privateKeyOnPolygon[2:]
-	}
-
-	privateKey, err := crypto.HexToECDSA(privateKeyOnPolygon)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-
-	adminAddressStr := privateKey.PublicKey.X.String()
-	logs.GetLogger().Info("adminAddress:", adminAddressStr)
-	adminAddress := common.HexToAddress(adminAddressStr)
-	nonce, err := ethClient.PendingNonceAt(context.Background(), adminAddress)
+func GetTransactOpts(ethClient *ethclient.Client, privateKey *ecdsa.PrivateKey, publicKeyAddress common.Address) (*bind.TransactOpts, error) {
+	nonce, err := ethClient.PendingNonceAt(context.Background(), publicKeyAddress)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err

@@ -16,7 +16,7 @@
 - [Configuration](#Configuration)
 - [Payment Process](#Payment-Process)
 - [Database Table Introduction](#Database-Table-Introduction)
-- [pay for filecoin by polygon](https://www.youtube.com/watch?v=c4Dvidz3plU)
+- [Pay for Filecoin by Polygon](https://www.youtube.com/watch?v=c4Dvidz3plU)
 - [License](#License)
 
 ## Functions

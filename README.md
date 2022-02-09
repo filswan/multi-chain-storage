@@ -145,9 +145,13 @@ nohup ./build/multi-chain-payment >> ./build/mcp.log &    #After installation fr
 
 ## Payment Process
 
-1. Users upload a file they want to backup to filecoin network, then use the currencies we support to send tokens
-to our contract address.<br>
-**Step:two:** MCP scans the events of the above transactions<br>
+1. Users upload a file they want to backup to filecoin network
+2. User pay currencies we support to send tokens to our payment contract address, see [Configuration](#Configuration)
+3. MCP keeps the transaction info to our system
+4. MCP scan those source files uploaded and paid but not yet created to car files, and then do the following steps:
+   1. compute the max price for each source file, based on the source file size, token paid, and exchange rate betwee USDC and wFil
+   2. if the scanned source file size sum is more than 1GB or the earliest source file to be merged to car file is more 1 day ago then:
+      create car files, upload car files, send tasks to swan platform
 **Step:three:** When the event data got in Step:two: meet the conditions, the user can perform the filecoin network storage function<br>
 **Step:four:** When the user's storage is successful, it will be scanned by DAO organization, and then DAO signed to
 agree to unlock the user's payment.<br>

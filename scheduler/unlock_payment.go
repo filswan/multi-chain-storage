@@ -89,6 +89,11 @@ func UnlockPayment() error {
 			continue
 		}
 
+		if txHash == nil {
+			logs.GetLogger().Info(getLog(offlineDeal, " no tx hash returned"))
+			continue
+		}
+
 		err = updateUnlockPayment(offlineDeal, *txHash, rpcClient)
 		if err != nil {
 			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))

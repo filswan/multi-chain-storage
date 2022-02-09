@@ -134,13 +134,14 @@ nohup ./build/multi-chain-payment >> ./build/mcp.log &    #After installation fr
 - **generate_md5**: [true/false] Whether to generate md5 for each car file, note: this is a resource consuming action
 
 #### [polygon]
-- **rpc_url**: the polygon network rpc url
-- **payment_contract_address**:  swan payment gateway address on polygon
-- **contract_lock_function_signature**:  swan payment gateway's lock payment event's function signature on polygon
-- **contract_unlock_function_signature**:  swan payment gateway's lock payment event's function signature on polygon
-- **dao_swan_oracle_address**:  swan dao address on polygon
-- **dao_event_function_signature**:  swan dao's signature event's function signature on polygon
-- **pair_address_between_wfil_usdc_of_sushiswap_on_polygon**:
+- **rpc_url**: your polygon network rpc url
+- **payment_contract_address**:  swan payment gateway address on polygon to lock money
+- **sushi_dex_address**:  sushi address on polygon
+- **usdc_wFil_pool_contract**:  address to get exchange rate between uscs and wFil from sushi on polygon
+- **dao_contract_address**:  swan dao address on polygon, to receive dao signatures
+- **mcp_payment_receiver_address**:  mcp wallet address to receive money from unlock operation
+- **gas_limit**: gas limit for transaction
+- **unlock_interval_minute**: minimum unlock interval in minutes between 2 unlock operations
 
 ## Payment Process
 

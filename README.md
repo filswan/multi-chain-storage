@@ -158,7 +158,8 @@ nohup ./build/multi-chain-payment >> ./build/mcp.log &    #After installation fr
 6. MCP send deals by calling Swan Client API, see [Swan Client](https://github.com/filswan/go-swan-client)
 7. MCP Scan Scheduler module scan the deal info from lotus
 8. When DAO organization find the deal succeeds, and then they will sign to agree to unlock the user's payment.
-9. If more than half of the dao agree, MCP will unlock the user's payment, release the remaining money to the user wallet.
+9. After more than half of the dao agree and after 1 minute later of the last DAO signature, MCP will unlock the user's payment, release the moeny spent on send deal to mcp payment receiver address, see [Swan Client](https://github.com/filswan/go-swan-client)
+10. After all deals of a car file are unlocked, MCP refund the remaining money to user wallet address used when pay in step 2.
 
 ## Database Table Introduction
 - You can get db table ddl sql script in `[mcp-source-file-path]/script/dbschema.sql`

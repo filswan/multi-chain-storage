@@ -85,15 +85,16 @@ func GetSwanPaymentTransactor(ethClient *ethclient.Client) (*common.Address, *go
 }
 
 func GetFilswanOracleSession(ethClient *ethclient.Client) (*goBind.FilswanOracleSession, error) {
-	daoAddress := common.HexToAddress(config.GetConfig().Polygon.DaoContractAddress)
-	daoOracleContractInstance, err := goBind.NewFilswanOracle(daoAddress, ethClient)
+	daoContractAddress := common.HexToAddress(config.GetConfig().Polygon.DaoContractAddress)
+	filswanOracle, err := goBind.NewFilswanOracle(daoContractAddress, ethClient)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
 	}
 
-	filswanOracleSession := &goBind.FilswanOracleSession{}
-	filswanOracleSession.Contract = daoOracleContractInstance
+	filswanOracleSession := &goBind.FilswanOracleSession{
+		Contract: filswanOracle,
+	}
 
 	return filswanOracleSession, nil
 }
@@ -123,7 +124,7 @@ func GetTransactOpts(ethClient *ethclient.Client, privateKey *ecdsa.PrivateKey, 
 		return nil, err
 	}
 
-	transactOpts.Nonce = big.NewInt(int64(nonce + 1))
+	transactOpts.Nonce = big.NewInt(int64(nonce))
 	transactOpts.GasPrice = gasPrice
 	transactOpts.GasLimit = config.GetConfig().Polygon.GasLimit
 	transactOpts.Context = context.Background()

@@ -54,7 +54,13 @@ func UnlockPayment() error {
 		return err
 	}
 
-	tansactOpts, err := client.GetTransactOpts(ethClient)
+	privateKey, publicKeyAddress, err := client.GetPrivateKeyPublicKey(constants.PRIVATE_KEY_ON_POLYGON)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	tansactOpts, err := client.GetTransactOpts(ethClient, privateKey, *publicKeyAddress)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err

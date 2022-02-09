@@ -49,12 +49,11 @@ func GetDealFileByDealId(dealId int64) (*DealFile, error) {
 	return nil, err
 }
 
-func GetDealFiles2Refund() ([]*DealFile, error) {
-	sql := "select a.* from deal_file a where a.lock_payment_status!=? and a.lock_payment_status!=?"
-
+func GetDealFilesByStatus(status string) ([]*DealFile, error) {
+	sql := "select a.* from deal_file a where a.lock_payment_status=?"
 	var dealFiles []*DealFile
 
-	err := database.GetDB().Raw(sql, constants.PROCESS_STATUS_UNLOCK_REFUNDED, constants.PROCESS_STATUS_UNLOCK_REFUNDFAILED).Scan(&dealFiles).Error
+	err := database.GetDB().Raw(sql, status).Scan(&dealFiles).Error
 
 	if err != nil {
 		logs.GetLogger().Error(err)

@@ -32,7 +32,7 @@ func main() {
 	//scheduler.CreateTask()
 	//scheduler.SendDeal()
 	//scheduler.ScanDeal()
-	scheduler.UnlockPayment()
+	//scheduler.UnlockPayment()
 
 	createGinServer()
 }

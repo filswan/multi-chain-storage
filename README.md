@@ -16,7 +16,7 @@
 - [Configuration](#Configuration)
 - [Payment Process](#Payment-Process)
 - [Database Table Introduction](#Database-Table-Introduction)
-- [Other Topics](#Other-Topics)
+- [pay for filecoin by polygon](https://www.youtube.com/watch?v=c4Dvidz3plU)
 - [License](#License)
 
 ## Functions
@@ -191,12 +191,6 @@ Now we can run Payment Bridge as a system service by executing the following com
 cd $GOPATH/src/payment-bridge/script/run_services
 ansible-playbook run_payment_bridge_service.yaml --ask-become-pass -vvv
 ```
-
-
-
-## Other Topics
-
-- [how to pay for filecoin network storage with polygon](https://www.youtube.com/watch?v=c4Dvidz3plU)
 
 ## License
 

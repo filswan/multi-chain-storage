@@ -261,6 +261,8 @@ func doUnlockDeal(offlineDeal *models.OfflineDeal, ethClient *ethclient.Client, 
 	txHash := ""
 	if tx != nil {
 		txHash = tx.Hash().Hex()
+	} else {
+		logs.GetLogger().Info("tx hash is nil")
 	}
 
 	logs.GetLogger().Info(getLog(offlineDeal, txHash))

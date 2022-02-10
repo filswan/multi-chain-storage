@@ -263,7 +263,7 @@ contract SwanPayment is IPaymentMinimal, Initializable {
             uint256 size = 0;
             for (uint8 i = 0; i < cidList.length; i++) {
                 TxInfo storage t = txCarMap[cidList[i]];
-                if (t._isExisted) {
+                if (!t._isExisted) {
                     continue;
                 } else {
                     size += t.size;

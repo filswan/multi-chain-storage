@@ -36,16 +36,18 @@ async function main() {
   const contract = await hre.ethers.getContractFactory("SwanPayment");
   const paymentInstance = await contract.attach(gatewayContractAddress);
 
-  const tx = await paymentInstance.connect(payer).lockTokenPayment({
-    id: cid,
-    minPayment: one,
-    amount: ten,
-    lockTime: 60, // 6 days
-    recipient: recipientAddress,
-    size:0,
-  }, overrides);
+  // const tx = await paymentInstance.connect(payer).lockTokenPayment({
+  //   id: cid,
+  //   minPayment: one,
+  //   amount: ten,
+  //   lockTime: 60, // 6 days
+  //   recipient: recipientAddress,
+  //   size:0,
+  // }, overrides);
 
-  await tx.wait();
+  // await tx.wait();
+
+  paymentInstance.get
 }
 
 // We recommend this pattern to be able to use async/await everywhere

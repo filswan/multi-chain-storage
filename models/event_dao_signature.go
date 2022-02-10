@@ -39,3 +39,19 @@ func UpdateDaoEventLog(whereCondition interface{}, updateFields interface{}) err
 	}
 	return err
 }
+
+func GetEventDaoSignaturesByDealId(dealId int64) ([]*EventDaoSignature, error) {
+	var eventDaoSignatures []*EventDaoSignature
+	sql := "select * from event_dao_signature a where a.deal_id=?"
+
+	query := database.GetDB().Raw(sql, dealId).Order("block_time desc").Scan(&eventDaoSignatures)
+
+	err := query.Error
+
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	return eventDaoSignatures, nil
+}

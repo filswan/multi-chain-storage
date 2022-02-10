@@ -450,14 +450,16 @@ export default {
         fn() {
             let _this = this
             ethereum.on("accountsChanged", function(accounts) {
-                if(_this.metaAddress){
-                    web3.eth.getAccounts().then(accounts => {
+                // console.log('account header:', accounts[0]);  //Once the account is switched, it will be executed here
+                if(_this.metaAddress && accounts[0]){
+                    // web3.eth.getAccounts().then(accounts => {
                         _this.addrChild = accounts[0]
                         _this.walletInfo()
                         _this.$store.dispatch('setMetaAddress', accounts[0])
                         _this.$router.go(0)
-                    })
-                    // console.log('account header:', accounts[0]);  //Once the account is switched, it will be executed here
+                    // })
+                }else{
+                    _this.signOutFun()
                 }
             });
             // networkChanged

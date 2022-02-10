@@ -19,11 +19,12 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/filswan/go-swan-lib/logs"
+	libutils "github.com/filswan/go-swan-lib/utils"
 )
 
 func UnlockPayment() error {
 	offlineDeals, err := models.GetOfflineDeals2BeUnlocked()
-	//offlineDeals, err := models.GetOfflineDealByDealId(87341)
+	//offlineDeals, err := models.GetOfflineDealByDealId(87416)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
@@ -68,8 +69,21 @@ func UnlockPayment() error {
 
 	unlockInterval := config.GetConfig().Polygon.UnlockIntervalMinute * time.Minute
 	logs.GetLogger().Info("unlock interval is ", unlockInterval)
-	for i, offlineDeal := range offlineDeals {
-		if i > 0 {
+
+	unlockCnt := 0
+	for _, offlineDeal := range offlineDeals {
+		isUnlockable, err := checkUnlockable(offlineDeal, filswanOracleSession, mcpPaymentReceiverAddress)
+		if err != nil {
+			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
+			continue
+		}
+
+		if !isUnlockable {
+			logs.GetLogger().Info(getLog(offlineDeal, "not unlockable, please wait"))
+			continue
+		}
+
+		if unlockCnt > 0 {
 			logs.GetLogger().Info(getLog(offlineDeal, "sleeping "+unlockInterval.String()+" before unlock"))
 			time.Sleep(unlockInterval)
 		}
@@ -82,7 +96,8 @@ func UnlockPayment() error {
 			continue
 		}
 
-		txHash, err := unlockDeal(filswanOracleSession, offlineDeal, ethClient, swanPaymentTransactor, tansactOpts, mcpPaymentReceiverAddress)
+		unlockCnt = unlockCnt + 1
+		txHash, err := doUnlockDeal(offlineDeal, ethClient, swanPaymentTransactor, tansactOpts, mcpPaymentReceiverAddress)
 		if err != nil {
 			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 			continue
@@ -99,6 +114,50 @@ func UnlockPayment() error {
 		}
 	}
 	return nil
+}
+
+func checkUnlockable(offlineDeal *models.OfflineDeal, filswanOracleSession *goBind.FilswanOracleSession, mcpPaymentReceiverAddress common.Address) (bool, error) {
+	dealIdStr := strconv.FormatInt(offlineDeal.DealId, 10)
+	isPaymentAvailable, err := filswanOracleSession.IsCarPaymentAvailable(dealIdStr, mcpPaymentReceiverAddress)
+	if err != nil {
+		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
+		return false, err
+	}
+
+	if !isPaymentAvailable {
+		logs.GetLogger().Info(getLog(offlineDeal, "payment is not available for recipient "+mcpPaymentReceiverAddress.String()))
+		return false, nil
+	}
+
+	daoSignatures, err := models.GetEventDaoSignaturesByDealId(offlineDeal.DealId)
+	if err != nil {
+		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
+		return false, err
+	}
+
+	if len(daoSignatures) == 0 {
+		logs.GetLogger().Info("no dao sigatures yet")
+		return false, nil
+	}
+
+	blockTime := libutils.GetInt64FromStr(daoSignatures[0].BlockTime)
+	if blockTime < 0 {
+		err := fmt.Errorf(getLog(offlineDeal, "invalid block time:"+daoSignatures[0].BlockTime))
+		logs.GetLogger().Error(err)
+		return false, err
+	}
+
+	blockTime = blockTime * 1000
+	curUtcMilliSec := utils.GetCurrentUtcMilliSecond()
+	daoPassMilliSec := curUtcMilliSec - blockTime
+
+	intervalDaoUnlockMinute := config.GetConfig().Polygon.IntervalDaoUnlockMinute
+	if daoPassMilliSec < int64(intervalDaoUnlockMinute)*60*1000 {
+		logs.GetLogger().Info(offlineDeal, "dao just signed, please wait")
+		return false, nil
+	}
+
+	return true, nil
 }
 
 func updateUnlockPayment(offlineDeal *models.OfflineDeal, txHash string, rpcClient *rpc.Client) error {
@@ -194,19 +253,8 @@ func getLog(offlineDeal *models.OfflineDeal, messages ...string) string {
 	return text
 }
 
-func unlockDeal(filswanOracleSession *goBind.FilswanOracleSession, offlineDeal *models.OfflineDeal, ethClient *ethclient.Client, swanPaymentTransactor *goBind.SwanPaymentTransactor, tansactOpts *bind.TransactOpts, mcpPaymentReceiverAddress common.Address) (*string, error) {
+func doUnlockDeal(offlineDeal *models.OfflineDeal, ethClient *ethclient.Client, swanPaymentTransactor *goBind.SwanPaymentTransactor, tansactOpts *bind.TransactOpts, mcpPaymentReceiverAddress common.Address) (*string, error) {
 	dealIdStr := strconv.FormatInt(offlineDeal.DealId, 10)
-	isPaymentAvailable, err := filswanOracleSession.IsCarPaymentAvailable(dealIdStr, mcpPaymentReceiverAddress)
-	if err != nil {
-		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
-		return nil, err
-	}
-
-	if !isPaymentAvailable {
-		logs.GetLogger().Info(getLog(offlineDeal, "payment is not available for recipient "+mcpPaymentReceiverAddress.String()))
-		return nil, nil
-	}
-
 	unlockStatusFailed := constants.OFFLINE_DEAL_UNLOCK_STATUS_UNLOCK_FAILED
 
 	tx, err := swanPaymentTransactor.UnlockCarPayment(tansactOpts, dealIdStr, mcpPaymentReceiverAddress)

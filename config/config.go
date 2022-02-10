@@ -34,6 +34,7 @@ type polygon struct {
 	McpPaymentReceiverAddress string        `toml:"mcp_payment_receiver_address"`
 	GasLimit                  uint64        `toml:"gas_limit"`
 	UnlockIntervalMinute      time.Duration `toml:"unlock_interval_minute"`
+	IntervalDaoUnlockMinute   int           `toml:"interval_dao_unlock_minute"`
 }
 
 type database struct {

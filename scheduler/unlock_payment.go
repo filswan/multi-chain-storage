@@ -258,10 +258,16 @@ func doUnlockDeal(offlineDeal *models.OfflineDeal, ethClient *ethclient.Client, 
 	unlockStatusFailed := constants.OFFLINE_DEAL_UNLOCK_STATUS_UNLOCK_FAILED
 
 	tx, err := swanPaymentTransactor.UnlockCarPayment(tansactOpts, dealIdStr, mcpPaymentReceiverAddress)
+	txHash := ""
+	if tx != nil {
+		txHash = tx.Hash().Hex()
+	}
+
+	logs.GetLogger().Info(getLog(offlineDeal, txHash))
 	if err != nil {
 		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 
-		err = models.UpdateOfflineDealUnlockStatus(offlineDeal.Id, unlockStatusFailed, err.Error())
+		err = models.UpdateOfflineDealUnlockStatus(offlineDeal.Id, unlockStatusFailed, "txHash="+txHash, err.Error())
 		if err != nil {
 			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 			return nil, err
@@ -271,19 +277,16 @@ func doUnlockDeal(offlineDeal *models.OfflineDeal, ethClient *ethclient.Client, 
 	}
 
 	if tx == nil {
-		err = fmt.Errorf("tx is nil")
+		err := fmt.Errorf("tx hash is nil")
 		logs.GetLogger().Error(err)
 		return nil, err
 	}
-
-	txHash := tx.Hash().Hex()
-	logs.GetLogger().Info(getLog(offlineDeal, txHash))
 
 	txReceipt, err := client.CheckTx(ethClient, tx)
 	if err != nil {
 		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 
-		err = models.UpdateOfflineDealUnlockStatus(offlineDeal.Id, unlockStatusFailed, tx.Hash().Hex(), err.Error())
+		err = models.UpdateOfflineDealUnlockStatus(offlineDeal.Id, unlockStatusFailed, "txHash="+txHash, err.Error())
 		if err != nil {
 			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 			return nil, err
@@ -296,7 +299,7 @@ func doUnlockDeal(offlineDeal *models.OfflineDeal, ethClient *ethclient.Client, 
 		err := fmt.Errorf("unlock failed! txHash=%s", tx.Hash().Hex())
 		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 
-		err = models.UpdateOfflineDealUnlockStatus(offlineDeal.Id, unlockStatusFailed, tx.Hash().Hex(), err.Error())
+		err = models.UpdateOfflineDealUnlockStatus(offlineDeal.Id, unlockStatusFailed, "txHash="+txHash, err.Error())
 		if err != nil {
 			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 			return nil, err

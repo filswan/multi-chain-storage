@@ -27,7 +27,7 @@ async function main() {
   const tx = await paymentInstance.connect(payer).unlockTokenPayment({
     id: cid,
     orderId: "",
-    dealId: "4109",
+    dealId: "1234",
     amount: "0",
     recipient: recipientAddress, //todo:
   }, overrides);

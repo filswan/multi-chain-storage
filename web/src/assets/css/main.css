@@ -1,0 +1,663 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body,
+#app,
+.wrapper {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: #f2f3f8;
+  font-size: 107px;
+}
+
+body {
+  font-family: 'PingFang SC', "Helvetica Neue", Helvetica, "microsoft yahei", arial, STHeiTi, sans-serif;
+}
+
+a {
+  text-decoration: none
+}
+
+.pcShow{
+  display: block;
+}
+.mobileShow{
+  display: none;
+}
+.content-box {
+  position: absolute;
+  left: 2.37rem;
+  right: 0;
+  top: 0.86rem;
+  bottom: 0;
+  -webkit-transition: left .3s ease-in-out;
+  transition: left .3s ease-in-out;
+  background: #f0f0f0;
+  overflow-y: scroll;
+}
+.content-login{
+top: 0;
+}
+.content-box::-webkit-scrollbar-track {
+  background: transparent;
+}
+.content-box::-webkit-scrollbar {
+  width: 6px;
+  background: transparent;
+}
+.content-box::-webkit-scrollbar-thumb {
+  background: #ccc;
+}
+.content-box .el-loading-spinner {
+top: 1.5rem;
+}
+
+.content {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+#footer{
+  width: calc(100% - 0.6rem);
+  height: 0.6rem;
+  line-height: 0.6rem;
+  padding: 0.07rem 0.3rem;
+  background-color: #fff;
+  bottom: 0;
+  overflow: hidden;
+}
+#footer .footer_left{
+  float: left;
+  width: auto;
+  font-size: 0.12rem;
+  font-weight: 400;
+  color: #a9a9aa;
+}
+#footer .footer_right{
+  float: right;
+  font-size: 0.12rem;
+  font-weight: 400;
+  overflow: hidden;
+}
+#footer .footer_right a{
+  padding: 0 0.12rem;
+  color: #5867dd;
+  outline: none;
+}
+
+#headerMb{
+background-color: #fff;
+/* padding: 0 0 0.03rem; */
+}
+.headerMb{
+display: flex;
+flex-wrap: wrap;
+justify-content: space-between;
+align-items: center;
+padding: 0 0.2rem;
+font-size: 0.26rem;
+line-height: 0.6rem;
+border-bottom: 1px solid #f5f5f5;
+color: #0b318f;
+}
+.headerMb .el-button{
+padding: 0.08rem 0.2rem;
+background-color: #0b318f;
+border: 0;
+}
+
+.content-collapse {
+  left: 0.65rem !important;
+}
+
+.container {
+  padding: 0.3rem;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.crumbs {
+  margin: 0.1rem 0;
+}
+
+.el-table th {
+  background-color: #f5f7fa !important;
+}
+
+.pagination {
+  margin: 0.2rem 0;
+  text-align: right;
+}
+
+.plugins-tips {
+  padding: 0.2rem 0.1rem;
+  margin-bottom: 0.2rem;
+}
+
+.el-button+.el-tooltip {
+  margin-left: 0.1rem;
+}
+
+.el-tooltip__popper{
+  width: 200px;
+  word-break: break-word;
+}
+
+.el-table tr:hover {
+  background: #f6faff;
+}
+
+.mgb20 {
+  margin-bottom: 0.2rem;
+}
+
+.move-enter-active,
+.move-leave-active {
+  transition: opacity .5s;
+}
+
+.move-enter,
+.move-leave {
+  opacity: 0;
+}
+
+/*BaseForm*/
+
+.form-box {
+  width: 6rem;
+}
+
+.form-box .line {
+  text-align: center;
+}
+
+.el-time-panel__content::after,
+.el-time-panel__content::before {
+  margin-top: -0.07rem;
+}
+
+.el-time-spinner__wrapper .el-scrollbar__wrap:not(.el-scrollbar__wrap--hidden-default) {
+  padding-bottom: 0;
+}
+
+/*Upload*/
+
+.pure-button {
+  width: 1.5rem;
+  height: 0.4rem;
+  line-height: 0.4rem;
+  text-align: center;
+  color: #fff;
+  border-radius: 3px;
+}
+
+.g-core-image-corp-container .info-aside {
+  height: 0.45rem;
+}
+
+.el-upload--text {
+  background-color: #fff;
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  box-sizing: border-box;
+  width: 3.6rem;
+  height: 1.8rem;
+  text-align: center;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.el-upload--text .el-icon-upload {
+  font-size: 0.67rem;
+  color: #97a8be;
+  margin: 0.4rem 0 0.16rem;
+  line-height: 0.5rem;
+}
+
+.el-upload--text {
+  color: #97a8be;
+  font-size: 0.14rem;
+  text-align: center;
+}
+
+.el-upload--text em {
+  font-style: normal;
+}
+
+/*VueEditor*/
+
+.ql-container {
+  min-height: 4rem;
+}
+
+.ql-snow .ql-tooltip {
+  transform: translateX(1.175rem) translateY(0.1rem) !important;
+}
+
+.editor-btn {
+  margin-top: 0.2rem;
+}
+
+/*markdown*/
+
+.v-note-wrapper .v-note-panel {
+  min-height: 5rem;
+}
+
+
+.el-message /deep/ .el-message__icon{
+  font-size: 20px;
+}
+#profile .el-loading-mask .el-loading-spinner {
+  top: 1.5rem;
+}
+
+
+.mask.vue-img-cutter /deep/ .dialogBoxModal .tool-title{
+  color: #fff;
+}
+
+.login{
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  background: url(../images/login/bg_login.jpg) no-repeat center;
+  background-size: cover;
+  justify-content: space-evenly;
+  align-items: center;
+  z-index: 1;
+}
+.login .loginArea{
+  width: 3.28rem;
+  /* height: 4.08rem; */
+  padding: 0 0 0.2rem;
+  margin-top: 5%;
+  min-width: 330px;
+  min-height: 200px;
+  background: #fff;
+}
+.login .loginArea .loginAreaLeft{
+  float: left;
+  display: flex;
+  width: 52.7%;
+  height: 100%;
+  background: url(../images/login/img_login01.jpg) no-repeat center;
+  background-size: cover;
+  justify-content: space-evenly;
+  align-items: center;
+  display: none;
+}
+.login .loginArea .loginAreaLeft img{
+  width: 50%;
+}
+.login .loginArea .loginAreaRight{
+  position: relative;
+  float: left;
+  width: 100%;
+  padding:0 0 0.3rem;
+}
+.loginAreaRight .login_register{
+  display: block;
+  width: calc(100% - 0.18rem);
+  margin: 0.14rem 0 0;
+  padding: 0 0.18rem 0 0;
+  line-height: 0.12rem;
+  font-size: 0.12rem;
+  color: #0099ff;
+  text-align: right;
+}
+.loginAreaRight h1{
+  width: 100%;
+  margin: 0.55rem 0 0.42rem;
+  text-align: center;
+  line-height: 0.2rem;
+  /* font-family: 'SourceHanSansCN-Medium'; */
+  font-size: 0.195rem;
+  font-weight: 500;
+  color: #333;
+  /* letter-spacing: 0.02rem; */
+}
+.login .el-form.demo-dynamic{
+  float: left;
+  clear: both;
+  width: 100%;
+}
+.login .el-form-item{
+    height: 0.34rem;
+    margin-bottom: 0.2rem;
+    line-height: 0.34rem;
+    font-size: 0.105rem;
+    text-align: center;
+}
+.login .el-form-item:nth-child(3),.login .el-form-item:nth-child(4){
+  margin-bottom: 0;
+}
+.login .el-form-item__content{
+    height: 0.34rem;
+    line-height: 0.34rem;
+    font-size: 0.105rem;
+    width: 81%;
+    margin: auto !important;
+}
+.login .el-input__inner {
+  border-radius: 0;
+  border: 0.01rem solid #e0e0e0;
+  color: #606266;
+  height: 0.34rem;
+  line-height: 0.34rem;
+  outline: none;
+  padding: 0 0.1rem;
+  width: 100%;
+  font-size: 0.105rem;
+}
+.login .el-checkbox-group {
+  text-align: left;
+}
+.login .el-checkbox__label {
+  padding-left: 0.06rem;
+  line-height: 0.25rem;
+  font-size: 0.105rem;
+  color: #303137;
+}
+.login .el-checkbox__inner {
+  float: left;
+  width: 0.11rem;
+  height: 0.11rem;
+  margin-left: 0.02rem;
+  margin-top: -0.02rem;
+  border: 0.01rem solid #ccd3db;
+  border-radius: 0;
+}
+.login .el-checkbox__inner::after {
+  height: 0.07rem;
+  left: 0.03rem;
+  top: 0;
+  width: 0.04rem;
+}
+.login .el-button{
+  width: 100%;
+  padding: 0;
+  margin: 0 auto 0;
+  height: 0.37rem;
+  line-height: 0.37rem;
+  font-size: 0.12rem;
+  border: 0;
+  border-radius: 0;
+}
+.login .el-button--primary {
+  background-color: #009ffd;
+  border-color: #009ffd;
+}
+.login .login_forgetPass{
+  float: right;
+  display: block;
+  margin: 0.07rem 9.5% 0.07rem 0;
+  font-size: 0.12rem;
+  color: #98989b;
+}
+.login .el-form-item__error{
+  padding-top: 0;
+  font-size: 0.105rem;
+}
+.login .login_register1{
+  position: absolute;
+  top: -0.33rem;
+  right: 0.04rem;
+  line-height: 0.33rem;
+  font-size: 0.12rem;
+  color: #fff;
+}
+.login .title{
+  display: flex;
+  margin: 0.45rem 0 0.1rem;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.165rem;
+  color: #333;
+}
+.login .title div{
+  display: inline;
+  padding: 0 0.08rem;
+  line-height: 0.3rem;
+  cursor: pointer;
+}
+.login .title .active{
+  font-weight: bold;
+}
+.login.register .el-input__inner{
+  height: 0.29rem;
+  line-height: 0.29rem;
+}
+.login.register .el-form-item{
+  margin-bottom: 0.14rem;
+}
+.login .identCode{
+  position: relative;
+  float: left;
+  width: 38%;
+  padding: 0 0 0 2%;
+  color: #2469c6;
+  text-align: center;
+  cursor: pointer;
+  font-size: 0.12rem;
+}
+.login .identCode.active{
+  opacity: 0.5;
+}
+.login .identCode::after{
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 0.01rem;
+  height: 0.17rem;
+  margin-top: -0.085rem;
+  background-color: #e0e0e0;
+}
+.login .loginFormDiv{
+  width: 81%;
+  height: 0.29rem;
+  margin: 0 auto 0.16rem;
+  border:0.01rem solid #e0e0e0;
+  font-size: 0.0105rem;
+  line-height: 0.29rem;
+  overflow: hidden;
+}
+.login.register .loginFormDiv .noborder{
+  float: left;
+  width: calc(66% - 0.2rem);
+  border:0;
+}
+.login.register .loginFormDiv .noborder .el-input__inner{
+  border:0;
+}
+.login .loginFormDiv .form-input{
+  border: 0;
+    border-radius: 0;
+    color: #606266;
+    height: 0.29rem;
+    line-height: 0.29rem;
+    outline: none;
+    padding: 0 0.1rem;
+    width: calc(100% - 0.2rem);
+    font-size: 0.12rem;
+}
+.login .loginFormDiv+.form-tips{
+    width: 81%;
+    min-height: 0.16rem;
+    margin: -0.16rem auto 0;
+    font-size: 11px;
+    color: #ff5656;
+}
+.login.register .loginFormDiv .el-select{
+  position: relative;
+  float: left;
+  width: 29.5%;
+}
+.login.register .loginFormDiv .el-select::after{
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 50%;
+  width: 0.01rem;
+  height: 0.17rem;
+  margin-top: -0.085rem;
+  background-color: #e0e0e0;
+}
+.login.register .loginFormDiv .el-input--suffix .el-input__inner{
+  padding-right: 0.3rem;
+}
+.login.register .loginFormDiv .el-input .el-input__inner{
+  border: 0;
+}
+.login.register .loginFormDiv .el-input__icon{
+  width: 0.25rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.el-message-box__wrapper .el-message-box{
+  background: #fff url(../images/tip_bg.png) no-repeat;
+  background-size: 1.45rem;
+  background-position: -0.2rem -0.3rem;
+}
+.el-message-box__wrapper .el-message-box .el-message-box__header{
+  padding-top: 0.15rem;
+}
+.el-message-box__wrapper .el-message-box .el-message-box__message p{
+  line-height: 0.6rem;
+  text-align: center;
+}
+.el-message-box__wrapper .el-message-box .el-message-box__btns{
+  padding-top: 0.25rem;
+}
+.el-message-box__wrapper .el-message-box .el-message-box__btns button{
+  padding: 0.07rem 0.2rem;
+  border-radius: 0.08rem;
+  font-size: 0.1372rem;
+}
+.el-message-box__wrapper .el-message-box .el-message-box__btns button:nth-child(1){
+  background-color: #fff;
+  border-color: #0b318f;
+  color:  #0b318f;
+}
+.el-message-box__wrapper .el-message-box .el-message-box__btns button:nth-child(2){
+  background-color: #0b318f;
+  border-color: #0b318f;
+}
+
+.el-message .el-icon-success,.el-message .el-icon-error, .el-message--warning{
+  font-size: 35px;
+}
+
+
+.elPopMiner{
+  text-align: center;
+}
+.el-popover.el-popper{
+  max-width: 400px;
+}
+
+@media screen and (max-width:1024px){
+html,
+body,
+#app,
+.wrapper {
+    font-size: 97px;
+}
+}
+@media screen and (max-width:999px){
+  html,
+  body,
+  #app,
+  .wrapper {
+      font-size: 95px;
+  }
+
+  .login .loginArea{
+    width: 90%;
+    max-width: 400px;
+    height: auto;
+    min-width: auto;
+  }
+  .login .loginArea .loginAreaLeft{
+    display: none;
+    float: none;
+    width: 100%;
+    height: auto;
+    padding: 0.2rem 0;
+  }
+  .login .loginArea .loginAreaLeft img{
+    width: 40%;
+  }
+  .login .loginArea .loginAreaRight{
+    width: 100%;
+    float: none;
+  }
+  /* .loginAreaRight h1{
+    margin: 0.1rem 0 0.2rem !important;
+  } */
+  .login .login_register1{
+    display: block;
+    width: calc(100% - 0.18rem);
+    margin: 0.14rem 0 0;
+    padding: 0 0.18rem 0 0;
+    line-height: 0.12rem;
+    font-size: 0.12rem;
+    color: #0099ff;
+    text-align: right;
+    position: relative;
+    top: auto;
+    right: auto;
+  }
+
+  .content-box{
+    left: 0 !important;
+    top: 0.6rem;
+    overflow-x: hidden
+  }
+}
+@media screen and (max-width:768px){
+.el-message-box__wrapper .el-message-box{
+  width: 90%;
+}
+/* .login{
+  position: relative;
+  margin-top: -10px;
+} */
+.login .loginArea{
+  margin: 0 auto;
+  padding: 0 0 0.05rem;
+}
+}
+
+@media screen and (max-width:441px){
+.el-date-range-picker{
+  width: 100%;
+  left: 0;
+}
+.el-date-range-picker .el-picker-panel__body{
+  min-width: auto;
+  width:  100%;
+}
+.el-date-range-picker__content{
+  width:  100%;
+  clear: both;
+  padding: 0;
+}
+.el-date-range-picker__content.is-left{
+  border: 0;
+}
+}

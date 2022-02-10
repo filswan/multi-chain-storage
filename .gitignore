@@ -127,10 +127,15 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
-./idea/
+.idea/
 ./on-chain/node_modules/
 ./on-chain/artifacts/
 ./on-chain/cache/
 config.toml
 config_*.toml
 
+.DS_Store
+.vscode/launch.json
+.vscode/*
+.vscode
+__debug_bin

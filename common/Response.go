@@ -2,6 +2,7 @@ package common
 
 import (
 	"payment-bridge/common/constants"
+	"payment-bridge/common/errorinfo"
 )
 
 type BasicResponse struct {
@@ -34,11 +35,15 @@ func CreateSuccessResponse(_data interface{}) BasicResponse {
 	}
 }
 
-func CreateErrorResponse(_errCode, _errMsg string) BasicResponse {
+func CreateErrorResponse(errCode string, errMsg ...string) BasicResponse {
+	message := errorinfo.GetErrMsg(errCode)
+	if errMsg != nil {
+		message = message + ":" + errMsg[0]
+	}
 	return BasicResponse{
 		Status:  constants.HTTP_STATUS_ERROR,
-		Code:    _errCode,
-		Message: _errMsg,
+		Code:    errCode,
+		Message: message,
 	}
 }
 
@@ -49,4 +54,8 @@ func NewSuccessResponseWithPageInfo(_data interface{}, _page *PageInfo) BasicRes
 		Data:     _data,
 		PageInfo: _page,
 	}
+}
+
+type RecordCount struct {
+	TotalRecord int64 `json:"total_record"`
 }

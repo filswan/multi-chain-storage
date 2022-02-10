@@ -23,9 +23,9 @@
 7. DAO memebers sign storage status info(dealid, mcp_payment_receiver_address) on-chain, by calling dao_contract
 8. Once signatures from DAO memeber reach threshold, 
 9. mcp_platform calls unlockCarPayment method of mcp_payment_contract  
-9.1 mcp_payment_contract reads payment info from flink_service_contract
-9.2 mcp_payment_contract gets wFil/USDC price from DEX pool price_feed_address 
-9.3 mcp_payment_contract calculates cost of storage service and pays it to mcp_platform  
+9.1 mcp_payment_contract reads payment info from flink_service_contract,please make sure your caller wallet has engouh link for oracle service    
+9.2 mcp_payment_contract gets wFil/USDC price from DEX pool price_feed_address   
+9.3 mcp_payment_contract calculates cost of storage service and pays it to mcp_platform    
 1.  mcp_platform calls refund method of mcp_payment_contract, and mcp_payment_contract returns remain tokens back to user.  
 
 

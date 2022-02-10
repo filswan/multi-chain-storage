@@ -395,6 +395,7 @@ func (_FilswanOracle *FilswanOracleCaller) IsPaymentAvailable(opts *bind.CallOpt
 	var out []interface{}
 	err := _FilswanOracle.contract.Call(opts, &out, "isPaymentAvailable", cid, dealId, recipient)
 
+
 	if err != nil {
 		return *new(bool), err
 	}
@@ -414,6 +415,7 @@ func (_FilswanOracle *FilswanOracleSession) IsPaymentAvailable(cid string, dealI
 
 // IsPaymentAvailable is a free data retrieval call binding the contract method 0x580e75f1.
 //
+
 // Solidity: function isPaymentAvailable(string cid, string dealId, address recipient) view returns(bool)
 func (_FilswanOracle *FilswanOracleCallerSession) IsPaymentAvailable(cid string, dealId string, recipient common.Address) (bool, error) {
 	return _FilswanOracle.Contract.IsPaymentAvailable(&_FilswanOracle.CallOpts, cid, dealId, recipient)

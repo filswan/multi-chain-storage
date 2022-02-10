@@ -23,7 +23,7 @@ async function main() {
 
   const gatewayContractAddress = "0x12EDC75CE16d778Dc450960d5f1a744477ee49a0";
 
-  const cid = "abcd2bzacedh6keeksywaoa3wjryqzihqixyfekqgfljfosrcoyaj2";
+  const cid = "abcd2bzacedh6keeksywaoa3wjryqzihqixyfekqgfljfosrcoyaja";
 
   const [payer] = await ethers.getSigners();
 
@@ -36,15 +36,18 @@ async function main() {
   const contract = await hre.ethers.getContractFactory("SwanPayment");
   const paymentInstance = await contract.attach(gatewayContractAddress);
 
-  const tx = await paymentInstance.connect(payer).lockTokenPayment({
-    id: cid,
-    minPayment: one,
-    amount: ten,
-    lockTime: 86400 * 6, // 6 days
-    recipient: recipientAddress, //todo:
-  }, overrides);
+  // const tx = await paymentInstance.connect(payer).lockTokenPayment({
+  //   id: cid,
+  //   minPayment: one,
+  //   amount: ten,
+  //   lockTime: 60, // 6 days
+  //   recipient: recipientAddress,
+  //   size:0,
+  // }, overrides);
 
-  await tx.wait();
+  // await tx.wait();
+
+  paymentInstance.get
 }
 
 // We recommend this pattern to be able to use async/await everywhere

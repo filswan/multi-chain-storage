@@ -133,7 +133,7 @@
     "inputs": [
       {
         "internalType": "string",
-        "name": "txId",
+        "name": "cId",
         "type": "string"
       }
     ],
@@ -180,6 +180,11 @@
             "internalType": "bool",
             "name": "_isExisted",
             "type": "bool"
+          },
+          {
+            "internalType": "uint256",
+            "name": "size",
+            "type": "uint256"
           }
         ],
         "internalType": "struct IPaymentMinimal.TxInfo",
@@ -251,52 +256,11 @@
             "internalType": "address",
             "name": "recipient",
             "type": "address"
-          }
-        ],
-        "internalType": "struct IPaymentMinimal.lockPaymentParam",
-        "name": "param",
-        "type": "tuple"
-      }
-    ],
-    "name": "lockPayment",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "components": [
-          {
-            "internalType": "string",
-            "name": "id",
-            "type": "string"
           },
           {
             "internalType": "uint256",
-            "name": "minPayment",
+            "name": "size",
             "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "amount",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "lockTime",
-            "type": "uint256"
-          },
-          {
-            "internalType": "address",
-            "name": "recipient",
-            "type": "address"
           }
         ],
         "internalType": "struct IPaymentMinimal.lockPaymentParam",
@@ -312,6 +276,19 @@
         "type": "bool"
       }
     ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string[]",
+        "name": "cidList",
+        "type": "string[]"
+      }
+    ],
+    "name": "refund",
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -376,11 +353,16 @@
     "inputs": [
       {
         "internalType": "string",
-        "name": "txId",
+        "name": "dealId",
         "type": "string"
+      },
+      {
+        "internalType": "address",
+        "name": "recipient",
+        "type": "address"
       }
     ],
-    "name": "unlockPayment",
+    "name": "unlockCarPayment",
     "outputs": [
       {
         "internalType": "bool",

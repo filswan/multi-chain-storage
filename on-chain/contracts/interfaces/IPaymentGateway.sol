@@ -8,6 +8,7 @@ interface IPaymentMinimal {
         uint256 amount;
         uint256 lockTime;
         address recipient;
+        uint256 size;
     }
 
     struct unlockPaymentParam {
@@ -26,32 +27,26 @@ interface IPaymentMinimal {
         address recipient;
         uint256 deadline;
         bool _isExisted;
+        uint256 size;
     }
 
     /// @notice Returns the locked balance of caller in specific transaction
-    /// @param txId The transaction for which to look up the balance it has
+    /// @param cId The transaction for which to look up the balance it has
     /// @return tx The transaction object
-    function getLockedPaymentInfo(string calldata txId)
+    function getLockedPaymentInfo(string calldata cId)
         external
         view
         returns (TxInfo memory tx);
 
-    /// @notice Deposits the amount of token for specific transaction
-    /// @param txInfo The transaction information for which to deposit balance
-    /// @return Returns true for a successful deposit, false for an unsuccessful deposit
-    function lockPayment(lockPaymentParam calldata txInfo)
+    function lockTokenPayment(lockPaymentParam calldata param)
         external
-        payable
         returns (bool);
 
-    /// @notice Returns the current allowance given to a spender by an owner
-    /// @param txId transaction id
-    /// @return Returns true for a successful payment, false for an unsuccessful payment
-    function unlockPayment(string calldata txId) external returns (bool);
+    function unlockTokenPayment(unlockPaymentParam calldata param)
+        external
+        returns (bool);
 
-    function lockTokenPayment(lockPaymentParam calldata param) external returns (bool);
-
-    function unlockTokenPayment(unlockPaymentParam calldata param) external returns (bool);
-
-    //function updateTxStatus((bytes calldata txId, uint256 cost, uint8 status) external returns (bool);
+    function unlockCarPayment(string calldata dealId, address recipient)
+        external
+        returns (bool);
 }

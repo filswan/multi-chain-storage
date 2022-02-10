@@ -36,6 +36,7 @@
                   _this.$nextTick(() => {
                       _this.$store.dispatch('setMetaAddress', addr)
                       _this.$emit("getMetamaskLogin", true)
+                      _this.$router.go(0)
                   })
               })
               return false

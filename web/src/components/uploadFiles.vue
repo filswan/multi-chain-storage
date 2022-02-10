@@ -305,7 +305,7 @@
                                 // console.log(_this.ruleForm.amount, _this.usdcAvailable)
 
                                 // 判断支付金额是否大于代币余额
-                                if(_this.ruleForm.amount > _this.usdcAvailable ){
+                                if(Number(_this.ruleForm.amount) > Number(_this.usdcAvailable) ){
                                     _this.$message.error('Insufficient balance')
                                     return false
                                 }
@@ -432,9 +432,9 @@
                     amount: web3.utils.toWei(_this.ruleForm.amount, 'ether'),
                     lockTime: 86400 * Number(_this.$root.LOCK_TIME), // one day
                     recipient: _this.recipientAddress, //todo:
-                    size: _this._file.size
+                    size: resData.file_size
                 }
-                
+                console.log(lockObj)
                 contract_instance.methods.lockTokenPayment(lockObj)
                 .send(payObject)
                 .on('transactionHash', function(hash){

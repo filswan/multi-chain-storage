@@ -40,10 +40,10 @@ After a file is uploaded, the cost of storage service is estimated based on foll
 
 
 ## Environment Info
-RPC URL: **https://matic-mumbai.chainstacklabs.com**      
-Chain ID: **80001**
 
 ### Mumbai Testnet Blockchain Network
+RPC URL: **https://matic-mumbai.chainstacklabs.com**      
+Chain ID: **80001**
 #### Contract List
 |Contract   |  Address |
 |---|---|

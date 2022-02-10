@@ -63,7 +63,7 @@ func refund(dealFileId int64, swanPaymentTransactor *goBind.SwanPaymentTransacto
 	}
 
 	if len(offlineDealsNotUnlocked) > 0 {
-		msg := fmt.Sprintf("%d deals not unlocked, cannot refund for the deal file", len(offlineDealsNotUnlocked))
+		msg := fmt.Sprintf("%d deals not unlocked or unlock failed, cannot refund for the deal file", len(offlineDealsNotUnlocked))
 		logs.GetLogger().Info(msg)
 		return nil
 	}

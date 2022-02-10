@@ -2,7 +2,7 @@
 [![Chat on Slack](https://img.shields.io/badge/slack-filswan.slack.com-green.svg)](https://filswan.slack.com)
 [![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg)](https://github.com/RichardLitt/standard-readme)
 
-# Payment-Bridge-Contract
+# MCP Contract
 
 
 ## Architecture Overview
@@ -40,6 +40,8 @@ After a file is uploaded, the cost of storage service is estimated based on foll
 
 
 ## Environment Info
+RPC URL: **https://matic-mumbai.chainstacklabs.com**      
+Chain ID: **80001**
 
 ### Mumbai Testnet Blockchain Network
 #### Contract List

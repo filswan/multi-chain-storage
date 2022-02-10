@@ -46,6 +46,7 @@ func WriteLockPayment(c *gin.Context) {
 		}
 	} else {
 		event.MinPayment = lockedPayment.MinPayment
+		event.LockedFee = lockedPayment.LockedFee
 		event.Deadline = lockedPayment.Deadline
 		event.TokenAddress = lockedPayment.TokenAddress
 		event.AddressFrom = lockedPayment.AddressFrom

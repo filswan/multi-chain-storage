@@ -1,10 +1,12 @@
 package scheduler
 
 import (
+	"payment-bridge/common/constants"
 	"payment-bridge/common/utils"
 	"payment-bridge/config"
 	"payment-bridge/database"
 	"payment-bridge/models"
+	"strconv"
 
 	"github.com/filswan/go-swan-lib/logs"
 
@@ -41,6 +43,48 @@ func ScanDeal() error {
 				return err
 			}
 		}
+	}
+
+	err = GetExpiredDealInfoAndUpdateInfoToDB()
+
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	return nil
+}
+
+func GetExpiredDealInfoAndUpdateInfoToDB() error {
+	eventLockPayment, err := models.FindExpiredLockPayment()
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+	for _, v := range eventLockPayment {
+		_dealFileId := v.DealFileId
+		paymentStatus := constants.PROCESS_STATUS_EXPIRE_REFUNDING
+		eventExpireList, err := models.FindEventExpirePayments(&models.EventExpirePayment{PayloadCid: v.PayloadCid}, "id desc", "10", "0")
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return err
+		}
+		for _, e := range eventExpireList {
+			lockAmount, err := strconv.ParseInt(e.ExpireUserAmount, 10, 64)
+			if err != nil {
+				logs.GetLogger().Error(err)
+				return err
+			}
+			if lockAmount > 0 {
+				paymentStatus = constants.PROCESS_STATUS_EXPIRE_REFUNDED
+			}
+		}
+		err = models.UpdateDealFileStatus(_dealFileId, paymentStatus)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return err
+		}
+
 	}
 	return nil
 }

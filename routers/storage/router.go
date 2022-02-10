@@ -31,6 +31,7 @@ func SendDealManager(router *gin.RouterGroup) {
 	router.GET("/dao/signature/deals", GetDealListForDaoToSign)
 	router.PUT("/dao/signature/deals", RecordDealListThatHaveBeenSignedByDao)
 	router.POST("/mint/info", RecordMintInfo)
+	router.POST("/deal/expire", RecordExpiredRefund)
 }
 
 type UpdateSourceFileParam struct {
@@ -429,4 +430,23 @@ type mintInfoUpload struct {
 	TxHash      string `json:"tx_hash"`
 	TokenId     string `json:"token_id"`
 	MintAddress string `json:"mint_address"`
+}
+
+func RecordExpiredRefund(c *gin.Context) {
+	URL := c.Request.URL.Query()
+	tx_hash := URL.Get("tx_hash")
+	if strings.Trim(tx_hash, " ") == "" {
+		err := fmt.Errorf("transaction hash is required")
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_CODE, err.Error()))
+		return
+	}
+	event, err := SaveExpirePaymentEvent(tx_hash)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.SAVE_DATA_TO_DB_ERROR_CODE))
+		return
+	} else {
+		c.JSON(http.StatusOK, common.CreateSuccessResponse(event))
+	}
 }

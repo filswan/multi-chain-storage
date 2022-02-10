@@ -2,6 +2,7 @@ package storage
 
 import (
 	"context"
+	"math/big"
 	"mime/multipart"
 	"os"
 	"path/filepath"
@@ -393,4 +394,88 @@ func SaveDaoEventFromTxHash(txHash string, payload_cid string, recipent string, 
 		}
 	}
 	return nil
+}
+
+func SaveExpirePaymentEvent(txHash string) (*models.EventExpirePayment, error) {
+
+	ethClient, rpcClient, err := client.GetEthClient()
+
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	if txHash != "" && strings.HasPrefix(txHash, "0x") {
+		var rpcTransaction *models.RpcTransaction
+		err = rpcClient.CallContext(context.Background(), &rpcTransaction, "eth_getTransactionByHash", common.HexToHash(txHash))
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return nil, err
+		}
+
+		transactionReceipt, err := ethClient.TransactionReceipt(context.Background(), common.HexToHash(txHash))
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return nil, err
+		}
+
+		event := new(models.EventExpirePayment)
+		event.TxHash = txHash
+
+		block, err := ethClient.BlockByHash(context.Background(), *rpcTransaction.BlockHash)
+		if err != nil {
+			logs.GetLogger().Error(err)
+		} else {
+			event.BlockTime = strconv.FormatUint(block.Time(), 10)
+		}
+		blockNumberStr := strings.Replace(*rpcTransaction.BlockNumber, "0x", "", -1)
+		blockNumberInt64, err := strconv.ParseUint(blockNumberStr, 16, 64)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return nil, err
+		}
+		event.BlockNo = strconv.FormatUint(blockNumberInt64, 10)
+		wfilCoinId, err := models.FindCoinByFullName(constants.COIN_NAME_USDC)
+		if err != nil {
+			logs.GetLogger().Error(err)
+		} else {
+			event.CoinId = wfilCoinId.ID
+			event.NetworkId = wfilCoinId.NetworkId
+		}
+
+		contrackABI, err := client.GetContractAbi()
+
+		if err != nil {
+			logs.GetLogger().Error(err)
+		}
+
+		for _, v := range transactionReceipt.Logs {
+			if v.Topics[0].Hex() == "0xe704d5e6168e602e91f017f25d889b182d9e11a90fd939a489cc2f04734c1f8a" {
+				dataList, err := contrackABI.Unpack("ExpirePayment", v.Data)
+				if err != nil {
+					logs.GetLogger().Error(err)
+				}
+				event.PayloadCid = dataList[0].(string)
+				event.TokenAddress = dataList[1].(common.Address).Hex()
+				event.ExpireUserAmount = dataList[2].(*big.Int).String()
+				event.UserAddress = dataList[3].(common.Address).Hex()
+			}
+		}
+		event.CreateAt = strconv.FormatInt(utils.GetCurrentUtcMilliSecond(), 10)
+		event.ContractAddress = transactionReceipt.ContractAddress.Hex()
+
+		eventList, err := models.FindEventExpirePayments(&models.EventExpirePayment{TxHash: txHash, BlockNo: strconv.
+			FormatUint(blockNumberInt64, 10)}, "id desc", "10", "0")
+		if err != nil {
+			logs.GetLogger().Error(err)
+		}
+		if len(eventList) <= 0 {
+			err = database.SaveOneWithTransaction(event)
+			if err != nil {
+				logs.GetLogger().Error(err)
+			}
+		}
+		return event, nil
+	}
+	return nil, nil
 }

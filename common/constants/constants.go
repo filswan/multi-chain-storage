@@ -40,6 +40,8 @@ const (
 	PROCESS_STATUS_DEAL_SEND_CANCELLED = "DealSendCancelled"
 	PROCESS_STATUS_UNLOCK_REFUNDED     = "UnlockRefundSucceeded"
 	PROCESS_STATUS_UNLOCK_REFUNDFAILED = "UnlockRefundFailed"
+	PROCESS_STATUS_EXPIRE_REFUNDING    = "Refunding"
+	PROCESS_STATUS_EXPIRE_REFUNDED     = "Refunded"
 
 	DEAL_STATUS_ACTIVE = "StorageDealActive"
 	DEAL_STATUS_ERROR  = "StorageDealError"

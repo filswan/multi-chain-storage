@@ -1,7 +1,10 @@
 package models
 
 import (
+	"payment-bridge/common/constants"
 	"payment-bridge/database"
+	"strconv"
+	"time"
 
 	"github.com/filswan/go-swan-lib/logs"
 	"github.com/shopspring/decimal"
@@ -28,6 +31,13 @@ type EventLockPayment struct {
 	UnlockTxStatus  string          `json:"unlock_tx_status"`
 	UnlockTime      string          `json:"unlock_time"`
 	SourceFileId    int64           `json:"source_file_id"`
+}
+
+type EventLockPaymentQuery struct {
+	PayloadCid string `json:"payload_cid"`
+	DealId     string `json:"deal_id"`
+	Recipient  string `json:"recipient"`
+	DealFileId int64  `json:"deal_file_id"`
 }
 
 func GetEventLockPaymentBySrcPayloadCid(srcFilePayloadCid string) ([]*EventLockPayment, error) {
@@ -68,4 +78,21 @@ func GetEventLockPaymentByPayloadCid(payloadCid string) ([]*EventLockPayment, er
 	}
 
 	return eventLockPayment, nil
+}
+
+func FindExpiredLockPayment() ([]*EventLockPaymentQuery, error) {
+	sql :=
+		"SELECT b.id as deal_file_id, a.payload_cid, b.deal_id, a.address_from as recipient " +
+			"FROM event_lock_payment a, deal_file b " +
+			"WHERE a.payload_cid = b.payload_cid and a.payload_cid not in (SELECT payload_cid FROM event_unlock_payment c) and lock_payment_status <> '" + constants.PROCESS_STATUS_EXPIRE_REFUNDED +
+			"' and a.deadline < " + strconv.FormatInt(time.Now().Unix(), 10) +
+			" and not exists (select 1 from offline_deal d where d.deal_file_id = b.id and unlock_status ='Unlocked') and b.deal_id <> 0"
+	db := database.GetDB()
+	var models []*EventLockPaymentQuery
+	err := db.Raw(sql).Scan(&models).Limit(constants.DEFAULT_SELECT_LIMIT).Offset(0).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+	return models, nil
 }

@@ -34,7 +34,7 @@ type polygon struct {
 	McpPaymentReceiverAddress string        `toml:"mcp_payment_receiver_address"`
 	GasLimit                  uint64        `toml:"gas_limit"`
 	UnlockIntervalMinute      time.Duration `toml:"unlock_interval_minute"`
-	IntervalDaoUnlockMinute   int           `toml:"interval_dao_unlock_minute"`
+	IntervalDaoUnlockBlock    int64         `toml:"interval_dao_unlock_block"`
 }
 
 type database struct {
@@ -160,6 +160,7 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 		{"polygon", "mcp_payment_receiver_address"},
 		{"polygon", "gas_limit"},
 		{"polygon", "unlock_interval_minute"},
+		{"polygon", "interval_dao_unlock_block"},
 	}
 
 	for _, v := range requiredFields {

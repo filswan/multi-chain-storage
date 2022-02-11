@@ -148,7 +148,8 @@ func checkUnlockable(ethClient *ethclient.Client, offlineDeal *models.OfflineDea
 	blockInterval := int64(currentBlockNo - daoSignatures[0].BlockNo)
 
 	if blockInterval < config.GetConfig().Polygon.IntervalDaoUnlockBlock {
-		logs.GetLogger().Info(offlineDeal, "dao just signed, please wait")
+		msg := fmt.Sprintf("current block number:%d minus last dao block number:%d is less than block interval:%d", currentBlockNo, daoSignatures[0].BlockNo, blockInterval)
+		logs.GetLogger().Info(offlineDeal, msg)
 		return false, nil
 	}
 

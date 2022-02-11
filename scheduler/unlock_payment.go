@@ -15,7 +15,6 @@ import (
 
 	"github.com/ethereum/go-ethereum/rpc"
 
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/filswan/go-swan-lib/logs"
@@ -54,18 +53,6 @@ func UnlockPayment() error {
 		return err
 	}
 
-	privateKey, publicKeyAddress, err := client.GetPrivateKeyPublicKey(constants.PRIVATE_KEY_ON_POLYGON)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
-
-	tansactOpts, err := client.GetTransactOpts(ethClient, privateKey, *publicKeyAddress)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
-
 	unlockInterval := config.GetConfig().Polygon.UnlockIntervalMinute * time.Minute
 	logs.GetLogger().Info("unlock interval is ", unlockInterval)
 
@@ -96,7 +83,7 @@ func UnlockPayment() error {
 		}
 
 		unlockCnt = unlockCnt + 1
-		txHash, err := doUnlockDeal(offlineDeal, ethClient, swanPaymentTransactor, tansactOpts, mcpPaymentReceiverAddress)
+		txHash, err := doUnlockDeal(offlineDeal, ethClient, swanPaymentTransactor, mcpPaymentReceiverAddress)
 		if err != nil {
 			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 			continue
@@ -249,7 +236,19 @@ func getLog(offlineDeal *models.OfflineDeal, messages ...string) string {
 	return text
 }
 
-func doUnlockDeal(offlineDeal *models.OfflineDeal, ethClient *ethclient.Client, swanPaymentTransactor *goBind.SwanPaymentTransactor, tansactOpts *bind.TransactOpts, mcpPaymentReceiverAddress common.Address) (*string, error) {
+func doUnlockDeal(offlineDeal *models.OfflineDeal, ethClient *ethclient.Client, swanPaymentTransactor *goBind.SwanPaymentTransactor, mcpPaymentReceiverAddress common.Address) (*string, error) {
+	privateKey, publicKeyAddress, err := client.GetPrivateKeyPublicKey(constants.PRIVATE_KEY_ON_POLYGON)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	tansactOpts, err := client.GetTransactOpts(ethClient, privateKey, *publicKeyAddress)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
 	dealIdStr := strconv.FormatInt(offlineDeal.DealId, 10)
 	unlockStatusFailed := constants.OFFLINE_DEAL_UNLOCK_STATUS_UNLOCK_FAILED
 

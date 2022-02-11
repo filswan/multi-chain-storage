@@ -1,6 +1,7 @@
 package models
 
 import (
+	"payment-bridge/common/constants"
 	"payment-bridge/database"
 
 	"github.com/filswan/go-swan-lib/logs"
@@ -42,7 +43,7 @@ func UpdateDaoEventLog(whereCondition interface{}, updateFields interface{}) err
 
 func GetEventDaoSignaturesByDealId(dealId int64) ([]*EventDaoSignature, error) {
 	var eventDaoSignatures []*EventDaoSignature
-	sql := "select * from event_dao_signature a where a.deal_id=?"
+	sql := "select * from event_dao_signature a where a.deal_id=? and signature_unlock_status =" + constants.SIGNATURE_SUCCESS_VALUE
 
 	query := database.GetDB().Raw(sql, dealId).Order("block_time desc").Scan(&eventDaoSignatures)
 

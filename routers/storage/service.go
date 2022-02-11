@@ -2,6 +2,7 @@ package storage
 
 import (
 	"context"
+	"errors"
 	"math/big"
 	"mime/multipart"
 	"os"
@@ -15,6 +16,7 @@ import (
 	"payment-bridge/scheduler"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/filswan/go-swan-lib/logs"
@@ -283,10 +285,11 @@ func GetLockFoundInfoByPayloadCid(payloadCid string) (*LockFound, error) {
 }
 
 func GetShoulBeSignDealListFromDB() ([]*DealForDaoSignResult, error) {
-	finalSql := "select a.id as deal_file_id, b.deal_id,a.deal_cid,a.piece_cid,a.payload_cid,a.cost,a.verified,a.miner_fid,duration,a.client_wallet_address,a.create_at from deal_file a left join offline_deal b on a.id = b.deal_file_id" +
+	finalSql := "select a.id as deal_file_id, b.deal_id,a.deal_cid,a.piece_cid,a.payload_cid,a.cost,a.verified,a.miner_fid,duration,a.client_wallet_address,a.create_at from deal_file a left join offline_deal b on a.id = b.deal_file_id left join event_lock_payment c on a.payload_cid=c.payload_cid " +
 		" where b.deal_id not in  ( " +
 		" select  deal_id from dao_fetched_deal ) " +
-		" and b.deal_id > 0 order by a.create_at desc"
+		" and b.deal_id > 0 and c.deadline < " + strconv.FormatInt(time.Now().Unix(), 10) +
+		" order by a.create_at desc"
 	var dealForDaoSignResultList []*DealForDaoSignResult
 	err := database.GetDB().Raw(finalSql).Scan(&dealForDaoSignResultList).Limit(0).Offset(constants.DEFAULT_SELECT_LIMIT).Error
 	if err != nil {
@@ -334,7 +337,7 @@ func GetDaoSignEventByDealId(dealId int64) ([]*DaoInfoResult, error) {
 	return daoInfoResult, nil
 }
 
-func SaveDaoEventFromTxHash(txHash string, payload_cid string, recipent string, deal_id int64) error {
+func SaveDaoEventFromTxHash(txHash string, payload_cid string, recipent string, deal_id int64, verification bool) error {
 	ethClient, rpcClient, err := client.GetEthClient()
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -350,6 +353,11 @@ func SaveDaoEventFromTxHash(txHash string, payload_cid string, recipent string, 
 		}
 
 		transaction, _, err := ethClient.TransactionByHash(context.Background(), common.HexToHash(txHash))
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return err
+		}
+		transReceipt, err := ethClient.TransactionReceipt(context.Background(), common.HexToHash(txHash))
 		if err != nil {
 			logs.GetLogger().Error(err)
 			return err
@@ -380,8 +388,17 @@ func SaveDaoEventFromTxHash(txHash string, payload_cid string, recipent string, 
 			return err
 		}
 		eventDaoSignature.BlockNo = blockNumberInt64
-		eventDaoSignature.Status = true
-		eventDaoSignature.SignatureUnlockStatus = constants.SIGNATURE_DEFAULT_VALUE
+		if transReceipt.Status == 1 {
+			eventDaoSignature.Status = true
+		} else {
+			eventDaoSignature.Status = false
+		}
+
+		if verification {
+			eventDaoSignature.SignatureUnlockStatus = constants.SIGNATURE_SUCCESS_VALUE
+		} else {
+			eventDaoSignature.SignatureUnlockStatus = constants.SIGNATURE_FAILED_VALUE
+		}
 		addrInfo, err := client.GetFromAndToAddressByTxHash(ethClient, transaction.ChainId(), common.HexToHash(txHash))
 		if err != nil {
 			logs.GetLogger().Error(err)
@@ -478,4 +495,28 @@ func SaveExpirePaymentEvent(txHash string) (*models.EventExpirePayment, error) {
 		return event, nil
 	}
 	return nil, nil
+}
+
+func VerifyDaoSigOnContract(tx_hash string) (bool, error) {
+	client, _, err := client.GetEthClient()
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return false, err
+	}
+	if tx_hash != "" && strings.HasPrefix(tx_hash, "0x") {
+		transaction, err := client.TransactionReceipt(context.Background(), common.HexToHash(tx_hash))
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return false, err
+		}
+		if transaction.Status == 1 {
+			return true, nil
+		} else {
+			return false, nil
+		}
+	} else {
+		err := errors.New("invalid transaction hash:" + tx_hash)
+		logs.GetLogger().Error(err)
+		return false, err
+	}
 }

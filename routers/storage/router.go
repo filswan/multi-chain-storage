@@ -233,31 +233,29 @@ func GetDealListFromFilink(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE, errorinfo.GET_RECORD_lIST_ERROR_CODE+": get lock found info from db occurred error"))
 		return
 	}
-	fileList, err := models.GetSourceFileExtByPayloadCid(srcFilePayloadCid, walletAddress)
+	srcFile, err := models.GetSourceFileExtByPayloadCid(srcFilePayloadCid, walletAddress)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE, errorinfo.GET_RECORD_lIST_ERROR_CODE+": get deal file info from db occurred error"))
 		return
 	}
-	if fileList != nil {
-		result.Data.Data.Deal.IpfsUrl = fileList.IpfsUrl
-		result.Data.Data.Deal.FileName = fileList.FileName
+
+	unlockStatus := false
+	if srcFile != nil {
+		result.Data.Data.Deal.IpfsUrl = srcFile.IpfsUrl
+		result.Data.Data.Deal.FileName = srcFile.FileName
+		if srcFile.RefundStatus != nil {
+			unlockStatus = *srcFile.RefundStatus == constants.PROCESS_STATUS_UNLOCK_REFUNDED
+		}
 	}
 	threshHold, err := client.GetThreshHold()
 	if err != nil {
 		logs.GetLogger().Error(err)
 	}
 
-	dealFiles, err := models.GetDealFileBySourceFilePayloadCid(srcFilePayloadCid)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE))
-		return
-	}
-
 	result.Data.Data.Deal.CreatedAt = result.Data.Data.Deal.CreatedAt * 1000
 	c.JSON(http.StatusOK, common.CreateSuccessResponse(gin.H{
-		"unlock_status":    dealFiles[0].LockPaymentStatus == constants.PROCESS_STATUS_UNLOCK_REFUNDED,
+		"unlock_status":    unlockStatus,
 		"dao_thresh_hold":  threshHold,
 		"signed_dao_count": signedDaoCount,
 		"dao_total_count":  len(daoSignList),

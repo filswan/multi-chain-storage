@@ -188,17 +188,6 @@ func GetDealListFromFilink(c *gin.Context) {
 		return
 	}
 
-	dealFiles, err := models.GetDealFileBySourceFilePayloadCid(srcFilePayloadCid)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE))
-		return
-	}
-	payloadCid := ""
-	if len(dealFiles) > 0 {
-		payloadCid = dealFiles[0].PayloadCid
-	}
-
 	url := config.GetConfig().FilinkUrl
 	parameter := new(filinkParams)
 	//todo
@@ -259,20 +248,16 @@ func GetDealListFromFilink(c *gin.Context) {
 		logs.GetLogger().Error(err)
 	}
 
-	unlockStatus := false
-	if payloadCid != "" {
-		eventList, err := models.GetEventUnlockPaymentsByPayloadCid(payloadCid, "10", "0")
-		if err != nil {
-			logs.GetLogger().Error(err)
-		}
-		if len(eventList) > 0 {
-			unlockStatus = true
-		}
+	dealFiles, err := models.GetDealFileBySourceFilePayloadCid(srcFilePayloadCid)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE))
+		return
 	}
 
 	result.Data.Data.Deal.CreatedAt = result.Data.Data.Deal.CreatedAt * 1000
 	c.JSON(http.StatusOK, common.CreateSuccessResponse(gin.H{
-		"unlock_status":    unlockStatus,
+		"unlock_status":    dealFiles[0].LockPaymentStatus == constants.PROCESS_STATUS_UNLOCK_REFUNDED,
 		"dao_thresh_hold":  threshHold,
 		"signed_dao_count": signedDaoCount,
 		"dao_total_count":  len(daoSignList),

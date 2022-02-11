@@ -7,7 +7,7 @@ import (
 	"payment-bridge/on-chain/client"
 	"payment-bridge/on-chain/goBind"
 
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/filswan/go-swan-lib/logs"
 )
 
@@ -24,18 +24,6 @@ func Refund() error {
 		return err
 	}
 
-	privateKey, publicKeyAddress, err := client.GetPrivateKeyPublicKey(constants.PRIVATE_KEY_ON_POLYGON)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
-
-	tansactOpts, err := client.GetTransactOpts(ethClient, privateKey, *publicKeyAddress)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
-
 	//refund(int64(903), swanPaymentTransactor, tansactOpts)
 
 	dealFiles, err := models.GetDealFilesByStatus(constants.PROCESS_STATUS_DEAL_SENT)
@@ -45,7 +33,7 @@ func Refund() error {
 	}
 
 	for _, dealFile := range dealFiles {
-		err = refund(dealFile.ID, swanPaymentTransactor, tansactOpts)
+		err = refund(ethClient, dealFile.ID, swanPaymentTransactor)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			continue
@@ -55,7 +43,7 @@ func Refund() error {
 	return nil
 }
 
-func refund(dealFileId int64, swanPaymentTransactor *goBind.SwanPaymentTransactor, tansactOpts *bind.TransactOpts) error {
+func refund(ethClient *ethclient.Client, dealFileId int64, swanPaymentTransactor *goBind.SwanPaymentTransactor) error {
 	offlineDealsNotUnlocked, err := models.GetOfflineDealsNotUnlockedByDealFileId(dealFileId)
 	if err != nil {
 		logs.GetLogger().Error(err.Error())
@@ -89,6 +77,18 @@ func refund(dealFileId int64, swanPaymentTransactor *goBind.SwanPaymentTransacto
 		}
 
 		srcFilePayloadCids = append(srcFilePayloadCids, srcFile.PayloadCid)
+	}
+
+	privateKey, publicKeyAddress, err := client.GetPrivateKeyPublicKey(constants.PRIVATE_KEY_ON_POLYGON)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	tansactOpts, err := client.GetTransactOpts(ethClient, privateKey, *publicKeyAddress)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
 	}
 
 	refundStatus := constants.PROCESS_STATUS_UNLOCK_REFUNDED

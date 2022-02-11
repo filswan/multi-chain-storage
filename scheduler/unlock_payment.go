@@ -19,7 +19,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/filswan/go-swan-lib/logs"
-	libutils "github.com/filswan/go-swan-lib/utils"
 )
 
 func UnlockPayment() error {
@@ -72,7 +71,7 @@ func UnlockPayment() error {
 
 	unlockCnt := 0
 	for _, offlineDeal := range offlineDeals {
-		isUnlockable, err := checkUnlockable(offlineDeal, filswanOracleSession, mcpPaymentReceiverAddress)
+		isUnlockable, err := checkUnlockable(ethClient, offlineDeal, filswanOracleSession, mcpPaymentReceiverAddress)
 		if err != nil {
 			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 			continue
@@ -116,7 +115,7 @@ func UnlockPayment() error {
 	return nil
 }
 
-func checkUnlockable(offlineDeal *models.OfflineDeal, filswanOracleSession *goBind.FilswanOracleSession, mcpPaymentReceiverAddress common.Address) (bool, error) {
+func checkUnlockable(ethClient *ethclient.Client, offlineDeal *models.OfflineDeal, filswanOracleSession *goBind.FilswanOracleSession, mcpPaymentReceiverAddress common.Address) (bool, error) {
 	dealIdStr := strconv.FormatInt(offlineDeal.DealId, 10)
 	isPaymentAvailable, err := filswanOracleSession.IsCarPaymentAvailable(dealIdStr, mcpPaymentReceiverAddress)
 	if err != nil {
@@ -140,19 +139,15 @@ func checkUnlockable(offlineDeal *models.OfflineDeal, filswanOracleSession *goBi
 		return false, nil
 	}
 
-	blockTime := libutils.GetInt64FromStr(daoSignatures[0].BlockTime)
-	if blockTime < 0 {
-		err := fmt.Errorf(getLog(offlineDeal, "invalid block time:"+daoSignatures[0].BlockTime))
-		logs.GetLogger().Error(err)
+	currentBlockNo, err := ethClient.BlockNumber(context.Background())
+	if err != nil {
+		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 		return false, err
 	}
 
-	blockTime = blockTime * 1000
-	curUtcMilliSec := utils.GetCurrentUtcMilliSecond()
-	daoPassMilliSec := curUtcMilliSec - blockTime
+	blockInterval := int64(currentBlockNo - daoSignatures[0].BlockNo)
 
-	intervalDaoUnlockMinute := config.GetConfig().Polygon.IntervalDaoUnlockMinute
-	if daoPassMilliSec < int64(intervalDaoUnlockMinute)*60*1000 {
+	if blockInterval < config.GetConfig().Polygon.IntervalDaoUnlockBlock {
 		logs.GetLogger().Info(offlineDeal, "dao just signed, please wait")
 		return false, nil
 	}

@@ -123,7 +123,7 @@ func GetTransactOpts(ethClient *ethclient.Client, privateKey *ecdsa.PrivateKey, 
 		return nil, err
 	}
 
-	transactOpts.Nonce = big.NewInt(int64(nonce + 1))
+	transactOpts.Nonce = big.NewInt(int64(nonce))
 	transactOpts.GasPrice = gasPrice
 	transactOpts.GasLimit = config.GetConfig().Polygon.GasLimit
 	transactOpts.Context = context.Background()

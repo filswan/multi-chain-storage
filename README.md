@@ -92,7 +92,11 @@ git checkout <release_branch>
 ```shell
 vi ~/.swan/mcp/config.toml
 ```
-- After set your config in the related config files, you can run `multi-chain-payment` in `./build` directory
+- Before executing, you should check your enviornment variable in `~/.swan/mcp/.env` to ensure it is right.
+```shell
+vi ~/.swan/mcp/.env
+```
+- After set your config and env variable in the related files, you can run `multi-chain-payment` in `./build` directory
 ```shell
 ./build/multi-chain-payment
 ```
@@ -137,6 +141,9 @@ nohup ./build/multi-chain-payment >> ./build/mcp.log &    #After installation fr
 - **mcp_payment_receiver_address**:  mcp wallet address to receive money from unlock operation
 - **gas_limit**: gas limit for transaction
 - **unlock_interval_minute**: unlock interval in minutes between 2 unlock operations, in cannot be less than 1
+
+### .env
+- **privateKeyOnPolygon**: private key of the wallet used to execute contract methods on the polygon network and pay for gas
 
 ## Payment Process
 

@@ -882,7 +882,22 @@ export default {
                 else {
                     if(resData){
                       const lockPaymentTime = await new Date().getTime();
-                      _this.sendPayment(txHash, resData, lockObj, lockPaymentTime)
+                      const lockParam = {
+                          "tx_hash": txHash,
+                          "payload_cid": resData.payload_cid,
+                          "min_payment": lockObj.minPayment,
+                          "contract_address": this.gatewayContractAddress,
+                          "address_from": this.metaAddress,
+                          "address_to": this.gatewayContractAddress,
+                          "lock_payment_time": lockPaymentTime,
+                          "source_file_id":resData.id
+                      }
+                      _this.sendPostRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/billing/deal/lockpayment`, lockParam)
+                    }else{
+                      const lockParam = {
+                        tx_hash: txHash
+                      }
+                      _this.sendPostRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/storage/deal/expire`, lockParam)
                     }
                     clearTimeout(_this.timer)
                     setTimeout(function(){
@@ -895,23 +910,13 @@ export default {
             err => { console.error(err); }
         );
     },
-    sendPayment(txHash, resData, lockObj, lockPaymentTime) {
-        let lockParam = {
-            "tx_hash": txHash,
-            "payload_cid": resData.payload_cid,
-            "min_payment": lockObj.minPayment,
-            "contract_address": this.gatewayContractAddress,
-            "address_from": this.metaAddress,
-            "address_to": this.gatewayContractAddress,
-            "lock_payment_time": lockPaymentTime,
-            "source_file_id":resData.id
+    async sendPostRequest(apilink, jsonObject) {
+        try {
+            const response = await axios.post(apilink, jsonObject)
+            return response.data
+        } catch (err) {
+            console.error(err)
         }
-
-        axios.post(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/billing/deal/lockpayment`, lockParam)
-        .then((res) => {
-        }).catch(error => {
-            console.log(error)
-        })
     },
     finishClose(){
         this.finishTransaction = false

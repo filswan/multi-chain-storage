@@ -28,7 +28,7 @@ function Init(callback){
     .catch((error) => {
       if (error === "User rejected provider access") {
       } else {
-        alert("There was an issue signing you in. Please lock and switch to the correct network.");
+        alert("Please unlock MetaMask and switch to the correct network.");
         return false
       }
       console.error(

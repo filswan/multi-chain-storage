@@ -194,9 +194,10 @@ func GetDealListFromFilink(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE))
 		return
 	}
-	payloadCid := ""
+
+	unlockStatus := false
 	if len(dealFiles) > 0 {
-		payloadCid = dealFiles[0].PayloadCid
+		unlockStatus = dealFiles[0].LockPaymentStatus == constants.PROCESS_STATUS_UNLOCK_REFUNDED
 	}
 
 	url := config.GetConfig().FilinkUrl
@@ -257,17 +258,6 @@ func GetDealListFromFilink(c *gin.Context) {
 	threshHold, err := client.GetThreshHold()
 	if err != nil {
 		logs.GetLogger().Error(err)
-	}
-
-	unlockStatus := false
-	if payloadCid != "" {
-		eventList, err := models.GetEventUnlockPaymentsByPayloadCid(payloadCid, "10", "0")
-		if err != nil {
-			logs.GetLogger().Error(err)
-		}
-		if len(eventList) > 0 {
-			unlockStatus = true
-		}
 	}
 
 	result.Data.Data.Deal.CreatedAt = result.Data.Data.Deal.CreatedAt * 1000

@@ -20,16 +20,12 @@ type EventLockPayment struct {
 	LockedFee       decimal.Decimal `json:"locked_fee"`
 	Deadline        string          `json:"deadline"`
 	BlockNo         uint64          `json:"block_no"`
-	MinerAddress    string          `json:"miner_address"`
 	AddressFrom     string          `json:"address_from"`
 	AddressTo       string          `json:"address_to"`
 	CoinId          int64           `json:"coin_id"`
 	NetworkId       int64           `json:"network_id"`
 	LockPaymentTime int64           `json:"lock_payment_time"`
 	CreateAt        int64           `json:"create_at"`
-	UnlockTxHash    string          `json:"unlock_tx_hash"`
-	UnlockTxStatus  string          `json:"unlock_tx_status"`
-	UnlockTime      string          `json:"unlock_time"`
 	SourceFileId    int64           `json:"source_file_id"`
 }
 

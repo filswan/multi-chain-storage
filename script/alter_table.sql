@@ -55,6 +55,7 @@ alter table event_lock_payment add foreign key fk_event_lock_payment_source_file
 alter table event_lock_payment modify locked_fee double;
 
 
+alter table event_lock_payment drop column miner_address;
 
 
 SET SQL_SAFE_UPDATES = 0;

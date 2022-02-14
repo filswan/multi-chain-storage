@@ -18,9 +18,7 @@ func ScanRefundEventOnPolygon(blockNoFrom, blockNoTo int64) error {
 	query := ethereum.FilterQuery{
 		FromBlock: big.NewInt(blockNoFrom),
 		ToBlock:   big.NewInt(blockNoTo),
-		Addresses: []common.Address{
-			contractAddress,
-		},
+		Addresses: []common.Address{contractAddress},
 	}
 
 	ethClient, _, err := client.GetEthClient()

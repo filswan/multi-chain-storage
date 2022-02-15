@@ -288,7 +288,7 @@ func GetShoulBeSignDealListFromDB() ([]*DealForDaoSignResult, error) {
 	finalSql := "select a.id as deal_file_id, b.deal_id,a.deal_cid,a.piece_cid,a.payload_cid,a.cost,a.verified,a.miner_fid,duration,a.client_wallet_address,a.create_at from deal_file a left join offline_deal b on a.id = b.deal_file_id left join event_lock_payment c on a.payload_cid=c.payload_cid " +
 		" where b.deal_id not in  ( " +
 		" select  deal_id from dao_fetched_deal ) " +
-		" and b.deal_id > 0 and c.deadline < " + strconv.FormatInt(time.Now().Unix(), 10) +
+		" and b.deal_id > 0 and IFNULL(c.deadline,0) < " + strconv.FormatInt(time.Now().Unix(), 10) +
 		" order by a.create_at desc"
 	var dealForDaoSignResultList []*DealForDaoSignResult
 	err := database.GetDB().Raw(finalSql).Scan(&dealForDaoSignResultList).Limit(0).Offset(constants.DEFAULT_SELECT_LIMIT).Error
@@ -362,7 +362,16 @@ func SaveDaoEventFromTxHash(txHash string, payload_cid string, recipent string, 
 			logs.GetLogger().Error(err)
 			return err
 		}
-		var eventDaoSignature models.EventDaoSignature
+		eventDaoSignature, err := models.GetEventDaoSignatures(&models.EventDaoSignature{PayloadCid: payload_cid, TxHash: txHash})
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return err
+		}
+
+		if eventDaoSignature == nil {
+			eventDaoSignature = &models.EventDaoSignature{}
+		}
+
 		eventDaoSignature.TxHash = txHash
 		eventDaoSignature.Recipient = recipent
 		eventDaoSignature.PayloadCid = payload_cid

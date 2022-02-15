@@ -37,6 +37,7 @@ type IPaymentMinimalTxInfo struct {
 	Deadline   *big.Int
 	IsExisted  bool
 	Size       *big.Int
+	CopyLimit  uint8
 }
 
 // IPaymentMinimallockPaymentParam is an auto generated low-level Go binding around an user-defined struct.
@@ -47,6 +48,7 @@ type IPaymentMinimallockPaymentParam struct {
 	LockTime   *big.Int
 	Recipient  common.Address
 	Size       *big.Int
+	CopyLimit  uint8
 }
 
 // IPaymentMinimalunlockPaymentParam is an auto generated low-level Go binding around an user-defined struct.
@@ -58,107 +60,107 @@ type IPaymentMinimalunlockPaymentParam struct {
 	Recipient common.Address
 }
 
-// SwanPaymentABI is the input ABI used to generate the binding from.
-const SwanPaymentABI = "[{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"string\",\"name\":\"id\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"}],\"name\":\"ExpirePayment\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"string\",\"name\":\"id\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"lockedFee\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"minPayment\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"deadline\",\"type\":\"uint256\"}],\"name\":\"LockPayment\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"string\",\"name\":\"id\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"cost\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"restToken\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"}],\"name\":\"UnlockPayment\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"NATIVE_TOKEN\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"cId\",\"type\":\"string\"}],\"name\":\"getLockedPaymentInfo\",\"outputs\":[{\"components\":[{\"internalType\":\"string\",\"name\":\"id\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"minPayment\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"lockedFee\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"deadline\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"_isExisted\",\"type\":\"bool\"},{\"internalType\":\"uint256\",\"name\":\"size\",\"type\":\"uint256\"}],\"internalType\":\"structIPaymentMinimal.TxInfo\",\"name\":\"tx\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"ERC20_TOKEN\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"oracle\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"priceFeed\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"chainlinkOracle\",\"type\":\"address\"}],\"name\":\"initialize\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"string\",\"name\":\"id\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"minPayment\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"lockTime\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"size\",\"type\":\"uint256\"}],\"internalType\":\"structIPaymentMinimal.lockPaymentParam\",\"name\":\"param\",\"type\":\"tuple\"}],\"name\":\"lockTokenPayment\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string[]\",\"name\":\"cidList\",\"type\":\"string[]\"}],\"name\":\"refund\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_chainlinkOracle\",\"type\":\"address\"}],\"name\":\"setChainlinkOracle\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"oracle\",\"type\":\"address\"}],\"name\":\"setOracle\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"priceFeed\",\"type\":\"address\"}],\"name\":\"setPriceFeed\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"dealId\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"}],\"name\":\"unlockCarPayment\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"string\",\"name\":\"id\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"orderId\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"dealId\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"}],\"internalType\":\"structIPaymentMinimal.unlockPaymentParam\",\"name\":\"param\",\"type\":\"tuple\"}],\"name\":\"unlockTokenPayment\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
+// FilswanOracleABI is the input ABI used to generate the binding from.
+const FilswanOracleABI = "[{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"string\",\"name\":\"id\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"}],\"name\":\"ExpirePayment\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"string\",\"name\":\"id\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"lockedFee\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"minPayment\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"deadline\",\"type\":\"uint256\"}],\"name\":\"LockPayment\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"string\",\"name\":\"id\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"cost\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"restToken\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"}],\"name\":\"UnlockPayment\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"NATIVE_TOKEN\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"cId\",\"type\":\"string\"}],\"name\":\"getLockedPaymentInfo\",\"outputs\":[{\"components\":[{\"internalType\":\"string\",\"name\":\"id\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"minPayment\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"lockedFee\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"deadline\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"_isExisted\",\"type\":\"bool\"},{\"internalType\":\"uint256\",\"name\":\"size\",\"type\":\"uint256\"},{\"internalType\":\"uint8\",\"name\":\"copyLimit\",\"type\":\"uint8\"}],\"internalType\":\"structIPaymentMinimal.TxInfo\",\"name\":\"tx\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"ERC20_TOKEN\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"oracle\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"priceFeed\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"chainlinkOracle\",\"type\":\"address\"}],\"name\":\"initialize\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"string\",\"name\":\"id\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"minPayment\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"lockTime\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"size\",\"type\":\"uint256\"},{\"internalType\":\"uint8\",\"name\":\"copyLimit\",\"type\":\"uint8\"}],\"internalType\":\"structIPaymentMinimal.lockPaymentParam\",\"name\":\"param\",\"type\":\"tuple\"}],\"name\":\"lockTokenPayment\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string[]\",\"name\":\"cidList\",\"type\":\"string[]\"}],\"name\":\"refund\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_chainlinkOracle\",\"type\":\"address\"}],\"name\":\"setChainlinkOracle\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"oracle\",\"type\":\"address\"}],\"name\":\"setOracle\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"priceFeed\",\"type\":\"address\"}],\"name\":\"setPriceFeed\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"dealId\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"}],\"name\":\"unlockCarPayment\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"string\",\"name\":\"id\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"orderId\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"dealId\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"}],\"internalType\":\"structIPaymentMinimal.unlockPaymentParam\",\"name\":\"param\",\"type\":\"tuple\"}],\"name\":\"unlockTokenPayment\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
 
-// SwanPayment is an auto generated Go binding around an Ethereum contract.
-type SwanPayment struct {
-	SwanPaymentCaller     // Read-only binding to the contract
-	SwanPaymentTransactor // Write-only binding to the contract
-	SwanPaymentFilterer   // Log filterer for contract events
+// FilswanOracle is an auto generated Go binding around an Ethereum contract.
+type FilswanOracle struct {
+	FilswanOracleCaller     // Read-only binding to the contract
+	FilswanOracleTransactor // Write-only binding to the contract
+	FilswanOracleFilterer   // Log filterer for contract events
 }
 
-// SwanPaymentCaller is an auto generated read-only Go binding around an Ethereum contract.
-type SwanPaymentCaller struct {
+// FilswanOracleCaller is an auto generated read-only Go binding around an Ethereum contract.
+type FilswanOracleCaller struct {
 	contract *bind.BoundContract // Generic contract wrapper for the low level calls
 }
 
-// SwanPaymentTransactor is an auto generated write-only Go binding around an Ethereum contract.
-type SwanPaymentTransactor struct {
+// FilswanOracleTransactor is an auto generated write-only Go binding around an Ethereum contract.
+type FilswanOracleTransactor struct {
 	contract *bind.BoundContract // Generic contract wrapper for the low level calls
 }
 
-// SwanPaymentFilterer is an auto generated log filtering Go binding around an Ethereum contract events.
-type SwanPaymentFilterer struct {
+// FilswanOracleFilterer is an auto generated log filtering Go binding around an Ethereum contract events.
+type FilswanOracleFilterer struct {
 	contract *bind.BoundContract // Generic contract wrapper for the low level calls
 }
 
-// SwanPaymentSession is an auto generated Go binding around an Ethereum contract,
+// FilswanOracleSession is an auto generated Go binding around an Ethereum contract,
 // with pre-set call and transact options.
-type SwanPaymentSession struct {
-	Contract     *SwanPayment      // Generic contract binding to set the session for
+type FilswanOracleSession struct {
+	Contract     *FilswanOracle    // Generic contract binding to set the session for
 	CallOpts     bind.CallOpts     // Call options to use throughout this session
 	TransactOpts bind.TransactOpts // Transaction auth options to use throughout this session
 }
 
-// SwanPaymentCallerSession is an auto generated read-only Go binding around an Ethereum contract,
+// FilswanOracleCallerSession is an auto generated read-only Go binding around an Ethereum contract,
 // with pre-set call options.
-type SwanPaymentCallerSession struct {
-	Contract *SwanPaymentCaller // Generic contract caller binding to set the session for
-	CallOpts bind.CallOpts      // Call options to use throughout this session
+type FilswanOracleCallerSession struct {
+	Contract *FilswanOracleCaller // Generic contract caller binding to set the session for
+	CallOpts bind.CallOpts        // Call options to use throughout this session
 }
 
-// SwanPaymentTransactorSession is an auto generated write-only Go binding around an Ethereum contract,
+// FilswanOracleTransactorSession is an auto generated write-only Go binding around an Ethereum contract,
 // with pre-set transact options.
-type SwanPaymentTransactorSession struct {
-	Contract     *SwanPaymentTransactor // Generic contract transactor binding to set the session for
-	TransactOpts bind.TransactOpts      // Transaction auth options to use throughout this session
+type FilswanOracleTransactorSession struct {
+	Contract     *FilswanOracleTransactor // Generic contract transactor binding to set the session for
+	TransactOpts bind.TransactOpts        // Transaction auth options to use throughout this session
 }
 
-// SwanPaymentRaw is an auto generated low-level Go binding around an Ethereum contract.
-type SwanPaymentRaw struct {
-	Contract *SwanPayment // Generic contract binding to access the raw methods on
+// FilswanOracleRaw is an auto generated low-level Go binding around an Ethereum contract.
+type FilswanOracleRaw struct {
+	Contract *FilswanOracle // Generic contract binding to access the raw methods on
 }
 
-// SwanPaymentCallerRaw is an auto generated low-level read-only Go binding around an Ethereum contract.
-type SwanPaymentCallerRaw struct {
-	Contract *SwanPaymentCaller // Generic read-only contract binding to access the raw methods on
+// FilswanOracleCallerRaw is an auto generated low-level read-only Go binding around an Ethereum contract.
+type FilswanOracleCallerRaw struct {
+	Contract *FilswanOracleCaller // Generic read-only contract binding to access the raw methods on
 }
 
-// SwanPaymentTransactorRaw is an auto generated low-level write-only Go binding around an Ethereum contract.
-type SwanPaymentTransactorRaw struct {
-	Contract *SwanPaymentTransactor // Generic write-only contract binding to access the raw methods on
+// FilswanOracleTransactorRaw is an auto generated low-level write-only Go binding around an Ethereum contract.
+type FilswanOracleTransactorRaw struct {
+	Contract *FilswanOracleTransactor // Generic write-only contract binding to access the raw methods on
 }
 
-// NewSwanPayment creates a new instance of SwanPayment, bound to a specific deployed contract.
-func NewSwanPayment(address common.Address, backend bind.ContractBackend) (*SwanPayment, error) {
-	contract, err := bindSwanPayment(address, backend, backend, backend)
+// NewFilswanOracle creates a new instance of FilswanOracle, bound to a specific deployed contract.
+func NewFilswanOracle(address common.Address, backend bind.ContractBackend) (*FilswanOracle, error) {
+	contract, err := bindFilswanOracle(address, backend, backend, backend)
 	if err != nil {
 		return nil, err
 	}
-	return &SwanPayment{SwanPaymentCaller: SwanPaymentCaller{contract: contract}, SwanPaymentTransactor: SwanPaymentTransactor{contract: contract}, SwanPaymentFilterer: SwanPaymentFilterer{contract: contract}}, nil
+	return &FilswanOracle{FilswanOracleCaller: FilswanOracleCaller{contract: contract}, FilswanOracleTransactor: FilswanOracleTransactor{contract: contract}, FilswanOracleFilterer: FilswanOracleFilterer{contract: contract}}, nil
 }
 
-// NewSwanPaymentCaller creates a new read-only instance of SwanPayment, bound to a specific deployed contract.
-func NewSwanPaymentCaller(address common.Address, caller bind.ContractCaller) (*SwanPaymentCaller, error) {
-	contract, err := bindSwanPayment(address, caller, nil, nil)
+// NewFilswanOracleCaller creates a new read-only instance of FilswanOracle, bound to a specific deployed contract.
+func NewFilswanOracleCaller(address common.Address, caller bind.ContractCaller) (*FilswanOracleCaller, error) {
+	contract, err := bindFilswanOracle(address, caller, nil, nil)
 	if err != nil {
 		return nil, err
 	}
-	return &SwanPaymentCaller{contract: contract}, nil
+	return &FilswanOracleCaller{contract: contract}, nil
 }
 
-// NewSwanPaymentTransactor creates a new write-only instance of SwanPayment, bound to a specific deployed contract.
-func NewSwanPaymentTransactor(address common.Address, transactor bind.ContractTransactor) (*SwanPaymentTransactor, error) {
-	contract, err := bindSwanPayment(address, nil, transactor, nil)
+// NewFilswanOracleTransactor creates a new write-only instance of FilswanOracle, bound to a specific deployed contract.
+func NewFilswanOracleTransactor(address common.Address, transactor bind.ContractTransactor) (*FilswanOracleTransactor, error) {
+	contract, err := bindFilswanOracle(address, nil, transactor, nil)
 	if err != nil {
 		return nil, err
 	}
-	return &SwanPaymentTransactor{contract: contract}, nil
+	return &FilswanOracleTransactor{contract: contract}, nil
 }
 
-// NewSwanPaymentFilterer creates a new log filterer instance of SwanPayment, bound to a specific deployed contract.
-func NewSwanPaymentFilterer(address common.Address, filterer bind.ContractFilterer) (*SwanPaymentFilterer, error) {
-	contract, err := bindSwanPayment(address, nil, nil, filterer)
+// NewFilswanOracleFilterer creates a new log filterer instance of FilswanOracle, bound to a specific deployed contract.
+func NewFilswanOracleFilterer(address common.Address, filterer bind.ContractFilterer) (*FilswanOracleFilterer, error) {
+	contract, err := bindFilswanOracle(address, nil, nil, filterer)
 	if err != nil {
 		return nil, err
 	}
-	return &SwanPaymentFilterer{contract: contract}, nil
+	return &FilswanOracleFilterer{contract: contract}, nil
 }
 
-// bindSwanPayment binds a generic wrapper to an already deployed contract.
-func bindSwanPayment(address common.Address, caller bind.ContractCaller, transactor bind.ContractTransactor, filterer bind.ContractFilterer) (*bind.BoundContract, error) {
-	parsed, err := abi.JSON(strings.NewReader(SwanPaymentABI))
+// bindFilswanOracle binds a generic wrapper to an already deployed contract.
+func bindFilswanOracle(address common.Address, caller bind.ContractCaller, transactor bind.ContractTransactor, filterer bind.ContractFilterer) (*bind.BoundContract, error) {
+	parsed, err := abi.JSON(strings.NewReader(FilswanOracleABI))
 	if err != nil {
 		return nil, err
 	}
@@ -169,46 +171,46 @@ func bindSwanPayment(address common.Address, caller bind.ContractCaller, transac
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_SwanPayment *SwanPaymentRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
-	return _SwanPayment.Contract.SwanPaymentCaller.contract.Call(opts, result, method, params...)
+func (_FilswanOracle *FilswanOracleRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
+	return _FilswanOracle.Contract.FilswanOracleCaller.contract.Call(opts, result, method, params...)
 }
 
 // Transfer initiates a plain transaction to move funds to the contract, calling
 // its default method if one is available.
-func (_SwanPayment *SwanPaymentRaw) Transfer(opts *bind.TransactOpts) (*types.Transaction, error) {
-	return _SwanPayment.Contract.SwanPaymentTransactor.contract.Transfer(opts)
+func (_FilswanOracle *FilswanOracleRaw) Transfer(opts *bind.TransactOpts) (*types.Transaction, error) {
+	return _FilswanOracle.Contract.FilswanOracleTransactor.contract.Transfer(opts)
 }
 
 // Transact invokes the (paid) contract method with params as input values.
-func (_SwanPayment *SwanPaymentRaw) Transact(opts *bind.TransactOpts, method string, params ...interface{}) (*types.Transaction, error) {
-	return _SwanPayment.Contract.SwanPaymentTransactor.contract.Transact(opts, method, params...)
+func (_FilswanOracle *FilswanOracleRaw) Transact(opts *bind.TransactOpts, method string, params ...interface{}) (*types.Transaction, error) {
+	return _FilswanOracle.Contract.FilswanOracleTransactor.contract.Transact(opts, method, params...)
 }
 
 // Call invokes the (constant) contract method with params as input values and
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_SwanPayment *SwanPaymentCallerRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
-	return _SwanPayment.Contract.contract.Call(opts, result, method, params...)
+func (_FilswanOracle *FilswanOracleCallerRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
+	return _FilswanOracle.Contract.contract.Call(opts, result, method, params...)
 }
 
 // Transfer initiates a plain transaction to move funds to the contract, calling
 // its default method if one is available.
-func (_SwanPayment *SwanPaymentTransactorRaw) Transfer(opts *bind.TransactOpts) (*types.Transaction, error) {
-	return _SwanPayment.Contract.contract.Transfer(opts)
+func (_FilswanOracle *FilswanOracleTransactorRaw) Transfer(opts *bind.TransactOpts) (*types.Transaction, error) {
+	return _FilswanOracle.Contract.contract.Transfer(opts)
 }
 
 // Transact invokes the (paid) contract method with params as input values.
-func (_SwanPayment *SwanPaymentTransactorRaw) Transact(opts *bind.TransactOpts, method string, params ...interface{}) (*types.Transaction, error) {
-	return _SwanPayment.Contract.contract.Transact(opts, method, params...)
+func (_FilswanOracle *FilswanOracleTransactorRaw) Transact(opts *bind.TransactOpts, method string, params ...interface{}) (*types.Transaction, error) {
+	return _FilswanOracle.Contract.contract.Transact(opts, method, params...)
 }
 
 // NATIVETOKEN is a free data retrieval call binding the contract method 0x31f7d964.
 //
 // Solidity: function NATIVE_TOKEN() view returns(address)
-func (_SwanPayment *SwanPaymentCaller) NATIVETOKEN(opts *bind.CallOpts) (common.Address, error) {
+func (_FilswanOracle *FilswanOracleCaller) NATIVETOKEN(opts *bind.CallOpts) (common.Address, error) {
 	var out []interface{}
-	err := _SwanPayment.contract.Call(opts, &out, "NATIVE_TOKEN")
+	err := _FilswanOracle.contract.Call(opts, &out, "NATIVE_TOKEN")
 
 	if err != nil {
 		return *new(common.Address), err
@@ -223,23 +225,23 @@ func (_SwanPayment *SwanPaymentCaller) NATIVETOKEN(opts *bind.CallOpts) (common.
 // NATIVETOKEN is a free data retrieval call binding the contract method 0x31f7d964.
 //
 // Solidity: function NATIVE_TOKEN() view returns(address)
-func (_SwanPayment *SwanPaymentSession) NATIVETOKEN() (common.Address, error) {
-	return _SwanPayment.Contract.NATIVETOKEN(&_SwanPayment.CallOpts)
+func (_FilswanOracle *FilswanOracleSession) NATIVETOKEN() (common.Address, error) {
+	return _FilswanOracle.Contract.NATIVETOKEN(&_FilswanOracle.CallOpts)
 }
 
 // NATIVETOKEN is a free data retrieval call binding the contract method 0x31f7d964.
 //
 // Solidity: function NATIVE_TOKEN() view returns(address)
-func (_SwanPayment *SwanPaymentCallerSession) NATIVETOKEN() (common.Address, error) {
-	return _SwanPayment.Contract.NATIVETOKEN(&_SwanPayment.CallOpts)
+func (_FilswanOracle *FilswanOracleCallerSession) NATIVETOKEN() (common.Address, error) {
+	return _FilswanOracle.Contract.NATIVETOKEN(&_FilswanOracle.CallOpts)
 }
 
 // GetLockedPaymentInfo is a free data retrieval call binding the contract method 0xe063922b.
 //
-// Solidity: function getLockedPaymentInfo(string cId) view returns((string,address,uint256,uint256,address,address,uint256,bool,uint256) tx)
-func (_SwanPayment *SwanPaymentCaller) GetLockedPaymentInfo(opts *bind.CallOpts, cId string) (IPaymentMinimalTxInfo, error) {
+// Solidity: function getLockedPaymentInfo(string cId) view returns((string,address,uint256,uint256,address,address,uint256,bool,uint256,uint8) tx)
+func (_FilswanOracle *FilswanOracleCaller) GetLockedPaymentInfo(opts *bind.CallOpts, cId string) (IPaymentMinimalTxInfo, error) {
 	var out []interface{}
-	err := _SwanPayment.contract.Call(opts, &out, "getLockedPaymentInfo", cId)
+	err := _FilswanOracle.contract.Call(opts, &out, "getLockedPaymentInfo", cId)
 
 	if err != nil {
 		return *new(IPaymentMinimalTxInfo), err
@@ -253,189 +255,189 @@ func (_SwanPayment *SwanPaymentCaller) GetLockedPaymentInfo(opts *bind.CallOpts,
 
 // GetLockedPaymentInfo is a free data retrieval call binding the contract method 0xe063922b.
 //
-// Solidity: function getLockedPaymentInfo(string cId) view returns((string,address,uint256,uint256,address,address,uint256,bool,uint256) tx)
-func (_SwanPayment *SwanPaymentSession) GetLockedPaymentInfo(cId string) (IPaymentMinimalTxInfo, error) {
-	return _SwanPayment.Contract.GetLockedPaymentInfo(&_SwanPayment.CallOpts, cId)
+// Solidity: function getLockedPaymentInfo(string cId) view returns((string,address,uint256,uint256,address,address,uint256,bool,uint256,uint8) tx)
+func (_FilswanOracle *FilswanOracleSession) GetLockedPaymentInfo(cId string) (IPaymentMinimalTxInfo, error) {
+	return _FilswanOracle.Contract.GetLockedPaymentInfo(&_FilswanOracle.CallOpts, cId)
 }
 
 // GetLockedPaymentInfo is a free data retrieval call binding the contract method 0xe063922b.
 //
-// Solidity: function getLockedPaymentInfo(string cId) view returns((string,address,uint256,uint256,address,address,uint256,bool,uint256) tx)
-func (_SwanPayment *SwanPaymentCallerSession) GetLockedPaymentInfo(cId string) (IPaymentMinimalTxInfo, error) {
-	return _SwanPayment.Contract.GetLockedPaymentInfo(&_SwanPayment.CallOpts, cId)
+// Solidity: function getLockedPaymentInfo(string cId) view returns((string,address,uint256,uint256,address,address,uint256,bool,uint256,uint8) tx)
+func (_FilswanOracle *FilswanOracleCallerSession) GetLockedPaymentInfo(cId string) (IPaymentMinimalTxInfo, error) {
+	return _FilswanOracle.Contract.GetLockedPaymentInfo(&_FilswanOracle.CallOpts, cId)
 }
 
 // Initialize is a paid mutator transaction binding the contract method 0x1459457a.
 //
 // Solidity: function initialize(address owner, address ERC20_TOKEN, address oracle, address priceFeed, address chainlinkOracle) returns()
-func (_SwanPayment *SwanPaymentTransactor) Initialize(opts *bind.TransactOpts, owner common.Address, ERC20_TOKEN common.Address, oracle common.Address, priceFeed common.Address, chainlinkOracle common.Address) (*types.Transaction, error) {
-	return _SwanPayment.contract.Transact(opts, "initialize", owner, ERC20_TOKEN, oracle, priceFeed, chainlinkOracle)
+func (_FilswanOracle *FilswanOracleTransactor) Initialize(opts *bind.TransactOpts, owner common.Address, ERC20_TOKEN common.Address, oracle common.Address, priceFeed common.Address, chainlinkOracle common.Address) (*types.Transaction, error) {
+	return _FilswanOracle.contract.Transact(opts, "initialize", owner, ERC20_TOKEN, oracle, priceFeed, chainlinkOracle)
 }
 
 // Initialize is a paid mutator transaction binding the contract method 0x1459457a.
 //
 // Solidity: function initialize(address owner, address ERC20_TOKEN, address oracle, address priceFeed, address chainlinkOracle) returns()
-func (_SwanPayment *SwanPaymentSession) Initialize(owner common.Address, ERC20_TOKEN common.Address, oracle common.Address, priceFeed common.Address, chainlinkOracle common.Address) (*types.Transaction, error) {
-	return _SwanPayment.Contract.Initialize(&_SwanPayment.TransactOpts, owner, ERC20_TOKEN, oracle, priceFeed, chainlinkOracle)
+func (_FilswanOracle *FilswanOracleSession) Initialize(owner common.Address, ERC20_TOKEN common.Address, oracle common.Address, priceFeed common.Address, chainlinkOracle common.Address) (*types.Transaction, error) {
+	return _FilswanOracle.Contract.Initialize(&_FilswanOracle.TransactOpts, owner, ERC20_TOKEN, oracle, priceFeed, chainlinkOracle)
 }
 
 // Initialize is a paid mutator transaction binding the contract method 0x1459457a.
 //
 // Solidity: function initialize(address owner, address ERC20_TOKEN, address oracle, address priceFeed, address chainlinkOracle) returns()
-func (_SwanPayment *SwanPaymentTransactorSession) Initialize(owner common.Address, ERC20_TOKEN common.Address, oracle common.Address, priceFeed common.Address, chainlinkOracle common.Address) (*types.Transaction, error) {
-	return _SwanPayment.Contract.Initialize(&_SwanPayment.TransactOpts, owner, ERC20_TOKEN, oracle, priceFeed, chainlinkOracle)
+func (_FilswanOracle *FilswanOracleTransactorSession) Initialize(owner common.Address, ERC20_TOKEN common.Address, oracle common.Address, priceFeed common.Address, chainlinkOracle common.Address) (*types.Transaction, error) {
+	return _FilswanOracle.Contract.Initialize(&_FilswanOracle.TransactOpts, owner, ERC20_TOKEN, oracle, priceFeed, chainlinkOracle)
 }
 
-// LockTokenPayment is a paid mutator transaction binding the contract method 0xc873ff65.
+// LockTokenPayment is a paid mutator transaction binding the contract method 0xf4d98717.
 //
-// Solidity: function lockTokenPayment((string,uint256,uint256,uint256,address,uint256) param) returns(bool)
-func (_SwanPayment *SwanPaymentTransactor) LockTokenPayment(opts *bind.TransactOpts, param IPaymentMinimallockPaymentParam) (*types.Transaction, error) {
-	return _SwanPayment.contract.Transact(opts, "lockTokenPayment", param)
+// Solidity: function lockTokenPayment((string,uint256,uint256,uint256,address,uint256,uint8) param) returns(bool)
+func (_FilswanOracle *FilswanOracleTransactor) LockTokenPayment(opts *bind.TransactOpts, param IPaymentMinimallockPaymentParam) (*types.Transaction, error) {
+	return _FilswanOracle.contract.Transact(opts, "lockTokenPayment", param)
 }
 
-// LockTokenPayment is a paid mutator transaction binding the contract method 0xc873ff65.
+// LockTokenPayment is a paid mutator transaction binding the contract method 0xf4d98717.
 //
-// Solidity: function lockTokenPayment((string,uint256,uint256,uint256,address,uint256) param) returns(bool)
-func (_SwanPayment *SwanPaymentSession) LockTokenPayment(param IPaymentMinimallockPaymentParam) (*types.Transaction, error) {
-	return _SwanPayment.Contract.LockTokenPayment(&_SwanPayment.TransactOpts, param)
+// Solidity: function lockTokenPayment((string,uint256,uint256,uint256,address,uint256,uint8) param) returns(bool)
+func (_FilswanOracle *FilswanOracleSession) LockTokenPayment(param IPaymentMinimallockPaymentParam) (*types.Transaction, error) {
+	return _FilswanOracle.Contract.LockTokenPayment(&_FilswanOracle.TransactOpts, param)
 }
 
-// LockTokenPayment is a paid mutator transaction binding the contract method 0xc873ff65.
+// LockTokenPayment is a paid mutator transaction binding the contract method 0xf4d98717.
 //
-// Solidity: function lockTokenPayment((string,uint256,uint256,uint256,address,uint256) param) returns(bool)
-func (_SwanPayment *SwanPaymentTransactorSession) LockTokenPayment(param IPaymentMinimallockPaymentParam) (*types.Transaction, error) {
-	return _SwanPayment.Contract.LockTokenPayment(&_SwanPayment.TransactOpts, param)
+// Solidity: function lockTokenPayment((string,uint256,uint256,uint256,address,uint256,uint8) param) returns(bool)
+func (_FilswanOracle *FilswanOracleTransactorSession) LockTokenPayment(param IPaymentMinimallockPaymentParam) (*types.Transaction, error) {
+	return _FilswanOracle.Contract.LockTokenPayment(&_FilswanOracle.TransactOpts, param)
 }
 
 // Refund is a paid mutator transaction binding the contract method 0x7d29985b.
 //
 // Solidity: function refund(string[] cidList) returns()
-func (_SwanPayment *SwanPaymentTransactor) Refund(opts *bind.TransactOpts, cidList []string) (*types.Transaction, error) {
-	return _SwanPayment.contract.Transact(opts, "refund", cidList)
+func (_FilswanOracle *FilswanOracleTransactor) Refund(opts *bind.TransactOpts, cidList []string) (*types.Transaction, error) {
+	return _FilswanOracle.contract.Transact(opts, "refund", cidList)
 }
 
 // Refund is a paid mutator transaction binding the contract method 0x7d29985b.
 //
 // Solidity: function refund(string[] cidList) returns()
-func (_SwanPayment *SwanPaymentSession) Refund(cidList []string) (*types.Transaction, error) {
-	return _SwanPayment.Contract.Refund(&_SwanPayment.TransactOpts, cidList)
+func (_FilswanOracle *FilswanOracleSession) Refund(cidList []string) (*types.Transaction, error) {
+	return _FilswanOracle.Contract.Refund(&_FilswanOracle.TransactOpts, cidList)
 }
 
 // Refund is a paid mutator transaction binding the contract method 0x7d29985b.
 //
 // Solidity: function refund(string[] cidList) returns()
-func (_SwanPayment *SwanPaymentTransactorSession) Refund(cidList []string) (*types.Transaction, error) {
-	return _SwanPayment.Contract.Refund(&_SwanPayment.TransactOpts, cidList)
+func (_FilswanOracle *FilswanOracleTransactorSession) Refund(cidList []string) (*types.Transaction, error) {
+	return _FilswanOracle.Contract.Refund(&_FilswanOracle.TransactOpts, cidList)
 }
 
 // SetChainlinkOracle is a paid mutator transaction binding the contract method 0x7a9b0412.
 //
 // Solidity: function setChainlinkOracle(address _chainlinkOracle) returns(bool)
-func (_SwanPayment *SwanPaymentTransactor) SetChainlinkOracle(opts *bind.TransactOpts, _chainlinkOracle common.Address) (*types.Transaction, error) {
-	return _SwanPayment.contract.Transact(opts, "setChainlinkOracle", _chainlinkOracle)
+func (_FilswanOracle *FilswanOracleTransactor) SetChainlinkOracle(opts *bind.TransactOpts, _chainlinkOracle common.Address) (*types.Transaction, error) {
+	return _FilswanOracle.contract.Transact(opts, "setChainlinkOracle", _chainlinkOracle)
 }
 
 // SetChainlinkOracle is a paid mutator transaction binding the contract method 0x7a9b0412.
 //
 // Solidity: function setChainlinkOracle(address _chainlinkOracle) returns(bool)
-func (_SwanPayment *SwanPaymentSession) SetChainlinkOracle(_chainlinkOracle common.Address) (*types.Transaction, error) {
-	return _SwanPayment.Contract.SetChainlinkOracle(&_SwanPayment.TransactOpts, _chainlinkOracle)
+func (_FilswanOracle *FilswanOracleSession) SetChainlinkOracle(_chainlinkOracle common.Address) (*types.Transaction, error) {
+	return _FilswanOracle.Contract.SetChainlinkOracle(&_FilswanOracle.TransactOpts, _chainlinkOracle)
 }
 
 // SetChainlinkOracle is a paid mutator transaction binding the contract method 0x7a9b0412.
 //
 // Solidity: function setChainlinkOracle(address _chainlinkOracle) returns(bool)
-func (_SwanPayment *SwanPaymentTransactorSession) SetChainlinkOracle(_chainlinkOracle common.Address) (*types.Transaction, error) {
-	return _SwanPayment.Contract.SetChainlinkOracle(&_SwanPayment.TransactOpts, _chainlinkOracle)
+func (_FilswanOracle *FilswanOracleTransactorSession) SetChainlinkOracle(_chainlinkOracle common.Address) (*types.Transaction, error) {
+	return _FilswanOracle.Contract.SetChainlinkOracle(&_FilswanOracle.TransactOpts, _chainlinkOracle)
 }
 
 // SetOracle is a paid mutator transaction binding the contract method 0x7adbf973.
 //
 // Solidity: function setOracle(address oracle) returns(bool)
-func (_SwanPayment *SwanPaymentTransactor) SetOracle(opts *bind.TransactOpts, oracle common.Address) (*types.Transaction, error) {
-	return _SwanPayment.contract.Transact(opts, "setOracle", oracle)
+func (_FilswanOracle *FilswanOracleTransactor) SetOracle(opts *bind.TransactOpts, oracle common.Address) (*types.Transaction, error) {
+	return _FilswanOracle.contract.Transact(opts, "setOracle", oracle)
 }
 
 // SetOracle is a paid mutator transaction binding the contract method 0x7adbf973.
 //
 // Solidity: function setOracle(address oracle) returns(bool)
-func (_SwanPayment *SwanPaymentSession) SetOracle(oracle common.Address) (*types.Transaction, error) {
-	return _SwanPayment.Contract.SetOracle(&_SwanPayment.TransactOpts, oracle)
+func (_FilswanOracle *FilswanOracleSession) SetOracle(oracle common.Address) (*types.Transaction, error) {
+	return _FilswanOracle.Contract.SetOracle(&_FilswanOracle.TransactOpts, oracle)
 }
 
 // SetOracle is a paid mutator transaction binding the contract method 0x7adbf973.
 //
 // Solidity: function setOracle(address oracle) returns(bool)
-func (_SwanPayment *SwanPaymentTransactorSession) SetOracle(oracle common.Address) (*types.Transaction, error) {
-	return _SwanPayment.Contract.SetOracle(&_SwanPayment.TransactOpts, oracle)
+func (_FilswanOracle *FilswanOracleTransactorSession) SetOracle(oracle common.Address) (*types.Transaction, error) {
+	return _FilswanOracle.Contract.SetOracle(&_FilswanOracle.TransactOpts, oracle)
 }
 
 // SetPriceFeed is a paid mutator transaction binding the contract method 0x724e78da.
 //
 // Solidity: function setPriceFeed(address priceFeed) returns(bool)
-func (_SwanPayment *SwanPaymentTransactor) SetPriceFeed(opts *bind.TransactOpts, priceFeed common.Address) (*types.Transaction, error) {
-	return _SwanPayment.contract.Transact(opts, "setPriceFeed", priceFeed)
+func (_FilswanOracle *FilswanOracleTransactor) SetPriceFeed(opts *bind.TransactOpts, priceFeed common.Address) (*types.Transaction, error) {
+	return _FilswanOracle.contract.Transact(opts, "setPriceFeed", priceFeed)
 }
 
 // SetPriceFeed is a paid mutator transaction binding the contract method 0x724e78da.
 //
 // Solidity: function setPriceFeed(address priceFeed) returns(bool)
-func (_SwanPayment *SwanPaymentSession) SetPriceFeed(priceFeed common.Address) (*types.Transaction, error) {
-	return _SwanPayment.Contract.SetPriceFeed(&_SwanPayment.TransactOpts, priceFeed)
+func (_FilswanOracle *FilswanOracleSession) SetPriceFeed(priceFeed common.Address) (*types.Transaction, error) {
+	return _FilswanOracle.Contract.SetPriceFeed(&_FilswanOracle.TransactOpts, priceFeed)
 }
 
 // SetPriceFeed is a paid mutator transaction binding the contract method 0x724e78da.
 //
 // Solidity: function setPriceFeed(address priceFeed) returns(bool)
-func (_SwanPayment *SwanPaymentTransactorSession) SetPriceFeed(priceFeed common.Address) (*types.Transaction, error) {
-	return _SwanPayment.Contract.SetPriceFeed(&_SwanPayment.TransactOpts, priceFeed)
+func (_FilswanOracle *FilswanOracleTransactorSession) SetPriceFeed(priceFeed common.Address) (*types.Transaction, error) {
+	return _FilswanOracle.Contract.SetPriceFeed(&_FilswanOracle.TransactOpts, priceFeed)
 }
 
 // UnlockCarPayment is a paid mutator transaction binding the contract method 0x38b3c23b.
 //
 // Solidity: function unlockCarPayment(string dealId, address recipient) returns(bool)
-func (_SwanPayment *SwanPaymentTransactor) UnlockCarPayment(opts *bind.TransactOpts, dealId string, recipient common.Address) (*types.Transaction, error) {
-	return _SwanPayment.contract.Transact(opts, "unlockCarPayment", dealId, recipient)
+func (_FilswanOracle *FilswanOracleTransactor) UnlockCarPayment(opts *bind.TransactOpts, dealId string, recipient common.Address) (*types.Transaction, error) {
+	return _FilswanOracle.contract.Transact(opts, "unlockCarPayment", dealId, recipient)
 }
 
 // UnlockCarPayment is a paid mutator transaction binding the contract method 0x38b3c23b.
 //
 // Solidity: function unlockCarPayment(string dealId, address recipient) returns(bool)
-func (_SwanPayment *SwanPaymentSession) UnlockCarPayment(dealId string, recipient common.Address) (*types.Transaction, error) {
-	return _SwanPayment.Contract.UnlockCarPayment(&_SwanPayment.TransactOpts, dealId, recipient)
+func (_FilswanOracle *FilswanOracleSession) UnlockCarPayment(dealId string, recipient common.Address) (*types.Transaction, error) {
+	return _FilswanOracle.Contract.UnlockCarPayment(&_FilswanOracle.TransactOpts, dealId, recipient)
 }
 
 // UnlockCarPayment is a paid mutator transaction binding the contract method 0x38b3c23b.
 //
 // Solidity: function unlockCarPayment(string dealId, address recipient) returns(bool)
-func (_SwanPayment *SwanPaymentTransactorSession) UnlockCarPayment(dealId string, recipient common.Address) (*types.Transaction, error) {
-	return _SwanPayment.Contract.UnlockCarPayment(&_SwanPayment.TransactOpts, dealId, recipient)
+func (_FilswanOracle *FilswanOracleTransactorSession) UnlockCarPayment(dealId string, recipient common.Address) (*types.Transaction, error) {
+	return _FilswanOracle.Contract.UnlockCarPayment(&_FilswanOracle.TransactOpts, dealId, recipient)
 }
 
 // UnlockTokenPayment is a paid mutator transaction binding the contract method 0x5c95e7e1.
 //
 // Solidity: function unlockTokenPayment((string,string,string,uint256,address) param) returns(bool)
-func (_SwanPayment *SwanPaymentTransactor) UnlockTokenPayment(opts *bind.TransactOpts, param IPaymentMinimalunlockPaymentParam) (*types.Transaction, error) {
-	return _SwanPayment.contract.Transact(opts, "unlockTokenPayment", param)
+func (_FilswanOracle *FilswanOracleTransactor) UnlockTokenPayment(opts *bind.TransactOpts, param IPaymentMinimalunlockPaymentParam) (*types.Transaction, error) {
+	return _FilswanOracle.contract.Transact(opts, "unlockTokenPayment", param)
 }
 
 // UnlockTokenPayment is a paid mutator transaction binding the contract method 0x5c95e7e1.
 //
 // Solidity: function unlockTokenPayment((string,string,string,uint256,address) param) returns(bool)
-func (_SwanPayment *SwanPaymentSession) UnlockTokenPayment(param IPaymentMinimalunlockPaymentParam) (*types.Transaction, error) {
-	return _SwanPayment.Contract.UnlockTokenPayment(&_SwanPayment.TransactOpts, param)
+func (_FilswanOracle *FilswanOracleSession) UnlockTokenPayment(param IPaymentMinimalunlockPaymentParam) (*types.Transaction, error) {
+	return _FilswanOracle.Contract.UnlockTokenPayment(&_FilswanOracle.TransactOpts, param)
 }
 
 // UnlockTokenPayment is a paid mutator transaction binding the contract method 0x5c95e7e1.
 //
 // Solidity: function unlockTokenPayment((string,string,string,uint256,address) param) returns(bool)
-func (_SwanPayment *SwanPaymentTransactorSession) UnlockTokenPayment(param IPaymentMinimalunlockPaymentParam) (*types.Transaction, error) {
-	return _SwanPayment.Contract.UnlockTokenPayment(&_SwanPayment.TransactOpts, param)
+func (_FilswanOracle *FilswanOracleTransactorSession) UnlockTokenPayment(param IPaymentMinimalunlockPaymentParam) (*types.Transaction, error) {
+	return _FilswanOracle.Contract.UnlockTokenPayment(&_FilswanOracle.TransactOpts, param)
 }
 
-// SwanPaymentExpirePaymentIterator is returned from FilterExpirePayment and is used to iterate over the raw logs and unpacked data for ExpirePayment events raised by the SwanPayment contract.
-type SwanPaymentExpirePaymentIterator struct {
-	Event *SwanPaymentExpirePayment // Event containing the contract specifics and raw log
+// FilswanOracleExpirePaymentIterator is returned from FilterExpirePayment and is used to iterate over the raw logs and unpacked data for ExpirePayment events raised by the FilswanOracle contract.
+type FilswanOracleExpirePaymentIterator struct {
+	Event *FilswanOracleExpirePayment // Event containing the contract specifics and raw log
 
 	contract *bind.BoundContract // Generic contract to use for unpacking event data
 	event    string              // Event name to use for unpacking event data
@@ -449,7 +451,7 @@ type SwanPaymentExpirePaymentIterator struct {
 // Next advances the iterator to the subsequent event, returning whether there
 // are any more events found. In case of a retrieval or parsing error, false is
 // returned and Error() can be queried for the exact failure.
-func (it *SwanPaymentExpirePaymentIterator) Next() bool {
+func (it *FilswanOracleExpirePaymentIterator) Next() bool {
 	// If the iterator failed, stop iterating
 	if it.fail != nil {
 		return false
@@ -458,7 +460,7 @@ func (it *SwanPaymentExpirePaymentIterator) Next() bool {
 	if it.done {
 		select {
 		case log := <-it.logs:
-			it.Event = new(SwanPaymentExpirePayment)
+			it.Event = new(FilswanOracleExpirePayment)
 			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
 				it.fail = err
 				return false
@@ -473,7 +475,7 @@ func (it *SwanPaymentExpirePaymentIterator) Next() bool {
 	// Iterator still in progress, wait for either a data or an error event
 	select {
 	case log := <-it.logs:
-		it.Event = new(SwanPaymentExpirePayment)
+		it.Event = new(FilswanOracleExpirePayment)
 		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
 			it.fail = err
 			return false
@@ -489,19 +491,19 @@ func (it *SwanPaymentExpirePaymentIterator) Next() bool {
 }
 
 // Error returns any retrieval or parsing error occurred during filtering.
-func (it *SwanPaymentExpirePaymentIterator) Error() error {
+func (it *FilswanOracleExpirePaymentIterator) Error() error {
 	return it.fail
 }
 
 // Close terminates the iteration process, releasing any pending underlying
 // resources.
-func (it *SwanPaymentExpirePaymentIterator) Close() error {
+func (it *FilswanOracleExpirePaymentIterator) Close() error {
 	it.sub.Unsubscribe()
 	return nil
 }
 
-// SwanPaymentExpirePayment represents a ExpirePayment event raised by the SwanPayment contract.
-type SwanPaymentExpirePayment struct {
+// FilswanOracleExpirePayment represents a ExpirePayment event raised by the FilswanOracle contract.
+type FilswanOracleExpirePayment struct {
 	Id     string
 	Token  common.Address
 	Amount *big.Int
@@ -512,21 +514,21 @@ type SwanPaymentExpirePayment struct {
 // FilterExpirePayment is a free log retrieval operation binding the contract event 0xe704d5e6168e602e91f017f25d889b182d9e11a90fd939a489cc2f04734c1f8a.
 //
 // Solidity: event ExpirePayment(string id, address token, uint256 amount, address owner)
-func (_SwanPayment *SwanPaymentFilterer) FilterExpirePayment(opts *bind.FilterOpts) (*SwanPaymentExpirePaymentIterator, error) {
+func (_FilswanOracle *FilswanOracleFilterer) FilterExpirePayment(opts *bind.FilterOpts) (*FilswanOracleExpirePaymentIterator, error) {
 
-	logs, sub, err := _SwanPayment.contract.FilterLogs(opts, "ExpirePayment")
+	logs, sub, err := _FilswanOracle.contract.FilterLogs(opts, "ExpirePayment")
 	if err != nil {
 		return nil, err
 	}
-	return &SwanPaymentExpirePaymentIterator{contract: _SwanPayment.contract, event: "ExpirePayment", logs: logs, sub: sub}, nil
+	return &FilswanOracleExpirePaymentIterator{contract: _FilswanOracle.contract, event: "ExpirePayment", logs: logs, sub: sub}, nil
 }
 
 // WatchExpirePayment is a free log subscription operation binding the contract event 0xe704d5e6168e602e91f017f25d889b182d9e11a90fd939a489cc2f04734c1f8a.
 //
 // Solidity: event ExpirePayment(string id, address token, uint256 amount, address owner)
-func (_SwanPayment *SwanPaymentFilterer) WatchExpirePayment(opts *bind.WatchOpts, sink chan<- *SwanPaymentExpirePayment) (event.Subscription, error) {
+func (_FilswanOracle *FilswanOracleFilterer) WatchExpirePayment(opts *bind.WatchOpts, sink chan<- *FilswanOracleExpirePayment) (event.Subscription, error) {
 
-	logs, sub, err := _SwanPayment.contract.WatchLogs(opts, "ExpirePayment")
+	logs, sub, err := _FilswanOracle.contract.WatchLogs(opts, "ExpirePayment")
 	if err != nil {
 		return nil, err
 	}
@@ -536,8 +538,8 @@ func (_SwanPayment *SwanPaymentFilterer) WatchExpirePayment(opts *bind.WatchOpts
 			select {
 			case log := <-logs:
 				// New log arrived, parse the event and forward to the user
-				event := new(SwanPaymentExpirePayment)
-				if err := _SwanPayment.contract.UnpackLog(event, "ExpirePayment", log); err != nil {
+				event := new(FilswanOracleExpirePayment)
+				if err := _FilswanOracle.contract.UnpackLog(event, "ExpirePayment", log); err != nil {
 					return err
 				}
 				event.Raw = log
@@ -561,18 +563,18 @@ func (_SwanPayment *SwanPaymentFilterer) WatchExpirePayment(opts *bind.WatchOpts
 // ParseExpirePayment is a log parse operation binding the contract event 0xe704d5e6168e602e91f017f25d889b182d9e11a90fd939a489cc2f04734c1f8a.
 //
 // Solidity: event ExpirePayment(string id, address token, uint256 amount, address owner)
-func (_SwanPayment *SwanPaymentFilterer) ParseExpirePayment(log types.Log) (*SwanPaymentExpirePayment, error) {
-	event := new(SwanPaymentExpirePayment)
-	if err := _SwanPayment.contract.UnpackLog(event, "ExpirePayment", log); err != nil {
+func (_FilswanOracle *FilswanOracleFilterer) ParseExpirePayment(log types.Log) (*FilswanOracleExpirePayment, error) {
+	event := new(FilswanOracleExpirePayment)
+	if err := _FilswanOracle.contract.UnpackLog(event, "ExpirePayment", log); err != nil {
 		return nil, err
 	}
 	event.Raw = log
 	return event, nil
 }
 
-// SwanPaymentLockPaymentIterator is returned from FilterLockPayment and is used to iterate over the raw logs and unpacked data for LockPayment events raised by the SwanPayment contract.
-type SwanPaymentLockPaymentIterator struct {
-	Event *SwanPaymentLockPayment // Event containing the contract specifics and raw log
+// FilswanOracleLockPaymentIterator is returned from FilterLockPayment and is used to iterate over the raw logs and unpacked data for LockPayment events raised by the FilswanOracle contract.
+type FilswanOracleLockPaymentIterator struct {
+	Event *FilswanOracleLockPayment // Event containing the contract specifics and raw log
 
 	contract *bind.BoundContract // Generic contract to use for unpacking event data
 	event    string              // Event name to use for unpacking event data
@@ -586,7 +588,7 @@ type SwanPaymentLockPaymentIterator struct {
 // Next advances the iterator to the subsequent event, returning whether there
 // are any more events found. In case of a retrieval or parsing error, false is
 // returned and Error() can be queried for the exact failure.
-func (it *SwanPaymentLockPaymentIterator) Next() bool {
+func (it *FilswanOracleLockPaymentIterator) Next() bool {
 	// If the iterator failed, stop iterating
 	if it.fail != nil {
 		return false
@@ -595,7 +597,7 @@ func (it *SwanPaymentLockPaymentIterator) Next() bool {
 	if it.done {
 		select {
 		case log := <-it.logs:
-			it.Event = new(SwanPaymentLockPayment)
+			it.Event = new(FilswanOracleLockPayment)
 			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
 				it.fail = err
 				return false
@@ -610,7 +612,7 @@ func (it *SwanPaymentLockPaymentIterator) Next() bool {
 	// Iterator still in progress, wait for either a data or an error event
 	select {
 	case log := <-it.logs:
-		it.Event = new(SwanPaymentLockPayment)
+		it.Event = new(FilswanOracleLockPayment)
 		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
 			it.fail = err
 			return false
@@ -626,19 +628,19 @@ func (it *SwanPaymentLockPaymentIterator) Next() bool {
 }
 
 // Error returns any retrieval or parsing error occurred during filtering.
-func (it *SwanPaymentLockPaymentIterator) Error() error {
+func (it *FilswanOracleLockPaymentIterator) Error() error {
 	return it.fail
 }
 
 // Close terminates the iteration process, releasing any pending underlying
 // resources.
-func (it *SwanPaymentLockPaymentIterator) Close() error {
+func (it *FilswanOracleLockPaymentIterator) Close() error {
 	it.sub.Unsubscribe()
 	return nil
 }
 
-// SwanPaymentLockPayment represents a LockPayment event raised by the SwanPayment contract.
-type SwanPaymentLockPayment struct {
+// FilswanOracleLockPayment represents a LockPayment event raised by the FilswanOracle contract.
+type FilswanOracleLockPayment struct {
 	Id         string
 	Token      common.Address
 	LockedFee  *big.Int
@@ -651,21 +653,21 @@ type SwanPaymentLockPayment struct {
 // FilterLockPayment is a free log retrieval operation binding the contract event 0x87b076911cb43e46012dbf762607ad5d0c5d6eb5e1d8fec72be99002451c18ba.
 //
 // Solidity: event LockPayment(string id, address token, uint256 lockedFee, uint256 minPayment, address recipient, uint256 deadline)
-func (_SwanPayment *SwanPaymentFilterer) FilterLockPayment(opts *bind.FilterOpts) (*SwanPaymentLockPaymentIterator, error) {
+func (_FilswanOracle *FilswanOracleFilterer) FilterLockPayment(opts *bind.FilterOpts) (*FilswanOracleLockPaymentIterator, error) {
 
-	logs, sub, err := _SwanPayment.contract.FilterLogs(opts, "LockPayment")
+	logs, sub, err := _FilswanOracle.contract.FilterLogs(opts, "LockPayment")
 	if err != nil {
 		return nil, err
 	}
-	return &SwanPaymentLockPaymentIterator{contract: _SwanPayment.contract, event: "LockPayment", logs: logs, sub: sub}, nil
+	return &FilswanOracleLockPaymentIterator{contract: _FilswanOracle.contract, event: "LockPayment", logs: logs, sub: sub}, nil
 }
 
 // WatchLockPayment is a free log subscription operation binding the contract event 0x87b076911cb43e46012dbf762607ad5d0c5d6eb5e1d8fec72be99002451c18ba.
 //
 // Solidity: event LockPayment(string id, address token, uint256 lockedFee, uint256 minPayment, address recipient, uint256 deadline)
-func (_SwanPayment *SwanPaymentFilterer) WatchLockPayment(opts *bind.WatchOpts, sink chan<- *SwanPaymentLockPayment) (event.Subscription, error) {
+func (_FilswanOracle *FilswanOracleFilterer) WatchLockPayment(opts *bind.WatchOpts, sink chan<- *FilswanOracleLockPayment) (event.Subscription, error) {
 
-	logs, sub, err := _SwanPayment.contract.WatchLogs(opts, "LockPayment")
+	logs, sub, err := _FilswanOracle.contract.WatchLogs(opts, "LockPayment")
 	if err != nil {
 		return nil, err
 	}
@@ -675,8 +677,8 @@ func (_SwanPayment *SwanPaymentFilterer) WatchLockPayment(opts *bind.WatchOpts, 
 			select {
 			case log := <-logs:
 				// New log arrived, parse the event and forward to the user
-				event := new(SwanPaymentLockPayment)
-				if err := _SwanPayment.contract.UnpackLog(event, "LockPayment", log); err != nil {
+				event := new(FilswanOracleLockPayment)
+				if err := _FilswanOracle.contract.UnpackLog(event, "LockPayment", log); err != nil {
 					return err
 				}
 				event.Raw = log
@@ -700,18 +702,18 @@ func (_SwanPayment *SwanPaymentFilterer) WatchLockPayment(opts *bind.WatchOpts, 
 // ParseLockPayment is a log parse operation binding the contract event 0x87b076911cb43e46012dbf762607ad5d0c5d6eb5e1d8fec72be99002451c18ba.
 //
 // Solidity: event LockPayment(string id, address token, uint256 lockedFee, uint256 minPayment, address recipient, uint256 deadline)
-func (_SwanPayment *SwanPaymentFilterer) ParseLockPayment(log types.Log) (*SwanPaymentLockPayment, error) {
-	event := new(SwanPaymentLockPayment)
-	if err := _SwanPayment.contract.UnpackLog(event, "LockPayment", log); err != nil {
+func (_FilswanOracle *FilswanOracleFilterer) ParseLockPayment(log types.Log) (*FilswanOracleLockPayment, error) {
+	event := new(FilswanOracleLockPayment)
+	if err := _FilswanOracle.contract.UnpackLog(event, "LockPayment", log); err != nil {
 		return nil, err
 	}
 	event.Raw = log
 	return event, nil
 }
 
-// SwanPaymentUnlockPaymentIterator is returned from FilterUnlockPayment and is used to iterate over the raw logs and unpacked data for UnlockPayment events raised by the SwanPayment contract.
-type SwanPaymentUnlockPaymentIterator struct {
-	Event *SwanPaymentUnlockPayment // Event containing the contract specifics and raw log
+// FilswanOracleUnlockPaymentIterator is returned from FilterUnlockPayment and is used to iterate over the raw logs and unpacked data for UnlockPayment events raised by the FilswanOracle contract.
+type FilswanOracleUnlockPaymentIterator struct {
+	Event *FilswanOracleUnlockPayment // Event containing the contract specifics and raw log
 
 	contract *bind.BoundContract // Generic contract to use for unpacking event data
 	event    string              // Event name to use for unpacking event data
@@ -725,7 +727,7 @@ type SwanPaymentUnlockPaymentIterator struct {
 // Next advances the iterator to the subsequent event, returning whether there
 // are any more events found. In case of a retrieval or parsing error, false is
 // returned and Error() can be queried for the exact failure.
-func (it *SwanPaymentUnlockPaymentIterator) Next() bool {
+func (it *FilswanOracleUnlockPaymentIterator) Next() bool {
 	// If the iterator failed, stop iterating
 	if it.fail != nil {
 		return false
@@ -734,7 +736,7 @@ func (it *SwanPaymentUnlockPaymentIterator) Next() bool {
 	if it.done {
 		select {
 		case log := <-it.logs:
-			it.Event = new(SwanPaymentUnlockPayment)
+			it.Event = new(FilswanOracleUnlockPayment)
 			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
 				it.fail = err
 				return false
@@ -749,7 +751,7 @@ func (it *SwanPaymentUnlockPaymentIterator) Next() bool {
 	// Iterator still in progress, wait for either a data or an error event
 	select {
 	case log := <-it.logs:
-		it.Event = new(SwanPaymentUnlockPayment)
+		it.Event = new(FilswanOracleUnlockPayment)
 		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
 			it.fail = err
 			return false
@@ -765,19 +767,19 @@ func (it *SwanPaymentUnlockPaymentIterator) Next() bool {
 }
 
 // Error returns any retrieval or parsing error occurred during filtering.
-func (it *SwanPaymentUnlockPaymentIterator) Error() error {
+func (it *FilswanOracleUnlockPaymentIterator) Error() error {
 	return it.fail
 }
 
 // Close terminates the iteration process, releasing any pending underlying
 // resources.
-func (it *SwanPaymentUnlockPaymentIterator) Close() error {
+func (it *FilswanOracleUnlockPaymentIterator) Close() error {
 	it.sub.Unsubscribe()
 	return nil
 }
 
-// SwanPaymentUnlockPayment represents a UnlockPayment event raised by the SwanPayment contract.
-type SwanPaymentUnlockPayment struct {
+// FilswanOracleUnlockPayment represents a UnlockPayment event raised by the FilswanOracle contract.
+type FilswanOracleUnlockPayment struct {
 	Id        string
 	Token     common.Address
 	Cost      *big.Int
@@ -790,21 +792,21 @@ type SwanPaymentUnlockPayment struct {
 // FilterUnlockPayment is a free log retrieval operation binding the contract event 0xd9aab088cd193ab56c9a682b9f2e42fb39206b42c3a6ba78130dc97a2a8d03ee.
 //
 // Solidity: event UnlockPayment(string id, address token, uint256 cost, uint256 restToken, address recipient, address owner)
-func (_SwanPayment *SwanPaymentFilterer) FilterUnlockPayment(opts *bind.FilterOpts) (*SwanPaymentUnlockPaymentIterator, error) {
+func (_FilswanOracle *FilswanOracleFilterer) FilterUnlockPayment(opts *bind.FilterOpts) (*FilswanOracleUnlockPaymentIterator, error) {
 
-	logs, sub, err := _SwanPayment.contract.FilterLogs(opts, "UnlockPayment")
+	logs, sub, err := _FilswanOracle.contract.FilterLogs(opts, "UnlockPayment")
 	if err != nil {
 		return nil, err
 	}
-	return &SwanPaymentUnlockPaymentIterator{contract: _SwanPayment.contract, event: "UnlockPayment", logs: logs, sub: sub}, nil
+	return &FilswanOracleUnlockPaymentIterator{contract: _FilswanOracle.contract, event: "UnlockPayment", logs: logs, sub: sub}, nil
 }
 
 // WatchUnlockPayment is a free log subscription operation binding the contract event 0xd9aab088cd193ab56c9a682b9f2e42fb39206b42c3a6ba78130dc97a2a8d03ee.
 //
 // Solidity: event UnlockPayment(string id, address token, uint256 cost, uint256 restToken, address recipient, address owner)
-func (_SwanPayment *SwanPaymentFilterer) WatchUnlockPayment(opts *bind.WatchOpts, sink chan<- *SwanPaymentUnlockPayment) (event.Subscription, error) {
+func (_FilswanOracle *FilswanOracleFilterer) WatchUnlockPayment(opts *bind.WatchOpts, sink chan<- *FilswanOracleUnlockPayment) (event.Subscription, error) {
 
-	logs, sub, err := _SwanPayment.contract.WatchLogs(opts, "UnlockPayment")
+	logs, sub, err := _FilswanOracle.contract.WatchLogs(opts, "UnlockPayment")
 	if err != nil {
 		return nil, err
 	}
@@ -814,8 +816,8 @@ func (_SwanPayment *SwanPaymentFilterer) WatchUnlockPayment(opts *bind.WatchOpts
 			select {
 			case log := <-logs:
 				// New log arrived, parse the event and forward to the user
-				event := new(SwanPaymentUnlockPayment)
-				if err := _SwanPayment.contract.UnpackLog(event, "UnlockPayment", log); err != nil {
+				event := new(FilswanOracleUnlockPayment)
+				if err := _FilswanOracle.contract.UnpackLog(event, "UnlockPayment", log); err != nil {
 					return err
 				}
 				event.Raw = log
@@ -839,9 +841,9 @@ func (_SwanPayment *SwanPaymentFilterer) WatchUnlockPayment(opts *bind.WatchOpts
 // ParseUnlockPayment is a log parse operation binding the contract event 0xd9aab088cd193ab56c9a682b9f2e42fb39206b42c3a6ba78130dc97a2a8d03ee.
 //
 // Solidity: event UnlockPayment(string id, address token, uint256 cost, uint256 restToken, address recipient, address owner)
-func (_SwanPayment *SwanPaymentFilterer) ParseUnlockPayment(log types.Log) (*SwanPaymentUnlockPayment, error) {
-	event := new(SwanPaymentUnlockPayment)
-	if err := _SwanPayment.contract.UnpackLog(event, "UnlockPayment", log); err != nil {
+func (_FilswanOracle *FilswanOracleFilterer) ParseUnlockPayment(log types.Log) (*FilswanOracleUnlockPayment, error) {
+	event := new(FilswanOracleUnlockPayment)
+	if err := _FilswanOracle.contract.UnpackLog(event, "UnlockPayment", log); err != nil {
 		return nil, err
 	}
 	event.Raw = log

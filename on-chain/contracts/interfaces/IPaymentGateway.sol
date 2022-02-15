@@ -9,6 +9,7 @@ interface IPaymentMinimal {
         uint256 lockTime;
         address recipient;
         uint256 size;
+        uint8 copyLimit;
     }
 
     struct unlockPaymentParam {
@@ -28,6 +29,7 @@ interface IPaymentMinimal {
         uint256 deadline;
         bool _isExisted;
         uint256 size;
+        uint8 copyLimit;
     }
 
     /// @notice Returns the locked balance of caller in specific transaction

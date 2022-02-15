@@ -2,6 +2,7 @@ package models
 
 import (
 	"payment-bridge/common/constants"
+	"payment-bridge/common/utils"
 	"payment-bridge/database"
 	"strconv"
 	"time"
@@ -94,6 +95,9 @@ func FindExpiredLockPayment() ([]*EventLockPaymentQuery, error) {
 }
 
 func CreateEventLockPayment(eventLockPayment EventLockPayment) error {
+	currentUtcMilliSecond := utils.GetCurrentUtcMilliSecond()
+	eventLockPayment.CreateAt = currentUtcMilliSecond
+
 	db := database.GetDBTransaction()
 	err := database.SaveOneInTransaction(db, &eventLockPayment)
 	if err != nil {
@@ -106,7 +110,7 @@ func CreateEventLockPayment(eventLockPayment EventLockPayment) error {
 
 	params := []interface{}{}
 	params = append(params, constants.SOURCE_FILE_STATUS_PAID)
-	params = append(params, eventLockPayment.LockPaymentTime)
+	params = append(params, currentUtcMilliSecond)
 	params = append(params, eventLockPayment.SourceFileId)
 
 	err = db.Exec(sql, params...).Error

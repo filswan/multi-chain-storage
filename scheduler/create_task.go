@@ -359,6 +359,7 @@ func CheckSourceFilesPaid() error {
 
 		currentUtcMilliSecond := utils.GetCurrentUtcMilliSecond()
 		eventLockPayment := models.EventLockPayment{
+			PayloadCid:      srcFile.PayloadCid,
 			MinPayment:      lockedPayment.MinPayment,
 			LockedFee:       lockedPayment.LockedFee,
 			Deadline:        lockedPayment.Deadline,

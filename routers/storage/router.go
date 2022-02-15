@@ -86,6 +86,8 @@ func RecordDealListThatHaveBeenSignedByDao(c *gin.Context) {
 		return
 	}
 
+	daoSignRes := []daoBackendResponse{}
+
 	for _, v := range dealIdList {
 		daosignCount := 0
 		deal_id, err := strconv.ParseInt(v.DealId, 10, 64)
@@ -158,11 +160,16 @@ func RecordDealListThatHaveBeenSignedByDao(c *gin.Context) {
 					logs.GetLogger().Error(err)
 					continue
 				}
+				var response daoBackendResponse
+				response.DealId = v.DealId
+				response.PayloadCid = v.PayloadCid
+				response.SuccessDaoCount = len(events)
+				daoSignRes = append(daoSignRes, response)
 			}
 		}
 	}
 
-	c.JSON(http.StatusOK, common.CreateSuccessResponse(""))
+	c.JSON(http.StatusOK, common.CreateSuccessResponse(&daoSignRes))
 }
 
 func GetDealListForDaoToSign(c *gin.Context) {
@@ -478,4 +485,10 @@ func RecordExpiredRefund(c *gin.Context) {
 	} else {
 		c.JSON(http.StatusOK, common.CreateSuccessResponse(event))
 	}
+}
+
+type daoBackendResponse struct {
+	PayloadCid      string `json:"payload_cid"`
+	DealId          string `json:"deal_id"`
+	SuccessDaoCount int    `json:"success_dao_count"`
 }

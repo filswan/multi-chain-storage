@@ -56,3 +56,20 @@ func GetEventDaoSignaturesByDealId(dealId int64) ([]*EventDaoSignature, error) {
 
 	return eventDaoSignatures, nil
 }
+
+func GetEventDaoSignatures(whereCondition interface{}) (*EventDaoSignature, error) {
+	db := database.GetDB()
+	var eventDaoSignatures []*EventDaoSignature
+	err := db.Where(whereCondition).Find(&eventDaoSignatures).Error
+
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	if len(eventDaoSignatures) >= 1 {
+		return eventDaoSignatures[0], nil
+	} else {
+		return nil, nil
+	}
+}

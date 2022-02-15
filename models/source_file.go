@@ -83,6 +83,18 @@ func GetSourceFilesByPayloadCid(payloadCid string) ([]*SourceFile, error) {
 	return sourceFiles, nil
 }
 
+func GetSourceFilesByStatus(status string) ([]*SourceFile, error) {
+	var sourceFiles []*SourceFile
+
+	err := database.GetDB().Where("status=?", status).Order("create_at").Find(&sourceFiles).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	return sourceFiles, nil
+}
+
 func GetSourceFileByPayloadCid(payloadCid string) (*SourceFile, error) {
 	var sourceFiles []*SourceFile
 
@@ -123,7 +135,7 @@ func GetSourceFileExtByPayloadCid(payloadCid, walletAddress string) (*SourceFile
 func GetSourceFilesNeed2Car() ([]*SourceFileExt, error) {
 	var sourceFiles []*SourceFileExt
 	sql := "select a.*,b.locked_fee from source_file a, event_lock_payment b where b.source_file_id=a.id and a.status=? and a.file_type=?"
-	err := database.GetDB().Raw(sql, constants.SOURCE_FILE_STATUS_CREATED, constants.SOURCE_FILE_TYPE_NORMAL).Scan(&sourceFiles).Error
+	err := database.GetDB().Raw(sql, constants.SOURCE_FILE_STATUS_PAID, constants.SOURCE_FILE_TYPE_NORMAL).Scan(&sourceFiles).Error
 
 	if err != nil {
 		logs.GetLogger().Error(err)

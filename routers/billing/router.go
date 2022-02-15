@@ -6,7 +6,6 @@ import (
 	"payment-bridge/common/constants"
 	"payment-bridge/common/errorinfo"
 	"payment-bridge/common/utils"
-	"payment-bridge/database"
 	"payment-bridge/models"
 	"payment-bridge/on-chain/client"
 	"strconv"
@@ -25,52 +24,52 @@ func BillingManager(router *gin.RouterGroup) {
 }
 
 func WriteLockPayment(c *gin.Context) {
-	var event models.EventLockPayment
-	err := c.BindJSON(&event)
+	var eventLockPayment models.EventLockPayment
+	err := c.BindJSON(&eventLockPayment)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.JSON(http.StatusOK, common.CreateErrorResponse(err.Error()))
 		return
 	}
 
-	lockedPayment, err := client.GetLockedPaymentInfo(event.PayloadCid)
+	lockedPayment, err := client.GetLockedPaymentInfo(eventLockPayment.PayloadCid)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		usdcCoin, err := models.FindCoinByFullName(constants.COIN_NAME_USDC)
 		if err != nil {
 			logs.GetLogger().Error(err)
 		} else {
-			event.CoinId = usdcCoin.ID
-			event.NetworkId = usdcCoin.NetworkId
-			event.TokenAddress = usdcCoin.Address
+			eventLockPayment.CoinId = usdcCoin.ID
+			eventLockPayment.NetworkId = usdcCoin.NetworkId
+			eventLockPayment.TokenAddress = usdcCoin.Address
 		}
 	} else {
-		event.MinPayment = lockedPayment.MinPayment
-		event.LockedFee = lockedPayment.LockedFee
-		event.Deadline = lockedPayment.Deadline
-		event.TokenAddress = lockedPayment.TokenAddress
-		event.AddressFrom = lockedPayment.AddressFrom
-		event.AddressTo = lockedPayment.AddressTo
-		event.LockPaymentTime = utils.GetCurrentUtcMilliSecond()
+		eventLockPayment.MinPayment = lockedPayment.MinPayment
+		eventLockPayment.LockedFee = lockedPayment.LockedFee
+		eventLockPayment.Deadline = lockedPayment.Deadline
+		eventLockPayment.TokenAddress = lockedPayment.TokenAddress
+		eventLockPayment.AddressFrom = lockedPayment.AddressFrom
+		eventLockPayment.AddressTo = lockedPayment.AddressTo
+		eventLockPayment.LockPaymentTime = utils.GetCurrentUtcMilliSecond()
 		coin, err := models.FindCoinByCoinAddress(lockedPayment.TokenAddress)
 		if err != nil {
 			logs.GetLogger().Error(err)
 		} else {
-			event.CoinId = coin.ID
-			event.NetworkId = coin.NetworkId
+			eventLockPayment.CoinId = coin.ID
+			eventLockPayment.NetworkId = coin.NetworkId
 		}
 	}
-	srcFile, err := models.GetSourceFileByPayloadCid(event.PayloadCid)
+	srcFile, err := models.GetSourceFileByPayloadCid(eventLockPayment.PayloadCid)
 	if err != nil {
 		logs.GetLogger().Error(err)
 	} else {
-		event.SourceFileId = srcFile.ID
+		eventLockPayment.SourceFileId = srcFile.ID
 	}
 
-	err = database.GetDB().Save(&event).Error
+	err = models.CreateEventLockPayment(eventLockPayment)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(err.Error()))
+		c.JSON(http.StatusOK, common.CreateErrorResponse(err.Error()))
 		return
 	}
 

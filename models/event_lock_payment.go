@@ -92,3 +92,35 @@ func FindExpiredLockPayment() ([]*EventLockPaymentQuery, error) {
 	}
 	return models, nil
 }
+
+func CreateEventLockPayment(eventLockPayment EventLockPayment) error {
+	db := database.GetDBTransaction()
+	err := database.SaveOneInTransaction(db, &eventLockPayment)
+	if err != nil {
+		db.Rollback()
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	sql := "update source_file set status=?,update_at=? where id=?"
+
+	params := []interface{}{}
+	params = append(params, constants.SOURCE_FILE_STATUS_PAID)
+	params = append(params, eventLockPayment.LockPaymentTime)
+	params = append(params, eventLockPayment.SourceFileId)
+
+	err = db.Exec(sql, params...).Error
+	if err != nil {
+		db.Rollback()
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	err = db.Commit().Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	return nil
+}

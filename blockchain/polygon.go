@@ -1,4 +1,4 @@
-package polygon
+package blockchain
 
 import (
 	"context"
@@ -11,7 +11,7 @@ import (
 	"github.com/filswan/go-swan-lib/logs"
 )
 
-func ScanRefundEventOnPolygon(blockNoFrom, blockNoTo int64) error {
+func ScanEventOnPolygon(blockNoFrom, blockNoTo int64) error {
 	contractAddress := common.HexToAddress(config.GetConfig().Polygon.PaymentContractAddress)
 	refundFunctionSignature := ""
 
@@ -33,11 +33,16 @@ func ScanRefundEventOnPolygon(blockNoFrom, blockNoTo int64) error {
 		return err
 	}
 
+	//swanPaymentFilter, err := client.GetSwanPaymentFilterer()
+	//if err != nil {
+	//	logs.GetLogger().Error(err)
+	//	return err
+	//}
+
 	for _, vLog := range logsInChain {
 		if vLog.Topics[0].Hex() != refundFunctionSignature {
 			continue
 		}
-
 	}
 	return nil
 }

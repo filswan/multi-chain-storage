@@ -143,6 +143,17 @@ func GetContractAbi() (*abi.ABI, error) {
 	return &contractAbi, nil
 }
 
+func GetSwanPaymentFilterer() (*goBind.SwanPaymentFilterer, error) {
+	contractAddress := common.HexToAddress(config.GetConfig().Polygon.PaymentContractAddress)
+	swanPaymentFilterer, err := goBind.NewSwanPaymentFilterer(contractAddress, nil)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	return swanPaymentFilterer, nil
+}
+
 func CheckTx(client *ethclient.Client, tx *types.Transaction) (*types.Receipt, error) {
 retry:
 	rp, err := client.TransactionReceipt(context.Background(), tx.Hash())

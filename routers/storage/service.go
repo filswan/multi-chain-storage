@@ -275,9 +275,11 @@ func GetLockFoundInfoByPayloadCid(payloadCid string) (*LockFound, error) {
 		return nil, err
 	}
 
-	lockFound := new(LockFound)
+	lockFound := &LockFound{
+		PayloadCid: payloadCid,
+	}
+
 	if len(lockEventList) > 0 {
-		lockFound.PayloadCid = lockEventList[0].PayloadCid
 		lockFound.LockedFee = lockEventList[0].LockedFee.String()
 		lockFound.CreateAt = strconv.FormatInt(lockEventList[0].CreateAt, 10)
 	}

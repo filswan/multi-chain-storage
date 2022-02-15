@@ -22,7 +22,7 @@ import (
 )
 
 func CreateTask() error {
-	err := CheckSourceFilePaid()
+	err := CheckSourceFilesPaid()
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
@@ -332,7 +332,7 @@ func saveCarInfo2DB(fileDesc *libmodel.FileDesc, srcFiles []*models.SourceFileEx
 	return nil
 }
 
-func CheckSourceFilePaid() error {
+func CheckSourceFilesPaid() error {
 	srcFiles, err := models.GetSourceFilesByStatus(constants.SOURCE_FILE_STATUS_CREATED)
 	if err != nil {
 		logs.GetLogger().Error(err)

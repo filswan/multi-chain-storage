@@ -335,25 +335,26 @@ func CheckSourceFilesPaid() error {
 	srcFiles, err := models.GetSourceFilesByStatus(constants.SOURCE_FILE_STATUS_CREATED)
 	if err != nil {
 		logs.GetLogger().Error(err)
+		return err
 	}
 
 	for _, srcFile := range srcFiles {
 		lockedPayment, err := client.GetLockedPaymentInfo(srcFile.PayloadCid)
 		if err != nil {
 			logs.GetLogger().Error(err)
-			return err
+			continue
 		}
 
 		coin, err := models.FindCoinByCoinAddress(lockedPayment.TokenAddress)
 		if err != nil {
 			logs.GetLogger().Error(err)
-			return err
+			continue
 		}
 
 		srcFile, err := models.GetSourceFileByPayloadCid(srcFile.PayloadCid)
 		if err != nil {
 			logs.GetLogger().Error(err)
-			return err
+			continue
 		}
 
 		currentUtcMilliSecond := utils.GetCurrentUtcMilliSecond()
@@ -374,7 +375,7 @@ func CheckSourceFilesPaid() error {
 		err = models.CreateEventLockPayment(eventLockPayment)
 		if err != nil {
 			logs.GetLogger().Error(err)
-			return err
+			continue
 		}
 	}
 

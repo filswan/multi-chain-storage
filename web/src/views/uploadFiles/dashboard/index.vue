@@ -690,7 +690,8 @@ export default {
             amount: payAmount,
             lockTime: 86400 * Number(_this.$root.LOCK_TIME), // one day
             recipient: _this.recipientAddress, //todo:
-            size: 0
+            size: 0,
+            copyLimit: 1
         }
         
         contract_instance.methods.lockTokenPayment(lockObj)

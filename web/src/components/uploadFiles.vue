@@ -372,23 +372,23 @@
                                         if (event.lengthComputable) {
                                             let loaded = event.loaded
                                             let total = event.total
-                                            console.log('total-loaded', total, loaded)
+                                            // console.log('total-loaded', total, loaded)
                                             let percentIn = Math.floor(event.loaded / event.total * 100);
                                             // 设置进度显示
                                             _this.percentIn = percentIn+'%'
-                                            console.log(percentIn+'%-')
+                                            // console.log(percentIn+'%-')
                                         }
                                     })
                                 };
                                 // 获取上传进度
                                 xhr.upload.onprogress = function(event) { 
-                                    console.log('event.loaded', event.loaded)
-                                    console.log('event.total', event.total)
+                                    // console.log('event.loaded', event.loaded)
+                                    // console.log('event.total', event.total)
                                     if (event.lengthComputable) {
                                         let percentIn = Math.floor(event.loaded / event.total * 100);
                                         // 设置进度显示
                                         _this.percentIn = percentIn+'%'
-                                        console.log(percentIn+'%')
+                                        // console.log(percentIn+'%')
                                     }
                                 };
                                 xhr.send(formData);
@@ -458,9 +458,10 @@
                     amount: web3.utils.toWei(_this.ruleForm.amount, 'ether'),
                     lockTime: 86400 * Number(_this.$root.LOCK_TIME), // one day
                     recipient: _this.recipientAddress, //todo:
-                    size: 0
+                    size: 0,
+                    copyLimit: 1
                 }
-                
+                console.log(lockObj)
                 contract_instance.methods.lockTokenPayment(lockObj)
                 .send(payObject)
                 .on('transactionHash', function(hash){

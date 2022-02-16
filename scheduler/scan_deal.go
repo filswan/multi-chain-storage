@@ -6,6 +6,7 @@ import (
 	"payment-bridge/config"
 	"payment-bridge/database"
 	"payment-bridge/models"
+	"payment-bridge/on-chain/client"
 	"strconv"
 
 	"github.com/filswan/go-swan-lib/logs"
@@ -61,7 +62,21 @@ func GetExpiredDealInfoAndUpdateInfoToDB() error {
 		logs.GetLogger().Error(err)
 		return err
 	}
+
 	for _, v := range eventLockPayment {
+		isLockedPaymentExists, err := client.IsLockedPaymentExists(v.PayloadCid)
+		if err != nil {
+			logs.GetLogger().Error(err)
+		} else {
+			if !*isLockedPaymentExists {
+				err = models.UpdateDealFileStatus(v.DealFileId, constants.PROCESS_STATUS_EXPIRE_REFUNDED)
+				if err != nil {
+					logs.GetLogger().Error(err)
+				}
+			}
+			continue
+		}
+
 		_dealFileId := v.DealFileId
 		paymentStatus := constants.PROCESS_STATUS_EXPIRE_REFUNDING
 		eventExpireList, err := models.FindEventExpirePayments(&models.EventExpirePayment{PayloadCid: v.PayloadCid}, "id desc", "10", "0")

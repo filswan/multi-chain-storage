@@ -20,6 +20,22 @@ type LockedPayment struct {
 	Size         int64
 }
 
+func IsLockedPaymentExists(srcFilePayloadCid string) (*bool, error) {
+	swanPaymentSession, err := GetSwanPaymentSession()
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	paymentInfo, err := swanPaymentSession.GetLockedPaymentInfo(srcFilePayloadCid)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	return &paymentInfo.IsExisted, nil
+}
+
 func GetLockedPaymentInfo(srcFilePayloadCid string) (*LockedPayment, error) {
 	swanPaymentSession, err := GetSwanPaymentSession()
 	if err != nil {

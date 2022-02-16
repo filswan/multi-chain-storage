@@ -62,6 +62,7 @@ func GetExpiredDealInfoAndUpdateInfoToDB() error {
 		logs.GetLogger().Error(err)
 		return err
 	}
+
 	for _, v := range eventLockPayment {
 		isLockedPaymentExists, err := client.IsLockedPaymentExists(v.PayloadCid)
 		if err != nil {

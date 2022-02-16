@@ -25,7 +25,6 @@ func CreateTask() error {
 	err := CheckSourceFilesPaid()
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return err
 	}
 
 	for {

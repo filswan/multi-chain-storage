@@ -28,8 +28,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GetSourceFiles(pageSize, offset string, walletAddress, payloadCid string, file_name string) ([]*models.SourceFileExt, error) {
-	srcFiles, err := models.GetSourceFiles(pageSize, offset, walletAddress, payloadCid, file_name)
+func GetSourceFiles(pageSize, offset string, walletAddress, payloadCid string, file_name string, orderByColumn int, ascdesc string) ([]*models.SourceFileExt, error) {
+	srcFiles, err := models.GetSourceFiles(pageSize, offset, walletAddress, payloadCid, file_name, orderByColumn, ascdesc)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err

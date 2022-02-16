@@ -5,11 +5,12 @@ import (
 	"net/http"
 	"payment-bridge/common/httpClient"
 	"payment-bridge/database"
+	"strconv"
 
 	"github.com/filswan/go-swan-lib/logs"
 )
 
-func getBillHistoryList(walletAddress, limit, offset string, txHash string) ([]*BillingResult, error) {
+func getBillHistoryList(walletAddress, limit, offset string, txHash string, orderByColumn int, ascdesc string) ([]*BillingResult, error) {
 	sql := "select a.tx_hash,a.locked_fee,b.cn_name coin_type,h.file_name,d.payload_cid,h.wallet_address address_from,d.refund_amount unlock_to_user_amount," +
 		"d.refund_at unlock_time,c.network_name network,a.lock_payment_time,a.deadline,h.source_file_id" +
 		" from event_lock_payment a, coin b, network c, source_file d, source_file_upload_history h" +
@@ -19,8 +20,10 @@ func getBillHistoryList(walletAddress, limit, offset string, txHash string) ([]*
 		sql = sql + " and a.tx_hash ='" + txHash + "'"
 	}
 
+	orderClause := strconv.Itoa(orderByColumn) + " " + ascdesc
+
 	var billingResults []*BillingResult
-	err := database.GetDB().Raw(sql, walletAddress).Limit(limit).Offset(offset).Order("lock_payment_time desc").Scan(&billingResults).Error
+	err := database.GetDB().Raw(sql, walletAddress).Limit(limit).Offset(offset).Order(orderClause).Scan(&billingResults).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err

@@ -126,6 +126,21 @@ func GetUserBillingHistory(c *gin.Context) {
 		return
 	}
 
+	orderBy := URL.Get("order_by")
+	orderByColumn, err := strconv.Atoi(orderBy)
+
+	if err != nil {
+		orderByColumn = 11
+	}
+
+	isAscending := URL.Get("is_ascending")
+	ASCorDESC := "DESC"
+	if strings.Trim(isAscending, " ") != "" {
+		if strings.ToLower(strings.Trim(isAscending, " ")) == "y" {
+			ASCorDESC = "ASC"
+		}
+	}
+
 	txHash := strings.Trim(URL.Get("tx_hash"), " ")
 
 	totalRecords, err := getBillHistoriesByWalletAddress(walletAddress)
@@ -135,7 +150,7 @@ func GetUserBillingHistory(c *gin.Context) {
 		return
 	}
 
-	billingResultList, err := getBillHistoryList(walletAddress, pageSize, strconv.FormatInt(offset, 10), txHash)
+	billingResultList, err := getBillHistoryList(walletAddress, pageSize, strconv.FormatInt(offset, 10), txHash, orderByColumn, ASCorDESC)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE))

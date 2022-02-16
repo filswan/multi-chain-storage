@@ -400,6 +400,21 @@ func GetDealListFromLocal(c *gin.Context) {
 		pageSize = constants.PAGE_SIZE_DEFAULT_VALUE
 	}
 
+	orderBy := URL.Get("order_by")
+	orderByColumn, err := strconv.Atoi(orderBy)
+
+	if err != nil {
+		orderByColumn = 5
+	}
+
+	isAscending := URL.Get("is_ascending")
+	ASCorDESC := "DESC"
+	if strings.Trim(isAscending, " ") != "" {
+		if strings.ToLower(strings.Trim(isAscending, " ")) == "y" {
+			ASCorDESC = "ASC"
+		}
+	}
+
 	offset, err := utils.GetOffsetByPagenumber(pageNumber, pageSize)
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -408,7 +423,7 @@ func GetDealListFromLocal(c *gin.Context) {
 	}
 	payloadCid := strings.Trim(URL.Get("payload_cid"), " ")
 	fileName := strings.Trim(URL.Get("file_name"), " ")
-	infoList, err := GetSourceFiles(pageSize, strconv.FormatInt(offset, 10), walletAddress, payloadCid, fileName)
+	infoList, err := GetSourceFiles(pageSize, strconv.FormatInt(offset, 10), walletAddress, payloadCid, fileName, orderByColumn, ASCorDESC)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE, err.Error()))

@@ -5,6 +5,7 @@ import (
 	"payment-bridge/common/constants"
 	"payment-bridge/common/utils"
 	"payment-bridge/database"
+	"strconv"
 	"strings"
 
 	"github.com/filswan/go-swan-lib/logs"
@@ -156,7 +157,7 @@ func CreateSourceFile(sourceFile SourceFile) (*SourceFile, error) {
 	return sourceFileCreated, nil
 }
 
-func GetSourceFiles(limit, offset string, walletAddress, payloadCid string, file_name string) ([]*SourceFileExt, error) {
+func GetSourceFiles(limit, offset string, walletAddress, payloadCid string, file_name string, orderByColumn int, ascdesc string) ([]*SourceFileExt, error) {
 	sql := "select s.id, h.file_name,s.file_size,s.pin_status,s.create_at,s.payload_cid,s.ipfs_url,h.wallet_address,s.mint_address, s.nft_tx_hash, s.token_id,df.id deal_file_id,df.lock_payment_status status,df.duration, evpm.locked_fee from source_file s "
 	sql = sql + "left join source_file_upload_history h on s.id=h.source_file_id "
 	sql = sql + "left join source_file_deal_file_map sfdfm on s.id = sfdfm.source_file_id "
@@ -176,11 +177,13 @@ func GetSourceFiles(limit, offset string, walletAddress, payloadCid string, file
 		sql = sql + " and h.file_name like '%" + file_name + "%'"
 	}
 
+	orderClause := strconv.Itoa(orderByColumn) + " " + ascdesc
+
 	params = append(params, walletAddress, constants.SOURCE_FILE_TYPE_NORMAL)
 
 	var results []*SourceFileExt
 
-	err := database.GetDB().Raw(sql, params...).Order("create_at desc").Limit(limit).Offset(offset).Scan(&results).Error
+	err := database.GetDB().Raw(sql, params...).Order(orderClause).Limit(limit).Offset(offset).Scan(&results).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err

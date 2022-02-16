@@ -432,7 +432,8 @@
                     amount: web3.utils.toWei(_this.ruleForm.amount, 'ether'),
                     lockTime: 86400 * Number(_this.$root.LOCK_TIME), // one day
                     recipient: _this.recipientAddress, //todo:
-                    size: resData.file_size
+                    size: resData.file_size,
+                    copyLimit: Number(_this.ruleForm.storage_copy)
                 }
                 console.log(lockObj)
                 contract_instance.methods.lockTokenPayment(lockObj)

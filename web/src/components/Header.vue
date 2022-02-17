@@ -432,6 +432,7 @@ export default {
                         }else{
                             _this.$router.push({ path: '/upload_file' })
                         }
+                        window.location.reload()
                         _this.$emit("getMetamaskLogin", false)
                     }
                     return;

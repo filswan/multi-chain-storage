@@ -27,8 +27,11 @@
                             </div>
                         </div>
                         <div class="form_table">
-                            <el-table v-loading="loading" :data="tableData" style="width: 100%" :empty-text="$t('deal.formNotData')" max-height="580">
-                                <el-table-column prop="tx_hash" :label="$t('billing.TRANSACTION')" min-width="190">
+                            <el-table 
+                            v-loading="loading" :data="tableData" style="width: 100%" 
+                            :empty-text="$t('deal.formNotData')" max-height="580" @sort-change="sortChange"
+                            :default-sort = "{prop: 'date', order: 'descending'}">
+                                <el-table-column prop="tx_hash" :label="$t('billing.TRANSACTION')" min-width="190" sortable="custom">
                                     <template slot-scope="scope">
                                         <div class="hot-cold-box">
                                             <el-popover
@@ -46,15 +49,15 @@
                                         </div>
                                     </template>                    
                                 </el-table-column>
-                                <el-table-column prop="locked_fee" :label="$t('billing.AMOUNT')" min-width="150">
+                                <el-table-column prop="locked_fee" :label="$t('billing.AMOUNT')" min-width="150" sortable="custom">
                                     <template slot-scope="scope">{{scope.row.locked_fee | balanceFilter}}</template>
                                 </el-table-column>
-                                <el-table-column prop="unlock_to_user_amount" :label="$t('billing.UNLOCKAMOUNT')" min-width="150">
+                                <el-table-column prop="unlock_to_user_amount" :label="$t('billing.UNLOCKAMOUNT')" min-width="150" sortable="custom">
                                     <template slot-scope="scope">{{scope.row.unlock_to_user_amount | balanceFilter}}</template>
                                 </el-table-column>
-                                <el-table-column prop="coin_type" :label="$t('billing.TOKEN')" min-width="120"></el-table-column>
-                                <el-table-column prop="file_name" :label="$t('billing.FILENAME')" min-width="180"></el-table-column>
-                                <el-table-column prop="payload_cid" :label="$t('billing.PAYLOADCID')" min-width="140">
+                                <el-table-column prop="coin_type" :label="$t('billing.TOKEN')" min-width="120" sortable="custom"></el-table-column>
+                                <el-table-column prop="file_name" :label="$t('billing.FILENAME')" min-width="180" sortable="custom"></el-table-column>
+                                <el-table-column prop="payload_cid" :label="$t('billing.PAYLOADCID')" min-width="140" sortable="custom">
                                     <template slot-scope="scope">
                                         <div class="hot-cold-box">
                                             <el-popover
@@ -72,7 +75,7 @@
                                         </div>
                                     </template>                    
                                 </el-table-column>
-                                <el-table-column prop="address_from" :label="$t('billing.WALLET')" min-width="140">
+                                <el-table-column prop="address_from" :label="$t('billing.WALLET')" min-width="140" sortable="custom">
                                     <template slot-scope="scope">
                                         <div class="hot-cold-box">
                                             <el-popover
@@ -90,10 +93,10 @@
                                         </div>
                                     </template>                    
                                 </el-table-column>
-                                <el-table-column prop="network" :label="$t('billing.NETWORK')" min-width="120"></el-table-column>
-                                <el-table-column prop="lock_payment_time" :label="$t('billing.PAYMENTDATE')" min-width="140"></el-table-column>
-                                <el-table-column prop="unlock_time" :label="$t('billing.UNLOCKDATE')" min-width="140"></el-table-column>
-                                <el-table-column prop="deadline" :label="$t('billing.Deadline')" min-width="140"></el-table-column>
+                                <el-table-column prop="network" :label="$t('billing.NETWORK')" min-width="120" sortable="custom"></el-table-column>
+                                <el-table-column prop="lock_payment_time" :label="$t('billing.PAYMENTDATE')" min-width="140" sortable="custom"></el-table-column>
+                                <el-table-column prop="unlock_time" :label="$t('billing.UNLOCKDATE')" min-width="140" sortable="custom"></el-table-column>
+                                <el-table-column prop="deadline" :label="$t('billing.Deadline')" min-width="140" sortable="custom"></el-table-column>
                             </el-table>
                         </div>
 
@@ -157,7 +160,9 @@
                     limit: 10,
                     offset: 1,
                     total: 0,
-                    jumperOffset: 1
+                    jumperOffset: 1,
+                    order_by: '',
+                    is_ascending: ''
                 },
                 loading: false,
                 downCsv: localStorage.getItem("addressYM")?localStorage.getItem("addressYM"):'',
@@ -226,6 +231,41 @@
                 this.parma.jumperOffset = recordPage;
                 this.getData(); 
             },
+            async sortOrderBy(sort) {
+                switch(sort) {
+                    case 'tx_hash':
+                        return 1;
+                    case 'locked_fee':
+                        return 2;
+                    case 'unlock_to_user_amount':
+                        return 7;
+                    case 'coin_type':
+                        return 3;
+                    case 'file_name':
+                        return 4;
+                    case 'payload_cid':
+                        return 5;
+                    case 'address_from':
+                        return 6;
+                    case 'network':
+                        return 9;
+                    case 'lock_payment_time':
+                        return 10;
+                    case 'unlock_time':
+                        return 8;
+                    case 'deadline':
+                        return 11;
+                    default:
+                        return ;
+                }
+            },
+            async sortChange(column) {
+                // console.log(column);
+                this.parma.order_by = await this.sortOrderBy(column.prop)
+                this.parma.is_ascending = column.order == "ascending" ? 'y' : column.order == "descending" ? 'n' : ''
+                this.loading = true
+                this.getData()
+            },
             getData(){
                 let _this = this
                 _this.loading = true
@@ -233,7 +273,9 @@
                     "tx_hash": _this.searchValue, 
                     "wallet_address": _this.metaAddress,    
                     "page_number": _this.parma.offset,    
-                    "page_size": _this.parma.limit
+                    "page_size": _this.parma.limit,
+                    "order_by": _this.parma.is_ascending?_this.parma.order_by:'',
+                    "is_ascending": _this.parma.is_ascending
                 }
                 let upload_api = `${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/billing?${QS.stringify(obj)}`
                 // let upload_api = `./static/response-billing.json?${QS.stringify(obj)}`;
@@ -352,6 +394,8 @@
                 this.parma.limit = 10
                 this.parma.offset = 1
                 this.parma.jumperOffset = 1
+                this.parma.order_by = ''
+                this.parma.is_ascending = ''
                 this.getData();
             },
             clearAll() {
@@ -615,6 +659,10 @@
                                 background-color: #f2f2f2 !important;
                                 text-align: center;
                                 .cell{
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    padding-right: 0;
                                     word-break: break-word;
                                     font-weight: 500;
                                     color: #737373;

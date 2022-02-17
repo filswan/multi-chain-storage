@@ -8,8 +8,10 @@
     "dev": "webpack-dev-server --inline --progress --config buildVue/webpack.dev.conf.js",
     "start": "npm run dev",
     "lint": "eslint --ext .js,.vue src",
-    "build:test": "cross-env NODE_ENV=production env_config=test node buildVue/build.js",
-    "build:prod": "cross-env NODE_ENV=production env_config=prod node buildVue/build.js"
+    "build:test": "cross-env NODE_ENV=test env_config=test node buildVue/build.js",
+    "build:qa": "cross-env NODE_ENV=test env_config=test node buildVue/build.js",
+    "build:staging": "cross-env NODE_ENV=production env_config=staging node buildVue/build.js",
+    "build:prod": "cross-env NODE_ENV=production env_config=staging node buildVue/build.js"
   },
   "dependencies": {
     "axios": "^0.21.1",

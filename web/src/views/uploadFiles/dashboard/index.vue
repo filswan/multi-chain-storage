@@ -45,7 +45,7 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="file_size" :label="$t('uploadFile.file_size')" width="90" sortable="custom">
+          <el-table-column prop="file_size" :label="$t('uploadFile.file_size')" min-width="90" sortable="custom">
             <template slot-scope="scope">
               <div class="hot-cold-box">
                 {{ scope.row.file_size | formatbytes }}

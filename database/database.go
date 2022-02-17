@@ -63,7 +63,7 @@ func SaveOneWithResult(data interface{}) (interface{}, error) {
 }
 
 func SaveOneInTransaction(db *gorm.DB, data interface{}) error {
-	err := db.Save(data).Error
+	err := db.Set("gorm:query_option", "FOR UPDATE").Save(data).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
 	}

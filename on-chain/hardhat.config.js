@@ -92,7 +92,7 @@ module.exports = {
 
   },
   abiExporter: {
-    path: './contracts/abi',
+    path: './contracts/plain-abi',
     runOnCompile: true,
     clear: true,
     flat: true,

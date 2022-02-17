@@ -86,6 +86,10 @@
                 </div>
                 <div class="upload_bot">
                     <el-button type="primary" @click="submitForm('ruleForm')">{{$t('deal.Submit')}}</el-button>
+                    <br />
+                    <div class="found">
+                        <a :href="found_link" target="_blank">{{$t('uploadFile.upload_funds')}}</a>
+                    </div>
                 </div>
             </div>
 
@@ -237,7 +241,8 @@
                 paymentPopup01: false,
                 percentIn: '',
                 loadMetamaskPay: false,
-                metamaskLoginTip: false
+                metamaskLoginTip: false,
+                found_link: process.env.NODE_ENV == "production"?"https://calibration-faucet.filswan.com/":"http://192.168.88.216:8080/faucet/#/dashboard"
             };
         },
         components: {},
@@ -1089,6 +1094,7 @@
                 display: flex;
                 justify-content: center;
                 align-items: center;
+                flex-wrap: wrap;
                 width: 100%;
                 margin: 0.25rem auto 0.15rem;
                 .el-button /deep/{
@@ -1100,6 +1106,16 @@
                     font-size: 0.1372rem;
                     color: #fff;
                     border: 0;
+                }
+                .found{
+                    width: 100%;
+                    text-align: center;
+                    a{
+                        text-decoration: underline;
+                        font-size: 13px;
+                        color: rgb(11, 49, 143);
+                        cursor: pointer;
+                    }
                 }
             }
             .upload_result /deep/{

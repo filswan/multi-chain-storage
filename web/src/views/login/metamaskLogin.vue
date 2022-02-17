@@ -6,7 +6,7 @@
     <div class="metamask">
       <div class="titleCont">{{$t('fs3Login.title')}}</div>
       <el-row>
-          <el-col :span="24">
+          <el-col :span="24" @click.native="signFun">
             <img src="@/assets/images/metamask.png" alt="">
             <span>{{$t('fs3Login.MetaMask')}}</span>
           </el-col>
@@ -36,7 +36,6 @@
                   _this.$nextTick(() => {
                       _this.$store.dispatch('setMetaAddress', addr)
                       _this.$emit("getMetamaskLogin", true)
-                      _this.$router.go(0)
                   })
               })
               return false

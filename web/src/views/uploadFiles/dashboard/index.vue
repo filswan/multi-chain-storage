@@ -26,9 +26,10 @@
           :data="tableData" ref="singleTable"  stripe
           style="width: 100%" max-height="580"
           :empty-text="$t('deal.formNotData')"
-           v-loading="loading"
+           v-loading="loading" @sort-change="sortChange"
+           :default-sort = "{prop: 'date', order: 'descending'}"
         >
-          <el-table-column prop="file_name" min-width="120">
+          <el-table-column prop="file_name" min-width="120" sortable="custom">
             <template slot="header" slot-scope="scope">
               <div class="tips">
                 {{$t('uploadFile.file_name')}}
@@ -44,14 +45,14 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="file_size" :label="$t('uploadFile.file_size')" width="90">
+          <el-table-column prop="file_size" :label="$t('uploadFile.file_size')" width="90" sortable="custom">
             <template slot-scope="scope">
               <div class="hot-cold-box">
                 {{ scope.row.file_size | formatbytes }}
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="status" :label="$t('uploadFile.file_status')" width="140">
+          <el-table-column prop="status" :label="$t('uploadFile.file_status')" width="140" sortable="custom">
             <template slot-scope="scope">
               <el-button type="danger" class="statusStyle" v-if="scope.row.status&&scope.row.status.toLowerCase()=='failed'">
                   {{ languageMcp == "en" ? "Fail" : '失败'}}
@@ -76,7 +77,7 @@
               </el-button>
             </template>
           </el-table-column>
-          <el-table-column prop="pin_status" width="140">
+          <el-table-column prop="pin_status" width="140" sortable="custom">
             <template slot="header" slot-scope="scope">
               <div class="tips">
                 {{$t('uploadFile.status')}}
@@ -95,7 +96,7 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="payload_cid" min-width="120">
+          <el-table-column prop="payload_cid" min-width="120" sortable="custom">
             <template slot="header" slot-scope="scope">
               <div class="tips">
                 {{$t('billing.PAYLOADCID')}}
@@ -403,7 +404,7 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="create_at" :label="$t('uploadFile.upload_time')" width="100">
+          <el-table-column prop="create_at" :label="$t('uploadFile.upload_time')" width="100" sortable="custom">
             <template slot-scope="scope">
               {{ scope.row.create_at }}
             </template>
@@ -574,7 +575,9 @@ export default {
         offset: 1,
         locationValue: "",
         total: 0,
-        jumperOffset: 1
+        jumperOffset: 1,
+        order_by: '',
+        is_ascending: ''
       },
       parmaChild: {
         limit: 10,
@@ -658,6 +661,8 @@ export default {
       _this.parma.limit = 10
       _this.parma.offset = 1
       _this.parma.jumperOffset = 1
+      _this.parma.order_by = ''
+      _this.parma.is_ascending = ''
       _this.parmaChild.limit = 10
       _this.parmaChild.offset = 1
       _this.getData()
@@ -1145,6 +1150,8 @@ export default {
       _this.paginationShow = true;
       _this.parma.offset = 1;
       _this.parma.jumperOffset = 1;
+      _this.parma.order_by = ''
+      _this.parma.is_ascending = ''
       _this.getData();
     },
     clearAll() {
@@ -1153,6 +1160,8 @@ export default {
       _this.parma.limit = 10;
       _this.parma.offset = 1;
       _this.parma.jumperOffset = 1;
+      _this.parma.order_by = ''
+      _this.parma.is_ascending = ''
       _this.getData();
     },
     handleCurrentChange(val) {
@@ -1211,6 +1220,31 @@ export default {
             console.error(err)
         }
     },
+    async sortOrderBy(sort) {
+      switch(sort) {
+        case 'file_name':
+          return 2;
+        case 'file_size':
+          return 3;
+        case 'status':
+          return 13;
+        case 'pin_status':
+          return 4;
+        case 'payload_cid':
+          return 6;
+        case 'create_at':
+          return 5;
+        default:
+          return ;
+      }
+    },
+    async sortChange(column) {
+      // console.log(column);
+      this.parma.order_by = await this.sortOrderBy(column.prop)
+      this.parma.is_ascending = column.order == "ascending" ? 'y' : column.order == "descending" ? 'n' : ''
+      this.loading = true
+      this.getData()
+    },
     getData() {
       let _this = this;
       _this.loading = true;
@@ -1221,7 +1255,9 @@ export default {
         page_number: _this.parma.offset,
         file_name: _this.searchValue,
         source_id: 4,
-        wallet_address: _this.metaAddress
+        wallet_address: _this.metaAddress,
+        order_by: _this.parma.is_ascending?_this.parma.order_by:'',
+        is_ascending: _this.parma.is_ascending
       };
 
       _this.tableData = []
@@ -1265,38 +1301,6 @@ export default {
           _this.loading = false;
       })
       return false
-
-      // myAjax
-      //   .getPaymentDeals(parma)
-      //   .then((response) => {
-      //     if (response.status == "success") {
-      //       const data = response.data;
-      //       _this.expands = []
-      //       // _this.tableData = Array.from(new Set(response.data.deals));
-      //       _this.parma.total = response.paging_info.total_items;
-      //       _this.tableData = response.data.deals;
-      //       _this.tableData.map((item,s) => {
-      //         item.payloadAct = false
-      //         item.create_at = item.create_at
-      //           ? item.create_at.length < 13
-      //             ? moment(new Date(parseInt(item.create_at * 1000))).format(
-      //                 "YYYY-MM-DD HH:mm:ss"
-      //               )
-      //             : moment(new Date(parseInt(item.create_at))).format(
-      //                 "YYYY-MM-DD HH:mm:ss"
-      //               )
-      //           : "-";
-      //       });
-
-      //     } else {
-      //       _this.$message.error(response.message);
-      //     }
-      //     _this.loading = false
-      //   })
-      //   .catch((error) => {
-      //     console.log(error);
-      //     _this.loading = false;
-      //   });
     },
     byteChange(limit){
         var size = "";
@@ -1763,12 +1767,20 @@ export default {
             text-align: center;
 
             .cell {
+              display: flex;
+              align-items: center;
+              justify-content: center;
               word-break: break-word;
               font-weight: 500;
               color: #737373;
               text-transform: uppercase;
               .caret-wrapper{
-                display: none;
+                // display: none;
+                width: 10px;
+                margin-left: 5px;
+                .sort-caret{
+                  left: 0;
+                }
               }
               .tips{
                 display: flex;
@@ -1788,31 +1800,31 @@ export default {
             }
           }
 
-          .descending{
-              position: relative;
-              &::after{
-                content: '';
-                position: absolute;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                height: 3px;
-                background-color: #0a318e;
-              }
-          }
+          // .descending{
+          //     position: relative;
+          //     &::after{
+          //       content: '';
+          //       position: absolute;
+          //       bottom: 0;
+          //       left: 0;
+          //       right: 0;
+          //       height: 3px;
+          //       background-color: #0a318e;
+          //     }
+          // }
 
-          .ascending{
-              position: relative;
-              &::after{
-                content: '';
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                height: 3px;
-                background-color: #0a318e;
-              }
-          }
+          // .ascending{
+          //     position: relative;
+          //     &::after{
+          //       content: '';
+          //       position: absolute;
+          //       top: 0;
+          //       left: 0;
+          //       right: 0;
+          //       height: 3px;
+          //       background-color: #0a318e;
+          //     }
+          // }
 
           th.is-leaf {
             border-bottom: 0;

@@ -98,8 +98,18 @@ func CreateEventLockPayment(eventLockPayment EventLockPayment) error {
 	currentUtcMilliSecond := utils.GetCurrentUtcMilliSecond()
 	eventLockPayment.CreateAt = currentUtcMilliSecond
 
+	eventLockPayments, err := GetEventLockPaymentByPayloadCid(eventLockPayment.PayloadCid)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	if len(eventLockPayments) > 0 {
+		eventLockPayment.ID = eventLockPayments[0].ID
+	}
+
 	db := database.GetDBTransaction()
-	err := database.SaveOneInTransaction(db, &eventLockPayment)
+	err = database.SaveOneInTransaction(db, &eventLockPayment)
 	if err != nil {
 		db.Rollback()
 		logs.GetLogger().Error(err)

@@ -31,7 +31,7 @@
                             v-loading="loading" :data="tableData" style="width: 100%" 
                             :empty-text="$t('deal.formNotData')" max-height="580" @sort-change="sortChange"
                             :default-sort = "{prop: 'date', order: 'descending'}">
-                                <el-table-column prop="tx_hash" :label="$t('billing.TRANSACTION')" min-width="190" sortable="custom">
+                                <el-table-column prop="tx_hash" :label="$t('billing.TRANSACTION')" min-width="190">
                                     <template slot-scope="scope">
                                         <div class="hot-cold-box">
                                             <el-popover
@@ -55,9 +55,9 @@
                                 <el-table-column prop="unlock_to_user_amount" :label="$t('billing.UNLOCKAMOUNT')" min-width="150" sortable="custom">
                                     <template slot-scope="scope">{{scope.row.unlock_to_user_amount | balanceFilter}}</template>
                                 </el-table-column>
-                                <el-table-column prop="coin_type" :label="$t('billing.TOKEN')" min-width="120" sortable="custom"></el-table-column>
+                                <el-table-column prop="coin_type" :label="$t('billing.TOKEN')" min-width="120"></el-table-column>
                                 <el-table-column prop="file_name" :label="$t('billing.FILENAME')" min-width="180" sortable="custom"></el-table-column>
-                                <el-table-column prop="payload_cid" :label="$t('billing.PAYLOADCID')" min-width="140" sortable="custom">
+                                <el-table-column prop="payload_cid" :label="$t('billing.PAYLOADCID')" min-width="140">
                                     <template slot-scope="scope">
                                         <div class="hot-cold-box">
                                             <el-popover
@@ -75,7 +75,7 @@
                                         </div>
                                     </template>                    
                                 </el-table-column>
-                                <el-table-column prop="address_from" :label="$t('billing.WALLET')" min-width="140" sortable="custom">
+                                <el-table-column prop="address_from" :label="$t('billing.WALLET')" min-width="140">
                                     <template slot-scope="scope">
                                         <div class="hot-cold-box">
                                             <el-popover
@@ -93,7 +93,7 @@
                                         </div>
                                     </template>                    
                                 </el-table-column>
-                                <el-table-column prop="network" :label="$t('billing.NETWORK')" min-width="120" sortable="custom"></el-table-column>
+                                <el-table-column prop="network" :label="$t('billing.NETWORK')" min-width="120"></el-table-column>
                                 <el-table-column prop="lock_payment_time" :label="$t('billing.PAYMENTDATE')" min-width="140" sortable="custom"></el-table-column>
                                 <el-table-column prop="unlock_time" :label="$t('billing.UNLOCKDATE')" min-width="140" sortable="custom"></el-table-column>
                                 <el-table-column prop="deadline" :label="$t('billing.Deadline')" min-width="140" sortable="custom"></el-table-column>

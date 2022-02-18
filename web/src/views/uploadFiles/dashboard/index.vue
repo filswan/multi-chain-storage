@@ -52,7 +52,7 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="status" :label="$t('uploadFile.file_status')" width="140" sortable="custom">
+          <el-table-column prop="status" :label="$t('uploadFile.file_status')" width="140">
             <template slot-scope="scope">
               <el-button type="danger" class="statusStyle" v-if="scope.row.status&&scope.row.status.toLowerCase()=='failed'">
                   {{ languageMcp == "en" ? "Fail" : '失败'}}
@@ -77,7 +77,7 @@
               </el-button>
             </template>
           </el-table-column>
-          <el-table-column prop="pin_status" width="140" sortable="custom">
+          <el-table-column prop="pin_status" width="140">
             <template slot="header" slot-scope="scope">
               <div class="tips">
                 {{$t('uploadFile.status')}}
@@ -96,7 +96,7 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="payload_cid" min-width="120" sortable="custom">
+          <el-table-column prop="payload_cid" min-width="120">
             <template slot="header" slot-scope="scope">
               <div class="tips">
                 {{$t('billing.PAYLOADCID')}}

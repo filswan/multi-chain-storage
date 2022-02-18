@@ -141,6 +141,8 @@ contract SwanPayment is IPaymentMinimal, Initializable {
             t.token = _ERC20_TOKEN;
             t._isExisted = true;
             t.size = param.size;
+            t.copyLimit = param.copyLimit;
+            
         } else {
             TxInfo storage t = txMap[param.id];
             t.owner = msg.sender;
@@ -150,6 +152,7 @@ contract SwanPayment is IPaymentMinimal, Initializable {
             t.lockedFee = param.amount;
             t.token = _ERC20_TOKEN;
             t._isExisted = true;
+            t.copyLimit = param.copyLimit;
 
             emit LockPayment(
                 param.id,

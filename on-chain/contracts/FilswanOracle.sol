@@ -25,6 +25,7 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
         address recipient;
         bool status;
         bool flag; // check existence of signature
+        string[] cidList;
     }
 
     event SignTransaction(string cid, string dealId, address recipient);
@@ -87,6 +88,7 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
 
         txInfoMap[key][msg.sender].recipient = recipient;
         txInfoMap[key][msg.sender].flag = true;
+        txInfoMap[key][msg.sender].cidList = cidList;
 
         bytes32 voteKey = keccak256(
             abi.encodeWithSignature(
@@ -186,5 +188,12 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
     ) public view returns (bool) {
         bytes32 voteKey = keccak256(abi.encodePacked(cid, dealId, recipient));
         return txVoteMap[voteKey] >= _threshold;
+    }
+
+    function getSignatureInfo(
+        string memory dealId,
+        address signer
+    ) public view returns (TxOracleInfo memory) {
+        return txInfoMap[dealId][signer];
     }
 }

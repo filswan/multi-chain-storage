@@ -9,6 +9,7 @@
   "function getCarPaymentVotes(string,string,address) view returns (uint8)",
   "function getCidList(string,string) view returns (string[])",
   "function getRoleAdmin(bytes32) view returns (bytes32)",
+  "function getSignatureList(string,string) view returns (tuple(uint256,uint256,address,bool,bool,string[])[])",
   "function getThreshold() view returns (uint8)",
   "function grantRole(bytes32,address)",
   "function hasRole(bytes32,address) view returns (bool)",

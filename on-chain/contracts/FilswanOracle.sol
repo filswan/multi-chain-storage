@@ -19,6 +19,8 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
     address private _filinkAddress;
     mapping(string => string[]) cidListMap;
 
+    address[] private _daoLists;
+
     struct TxOracleInfo {
         uint256 paid;
         uint256 terms;
@@ -63,6 +65,7 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
         for (uint8 i = 0; i < daoUsers.length; i++) {
             grantRole(DAO_ROLE, daoUsers[i]);
         }
+        _daoLists = daoUsers;
         return true;
     }
 
@@ -159,17 +162,17 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
         return cidListMap[key];
     }
 
-    // function getSignatureList(
-    //     string memory dealId,
-    //     string memory network
-    // ) public view returns (TxOracleInfo[] memory) {
-    //     string memory key = concatenate(dealId, network);
-    //     uint256 cnt = getRoleMemberCount(DAO_ROLE);
-    //     TxOracleInfo[] memory result = new TxOracleInfo[](cnt);
-    //     for (uint256 i = 0; i < cnt; i++) {
-    //         address member = getRoleMember(DAO_ROLE, i);
-    //         result[i] = txInfoMap[key][member];
-    //     }
-    //     return result;
-    // }
+    function getSignatureList(
+        string memory dealId,
+        string memory network
+    ) public view returns (TxOracleInfo[] memory) {
+        string memory key = concatenate(dealId, network);
+        uint256 cnt = _daoLists.length;
+        TxOracleInfo[] memory result = new TxOracleInfo[](cnt);
+        for (uint256 i = 0; i < cnt; i++) {
+            address member = _daoLists[i];
+            result[i] = txInfoMap[key][member];
+        }
+        return result;
+    }
 }

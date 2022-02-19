@@ -74,7 +74,7 @@ Chain ID: **80001**
 DEX pool, usdc, wFil addresses are the same, since we are using the same network
 ##### Wallet List
 DAO addresses list  
-0x6d2e5279b106843f6E924194401B50e6e27FE12a  
+0x6d2e5279b106843f6E924194401B50e6e27FE12a(unlock wallet)  
 0xbE14Eb1ffcA54861D3081560110a45F4A1A9e9c5  
 0xeA2bf08288bbfB0d3DBf534f35af32bF2c6E5e45  
 

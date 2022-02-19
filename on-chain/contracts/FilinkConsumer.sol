@@ -68,20 +68,25 @@ contract FilinkConsumer is ChainlinkClient {
      */
 
      // todo: use call back to pay
-    function requestDealInfo(string calldata deal) public returns (bytes32 requestId) 
+    function requestDealInfo(string calldata deal, string calldata network) public returns (bytes32 requestId) 
     {
         require(mapDealPrice[deal] == 0, "deal price is already on-chain, call getPrice(deal)");
 
         Chainlink.Request memory request = buildChainlinkRequest(jobId, address(this), this.fulfill.selector);
+
+        string memory tmp = concatenate(deal, "&network=");
+        string memory params = concatenate(tmp, network);
+
+        string memory key = concatenate(deal, network);
         
         // Set the URL to perform the GET request on
-        request.add("get", concatenate("https://cxq4eshb10.execute-api.us-east-1.amazonaws.com/default/test2?deal=", deal));
+        request.add("get", concatenate("https://cxq4eshb10.execute-api.us-east-1.amazonaws.com/default/test2?deal=", params));
         // request.add("deal", deal);
 
         request.add("path", "data.deal.storage_price");
       
         bytes32 id = sendChainlinkRequestTo(oracle, request, fee);
-        mapRequestDeal[id] = deal;
+        mapRequestDeal[id] = key;
 
         return id;
     }
@@ -95,9 +100,10 @@ contract FilinkConsumer is ChainlinkClient {
         mapDealPrice[mapRequestDeal[_requestId]] = _price;
     }
 
-    function getPrice(string calldata deal) public view returns (uint256)
+    function getPrice(string calldata deal, string calldata network) public view returns (uint256)
     {
-        return mapDealPrice[deal];
+        string memory key = concatenate(deal, network);
+        return mapDealPrice[key];
     }
 
     // function withdrawLINK(address _to, uint256 _amount) onlyowner public returns (bool)

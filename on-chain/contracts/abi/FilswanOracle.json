@@ -152,6 +152,11 @@
         "type": "string"
       },
       {
+        "internalType": "string",
+        "name": "network",
+        "type": "string"
+      },
+      {
         "internalType": "address",
         "name": "recipient",
         "type": "address"
@@ -173,6 +178,11 @@
       {
         "internalType": "string",
         "name": "dealId",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "network",
         "type": "string"
       }
     ],
@@ -214,12 +224,12 @@
         "type": "string"
       },
       {
-        "internalType": "address",
-        "name": "signer",
-        "type": "address"
+        "internalType": "string",
+        "name": "network",
+        "type": "string"
       }
     ],
-    "name": "getSignatureInfo",
+    "name": "getSignatureList",
     "outputs": [
       {
         "components": [
@@ -254,9 +264,9 @@
             "type": "string[]"
           }
         ],
-        "internalType": "struct FilswanOracle.TxOracleInfo",
+        "internalType": "struct FilswanOracle.TxOracleInfo[]",
         "name": "",
-        "type": "tuple"
+        "type": "tuple[]"
       }
     ],
     "stateMutability": "view",
@@ -343,41 +353,17 @@
         "type": "string"
       },
       {
+        "internalType": "string",
+        "name": "network",
+        "type": "string"
+      },
+      {
         "internalType": "address",
         "name": "recipient",
         "type": "address"
       }
     ],
     "name": "isCarPaymentAvailable",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "string",
-        "name": "cid",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "dealId",
-        "type": "string"
-      },
-      {
-        "internalType": "address",
-        "name": "recipient",
-        "type": "address"
-      }
-    ],
-    "name": "isPaymentAvailable",
     "outputs": [
       {
         "internalType": "bool",
@@ -495,35 +481,17 @@
         "type": "string"
       },
       {
+        "internalType": "string",
+        "name": "network",
+        "type": "string"
+      },
+      {
         "internalType": "address",
         "name": "recipient",
         "type": "address"
       }
     ],
     "name": "signCarTransaction",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "string",
-        "name": "cid",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "dealId",
-        "type": "string"
-      },
-      {
-        "internalType": "address",
-        "name": "recipient",
-        "type": "address"
-      }
-    ],
-    "name": "signTransaction",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

@@ -367,6 +367,11 @@
         "type": "string"
       },
       {
+        "internalType": "string",
+        "name": "network",
+        "type": "string"
+      },
+      {
         "internalType": "address",
         "name": "recipient",
         "type": "address"

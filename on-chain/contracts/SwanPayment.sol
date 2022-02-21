@@ -142,7 +142,7 @@ contract SwanPayment is IPaymentMinimal, Initializable {
             t._isExisted = true;
             t.size = param.size;
             t.copyLimit = param.copyLimit;
-            
+
         } else {
             TxInfo storage t = txMap[param.id];
             t.owner = msg.sender;
@@ -192,71 +192,26 @@ contract SwanPayment is IPaymentMinimal, Initializable {
 
             IERC20(_ERC20_TOKEN).transfer(t.owner, lockedFee);
             emit ExpirePayment(param.id, _ERC20_TOKEN, lockedFee, t.owner);
-        } else {
-            require(
-                FilswanOracle(_oracle).isPaymentAvailable(
-                    param.id,
-                    param.dealId,
-                    param.recipient
-                ),
-                "illegal unlock action"
-            );
-
-            uint256 tokenAmount = t.minPayment;
-            // get spend token amount
-            uint256 serviceCost = FilinkConsumer(_chainlinkOracle).getPrice(
-                param.dealId
-            );
-            if (serviceCost > 0) {
-                tokenAmount = IPriceFeed(_priceFeed).consult(
-                    _ERC20_TOKEN,
-                    serviceCost
-                );
-                if (tokenAmount < t.minPayment) {
-                    tokenAmount = t.minPayment;
-                }
-            }
-
-            t._isExisted = false;
-
-            if (t.lockedFee > tokenAmount) {
-                t.lockedFee = 0; // prevent re-entrying
-                IERC20(_ERC20_TOKEN).transfer(t.owner, lockedFee - tokenAmount);
-            } else {
-                tokenAmount = t.lockedFee;
-                t.lockedFee = 0; // prevent re-entrying
-            }
-            IERC20(_ERC20_TOKEN).transfer(param.recipient, tokenAmount);
-
-            emit UnlockPayment(
-                param.id,
-                _ERC20_TOKEN,
-                tokenAmount,
-                lockedFee - tokenAmount,
-                param.recipient,
-                t.owner
-            );
         }
-
         return true;
     }
 
-    function unlockCarPayment(string calldata dealId, address recipient)
+    function unlockCarPayment(string calldata dealId, string calldata network, address recipient)
         public
         override
         returns (bool)
     {
         require(
-            FilswanOracle(_oracle).isCarPaymentAvailable(dealId, recipient),
+            FilswanOracle(_oracle).isCarPaymentAvailable(dealId, network, recipient),
             "illegal unlock car action"
         );
 
         uint256 tokenAmount = 0;
         // get spend token amount
-        uint256 serviceCost = FilinkConsumer(_chainlinkOracle).getPrice(dealId);
+        uint256 serviceCost = FilinkConsumer(_chainlinkOracle).getPrice(dealId, network);
 
         // get cid list
-        string[] memory cidList = FilswanOracle(_oracle).getCidList(dealId);
+        string[] memory cidList = FilswanOracle(_oracle).getCidList(dealId, network);
 
         if (serviceCost > 0) {
             tokenAmount = IPriceFeed(_priceFeed).consult(

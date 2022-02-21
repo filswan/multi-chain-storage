@@ -562,7 +562,9 @@ export default {
         goTopage: '页'
     },
     billing: {
-        search_placeholder: '按交易哈希搜索',
+        search_placeholder: '搜索方式',
+        search_option_filename: '文件名',
+        search_option_transaction: '交易',
         search_btn: '搜索',
         clear_btn: '清除',
         TRANSACTION: '交易哈希',

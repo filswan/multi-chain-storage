@@ -527,6 +527,7 @@ export default {
             _this.signFun()
         }
         _this.fn()
+        console.log(_this.metaAddress)
     },
     filters: {
         number (value) {

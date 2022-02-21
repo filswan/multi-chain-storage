@@ -185,6 +185,11 @@
             "internalType": "uint256",
             "name": "size",
             "type": "uint256"
+          },
+          {
+            "internalType": "uint8",
+            "name": "copyLimit",
+            "type": "uint8"
           }
         ],
         "internalType": "struct IPaymentMinimal.TxInfo",
@@ -261,6 +266,11 @@
             "internalType": "uint256",
             "name": "size",
             "type": "uint256"
+          },
+          {
+            "internalType": "uint8",
+            "name": "copyLimit",
+            "type": "uint8"
           }
         ],
         "internalType": "struct IPaymentMinimal.lockPaymentParam",
@@ -354,6 +364,11 @@
       {
         "internalType": "string",
         "name": "dealId",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "network",
         "type": "string"
       },
       {

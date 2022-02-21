@@ -150,6 +150,40 @@
         "internalType": "string",
         "name": "dealId",
         "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "network",
+        "type": "string"
+      },
+      {
+        "internalType": "address",
+        "name": "recipient",
+        "type": "address"
+      }
+    ],
+    "name": "getCarPaymentVotes",
+    "outputs": [
+      {
+        "internalType": "uint8",
+        "name": "",
+        "type": "uint8"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "dealId",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "network",
+        "type": "string"
       }
     ],
     "name": "getCidList",
@@ -177,6 +211,62 @@
         "internalType": "bytes32",
         "name": "",
         "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "dealId",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "network",
+        "type": "string"
+      }
+    ],
+    "name": "getSignatureList",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "paid",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "terms",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "recipient",
+            "type": "address"
+          },
+          {
+            "internalType": "bool",
+            "name": "status",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "flag",
+            "type": "bool"
+          },
+          {
+            "internalType": "string[]",
+            "name": "cidList",
+            "type": "string[]"
+          }
+        ],
+        "internalType": "struct FilswanOracle.TxOracleInfo[]",
+        "name": "",
+        "type": "tuple[]"
       }
     ],
     "stateMutability": "view",
@@ -263,41 +353,17 @@
         "type": "string"
       },
       {
+        "internalType": "string",
+        "name": "network",
+        "type": "string"
+      },
+      {
         "internalType": "address",
         "name": "recipient",
         "type": "address"
       }
     ],
     "name": "isCarPaymentAvailable",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "string",
-        "name": "cid",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "dealId",
-        "type": "string"
-      },
-      {
-        "internalType": "address",
-        "name": "recipient",
-        "type": "address"
-      }
-    ],
-    "name": "isPaymentAvailable",
     "outputs": [
       {
         "internalType": "bool",
@@ -415,35 +481,17 @@
         "type": "string"
       },
       {
+        "internalType": "string",
+        "name": "network",
+        "type": "string"
+      },
+      {
         "internalType": "address",
         "name": "recipient",
         "type": "address"
       }
     ],
     "name": "signCarTransaction",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "string",
-        "name": "cid",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "dealId",
-        "type": "string"
-      },
-      {
-        "internalType": "address",
-        "name": "recipient",
-        "type": "address"
-      }
-    ],
-    "name": "signTransaction",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

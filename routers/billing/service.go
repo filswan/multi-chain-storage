@@ -21,7 +21,7 @@ func getBillHistoryList(walletAddress, limit, offset string, txHash string, file
 	}
 
 	if fileName != "" {
-		sql = sql + " and lower(h.file_name) =lower('" + fileName + "') "
+		sql = sql + " and h.file_name like lower('%" + fileName + "%') "
 	}
 
 	orderClause := strconv.Itoa(orderByColumn) + " " + ascdesc

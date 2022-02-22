@@ -14,7 +14,7 @@ export default {
         documentation: 'Documentation'
     },
     navbar: {
-        sidebar_header: 'Multi-Chain Payment',
+        sidebar_header: 'Multi-Chain Storage',
         "section": "Section",
         "myprofile": "My Profile",
         "support": "Support",

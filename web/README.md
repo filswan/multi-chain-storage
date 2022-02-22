@@ -1,4 +1,4 @@
-# Multi-Chain Payment
+# Multi-Chain Storage
 
 **Technology stack：** vue2 + vuex + vue-router + webpack + sass + element-ui + web3
 
@@ -14,7 +14,7 @@ Running Swan Faucet as a container is the recommended way of using it.
 https://docs.docker.com/compose/install/
 ### Stable
 
-Run the following command to run the latest stable image of MCP Web
+Run the following command to run the latest stable image of MCS Web
 
 ```bash
 docker build -t filswan/mcp-web .

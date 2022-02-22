@@ -55,22 +55,22 @@
           <el-table-column prop="status" :label="$t('uploadFile.file_status')" width="140">
             <template slot-scope="scope">
               <el-button type="danger" class="statusStyle" v-if="scope.row.status&&scope.row.status.toLowerCase()=='failed'">
-                  {{ languageMcp == "en" ? "Fail" : '失败'}}
+                  {{ languageMcs == "en" ? "Fail" : '失败'}}
               </el-button>
               <el-button type="pending" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='pending'">
-                  {{ languageMcp == "en" ? "Pending" : '待支付'}}
+                  {{ languageMcs == "en" ? "Pending" : '待支付'}}
               </el-button>
               <el-button type="primary" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='processing'">
-                  {{ languageMcp == "en" ? "Processing" : '处理中'}}
+                  {{ languageMcs == "en" ? "Processing" : '处理中'}}
               </el-button>
               <el-button type="success" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='active'">
-                  {{ languageMcp == "en" ? "Active" : '完成'}}
+                  {{ languageMcs == "en" ? "Active" : '完成'}}
               </el-button>
               <el-button type="info" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='refunded'">
-                  {{ languageMcp == "en" ? "Refunded" : '已退款'}}
+                  {{ languageMcs == "en" ? "Refunded" : '已退款'}}
               </el-button>
               <el-button type="refunding" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='refunding'">
-                  {{ languageMcp == "en" ? "Refunding" : '可退款'}}
+                  {{ languageMcs == "en" ? "Refunding" : '可退款'}}
               </el-button>
               <el-button type="info" plain class="statusStyle" v-else>
                   {{scope.row.status}}
@@ -148,108 +148,108 @@
                             class="statusStyle"
                             v-if="miner.status == 'Created'"
                             :style="$status_color.Task_color('Created')">
-                            {{ languageMcp == "en" ? "Created" : "已创建" }}
+                            {{ languageMcs == "en" ? "Created" : "已创建" }}
                           </div>
                           <div
                             class="statusStyle"
                             v-else-if="miner.status == 'Assigned'"
                             :style="$status_color.Task_color('Assigned')"
                           >
-                            {{ languageMcp == "en" ? "Assigned" : "已分配" }}
+                            {{ languageMcs == "en" ? "Assigned" : "已分配" }}
                           </div>
                           <div
                             class="statusStyle"
                             v-else-if="miner.status == 'Accepted'"
                             :style="$status_color.Task_color('Accepted')"
                           >
-                            {{ languageMcp == "en" ? "Accepted" : "已接受" }}
+                            {{ languageMcs == "en" ? "Accepted" : "已接受" }}
                           </div>
                           <div
                             class="statusStyle"
                             v-else-if="miner.status == 'Completed'"
                             :style="$status_color.Task_color('Completed')"
                           >
-                            {{ languageMcp == "en" ? "Completed" : "已完成" }}
+                            {{ languageMcs == "en" ? "Completed" : "已完成" }}
                           </div>
                           <div
                             class="statusStyle"
                             v-else-if="miner.status == 'Failed'"
                             :style="$status_color.Task_color('Failed')"
                           >
-                            {{ languageMcp == "en" ? "Failed" : "已失败" }}
+                            {{ languageMcs == "en" ? "Failed" : "已失败" }}
                           </div>
                           <div
                             class="statusStyle"
                             v-else-if="miner.status == 'Cancelled'"
                             :style="$status_color.Task_color('Cancelled')"
                           >
-                            {{ languageMcp == "en" ? "Cancelled" : "已取消" }}
+                            {{ languageMcs == "en" ? "Cancelled" : "已取消" }}
                           </div>
                           <div
                             class="statusStyle"
                             v-else-if="miner.status == 'Closed'"
                             :style="$status_color.Task_color('Closed')"
                           >
-                            {{ languageMcp == "en" ? "Closed" : "已关闭" }}
+                            {{ languageMcs == "en" ? "Closed" : "已关闭" }}
                           </div>
                           <div
                             class="statusStyle"
                             v-else-if="miner.status == 'Expired'"
                             :style="$status_color.Task_color('Expired')"
                           >
-                            {{ languageMcp == "en" ? "Expired" : "已过期" }}
+                            {{ languageMcs == "en" ? "Expired" : "已过期" }}
                           </div>
                           <div
                               class="statusStyle"
                               v-else-if="miner.status == 'ActionRequired'"
                               :style="$status_color.Task_color('ActionRequired')">
-                              {{ languageMcp == 'en' ? 'ActionRequired' : '需要操作' }}
+                              {{ languageMcs == 'en' ? 'ActionRequired' : '需要操作' }}
                           </div>
                           <div
                               class="statusStyle"
                               v-else-if="miner.status == 'DealSent'"
                               :style="$status_color.Task_color('DealSent')">
-                              {{ languageMcp == 'en' ? 'DealSent' : '交易已发送' }}
+                              {{ languageMcs == 'en' ? 'DealSent' : '交易已发送' }}
                           </div>
                           <div class="statusStyle"
                                 v-else-if="miner.status == 'FileImporting'"
                                 :style="$status_color.Task_color('FileImporting')">
-                              {{ languageMcp == 'en' ? 'FileImporting' : '文件导入中' }}
+                              {{ languageMcs == 'en' ? 'FileImporting' : '文件导入中' }}
                           </div>
                           <div class="statusStyle"
                                 v-else-if="miner.status == 'FileImported'"
                                 :style="$status_color.Task_color('FileImported')">
-                              {{ languageMcp == 'en' ? 'FileImported' : '文件已导入' }}
+                              {{ languageMcs == 'en' ? 'FileImported' : '文件已导入' }}
                           </div>
                           <div class="statusStyle"
                                 v-else-if="miner.status == 'ImportFailed'"
                                 :style="$status_color.Task_color('ImportFailed')">
-                              {{ languageMcp == 'en' ? 'ImportFailed' : '导入失败' }}
+                              {{ languageMcs == 'en' ? 'ImportFailed' : '导入失败' }}
                           </div>
                           <div class="statusStyle"
                                 v-else-if="miner.status == 'Downloading'"
                                 :style="$status_color.Task_color('Downloading')">
-                              {{ languageMcp == 'en' ? 'Downloading' : '下载中' }}
+                              {{ languageMcs == 'en' ? 'Downloading' : '下载中' }}
                           </div>
                           <div class="statusStyle"
                                 v-else-if="miner.status == 'DownloadFailed'"
                                 :style="$status_color.Task_color('DownloadFailed')">
-                              {{ languageMcp == 'en' ? 'DownloadFailed' : '下载失败' }}
+                              {{ languageMcs == 'en' ? 'DownloadFailed' : '下载失败' }}
                           </div>
                           <div class="statusStyle"
                                 v-else-if="miner.status == 'DealActive'"
                                 :style="$status_color.Task_color('DealActive')">
-                              {{ languageMcp == 'en' ? 'DealActive' : '有效交易' }}
+                              {{ languageMcs == 'en' ? 'DealActive' : '有效交易' }}
                           </div>
                           <div class="statusStyle"
                                 v-else-if="miner.status == 'Waiting'"
                                 :style="$status_color.Task_color('Waiting')">
-                              {{ languageMcp == 'en' ? 'Waiting' : '等待中' }}
+                              {{ languageMcs == 'en' ? 'Waiting' : '等待中' }}
                           </div>
                           <div class="statusStyle"
                                 v-else-if="miner.status == 'ReadyForImport'"
                                 :style="$status_color.Task_color('ReadyForImport')">
-                              {{ languageMcp == 'en' ? 'ReadyForImport' : '准备导入' }}
+                              {{ languageMcs == 'en' ? 'ReadyForImport' : '准备导入' }}
                           </div>
                           <div
                               class="statusStyle"
@@ -262,7 +262,6 @@
                               {{ miner.status }}
                           </div>
                       </div>
-                       <!-- @click="minerIdLink(scope.row.miner_fid)" -->
                       <el-button slot="reference" @click="minerIdLink(miner.miner_fid)">
                           {{miner.miner_fid}}<small v-if="i<scope.row.offline_deals.length-1">,&nbsp;</small>
                       </el-button>
@@ -278,108 +277,108 @@
                             class="statusStyle"
                             v-if="scope.row.deal_status == 'Created'"
                             :style="$status_color.Task_color('Created')">
-                            {{ languageMcp == "en" ? "Created" : "已创建" }}
+                            {{ languageMcs == "en" ? "Created" : "已创建" }}
                           </div>
                           <div
                             class="statusStyle"
                             v-else-if="scope.row.deal_status == 'Assigned'"
                             :style="$status_color.Task_color('Assigned')"
                           >
-                            {{ languageMcp == "en" ? "Assigned" : "已分配" }}
+                            {{ languageMcs == "en" ? "Assigned" : "已分配" }}
                           </div>
                           <div
                             class="statusStyle"
                             v-else-if="scope.row.deal_status == 'Accepted'"
                             :style="$status_color.Task_color('Accepted')"
                           >
-                            {{ languageMcp == "en" ? "Accepted" : "已接受" }}
+                            {{ languageMcs == "en" ? "Accepted" : "已接受" }}
                           </div>
                           <div
                             class="statusStyle"
                             v-else-if="scope.row.deal_status == 'Completed'"
                             :style="$status_color.Task_color('Completed')"
                           >
-                            {{ languageMcp == "en" ? "Completed" : "已完成" }}
+                            {{ languageMcs == "en" ? "Completed" : "已完成" }}
                           </div>
                           <div
                             class="statusStyle"
                             v-else-if="scope.row.deal_status == 'Failed'"
                             :style="$status_color.Task_color('Failed')"
                           >
-                            {{ languageMcp == "en" ? "Failed" : "已失败" }}
+                            {{ languageMcs == "en" ? "Failed" : "已失败" }}
                           </div>
                           <div
                             class="statusStyle"
                             v-else-if="scope.row.deal_status == 'Cancelled'"
                             :style="$status_color.Task_color('Cancelled')"
                           >
-                            {{ languageMcp == "en" ? "Cancelled" : "已取消" }}
+                            {{ languageMcs == "en" ? "Cancelled" : "已取消" }}
                           </div>
                           <div
                             class="statusStyle"
                             v-else-if="scope.row.deal_status == 'Closed'"
                             :style="$status_color.Task_color('Closed')"
                           >
-                            {{ languageMcp == "en" ? "Closed" : "已关闭" }}
+                            {{ languageMcs == "en" ? "Closed" : "已关闭" }}
                           </div>
                           <div
                             class="statusStyle"
                             v-else-if="scope.row.deal_status == 'Expired'"
                             :style="$status_color.Task_color('Expired')"
                           >
-                            {{ languageMcp == "en" ? "Expired" : "已过期" }}
+                            {{ languageMcs == "en" ? "Expired" : "已过期" }}
                           </div>
                           <div
                               class="statusStyle"
                               v-else-if="scope.row.deal_status == 'ActionRequired'"
                               :style="$status_color.Task_color('ActionRequired')">
-                              {{ languageMcp == 'en' ? 'ActionRequired' : '需要操作' }}
+                              {{ languageMcs == 'en' ? 'ActionRequired' : '需要操作' }}
                           </div>
                           <div
                               class="statusStyle"
                               v-else-if="scope.row.deal_status == 'DealSent'"
                               :style="$status_color.Task_color('DealSent')">
-                              {{ languageMcp == 'en' ? 'DealSent' : '交易已发送' }}
+                              {{ languageMcs == 'en' ? 'DealSent' : '交易已发送' }}
                           </div>
                           <div class="statusStyle"
                                 v-else-if="scope.row.deal_status == 'FileImporting'"
                                 :style="$status_color.Task_color('FileImporting')">
-                              {{ languageMcp == 'en' ? 'FileImporting' : '文件导入中' }}
+                              {{ languageMcs == 'en' ? 'FileImporting' : '文件导入中' }}
                           </div>
                           <div class="statusStyle"
                                 v-else-if="scope.row.deal_status == 'FileImported'"
                                 :style="$status_color.Task_color('FileImported')">
-                              {{ languageMcp == 'en' ? 'FileImported' : '文件已导入' }}
+                              {{ languageMcs == 'en' ? 'FileImported' : '文件已导入' }}
                           </div>
                           <div class="statusStyle"
                                 v-else-if="scope.row.deal_status == 'ImportFailed'"
                                 :style="$status_color.Task_color('ImportFailed')">
-                              {{ languageMcp == 'en' ? 'ImportFailed' : '导入失败' }}
+                              {{ languageMcs == 'en' ? 'ImportFailed' : '导入失败' }}
                           </div>
                           <div class="statusStyle"
                                 v-else-if="scope.row.deal_status == 'Downloading'"
                                 :style="$status_color.Task_color('Downloading')">
-                              {{ languageMcp == 'en' ? 'Downloading' : '下载中' }}
+                              {{ languageMcs == 'en' ? 'Downloading' : '下载中' }}
                           </div>
                           <div class="statusStyle"
                                 v-else-if="scope.row.deal_status == 'DownloadFailed'"
                                 :style="$status_color.Task_color('DownloadFailed')">
-                              {{ languageMcp == 'en' ? 'DownloadFailed' : '下载失败' }}
+                              {{ languageMcs == 'en' ? 'DownloadFailed' : '下载失败' }}
                           </div>
                           <div class="statusStyle"
                                 v-else-if="scope.row.deal_status == 'DealActive'"
                                 :style="$status_color.Task_color('DealActive')">
-                              {{ languageMcp == 'en' ? 'DealActive' : '有效交易' }}
+                              {{ languageMcs == 'en' ? 'DealActive' : '有效交易' }}
                           </div>
                           <div class="statusStyle"
                                 v-else-if="scope.row.deal_status == 'Waiting'"
                                 :style="$status_color.Task_color('Waiting')">
-                              {{ languageMcp == 'en' ? 'Waiting' : '等待中' }}
+                              {{ languageMcs == 'en' ? 'Waiting' : '等待中' }}
                           </div>
                           <div class="statusStyle"
                                 v-else-if="scope.row.deal_status == 'ReadyForImport'"
                                 :style="$status_color.Task_color('ReadyForImport')">
-                              {{ languageMcp == 'en' ? 'ReadyForImport' : '准备导入' }}
+                              {{ languageMcs == 'en' ? 'ReadyForImport' : '准备导入' }}
                           </div>
                           <div
                               class="statusStyle"
@@ -641,8 +640,8 @@ export default {
     };
   },
   computed: {
-    languageMcp() {
-      return this.$store.state.app.languageMcp;
+    languageMcs() {
+      return this.$store.state.app.languageMcs;
     },
     metaAddress() {
         return this.$store.getters.metaAddress
@@ -676,7 +675,14 @@ export default {
   },
   methods: {
     minerIdLink(id){
-      window.open(`${process.env.BASE_MINERADDRESS}${id}`)
+      switch(process.env.NODE_ENV){
+        case 'production':
+          window.open(`https://filfox.info/en/address/${id}`)
+          return false;
+        default:
+          window.open(`https://calibration.filscan.io/address/miner?address=${id}`)
+          break;
+      }
     },
     toDetail(row){
       if(row.offline_deals && row.offline_deals.length>0){
@@ -960,7 +966,7 @@ export default {
     },
     copyTextToClipboard(text) {
         let _this = this
-        let saveLang = localStorage.getItem('languageMcp') == 'cn'?"复制成功":"success";
+        let saveLang = localStorage.getItem('languageMcs') == 'cn'?"复制成功":"success";
         var txtArea = document.createElement("textarea");
         txtArea.id = 'txt';
         txtArea.style.position = 'fixed';
@@ -1131,12 +1137,12 @@ export default {
         }).then(res => {
             if(res.data.status == 'success'){
                 _this.$message({
-                    message: localStorage.getItem('languageMcp') == 'en'?'Send Deal Success': '发送交易成功',
+                    message: localStorage.getItem('languageMcs') == 'en'?'Send Deal Success': '发送交易成功',
                     type: 'success'
                 });
                 _this.getData()
             }else{
-                _this.$message.error(localStorage.getItem('languageMcp') == 'en'?'Send Deal Fail': '发送交易失败');
+                _this.$message.error(localStorage.getItem('languageMcs') == 'en'?'Send Deal Fail': '发送交易失败');
             }
         }).catch(error => {
             console.log(error)

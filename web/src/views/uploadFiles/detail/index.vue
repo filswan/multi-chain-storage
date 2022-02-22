@@ -207,7 +207,7 @@ export default {
         },
         copyTextToClipboard(text) {
             let _this = this
-            let saveLang = localStorage.getItem('languageMcp') == 'cn'?"复制成功":"success";
+            let saveLang = localStorage.getItem('languageMcs') == 'cn'?"复制成功":"success";
             var txtArea = document.createElement("textarea");
             txtArea.id = 'txt';
             txtArea.style.position = 'fixed';
@@ -281,7 +281,7 @@ export default {
                     if(json.data.deal.provider && json.data.found.payload_cid){
                         _this.copy_filename = 'lotus client retrieve --miner '+json.data.deal.provider+' '+json.data.found.payload_cid+' output-file';
                     }else{
-                        _this.copy_filename = localStorage.getItem('languageMcp') == 'cn'?"还不可用。":"It's not available yet.";
+                        _this.copy_filename = localStorage.getItem('languageMcs') == 'cn'?"还不可用。":"It's not available yet.";
                     }
 
                     if(!json.data.found) _this.dealCont.found = {}

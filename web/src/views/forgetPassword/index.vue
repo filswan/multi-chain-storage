@@ -192,8 +192,8 @@ export default {
       },
   },
   computed: {
-    languageMcp() {
-      return this.$store.getters.languageMcp
+    languageMcs() {
+      return this.$store.getters.languageMcs
     },
   },
   mounted() {

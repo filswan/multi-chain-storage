@@ -28,6 +28,9 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
         bool status;
         bool flag; // check existence of signature
         string[] cidList;
+        address signer;
+        uint256 timestamp;
+        uint256 blockNumber;
     }
 
     event SignTransaction(string cid, string dealId, address recipient);
@@ -93,6 +96,9 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
         txInfoMap[key][msg.sender].recipient = recipient;
         txInfoMap[key][msg.sender].flag = true;
         txInfoMap[key][msg.sender].cidList = cidList;
+        txInfoMap[key][msg.sender].signer = msg.sender;
+        txInfoMap[key][msg.sender].timestamp = block.timestamp;
+        txInfoMap[key][msg.sender].blockNumber = block.number;
 
         bytes32 voteKey = keccak256(
             abi.encodeWithSignature(
@@ -113,11 +119,11 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
         }
     }
 
-    function isCarPaymentAvailable(string memory dealId, string memory network, address recipient)
-        public
-        view
-        returns (bool)
-    {
+    function isCarPaymentAvailable(
+        string memory dealId,
+        string memory network,
+        address recipient
+    ) public view returns (bool) {
         string[] memory cidList = cidListMap[dealId];
         bytes32 voteKey = keccak256(
             abi.encodeWithSignature(
@@ -131,11 +137,11 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
         return txVoteMap[voteKey] >= _threshold;
     }
 
-    function getCarPaymentVotes(string memory dealId, string memory network, address recipient)
-        public
-        view
-        returns (uint8)
-    {
+    function getCarPaymentVotes(
+        string memory dealId,
+        string memory network,
+        address recipient
+    ) public view returns (uint8) {
         string[] memory cidList = cidListMap[dealId];
         bytes32 voteKey = keccak256(
             abi.encodeWithSignature(
@@ -162,10 +168,11 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
         return cidListMap[key];
     }
 
-    function getSignatureList(
-        string memory dealId,
-        string memory network
-    ) public view returns (TxOracleInfo[] memory) {
+    function getSignatureList(string memory dealId, string memory network)
+        public
+        view
+        returns (TxOracleInfo[] memory)
+    {
         string memory key = concatenate(dealId, network);
         uint256 cnt = _daoLists.length;
         TxOracleInfo[] memory result = new TxOracleInfo[](cnt);

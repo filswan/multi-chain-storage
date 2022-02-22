@@ -262,6 +262,21 @@
             "internalType": "string[]",
             "name": "cidList",
             "type": "string[]"
+          },
+          {
+            "internalType": "address",
+            "name": "signer",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "timestamp",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "blockNumber",
+            "type": "uint256"
           }
         ],
         "internalType": "struct FilswanOracle.TxOracleInfo[]",

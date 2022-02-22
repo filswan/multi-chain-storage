@@ -19,6 +19,8 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
     address private _filinkAddress;
     mapping(string => string[]) cidListMap;
 
+    address[] private _daoLists;
+
     struct TxOracleInfo {
         uint256 paid;
         uint256 terms;
@@ -26,6 +28,9 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
         bool status;
         bool flag; // check existence of signature
         string[] cidList;
+        address signer;
+        uint256 timestamp;
+        uint256 blockNumber;
     }
 
     event SignTransaction(string cid, string dealId, address recipient);
@@ -63,6 +68,7 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
         for (uint8 i = 0; i < daoUsers.length; i++) {
             grantRole(DAO_ROLE, daoUsers[i]);
         }
+        _daoLists = daoUsers;
         return true;
     }
 
@@ -77,9 +83,10 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
     function signCarTransaction(
         string[] memory cidList,
         string memory dealId,
+        string memory network,
         address recipient
     ) public onlyRole(DAO_ROLE) {
-        string memory key = dealId;
+        string memory key = concatenate(dealId, network);
 
         require(
             txInfoMap[key][msg.sender].flag == false,
@@ -89,11 +96,15 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
         txInfoMap[key][msg.sender].recipient = recipient;
         txInfoMap[key][msg.sender].flag = true;
         txInfoMap[key][msg.sender].cidList = cidList;
+        txInfoMap[key][msg.sender].signer = msg.sender;
+        txInfoMap[key][msg.sender].timestamp = block.timestamp;
+        txInfoMap[key][msg.sender].blockNumber = block.number;
 
         bytes32 voteKey = keccak256(
             abi.encodeWithSignature(
-                "f(string,address,string[])",
+                "f(string, string,address,string[])",
                 dealId,
+                network,
                 recipient,
                 cidList
             )
@@ -104,20 +115,21 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
         // todo: check cidList each time.
         if (txVoteMap[voteKey] == _threshold && _filinkAddress != address(0)) {
             cidListMap[key] = cidList;
-            FilinkConsumer(_filinkAddress).requestDealInfo(dealId);
+            FilinkConsumer(_filinkAddress).requestDealInfo(dealId, network);
         }
     }
 
-    function isCarPaymentAvailable(string memory dealId, address recipient)
-        public
-        view
-        returns (bool)
-    {
+    function isCarPaymentAvailable(
+        string memory dealId,
+        string memory network,
+        address recipient
+    ) public view returns (bool) {
         string[] memory cidList = cidListMap[dealId];
         bytes32 voteKey = keccak256(
             abi.encodeWithSignature(
-                "f(string,address,string[])",
+                "f(string,string,address,string[])",
                 dealId,
+                network,
                 recipient,
                 cidList
             )
@@ -125,16 +137,17 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
         return txVoteMap[voteKey] >= _threshold;
     }
 
-    function getCarPaymentVotes(string memory dealId, address recipient)
-        public
-        view
-        returns (uint8)
-    {
+    function getCarPaymentVotes(
+        string memory dealId,
+        string memory network,
+        address recipient
+    ) public view returns (uint8) {
         string[] memory cidList = cidListMap[dealId];
         bytes32 voteKey = keccak256(
             abi.encodeWithSignature(
-                "f(string,address,string[])",
+                "f(string,string,address,string[])",
                 dealId,
+                network,
                 recipient,
                 cidList
             )
@@ -146,54 +159,27 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
         return _threshold;
     }
 
-    function getCidList(string memory dealId)
+    function getCidList(string memory dealId, string memory network)
         public
         view
         returns (string[] memory)
     {
-        return cidListMap[dealId];
+        string memory key = concatenate(dealId, network);
+        return cidListMap[key];
     }
 
-    function signTransaction(
-        string memory cid,
-        string memory dealId,
-        address recipient
-    ) public onlyRole(DAO_ROLE) {
-        string memory key = concatenate(cid, dealId);
-
-        require(
-            txInfoMap[key][msg.sender].flag == false,
-            "You already sign this transaction"
-        );
-
-        txInfoMap[key][msg.sender].recipient = recipient;
-        txInfoMap[key][msg.sender].flag = true;
-
-        bytes32 voteKey = keccak256(abi.encodePacked(cid, dealId, recipient));
-
-        txVoteMap[voteKey] = txVoteMap[voteKey] + 1;
-        // todo: if vote is greater than threshold, call chainlink oracle to save price
-
-        if (txVoteMap[voteKey] == _threshold && _filinkAddress != address(0)) {
-            FilinkConsumer(_filinkAddress).requestDealInfo(dealId);
+    function getSignatureList(string memory dealId, string memory network)
+        public
+        view
+        returns (TxOracleInfo[] memory)
+    {
+        string memory key = concatenate(dealId, network);
+        uint256 cnt = _daoLists.length;
+        TxOracleInfo[] memory result = new TxOracleInfo[](cnt);
+        for (uint256 i = 0; i < cnt; i++) {
+            address member = _daoLists[i];
+            result[i] = txInfoMap[key][member];
         }
-
-        emit SignTransaction(cid, dealId, recipient);
-    }
-
-    function isPaymentAvailable(
-        string memory cid,
-        string memory dealId,
-        address recipient
-    ) public view returns (bool) {
-        bytes32 voteKey = keccak256(abi.encodePacked(cid, dealId, recipient));
-        return txVoteMap[voteKey] >= _threshold;
-    }
-
-    function getSignatureInfo(
-        string memory dealId,
-        address signer
-    ) public view returns (TxOracleInfo memory) {
-        return txInfoMap[dealId][signer];
+        return result;
     }
 }

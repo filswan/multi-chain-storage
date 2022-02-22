@@ -48,7 +48,7 @@ interface IPaymentMinimal {
         external
         returns (bool);
 
-    function unlockCarPayment(string calldata dealId, address recipient)
+    function unlockCarPayment(string calldata dealId, string calldata network, address recipient)
         external
         returns (bool);
 }

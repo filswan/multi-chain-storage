@@ -66,7 +66,7 @@ Chain ID: **80001**
 |---|---|
 | mcp_payment_contract  | 0x24B9c56BB6419f4c5AE6a63Fd64dE0dCFA1841F1  |
 | dao_contract  | 0x9208C2B417Ec2699454843A06A5E49fA6dd88422  |
-| flink_service_contract  | 0xdE810bd96D370fe876858b2cc9B7448Dae855Df0  |
+| flink_service_contract  | 0xB6312D719F6B496647703c81F6965EF38bF58B8D  |
 | DEX pool price_feed_address  | 0xe8a67994c114e0c17E1c135d0CB599a2394f1505  |
 | usdc token address  | 0xe11A86849d99F524cAC3E7A0Ec1241828e332C62  |
 | wFil token address  | 0x97916e6CC8DD75c6E6982FFd949Fc1768CF8c055  |
@@ -74,12 +74,17 @@ Chain ID: **80001**
 DEX pool, usdc, wFil addresses are the same, since we are using the same network
 ##### Wallet List
 DAO addresses list  
-0x6d2e5279b106843f6E924194401B50e6e27FE12a  
+0x6d2e5279b106843f6E924194401B50e6e27FE12a(unlock wallet)  
 0xbE14Eb1ffcA54861D3081560110a45F4A1A9e9c5  
 0xeA2bf08288bbfB0d3DBf534f35af32bF2c6E5e45  
 
 ## Development
-
+#### generate go bind files
+```
+cd /on-chain/contracts
+abigen --abi ./abi/FilswanOracle.json --pkg goBind --type FilswanOracle --out ../goBind/FilswanOracle.go
+abigen --abi ./abi/SwanPayment.json --pkg goBind --type SwanPayment --out ../goBind/SwanPayment.go 
+```
 ## FAQ
 ...
 

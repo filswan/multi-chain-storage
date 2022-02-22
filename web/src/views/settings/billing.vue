@@ -166,8 +166,8 @@
             };
         },
         computed: {
-            languageMcp() {
-                return this.$store.state.app.languageMcp
+            languageMcs() {
+                return this.$store.state.app.languageMcs
             },
             metaAddress() {
                 return this.$store.getters.metaAddress
@@ -290,7 +290,7 @@
             },
             copyTextToClipboard(text) {
                 let _this = this
-                let saveLang = localStorage.getItem('languageMcp') == 'cn'?"复制成功":"success";
+                let saveLang = localStorage.getItem('languageMcs') == 'cn'?"复制成功":"success";
                 var txtArea = document.createElement("textarea");
                 txtArea.id = 'txt';
                 txtArea.style.position = 'fixed';

@@ -13,7 +13,7 @@ export default {
         documentation: '文档'
     },
     navbar: {
-        sidebar_header: 'Multi-Chain Payment',
+        sidebar_header: 'Multi-Chain Storage',
         "section": "部分",
         "myprofile": "个人信息",
         "support": "支持",

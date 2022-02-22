@@ -193,7 +193,11 @@ create table if not exists source_file
 	delete_at varchar(128) null,
 	user_id int null,
 	ipfs_url varchar(255) null,
-	pin_status varchar(32) null
+	pin_status varchar(32) null,
+	nft_tx_hash varchar(255)  null,
+	token_id varchar(200)  null,
+	mint_address varchar(255) null,
+	file_type varchar(5) null
 );
 
 create table if not exists source_file_deal_file_map
@@ -228,3 +232,23 @@ create table if not exists system_config_param
 		unique (param_key)
 );
 
+create table if not exists event_expire_payment
+(
+	id bigint auto_increment
+		primary key,
+	tx_hash varchar(255) null,
+	payload_cid varchar(255) null,
+	block_no varchar(128) null,
+	token_address varchar(255) null,
+	contract_address varchar(255) null,
+	user_address varchar(255) null,
+	expire_user_amount varchar(255) null,
+	block_time varchar(64) null,
+	create_at varchar(64) null,
+	network_id bigint null,
+	coin_id bigint null,
+	constraint event_expire_payment_coin_info_id_fk
+		foreign key (coin_id) references coin (id),
+	constraint event_expire_payment_network_info_id_fk
+		foreign key (network_id) references network (id)
+);

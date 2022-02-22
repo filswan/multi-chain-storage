@@ -2,8 +2,6 @@ package scheduler
 
 import (
 	"fmt"
-	"github.com/filswan/go-swan-lib/client/lotus"
-	"github.com/robfig/cron"
 	"payment-bridge/common/constants"
 	"payment-bridge/common/utils"
 	"payment-bridge/config"
@@ -13,6 +11,9 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/filswan/go-swan-lib/client/lotus"
+	"github.com/robfig/cron"
 )
 
 func ScanDealInfoScheduler() {
@@ -20,6 +21,23 @@ func ScanDealInfoScheduler() {
 	err := c.AddFunc(config.GetConfig().ScheduleRule.ScanDealStatusRule, func() {
 		logs.GetLogger().Info("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ scan deal info from chain scheduler is running at " + time.Now().Format("2006-01-02 15:04:05"))
 		err := GetDealInfoByLotusClientAndUpdateInfoToDB()
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return
+		}
+	})
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return
+	}
+	c.Start()
+}
+
+func ScanExpiredDealInfoScheduler() {
+	c := cron.New()
+	err := c.AddFunc(config.GetConfig().ScheduleRule.UpdatePayStatusRule, func() {
+		logs.GetLogger().Info("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ scan expired deal info scheduler is running at " + time.Now().Format("2006-01-02 15:04:05"))
+		err := GetExpiredDealInfoAndUpdateInfoToDB()
 		if err != nil {
 			logs.GetLogger().Error(err)
 			return
@@ -58,7 +76,11 @@ func GetDealInfoByLotusClientAndUpdateInfoToDB() error {
 		if strings.ToLower(dealInfo.Status) == strings.ToLower(constants.DEAL_STATUS_ACTIVE) {
 			paymentStatus = constants.LOCK_PAYMENT_STATUS_SUCCESS
 		} else if strings.ToLower(dealInfo.Status) == strings.ToLower(constants.DEAL_STATUS_ERROR) {
-			paymentStatus = constants.LOCK_PAYMENT_STATUS_REFUNDED
+			if err != nil {
+				logs.GetLogger().Error(err)
+				return err
+			}
+			paymentStatus = constants.LOCK_PAYMENT_STATUS_WAITING
 		} else {
 			paymentStatus = constants.LOCK_PAYMENT_STATUS_PROCESSING
 		}
@@ -69,6 +91,39 @@ func GetDealInfoByLotusClientAndUpdateInfoToDB() error {
 		v.LockPaymentStatus = paymentStatus
 		v.UpdateAt = strconv.FormatInt(utils.GetEpochInMillis(), 10)
 		err = database.SaveOne(v)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return err
+		}
+	}
+	return nil
+}
+
+func GetExpiredDealInfoAndUpdateInfoToDB() error {
+	eventLockPayment, err := models.FindExpiredLockPayment()
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+	for _, v := range eventLockPayment {
+		_dealFileId := v.DealFileId
+		paymentStatus := constants.LOCK_PAYMENT_STATUS_REFUNDING
+		eventExpireList, err := models.FindEventExpirePayments(&models.EventExpirePayment{PayloadCid: v.PayloadCid}, "id desc", "10", "0")
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return err
+		}
+		for _, e := range eventExpireList {
+			lockAmount, err := strconv.ParseInt(e.ExpireUserAmount, 10, 64)
+			if err != nil {
+				logs.GetLogger().Error(err)
+				return err
+			}
+			if lockAmount > 0 {
+				paymentStatus = constants.LOCK_PAYMENT_STATUS_REFUNDED
+			}
+		}
+		err = models.UpdateDealFile(&models.DealFile{ID: _dealFileId}, &models.DealFile{LockPaymentStatus: paymentStatus, UpdateAt: strconv.FormatInt(utils.GetEpochInMillis(), 10)})
 		if err != nil {
 			logs.GetLogger().Error(err)
 			return err

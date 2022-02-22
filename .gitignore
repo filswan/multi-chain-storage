@@ -134,3 +134,7 @@ dmypy.json
 config.toml
 config_*.toml
 
+# environment
+launch.json
+.DS_Store
+

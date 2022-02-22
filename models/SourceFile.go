@@ -3,6 +3,7 @@ package models
 import (
 	"payment-bridge/common/constants"
 	"payment-bridge/database"
+	"payment-bridge/logs"
 )
 
 type SourceFile struct {
@@ -17,6 +18,10 @@ type SourceFile struct {
 	IpfsUrl       string `json:"ipfs_url"`
 	PinStatus     string `json:"pin_status"`
 	WalletAddress string `json:"wallet_address"`
+	NftTxHash     string `json:"nft_tx_hash"`
+	TokenId       string `json:"token_id"`
+	MintAddress   string `json:"mint_address"`
+	FileType      string `json:"file_type"`
 }
 
 // FindSourceFileList (&SourceFile{Id: "0xadeaCC802D0f2DFd31bE4Fa7434F15782Fd720ac"},"id desc","10","0")
@@ -31,4 +36,22 @@ func FindSourceFileList(whereCondition interface{}, orderCondition, limit, offse
 	var models []*SourceFile
 	err := db.Where(whereCondition).Offset(offset).Limit(limit).Order(orderCondition).Find(&models).Error
 	return models, err
+}
+
+func FindSourceFileByPayloadCid(payloadCid string) (*SourceFile, error) {
+	db := database.GetDB()
+	sql := "select s.id, s.file_name, s.resource_uri, s.file_size, s.uuid, s.dataset, s.create_at, s.ipfs_url, s.pin_status, s.wallet_address from source_file s " +
+		" inner join source_file_deal_file_map sfdfm on s.id = sfdfm.source_file_id" +
+		" inner join deal_file df on sfdfm.deal_file_id = df.id and df.payload_cid='" + payloadCid + "' "
+	var results []*SourceFile
+	err := db.Raw(sql).Order("create_at desc").Scan(&results).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+	if len(results) > 0 {
+		return results[0], nil
+	} else {
+		return nil, nil
+	}
 }

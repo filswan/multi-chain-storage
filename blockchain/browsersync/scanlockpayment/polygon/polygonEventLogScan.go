@@ -76,6 +76,12 @@ func ScanEventFromChainAndSaveDataToDbForPolygon() {
 				continue
 			}
 
+			err = ScanPolygonExpirePaymentEventFromChainAndSaveEventLogData(start-1, end+1)
+			if err != nil {
+				logs.GetLogger().Error(err)
+				continue
+			}
+
 			if end >= blockNoCurrent.Int64() {
 				blockScanRecord.LastCurrentBlockNumber = blockNoCurrent.Int64()
 			} else {

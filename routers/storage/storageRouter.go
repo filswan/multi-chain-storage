@@ -4,12 +4,10 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"payment-bridge/common"
 	"payment-bridge/common/constants"
 	"payment-bridge/common/errorinfo"
-	"payment-bridge/common/httpClient"
 	"payment-bridge/common/utils"
 	"payment-bridge/config"
 	"payment-bridge/database"
@@ -17,6 +15,8 @@ import (
 	"payment-bridge/models"
 	"strconv"
 	"strings"
+
+	"github.com/gin-gonic/gin"
 )
 
 func SendDealManager(router *gin.RouterGroup) {
@@ -27,6 +27,7 @@ func SendDealManager(router *gin.RouterGroup) {
 	//router.GET("/dao/signature/deal/:deal_id", GetDealListForDaoByDealId)
 	router.GET("/dao/signature/deals", GetDealListForDaoToSign)
 	router.PUT("/dao/signature/deals", RecordDealListThatHaveBeenSignedByDao)
+	router.POST("/mint/info", RecordMintInfo)
 }
 
 func RecordDealListThatHaveBeenSignedByDao(c *gin.Context) {
@@ -82,7 +83,7 @@ func GetDealListForDaoByDealId(c *gin.Context) {
 	dealIdIntValue, err := strconv.Atoi(dealId)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_CODE, errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_MSG))
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.TYPE_TRANSFER_ERROR_CODE, errorinfo.TYPE_TRANSFER_ERROR_MSG))
 		return
 	}
 	dealList, err := GetDealListThanGreaterDealID(int64(dealIdIntValue), 0, 100)
@@ -96,11 +97,6 @@ func GetDealListForDaoByDealId(c *gin.Context) {
 }
 
 func GetDealListFromFilink(c *gin.Context) {
-	authorization := c.Request.Header.Get("authorization")
-	if len(authorization) == 0 {
-		c.JSON(http.StatusUnauthorized, common.CreateErrorResponse(errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_CODE, errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_MSG))
-		return
-	}
 	dealId := strings.Trim(c.Params.ByName("deal_id"), " ")
 	if strings.Trim(dealId, " ") == "" {
 		errMsg := "deal id can not be null"
@@ -238,7 +234,15 @@ func UploadFileToIpfs(c *gin.Context) {
 	}
 	durationInt = durationInt * 24 * 60 * 60 / 30
 
-	payloadCid, ipfsDownloadPath, needPay, err := SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c, file, durationInt, 0, walletAddress)
+	fileType := c.DefaultPostForm("file_type", "0")
+	fileTypeInt, err := strconv.Atoi(fileType)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.TYPE_TRANSFER_ERROR_CODE, errorinfo.TYPE_TRANSFER_ERROR_MSG+": file type is not a number"))
+		return
+	}
+
+	payloadCid, ipfsDownloadPath, needPay, err := SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c, file, durationInt, 0, walletAddress, fileTypeInt)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.SENDING_DEAL_ERROR_CODE, errorinfo.SENDING_DEAL_ERROR_MSG))
 		return
@@ -310,96 +314,60 @@ func GetDealListFromLocal(c *gin.Context) {
 	c.JSON(http.StatusOK, common.NewSuccessResponseWithPageInfo(infoList, pageInfo))
 }
 
-func GetDealListFromSwan(c *gin.Context) {
-	URL := c.Request.URL.Query()
-	pageNumber := URL.Get("page_number")
-	pageSize := URL.Get("page_size")
-	authorization := c.Request.Header.Get("authorization")
-	if len(authorization) == 0 {
-		c.JSON(http.StatusOK, common.CreateErrorResponse(errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_CODE, errorinfo.NO_AUTHORIZATION_TOKEN_ERROR_MSG))
+func RecordMintInfo(c *gin.Context) {
+	var model mintInfoUpload
+	c.BindJSON(&model)
+	payloadCid := model.PayloadCid
+	nftTxHash := model.TxHash
+	tokenId := model.TokenId
+	mintAddress := model.MintAddress
+	if payloadCid == "" || nftTxHash == "" || tokenId == "" || mintAddress == "" {
+		errMsg := "payload_cid, tx_hash and token_id cannot be nil"
+		err := errors.New(errMsg)
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_CODE, errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_MSG+":"+errMsg))
 		return
 	}
 
-	if (strings.Trim(pageNumber, " ") == "") || (strings.Trim(pageNumber, " ") == "0") {
-		pageNumber = "1"
+	dealList, err := models.FindDealFileList(&models.DealFile{PayloadCid: payloadCid}, "create_at desc", "10", "0")
+	if err != nil {
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE, errorinfo.GET_RECORD_lIST_ERROR_MSG))
+		return
 	} else {
-		tmpPageNumber, err := strconv.Atoi(pageNumber)
-		pageNumber = strconv.Itoa(tmpPageNumber)
-		if err != nil {
-			pageNumber = "1"
-		}
-	}
-
-	if strings.Trim(pageSize, " ") == "" {
-		pageSize = constants.PAGE_SIZE_DEFAULT_VALUE
-	}
-
-	offset, err := utils.GetOffsetByPagenumber(pageNumber, pageSize)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.PAGE_NUMBER_OR_SIZE_FORMAT_ERROR_CODE, errorinfo.PAGE_NUMBER_OR_SIZE_FORMAT_ERROR_MSG))
-		return
-	}
-	url := config.GetConfig().SwanApi.ApiUrl + "/paymentgateway/deals?source_id=" + strconv.Itoa(constants.SOURCE_ID_OF_PAYMENT) +
-		"&limit=" + pageSize + "&offset=" + strconv.FormatInt(offset, 10)
-	header := make(http.Header)
-	header.Add(constants.HTTP_REQUEST_HEADER_AUTHRORIZATION, authorization)
-	response, err := httpClient.SendRequestAndGetBytes(http.MethodGet, url, nil, header)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_SEND_REQUEST_RETUREN_ERROR_CODE, errorinfo.HTTP_REQUEST_SEND_REQUEST_RETUREN_ERROR_MSG))
-		return
-	}
-	var results *models.OfflineDealResult
-	err = json.Unmarshal(response, &results)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARSER_RESPONSE_TO_STRUCT_ERROR_CODE, errorinfo.HTTP_REQUEST_PARSER_RESPONSE_TO_STRUCT_ERROR_MSG))
-		return
-	}
-	whereCondition := ""
-	for i, v := range results.Data.Deals {
-		whereCondition += "'" + v.PayloadCid + "'"
-		if i < len(results.Data.Deals)-1 {
-			whereCondition += ","
-		}
-	}
-	if strings.Trim(whereCondition, " ") == "" {
-		whereCondition = "1=1"
-	} else {
-		whereCondition = "1=1 and payload_cid in (" + whereCondition + ")"
-	}
-	eventList, err := models.FindEventLockPayment(whereCondition, "", strconv.Itoa(results.PagingInfo.Limit), strconv.Itoa(results.PagingInfo.Offset))
-	if err != nil {
-		logs.GetLogger().Error(err)
-		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE, errorinfo.GET_RECORD_lIST_ERROR_MSG))
-		return
-	}
-	paidList := ""
-	for _, v := range eventList {
-		paidList += v.PayloadCid
-	}
-	for _, v := range results.Data.Deals {
-		if strings.Contains(paidList, v.PayloadCid) {
-			v.PayStatus = "Success"
+		if len(dealList) > 0 {
+			sourceFile, err := models.FindSourceFileByPayloadCid(dealList[0].PayloadCid)
+			if err != nil {
+				logs.GetLogger().Error(err)
+				c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.SAVE_DATA_TO_DB_ERROR_CODE, errorinfo.SAVE_DATA_TO_DB_ERROR_MSG))
+				return
+			} else {
+				sourceFile.NftTxHash = nftTxHash
+				sourceFile.TokenId = tokenId
+				sourceFile.MintAddress = mintAddress
+				database.SaveOneWithTransaction(sourceFile)
+				c.JSON(http.StatusOK, common.CreateSuccessResponse(sourceFile))
+			}
 		} else {
-			v.PayStatus = "Fail"
+			errMsg := "no deal is found"
+			err := errors.New(errMsg)
+			logs.GetLogger().Error(err)
+			c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.SAVE_DATA_TO_DB_ERROR_CODE, errorinfo.SAVE_DATA_TO_DB_ERROR_MSG+":"+errMsg))
+			return
 		}
+
 	}
-	if len(eventList) == 0 {
-		for _, v := range results.Data.Deals {
-			v.PayStatus = "Fail"
-		}
-	}
-	pageInfo := new(common.PageInfo)
-	pageInfo.PageSize = pageSize
-	pageInfo.PageNumber = pageNumber
-	pageInfo.TotalRecordCount = strconv.Itoa(results.PagingInfo.TotalItems)
-	c.JSON(http.StatusOK, common.NewSuccessResponseWithPageInfo(results.Data.Deals, pageInfo))
 }
 
 type uploadResult struct {
 	PayloadCid string `json:"payload_cid"`
 	IpfsUrl    string `json:"ipfs_url"`
 	NeedPay    int    `json:"need_pay"`
+}
+
+type mintInfoUpload struct {
+	PayloadCid  string `json:"payload_cid"`
+	TxHash      string `json:"tx_hash"`
+	TokenId     string `json:"token_id"`
+	MintAddress string `json:"mint_address"`
 }

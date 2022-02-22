@@ -1,10 +1,11 @@
 package config
 
 import (
-	"github.com/BurntSushi/toml"
-	"github.com/shopspring/decimal"
 	"log"
 	"strings"
+
+	"github.com/BurntSushi/toml"
+	"github.com/shopspring/decimal"
 )
 
 type Configuration struct {

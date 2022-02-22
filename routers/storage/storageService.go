@@ -23,14 +23,12 @@ import (
 	clientmodel "github.com/filswan/go-swan-client/model"
 	"github.com/filswan/go-swan-client/subcommand"
 	"github.com/filswan/go-swan-lib/client/ipfs"
-	"github.com/filswan/go-swan-lib/client/swan"
-	libconstants "github.com/filswan/go-swan-lib/constants"
 	libmodel "github.com/filswan/go-swan-lib/model"
 	libutils "github.com/filswan/go-swan-lib/utils"
 	"github.com/gin-gonic/gin"
 )
 
-func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multipart.FileHeader, duration, userId int, walletAddress string) (string, string, int, error) {
+func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multipart.FileHeader, duration, userId int, walletAddress string, fileType int) (string, string, int, error) {
 	temDirDeal := config.GetConfig().SwanTask.DirDeal
 
 	logs.GetLogger().Info("temp dir is ", temDirDeal)
@@ -117,7 +115,7 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 		} else {
 			if len(lockPaymentList) > 0 {
 				needPay = 3
-				sourceFile, err := saveSourceFileToDB(srcFile, srcFilepath, userId, filePathInIpfs, walletAddress)
+				sourceFile, err := saveSourceFileToDB(srcFile, srcFilepath, userId, filePathInIpfs, walletAddress, fileType)
 				if err != nil {
 					logs.GetLogger().Error(err)
 					return "", "", needPay, err
@@ -137,7 +135,7 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 				return fileList[0].DataCid, sourceAndDealFileList[0].IpfsUrl, needPay, nil
 			} else {
 				needPay = 4
-				sourceFile, err := saveSourceFileToDB(srcFile, srcFilepath, userId, filePathInIpfs, walletAddress)
+				sourceFile, err := saveSourceFileToDB(srcFile, srcFilepath, userId, filePathInIpfs, walletAddress, fileType)
 				if err != nil {
 					logs.GetLogger().Error(err)
 					return "", "", needPay, err
@@ -151,7 +149,7 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 			}
 		}
 	} else {
-		sourceFile, err := saveSourceFileToDB(srcFile, srcFilepath, userId, filePathInIpfs, walletAddress)
+		sourceFile, err := saveSourceFileToDB(srcFile, srcFilepath, userId, filePathInIpfs, walletAddress, fileType)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			return "", "", needPay, err
@@ -165,7 +163,7 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 	}
 }
 
-func saveSourceFileToDB(srcFile *multipart.FileHeader, srcFilepath string, userId int, filePathInIpfs, walletAddress string) (*models.SourceFile, error) {
+func saveSourceFileToDB(srcFile *multipart.FileHeader, srcFilepath string, userId int, filePathInIpfs, walletAddress string, fileType int) (*models.SourceFile, error) {
 	sourceFile := new(models.SourceFile)
 	sourceFile.FileName = srcFile.Filename
 	sourceFile.FileSize = strconv.FormatInt(srcFile.Size, 10)
@@ -176,6 +174,7 @@ func saveSourceFileToDB(srcFile *multipart.FileHeader, srcFilepath string, userI
 	sourceFile.IpfsUrl = filePathInIpfs
 	sourceFile.PinStatus = constants.IPFS_File_PINNED_STATUS
 	sourceFile.WalletAddress = walletAddress
+	sourceFile.FileType = strconv.Itoa(fileType)
 	err := database.SaveOne(sourceFile)
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -279,8 +278,8 @@ func saveDealFileAndMapRelation(fileInfoList []*libmodel.FileDesc, sourceFile *m
 	return nil
 }
 
-func GetSourceFileAndDealFileInfo(limit, offset string, walletAddress string, payloadCid, fileName string) ([]*SourceFileAndDealFileInfo, error) {
-	sql := "select s.file_name,s.file_size,s.pin_status,s.create_at,df.miner_fid,df.payload_cid,df.deal_cid,df.deal_id,df.piece_cid,df.deal_status,df.lock_payment_status as status,df.duration from  source_file s " +
+func GetSourceFileAndDealFileInfo(limit, offset string, walletAddress string, payloadCid, fileName string) ([]*SourceFileAndDealFileInfoExtend, error) {
+	sql := "select s.file_name,s.file_size,s.pin_status,s.create_at,df.miner_fid,df.payload_cid,df.deal_cid,df.deal_id,df.piece_cid,df.deal_status,df.lock_payment_status as status,df.duration, evpm.locked_fee as locked_fee, s.nft_tx_hash, s.token_id, s.mint_address from source_file s " +
 		" inner join source_file_deal_file_map sfdfm on s.id = sfdfm.source_file_id" +
 		" inner join deal_file df on sfdfm.deal_file_id = df.id and wallet_address='" + walletAddress + "' "
 	if strings.Trim(payloadCid, " ") != "" {
@@ -289,7 +288,9 @@ func GetSourceFileAndDealFileInfo(limit, offset string, walletAddress string, pa
 	if strings.Trim(fileName, " ") != "" {
 		sql = sql + " and s.file_name like '%" + fileName + "%'"
 	}
-	var results []*SourceFileAndDealFileInfo
+	sql = sql + " left outer join event_lock_payment evpm on evpm.payload_cid = df.payload_cid"
+	sql = sql + " where IFNULL(s.file_type,'0') <>'1'"
+	var results []*SourceFileAndDealFileInfoExtend
 	err := database.GetDB().Raw(sql).Order("create_at desc").Limit(limit).Offset(offset).Scan(&results).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -310,74 +311,6 @@ func GetSourceFileAndDealFileInfoCount(walletAddress string) (int64, error) {
 		return 0, err
 	}
 	return recordCount.TotalRecord, nil
-}
-
-func SendAutoBidDeals(confDeal *clientmodel.ConfDeal) ([]string, [][]*libmodel.FileDesc, error) {
-	err := subcommand.CreateOutputDir(confDeal.OutputDir)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, nil, err
-	}
-
-	logs.GetLogger().Info("output dir is:", confDeal.OutputDir)
-
-	swanClient, err := swan.SwanGetClient(confDeal.SwanApiUrl, confDeal.SwanApiKey, confDeal.SwanAccessToken, confDeal.SwanToken)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, nil, err
-	}
-
-	assignedTasks, err := swanClient.SwanGetAssignedTasks()
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, nil, err
-	}
-	logs.GetLogger().Info("autobid Swan task count:", len(assignedTasks))
-	if len(assignedTasks) == 0 {
-		logs.GetLogger().Info("no autobid task to be dealt with")
-		return nil, nil, nil
-	}
-
-	var tasksDeals [][]*libmodel.FileDesc
-	csvFilepaths := []string{}
-	for _, assignedTask := range assignedTasks {
-		assignedTaskInfo, err := swanClient.SwanGetOfflineDealsByTaskUuid(assignedTask.Uuid)
-		if err != nil {
-			logs.GetLogger().Error(err)
-			continue
-		}
-
-		deals := assignedTaskInfo.Data.Deal
-		task := assignedTaskInfo.Data.Task
-		dealSentNum, csvFilePath, carFiles, err := subcommand.SendAutobidDeals4Task(confDeal, deals, task, confDeal.OutputDir)
-		if err != nil {
-			csvFilepaths = append(csvFilepaths, csvFilePath)
-			logs.GetLogger().Error(err)
-			continue
-		}
-
-		tasksDeals = append(tasksDeals, carFiles)
-
-		if dealSentNum == 0 {
-			logs.GetLogger().Info(dealSentNum, " deal(s) sent for task:", task.TaskName)
-			continue
-		}
-
-		status := libconstants.TASK_STATUS_DEAL_SENT
-		if dealSentNum != len(deals) {
-			status = libconstants.TASK_STATUS_PROGRESS_WITH_FAILURE
-		}
-
-		response, err := swanClient.SwanUpdateAssignedTask(assignedTask.Uuid, status, csvFilePath)
-		if err != nil {
-			logs.GetLogger().Error(err)
-			continue
-		}
-
-		logs.GetLogger().Info(response.Message)
-	}
-
-	return csvFilepaths, tasksDeals, nil
 }
 
 func GetDealListThanGreaterDealID(dealId int64, offset, limit int) ([]*DaoDealResult, error) {

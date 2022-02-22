@@ -19,18 +19,24 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 )
 
+/**
+ * created on 08/10/21.
+ * author: nebula-ai-dannyng
+ * Copyright defined in payment-bridge/LICENSE
+ */
+
 // EventLogSave Find the event that executed the contract and save to db
-func ScanDaoEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) error {
+func ScanPolygonExpirePaymentEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) error {
 	//read contract api json file
-	logs.GetLogger().Println("polygon scan dao event  : blockNoFrom=" + strconv.FormatInt(blockNoFrom, 10) + "--------------blockNoTo=" + strconv.FormatInt(blockNoTo, 10))
-	daoEventAbiString := goBind.FilswanOracleMetaData.ABI
+	logs.GetLogger().Println("polygon expireEvent scan blockNoFrom=" + strconv.FormatInt(blockNoFrom, 10) + "--------------blockNoTo=" + strconv.FormatInt(blockNoTo, 10))
+	//paymentAbiString, err := utils.ReadContractAbiJsonFile(goBind.SwanPaymentMetaData.ABI)
+	expirePaymentAbiString := goBind.SwanPaymentMetaData.ABI
 
 	//SwanPayment contract address
-	contractAddress := common.HexToAddress(GetConfig().PolygonMainnetNode.DaoSwanOracleAddress)
+	contractAddress := common.HexToAddress(GetConfig().PolygonMainnetNode.PaymentContractAddress)
 	//SwanPayment contract function signature
-	contractFunctionSignature := GetConfig().PolygonMainnetNode.DaoEventFunctionSignature
+	contractFunctionSignature := GetConfig().PolygonMainnetNode.ExpireEventFunctionSignature
 
-	//test block no. is : 5297224
 	query := ethereum.FilterQuery{
 		FromBlock: big.NewInt(blockNoFrom),
 		ToBlock:   big.NewInt(blockNoTo),
@@ -56,7 +62,7 @@ func ScanDaoEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) erro
 		}
 	}
 
-	contractAbi, err := abi.JSON(strings.NewReader(daoEventAbiString))
+	contractAbi, err := abi.JSON(strings.NewReader(expirePaymentAbiString))
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
@@ -65,42 +71,27 @@ func ScanDaoEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) erro
 	for _, vLog := range logsInChain {
 		//if log have this contractor function signer
 		if vLog.Topics[0].Hex() == contractFunctionSignature {
-			dataList, err := contractAbi.Unpack("SignTransaction", vLog.Data)
+			dataList, err := contractAbi.Unpack("ExpirePayment", vLog.Data)
 			if err != nil {
 				logs.GetLogger().Error(err)
 			}
 			logs.GetLogger().Info(dataList)
-			eventList, err := models.FindDaoEventLog(&models.EventDaoSignature{TxHash: vLog.TxHash.Hex(), BlockNo: vLog.BlockNumber}, "id desc", "10", "0")
+			eventList, err := models.FindEventExpirePayments(&models.EventExpirePayment{TxHash: vLog.TxHash.Hex(), BlockNo: strconv.FormatUint(vLog.BlockNumber, 10)}, "id desc", "10", "0")
 			if err != nil {
 				logs.GetLogger().Error(err)
 				continue
 			}
+			var event *models.EventExpirePayment
 			if len(eventList) <= 0 {
-				var event = new(models.EventDaoSignature)
-				dataList, err := contractAbi.Unpack("SignTransaction", vLog.Data)
-				if err != nil {
-					logs.GetLogger().Error(err)
-				}
-
+				event = new(models.EventExpirePayment)
+				event.TxHash = vLog.TxHash.Hex()
+				event.BlockNo = strconv.FormatUint(vLog.BlockNumber, 10)
 				block, err := WebConn.ConnWeb.BlockByNumber(context.Background(), big.NewInt(int64(vLog.BlockNumber)))
 				if err != nil {
 					logs.GetLogger().Error(err)
 				} else {
 					event.BlockTime = strconv.FormatUint(block.Time(), 10)
-					event.DaoPassTime = strconv.FormatUint(block.Time(), 10)
 				}
-				chainId, err := WebConn.ConnWeb.ChainID(context.Background())
-				if err != nil {
-					logs.GetLogger().Error(err)
-					continue
-				}
-				addrInfo, err := utils.GetFromAndToAddressByTxHash(WebConn.ConnWeb, chainId, vLog.TxHash)
-				if err != nil {
-					logs.GetLogger().Error(err)
-				} else {
-					event.DaoAddress = addrInfo.AddrFrom
-				}
-
 				wfilCoinId, err := models.FindCoinIdByUUID(constants.COIN_TYPE_WFIL_ON_POLYGON_UUID)
 				if err != nil {
 					logs.GetLogger().Error(err)
@@ -113,19 +104,12 @@ func ScanDaoEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) erro
 				} else {
 					event.NetworkId = networkId
 				}
-				event.BlockNo = vLog.BlockNumber
-				event.TxHash = vLog.TxHash.Hex()
 				event.PayloadCid = dataList[0].(string)
-				dealId, err := strconv.ParseInt(dataList[1].(string), 10, 64)
-				if err != nil {
-					logs.GetLogger().Error(err)
-				} else {
-					event.DealId = dealId
-				}
-				event.Recipient = dataList[2].(common.Address).String()
-				event.Status = true
-				event.SignatureUnlockStatus = constants.SIGNATURE_DEFAULT_VALUE
-
+				event.TokenAddress = dataList[1].(common.Address).Hex()
+				event.ExpireUserAmount = dataList[2].(*big.Int).String()
+				event.UserAddress = dataList[3].(common.Address).Hex()
+				event.CreateAt = strconv.FormatInt(utils.GetEpochInMillis(), 10)
+				event.ContractAddress = contractAddress.String()
 				err = database.SaveOneWithTransaction(event)
 				if err != nil {
 					logs.GetLogger().Error(err)

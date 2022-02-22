@@ -60,6 +60,7 @@ const (
 	LOCK_PAYMENT_STATUS_PROCESSING = "Processing" //lock payment fail
 	LOCK_PAYMENT_STATUS_SUCCESS    = "Active"     //lock payment active
 	LOCK_PAYMENT_STATUS_REFUNDED   = "Refunded"
+	LOCK_PAYMENT_STATUS_REFUNDING  = "Refunding"
 
 	SEND_DEAL_STATUS_SUCCESS = "Success"
 	SEND_DEAL_STATUS_FAIL    = "Fail"

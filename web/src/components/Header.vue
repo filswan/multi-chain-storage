@@ -3,7 +3,7 @@
         <div class="header_arera">
             <div class="header_left">
                 <span v-if="!bodyWidth">{{headertitle}}</span>
-                <img v-else src="@/assets/images/MCP_logo.png" alt="">
+                <img v-else src="@/assets/images/MCS_logo.png" alt="">
                 <!-- <span v-else>{{$t('navbar.sidebar_header')}}</span> -->
             </div>
             <div class="header-right">
@@ -32,14 +32,14 @@
                     @command="handleSetLanguage" v-if="!bodyWidth"
                 >
                     <div class="background">
-                    <span v-if="languageMcp === 'cn'" style="cursor: pointer;">CN <i class="el-icon-arrow-down"></i></span>
-                    <span v-if="languageMcp === 'en'" style="cursor: pointer;">EN <i class="el-icon-arrow-down"></i></span>
+                    <span v-if="languageMcs === 'cn'" style="cursor: pointer;">CN <i class="el-icon-arrow-down"></i></span>
+                    <span v-if="languageMcs === 'en'" style="cursor: pointer;">EN <i class="el-icon-arrow-down"></i></span>
                     </div>
                     <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item command="cn" :disabled="languageMcp === 'cn'">
+                    <el-dropdown-item command="cn" :disabled="languageMcs === 'cn'">
                         <img src="../assets/images/cn.jpg" class="elImg" />简体中文
                     </el-dropdown-item>
-                    <el-dropdown-item command="en" :disabled="languageMcp === 'en'">
+                    <el-dropdown-item command="en" :disabled="languageMcs === 'en'">
                         <img src="../assets/images/en.jpg" class="elImg" />English
                     </el-dropdown-item>
                     </el-dropdown-menu>
@@ -109,15 +109,15 @@ export default {
             message: 2,
             langNew: '',
             userShow: false,
-            loginShow: localStorage.getItem("mcpLoginAccessToken") ? false : true,
+            loginShow: localStorage.getItem("mcsLoginAccessToken") ? false : true,
             bodyWidth: document.body.clientWidth<999?true:false,
             langShow: true,
             loadIndexing: false,
             // 控制是否在路由栈中清理当前页面的数据
             replaceData:null,
             tools: '1',
-            tabOaxLogin: localStorage.getItem("mcpLoginAccessToken"),
-            tabOaxNew: localStorage.getItem("mcpLoginAccessToken"),
+            tabOaxLogin: localStorage.getItem("mcsLoginAccessToken"),
+            tabOaxNew: localStorage.getItem("mcsLoginAccessToken"),
             priceAccound: 0,
             network: {
                 name: '',
@@ -135,8 +135,8 @@ export default {
         email() {
             return this.$store.state.user.email
         },
-        languageMcp() {
-            return this.$store.getters.languageMcp
+        languageMcs() {
+            return this.$store.getters.languageMcs
         },
         routerMenu() {
             return this.$store.getters.routerMenu
@@ -248,7 +248,7 @@ export default {
                   if(response.data.status == 'success'){
                     _this.$store.dispatch("FedLogOut").then(() => {
                         _this.$router.push("/supplierAllBack");
-                        _this.loginShow = localStorage.getItem("mcpLoginAccessToken") ? false : true
+                        _this.loginShow = localStorage.getItem("mcsLoginAccessToken") ? false : true
                     });
                   }else{
                     console.log(response.data.message);
@@ -258,24 +258,9 @@ export default {
                 console.log(error.config);
                 _this.$store.dispatch("FedLogOut").then(() => {
                     _this.$router.push("/login");
-                    _this.loginShow = localStorage.getItem("mcpLoginAccessToken") ? false : true
+                    _this.loginShow = localStorage.getItem("mcsLoginAccessToken") ? false : true
                 });
             });
-
-            // myAjax.logout(params).then(res => {
-            //   console.log('_RequestUploads_', res)
-            //   if (res.status == "success") {
-            //     _this.$store.dispatch("FedLogOut").then(() => {
-            //         _this.$router.push("/supplierAllBack");
-            //         _this.loginShow = localStorage.getItem("mcpLoginAccessToken") ? false : true
-            //     });
-            //   } else {
-            //       _this.$message.error(res.message)
-            //   }
-            // }).catch(error => {
-            //     console.log(error)
-            // })
-
         },
         // 侧边栏折叠
         collapseChage() {

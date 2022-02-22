@@ -19,7 +19,7 @@ import './assets/css/main.css';
 import 'element-ui/lib/theme-chalk/index.css';
 
 Vue.use(Router);
-let langNew = store.getters.languageMcp == 'en'?{ locale }:{ localeCN }
+let langNew = store.getters.languageMcs == 'en'?{ locale }:{ localeCN }
 Vue.use(ElementUI, langNew)
 // Vue.use(ElementUI);
 Vue.use(Vuex)

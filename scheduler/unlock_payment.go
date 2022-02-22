@@ -103,6 +103,12 @@ func UnlockPayment() error {
 }
 
 func getDaoSignatures(ethClient *ethclient.Client, offlineDeal *models.OfflineDeal, mcpPaymentReceiverAddress common.Address) error {
+	dealFile, err := models.GetDealFileById(offlineDeal.DealFileId)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
 	filswanOracleSession, err := client.GetFilswanOracleSession(ethClient)
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -118,6 +124,21 @@ func getDaoSignatures(ethClient *ethclient.Client, offlineDeal *models.OfflineDe
 	}
 
 	for _, daoSingature := range daoSignatures {
+		eventDaoSignature := models.EventDaoSignature{
+			Recipient:   daoSingature.Recipient.Hex(),
+			PayloadCid:  dealFile.PayloadCid,
+			DealId:      offlineDeal.DealId,
+			DaoAddress:  daoSingature.Signer.Hex(),
+			BlockNo:     daoSingature.BlockNumber.Uint64(),
+			BlockTime:   daoSingature.Timestamp.String(),
+			DaoPassTime: daoSingature.Timestamp.String(),
+			Status:      daoSingature.Status,
+		}
+		err = database.SaveOne(eventDaoSignature)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return err
+		}
 		logs.GetLogger().Info(daoSingature.Paid)
 		logs.GetLogger().Info(daoSingature.Terms)
 	}

@@ -1,4 +1,4 @@
-# Multi-Chain Payment
+# Multi-Chain Storage
 
 **Technology stack：** vue2 + vuex + vue-router + webpack + sass + element-ui + web3
 
@@ -13,9 +13,6 @@ Run `npm run dev` for a dev server. Navigate to `http://localhost:8080/`. The ap
 ## Build project
 
 ```shell
-# install cross-env
-$ npm i cross-env --save
-
 # Build test projects
 $ npm run build:test
 

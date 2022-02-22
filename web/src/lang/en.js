@@ -14,7 +14,7 @@ export default {
         documentation: 'Documentation'
     },
     navbar: {
-        sidebar_header: 'Multi-Chain Payment',
+        sidebar_header: 'Multi-Chain Storage',
         "section": "Section",
         "myprofile": "My Profile",
         "support": "Support",
@@ -557,7 +557,9 @@ export default {
         goTopage: ''
     },
     billing: {
-        search_placeholder: 'Search by TX HASH',
+        search_placeholder: 'Search by ',
+        search_option_filename: 'File Name',
+        search_option_transaction: 'Transaction',
         search_btn: 'Search',
         clear_btn: 'Clear',
         TRANSACTION: 'Transaction',

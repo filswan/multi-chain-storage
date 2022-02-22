@@ -19,7 +19,7 @@ service.interceptors.request.use(function (config) {
       // config.data = qs.stringify(config.data)
       // config.content-type = 'application/x-www-form-urlencoded'npm
     }
-    config.headers.lang = store.getters.languageMcp
+    config.headers.lang = store.getters.languageMcs
     // config.headers.userId = 74
 	// config.headers.accessToken = "1723113221611601ad4845f48209bfe8d2cacb54c43"
 	// config.headers['Authorization']  =  store.getters.accessToken

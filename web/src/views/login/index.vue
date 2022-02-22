@@ -207,8 +207,8 @@ import bus from '@/components/bus';
           .then(response => {
             // console.log(response)
             if (response.status == "success") {
-              localStorage.setItem('mcpLoginAccessToken',response.auth_token)
-              localStorage.setItem('mcpLoginEmail',_this.formData.mail.email)
+              localStorage.setItem('mcsLoginAccessToken',response.auth_token)
+              localStorage.setItem('mcsLoginEmail',_this.formData.mail.email)
               sessionStorage.oaxLoginpassword = _this.formData.mail.password
               _this.$store.state.user.accessToken = response.auth_token
               _this.$store.state.user.email = _this.formData.mail.email
@@ -234,7 +234,7 @@ import bus from '@/components/bus';
       // 是否已登录
       isLogin() {
         var _this = this
-        if (localStorage.getItem("mcpLoginAccessToken")) {
+        if (localStorage.getItem("mcsLoginAccessToken")) {
           _this.$router.push({ path: '/upload_file' })
         }
       },
@@ -245,8 +245,8 @@ import bus from '@/components/bus';
       },
     },
     computed: {
-      languageMcp() {
-        return this.$store.getters.languageMcp
+      languageMcs() {
+        return this.$store.getters.languageMcs
       },
     },
     mounted() {

@@ -1,7 +1,7 @@
 {
-  "name": "multichainpayment",
+  "name": "multichainstorage",
   "version": "1.0.0",
-  "description": "Multi-Chain Payment",
+  "description": "Multi-Chain Storage",
   "author": "yxie <yxie@nbai.io>",
   "private": true,
   "scripts": {

@@ -89,8 +89,8 @@ export default {
         assetNow() {
             return this.$store.state.app.assetNow
         },
-        languageMcp() {
-            return this.$store.getters.languageMcp
+        languageMcs() {
+            return this.$store.getters.languageMcs
         },
         avater() {
             return this.$store.getters.avater

@@ -90,20 +90,20 @@ git checkout <release_branch>
 ## After Installation
 - Before executing, you should check your configuration in `~/.swan/mcs/config.toml` to ensure it is right.
 ```shell
-vi ~/.swan/mcp/config.toml
+vi ~/.swan/mcs/config.toml
 ```
 - Before executing, you should check your enviornment variable in `~/.swan/mcs/.env` to ensure it is right.
 ```shell
-vi ~/.swan/mcp/.env
+vi ~/.swan/mcs/.env
 ```
 - After set your config and env variable in the related files, you can run `multi-chain-storage` in `./build` directory
 ```shell
-./build/multi-chain-payment
+./build/multi-chain-storage
 ```
 ### Note
 - Logs are in directory `./logs`
 - You can add `nohup` before `./multi-chain-storage` to ignore the HUP (hangup) signal and therefore avoid stop when you log out.
-- You can add `>> mcp.log` in the command to let all the logs output to `mcp.log`.
+- You can add `>> mcs.log` in the command to let all the logs output to `mcs.log`.
 - You can add `&` at the end of the command to let the program run in background.
 - Such as:
 ```shell

@@ -47,9 +47,8 @@ build: ## Build the binary file
 	@go mod download
 	@go mod tidy
 	@go build -o build/$(BINARY_NAME) main.go
-	@mkdir -p ./build/on-chain/contracts/abi
-	@cp ./on-chain/contracts/abi/SwanPayment.json ./build/on-chain/contracts/abi/SwanPayment.json
 	@echo "Done building."
+	@echo "Go to build folder and run \"$(GOBIN)/$(BINARY_NAME)\" to launch multi chain storage."
 
 clean: ## Remove previous build
 	@go clean

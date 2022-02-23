@@ -3,8 +3,8 @@ Description=Multi Chain Storage Service
 
 [Service]
 Type=simple
-ExecStart=[source_path]/multi-chain-storage/build/multi-chain-storage
-StandardOutput=[source_path]/multi-chain-storage/build/mcs.log
+ExecStart=[binary_dir]/multi-chain-storage
+StandardOutput=[binary_dir]/mcs.log
 Restart=always
 RestartSec=1
 KillMode=mixed

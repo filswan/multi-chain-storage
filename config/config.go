@@ -93,7 +93,7 @@ func InitConfig() {
 		logs.GetLogger().Fatal("Cannot get home directory.")
 	}
 
-	configFile := filepath.Join(homedir, ".swan/mcp/config.toml")
+	configFile := filepath.Join(homedir, ".swan/mcs/config.toml")
 
 	if metaData, err := toml.DecodeFile(configFile, &config); err != nil {
 		logs.GetLogger().Fatal("error:", err)

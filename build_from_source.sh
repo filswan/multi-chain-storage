@@ -1,6 +1,6 @@
 #!/bin/bash
 
-CONF_FILE_DIR_DEST=${HOME}/.swan/mcp
+CONF_FILE_DIR_DEST=${HOME}/.swan/mcs
 mkdir -p ${CONF_FILE_DIR_DEST}
 
 CONF_FILE_NAMES=(

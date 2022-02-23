@@ -45,7 +45,7 @@
 4. Token exchange(swap) is done through Sushi Swap which is a DEX.
 
 ### Payment Module
-1. After a file is uploaded, the money to be paid is estimated based on the 
+1. After a file is uploaded, the money to be paid is estimated based on: 
    1. the average price of all the miners on the entire network.
    2. file size
    3. store copy number

@@ -140,7 +140,7 @@ nohup ./build/multi-chain-storage >> ./build/mcs.log &    #After installation fr
 - **sushi_dex_address**:  sushi address on polygon
 - **usdc_wFil_pool_contract**:  address to get exchange rate between uscs and wFil from sushi on polygon
 - **dao_contract_address**:  swan dao address on polygon, to receive dao signatures
-- **mcp_payment_receiver_address**:  mcp wallet address to receive money from unlock operation
+- **mcs_payment_receiver_address**:  mcs wallet address to receive money from unlock operation
 - **gas_limit**: gas limit for transaction
 - **unlock_interval_minute**: unlock interval in minutes between 2 unlock operations, in cannot be less than 1
 

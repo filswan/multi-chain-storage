@@ -117,6 +117,7 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 		{"release"},
 		{"swan_platform_fil_wallet"},
 		{"filink_url"},
+		{"filecoin_network"},
 
 		{"database", "db_host"},
 		{"database", "db_port"},

@@ -66,7 +66,7 @@
 ### Lotus Node
 - Lotus node is used for making car files and sending offline deals
 - Install lotus node or lotus lite node in the same machine as MCS
-- Lotus full node is too heavy compared with lotus lite node, so lotus lite node is preferred
+- Lotus lite node is preferred since lotus full node is too heavy compared with lotus lite node 
 - Lotus lite node depends on a lotus node, so ensure that a lotus node exists somewhere when using lotus lite node
 #### Option:one: [install a lotus full node](https://lotus.filecoin.io/docs/set-up/install/)
 #### Option:two: [install a lotus lite node](https://lotus.filecoin.io/docs/set-up/lotus-lite/#amd-and-intel-based-computers)

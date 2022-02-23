@@ -1,8 +1,8 @@
 package common
 
 import (
-	"payment-bridge/common/constants"
-	"payment-bridge/common/errorinfo"
+	"multi-chain-storage/common/constants"
+	"multi-chain-storage/common/errorinfo"
 )
 
 type BasicResponse struct {

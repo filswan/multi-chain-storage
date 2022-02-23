@@ -1,8 +1,8 @@
 package models
 
 import (
-	"payment-bridge/common/constants"
-	"payment-bridge/database"
+	"multi-chain-storage/common/constants"
+	"multi-chain-storage/database"
 )
 
 type DaoInfo struct {

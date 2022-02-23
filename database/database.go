@@ -2,7 +2,7 @@ package database
 
 import (
 	"context"
-	"payment-bridge/config"
+	"multi-chain-storage/config"
 
 	"github.com/filswan/go-swan-lib/logs"
 

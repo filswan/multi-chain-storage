@@ -1,10 +1,10 @@
 package common
 
 import (
+	"multi-chain-storage/common"
+	"multi-chain-storage/common/constants"
+	"multi-chain-storage/common/errorinfo"
 	"net/http"
-	"payment-bridge/common"
-	"payment-bridge/common/constants"
-	"payment-bridge/common/errorinfo"
 	"strings"
 
 	"github.com/filswan/go-swan-lib/logs"

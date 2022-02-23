@@ -2,9 +2,9 @@ package billing
 
 import (
 	"encoding/json"
+	"multi-chain-storage/common/httpClient"
+	"multi-chain-storage/database"
 	"net/http"
-	"payment-bridge/common/httpClient"
-	"payment-bridge/database"
 	"strconv"
 
 	"github.com/filswan/go-swan-lib/logs"

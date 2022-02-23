@@ -3,8 +3,8 @@ package blockchain
 import (
 	"context"
 	"math/big"
-	"payment-bridge/config"
-	"payment-bridge/on-chain/client"
+	"multi-chain-storage/config"
+	"multi-chain-storage/on-chain/client"
 
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"

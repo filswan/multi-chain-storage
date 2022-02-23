@@ -1,12 +1,12 @@
 package scheduler
 
 import (
-	"payment-bridge/common/constants"
-	"payment-bridge/common/utils"
-	"payment-bridge/config"
-	"payment-bridge/database"
-	"payment-bridge/models"
-	"payment-bridge/on-chain/client"
+	"multi-chain-storage/common/constants"
+	"multi-chain-storage/common/utils"
+	"multi-chain-storage/config"
+	"multi-chain-storage/database"
+	"multi-chain-storage/models"
+	"multi-chain-storage/on-chain/client"
 	"strconv"
 
 	"github.com/filswan/go-swan-lib/logs"

@@ -118,6 +118,8 @@ nohup ./build/multi-chain-storage >> ./build/mcs.log &    #After installation fr
 - **release**: When work in release mode: set this to true, otherwise to false and enviornment variable GIN_MODE not to release
 - **swan_platform_fil_wallet**: The wallet address used to pay on the filecoin network
 - **filink_url**: Deals data can be searched from here
+- **filecoin_network**: filecoin_calibration or filecoin_mainnet
+
 #### [lotus]
 - **client_api_url**:  Url of lotus client web api, such as: `http://[ip]:[port]/rpc/v0`, generally the `[port]` is `1234`. See [Lotus API](https://docs.filecoin.io/reference/lotus-api/#features)
 - **client_access_token**:  Access token of lotus client web api. It should have admin access right. You can get it from your lotus node machine using command `lotus auth create-token --perm admin`. See [Obtaining Tokens](https://docs.filecoin.io/build/lotus/api-tokens/#obtaining-tokens)

@@ -32,7 +32,7 @@ type polygon struct {
 	SushiDexAddress           string        `toml:"sushi_dex_address"`
 	UsdcWFilPoolContract      string        `toml:"usdc_wFil_pool_contract"`
 	DaoContractAddress        string        `toml:"dao_contract_address"`
-	McpPaymentReceiverAddress string        `toml:"mcp_payment_receiver_address"`
+	McsPaymentReceiverAddress string        `toml:"mcs_payment_receiver_address"`
 	GasLimit                  uint64        `toml:"gas_limit"`
 	UnlockIntervalMinute      time.Duration `toml:"unlock_interval_minute"`
 	IntervalDaoUnlockBlock    int64         `toml:"interval_dao_unlock_block"`

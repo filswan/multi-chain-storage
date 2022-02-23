@@ -15,7 +15,7 @@ type Configuration struct {
 	Port                  int          `toml:"port"`
 	Release               bool         `toml:"release"`
 	SwanPlatformFilWallet string       `toml:"swan_platform_fil_wallet"`
-	FilinkUrl             string       `toml:"filink_url"`
+	FLinkUrl              string       `toml:"flink_url"`
 	FilecoinNetwork       string       `toml:"filecoin_network"`
 	Polygon               polygon      `toml:"polygon"`
 	Database              database     `toml:"database"`
@@ -116,7 +116,7 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 		{"port"},
 		{"release"},
 		{"swan_platform_fil_wallet"},
-		{"filink_url"},
+		{"flink_url"},
 		{"filecoin_network"},
 
 		{"database", "db_host"},

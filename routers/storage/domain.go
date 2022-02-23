@@ -42,7 +42,8 @@ type SourceFileAndDealFileInfoExtend struct {
 type filinkParams struct {
 	ID   int `json:"id"`
 	Data struct {
-		Deal int `json:"deal"`
+		Deal    int    `json:"deal"`
+		Network string `json:"network"`
 	} `json:"data"`
 }
 type DealOnChainResult struct {

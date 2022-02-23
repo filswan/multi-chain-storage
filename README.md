@@ -51,7 +51,7 @@
    3. storage copy number
    4. duration
 2. Then the estimated amount of money will be locked to the payment contract address, see [Configuration](#Configuration)
-3. In unlock step, the amount pay to filcoin network by swan platform fil wallet, will be transfered to mcp payment receiver address, see [Configuration](#Configuration)
+3. In unlock step, the amount pay to filcoin network by swan platform fil wallet, will be transfered to mcs payment receiver address, see [Configuration](#Configuration)
 4. In refund step, the overpayment part that is locked will be returned to user wallet
 
 ### DAO Signature

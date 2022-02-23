@@ -65,7 +65,7 @@ func LoadEnv() {
 		logs.GetLogger().Fatal("Cannot get home directory.")
 	}
 
-	envFile := filepath.Join(homedir, ".swan/mcp/.env")
+	envFile := filepath.Join(homedir, ".swan/mcs/.env")
 	err = godotenv.Load(envFile)
 	if err != nil {
 		logs.GetLogger().Fatal(err)

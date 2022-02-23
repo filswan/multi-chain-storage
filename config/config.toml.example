@@ -7,7 +7,7 @@ filecoin_network = ""
 [database]
 db_host="localhost"
 db_port="3306"
-db_schema_name="mcp_v2"
+db_schema_name="mcs"
 db_username="root"
 db_password=""
 db_args="charset=utf8mb4&parseTime=True&loc=Local"
@@ -26,7 +26,7 @@ download_url_prefix = "http://[ip]:[port]"
 upload_url_prefix = "http://[ip]:[port]"
 
 [swan_task]
-dir_deal="~/.swan/mcp/temp/deal"
+dir_deal="~/.swan/mcs/temp/deal"
 description = ""
 curated_dataset = ""
 tags = ""
@@ -51,7 +51,7 @@ payment_contract_address = ""                # user pay from his/her wallet addr
 sushi_dex_address = ""
 usdc_wFil_pool_contract = ""
 dao_contract_address = ""
-mcp_payment_receiver_address = ""
+mcs_payment_receiver_address = ""
 gas_limit = 8000000
 unlock_interval_minute = 1
 interval_dao_unlock_block = 5 

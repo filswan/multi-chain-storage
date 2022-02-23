@@ -32,7 +32,7 @@ type polygon struct {
 	SushiDexAddress           string        `toml:"sushi_dex_address"`
 	UsdcWFilPoolContract      string        `toml:"usdc_wFil_pool_contract"`
 	DaoContractAddress        string        `toml:"dao_contract_address"`
-	McpPaymentReceiverAddress string        `toml:"mcp_payment_receiver_address"`
+	McsPaymentReceiverAddress string        `toml:"mcs_payment_receiver_address"`
 	GasLimit                  uint64        `toml:"gas_limit"`
 	UnlockIntervalMinute      time.Duration `toml:"unlock_interval_minute"`
 	IntervalDaoUnlockBlock    int64         `toml:"interval_dao_unlock_block"`
@@ -93,7 +93,7 @@ func InitConfig() {
 		logs.GetLogger().Fatal("Cannot get home directory.")
 	}
 
-	configFile := filepath.Join(homedir, ".swan/mcp/config.toml")
+	configFile := filepath.Join(homedir, ".swan/mcs/config.toml")
 
 	if metaData, err := toml.DecodeFile(configFile, &config); err != nil {
 		logs.GetLogger().Fatal("error:", err)
@@ -158,7 +158,7 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 		{"polygon", "sushi_dex_address"},
 		{"polygon", "usdc_wFil_pool_contract"},
 		{"polygon", "dao_contract_address"},
-		{"polygon", "mcp_payment_receiver_address"},
+		{"polygon", "mcs_payment_receiver_address"},
 		{"polygon", "gas_limit"},
 		{"polygon", "unlock_interval_minute"},
 		{"polygon", "interval_dao_unlock_block"},

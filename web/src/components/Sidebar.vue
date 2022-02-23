@@ -270,6 +270,7 @@ export default {
     .menu_list{
         height: calc(100% - 1.2rem);
         padding: 0;
+        overflow-x: hidden;
         overflow-y: scroll;
         // 火狐浏览器滚动条样式设置
         scrollbar-color: #ccc transparent; //滚动条轨道颜色   滚动条滑块的颜色

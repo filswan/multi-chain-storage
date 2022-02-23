@@ -1,7 +1,6 @@
 package storage
 
 import (
-	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -20,6 +19,7 @@ import (
 	"github.com/filswan/go-swan-lib/logs"
 	"github.com/shopspring/decimal"
 
+	"github.com/filswan/go-swan-lib/client/web"
 	"github.com/gin-gonic/gin"
 )
 
@@ -239,19 +239,12 @@ func GetDealListFromFilink(c *gin.Context) {
 		return
 	}
 
-	url := config.GetConfig().FilinkUrl
+	url := config.GetConfig().FLinkUrl
 	parameter := new(filinkParams)
-	//todo
 	parameter.Data.Deal = dealIdIntValue
-	paramBytes, err := json.Marshal(&parameter)
-	paramStr := string(paramBytes)
-	logs.GetLogger().Info(paramStr)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARSER_STRUCT_TO_REQUEST_ERROR_CODE))
-		return
-	}
-	response, err := http.Post(url, "application/json; charset=UTF-8", bytes.NewBuffer(paramBytes))
+	parameter.Data.Network = config.GetConfig().FilecoinNetwork
+
+	response, err := web.HttpPostNoToken(url, parameter)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_GET_RESPONSE_ERROR_CODE))
@@ -259,7 +252,7 @@ func GetDealListFromFilink(c *gin.Context) {
 	}
 
 	result := DealOnChainResult{}
-	err = json.NewDecoder(response.Body).Decode(&result)
+	err = json.Unmarshal(response, &result)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARSER_STRUCT_TO_REQUEST_ERROR_CODE))

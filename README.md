@@ -46,7 +46,7 @@
 
 ### Payment Module
 1. After a file is uploaded, the money to be paid is estimated based on: 
-   1. the average price of all the miners on the entire network.
+   1. the average price of all the miners on the entire network
    2. file size
    3. store copy number
    4. duration

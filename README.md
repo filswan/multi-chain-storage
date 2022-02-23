@@ -40,7 +40,7 @@
 
 ### Token Swap
 1. Users pay USDC or other tokens, which are called user tokens, when uploading a file.
-2. MCP uses FIL, which is called wrapped token, to pay when store data to filecoin network.
+2. MCS uses FIL, which is called wrapped token, to pay when store data to filecoin network.
 3. User tokens should be changed to wrapped token by this module and this step is called token exchange(swap).
 4. Token exchange(swap) is done through Sushi Swap which is a DEX.
 

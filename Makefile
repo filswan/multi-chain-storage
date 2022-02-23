@@ -1,8 +1,8 @@
 PROJECT_NAME=multi-chain-storage
-PKG := "$(PROJECT_NAME)"
+PKG := $(PROJECT_NAME)
 PKG_LIST := $(shell go list ${PKG}/... | grep -v /vendor/)
 GO_FILES := $(shell find . -name '*.go' | grep -v /vendor/ | grep -v _test.go)
-BINARY_NAME=multi-chain-storage
+BINARY_NAME=$(PROJECT_NAME)
 
 GOCMD=go
 GOBUILD=$(GOCMD) build
@@ -46,7 +46,7 @@ ffi:
 build: ## Build the binary file
 	@go mod download
 	@go mod tidy
-	@go build -o build/multi-chain-payment main.go
+	@go build -o build/$(BINARY_NAME) main.go
 	@mkdir -p ./build/on-chain/contracts/abi
 	@cp ./on-chain/contracts/abi/SwanPayment.json ./build/on-chain/contracts/abi/SwanPayment.json
 	@echo "Done building."

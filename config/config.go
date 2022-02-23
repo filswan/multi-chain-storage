@@ -158,7 +158,7 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 		{"polygon", "sushi_dex_address"},
 		{"polygon", "usdc_wFil_pool_contract"},
 		{"polygon", "dao_contract_address"},
-		{"polygon", "mcp_payment_receiver_address"},
+		{"polygon", "mcs_payment_receiver_address"},
 		{"polygon", "gas_limit"},
 		{"polygon", "unlock_interval_minute"},
 		{"polygon", "interval_dao_unlock_block"},

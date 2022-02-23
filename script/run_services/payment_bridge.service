@@ -1,10 +1,10 @@
 [Unit]
-Description=Payment Bridge (MCP Backend) Service
+Description=Multi Chain Storage Service
 
 [Service]
 Type=simple
-ExecStart=/home/zzq/go/src/multi-chain-storage/build/multi-chain-storage
-StandardOutput=/home/zzq/go/src/multi-chain-storage/build/multi-chain-storage/build/pb_log.log
+ExecStart=[source_path]/multi-chain-storage/build/multi-chain-storage
+StandardOutput=[source_path]/multi-chain-storage/build/mcs.log
 Restart=always
 RestartSec=1
 KillMode=mixed

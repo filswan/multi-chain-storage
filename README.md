@@ -27,7 +27,7 @@
 
 ## System Design
 
-![MCP-MCP Desgin](https://user-images.githubusercontent.com/8363795/143811916-f051ccce-f9b2-49eb-99ab-8da1a0d9f2f2.png)
+![MCS Desgin](https://user-images.githubusercontent.com/8363795/143811916-f051ccce-f9b2-49eb-99ab-8da1a0d9f2f2.png)
 
 ## Modules
 * [Token Swap](#Token-Swap)
@@ -166,7 +166,7 @@ nohup ./build/multi-chain-storage >> ./build/mcs.log &    #After installation fr
 10. After all deals of a car file are unlocked, MCS refund the remaining money to user wallet address used when pay in step 2.
 
 ## Database Table Introduction
-- You can get db table ddl sql script in `[mcp-source-file-path]/script/dbschema.sql`
+- You can get db table ddl sql script in `[mcs-source-file-path]/script/dbschema.sql`
 - Two tables should be initialized before it can be used
 
 ### system_config_param

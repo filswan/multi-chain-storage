@@ -1,8 +1,8 @@
-PROJECT_NAME=payment-bridge
+PROJECT_NAME=multi-chain-storage
 PKG := "$(PROJECT_NAME)"
 PKG_LIST := $(shell go list ${PKG}/... | grep -v /vendor/)
 GO_FILES := $(shell find . -name '*.go' | grep -v /vendor/ | grep -v _test.go)
-BINARY_NAME=payment-bridge
+BINARY_NAME=multi-chain-storage
 
 GOCMD=go
 GOBUILD=$(GOCMD) build

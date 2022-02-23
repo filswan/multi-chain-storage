@@ -2,10 +2,10 @@ package scheduler
 
 import (
 	"fmt"
-	"payment-bridge/common/constants"
-	"payment-bridge/models"
-	"payment-bridge/on-chain/client"
-	"payment-bridge/on-chain/goBind"
+	"multi-chain-storage/common/constants"
+	"multi-chain-storage/models"
+	"multi-chain-storage/on-chain/client"
+	"multi-chain-storage/on-chain/goBind"
 
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/filswan/go-swan-lib/logs"

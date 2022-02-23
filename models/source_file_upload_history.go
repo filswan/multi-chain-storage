@@ -1,7 +1,7 @@
 package models
 
 import (
-	"payment-bridge/database"
+	"multi-chain-storage/database"
 
 	"github.com/filswan/go-swan-lib/logs"
 )

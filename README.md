@@ -189,13 +189,13 @@ nohup ./build/multi-chain-payment >> ./build/mcp.log &    #After installation fr
 |CREATE_AT              |create time            |
 
 ### Run Payment Bridge as system service
-Before running the playbook to start payment bridge as a system service, please first change the following line in `$GOPATH/src/payment-bridge/script/run_services/payment_bridge.service` to the actual path of payment bridge executable:
+Before running the playbook to start payment bridge as a system service, please first change the following line in `$GOPATH/src/multi-chain-storage/script/run_services/payment_bridge.service` to the actual path of payment bridge executable:
 ```
-ExecStart=/home/filswan/payment-bridge/build/payment-bridge
+ExecStart=/home/filswan/multi-chain-storage/build/multi-chain-storage
 ```
 Now we can run Payment Bridge as a system service by executing the following command in shell and entering sudo password when prompt:
 ```bash
-cd $GOPATH/src/payment-bridge/script/run_services
+cd $GOPATH/src/multi-chain-storage/script/run_services
 ansible-playbook run_payment_bridge_service.yaml --ask-become-pass -vvv
 ```
 

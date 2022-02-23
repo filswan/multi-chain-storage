@@ -1,15 +1,15 @@
 package main
 
 import (
+	"multi-chain-storage/common/constants"
+	"multi-chain-storage/config"
+	"multi-chain-storage/database"
+	"multi-chain-storage/routers/billing"
+	"multi-chain-storage/routers/common"
+	"multi-chain-storage/routers/storage"
+	"multi-chain-storage/scheduler"
 	"os"
 	"path/filepath"
-	"payment-bridge/common/constants"
-	"payment-bridge/config"
-	"payment-bridge/database"
-	"payment-bridge/routers/billing"
-	"payment-bridge/routers/common"
-	"payment-bridge/routers/storage"
-	"payment-bridge/scheduler"
 	"strconv"
 	"time"
 

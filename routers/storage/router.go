@@ -239,24 +239,26 @@ func GetDealListFromFilink(c *gin.Context) {
 		return
 	}
 
-	url := config.GetConfig().FLinkUrl
-	parameter := new(filinkParams)
-	parameter.Data.Deal = dealIdIntValue
-	parameter.Data.Network = config.GetConfig().FilecoinNetwork
-
-	response, err := web.HttpPostNoToken(url, parameter)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_GET_RESPONSE_ERROR_CODE))
-		return
-	}
-
 	result := DealOnChainResult{}
-	err = json.Unmarshal(response, &result)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARSER_STRUCT_TO_REQUEST_ERROR_CODE))
-		return
+	if dealIdIntValue > 0 {
+		url := config.GetConfig().FLinkUrl
+		parameter := new(filinkParams)
+		parameter.Data.Deal = dealIdIntValue
+		parameter.Data.Network = config.GetConfig().FilecoinNetwork
+
+		response, err := web.HttpGetNoToken(url, parameter)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_GET_RESPONSE_ERROR_CODE))
+			return
+		}
+
+		err = json.Unmarshal(response, &result)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARSER_STRUCT_TO_REQUEST_ERROR_CODE))
+			return
+		}
 	}
 
 	daoSignList, err := GetDaoSignEventByDealId(int64(dealIdIntValue))

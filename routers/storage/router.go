@@ -240,24 +240,18 @@ func GetDealListFromFilink(c *gin.Context) {
 	}
 
 	result := DealOnChainResult{}
-	if dealIdIntValue > 0 {
-		url := config.GetConfig().FLinkUrl
-		parameter := new(filinkParams)
-		parameter.Data.Deal = dealIdIntValue
-		parameter.Data.Network = config.GetConfig().FilecoinNetwork
+	url := config.GetConfig().FLinkUrl
+	parameter := new(filinkParams)
+	parameter.Data.Deal = dealIdIntValue
+	parameter.Data.Network = config.GetConfig().FilecoinNetwork
 
-		response, err := web.HttpGetNoToken(url, parameter)
-		if err != nil {
-			logs.GetLogger().Error(err)
-			c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_GET_RESPONSE_ERROR_CODE))
-			return
-		}
-
+	response, err := web.HttpGetNoToken(url, parameter)
+	if err != nil {
+		logs.GetLogger().Error(err)
+	} else {
 		err = json.Unmarshal(response, &result)
 		if err != nil {
 			logs.GetLogger().Error(err)
-			c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARSER_STRUCT_TO_REQUEST_ERROR_CODE))
-			return
 		}
 	}
 

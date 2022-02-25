@@ -130,8 +130,8 @@ func createTask() (*int, error) {
 
 	if !createAnyway && totalSize < fileSizeMin {
 		os.RemoveAll(carSrcDir)
-		err := fmt.Errorf("source file size is not enough")
-		logs.GetLogger().Error("source file size is not enough")
+		err := fmt.Errorf("source file size:%d is less than min file size:%d", totalSize, fileSizeMin)
+		logs.GetLogger().Error(err)
 		return nil, err
 	}
 

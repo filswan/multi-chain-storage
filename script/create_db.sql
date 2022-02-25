@@ -17,13 +17,7 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
---
--- Table structure for table `block_scan_record`
---
 
-DROP TABLE IF EXISTS `block_scan_record`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
 CREATE TABLE `block_scan_record` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `network_id` bigint(20) DEFAULT NULL,
@@ -36,13 +30,7 @@ CREATE TABLE `block_scan_record` (
 ) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Table structure for table `coin`
---
 
-DROP TABLE IF EXISTS `coin`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
 CREATE TABLE `coin` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `short_name` varchar(255) COLLATE utf8_bin NOT NULL,
@@ -61,13 +49,7 @@ CREATE TABLE `coin` (
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Table structure for table `dao_fetched_deal`
---
 
-DROP TABLE IF EXISTS `dao_fetched_deal`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
 CREATE TABLE `dao_fetched_deal` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `deal_id` bigint(20) NOT NULL,
@@ -76,13 +58,7 @@ CREATE TABLE `dao_fetched_deal` (
 ) ENGINE=InnoDB AUTO_INCREMENT=762 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Table structure for table `dao_info`
---
 
-DROP TABLE IF EXISTS `dao_info`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
 CREATE TABLE `dao_info` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `dao_name` varchar(255) COLLATE utf8_bin NOT NULL,
@@ -94,13 +70,7 @@ CREATE TABLE `dao_info` (
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Table structure for table `deal_file`
---
 
-DROP TABLE IF EXISTS `deal_file`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
 CREATE TABLE `deal_file` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `deal_cid` varchar(255) COLLATE utf8_bin DEFAULT '',
@@ -136,13 +106,7 @@ CREATE TABLE `deal_file` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1024 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Table structure for table `event_dao_signature`
---
 
-DROP TABLE IF EXISTS `event_dao_signature`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
 CREATE TABLE `event_dao_signature` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `tx_hash` varchar(255) COLLATE utf8_bin DEFAULT NULL,
@@ -170,13 +134,7 @@ CREATE TABLE `event_dao_signature` (
 ) ENGINE=InnoDB AUTO_INCREMENT=920 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Table structure for table `event_expire_payment`
---
 
-DROP TABLE IF EXISTS `event_expire_payment`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
 CREATE TABLE `event_expire_payment` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `tx_hash` varchar(255) DEFAULT NULL,
@@ -198,13 +156,7 @@ CREATE TABLE `event_expire_payment` (
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Table structure for table `event_lock_payment`
---
 
-DROP TABLE IF EXISTS `event_lock_payment`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
 CREATE TABLE `event_lock_payment` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `network_id` bigint(20) DEFAULT NULL,
@@ -238,9 +190,6 @@ CREATE TABLE `event_lock_payment` (
 -- Table structure for table `event_unlock_payment`
 --
 
-DROP TABLE IF EXISTS `event_unlock_payment`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
 CREATE TABLE `event_unlock_payment` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `tx_hash` varchar(255) COLLATE utf8_bin DEFAULT NULL,
@@ -276,9 +225,6 @@ CREATE TABLE `event_unlock_payment` (
 -- Table structure for table `mint_info`
 --
 
-DROP TABLE IF EXISTS `mint_info`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
 CREATE TABLE `mint_info` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `nft_tx_hash` varchar(255) COLLATE utf8_bin NOT NULL,
@@ -291,9 +237,6 @@ CREATE TABLE `mint_info` (
 -- Table structure for table `network`
 --
 
-DROP TABLE IF EXISTS `network`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
 CREATE TABLE `network` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `network_name` varchar(255) COLLATE utf8_bin NOT NULL,
@@ -306,13 +249,7 @@ CREATE TABLE `network` (
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Table structure for table `offline_deal`
---
 
-DROP TABLE IF EXISTS `offline_deal`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
 CREATE TABLE `offline_deal` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `deal_file_id` bigint(20) NOT NULL,
@@ -333,13 +270,7 @@ CREATE TABLE `offline_deal` (
 ) ENGINE=InnoDB AUTO_INCREMENT=139 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Table structure for table `source_file`
---
 
-DROP TABLE IF EXISTS `source_file`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
 CREATE TABLE `source_file` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `resource_uri` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
@@ -367,13 +298,7 @@ CREATE TABLE `source_file` (
 ) ENGINE=InnoDB AUTO_INCREMENT=708 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Table structure for table `source_file_deal_file_map`
---
 
-DROP TABLE IF EXISTS `source_file_deal_file_map`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
 CREATE TABLE `source_file_deal_file_map` (
   `source_file_id` bigint(20) NOT NULL,
   `file_index` int(11) NOT NULL,
@@ -388,13 +313,7 @@ CREATE TABLE `source_file_deal_file_map` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Table structure for table `source_file_upload_history`
---
 
-DROP TABLE IF EXISTS `source_file_upload_history`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
 CREATE TABLE `source_file_upload_history` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `source_file_id` bigint(20) NOT NULL,
@@ -409,13 +328,7 @@ CREATE TABLE `source_file_upload_history` (
 ) ENGINE=InnoDB AUTO_INCREMENT=274 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Table structure for table `system_config_param`
---
 
-DROP TABLE IF EXISTS `system_config_param`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
 CREATE TABLE `system_config_param` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `param_key` varchar(255) COLLATE utf8_bin DEFAULT NULL,
@@ -466,7 +379,7 @@ UNLOCK TABLES;
 
 LOCK TABLES `dao_info` WRITE;
 /*!40000 ALTER TABLE `dao_info` DISABLE KEYS */;
-INSERT INTO `dao_info` VALUES (1,'Dao1','0x05856015d07F3E24936B7D20cB3CcfCa3D34B41d',1,NULL,NULL),(2,'Dao2','0x6f2B76024196e82D81c8bC5eDe7cff0B0276c9C1',2,NULL,NULL),(3,'Dao3','0x800210CfB747992790245eA878D32F188d01a03A',3,NULL,NULL);
+INSERT INTO `dao_info` VALUES (1,'Dao1','0x6d2e5279b106843f6E924194401B50e6e27FE12a',1,NULL,NULL),(2,'Dao2','0xbE14Eb1ffcA54861D3081560110a45F4A1A9e9c5',2,NULL,NULL),(3,'Dao3','0xeA2bf08288bbfB0d3DBf534f35af32bF2c6E5e45',3,NULL,NULL);
 /*!40000 ALTER TABLE `dao_info` ENABLE KEYS */;
 UNLOCK TABLES;
 

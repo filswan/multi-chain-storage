@@ -8,11 +8,39 @@ import (
 	"multi-chain-storage/models"
 	"multi-chain-storage/on-chain/client"
 	"strconv"
+	"sync"
 
 	"github.com/filswan/go-swan-lib/logs"
+	"github.com/robfig/cron"
 
 	"github.com/filswan/go-swan-lib/client/lotus"
 )
+
+func CreateScheduler4ScanDeal() {
+	c := cron.New()
+	name := "scan deal"
+	rule := config.GetConfig().ScheduleRule.ScanDealStatusRule
+	mutex := &sync.Mutex{}
+
+	err := c.AddFunc(rule, func() {
+		logs.GetLogger().Info(name, " start")
+
+		mutex.Lock()
+		logs.GetLogger().Info(name, " running")
+		err := ScanDeal()
+		if err != nil {
+			logs.GetLogger().Error(err)
+		}
+		mutex.Unlock()
+		logs.GetLogger().Info(name, " end")
+	})
+
+	if err != nil {
+		logs.GetLogger().Fatal(err)
+	}
+
+	c.Start()
+}
 
 func ScanDeal() error {
 	dealList, err := models.GetOfflineDeals2BeScanned()

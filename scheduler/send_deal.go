@@ -1,7 +1,10 @@
 package scheduler
 
 import (
+	"sync"
+
 	"github.com/filswan/go-swan-client/command"
+	"github.com/robfig/cron"
 
 	"multi-chain-storage/common/constants"
 	"multi-chain-storage/config"
@@ -16,6 +19,32 @@ import (
 
 	libconstants "github.com/filswan/go-swan-lib/constants"
 )
+
+func CreateScheduler4SendDeal() {
+	c := cron.New()
+	name := "send deal"
+	rule := config.GetConfig().ScheduleRule.SendDealRule
+	mutex := &sync.Mutex{}
+
+	err := c.AddFunc(rule, func() {
+		logs.GetLogger().Info(name, " start")
+
+		mutex.Lock()
+		logs.GetLogger().Info(name, " running")
+		err := SendDeal()
+		if err != nil {
+			logs.GetLogger().Error(err)
+		}
+		mutex.Unlock()
+		logs.GetLogger().Info(name, " end")
+	})
+
+	if err != nil {
+		logs.GetLogger().Fatal(err)
+	}
+
+	c.Start()
+}
 
 func SendDeal() error {
 	dealFiles, err := models.GetDeal2Send()

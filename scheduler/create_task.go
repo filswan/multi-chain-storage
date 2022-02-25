@@ -11,6 +11,7 @@ import (
 	"multi-chain-storage/on-chain/client"
 	"os"
 	"path/filepath"
+	"sync"
 	"time"
 
 	"github.com/filswan/go-swan-client/command"
@@ -18,8 +19,35 @@ import (
 	"github.com/filswan/go-swan-lib/logs"
 	libmodel "github.com/filswan/go-swan-lib/model"
 	libutils "github.com/filswan/go-swan-lib/utils"
+	"github.com/robfig/cron"
 	"github.com/shopspring/decimal"
 )
+
+func CreateScheduler4CreateTask() {
+	c := cron.New()
+	name := "create task"
+	rule := config.GetConfig().ScheduleRule.CreateTaskRule
+	mutex := &sync.Mutex{}
+
+	err := c.AddFunc(rule, func() {
+		logs.GetLogger().Info(name, " start")
+
+		mutex.Lock()
+		logs.GetLogger().Info(name, " running")
+		err := CreateTask()
+		if err != nil {
+			logs.GetLogger().Error(err)
+		}
+		mutex.Unlock()
+		logs.GetLogger().Info(name, " end")
+	})
+
+	if err != nil {
+		logs.GetLogger().Fatal(err)
+	}
+
+	c.Start()
+}
 
 func CreateTask() error {
 	err := CheckSourceFilesPaid()
@@ -130,8 +158,8 @@ func createTask() (*int, error) {
 
 	if !createAnyway && totalSize < fileSizeMin {
 		os.RemoveAll(carSrcDir)
-		err := fmt.Errorf("source file size is not enough")
-		logs.GetLogger().Error("source file size is not enough")
+		err := fmt.Errorf("source file size:%d is less than min file size:%d", totalSize, fileSizeMin)
+		logs.GetLogger().Error(err)
 		return nil, err
 	}
 

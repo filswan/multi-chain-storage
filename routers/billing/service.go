@@ -37,10 +37,14 @@ func getBillHistoryList(walletAddress, limit, offset string, txHash string, file
 	return billingResults, nil
 }
 
-func getBillHistoriesByWalletAddress(walletAddress string) ([]*BillingResult, error) {
+func getBillHistoriesByWalletAddress(walletAddress string, fileName string) ([]*BillingResult, error) {
 	sql := "select a.tx_hash,a.locked_fee,b.cn_name coin_type,h.file_name,d.payload_cid,h.wallet_address address_from,c.network_name network,a.lock_payment_time,a.deadline"
 	sql = sql + " from event_lock_payment a, coin b, network c, source_file d, source_file_upload_history h"
 	sql = sql + " where a.coin_id=b.id and a.network_id=c.id and a.source_file_id=d.id and d.id=h.source_file_id and a.address_from=h.wallet_address and h.wallet_address=?"
+
+	if fileName != "" {
+		sql = sql + " and h.file_name like lower('%" + fileName + "%') "
+	}
 
 	var billingResultList []*BillingResult
 	err := database.GetDB().Raw(sql, walletAddress).Order("lock_payment_time desc").Scan(&billingResultList).Error

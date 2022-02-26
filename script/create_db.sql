@@ -1,5 +1,5 @@
-#-- CREATE DATABASE  IF NOT EXISTS `mcp_v2` /*!40100 DEFAULT CHARACTER SET latin1 */;
-#-- USE `mcp_v2`;
+CREATE DATABASE  IF NOT EXISTS `mcs` /*!40100 DEFAULT CHARACTER SET latin1 */;
+USE `mcs`;
 -- MySQL dump 10.13  Distrib 8.0.16, for macos10.14 (x86_64)
 --
 -- Host: 192.168.88.188    Database: mcp_v2
@@ -361,44 +361,8 @@ CREATE TABLE `system_config_param` (
 
 
 
-
-
-LOCK TABLES `coin` WRITE;
-/*!40000 ALTER TABLE `coin` DISABLE KEYS */;
-INSERT INTO `coin` VALUES (1,'USDC','USDC','USDC','0xe11A86849d99F524cAC3E7A0Ec1241828e332C62','0732db61-10c7-4f16-b349-d60afc1d7a34',1,0,0,'usdc on polygon crearted by lao liu'),(2,'WFIL','WFIL','WFIL','0x97916e6CC8DD75c6E6982FFd949Fc1768CF8c055','c4623fc0-2b38-4af1-9bb5-297474187823',1,0,0,NULL);
-/*!40000 ALTER TABLE `coin` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Dumping data for table `dao_fetched_deal`
---
-
---
--- Dumping data for table `dao_info`
---
-
-LOCK TABLES `dao_info` WRITE;
-/*!40000 ALTER TABLE `dao_info` DISABLE KEYS */;
-INSERT INTO `dao_info` VALUES (1,'Dao1','0x6d2e5279b106843f6E924194401B50e6e27FE12a',1,NULL,NULL),(2,'Dao2','0xbE14Eb1ffcA54861D3081560110a45F4A1A9e9c5',2,NULL,NULL),(3,'Dao3','0xeA2bf08288bbfB0d3DBf534f35af32bF2c6E5e45',3,NULL,NULL);
-/*!40000 ALTER TABLE `dao_info` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Dumping data for table `network`
---
-
-LOCK TABLES `network` WRITE;
-/*!40000 ALTER TABLE `network` DISABLE KEYS */;
 INSERT INTO `network` VALUES (1,'polygon','42746d02-b407-4bd9-bf2a-38381e009517','https://polygon-mumbai.g.alchemy.com/v2/86HeefA3O9EF22t2NTLbmcpfN0hb9vlv','MATIC',NULL),(2,'goerli','927ccb7b-072b-47c1-af43-0c07e362ae23','https://goerli.infura.io/v3/a30f13ea65fe406a86783fa912982906','GOERLI',NULL),(3,'nbai','05502a3a-22a8-49e4-86bc-539a297f76be','https://api.nbai.io/','NBAI',NULL),(4,'bsc','f74f7f00-6ea3-41b6-85f8-912e3a14f132','https://data-seed-prebsc-1-s1.binance.org:8545/','BNB',NULL);
-/*!40000 ALTER TABLE `network` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Dumping data for table `system_config_param`
---
-
-LOCK TABLES `system_config_param` WRITE;
-/*!40000 ALTER TABLE `system_config_param` DISABLE KEYS */;
+INSERT INTO `coin` VALUES (1,'USDC','USDC','USDC','0xe11A86849d99F524cAC3E7A0Ec1241828e332C62','0732db61-10c7-4f16-b349-d60afc1d7a34',1,0,0,'usdc on polygon crearted by lao liu'),(2,'WFIL','WFIL','WFIL','0x97916e6CC8DD75c6E6982FFd949Fc1768CF8c055','c4623fc0-2b38-4af1-9bb5-297474187823',1,0,0,NULL);
+INSERT INTO `dao_info` VALUES (1,'Dao1','0x6d2e5279b106843f6E924194401B50e6e27FE12a',1,NULL,NULL),(2,'Dao2','0xbE14Eb1ffcA54861D3081560110a45F4A1A9e9c5',2,NULL,NULL),(3,'Dao3','0xeA2bf08288bbfB0d3DBf534f35af32bF2c6E5e45',3,NULL,NULL);
 INSERT INTO `system_config_param` VALUES (1,'SWAN_PAYMENT_CONTRACT_ADDRESS','0x12EDC75CE16d778Dc450960d5f1a744477ee49a0','hackfs',NULL),(2,'PAY_WITH_MULTIPLY_FACTOR','1.5','hackfs',NULL),(3,'LOCK_TIME','6',NULL,'unit:day'),(4,'RECIPIENT','0xABeAAb124e6b52afFF504DB71bbF08D0A768D053',NULL,'//todo same as SWAN_PAYMENT_CONTRACT_ADDRESS'),(5,'PAY_GAS_LIMIT','9999999',NULL,NULL),(7,'USDC_ADDRESS','0xe11A86849d99F524cAC3E7A0Ec1241828e332C62',NULL,NULL),(8,'MINT_CONTRACT','0x1A1e5AC88C493e0608C84c60b7bb5f04D9cF50B3',NULL,NULL);
-/*!40000 ALTER TABLE `system_config_param` ENABLE KEYS */;
-UNLOCK TABLES;
+

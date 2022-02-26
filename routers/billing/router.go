@@ -145,7 +145,7 @@ func GetUserBillingHistory(c *gin.Context) {
 
 	fileName := strings.Trim(URL.Get("file_name"), " ")
 
-	totalRecords, err := getBillHistoriesByWalletAddress(walletAddress)
+	totalRecords, err := getBillHistoriesByWalletAddress(walletAddress, fileName)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_COUNT_ERROR_CODE))

@@ -111,6 +111,7 @@ export default {
                 window.location.reload();
             }
         }
+        console.log('update time: 2022-02-28')
     }
 };
 </script>

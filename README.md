@@ -1,6 +1,6 @@
 # Multi Chain Payment Guide
 [![Made by FilSwan](https://img.shields.io/badge/made%20by-FilSwan-green.svg)](https://www.filswan.com/)
-[![Chat on Slack](https://img.shields.io/badge/slack-filswan.slack.com-green.svg)](https://filswan.slack.com)
+[![Chat on discord](https://cdn.logojoy.com/wp-content/uploads/20210422095037/discord-mascot.png)](https://discord.com/invite/KKGhy8ZqzK)
 [![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg)](https://github.com/RichardLitt/standard-readme)
 
 - Join us on our [public Slack channel](https://www.filswan.com/) for news, discussions, and status updates.
@@ -27,7 +27,7 @@
 
 ## System Design
 
-![MCP-MCP Desgin](https://user-images.githubusercontent.com/8363795/143811916-f051ccce-f9b2-49eb-99ab-8da1a0d9f2f2.png)
+![MCP-MCP Desgin](doc/mcs.png)
 
 ## Modules
 * [Token Swap](#Token-Swap)

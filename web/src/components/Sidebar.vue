@@ -165,7 +165,7 @@ export default {
                 default:
             }
             if(!nameNow && !indexNow){
-                window.open('https://docs.filswan.com/multi-chain-payment/overview', "_blank")
+                window.open('https://docs.filswan.com/multi-chain-storage/overview', "_blank")
                 window.location.reload();
                 return false
             }

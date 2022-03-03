@@ -80,7 +80,9 @@ func GetDealInfoByLotusClientAndUpdateInfoToDB() error {
 				logs.GetLogger().Error(err)
 				return err
 			}
-			paymentStatus = constants.LOCK_PAYMENT_STATUS_WAITING
+			logs.GetLogger().Error("deal:", v.DealCid, ", status:", dealInfo.Status)
+			//paymentStatus = constants.LOCK_PAYMENT_STATUS_WAITING
+			paymentStatus = constants.LOCK_PAYMENT_STATUS_PROCESSING
 		} else {
 			paymentStatus = constants.LOCK_PAYMENT_STATUS_PROCESSING
 		}

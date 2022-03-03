@@ -76,10 +76,6 @@ func GetDealInfoByLotusClientAndUpdateInfoToDB() error {
 		if strings.ToLower(dealInfo.Status) == strings.ToLower(constants.DEAL_STATUS_ACTIVE) {
 			paymentStatus = constants.LOCK_PAYMENT_STATUS_SUCCESS
 		} else if strings.ToLower(dealInfo.Status) == strings.ToLower(constants.DEAL_STATUS_ERROR) {
-			if err != nil {
-				logs.GetLogger().Error(err)
-				return err
-			}
 			logs.GetLogger().Error("deal:", v.DealCid, ", status:", dealInfo.Status)
 			//paymentStatus = constants.LOCK_PAYMENT_STATUS_WAITING
 			paymentStatus = constants.LOCK_PAYMENT_STATUS_PROCESSING

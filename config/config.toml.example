@@ -3,6 +3,7 @@ dev = false
 admin_wallet_on_polygon=""
 file_coin_wallet=""
 filink_url=""
+filecoin_network=""
 
 [database]
 db_host="localhost"

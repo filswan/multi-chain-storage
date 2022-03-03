@@ -2,13 +2,6 @@ package scheduler
 
 import (
 	"fmt"
-	clientmodel "github.com/filswan/go-swan-client/model"
-	"github.com/filswan/go-swan-client/subcommand"
-	libconstants "github.com/filswan/go-swan-lib/constants"
-	libmodel "github.com/filswan/go-swan-lib/model"
-	libutils "github.com/filswan/go-swan-lib/utils"
-	"github.com/robfig/cron"
-	"github.com/shopspring/decimal"
 	"math/big"
 	"path/filepath"
 	"payment-bridge/blockchain/browsersync/scanlockpayment/polygon"
@@ -22,6 +15,14 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	clientmodel "github.com/filswan/go-swan-client/model"
+	"github.com/filswan/go-swan-client/subcommand"
+	libconstants "github.com/filswan/go-swan-lib/constants"
+	libmodel "github.com/filswan/go-swan-lib/model"
+	libutils "github.com/filswan/go-swan-lib/utils"
+	"github.com/robfig/cron"
+	"github.com/shopspring/decimal"
 )
 
 func CreateTaskScheduler() {
@@ -101,11 +102,12 @@ func DoCreateTask() error {
 				continue
 			}
 			if len(lockPaymentList) > 0 {
-				lockedFee, err := strconv.ParseInt(lockPaymentList[0].LockedFee, 10, 64)
+				lockedFee, err := decimal.NewFromString(lockPaymentList[0].LockedFee)
 				if err != nil {
 					logs.GetLogger().Error(err)
 					continue
 				}
+
 				maxPrice, err := GetMaxPriceForCreateTask(fileCoinPriceInUsdc, lockedFee, v.Duration, v.CarFileSize)
 				if err != nil {
 					logs.GetLogger().Error(err)
@@ -180,10 +182,9 @@ func DoCreateTask() error {
 	return nil
 }
 
-func GetMaxPriceForCreateTask(rate *big.Int, lockedFee int64, duration int, carFileSize int64) (*decimal.Decimal, error) {
+func GetMaxPriceForCreateTask(rate *big.Int, lockedFee decimal.Decimal, duration int, carFileSize int64) (*decimal.Decimal, error) {
 	_, sectorSize := libutils.CalculatePieceSize(carFileSize)
-	lockedFeeDecimal := decimal.NewFromInt(lockedFee)
-	lockedFeeInFileCoin := lockedFeeDecimal.Div(decimal.NewFromFloat(constants.LOTUS_PRICE_MULTIPLE_1E18)).Div(decimal.NewFromInt(rate.Int64()))
+	lockedFeeInFileCoin := lockedFee.Div(decimal.NewFromFloat(constants.LOTUS_PRICE_MULTIPLE_1E18)).Div(decimal.NewFromInt(rate.Int64()))
 	maxPrice := lockedFeeInFileCoin.Div(decimal.NewFromFloat(sectorSize).Div(decimal.NewFromInt(10204 * 1024 * 1024))).Div(decimal.NewFromInt(int64(duration)))
 	return &maxPrice, nil
 }

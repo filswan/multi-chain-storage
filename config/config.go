@@ -20,6 +20,7 @@ type Configuration struct {
 	AdminWalletOnPolygon string       `toml:"admin_wallet_on_polygon"`
 	FileCoinWallet       string       `toml:"file_coin_wallet"`
 	FilinkUrl            string       `toml:"filink_url"`
+	FilecoinNetwork      string       `toml:"filecoin_network"`
 }
 
 type database struct {
@@ -102,6 +103,7 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 		{"admin_wallet_on_polygon"},
 		{"file_coin_wallet"},
 		{"filink_url"},
+		{"filecoin_network"},
 
 		{"database", "db_host"},
 		{"database", "db_port"},

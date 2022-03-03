@@ -123,6 +123,7 @@ func GetDealListFromFilink(c *gin.Context) {
 	url := config.GetConfig().FilinkUrl
 	parameter := new(filinkParams)
 	//todo
+	parameter.Data.Network = "filecoin_mainnet"
 	parameter.Data.Deal = dealIdIntValue
 	paramBytes, err := json.Marshal(&parameter)
 	paramStr := string(paramBytes)

@@ -415,6 +415,7 @@ export default {
                         }else{
                             _this.$router.push({ path: '/upload_file' })
                         }
+                        window.location.reload()
                         _this.$emit("getMetamaskLogin", false)
                     }
                     return;
@@ -433,14 +434,16 @@ export default {
         fn() {
             let _this = this
             ethereum.on("accountsChanged", function(accounts) {
-                if(_this.metaAddress){
-                    web3.eth.getAccounts().then(accounts => {
+                // console.log('account header:', accounts[0]);  //Once the account is switched, it will be executed here
+                if(_this.metaAddress && accounts[0]){
+                    // web3.eth.getAccounts().then(accounts => {
                         _this.addrChild = accounts[0]
                         _this.walletInfo()
                         _this.$store.dispatch('setMetaAddress', accounts[0])
                         _this.$router.go(0)
-                    })
-                    // console.log('account header:', accounts[0]);  //Once the account is switched, it will be executed here
+                    // })
+                }else{
+                    _this.signOutFun()
                 }
             });
             // networkChanged
@@ -824,6 +827,9 @@ export default {
     padding: 0 0.2rem;
     margin: 0.35rem 0.55rem 0 0.48rem;
     border-bottom: 1px solid #e6e6e6;
+    @media screen and (max-width: 1260px) {
+        margin: 0.35rem 0.15rem 0 0.18rem;
+    }
 }
 .header_arera_hidd{
     width: calc(100% - 1rem);

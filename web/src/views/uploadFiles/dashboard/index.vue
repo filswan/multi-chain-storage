@@ -992,7 +992,7 @@ export default {
             _this.mintContractAddress = _this.$root.MINT_CONTRACT
             
             const storageRes = await _this.sendRequest(`${process.env.BASE_API}stats/storage?wallet_address=${_this.metaAddress}`)
-            let cost = storageRes.data.average_price_per_GB_per_year.split(" ")
+            let cost = storageRes.data.average_verified_price_per_GB_per_year.split(" ")
             if(cost[0]) _this.storage = cost[0]
 
             const bilingRes = await _this.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/billing/price/filecoin?wallet_address=${_this.metaAddress}`)
@@ -1120,7 +1120,7 @@ export default {
     let _this = this;
     document.getElementById("content-box").scrollTop = 0;
     _this.$store.dispatch("setRouterMenu", 1);
-    _this.$store.dispatch("setHeadertitle", _this.$t('navbar.deal'));
+    _this.$store.dispatch("setHeadertitle", _this.$t('route.Deal'));
     _this.stats()
     document.onkeydown = function (e) {
       if (e.keyCode === 13) {

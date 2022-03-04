@@ -111,7 +111,7 @@ export default {
                 window.location.reload();
             }
         }
-        console.log('update time: 2022-02-28')
+        console.log('update time: 2022-03-04')
     }
 };
 </script>
@@ -119,8 +119,21 @@ export default {
 
 <style lang="scss" scoped>
 .wrapper{
+    position: relative;
     display: flex;
     flex-wrap: wrap;
+    width: 18rem;
+    max-width: 100%;
+    margin: auto;
+    @media screen and (max-width: 1800px) { 
+        width: 16.9rem;
+    }
+    @media screen and (max-width: 1600px) { 
+        width: 15rem;
+    }
+    @media screen and (max-width: 1440px) { 
+        width: 13.5rem;
+    }
     .content{
         position: relative;
         height: 100%;

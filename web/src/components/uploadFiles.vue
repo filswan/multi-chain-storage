@@ -295,7 +295,7 @@
                                 // console.log(_this.ruleForm.amount, _this.usdcAvailable)
 
                                 // 判断支付金额是否大于代币余额
-                                if(_this.ruleForm.amount > _this.usdcAvailable ){
+                                if(Number(_this.ruleForm.amount) > Number(_this.usdcAvailable) ){
                                     _this.$message.error('Insufficient balance')
                                     return false
                                 }
@@ -568,7 +568,7 @@
                         },
                     }).then(res => {
                         if(res.data.data){
-                            let cost = res.data.data.average_price_per_GB_per_year.split(" ")
+                            let cost = res.data.data.average_verified_price_per_GB_per_year.split(" ")
                             if(cost[0]) _this.storage = cost[0]
                         }
                         setTimeout(function(){

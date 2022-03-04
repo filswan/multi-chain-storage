@@ -10,6 +10,7 @@
                                     :placeholder="$t('billing.search_placeholder')"
                                     prefix-icon="el-icon-search"
                                     v-model="searchValue"
+                                    @input="searchValueChange"
                                 >
                                 </el-input>
                                 <div class="search_right" :style="{'opacity': !searchValue?'0.8':'1'}">
@@ -19,7 +20,6 @@
                                     type="primary"
                                     style="background-color: #0b318f"
                                     @click="clearAll"
-                                    :disabled="!searchValue"
                                     >
                                     {{$t('billing.clear_btn')}}
                                     </el-button>
@@ -328,6 +328,9 @@
             clearAll() {
                 this.searchValue = ""
                 this.search();
+            },
+            searchValueChange() {
+                if(this.searchValue == '') this.clearAll()
             }
         },
         mounted() {

@@ -237,7 +237,7 @@ func UploadFileToIpfs(c *gin.Context) {
 	durationInt = durationInt * 24 * 60 * 60 / 30
 
 	if durationInt > 1540000 || durationInt < 518400 {
-		err := fmt.Errorf("duration should be in [180,530]")
+		err := fmt.Errorf("duration should be in [180,534]")
 		logs.GetLogger().Error(err)
 		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_CODE, err.Error()))
 		return

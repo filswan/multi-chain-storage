@@ -17,7 +17,7 @@
             </span>
             <span v-else-if="dealCont.signed_dao_count >= dealCont.dao_thresh_hold && dealCont.unlock_status">
                 <img src="@/assets/images/dao_success.png" />
-                <span>{{$t('uploadFile.Successfully_unlocked_funds')}}</span>
+                <span style="color: #3db39e;">{{$t('uploadFile.Successfully_unlocked_funds')}}</span>
             </span>
             <span v-else-if="dealCont.signed_dao_count >= dealCont.dao_thresh_hold && !dealCont.unlock_status">
                 <img src="@/assets/images/dao_waiting.png" />
@@ -243,7 +243,7 @@ export default {
                     _this.dealCont = json.data
 
                     if(json.data.deal.provider && json.data.found.payload_cid){
-                        _this.copy_filename = 'lotus client retrieve --miner '+json.data.deal.provider+' '+json.data.found.payload_cid+' output-file';
+                        _this.copy_filename = 'lotus client retrieve --miner '+json.data.deal.provider+' '+json.data.found.payload_cid+' ~./output-file';
                     }else{
                         _this.copy_filename = localStorage.getItem('languageMcs') == 'cn'?"还不可用。":"It's not available yet.";
                     }
@@ -320,6 +320,7 @@ export default {
         align-items: center;
         font-size: 0.24rem;
         line-height: 1;
+        max-width: 200px;
         margin: 0 0 0.2rem;
         cursor: pointer;
     }
@@ -330,6 +331,7 @@ export default {
         font-weight: bold;
         line-height: 2;
         @media screen and (max-width:600px){
+            width: 100%;
             font-size: 16px;
             flex-wrap: wrap;
         }

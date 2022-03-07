@@ -85,7 +85,8 @@ export default {
         curated_dataset: '数据集:',
         upload_form_type: '类型:',
         upload_form_file: 'CSV文件:',
-        upload_form_file_tip: '上传.csv文件最大不超过：2MB。',
+        upload_form_file_tip: '文件最大为 1 GB',
+        upload_form_file_tip01: '文件最小为 1 bytes',
         upload_form_minerId: '存储节点ID:',
         upload_form_dataset: '数据集:',
         upload_form_minerId_tips: '存储节点ID不能为空',
@@ -467,6 +468,7 @@ export default {
         w3ss_id_nothing: '排队中',
         w3ss_id_nothing_tooltip: '正在整合本次上传的数据，以备存储到Filecoin。Filecoin交易会在上传后48小时内完成。',
         create_time: '创建时间',
+        upload_time: '上传时间',
         deal_id: '交易ID',
         payment: '支付',
         MINT: '铸造',
@@ -550,9 +552,12 @@ export default {
         Minting: '铸造中…',
         Mint_NFT: '铸造NFT',
         View_Your_NFT: '查看您的NFT',
-        View_Your_NFT_tips: '您的NFT已经成功铸造！您可以在这里查看该交易：',
+        View_Your_NFT_tips: '您的NFT已经成功铸造！',
+        View_Your_NFT_tips01: '您可以在这里查看该交易：',
         View_Your_NFT_OpenSea: '点击到OpenSea查看您的NFT',
-        View_Your_NFT_Note: '注意：OpenSea需要一些时间加载您的NFT。'
+        View_Your_NFT_Note: '注意：OpenSea需要一些时间加载您的NFT。',
+        goTo: '前往',
+        goTopage: '页'
     },
     billing: {
         search_placeholder: '按交易哈希搜索',

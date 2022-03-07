@@ -86,7 +86,8 @@ export default {
         curated_dataset: 'Curated Dataset:',
         upload_form_type: 'Type:',
         upload_form_file: 'CSV File:',
-        upload_form_file_tip: 'Maximum upload .csv file size: 2 MB',
+        upload_form_file_tip: 'The maximum size of the file is 1 GB',
+        upload_form_file_tip01: 'The minimum value of the file is 1 byte',
         upload_form_minerId: 'W3SS ID:',
         upload_form_dataset: 'Curated Dataset',
         upload_form_minerId_tips: 'W3SS ID cannot be null',
@@ -462,6 +463,7 @@ export default {
         w3ss_id_nothing: 'Queuing',
         w3ss_id_nothing_tooltip: 'The data from this upload is being aggregated for storage on Filecoin. Filecoin deals will be active within 48 hours of upload.',
         create_time: 'Create Time',
+        upload_time: 'Upload Time',
         deal_id: 'Deal ID',
         payment: 'PAYMENT',
         MINT: 'MINT',
@@ -545,9 +547,12 @@ export default {
         Minting: 'Minting…',
         Mint_NFT: 'Mint NFT',
         View_Your_NFT: 'View Your NFT',
-        View_Your_NFT_tips: 'Your NFT has been minted! You can view the transaction here:',
+        View_Your_NFT_tips: 'Your NFT has been minted!',
+        View_Your_NFT_tips01: 'You can view the transaction here:',
         View_Your_NFT_OpenSea: 'Click here to view your NFT on OpenSea',
-        View_Your_NFT_Note: 'Note: The NFT will take some time to load on Opensea.'
+        View_Your_NFT_Note: 'Note: The NFT will take some time to load on Opensea.',
+        goTo: 'Go to',
+        goTopage: ''
     },
     billing: {
         search_placeholder: 'Search by TX HASH',

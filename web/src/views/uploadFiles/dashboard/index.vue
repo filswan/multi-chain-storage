@@ -32,7 +32,7 @@
         <!-- @row-click="tableTrClick" highlight-current-row  -->
         <el-table
           :data="tableData" ref="singleTable"  stripe
-          style="width: 100%"
+          style="width: 100%" max-height="580"
           :empty-text="$t('deal.formNotData')"
            v-loading="loading"
         >
@@ -274,7 +274,7 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="create_at" :label="$t('uploadFile.create_time')" min-width="90">
+          <el-table-column prop="create_at" :label="$t('uploadFile.upload_time')" min-width="100">
             <template slot-scope="scope">
               {{ scope.row.create_at }}
             </template>
@@ -332,6 +332,7 @@
           <div class="pagination">
             <el-pagination
               :total="parma.total"
+              :page-sizes="[10, 20, 30]"
               :page-size="parma.limit"
               :current-page="parma.offset"
               :pager-count="bodyWidth ? 5 : 7"
@@ -339,10 +340,16 @@
               :layout="
                 bodyWidth
                   ? 'prev, pager, next'
-                  : 'total, prev, pager, next, jumper'
+                  : 'total, sizes, prev, pager, next'
               "
               @current-change="handleCurrentChange"
+              @size-change="handleSizeChange"
             />
+            <div class="span" v-if="!bodyWidth">
+              <span>{{$t('uploadFile.goTo')}}</span>
+              <el-input class="paginaInput" @change="pageSizeChange" v-model.number="parma.jumperOffset" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')" autocomplete="off"></el-input>
+              <span>{{$t('uploadFile.goTopage')}}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -397,9 +404,10 @@
             <img src="@/assets/images/alert-icon.png" />
             <h1>{{$t('uploadFile.View_Your_NFT')}}</h1>
             <h3>{{$t('uploadFile.View_Your_NFT_tips')}}</h3>
+            <a :href="'https://testnets.opensea.io/assets/mumbai/'+mint_address+'/'+tokenId" target="_blank">{{$t('uploadFile.View_Your_NFT_OpenSea')}}</a>
+            <h3>{{$t('uploadFile.View_Your_NFT_tips01')}}</h3>
             <a :href="'https://mumbai.polygonscan.com/tx/'+txHash" target="_blank">{{txHash}}</a>
             <br />
-            <a :href="'https://testnets.opensea.io/assets/mumbai/'+mint_address+'/'+tokenId" target="_blank">{{$t('uploadFile.View_Your_NFT_OpenSea')}}</a>
             <h3>{{$t('uploadFile.View_Your_NFT_Note')}}</h3>
             <a class="a-close" @click="mintTransaction=false">{{$t('uploadFile.CLOSE')}}</a>
         </el-dialog>
@@ -437,6 +445,9 @@ export default {
         offset: 1,
         locationValue: "",
         total: 0,
+        jumperOffset: 1,
+        order_by: '',
+        is_ascending: ''
       },
       parmaChild: {
         limit: 10,
@@ -520,6 +531,9 @@ export default {
       let _this = this
       _this.parma.limit = 10
       _this.parma.offset = 1
+      _this.parma.jumperOffset = 1
+      _this.parma.order_by = ''
+      _this.parma.is_ascending = ''
       _this.parmaChild.limit = 10
       _this.parmaChild.offset = 1
       _this.getData()
@@ -969,6 +983,9 @@ export default {
       _this.parma.limit = 10;
       _this.paginationShow = true;
       _this.parma.offset = 1;
+      _this.parma.jumperOffset = 1;
+      _this.parma.order_by = ''
+      _this.parma.is_ascending = ''
       _this.getData();
     },
     clearAll() {
@@ -976,11 +993,35 @@ export default {
       _this.searchValue = "";
       _this.parma.limit = 10;
       _this.parma.offset = 1;
+      _this.parma.jumperOffset = 1;
+      _this.parma.order_by = ''
+      _this.parma.is_ascending = ''
       _this.getData();
     },
     handleCurrentChange(val) {
-      this.parma.offset = val;
+      this.parma.offset = Number(val);
+      this.parma.jumperOffset = String(val)
       this.getData();
+    },
+    handleSizeChange (val){
+      this.parma.limit = Number(val);
+      this.parma.offset = 1;
+      this.parma.jumperOffset = 1;
+      this.getData();
+    },
+    pageSizeChange(recordPage=parseInt(this.parma.jumperOffset), MaxPagenumber=Math.ceil(this.parma.total/this.parma.limit)) {
+      if((recordPage > MaxPagenumber) && (MaxPagenumber > 0)){ 
+        recordPage = MaxPagenumber; 
+      }else if(MaxPagenumber<=0){
+        recordPage = 1;  
+      }else if(recordPage < 1){ 
+        recordPage = 1;           
+      }else if(this.parma.jumperOffset==NaN || this.parma.jumperOffset==""){  
+        recordPage = 1;
+      }
+      this.parma.offset = Number(recordPage);
+      this.parma.jumperOffset = recordPage;
+      this.getData(); 
     },
     async stats(){
         let _this = this
@@ -1067,38 +1108,6 @@ export default {
           _this.loading = false;
       })
       return false
-
-      // myAjax
-      //   .getPaymentDeals(parma)
-      //   .then((response) => {
-      //     if (response.status == "success") {
-      //       const data = response.data;
-      //       _this.expands = []
-      //       // _this.tableData = Array.from(new Set(response.data.deals));
-      //       _this.parma.total = response.paging_info.total_items;
-      //       _this.tableData = response.data.deals;
-      //       _this.tableData.map((item,s) => {
-      //         item.payloadAct = false
-      //         item.create_at = item.create_at
-      //           ? item.create_at.length < 13
-      //             ? moment(new Date(parseInt(item.create_at * 1000))).format(
-      //                 "YYYY-MM-DD HH:mm:ss"
-      //               )
-      //             : moment(new Date(parseInt(item.create_at))).format(
-      //                 "YYYY-MM-DD HH:mm:ss"
-      //               )
-      //           : "-";
-      //       });
-
-      //     } else {
-      //       _this.$message.error(response.message);
-      //     }
-      //     _this.loading = false
-      //   })
-      //   .catch((error) => {
-      //     console.log(error);
-      //     _this.loading = false;
-      //   });
     },
     byteChange(limit){
         var size = "";
@@ -1138,11 +1147,16 @@ export default {
       return value.toFixed(8) + ' FIL';
     },
     formatbytes: function (bytes) {
+      if (bytes === 0) return '0 B';
       if (!bytes) return "-";
-      if (bytes == 0) return '0 B';
       var k = 1000, // or 1024
           sizes = ['bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
           i = Math.floor(Math.log(bytes) / Math.log(k));
+
+      if (Math.round((bytes / Math.pow(k, i))).toString().length > 3) {
+          // 判断大小是999999999左右，解决会显示成1.00e+3科学计数法
+          i += 1
+      }
       return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];
     },
   },
@@ -1563,7 +1577,7 @@ export default {
 
       .el-table /deep/ {
         overflow: visible;
-        overflow-x: scroll;
+        // overflow-x: scroll;
         .el-loading-mask{
           .el-loading-spinner{
             top: 50%;
@@ -1571,7 +1585,7 @@ export default {
         }
         .el-table__body-wrapper,
         .el-table__header-wrapper {
-          overflow: visible;
+          // overflow: visible;
         }
 
         tr {
@@ -2273,6 +2287,15 @@ export default {
         font-size: 0.1372rem;
         color: #000;
 
+        .paginaInput /deep/{
+          max-width: 50px;
+          .el-input__inner, .el-input__icon{
+            padding: 0 3px;
+            height: 30px;
+            line-height: 30px;
+            text-align: center;
+          }
+        }
         .pagination_left {
           width: 0.24rem;
           height: 0.24rem;

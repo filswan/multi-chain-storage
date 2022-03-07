@@ -44,6 +44,9 @@ $ npm run build:test
 
 # Build staging projects
 $ npm run build:staging
+
+# Build prod projects
+$ npm run build:prod
 ```
 
 The build artifacts will be stored in the `dist/` directory.

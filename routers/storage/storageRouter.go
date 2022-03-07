@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"payment-bridge/common"
 	"payment-bridge/common/constants"
@@ -234,6 +235,13 @@ func UploadFileToIpfs(c *gin.Context) {
 		return
 	}
 	durationInt = durationInt * 24 * 60 * 60 / 30
+
+	if durationInt > 1540000 || durationInt < 518400 {
+		err := fmt.Errorf("duration should be in [180,530]")
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_CODE, err.Error()))
+		return
+	}
 
 	fileType := c.DefaultPostForm("file_type", "0")
 	fileTypeInt, err := strconv.Atoi(fileType)

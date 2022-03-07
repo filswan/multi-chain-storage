@@ -185,7 +185,7 @@ func DoCreateTask() error {
 func GetMaxPriceForCreateTask(rate *big.Int, lockedFee decimal.Decimal, duration int, carFileSize int64) (*decimal.Decimal, error) {
 	_, sectorSize := libutils.CalculatePieceSize(carFileSize)
 	lockedFeeInFileCoin := lockedFee.Div(decimal.NewFromFloat(constants.LOTUS_PRICE_MULTIPLE_1E18)).Div(decimal.NewFromInt(rate.Int64()))
-	maxPrice := lockedFeeInFileCoin.Div(decimal.NewFromFloat(sectorSize).Div(decimal.NewFromInt(10204 * 1024 * 1024))).Div(decimal.NewFromInt(int64(duration)))
+	maxPrice := lockedFeeInFileCoin.Div(decimal.NewFromFloat(sectorSize).Div(decimal.NewFromInt(1024 * 1024 * 1024))).Div(decimal.NewFromInt(int64(duration)))
 	return &maxPrice, nil
 }
 
@@ -227,7 +227,7 @@ type DuplicatedTaskInfo struct {
 	Status            string `json:"status"`
 	PayloadCid        string `json:"payload_cid"`
 	DealCid           string `json:"deal_cid"`
-	TaskUuid          string `json:"task_uuid""`
+	TaskUuid          string `json:"task_uuid"`
 	IpfsUrl           string `json:"ipfs_url"`
 	PieceCid          string `json:"piece_cid"`
 	LockPaymentStatus string `json:"lock_payment_status"`

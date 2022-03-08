@@ -57,25 +57,31 @@
                         <el-col :span="8">{{$t('uploadFile.detail_Locked_funds')}}:</el-col>
                         <el-col :span="16">{{dealCont.found.locked_fee | NumFormatPrice}} USDC</el-col>
                         <el-col :span="8">{{$t('uploadFile.w3ss_id')}}:</el-col>
-                        <el-col :span="16">{{dealCont.deal.provider | NumFormat}}</el-col>
+                        <el-col :span="16" v-if="dealId == 0">-</el-col>
+                        <el-col :span="16" v-else>{{dealCont.deal.provider | NumFormat}}</el-col>
                         <el-col :span="8">{{$t('uploadFile.detail_Storage_Price')}}:</el-col>
-                        <el-col :span="16">{{dealCont.deal.storage_price | NumFormatPrice}} FIL</el-col>
+                        <el-col :span="16" v-if="dealId == 0">-</el-col>
+                        <el-col :span="16" v-else>{{dealCont.deal.storage_price | NumFormatPrice}} FIL</el-col>
                         <el-col :span="8">{{$t('billing.PAYLOADCID')}}:</el-col>
                         <el-col :span="16">{{dealCont.found.payload_cid | NumFormat}}</el-col>
                         <el-col :span="8">{{$t('uploadFile.detail_ProposalCID')}}:</el-col>
-                        <el-col :span="16">{{dealCont.deal.deal_cid | NumFormat}}</el-col>
+                        <el-col :span="16" v-if="dealId == 0">-</el-col>
+                        <el-col :span="16" v-else>{{dealCont.deal.deal_cid | NumFormat}}</el-col>
                         <el-col :span="8">{{$t('uploadFile.create_time')}}:</el-col>
                         <el-col :span="16">{{dealCont.deal.created_at | NumFormat}}</el-col>
                         <el-col :span="8">{{$t('uploadFile.detail_MessageCID')}}:</el-col>
                         <el-col :span="16">{{dealCont.deal.message_cid | NumFormat}}</el-col>
                         <el-col :span="8">{{$t('uploadFile.detail_PieceCID')}}:</el-col>
-                        <el-col :span="16">{{dealCont.deal.piece_cid | NumFormat}}</el-col>
+                        <el-col :span="16" v-if="dealId == 0">-</el-col>
+                        <el-col :span="16" v-else>{{dealCont.deal.piece_cid | NumFormat}}</el-col>
                         <el-col :span="8">{{$t('uploadFile.detail_Client_Address')}}:</el-col>
-                        <el-col :span="16">{{dealCont.deal.client | NumFormat}}</el-col>
+                        <el-col :span="16" v-if="dealId == 0">-</el-col>
+                        <el-col :span="16" v-else>{{dealCont.deal.client | NumFormat}}</el-col>
                         <el-col :span="8">{{$t('uploadFile.detail_Verified_Deal')}}:</el-col>
                         <el-col :span="16">{{dealCont.deal.verified_deal?'True':'False'}}</el-col>
                         <el-col :span="8">{{$t('uploadFile.detail_Storage_Price_Per_Epoch')}}:</el-col>
-                        <el-col :span="16">{{dealCont.deal.storage_price_per_epoch | NumFormatPrice}} FIL</el-col>
+                        <el-col :span="16" v-if="dealId == 0">-</el-col>
+                        <el-col :span="16" v-else>{{dealCont.deal.storage_price_per_epoch | NumFormatPrice}} FIL</el-col>
                         <el-col :span="8">{{$t('uploadFile.detail_Signature_Type')}}:</el-col>
                         <el-col :span="16">{{dealCont.deal.signature_type | NumFormat}}</el-col>
                         <el-col :span="8">{{$t('my_profile.miner_add_Signature')}}:</el-col>

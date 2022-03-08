@@ -555,7 +555,8 @@ export default {
         View_Your_NFT_OpenSea: 'Click here to view your NFT on OpenSea',
         View_Your_NFT_Note: 'Note: The NFT will take some time to load on Opensea.',
         goTo: 'Go to',
-        goTopage: ''
+        goTopage: '',
+        xhr_tip: 'Upload file changed, please re-upload.'
     },
     billing: {
         search_placeholder: 'Search by ',

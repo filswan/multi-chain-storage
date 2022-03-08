@@ -560,7 +560,8 @@ export default {
         View_Your_NFT_OpenSea: '点击到OpenSea查看您的NFT',
         View_Your_NFT_Note: '注意：OpenSea需要一些时间加载您的NFT。',
         goTo: '前往',
-        goTopage: '页'
+        goTopage: '页',
+        xhr_tip: '上传文件已更改，请重新上传。'
     },
     billing: {
         search_placeholder: '搜索方式',

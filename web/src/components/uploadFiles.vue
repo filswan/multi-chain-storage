@@ -70,19 +70,19 @@
                             <el-radio label="1" border>
                                 <div class="title">{{$t('uploadFile.Low')}}</div>
                                 <div class="cont">
-                                    {{storage_cost_low | NumStoragePlan}} <br/> USDC
+                                    {{storage_cost_low}} <br/> USDC
                                 </div>
                             </el-radio>
                             <el-radio label="2" border>
                                 <div class="title">{{$t('uploadFile.Average')}}</div>
                                 <div class="cont">
-                                    {{storage_cost_average | NumStoragePlan}} <br/> USDC
+                                    {{storage_cost_average}} <br/> USDC
                                 </div>
                             </el-radio>
                             <el-radio label="3" border>
                                 <div class="title">{{$t('uploadFile.High')}}</div>
                                 <div class="cont">
-                                    {{storage_cost_high | NumStoragePlan}} <br/> USDC
+                                    {{storage_cost_high}} <br/> USDC
                                 </div>
                             </el-radio>
                         </el-radio-group>
@@ -263,29 +263,30 @@
         },
         methods: {
             calculation(type){
-                this.ruleForm.storage_cost = this.ruleForm.file_size_byte * this.ruleForm.duration * this.ruleForm.storage_copy * this.storage / 365
-                this.ruleForm.amount_minprice = Number(this.ruleForm.storage_cost * this.biling_price).toFixed(9)
-                this.storage_cost_low = this.ruleForm.storage_cost * this.biling_price * 2
-                this.storage_cost_average = this.ruleForm.storage_cost * this.biling_price * 3
-                this.storage_cost_high = this.ruleForm.storage_cost * this.biling_price * 5
+                this.ruleForm.storage_cost = this.ruleForm.file_size_byte * this.ruleForm.duration * this.storage / 365
+                let _price = this.ruleForm.storage_cost * this.biling_price
+                let number_price = Number(_price).toFixed(9)
+                this.ruleForm.amount_minprice = number_price > 0.000000001 ? number_price : '0.0000000005'
+                this.storage_cost_low = number_price > 0 ? Number(_price * 2).toFixed(9) : '0.000000001'
+                this.storage_cost_average = number_price > 0 ? Number(_price * 3).toFixed(9) : '0.000000002'
+                this.storage_cost_high = number_price > 0 ? Number(_price * 5).toFixed(9) : '0.000000003'
             },
             agreeChange(val){
                 this.ruleForm.lock_plan_tip = false
                 switch (val) {
                     case '1':
-                        this.ruleForm.amount = Number(this.storage_cost_low).toFixed(9)
+                        this.ruleForm.amount = this.storage_cost_low
                         break;
                     case '2':
-                        this.ruleForm.amount = Number(this.storage_cost_average).toFixed(9)
+                        this.ruleForm.amount = this.storage_cost_average
                         break;
                     case '3':
-                        this.ruleForm.amount = Number(this.storage_cost_high).toFixed(9)
+                        this.ruleForm.amount = this.storage_cost_high
                         break;
                     default:
-                        this.ruleForm.amount = Number(this.storage_cost_low).toFixed(9)
+                        this.ruleForm.amount = this.storage_cost_low
                         return;
                 }
-                this.ruleForm.amount = this.ruleForm.amount > 0 ? this.ruleForm.amount : '0.000000001'
             },
             submitForm(formName) {
                 let _this = this;
@@ -299,7 +300,7 @@
                             _this.ruleForm.lock_plan_tip = true
                             return false
                         }
-                        if(_this.ruleForm.fileList_tip) return false
+                        if(_this.ruleForm.fileList_tip || isNaN(_this.ruleForm.amount)) return false
 
                         if(_this.metaAddress){
                             // 授权代币
@@ -374,7 +375,7 @@
                                                         return false
                                                     }
                                                 }else{
-                                                    _this.$message.error('Fail')
+                                                    _this.$message.error(_this.$t('uploadFile.xhr_tip'))
                                                 }
                                             }
                                         }
@@ -383,14 +384,14 @@
                                         _this.fileUploadVisible = false
                                     }
                                     xhr.upload.addEventListener("error", event => {
-                                        _this.$message.error('Fail')
+                                        _this.$message.error(_this.$t('uploadFile.xhr_tip'))
                                     })
 
                                     xhr.upload.addEventListener("progress", event => {
                                         if (event.lengthComputable) {
                                             let loaded = event.loaded
                                             let total = event.total
-                                            console.log('total-loaded', total, loaded)
+                                            // console.log('total-loaded', total, loaded)
                                             let percentIn = Math.floor(event.loaded / event.total * 100);
                                             // 设置进度显示
                                             _this.percentIn = percentIn+'%'
@@ -514,10 +515,10 @@
             // 文件上传
             uploadFile(params) {
                 this._file = params.file;
-                const isLt2M = this._file.size / 1000 / 1000 / 1000 <= 1;  // or 1024
+                const isLt2M = this._file.size / 1024 / 1024 / 1024 <= 1;  // or 1000
                 this.ruleForm.file_size = this.sizeChange(this._file.size)
                 this.ruleForm.file_size_byte = this.byteChange(this._file.size)
-                console.log('bytes', this._file.size, this._file.size / 1000 / 1000)
+                console.log('bytes', this._file.size)
                 if (!isLt2M || this._file.size <= 0) {
                     // this.$message.error(this.$t('deal.upload_form_file_tip'))
                     this.ruleForm.fileList_tip = true
@@ -530,7 +531,7 @@
             sizeChange(bytes){
                 if (bytes === 0) return '0 B';
                 if (!bytes) return "-";
-                var k = 1000, // or 1024
+                var k = 1024, // or 1000
                     sizes = ['bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
                     i = Math.floor(Math.log(bytes) / Math.log(k));
 
@@ -546,7 +547,7 @@
                 if(limit <= 0){
                     return '-'
                 }else{
-                    size = limit/( 1000 * 1000 * 1000)  //or 1024
+                    size = limit/( 1024 * 1024 * 1024)  //or 1000
                 }
                 return size
                 // return Number(size).toFixed(3);

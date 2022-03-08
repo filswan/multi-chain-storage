@@ -299,11 +299,17 @@ func GetSourceFileAndDealFileInfo(limit, offset string, walletAddress string, pa
 	return results, nil
 }
 
-func GetSourceFileAndDealFileInfoCount(walletAddress string) (int64, error) {
+func GetSourceFileAndDealFileInfoCount(walletAddress string, payloadCid, fileName string) (int64, error) {
 	sql := "select count(1) as total_record from  source_file s " +
 		" inner join source_file_deal_file_map sfdfm on s.id = sfdfm.source_file_id" +
 		" inner join deal_file df on sfdfm.deal_file_id = df.id" +
 		" where s.wallet_address='" + walletAddress + "'"
+	if strings.Trim(payloadCid, " ") != "" {
+		sql = sql + " and df.payload_cid='" + payloadCid + "'"
+	}
+	if strings.Trim(fileName, " ") != "" {
+		sql = sql + " and s.file_name like '%" + fileName + "%'"
+	}
 	var recordCount common.RecordCount
 	err := database.GetDB().Raw(sql).Scan(&recordCount).Error
 	if err != nil {

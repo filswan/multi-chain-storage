@@ -27,7 +27,9 @@
                             </div>
                         </div>
                         <div class="form_table">
-                            <el-table v-loading="loading" :data="tableData" style="width: 100%" :empty-text="$t('deal.formNotData')" header-click="aaa">
+                            <el-table 
+                            v-loading="loading" :data="tableData" style="width: 100%" 
+                            :empty-text="$t('deal.formNotData')" max-height="580">
                                 <el-table-column prop="tx_hash" :label="$t('billing.TRANSACTION')" min-width="190">
                                     <template slot-scope="scope">
                                         <div class="hot-cold-box">
@@ -102,14 +104,25 @@
                         <div class="form_pagination">
                             <div class="pagination">
                                 <el-pagination
-                                    :total="parma.total"
-                                    :page-size="parma.limit"
-                                    :current-page="parma.offset"
-                                    :pager-count="bodyWidth?5:7"
-                                    style="padding: 30px 40px 32px 20px;"
-                                    background
-                                    :layout="bodyWidth?'prev, pager, next':'total, prev, pager, next, jumper'"
-                                    @current-change="handleCurrentChange" />
+                                :total="parma.total"
+                                :page-sizes="[10, 20, 30]"
+                                :page-size="parma.limit"
+                                :current-page="parma.offset"
+                                :pager-count="bodyWidth ? 5 : 7"
+                                background
+                                :layout="
+                                    bodyWidth
+                                    ? 'prev, pager, next'
+                                    : 'total, sizes, prev, pager, next'
+                                "
+                                @current-change="handleCurrentChange"
+                                @size-change="handleSizeChange"
+                                />
+                                <div class="span" v-if="!bodyWidth">
+                                    <span>{{$t('uploadFile.goTo')}}</span>
+                                    <el-input class="paginaInput" @change="pageSizeChange" v-model.number="parma.jumperOffset" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')" autocomplete="off"></el-input>
+                                    <span>{{$t('uploadFile.goTopage')}}</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -150,7 +163,10 @@
                 parma: {
                     limit: 10,
                     offset: 1,
-                    total: 0
+                    total: 0,
+                    jumperOffset: 1,
+                    order_by: '',
+                    is_ascending: ''
                 },
                 loading: false,
                 downCsv: localStorage.getItem("addressYM")?localStorage.getItem("addressYM"):'',
@@ -195,8 +211,29 @@
                 }
             },
             handleCurrentChange(val) {
-                this.parma.offset = val
-                this.getData()
+                this.parma.offset = Number(val);
+                this.parma.jumperOffset = String(val)
+                this.getData();
+            },
+            handleSizeChange (val){
+                this.parma.limit = Number(val);
+                this.parma.offset = 1;
+                this.parma.jumperOffset = 1;
+                this.getData();
+            },
+            pageSizeChange(recordPage=parseInt(this.parma.jumperOffset), MaxPagenumber=Math.ceil(this.parma.total/this.parma.limit)) {
+                if((recordPage > MaxPagenumber) && (MaxPagenumber > 0)){ 
+                    recordPage = MaxPagenumber; 
+                }else if(MaxPagenumber<=0){
+                    recordPage = 1;  
+                }else if(recordPage < 1){ 
+                    recordPage = 1;           
+                }else if(this.parma.jumperOffset==NaN || this.parma.jumperOffset==""){  
+                    recordPage = 1;
+                }
+                this.parma.offset = Number(recordPage);
+                this.parma.jumperOffset = recordPage;
+                this.getData(); 
             },
             getData(){
                 let _this = this
@@ -323,6 +360,9 @@
             search() {
                 this.parma.limit = 10
                 this.parma.offset = 1
+                this.parma.jumperOffset = 1
+                this.parma.order_by = ''
+                this.parma.is_ascending = ''
                 this.getData();
             },
             clearAll() {
@@ -366,6 +406,7 @@
                 // if (!Number(value)) return 0;
                 // if (isNaN(value)) return value;
                 // 18 - 单位换算需要 / 1000000000000000000，浮点运算显示有bug
+                value = Number(value)
                 if(String(value).length > 18){
                     let v1 = String(value).substring(0, String(value).length - 18)
                     let v2 = String(value).substring(String(value).length - 18)
@@ -749,28 +790,58 @@
                         white-space: nowrap
                     }
                 }
-                .form_pagination{
+                .form_pagination {
                     display: flex;
                     justify-content: center;
                     align-items: center;
                     height: 0.35rem;
                     text-align: center;
-                    .pagination{
+                    margin: 0.05rem 0;
+                    padding: 0 5% 0 0;
+                    @media screen and (max-width: 1024px){
+                        padding: 0;
+                    }
+                    .pagination {
                         display: flex;
                         align-items: center;
                         font-size: 0.1372rem;
                         color: #000;
-                        .pagination_left{
-                            width: 0.24rem;
-                            height: 0.24rem;
-                            margin: 0 0.2rem;
-                            border: 1px solid #f8f8f8;
-                            border-radius: 0.04rem;
+                        .el-select /deep/{
+                        max-width: 100px;
+                        margin-right: 0.15rem;
+                        .el-input__inner, .el-input__icon{
+                            height: 30px;
+                            line-height: 30px;
+                        }
+                        }
+                        .span{
+                        margin: 0 0 0 10px;
+                        font-size: 13px;
+                        font-weight: 400;
+                        color: #606266;
+                        white-space: nowrap;
+                        }
+                        .paginaInput /deep/{
+                        max-width: 50px;
+                        .el-input__inner, .el-input__icon{
+                            padding: 0 3px;
+                            height: 30px;
+                            line-height: 30px;
                             text-align: center;
-                            line-height: 0.24rem;
-                            font-size: 0.16rem;
-                            color: #959494;
-                            cursor: pointer;
+                        }
+                        }
+
+                        .pagination_left {
+                        width: 0.24rem;
+                        height: 0.24rem;
+                        margin: 0 0.2rem;
+                        border: 1px solid #f8f8f8;
+                        border-radius: 0.04rem;
+                        text-align: center;
+                        line-height: 0.24rem;
+                        font-size: 0.16rem;
+                        color: #959494;
+                        cursor: pointer;
                         }
                     }
                 }

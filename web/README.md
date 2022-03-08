@@ -16,6 +16,9 @@ Run `npm run dev` for a dev server. Navigate to `http://localhost:8080/`. The ap
 # Build test projects
 $ npm run build:test
 
+# Build staging projects
+$ npm run build:staging
+
 # Build production projects
 $ npm run build:prod
 ```

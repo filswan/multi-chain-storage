@@ -17,7 +17,7 @@
             </span>
             <span v-else-if="dealCont.signed_dao_count >= dealCont.dao_thresh_hold && dealCont.unlock_status">
                 <img src="@/assets/images/dao_success.png" />
-                <span>{{$t('uploadFile.Successfully_unlocked_funds')}}</span>
+                <span style="color: #3db39e;">{{$t('uploadFile.Successfully_unlocked_funds')}}</span>
             </span>
             <span v-else-if="dealCont.signed_dao_count >= dealCont.dao_thresh_hold && !dealCont.unlock_status">
                 <img src="@/assets/images/dao_waiting.png" />
@@ -42,25 +42,31 @@
                 <el-col :span="8">{{$t('uploadFile.detail_Locked_funds')}}:</el-col>
                 <el-col :span="16">{{dealCont.found.locked_fee | NumFormatPrice}} USDC</el-col>
                 <el-col :span="8">{{$t('uploadFile.w3ss_id')}}:</el-col>
-                <el-col :span="16">{{dealCont.deal.provider | NumFormat}}</el-col>
+                <el-col :span="16" v-if="dealId == 0">-</el-col>
+                <el-col :span="16" v-else>{{dealCont.deal.provider | NumFormat}}</el-col>
                 <el-col :span="8">{{$t('uploadFile.detail_Storage_Price')}}:</el-col>
-                <el-col :span="16">{{dealCont.deal.storage_price | NumFormatPrice}} FIL</el-col>
+                <el-col :span="16" v-if="dealId == 0">-</el-col>
+                <el-col :span="16" v-else>{{dealCont.deal.storage_price | NumFormatPrice}} FIL</el-col>
                 <el-col :span="8">{{$t('billing.PAYLOADCID')}}:</el-col>
                 <el-col :span="16">{{dealCont.found.payload_cid | NumFormat}}</el-col>
                 <el-col :span="8">{{$t('uploadFile.detail_ProposalCID')}}:</el-col>
-                <el-col :span="16">{{dealCont.deal.deal_cid | NumFormat}}</el-col>
+                <el-col :span="16" v-if="dealId == 0">-</el-col>
+                <el-col :span="16" v-else>{{dealCont.deal.deal_cid | NumFormat}}</el-col>
                 <el-col :span="8">{{$t('uploadFile.create_time')}}:</el-col>
-                <el-col :span="16">{{dealCont.found.create_at | NumFormat}}</el-col>
+                <el-col :span="16">{{dealCont.deal.created_at | NumFormat}}</el-col>
                 <el-col :span="8">{{$t('uploadFile.detail_MessageCID')}}:</el-col>
                 <el-col :span="16">{{dealCont.deal.message_cid | NumFormat}}</el-col>
                 <el-col :span="8">{{$t('uploadFile.detail_PieceCID')}}:</el-col>
-                <el-col :span="16">{{dealCont.deal.piece_cid | NumFormat}}</el-col>
+                <el-col :span="16" v-if="dealId == 0">-</el-col>
+                <el-col :span="16" v-else>{{dealCont.deal.piece_cid | NumFormat}}</el-col>
                 <el-col :span="8">{{$t('uploadFile.detail_Client_Address')}}:</el-col>
-                <el-col :span="16">{{dealCont.deal.client | NumFormat}}</el-col>
+                <el-col :span="16" v-if="dealId == 0">-</el-col>
+                <el-col :span="16" v-else>{{dealCont.deal.client | NumFormat}}</el-col>
                 <el-col :span="8">{{$t('uploadFile.detail_Verified_Deal')}}:</el-col>
                 <el-col :span="16">{{dealCont.deal.verified_deal?'True':'False'}}</el-col>
                 <el-col :span="8">{{$t('uploadFile.detail_Storage_Price_Per_Epoch')}}:</el-col>
-                <el-col :span="16">{{dealCont.deal.storage_price_per_epoch | NumFormatPrice}} FIL</el-col>
+                <el-col :span="16" v-if="dealId == 0">-</el-col>
+                <el-col :span="16" v-else>{{dealCont.deal.storage_price_per_epoch | NumFormatPrice}} FIL</el-col>
                 <el-col :span="8">{{$t('uploadFile.detail_Signature_Type')}}:</el-col>
                 <el-col :span="16">{{dealCont.deal.signature_type | NumFormat}}</el-col>
                 <el-col :span="8">{{$t('my_profile.miner_add_Signature')}}:</el-col>
@@ -243,7 +249,7 @@ export default {
                     _this.dealCont = json.data
 
                     if(json.data.deal.provider && json.data.found.payload_cid){
-                        _this.copy_filename = 'lotus client retrieve --miner '+json.data.deal.provider+' '+json.data.found.payload_cid+' output-file';
+                        _this.copy_filename = 'lotus client retrieve --miner '+json.data.deal.provider+' '+json.data.found.payload_cid+' ~./output-file';
                     }else{
                         _this.copy_filename = localStorage.getItem('languageMcs') == 'cn'?"还不可用。":"It's not available yet.";
                     }
@@ -320,6 +326,7 @@ export default {
         align-items: center;
         font-size: 0.24rem;
         line-height: 1;
+        max-width: 200px;
         margin: 0 0 0.2rem;
         cursor: pointer;
     }
@@ -330,6 +337,7 @@ export default {
         font-weight: bold;
         line-height: 2;
         @media screen and (max-width:600px){
+            width: 100%;
             font-size: 16px;
             flex-wrap: wrap;
         }

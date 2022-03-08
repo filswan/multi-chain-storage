@@ -4,10 +4,10 @@
         :before-close="closeDia">
         <div v-loading="hashload" :element-loading-text="isload?$t('uploadFile.payment_tip_deal'):''">
             <el-form :model="ruleForm" :rules="rules" ref="ruleForm">
-                <el-form-item :label="'NFT'+$t('uploadFile.nft_Name')" prop="name">
+                <el-form-item :label="'NFT '+$t('uploadFile.nft_Name')" prop="name">
                     <el-input v-model="ruleForm.name" placeholder=""></el-input>
                 </el-form-item>
-                <el-form-item :label="'NFT'+$t('uploadFile.nft_Description')" prop="description">
+                <el-form-item :label="'NFT '+$t('uploadFile.nft_Description')" prop="description">
                     <el-input v-model="ruleForm.description" type="textarea" :rows="2"></el-input>
                 </el-form-item>
                 <el-form-item :label="$t('uploadFile.nft_IPFSURL')" prop="image">

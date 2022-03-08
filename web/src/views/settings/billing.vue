@@ -7,7 +7,7 @@
                         <div class="form_top">
                             <div class="search">
                                 {{$t('billing.search_placeholder')}} &nbsp;
-                                <el-input placeholder="" v-model="searchValue" class="input-with-select">
+                                <el-input placeholder="" v-model="searchValue" class="input-with-select" @input="searchValueChange">
                                     <el-select v-model="selectInput" slot="prepend">
                                         <el-option :label="$t('billing.search_option_filename')" value="1"></el-option>
                                         <el-option :label="$t('billing.search_option_transaction')" value="2"></el-option>
@@ -20,7 +20,6 @@
                                     type="primary"
                                     style="background-color: #0b318f"
                                     @click="clearAll"
-                                    :disabled="!searchValue"
                                     >
                                     {{$t('billing.clear_btn')}}
                                     </el-button>
@@ -404,6 +403,9 @@
             clearAll() {
                 this.searchValue = ""
                 this.search();
+            },
+            searchValueChange() {
+                if(this.searchValue == '') this.clearAll()
             }
         },
         mounted() {

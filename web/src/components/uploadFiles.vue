@@ -4,7 +4,10 @@
             <div class="upload_title">{{$t('uploadFile.uploadFile_title')}}</div>
             <div class="upload_form">
                 <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" class="demo-ruleForm">
-                    <el-form-item prop="fileList" :label="$t('uploadFile.upload')">
+                    <el-form-item prop="fileList" style="align-items: flex-start;">
+                        <label slot="label" style="line-height:0.32rem">
+                            {{$t('uploadFile.upload')}}
+                        </label>
                         <div>
                             <el-upload
                                 class="upload-demo"
@@ -20,6 +23,7 @@
                                 <svg t="1637031488880" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3310" style="width: 0.13rem;height: 0.13rem;margin: 0 7px 0 5px;"><path d="M512 1024a512 512 0 1 1 512-512 32 32 0 0 1-32 32h-448v448a32 32 0 0 1-32 32zM512 64a448 448 0 0 0-32 896V512a32 32 0 0 1 32-32h448A448 448 0 0 0 512 64z" fill="#999999" p-id="3311"></path><path d="M858.88 976a32 32 0 0 1-32-32V640a32 32 0 0 1 32-32 32 32 0 0 1 32 32v304a32 32 0 0 1-32 32z" fill="#999999" p-id="3312"></path><path d="M757.12 773.12a34.56 34.56 0 0 1-22.4-8.96 32 32 0 0 1 0-45.44l101.12-101.12a32 32 0 0 1 45.44 0 30.72 30.72 0 0 1 0 44.8l-101.12 101.76a34.56 34.56 0 0 1-23.04 8.96z" fill="#999999" p-id="3313"></path><path d="M960 773.12a32 32 0 0 1-22.4-8.96l-101.76-101.76a32 32 0 0 1 0-44.8 32 32 0 0 1 45.44 0l101.12 101.12a32 32 0 0 1-22.4 54.4z" fill="#999999" p-id="3314"></path></svg>
                                 {{ruleForm.file_size}}
                             </p>
+                            <p v-if="ruleForm.fileList_tip" style="color: #F56C6C;font-size: 12px;line-height: 1;">{{ruleForm.fileList_tip_text}}</p>
                         </div>
                     </el-form-item>
                     <el-form-item prop="duration">
@@ -192,6 +196,8 @@
                     duration: '525',
                     storage_copy: '5',
                     fileList: [],
+                    fileList_tip: false,
+                    fileList_tip_text: '',
                     file_size: '',
                     file_size_byte: '',
                     storage_cost: '',
@@ -257,16 +263,13 @@
         },
         methods: {
             calculation(type){
-                if(type && type == 2){
-                    this.ruleForm.duration = '540'
-                }else if(type && type == 1){
-                    this.ruleForm.duration = '180'
-                }
-                this.ruleForm.storage_cost = this.ruleForm.file_size_byte * this.ruleForm.duration * this.ruleForm.storage_copy * this.storage / 365
-                this.ruleForm.amount_minprice = Number(this.ruleForm.storage_cost * this.biling_price).toFixed(9)
-                this.storage_cost_low = Number(this.ruleForm.storage_cost * this.biling_price * 2).toFixed(9)
-                this.storage_cost_average = Number(this.ruleForm.storage_cost * this.biling_price * 3).toFixed(9)
-                this.storage_cost_high = Number(this.ruleForm.storage_cost * this.biling_price * 5).toFixed(9)
+                this.ruleForm.storage_cost = this.ruleForm.file_size_byte * this.ruleForm.duration * this.storage / 365
+                let _price = this.ruleForm.storage_cost * this.biling_price
+                let number_price = Number(_price).toFixed(9)
+                this.ruleForm.amount_minprice = number_price > 0.000000001 ? number_price : '0.0000000005'
+                this.storage_cost_low = number_price > 0 ? Number(_price * 2).toFixed(9) : '0.000000001'
+                this.storage_cost_average = number_price > 0 ? Number(_price * 3).toFixed(9) : '0.000000002'
+                this.storage_cost_high = number_price > 0 ? Number(_price * 5).toFixed(9) : '0.000000003'
             },
             agreeChange(val){
                 this.ruleForm.lock_plan_tip = false
@@ -297,6 +300,7 @@
                             _this.ruleForm.lock_plan_tip = true
                             return false
                         }
+                        if(_this.ruleForm.fileList_tip || isNaN(_this.ruleForm.amount)) return false
 
                         if(_this.metaAddress){
                             // 授权代币
@@ -371,7 +375,7 @@
                                                         return false
                                                     }
                                                 }else{
-                                                    _this.$message.error('Fail')
+                                                    _this.$message.error(_this.$t('uploadFile.xhr_tip'))
                                                 }
                                             }
                                         }
@@ -380,14 +384,14 @@
                                         _this.fileUploadVisible = false
                                     }
                                     xhr.upload.addEventListener("error", event => {
-                                        _this.$message.error('Fail')
+                                        _this.$message.error(_this.$t('uploadFile.xhr_tip'))
                                     })
 
                                     xhr.upload.addEventListener("progress", event => {
                                         if (event.lengthComputable) {
                                             let loaded = event.loaded
                                             let total = event.total
-                                            console.log('total-loaded', total, loaded)
+                                            // console.log('total-loaded', total, loaded)
                                             let percentIn = Math.floor(event.loaded / event.total * 100);
                                             // 设置进度显示
                                             _this.percentIn = percentIn+'%'
@@ -444,7 +448,7 @@
                 contract_instance.methods.lockTokenPayment(lockObj)
                 .send(payObject)
                 .on('transactionHash', function(hash){
-                    console.log('hash console:', hash);
+                    // console.log('hash console:', hash);
                     _this.loadMetamaskPay = true
                     _this.loading = false
                     _this.txHash = hash
@@ -511,22 +515,23 @@
             // 文件上传
             uploadFile(params) {
                 this._file = params.file;
-                const isLt2M = this._file.size / 1000 / 1000 < 2;  // or 1024
+                const isLt2M = this._file.size / 1024 / 1024 / 1024 <= 1;  // or 1000
                 this.ruleForm.file_size = this.sizeChange(this._file.size)
                 this.ruleForm.file_size_byte = this.byteChange(this._file.size)
                 console.log('bytes', this._file.size)
-                if (!isLt2M) {
+                if (!isLt2M || this._file.size <= 0) {
                     // this.$message.error(this.$t('deal.upload_form_file_tip'))
-                    this.fileListTip = true
+                    this.ruleForm.fileList_tip = true
+                    this.ruleForm.fileList_tip_text = this._file.size <= 0 ? this.$t('deal.upload_form_file_tip01'):this.$t('deal.upload_form_file_tip')
                     return false
                 }else{
-                    this.fileListTip = false
+                    this.ruleForm.fileList_tip = false
                 }
             },
             sizeChange(bytes){
                 if (bytes === 0) return '0 B';
                 if (!bytes) return "-";
-                var k = 1000, // or 1024
+                var k = 1024, // or 1000
                     sizes = ['bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
                     i = Math.floor(Math.log(bytes) / Math.log(k));
 
@@ -542,7 +547,7 @@
                 if(limit <= 0){
                     return '-'
                 }else{
-                    size = limit/( 1000 * 1000 * 1000)  //or 1024
+                    size = limit/( 1024 * 1024 * 1024)  //or 1000
                 }
                 return size
                 // return Number(size).toFixed(3);
@@ -618,6 +623,10 @@
                 if (!value) return "-";
                 return value.toFixed(10);
             },
+            NumStoragePlan(value) {
+                if (!value) return "-";
+                return value.toFixed(9) > 0 ? value.toFixed(9) : '0.000000001';
+            }
         },
         computed: {
             metaAddress() {

@@ -1314,7 +1314,7 @@ export default {
         if(limit <= 0){
             return '-'
         }else{
-            size = limit/( 1000 * 1000 * 1000)  //or 1024
+            size = limit/( 1024 * 1024 * 1024)  //or 1000
         }
         return size
         // return Number(size).toFixed(3);
@@ -1348,7 +1348,7 @@ export default {
     formatbytes: function (bytes) {
       if (bytes === 0) return '0 B';
       if (!bytes) return "-";
-      var k = 1000, // or 1024
+      var k = 1024, // or 1000
           sizes = ['bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
           i = Math.floor(Math.log(bytes) / Math.log(k));
 

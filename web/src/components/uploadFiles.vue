@@ -45,7 +45,7 @@
                                 <img src="@/assets/images/info.png"/>
                             </el-tooltip>
                         </template>
-                        <span  style="color:#ce2f21">{{ruleForm.storage_cost | NumStorage}} FIL</span> 
+                        <span  style="color:#4326ab">{{ruleForm.storage_cost | NumStorage}} FIL</span> 
                     </el-form-item>
                 </el-form>
                 <div class="upload_plan">
@@ -61,19 +61,19 @@
                             <el-radio label="1" border>
                                 <div class="title">{{$t('uploadFile.Low')}}</div>
                                 <div class="cont">
-                                    {{storage_cost_low | NumStoragePlan}} <br/> USDC
+                                    {{storage_cost_low}} <br/> USDC
                                 </div>
                             </el-radio>
                             <el-radio label="2" border>
                                 <div class="title">{{$t('uploadFile.Average')}}</div>
                                 <div class="cont">
-                                    {{storage_cost_average | NumStoragePlan}} <br/> USDC
+                                    {{storage_cost_average}} <br/> USDC
                                 </div>
                             </el-radio>
                             <el-radio label="3" border>
                                 <div class="title">{{$t('uploadFile.High')}}</div>
                                 <div class="cont">
-                                    {{storage_cost_high | NumStoragePlan}} <br/> USDC
+                                    {{storage_cost_high}} <br/> USDC
                                 </div>
                             </el-radio>
                         </el-radio-group>
@@ -81,6 +81,10 @@
                 </div>
                 <div class="upload_bot">
                     <el-button type="primary" @click="submitForm('ruleForm')">{{$t('deal.Submit')}}</el-button>
+                    <br />
+                    <div class="found">
+                        <a :href="found_link" target="_blank">{{$t('uploadFile.upload_funds')}}</a>
+                    </div>
                 </div>
             </div>
 
@@ -233,7 +237,8 @@
                 paymentPopup01: false,
                 percentIn: '',
                 loadMetamaskPay: false,
-                metamaskLoginTip: false
+                metamaskLoginTip: false,
+                found_link: process.env.NODE_ENV == "production"?"https://calibration-faucet.filswan.com/":"http://192.168.88.216:8080/faucet/#/dashboard"
             };
         },
         components: {},
@@ -249,28 +254,29 @@
         methods: {
             calculation(type){
                 this.ruleForm.storage_cost = this.ruleForm.file_size_byte * this.ruleForm.duration * this.storage / 365
-                this.ruleForm.amount_minprice = Number(this.ruleForm.storage_cost * this.biling_price).toFixed(9)
-                this.storage_cost_low = this.ruleForm.storage_cost * this.biling_price * 2
-                this.storage_cost_average = this.ruleForm.storage_cost * this.biling_price * 3
-                this.storage_cost_high = this.ruleForm.storage_cost * this.biling_price * 5
+                let _price = this.ruleForm.storage_cost * this.biling_price
+                let number_price = Number(_price).toFixed(9)
+                this.ruleForm.amount_minprice = number_price > 0.000000001 ? number_price : '0.0000000005'
+                this.storage_cost_low = number_price > 0 ? Number(_price * 2).toFixed(9) : '0.000000001'
+                this.storage_cost_average = number_price > 0 ? Number(_price * 3).toFixed(9) : '0.000000002'
+                this.storage_cost_high = number_price > 0 ? Number(_price * 5).toFixed(9) : '0.000000003'
             },
             agreeChange(val){
                 this.ruleForm.lock_plan_tip = false
                 switch (val) {
                     case '1':
-                        this.ruleForm.amount = Number(this.storage_cost_low).toFixed(9)
+                        this.ruleForm.amount = this.storage_cost_low
                         break;
                     case '2':
-                        this.ruleForm.amount = Number(this.storage_cost_average).toFixed(9)
+                        this.ruleForm.amount = this.storage_cost_average
                         break;
                     case '3':
-                        this.ruleForm.amount = Number(this.storage_cost_high).toFixed(9)
+                        this.ruleForm.amount = this.storage_cost_high
                         break;
                     default:
-                        this.ruleForm.amount = Number(this.storage_cost_low).toFixed(9)
+                        this.ruleForm.amount = this.storage_cost_low
                         return;
                 }
-                this.ruleForm.amount = this.ruleForm.amount > 0 ? this.ruleForm.amount : '0.000000001'
             },
             submitForm(formName) {
                 let _this = this;
@@ -284,7 +290,8 @@
                             _this.ruleForm.lock_plan_tip = true
                             return false
                         }
-                        if(_this.ruleForm.fileList_tip) return false
+                        if(_this.ruleForm.fileList_tip || isNaN(_this.ruleForm.amount)) return false
+
                         if(_this.metaAddress){
                             // 授权代币
                             contract_erc20 = new web3.eth.Contract( erc20_contract_json );
@@ -358,7 +365,7 @@
                                                         return false
                                                     }
                                                 }else{
-                                                    _this.$message.error('Fail')
+                                                    _this.$message.error(_this.$t('uploadFile.xhr_tip'))
                                                 }
                                             }
                                         }
@@ -367,7 +374,7 @@
                                         _this.fileUploadVisible = false
                                     }
                                     xhr.upload.addEventListener("error", event => {
-                                        _this.$message.error('Fail')
+                                        _this.$message.error(_this.$t('uploadFile.xhr_tip'))
                                     })
 
                                     xhr.upload.addEventListener("progress", event => {
@@ -478,7 +485,7 @@
             // 文件上传
             uploadFile(params) {
                 this._file = params.file;
-                const isLt2M = this._file.size / 1000 / 1000 / 1000 <= 1;  // or 1024
+                const isLt2M = this._file.size / 1024 / 1024 / 1024 <= 1;  // or 1000
                 this.ruleForm.file_size = this.sizeChange(this._file.size)
                 this.ruleForm.file_size_byte = this.byteChange(this._file.size)
                 console.log('bytes', this._file.size)
@@ -494,7 +501,7 @@
             sizeChange(bytes){
                 if (bytes === 0) return '0 B';
                 if (!bytes) return "-";
-                var k = 1000, // or 1024
+                var k = 1024, // or 1000
                     sizes = ['bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
                     i = Math.floor(Math.log(bytes) / Math.log(k));
 
@@ -510,7 +517,7 @@
                 if(limit <= 0){
                     return '-'
                 }else{
-                    size = limit/( 1000 * 1000 * 1000)  //or 1024
+                    size = limit/( 1024 * 1024 * 1024)  //or 1000
                 }
                 return size
                 // return Number(size).toFixed(3);
@@ -584,7 +591,7 @@
         filters: {
             NumStorage(value) {
                 if (!value) return "-";
-                return value.toFixed(10);
+                return value.toFixed(15);
             },
             NumStoragePlan(value) {
                 if (!value) return "-";
@@ -1097,6 +1104,7 @@
                 display: flex;
                 justify-content: center;
                 align-items: center;
+                flex-wrap: wrap;
                 width: 100%;
                 margin: 0.25rem auto 0.15rem;
                 .el-button /deep/{
@@ -1108,6 +1116,16 @@
                     font-size: 0.1372rem;
                     color: #fff;
                     border: 0;
+                }
+                .found{
+                    width: 100%;
+                    text-align: center;
+                    a{
+                        text-decoration: underline;
+                        font-size: 13px;
+                        color: rgb(11, 49, 143);
+                        cursor: pointer;
+                    }
                 }
             }
             .upload_result /deep/{

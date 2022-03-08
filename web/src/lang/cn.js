@@ -458,6 +458,7 @@ export default {
         status: 'PIN状态',
         status_tooltip: '报告存储在FilSwan的IPFS节点上的文件或数据的状态。',
         file_name: '文件名称',
+        file_name_tooltip: '请点击文件名以查阅更多交易详情和DAO签名详情。',
         file_name_tip: '请选择文件',
         file_size: '文件大小',
         file_status: '状态',
@@ -523,6 +524,7 @@ export default {
         detail_DAO_RKH_Address: 'DAO RKH地址',
         detail_Time: '日期',
         uploadFile_title: '上传文件并设置存储时间后，将为您计算预计存储费用',
+        upload_funds: '资金不足？点击此处获取更多测试网代币。',
         Duration: '存储时间',
         Duration_tip: '请输入存储时间',
         Duration_tooltip: '存储时间是指您希望文件在Filecoin网络上存储的期限。',
@@ -557,7 +559,8 @@ export default {
         View_Your_NFT_OpenSea: '点击到OpenSea查看您的NFT',
         View_Your_NFT_Note: '注意：OpenSea需要一些时间加载您的NFT。',
         goTo: '前往',
-        goTopage: '页'
+        goTopage: '页',
+        xhr_tip: '上传文件已更改，请重新上传。'
     },
     billing: {
         search_placeholder: '按交易哈希搜索',

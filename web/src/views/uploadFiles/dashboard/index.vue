@@ -1,29 +1,21 @@
 <template>
   <div id="dealManagement">
-    <div class="tabTaskStyle">
-      <div class="createTask">
-        <!-- name: 'upload_file' -->
-        <router-link :to="{name: 'upload_file'}">
-            {{$t('uploadFile.Upload_More_Files')}}
-        </router-link>
-      </div>
-    </div>
     <div class="form">
       <div class="form_top">
-        <div class="upload_title">{{$t('uploadFile.topTip')}}</div>
         <div class="search_file">
-          <p>{{$t('uploadFile.search_title')}}</p>
-
+          <div class="createTask">
+            <router-link :to="{name: 'upload_file'}">
+                <span>{{$t('uploadFile.Upload_More_Files')}}</span>
+                <i class="el-icon-s-upload"></i>
+            </router-link>
+          </div>
           <div class="search_right">
             <el-input
-              :placeholder="$t('uploadFile.search_input')"
+              :placeholder="$t('uploadFile.search_title')"
               prefix-icon="el-icon-search"
-              v-model="searchValue"
+              v-model="searchValue" clearable
             >
             </el-input>
-            <el-button type="primary" style="background-color: #0b318f" @click="clearAll">
-                        {{ $t("deal.Clear_all") }}
-            </el-button>
           </div>
         </div>
       </div>
@@ -36,7 +28,16 @@
           :empty-text="$t('deal.formNotData')"
            v-loading="loading"
         >
-          <el-table-column prop="file_name" :label="$t('uploadFile.file_name')" min-width="120">
+          <el-table-column prop="file_name" min-width="120">
+            <template slot="header" slot-scope="scope">
+              <div class="tips">
+                {{$t('uploadFile.file_name')}}
+                    
+                <el-tooltip effect="dark" :content="$t('uploadFile.file_name_tooltip')" placement="top">
+                    <img src="@/assets/images/info.png"/>
+                </el-tooltip>
+              </div>
+            </template>
             <template slot-scope="scope">
               <div class="hot-cold-box" @click="toDetail(scope.row.deal_id, scope.row.payload_cid)" style="text-decoration: underline;">
                 {{ scope.row.file_name }}
@@ -1115,7 +1116,7 @@ export default {
         if(limit <= 0){
             return '-'
         }else{
-            size = limit/( 1000 * 1000 * 1000)  //or 1024
+            size = limit/( 1024 * 1024 * 1024)  //or 1000
         }
         return size
         // return Number(size).toFixed(3);
@@ -1149,7 +1150,7 @@ export default {
     formatbytes: function (bytes) {
       if (bytes === 0) return '0 B';
       if (!bytes) return "-";
-      var k = 1000, // or 1024
+      var k = 1024, // or 1000
           sizes = ['bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
           i = Math.floor(Math.log(bytes) / Math.log(k));
 
@@ -1493,9 +1494,27 @@ export default {
         justify-content: space-between;
         width: 100%;
         height: 0.42rem;
+        margin: 0.1rem 0 0;
         p{
           font-size: 0.13rem;
           color: #222;
+        }
+        .createTask {
+          background-color: #fff;
+          border-radius: 0.1rem;
+          a {
+            display: block;
+            padding: 0 0.1rem;
+            margin: 0;
+            background-color: #4326ab;
+            line-height: 2;
+            border-radius: 4px;
+            text-align: center;
+            color: #fff;
+            font-size: 0.16rem;
+            border: 0;
+            outline: none;
+          }
         }
         .search_right {
           display: flex;
@@ -1524,8 +1543,6 @@ export default {
             height: 0.3rem;
             line-height: 0.3rem;
             padding: 0 0.27rem;
-            border-top-right-radius: 0;
-            border-bottom-right-radius: 0;
           }
 
           .el-input__icon {
@@ -2610,9 +2627,10 @@ export default {
       .form_top{
         .search_file{
           flex-wrap: wrap;
+          height: auto;
           .search_right{
             width: 100%;
-            margin: 0.05rem 0 0.2rem;
+            margin: 0.05rem 0 0;
           }
         }
       }

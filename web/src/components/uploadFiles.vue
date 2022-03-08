@@ -448,7 +448,7 @@
                 contract_instance.methods.lockTokenPayment(lockObj)
                 .send(payObject)
                 .on('transactionHash', function(hash){
-                    console.log('hash console:', hash);
+                    // console.log('hash console:', hash);
                     _this.loadMetamaskPay = true
                     _this.loading = false
                     _this.txHash = hash

@@ -15,7 +15,7 @@ type OfflineDealLog struct {
 
 func GetOfflineDealLogsByDealCid(dealCid string) ([]*OfflineDealLog, error) {
 	var offlineDealLogs []*OfflineDealLog
-	err := database.GetDB().Where("deal_cid=?", dealCid).Find(&offlineDealLogs).Error
+	err := database.GetDB().Where("deal_cid=?", dealCid).Order("id desc").Find(&offlineDealLogs).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err

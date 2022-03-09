@@ -29,6 +29,28 @@ func SendDealManager(router *gin.RouterGroup) {
 	router.GET("/dao/signature/deals", GetDealListForDaoToSign)
 	router.PUT("/dao/signature/deals", RecordDealListThatHaveBeenSignedByDao)
 	router.POST("/mint/info", RecordMintInfo)
+	router.GET("/deal/log/:deal_cid", GetDealLogs)
+}
+
+func GetDealLogs(c *gin.Context) {
+	dealCid := strings.Trim(c.Params.ByName("deal_cid"), " ")
+	if strings.Trim(dealCid, " ") == "" {
+		errMsg := "deal cid can not be null"
+		logs.GetLogger().Error(errMsg)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAM_TYPE_ERROR_CODE, errorinfo.HTTP_REQUEST_PARAM_TYPE_ERROR_MSG+":"+errMsg))
+		return
+	}
+
+	offlineDealLogs, err := models.GetOfflineDealLogsByDealCid(dealCid)
+	if err != nil {
+		logs.GetLogger().Error(err.Error())
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.GET_EVENT_FROM_DB_ERROR_CODE, errorinfo.GET_EVENT_FROM_DB_ERROR_MSG+":"+err.Error()))
+		return
+	}
+
+	c.JSON(http.StatusOK, common.CreateSuccessResponse(gin.H{
+		"offline_deal_logs": offlineDealLogs,
+	}))
 }
 
 func RecordDealListThatHaveBeenSignedByDao(c *gin.Context) {

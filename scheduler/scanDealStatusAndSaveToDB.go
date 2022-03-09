@@ -72,6 +72,7 @@ func GetDealInfoByLotusClientAndUpdateInfoToDB() error {
 			logs.GetLogger().Error(err)
 			return err
 		}
+
 		paymentStatus := ""
 		if strings.ToLower(dealInfo.Status) == strings.ToLower(constants.DEAL_STATUS_ACTIVE) {
 			paymentStatus = constants.LOCK_PAYMENT_STATUS_SUCCESS
@@ -93,7 +94,49 @@ func GetDealInfoByLotusClientAndUpdateInfoToDB() error {
 			logs.GetLogger().Error(err)
 			return err
 		}
+
+		err = SaveOfflineDealStatus(v.DealCid, dealInfo.Status, dealInfo.Message)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return err
+		}
 	}
+	return nil
+}
+
+func SaveOfflineDealStatus(dealCid, status, message string) error {
+	dealLog := models.OfflineDealLog{
+		DealCid:  dealCid,
+		Status:   status,
+		Message:  message,
+		CreateAt: strconv.FormatInt(utils.GetEpochInMillis(), 10),
+	}
+
+	offlineDealLogs, err := models.GetOfflineDealLogsByDealCid(dealCid)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	logExists := false
+	for _, offlineDealLog := range offlineDealLogs {
+		if strings.EqualFold(offlineDealLog.Status, status) && strings.EqualFold(offlineDealLog.Message, message) {
+			logExists = true
+		}
+	}
+
+	logs.GetLogger().Info(dealCid, " on chain status:", status, " on chain message:", message)
+	if logExists {
+		logs.GetLogger().Info(dealCid, " deal status not changed")
+		return nil
+	}
+
+	err = database.SaveOne(&dealLog)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
 	return nil
 }
 

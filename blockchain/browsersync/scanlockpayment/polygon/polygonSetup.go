@@ -2,10 +2,11 @@ package polygon
 
 import (
 	"context"
-	"github.com/ethereum/go-ethereum/ethclient"
 	"math/big"
 	"payment-bridge/logs"
 	"time"
+
+	"github.com/ethereum/go-ethereum/ethclient"
 )
 
 type ConnSetup struct {
@@ -39,5 +40,5 @@ func (conn *ConnSetup) GetBlockNumber() (*big.Int, error) {
 }
 
 func init() {
-	ClientInit()
+	//ClientInit()
 }

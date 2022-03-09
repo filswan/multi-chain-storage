@@ -121,7 +121,7 @@ func DoCreateTask() error {
 					confUpload := &clientmodel.ConfUpload{
 						StorageServerType:           libconstants.STORAGE_SERVER_TYPE_IPFS_SERVER,
 						IpfsServerDownloadUrlPrefix: config.GetConfig().IpfsServer.DownloadUrlPrefix,
-						IpfsServerUploadUrl:         config.GetConfig().IpfsServer.UploadUrl,
+						IpfsServerUploadUrlPrefix:   config.GetConfig().IpfsServer.UploadUrl,
 						OutputDir:                   filepath.Dir(v.CarFilePath),
 						InputDir:                    filepath.Dir(v.CarFilePath),
 					}

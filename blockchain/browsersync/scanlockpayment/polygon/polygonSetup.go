@@ -40,5 +40,5 @@ func (conn *ConnSetup) GetBlockNumber() (*big.Int, error) {
 }
 
 func init() {
-	//ClientInit()
+	ClientInit()
 }

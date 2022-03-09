@@ -5,28 +5,31 @@
             <span style="font-size:0.18rem;margin-left:0.05rem">{{$t('deal.backto')}}</span>
         </div>
         <div class="files_title">
-            {{$t('uploadFile.Deal_Detail')}} #{{dealId}}
-            <span class="title" v-if="dealId == 0">
-                <el-tooltip effect="dark" :content="$t('uploadFile.detail_tip01')" placement="top">
-                    <img src="@/assets/images/info.png"/>
-                </el-tooltip>
-            </span>
-            <span v-if="!dealCont.found.locked_fee">
-                <img src="@/assets/images/error.png" />
-                <span>{{$t('uploadFile.no_fund_locked')}}</span>
-            </span>
-            <span v-else-if="dealCont.signed_dao_count >= dealCont.dao_thresh_hold && dealCont.unlock_status">
-                <img src="@/assets/images/dao_success.png" />
-                <span style="color: #3db39e;">{{$t('uploadFile.Successfully_unlocked_funds')}}</span>
-            </span>
-            <span v-else-if="dealCont.signed_dao_count >= dealCont.dao_thresh_hold && !dealCont.unlock_status">
-                <img src="@/assets/images/dao_waiting.png" />
-                <span>{{$t('uploadFile.Successfully_signed')}} {{dealCont.signed_dao_count}}/{{dealCont.dao_total_count}} </span>
-            </span>
-            <span v-else>
-                <img src="@/assets/images/dao_waiting.png" />
-                <span>{{$t('uploadFile.Waiting_for_signature')}} {{dealCont.signed_dao_count}}/{{dealCont.dao_total_count}} </span>
-            </span>
+            <div class="flex_left">
+                {{$t('uploadFile.Deal_Detail')}} #{{dealId}}
+                <span class="title" v-if="dealId == 0">
+                    <el-tooltip effect="dark" :content="$t('uploadFile.detail_tip01')" placement="top">
+                        <img src="@/assets/images/info.png"/>
+                    </el-tooltip>
+                </span>
+                <span v-if="!dealCont.found.locked_fee">
+                    <img src="@/assets/images/error.png" />
+                    <span>{{$t('uploadFile.no_fund_locked')}}</span>
+                </span>
+                <span v-else-if="dealCont.signed_dao_count >= dealCont.dao_thresh_hold && dealCont.unlock_status">
+                    <img src="@/assets/images/dao_success.png" />
+                    <span style="color: #3db39e;">{{$t('uploadFile.Successfully_unlocked_funds')}}</span>
+                </span>
+                <span v-else-if="dealCont.signed_dao_count >= dealCont.dao_thresh_hold && !dealCont.unlock_status">
+                    <img src="@/assets/images/dao_waiting.png" />
+                    <span>{{$t('uploadFile.Successfully_signed')}} {{dealCont.signed_dao_count}}/{{dealCont.dao_total_count}} </span>
+                </span>
+                <span v-else>
+                    <img src="@/assets/images/dao_waiting.png" />
+                    <span>{{$t('uploadFile.Waiting_for_signature')}} {{dealCont.signed_dao_count}}/{{dealCont.dao_total_count}} </span>
+                </span>
+            </div>
+            <el-button type="primary" size="small" @click="getDealLogsData">{{$t('uploadFile.view_deal_logs')}}</el-button>
         </div>
         <div class="upload">
             <el-row>
@@ -144,6 +147,26 @@
             </el-table>
         </div>
 
+        <el-dialog
+            :title="$t('uploadFile.deal_logs')"
+            :visible.sync="dialogVisible"
+            :width="width" custom-class="dealLogs">
+            <div class="block" v-loading="loadlogs">
+                <el-timeline v-if="dealLogsData.length>0">
+                    <el-timeline-item v-for="(item, n) in dealLogsData" :key="n" :timestamp="item.create_at" placement="top">
+                        <el-card>
+                            <h4>{{item.status}}</h4>
+                            <p>{{item.message}}</p>
+                        </el-card>
+                    </el-timeline-item>
+                </el-timeline>
+                <p v-else class="noLogs">{{$t('uploadFile.no_logs')}}</p>
+            </div>
+            <!-- <span slot="footer" class="dialog-footer">
+                <el-button type="primary" size="small" @click="dialogVisible = false">Close</el-button>
+            </span> -->
+        </el-dialog>
+
         <!-- 回到顶部 -->
         <el-backtop target=".content-box" :bottom="40" :right="20"></el-backtop>
     </div>
@@ -165,7 +188,11 @@ export default {
                 found: {}
             },
             daoCont: [],
-            copy_filename: ''
+            copy_filename: '',
+            dialogVisible: false,
+            width: document.body.clientWidth>600?'550px':'95%',
+            loadlogs: true,
+            dealLogsData: []
       };
     },
     computed: {},
@@ -272,8 +299,41 @@ export default {
                 console.log(error);
                 _this.loading = false
             });
-
-
+        },
+        getDealLogsData() {
+            let _this = this
+            _this.dialogVisible = true
+            _this.loadlogs = true
+            let obj = {
+                wallet_address: _this.$store.getters.metaAddress
+            }
+            axios.get(`${process.env.BASE_API}offlinedeal/log/${_this.dealId}?${QS.stringify(obj)}`, {headers: {
+            // axios.get(`./static/deal_logs.json`, {headers: {
+                    // 'Authorization':"Bearer "
+            }}).then((response) => {
+                let json = response.data
+                _this.loadlogs = false
+                if (json.status == 'success') {
+                    if(!json.data) return false
+                    if(json.data.logs){
+                        _this.dealLogsData = json.data.logs
+                        _this.dealLogsData.map(item => {
+                            item.create_at =  
+                                item.create_at? 
+                                    moment(new Date(parseInt(item.create_at * 1000))).format(
+                                        "YYYY-MM-DD HH:mm:ss"
+                                    )
+                                    : "-";
+                        })
+                    }
+                }else{
+                    _this.$message.error(json.message);
+                    return false
+                }
+            }).catch(function (error) {
+                console.log(error);
+                _this.loadlogs = false
+            });
         }
     },
     mounted() {
@@ -319,6 +379,68 @@ export default {
 
 
 <style scoped lang="scss">
+.el-dialog__wrapper /deep/{
+    display: flex;
+    .dealLogs{
+        height: 80%;
+        margin-top: 0 !important;
+        top: 10%;
+        .el-dialog__header{
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: #000;
+            font-size: 20px;
+            padding: 0.15rem;
+            .el-dialog__headerbtn{
+                position: relative;
+                top: auto;
+                right: auto;
+                font-size: inherit;
+                i{
+                    font-size: inherit;
+                    &:hover{
+                        color: #0b318f;
+                    }
+                }
+            }
+            .el-dialog__title{
+                font-size: inherit;
+            }
+        }
+        .el-dialog__body {
+            height: calc(100% - 24px - 0.55rem);
+            padding: 0.15rem 0.2rem 0;
+            font-size: 14px;
+            overflow-y: scroll;
+            .block{
+                position: relative;
+                min-height: 100px;
+                .noLogs{
+                    font-size: 16px;
+                    text-align: center;
+                }
+                .el-loading-mask{
+                    .el-loading-spinner{
+                        top: 50%;
+                    }
+                }
+            }
+        }
+        .el-dialog__footer{
+            padding: 0 0.2rem 0.1rem;
+            .dialog-footer{
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+                .el-button{
+                    font-size: 13px;
+                }
+            }
+        }
+    }
+
+}
 #dealManagement{
     padding: 0.25rem 0.2rem 0.2rem;
     .backTo{
@@ -331,8 +453,10 @@ export default {
         cursor: pointer;
     }
     .files_title{
+        width: 100%;
         display: flex;
         align-items: center;
+        justify-content: space-between;
         font-size: 0.16rem;
         font-weight: bold;
         line-height: 2;
@@ -341,44 +465,66 @@ export default {
             font-size: 16px;
             flex-wrap: wrap;
         }
-        img{
-            width: 20px;
-            height: 20px;
-            margin: 0 0 0 15px;
-            cursor: pointer;
-        }
-        span{
+        .flex_left{
             display: flex;
             align-items: center;
-            padding-left: 5px;
-            color: red;
-            font-size: 0.145rem;
             @media screen and (max-width:600px){
-                font-size: 14px;
+                width: 100%;
+                font-size: 16px;
+                flex-wrap: wrap;
             }
-        }
-        .title{
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            padding: 0;
-            line-height: 1.5;
-            text-align: center;
-            white-space: normal;
-            color: red;
-            text-shadow: 0 0 black;
-            text-indent: 0;
-            font-size: 13px;
-            font-weight: normal;
             img{
-                width: 0.16rem;
-                height: 0.16rem;
-                margin: 0 0 0 5px;
+                width: 20px;
+                height: 20px;
+                margin: 0 0 0 15px;
                 cursor: pointer;
                 @media screen and (max-width:600px){
                     width: 15px;
                     height: 15px;
+                    margin: 0;
                 }
+            }
+            span{
+                display: flex;
+                align-items: center;
+                padding-left: 5px;
+                color: red;
+                font-size: 0.145rem;
+                @media screen and (max-width:600px){
+                    font-size: 14px;
+                }
+            }
+            .title{
+                display: flex;
+                align-items: center;
+                justify-content: flex-start;
+                padding: 0;
+                line-height: 1.5;
+                text-align: center;
+                white-space: normal;
+                color: red;
+                text-shadow: 0 0 black;
+                text-indent: 0;
+                font-size: 13px;
+                font-weight: normal;
+                img{
+                    width: 0.16rem;
+                    height: 0.16rem;
+                    margin: 0 0 0 5px;
+                    cursor: pointer;
+                    @media screen and (max-width:600px){
+                        width: 15px;
+                        height: 15px;
+                    }
+                }
+            }
+        }
+        .el-button {
+            padding: 0.06rem 0.1rem;
+            font-size: 14px;
+            border-radius: 0.07rem;
+            @media screen and (max-width:600px){
+                margin: 0 0 5px;
             }
         }
     }

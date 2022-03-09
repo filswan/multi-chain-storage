@@ -9,10 +9,25 @@ function Init(callback){
     ethereum
     .request({ method: 'eth_requestAccounts' })
     .then((accounts) => {
-      var currentProvider = web3.currentProvider;
       // var Web3 = web3js.getWeb3();
-      web3 = new Web3(currentProvider);
-      web3.setProvider(currentProvider);
+      if (window.ethereum) {
+        web3 = new Web3(ethereum);
+        web3.setProvider(ethereum);
+      }
+      // Legacy dapp browsers...
+      else if (window.web3) {
+        // Use Mist/MetaMask's provider.
+        web3 = window.web3;
+        console.log("Injected web3 detected.");
+      }
+      // Fallback to localhost; use dev console port by default...
+      else {
+        var currentProvider = web3.currentProvider;
+        // var Web3 = web3js.getWeb3();
+        web3 = new Web3(currentProvider);
+        web3.setProvider(currentProvider);
+        console.log("No web3 instance injected, using Local web3.");
+      }
       if(!accounts){
         return false
       }

@@ -44,16 +44,6 @@ export default new Router({
                     path: '/upload_file',
                     name: 'upload_file',
                     component: upload_file,
-                    beforeEnter: (to, from, next) => {
-                        if (!sessionStorage.getItem('metaAddress')) {
-                            next({
-                                path: '/metamask_login',
-                                query: { redirect: to.fullPath }
-                            })
-                        } else {
-                            next()
-                        }
-                    },
                     meta: {
                         metaInfo: {
                             title: 'Upload File',

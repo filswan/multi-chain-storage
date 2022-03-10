@@ -304,10 +304,11 @@ export default {
             let _this = this
             _this.dialogVisible = true
             _this.loadlogs = true
+
             let obj = {
                 wallet_address: _this.$store.getters.metaAddress
             }
-            axios.get(`${process.env.BASE_API}offlinedeal/log/${_this.dealId}?${QS.stringify(obj)}`, {headers: {
+            axios.get(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/storage/deal/log/${_this.dealId}?${QS.stringify(obj)}`, {headers: {
             // axios.get(`./static/deal_logs.json`, {headers: {
                     // 'Authorization':"Bearer "
             }}).then((response) => {
@@ -315,12 +316,12 @@ export default {
                 _this.loadlogs = false
                 if (json.status == 'success') {
                     if(!json.data) return false
-                    if(json.data.logs){
-                        _this.dealLogsData = json.data.logs
+                    if(json.data.offline_deal_logs){
+                        _this.dealLogsData = json.data.offline_deal_logs
                         _this.dealLogsData.map(item => {
                             item.create_at =  
                                 item.create_at? 
-                                    moment(new Date(parseInt(item.create_at * 1000))).format(
+                                    moment(new Date(parseInt(item.create_at))).format(
                                         "YYYY-MM-DD HH:mm:ss"
                                     )
                                     : "-";

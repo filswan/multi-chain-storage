@@ -452,7 +452,7 @@ export default {
             });
             // 监听metamask网络断开
             ethereum.on('disconnect', (code, reason) => {
-                // console.log(`Ethereum Provider connection closed: ${reason}. Code: ${code}`);
+                console.log(`Ethereum Provider connection closed: ${reason}. Code: ${code}`);
             });
         },
         signOutFun() {
@@ -505,8 +505,8 @@ export default {
             }, false);
         }
 
+        _this.commonParam()
         if(_this.metaAddress){
-            _this.commonParam()
             _this.signFun()
         }
         _this.fn()

@@ -3,11 +3,6 @@ package scheduler
 import (
 	"encoding/json"
 	"fmt"
-	clientmodel "github.com/filswan/go-swan-client/model"
-	"github.com/filswan/go-swan-client/subcommand"
-	libconstants "github.com/filswan/go-swan-lib/constants"
-	libutils "github.com/filswan/go-swan-lib/utils"
-	"github.com/robfig/cron"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -18,6 +13,12 @@ import (
 	"payment-bridge/logs"
 	"payment-bridge/models"
 	"time"
+
+	clientmodel "github.com/filswan/go-swan-client/model"
+	"github.com/filswan/go-swan-client/subcommand"
+	libconstants "github.com/filswan/go-swan-lib/constants"
+	libutils "github.com/filswan/go-swan-lib/utils"
+	"github.com/robfig/cron"
 )
 
 func SendDealScheduler() {
@@ -123,6 +124,7 @@ func sendDeal(taskUuid string, file *models.DealFile) (string, error) {
 		LotusClientAccessToken:       config.GetConfig().Lotus.AccessToken,
 		Duration:                     file.Duration,
 		RelativeEpochFromMainNetwork: config.GetConfig().SwanTask.RelativeEpochFromMainNetwork,
+		TransferType:                 "manual", //means offline deals
 	}
 	confDeal.DealSourceIds = append(confDeal.DealSourceIds, libconstants.TASK_SOURCE_ID_SWAN_PAYMENT)
 

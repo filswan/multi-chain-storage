@@ -290,6 +290,10 @@
             },
             submitForm(formName) {
                 let _this = this;
+                if(!_this.metaAddress || _this.metaAddress == 'undefined') {
+                    _this.$router.push({ path: '/metamask_login' })
+                    return false
+                }
                 _this.$refs[formName].validate((valid) => {
                     if (valid) {
                         if(_this.metaAddress&&_this.networkID!=80001) {

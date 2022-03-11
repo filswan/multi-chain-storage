@@ -80,7 +80,10 @@
                     </div>
                 </div>
                 <div class="upload_bot">
-                    <el-button type="primary" @click="submitForm('ruleForm')">{{$t('deal.Submit')}}</el-button>
+                    <el-button type="primary" :class="{'no_login': !metaAddress || metaAddress == 'undefined'}"
+                         @click="!metaAddress || metaAddress == 'undefined' ? signFun() : submitForm('ruleForm')">
+                         {{ !metaAddress || metaAddress == 'undefined' ? $t('fs3.Connect_Wallet') : $t('deal.Submit')}}
+                    </el-button>
                     <br />
                     <div class="found">
                         <a :href="found_link" target="_blank">{{$t('uploadFile.upload_funds')}}</a>
@@ -164,18 +167,9 @@
             var validateDuration = (rule, value, callback) => {
                 if (!value) {
                     return callback(new Error(that.$t('uploadFile.Duration_tip')));
+                }else {
+                    callback();
                 }
-                setTimeout(() => {
-                    if (value < 180) {
-                        callback(new Error(' '));
-                        callback(that.calculation(1));
-                    }else if (value > 540) {
-                        callback(new Error(' '));
-                        callback(that.calculation(2));
-                    } else {
-                        callback(that.calculation());
-                    }
-                }, 100);
             };
             return {
                 tableData: {
@@ -278,12 +272,20 @@
                         return;
                 }
             },
-            submitForm(formName) {
-                let _this = this;
-                if(!_this.metaAddress || _this.metaAddress == 'undefined') {
-                    _this.$router.push({ path: '/metamask_login' })
+            signFun(){
+                let _this = this
+                if(!_this.metaAddress || _this.metaAddress == 'undefined'){
+                    NCWeb3.Init(addr=>{
+                        _this.$nextTick(() => {
+                            _this.$store.dispatch('setMetaAddress', addr)
+                            _this.$emit("getMetamaskLogin", true)
+                        })
+                    })
                     return false
                 }
+            },
+            submitForm(formName) {
+                let _this = this;
                 _this.$refs[formName].validate((valid) => {
                     if (valid) {
                         if(_this.metaAddress&&_this.networkID!=80001) {
@@ -322,90 +324,99 @@
                                 _this.loading = true
                                 _this.fileUploadVisible = true
 
+                                let uploadRes = new Promise((resolve, reject) => {
+                                    let xhr = new XMLHttpRequest()
+                                    xhr.open("POST", `${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/storage/ipfs/upload`, true);   // 设置xhr得请求方式和url。
+                                    xhr.withCredentials = false
+                                    const token = _this.$store.getters.accessToken
+                                    if (token) {
+                                        // xhr.setRequestHeader(
+                                        // "Authorization",
+                                        // "Bearer " + _this.$store.getters.accessToken
+                                        // )
+                                    }
+                                    let i = 0;
 
-                                let xhr = new XMLHttpRequest()
-                                xhr.open("POST", `${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/storage/ipfs/upload`, true);   // 设置xhr得请求方式和url。
-                                xhr.withCredentials = false
-                                const token = _this.$store.getters.accessToken
-                                if (token) {
-                                    // xhr.setRequestHeader(
-                                    // "Authorization",
-                                    // "Bearer " + _this.$store.getters.accessToken
-                                    // )
-                                }
-                                let i = 0;
-
-                                xhr.onreadystatechange = function() {   // 等待ajax请求完成。
-                                    if (xhr.status === 200) { 
-                                        if(xhr.responseText){
-                                            _this.fileUploadVisible = false
-                                            let res = JSON.parse(xhr.responseText)
-                                            i += 1
-                                            if(i <= 1){
-                                                if(res.status == "success"){
-                                                    if(res.data.need_pay == 0 || res.data.need_pay == 2 || res.data.need_pay == 4){
-                                                        contract_erc20.methods.allowance(_this.gatewayContractAddress, _this.metaAddress).call()
-                                                        .then(resultUSDC => {
-                                                            console.log('allowance：'+ resultUSDC);
-                                                            if(resultUSDC < web3.utils.toWei(_this.ruleForm.amount, 'ether')){
-                                                                contract_erc20.methods.approve(_this.gatewayContractAddress, web3.utils.toWei(_this.ruleForm.amount, 'ether')).send({from:  _this.metaAddress})
-                                                                .then(receipt => {
-                                                                    // console.log(receipt)
-                                                                })
-                                                                .catch(error => {
-                                                                    // console.log('errorerrorerror', error)
-                                                                })
-                                                            }
-                                                            _this.contractSend(res.data.payload_cid)
-                                                        })
-                                                    }else if(res.data.need_pay == 3){
-                                                        _this.paymentPopup01 = true
-                                                        _this.loading = false
-                                                        return false
+                                    xhr.onreadystatechange = function() {   // 等待ajax请求完成。
+                                        if (xhr.status === 200) { 
+                                            if(xhr.responseText){
+                                                _this.fileUploadVisible = false
+                                                let res = JSON.parse(xhr.responseText)
+                                                i += 1
+                                                if(i <= 1){
+                                                    if(res.status == "success"){
+                                                        if(res.data.need_pay == 0 || res.data.need_pay == 2 || res.data.need_pay == 4){
+                                                            contract_erc20.methods.allowance(_this.gatewayContractAddress, _this.metaAddress).call()
+                                                            .then(resultUSDC => {
+                                                                console.log('allowance：'+ resultUSDC);
+                                                                if(resultUSDC < web3.utils.toWei(_this.ruleForm.amount, 'ether')){
+                                                                    contract_erc20.methods.approve(_this.gatewayContractAddress, web3.utils.toWei(_this.ruleForm.amount, 'ether')).send({from:  _this.metaAddress})
+                                                                    .then(receipt => {
+                                                                        // console.log(receipt)
+                                                                    })
+                                                                    .catch(error => {
+                                                                        // console.log('errorerrorerror', error)
+                                                                    })
+                                                                }
+                                                                _this.contractSend(res.data.payload_cid)
+                                                            })
+                                                        }else if(res.data.need_pay == 3){
+                                                            _this.paymentPopup01 = true
+                                                            _this.loading = false
+                                                            return false
+                                                        }else{
+                                                            // res.data.need_pay == 1 && 其他情况
+                                                            _this.paymentPopup = true
+                                                            _this.loading = false
+                                                            return false
+                                                        }
+                                                        resolve("upload success")
                                                     }else{
-                                                        // res.data.need_pay == 1 && 其他情况
-                                                        _this.paymentPopup = true
-                                                        _this.loading = false
-                                                        return false
+                                                        _this.$message.error(_this.$t('uploadFile.xhr_tip'))
+                                                        reject(_this.$t('uploadFile.xhr_tip'))
                                                     }
-                                                }else{
-                                                    _this.$message.error(_this.$t('uploadFile.xhr_tip'))
                                                 }
                                             }
+                                        } else {
+                                            _this.loading = false
+                                            _this.fileUploadVisible = false
                                         }
-                                    } else {
-                                        _this.loading = false
-                                        _this.fileUploadVisible = false
-                                    }
-                                    xhr.upload.addEventListener("error", event => {
-                                        _this.$message.error(_this.$t('uploadFile.xhr_tip'))
-                                    })
+                                        xhr.upload.addEventListener("error", event => {
+                                            _this.$message.error(_this.$t('uploadFile.xhr_tip'))
+                                            reject(_this.$t('uploadFile.xhr_tip'))
+                                        })
 
-                                    xhr.upload.addEventListener("progress", event => {
+                                        xhr.upload.addEventListener("progress", event => {
+                                            if (event.lengthComputable) {
+                                                let loaded = event.loaded
+                                                let total = event.total
+                                                // console.log('total-loaded', total, loaded)
+                                                let percentIn = Math.floor(event.loaded / event.total * 100);
+                                                // 设置进度显示
+                                                _this.percentIn = percentIn+'%'
+                                                // console.log(percentIn+'%-')
+                                            }
+                                        })
+                                    };
+                                    // 获取上传进度
+                                    xhr.upload.onprogress = function(event) { 
+                                        // console.log('event.loaded', event.loaded)
+                                        // console.log('event.total', event.total)
                                         if (event.lengthComputable) {
-                                            let loaded = event.loaded
-                                            let total = event.total
-                                            // console.log('total-loaded', total, loaded)
                                             let percentIn = Math.floor(event.loaded / event.total * 100);
                                             // 设置进度显示
                                             _this.percentIn = percentIn+'%'
-                                            // console.log(percentIn+'%-')
+                                            // console.log(percentIn+'%')
                                         }
-                                    })
-                                };
-                                // 获取上传进度
-                                xhr.upload.onprogress = function(event) { 
-                                    // console.log('event.loaded', event.loaded)
-                                    // console.log('event.total', event.total)
-                                    if (event.lengthComputable) {
-                                        let percentIn = Math.floor(event.loaded / event.total * 100);
-                                        // 设置进度显示
-                                        _this.percentIn = percentIn+'%'
-                                        // console.log(percentIn+'%')
-                                    }
-                                };
-                                xhr.send(formData);
-                                return false
+                                    };
+                                    xhr.send(formData);
+                                    return false
+                                })
+                                Promise.all([uploadRes]).then((result) => {
+                                    console.log(result) 
+                                }).catch((error) => {
+                                    console.log(error)
+                                })
                             })
                         }
                     } else {
@@ -1120,6 +1131,9 @@
                     font-size: 0.1372rem;
                     color: #fff;
                     border: 0;
+                }
+                .no_login{
+                    background: #f56c6c;
                 }
                 .found{
                     width: 100%;

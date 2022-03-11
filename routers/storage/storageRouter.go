@@ -200,6 +200,8 @@ func GetDealListFromFilink(c *gin.Context) {
 	if len(fileList) > 0 {
 		result.Data.Data.Deal.IpfsUrl = fileList[0].IpfsUrl
 		result.Data.Data.Deal.FileName = fileList[0].FileName
+		result.Data.Data.Deal.MessageCid = result.Data.Data.Deal.DealCid
+		result.Data.Data.Deal.DealCid = fileList[0].DealCid
 	}
 	threshHold, err := GetThreshHold()
 	if err != nil {

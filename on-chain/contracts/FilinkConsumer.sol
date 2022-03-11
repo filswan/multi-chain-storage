@@ -26,28 +26,6 @@ contract FilinkConsumer is ChainlinkClient {
 
     uint256 public price;
 
-    
-    /**
-     * Network: matic test
-     * Oracle: 0x0bDDCD124709aCBf9BB3F824EbC61C87019888bb (Chainlink Devrel   
-     * Node)
-     * Chainlink address: 0x326C977E6efc84E512bB9C30f76E30c160eD06FB
-     * post -> bytes32
-     * Job ID: 35738ec3cf9f4fd296b17bb91fdda32e
-     * Fee: 0.01 LINK
-     */
-
-    // function initialize(address admin, address _chainlinkToken, address _oracle, bytes32 _jobId, uint256 _fee) public initializer {
-    //     __Ownable_init();
-    //     __AccessControl_init();
-    //     _setupRole(DEFAULT_ADMIN_ROLE, admin);
-    //     setChainlinkToken(_chainlinkToken);
-    //     oracle = _oracle;
-    //     jobId = _jobId;
-    //     fee = _fee; // (Varies by network and job)
-    // }
-
-
     constructor(address _chainlinkToken, address _oracle, uint256 _fee) {
         setChainlinkToken(_chainlinkToken);
         oracle = _oracle;
@@ -73,9 +51,12 @@ contract FilinkConsumer is ChainlinkClient {
         require(mapDealPrice[deal] == 0, "deal price is already on-chain, call getPrice(deal)");
 
         Chainlink.Request memory request = buildChainlinkRequest(jobId, address(this), this.fulfill.selector);
+
+        string memory params = concatenate(deal, "?network=filecoin_mainnet");
         
         // Set the URL to perform the GET request on
-        request.add("get", concatenate("https://cxq4eshb10.execute-api.us-east-1.amazonaws.com/default/test2?deal=", deal));
+        request.add("get", concatenate("http://35.168.51.2:7886/deal/", params));
+
         // request.add("deal", deal);
 
         request.add("path", "data.deal.storage_price");

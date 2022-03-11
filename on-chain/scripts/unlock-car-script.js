@@ -24,13 +24,13 @@ async function main() {
   const contract = await hre.ethers.getContractFactory("SwanPayment");
   const paymentInstance = await contract.attach(gatewayContractAddress);
 
-  const tx = await paymentInstance.connect(payer).unlockTokenPayment({
+  const tx = await paymentInstance.connect(payer).unlockCarPayment({
     id: cid,
     orderId: "",
-    dealId: "1234",
+    dealId: "63053",
     amount: "0",
     recipient: recipientAddress, //todo:
-  }, overrides);
+  }, ["cid1","cid2"], ["size1", "size2"], overrides);
 
   await tx.wait();
 }

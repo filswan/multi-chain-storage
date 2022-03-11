@@ -569,10 +569,12 @@ export default {
       // console.log(row)
       _this.payRow = row
       _this.payRow.storage_cost = row.file_size_byte * row.duration * _this.storage / 365
-      _this.payRow.amount_minprice = Number(_this.payRow.storage_cost * _this.biling_price).toFixed(9)
-      _this.cost.storage_cost_low = Number(_this.payRow.storage_cost * _this.biling_price * 2).toFixed(9)
-      _this.cost.storage_cost_average = Number(_this.payRow.storage_cost * _this.biling_price * 3).toFixed(9)
-      _this.cost.storage_cost_high = Number(_this.payRow.storage_cost * _this.biling_price * 5).toFixed(9)
+      let _price = _this.payRow.storage_cost * _this.biling_price
+      let number_price = Number(_price).toFixed(9)
+      _this.payRow.amount_minprice = number_price > 0.000000001 ? number_price : '0.0000000005'
+      _this.cost.storage_cost_low = number_price > 0 ? Number(_price * 2).toFixed(9) : '0.000000001'
+      _this.cost.storage_cost_average = number_price > 0 ? Number(_price * 3).toFixed(9) : '0.000000002'
+      _this.cost.storage_cost_high = number_price > 0 ? Number(_price * 5).toFixed(9) : '0.000000003'
 
       _this.payVisible = true
       return false

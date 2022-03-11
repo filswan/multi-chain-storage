@@ -89,7 +89,10 @@
                     </div>
                 </div>
                 <div class="upload_bot">
-                    <el-button type="primary" @click="submitForm('ruleForm')">{{$t('deal.Submit')}}</el-button>
+                    <el-button type="primary" :class="{'no_login': !metaAddress || metaAddress == 'undefined'}"
+                         @click="!metaAddress || metaAddress == 'undefined' ? signFun() : submitForm('ruleForm')">
+                         {{ !metaAddress || metaAddress == 'undefined' ? $t('fs3.Connect_Wallet') : $t('deal.Submit')}}
+                    </el-button>
                     <br />
                     <div class="found">
                         <a :href="found_link" target="_blank">{{$t('uploadFile.upload_funds')}}</a>
@@ -173,18 +176,9 @@
             var validateDuration = (rule, value, callback) => {
                 if (!value) {
                     return callback(new Error(that.$t('uploadFile.Duration_tip')));
+                }else {
+                    callback();
                 }
-                setTimeout(() => {
-                    if (value < 180) {
-                        callback(new Error(' '));
-                        callback(that.calculation(1));
-                    }else if (value > 540) {
-                        callback(new Error(' '));
-                        callback(that.calculation(2));
-                    } else {
-                        callback(that.calculation());
-                    }
-                }, 100);
             };
             return {
                 tableData: {
@@ -288,12 +282,20 @@
                         return;
                 }
             },
-            submitForm(formName) {
-                let _this = this;
-                if(!_this.metaAddress || _this.metaAddress == 'undefined') {
-                    _this.$router.push({ path: '/metamask_login' })
+            signFun(){
+                let _this = this
+                if(!_this.metaAddress || _this.metaAddress == 'undefined'){
+                    NCWeb3.Init(addr=>{
+                        _this.$nextTick(() => {
+                            _this.$store.dispatch('setMetaAddress', addr)
+                            _this.$emit("getMetamaskLogin", true)
+                        })
+                    })
                     return false
                 }
+            },
+            submitForm(formName) {
+                let _this = this;
                 _this.$refs[formName].validate((valid) => {
                     if (valid) {
                         if(_this.metaAddress&&_this.networkID!=80001) {
@@ -1119,6 +1121,9 @@
                     font-size: 0.1372rem;
                     color: #fff;
                     border: 0;
+                }
+                .no_login{
+                    background: #f56c6c;
                 }
                 .found{
                     width: 100%;

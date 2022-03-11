@@ -464,6 +464,7 @@ export default {
             this.network.unit = '';
             this.network.center_fail = false
             this.$store.dispatch('setMetaNetworkInfo', JSON.stringify(this.network))
+            if(this.$route.path == '/upload_file') return false
             this.$router.push("/supplierAllBack");
         },
         commonParam(){

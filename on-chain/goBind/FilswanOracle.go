@@ -4,7 +4,6 @@
 package goBind
 
 import (
-	"errors"
 	"math/big"
 	"strings"
 
@@ -18,7 +17,6 @@ import (
 
 // Reference imports to suppress errors if they are not otherwise used.
 var (
-	_ = errors.New
 	_ = big.NewInt
 	_ = strings.NewReader
 	_ = ethereum.NotFound
@@ -28,14 +26,18 @@ var (
 	_ = event.NewSubscription
 )
 
-// FilswanOracleMetaData contains all meta data concerning the FilswanOracle contract.
-var FilswanOracleMetaData = &bind.MetaData{
-	ABI: "[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"previousAdminRole\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"newAdminRole\",\"type\":\"bytes32\"}],\"name\":\"RoleAdminChanged\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"RoleGranted\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"RoleRevoked\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"string\",\"name\":\"cid\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"dealId\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"}],\"name\":\"SignTransaction\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"DAO_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"DEFAULT_ADMIN_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"}],\"name\":\"getRoleAdmin\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getThreshold\",\"outputs\":[{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"grantRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"hasRole\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"admin\",\"type\":\"address\"},{\"internalType\":\"uint8\",\"name\":\"threshold\",\"type\":\"uint8\"}],\"name\":\"initialize\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"cid\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"dealId\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"}],\"name\":\"isPaymentAvailable\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"renounceRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"revokeRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address[]\",\"name\":\"daoUsers\",\"type\":\"address[]\"}],\"name\":\"setDAOUsers\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"filinkAddress\",\"type\":\"address\"}],\"name\":\"setFilinkOracle\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"cid\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"dealId\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"}],\"name\":\"signTransaction\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes4\",\"name\":\"interfaceId\",\"type\":\"bytes4\"}],\"name\":\"supportsInterface\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"threshold\",\"type\":\"uint8\"}],\"name\":\"updateThreshold\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]",
+// FilswanOracleTxOracleInfo is an auto generated low-level Go binding around an user-defined struct.
+type FilswanOracleTxOracleInfo struct {
+	Paid      *big.Int
+	Terms     *big.Int
+	Recipient common.Address
+	Status    bool
+	Flag      bool
+	CidList   []string
 }
 
 // FilswanOracleABI is the input ABI used to generate the binding from.
-// Deprecated: Use FilswanOracleMetaData.ABI instead.
-var FilswanOracleABI = FilswanOracleMetaData.ABI
+const FilswanOracleABI = "[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"previousAdminRole\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"newAdminRole\",\"type\":\"bytes32\"}],\"name\":\"RoleAdminChanged\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"RoleGranted\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"RoleRevoked\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"string\",\"name\":\"cid\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"dealId\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"}],\"name\":\"SignTransaction\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"DAO_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"DEFAULT_ADMIN_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"dealId\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"}],\"name\":\"getCarPaymentVotes\",\"outputs\":[{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"dealId\",\"type\":\"string\"}],\"name\":\"getCidList\",\"outputs\":[{\"internalType\":\"string[]\",\"name\":\"\",\"type\":\"string[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"}],\"name\":\"getRoleAdmin\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"dealId\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"signer\",\"type\":\"address\"}],\"name\":\"getSignatureInfo\",\"outputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"paid\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"terms\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"status\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"flag\",\"type\":\"bool\"},{\"internalType\":\"string[]\",\"name\":\"cidList\",\"type\":\"string[]\"}],\"internalType\":\"structFilswanOracle.TxOracleInfo\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getThreshold\",\"outputs\":[{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"grantRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"hasRole\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"admin\",\"type\":\"address\"},{\"internalType\":\"uint8\",\"name\":\"threshold\",\"type\":\"uint8\"}],\"name\":\"initialize\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"dealId\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"}],\"name\":\"isCarPaymentAvailable\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"cid\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"dealId\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"}],\"name\":\"isPaymentAvailable\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"renounceRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"revokeRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address[]\",\"name\":\"daoUsers\",\"type\":\"address[]\"}],\"name\":\"setDAOUsers\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"filinkAddress\",\"type\":\"address\"}],\"name\":\"setFilinkOracle\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string[]\",\"name\":\"cidList\",\"type\":\"string[]\"},{\"internalType\":\"string\",\"name\":\"dealId\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"}],\"name\":\"signCarTransaction\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"cid\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"dealId\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"}],\"name\":\"signTransaction\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes4\",\"name\":\"interfaceId\",\"type\":\"bytes4\"}],\"name\":\"supportsInterface\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"threshold\",\"type\":\"uint8\"}],\"name\":\"updateThreshold\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
 
 // FilswanOracle is an auto generated Go binding around an Ethereum contract.
 type FilswanOracle struct {
@@ -241,6 +243,68 @@ func (_FilswanOracle *FilswanOracleCallerSession) DEFAULTADMINROLE() ([32]byte, 
 	return _FilswanOracle.Contract.DEFAULTADMINROLE(&_FilswanOracle.CallOpts)
 }
 
+// GetCarPaymentVotes is a free data retrieval call binding the contract method 0x487aa7b6.
+//
+// Solidity: function getCarPaymentVotes(string dealId, address recipient) view returns(uint8)
+func (_FilswanOracle *FilswanOracleCaller) GetCarPaymentVotes(opts *bind.CallOpts, dealId string, recipient common.Address) (uint8, error) {
+	var out []interface{}
+	err := _FilswanOracle.contract.Call(opts, &out, "getCarPaymentVotes", dealId, recipient)
+
+	if err != nil {
+		return *new(uint8), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(uint8)).(*uint8)
+
+	return out0, err
+
+}
+
+// GetCarPaymentVotes is a free data retrieval call binding the contract method 0x487aa7b6.
+//
+// Solidity: function getCarPaymentVotes(string dealId, address recipient) view returns(uint8)
+func (_FilswanOracle *FilswanOracleSession) GetCarPaymentVotes(dealId string, recipient common.Address) (uint8, error) {
+	return _FilswanOracle.Contract.GetCarPaymentVotes(&_FilswanOracle.CallOpts, dealId, recipient)
+}
+
+// GetCarPaymentVotes is a free data retrieval call binding the contract method 0x487aa7b6.
+//
+// Solidity: function getCarPaymentVotes(string dealId, address recipient) view returns(uint8)
+func (_FilswanOracle *FilswanOracleCallerSession) GetCarPaymentVotes(dealId string, recipient common.Address) (uint8, error) {
+	return _FilswanOracle.Contract.GetCarPaymentVotes(&_FilswanOracle.CallOpts, dealId, recipient)
+}
+
+// GetCidList is a free data retrieval call binding the contract method 0xa7a2572c.
+//
+// Solidity: function getCidList(string dealId) view returns(string[])
+func (_FilswanOracle *FilswanOracleCaller) GetCidList(opts *bind.CallOpts, dealId string) ([]string, error) {
+	var out []interface{}
+	err := _FilswanOracle.contract.Call(opts, &out, "getCidList", dealId)
+
+	if err != nil {
+		return *new([]string), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new([]string)).(*[]string)
+
+	return out0, err
+
+}
+
+// GetCidList is a free data retrieval call binding the contract method 0xa7a2572c.
+//
+// Solidity: function getCidList(string dealId) view returns(string[])
+func (_FilswanOracle *FilswanOracleSession) GetCidList(dealId string) ([]string, error) {
+	return _FilswanOracle.Contract.GetCidList(&_FilswanOracle.CallOpts, dealId)
+}
+
+// GetCidList is a free data retrieval call binding the contract method 0xa7a2572c.
+//
+// Solidity: function getCidList(string dealId) view returns(string[])
+func (_FilswanOracle *FilswanOracleCallerSession) GetCidList(dealId string) ([]string, error) {
+	return _FilswanOracle.Contract.GetCidList(&_FilswanOracle.CallOpts, dealId)
+}
+
 // GetRoleAdmin is a free data retrieval call binding the contract method 0x248a9ca3.
 //
 // Solidity: function getRoleAdmin(bytes32 role) view returns(bytes32)
@@ -270,6 +334,37 @@ func (_FilswanOracle *FilswanOracleSession) GetRoleAdmin(role [32]byte) ([32]byt
 // Solidity: function getRoleAdmin(bytes32 role) view returns(bytes32)
 func (_FilswanOracle *FilswanOracleCallerSession) GetRoleAdmin(role [32]byte) ([32]byte, error) {
 	return _FilswanOracle.Contract.GetRoleAdmin(&_FilswanOracle.CallOpts, role)
+}
+
+// GetSignatureInfo is a free data retrieval call binding the contract method 0x4bd72b92.
+//
+// Solidity: function getSignatureInfo(string dealId, address signer) view returns((uint256,uint256,address,bool,bool,string[]))
+func (_FilswanOracle *FilswanOracleCaller) GetSignatureInfo(opts *bind.CallOpts, dealId string, signer common.Address) (FilswanOracleTxOracleInfo, error) {
+	var out []interface{}
+	err := _FilswanOracle.contract.Call(opts, &out, "getSignatureInfo", dealId, signer)
+
+	if err != nil {
+		return *new(FilswanOracleTxOracleInfo), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(FilswanOracleTxOracleInfo)).(*FilswanOracleTxOracleInfo)
+
+	return out0, err
+
+}
+
+// GetSignatureInfo is a free data retrieval call binding the contract method 0x4bd72b92.
+//
+// Solidity: function getSignatureInfo(string dealId, address signer) view returns((uint256,uint256,address,bool,bool,string[]))
+func (_FilswanOracle *FilswanOracleSession) GetSignatureInfo(dealId string, signer common.Address) (FilswanOracleTxOracleInfo, error) {
+	return _FilswanOracle.Contract.GetSignatureInfo(&_FilswanOracle.CallOpts, dealId, signer)
+}
+
+// GetSignatureInfo is a free data retrieval call binding the contract method 0x4bd72b92.
+//
+// Solidity: function getSignatureInfo(string dealId, address signer) view returns((uint256,uint256,address,bool,bool,string[]))
+func (_FilswanOracle *FilswanOracleCallerSession) GetSignatureInfo(dealId string, signer common.Address) (FilswanOracleTxOracleInfo, error) {
+	return _FilswanOracle.Contract.GetSignatureInfo(&_FilswanOracle.CallOpts, dealId, signer)
 }
 
 // GetThreshold is a free data retrieval call binding the contract method 0xe75235b8.
@@ -332,6 +427,37 @@ func (_FilswanOracle *FilswanOracleSession) HasRole(role [32]byte, account commo
 // Solidity: function hasRole(bytes32 role, address account) view returns(bool)
 func (_FilswanOracle *FilswanOracleCallerSession) HasRole(role [32]byte, account common.Address) (bool, error) {
 	return _FilswanOracle.Contract.HasRole(&_FilswanOracle.CallOpts, role, account)
+}
+
+// IsCarPaymentAvailable is a free data retrieval call binding the contract method 0x72f42a62.
+//
+// Solidity: function isCarPaymentAvailable(string dealId, address recipient) view returns(bool)
+func (_FilswanOracle *FilswanOracleCaller) IsCarPaymentAvailable(opts *bind.CallOpts, dealId string, recipient common.Address) (bool, error) {
+	var out []interface{}
+	err := _FilswanOracle.contract.Call(opts, &out, "isCarPaymentAvailable", dealId, recipient)
+
+	if err != nil {
+		return *new(bool), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
+
+	return out0, err
+
+}
+
+// IsCarPaymentAvailable is a free data retrieval call binding the contract method 0x72f42a62.
+//
+// Solidity: function isCarPaymentAvailable(string dealId, address recipient) view returns(bool)
+func (_FilswanOracle *FilswanOracleSession) IsCarPaymentAvailable(dealId string, recipient common.Address) (bool, error) {
+	return _FilswanOracle.Contract.IsCarPaymentAvailable(&_FilswanOracle.CallOpts, dealId, recipient)
+}
+
+// IsCarPaymentAvailable is a free data retrieval call binding the contract method 0x72f42a62.
+//
+// Solidity: function isCarPaymentAvailable(string dealId, address recipient) view returns(bool)
+func (_FilswanOracle *FilswanOracleCallerSession) IsCarPaymentAvailable(dealId string, recipient common.Address) (bool, error) {
+	return _FilswanOracle.Contract.IsCarPaymentAvailable(&_FilswanOracle.CallOpts, dealId, recipient)
 }
 
 // IsPaymentAvailable is a free data retrieval call binding the contract method 0x580e75f1.
@@ -572,6 +698,27 @@ func (_FilswanOracle *FilswanOracleSession) SetFilinkOracle(filinkAddress common
 // Solidity: function setFilinkOracle(address filinkAddress) returns(bool)
 func (_FilswanOracle *FilswanOracleTransactorSession) SetFilinkOracle(filinkAddress common.Address) (*types.Transaction, error) {
 	return _FilswanOracle.Contract.SetFilinkOracle(&_FilswanOracle.TransactOpts, filinkAddress)
+}
+
+// SignCarTransaction is a paid mutator transaction binding the contract method 0xbaff9766.
+//
+// Solidity: function signCarTransaction(string[] cidList, string dealId, address recipient) returns()
+func (_FilswanOracle *FilswanOracleTransactor) SignCarTransaction(opts *bind.TransactOpts, cidList []string, dealId string, recipient common.Address) (*types.Transaction, error) {
+	return _FilswanOracle.contract.Transact(opts, "signCarTransaction", cidList, dealId, recipient)
+}
+
+// SignCarTransaction is a paid mutator transaction binding the contract method 0xbaff9766.
+//
+// Solidity: function signCarTransaction(string[] cidList, string dealId, address recipient) returns()
+func (_FilswanOracle *FilswanOracleSession) SignCarTransaction(cidList []string, dealId string, recipient common.Address) (*types.Transaction, error) {
+	return _FilswanOracle.Contract.SignCarTransaction(&_FilswanOracle.TransactOpts, cidList, dealId, recipient)
+}
+
+// SignCarTransaction is a paid mutator transaction binding the contract method 0xbaff9766.
+//
+// Solidity: function signCarTransaction(string[] cidList, string dealId, address recipient) returns()
+func (_FilswanOracle *FilswanOracleTransactorSession) SignCarTransaction(cidList []string, dealId string, recipient common.Address) (*types.Transaction, error) {
+	return _FilswanOracle.Contract.SignCarTransaction(&_FilswanOracle.TransactOpts, cidList, dealId, recipient)
 }
 
 // SignTransaction is a paid mutator transaction binding the contract method 0x5d9078aa.

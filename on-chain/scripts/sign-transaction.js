@@ -10,7 +10,7 @@ async function main() {
   const daoOracleInstance = await contract.attach(oracleDAOContractAddress);
 
 
-  const cid = "bafykbzacea4cz7kz77wx6zcqajd3fykb3zwmewiggy4x33wacuwads5favmf2";
+  const cid = "abcd2bzacedh6keeksywaoa3wjryqzihqixyfekqgfljfosrcoyaja";
   const orderId = "";
   const dealId = "'4109'";
 

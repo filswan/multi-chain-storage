@@ -17,7 +17,7 @@ async function main() {
 
   const gatewayContractAddress = "0x12EDC75CE16d778Dc450960d5f1a744477ee49a0";
 
-  const cid = "234234sdfsdfsd8908080r";
+  const cid = "abcd2bzacedh6keeksywaoa3wjryqzihqixyfekqgfljfosrcoyaj1";
 
   const [payer] = await ethers.getSigners();
 

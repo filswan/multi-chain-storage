@@ -16,6 +16,7 @@ import (
 	"payment-bridge/on-chain/goBind"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -27,6 +28,8 @@ import (
 	libutils "github.com/filswan/go-swan-lib/utils"
 	"github.com/gin-gonic/gin"
 )
+
+var createDirMutext = &sync.Mutex{}
 
 func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multipart.FileHeader, duration, userId int, walletAddress string, fileType int) (string, string, int, error) {
 	temDirDeal := config.GetConfig().SwanTask.DirDeal
@@ -46,11 +49,17 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 		return "", "", needPay, err
 	}
 
-	lowerChars := "abcdefghijklmnopqrstuvwxyz"
-	upperChars := strings.ToUpper(lowerChars)
+	createDirMutext.Lock()
+	timeStr := time.Now().Format("20060102_150405")
+	tempDirDealTemp := filepath.Join(temDirDeal, timeStr)
+	temDirDeal = tempDirDealTemp
+	i := 0
+	for libutils.IsDirExists(temDirDeal) {
+		temDirDeal = tempDirDealTemp + "_" + strconv.Itoa(i)
+		i++
+	}
+	createDirMutext.Unlock()
 
-	timeStr := time.Now().Format("20060102_150405") + "_" + libutils.RandString(lowerChars+upperChars, 6)
-	temDirDeal = filepath.Join(temDirDeal, timeStr)
 	srcDir := filepath.Join(temDirDeal, "src")
 	carDir := filepath.Join(temDirDeal, "car")
 	err = libutils.CreateDir(srcDir)

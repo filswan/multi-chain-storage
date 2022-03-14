@@ -1,25 +1,25 @@
 package storage
 
 import (
-	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"multi-chain-storage/common"
+	"multi-chain-storage/common/constants"
+	"multi-chain-storage/common/errorinfo"
+	"multi-chain-storage/common/utils"
+	"multi-chain-storage/config"
+	"multi-chain-storage/database"
+	"multi-chain-storage/models"
+	"multi-chain-storage/on-chain/client"
 	"net/http"
-	"payment-bridge/common"
-	"payment-bridge/common/constants"
-	"payment-bridge/common/errorinfo"
-	"payment-bridge/common/utils"
-	"payment-bridge/config"
-	"payment-bridge/database"
-	"payment-bridge/models"
-	"payment-bridge/on-chain/client"
 	"strconv"
 	"strings"
 
 	"github.com/filswan/go-swan-lib/logs"
 	"github.com/shopspring/decimal"
 
+	"github.com/filswan/go-swan-lib/client/web"
 	"github.com/gin-gonic/gin"
 )
 
@@ -239,31 +239,20 @@ func GetDealListFromFilink(c *gin.Context) {
 		return
 	}
 
-	url := config.GetConfig().FilinkUrl
-	parameter := new(filinkParams)
-	//todo
-	parameter.Data.Deal = dealIdIntValue
-	paramBytes, err := json.Marshal(&parameter)
-	paramStr := string(paramBytes)
-	logs.GetLogger().Info(paramStr)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARSER_STRUCT_TO_REQUEST_ERROR_CODE))
-		return
-	}
-	response, err := http.Post(url, "application/json; charset=UTF-8", bytes.NewBuffer(paramBytes))
-	if err != nil {
-		logs.GetLogger().Error(err)
-		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_GET_RESPONSE_ERROR_CODE))
-		return
-	}
-
 	result := DealOnChainResult{}
-	err = json.NewDecoder(response.Body).Decode(&result)
+	url := config.GetConfig().FLinkUrl
+	parameter := new(filinkParams)
+	parameter.Data.Deal = dealIdIntValue
+	parameter.Data.Network = config.GetConfig().FilecoinNetwork
+
+	response, err := web.HttpGetNoToken(url, parameter)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARSER_STRUCT_TO_REQUEST_ERROR_CODE))
-		return
+	} else {
+		err = json.Unmarshal(response, &result)
+		if err != nil {
+			logs.GetLogger().Error(err)
+		}
 	}
 
 	daoSignList, err := GetDaoSignEventByDealId(int64(dealIdIntValue))
@@ -433,14 +422,15 @@ func GetDealListFromLocal(c *gin.Context) {
 	pageInfo := new(common.PageInfo)
 	pageInfo.PageSize = pageSize
 	pageInfo.PageNumber = pageNumber
-	sourceFiles, err := models.GetSourceFilesByWalletAddress(walletAddress)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_COUNT_ERROR_CODE, err.Error()))
+	/*
+		sourceFiles, err := models.GetSourceFilesByWalletAddress(walletAddress)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_COUNT_ERROR_CODE, err.Error()))
 
-		return
-	}
-	pageInfo.TotalRecordCount = strconv.Itoa(len(sourceFiles))
+			return
+		} */
+	pageInfo.TotalRecordCount = strconv.Itoa(len(infoList))
 	c.JSON(http.StatusOK, common.NewSuccessResponseWithPageInfo(infoList, pageInfo))
 }
 

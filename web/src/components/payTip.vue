@@ -149,11 +149,16 @@
                 return value.toFixed(10);
             },
             sizeChange(bytes){
-                if (!bytes) return "-";
                 if (bytes === 0) return '0 B';
-                var k = 1000, // or 1024
+                if (!bytes) return "-";
+                var k = 1024, // or 1000
                     sizes = ['bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
                     i = Math.floor(Math.log(bytes) / Math.log(k));
+
+                if (Math.round((bytes / Math.pow(k, i))).toString().length > 3) {
+                    // 判断大小是999999999左右，解决会显示成1.00e+3科学计数法
+                    i += 1
+                }
                 return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];
             }
         }

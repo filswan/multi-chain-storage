@@ -6,11 +6,12 @@
                     <div class="form">
                         <div class="form_top">
                             <div class="search">
-                                <el-input
-                                    :placeholder="$t('billing.search_placeholder')"
-                                    prefix-icon="el-icon-search"
-                                    v-model="searchValue"
-                                >
+                                {{$t('billing.search_placeholder')}} &nbsp;
+                                <el-input placeholder="" v-model="searchValue" class="input-with-select" @input="searchValueChange">
+                                    <el-select v-model="selectInput" slot="prepend">
+                                        <el-option :label="$t('billing.search_option_filename')" value="1"></el-option>
+                                        <el-option :label="$t('billing.search_option_transaction')" value="2"></el-option>
+                                    </el-select>
                                 </el-input>
                                 <div class="search_right" :style="{'opacity': !searchValue?'0.8':'1'}">
                                     <el-button @click="search" style="background-color: #ffb822"
@@ -19,7 +20,6 @@
                                     type="primary"
                                     style="background-color: #0b318f"
                                     @click="clearAll"
-                                    :disabled="!searchValue"
                                     >
                                     {{$t('billing.clear_btn')}}
                                     </el-button>
@@ -31,7 +31,7 @@
                             v-loading="loading" :data="tableData" style="width: 100%" 
                             :empty-text="$t('deal.formNotData')" max-height="580" @sort-change="sortChange"
                             :default-sort = "{prop: 'date', order: 'descending'}">
-                                <el-table-column prop="tx_hash" :label="$t('billing.TRANSACTION')" min-width="190" sortable="custom">
+                                <el-table-column prop="tx_hash" :label="$t('billing.TRANSACTION')" min-width="190">
                                     <template slot-scope="scope">
                                         <div class="hot-cold-box">
                                             <el-popover
@@ -55,9 +55,9 @@
                                 <el-table-column prop="unlock_to_user_amount" :label="$t('billing.UNLOCKAMOUNT')" min-width="150" sortable="custom">
                                     <template slot-scope="scope">{{scope.row.unlock_to_user_amount | balanceFilter}}</template>
                                 </el-table-column>
-                                <el-table-column prop="coin_type" :label="$t('billing.TOKEN')" min-width="120" sortable="custom"></el-table-column>
+                                <el-table-column prop="coin_type" :label="$t('billing.TOKEN')" min-width="120"></el-table-column>
                                 <el-table-column prop="file_name" :label="$t('billing.FILENAME')" min-width="180" sortable="custom"></el-table-column>
-                                <el-table-column prop="payload_cid" :label="$t('billing.PAYLOADCID')" min-width="140" sortable="custom">
+                                <el-table-column prop="payload_cid" :label="$t('billing.PAYLOADCID')" min-width="140">
                                     <template slot-scope="scope">
                                         <div class="hot-cold-box">
                                             <el-popover
@@ -75,7 +75,7 @@
                                         </div>
                                     </template>                    
                                 </el-table-column>
-                                <el-table-column prop="address_from" :label="$t('billing.WALLET')" min-width="140" sortable="custom">
+                                <el-table-column prop="address_from" :label="$t('billing.WALLET')" min-width="140">
                                     <template slot-scope="scope">
                                         <div class="hot-cold-box">
                                             <el-popover
@@ -93,7 +93,7 @@
                                         </div>
                                     </template>                    
                                 </el-table-column>
-                                <el-table-column prop="network" :label="$t('billing.NETWORK')" min-width="120" sortable="custom"></el-table-column>
+                                <el-table-column prop="network" :label="$t('billing.NETWORK')" min-width="120"></el-table-column>
                                 <el-table-column prop="lock_payment_time" :label="$t('billing.PAYMENTDATE')" min-width="140" sortable="custom"></el-table-column>
                                 <el-table-column prop="unlock_time" :label="$t('billing.UNLOCKDATE')" min-width="140" sortable="custom"></el-table-column>
                                 <el-table-column prop="deadline" :label="$t('billing.Deadline')" min-width="140" sortable="custom"></el-table-column>
@@ -156,6 +156,7 @@
             return {
                 tableData: [],
                 searchValue: '',
+                selectInput: '1',
                 parma: {
                     limit: 10,
                     offset: 1,
@@ -178,8 +179,8 @@
             };
         },
         computed: {
-            languageMcp() {
-                return this.$store.state.app.languageMcp
+            languageMcs() {
+                return this.$store.state.app.languageMcs
             },
             metaAddress() {
                 return this.$store.getters.metaAddress
@@ -270,7 +271,8 @@
                 let _this = this
                 _this.loading = true
                 let obj = {
-                    "tx_hash": _this.searchValue, 
+                    "file_name": _this.selectInput === '1'?_this.searchValue:'', 
+                    "tx_hash": _this.selectInput === '2'?_this.searchValue:'', 
                     "wallet_address": _this.metaAddress,    
                     "page_number": _this.parma.offset,    
                     "page_size": _this.parma.limit,
@@ -360,7 +362,7 @@
             },
             copyTextToClipboard(text) {
                 let _this = this
-                let saveLang = localStorage.getItem('languageMcp') == 'cn'?"复制成功":"success";
+                let saveLang = localStorage.getItem('languageMcs') == 'cn'?"复制成功":"success";
                 var txtArea = document.createElement("textarea");
                 txtArea.id = 'txt';
                 txtArea.style.position = 'fixed';
@@ -401,6 +403,9 @@
             clearAll() {
                 this.searchValue = ""
                 this.search();
+            },
+            searchValueChange() {
+                if(this.searchValue == '') this.clearAll()
             }
         },
         mounted() {
@@ -574,7 +579,11 @@
                         justify-content: flex-start;
                         width: 100%;
                         height: 0.42rem;
-
+                        font-size: 0.13rem;
+                        color: #737373;
+                        @media screen and (max-width: 600px){
+                            font-size: 12px;
+                        }
                         .search_right {
                             display: flex;
                             align-items: center;
@@ -591,49 +600,83 @@
                         .el-button /deep/ {
                             height: 0.34rem;
                             padding: 0 0.4rem;
-                            margin: 0 0.1rem;
+                            margin: 0 0.1rem 0 0;
                             color: #fff;
                             line-height: 0.34rem;
                             font-size: 0.1372rem;
                             border: 0;
-                            border-radius: 0.08rem;
+                            border-radius: 4px;
                         }
 
                         .el-input /deep/ {
                             float: left;
                             width: 35%;
-
+                            margin-right: 0.1rem;
                             .el-input__inner {
                                 width: 100%;
                                 color: #737373;
-                                font-size: 0.12rem;
+                                font-family: inherit;
+                                font-size: 0.13rem;
                                 height: 0.34rem;
                                 line-height: 0.34rem;
-                                padding: 0 0.27rem;
+                                padding: 0 0.1rem;
+                                border-left: 0;
+                                border-color: #DCDFE6 !important;
+                                @media screen and (max-width: 600px){
+                                    font-size: 12px;
+                                }
                             }
 
                             .el-input__icon {
                                 line-height: 0.24rem;
                             }
+
+                            .el-input-group__prepend {
+                                position: relative;
+                                width: 130px;
+                                padding: 0;
+                                background: transparent;
+                                &::before{
+                                    content: '';
+                                    position: absolute;
+                                    right: 0;
+                                    top: 15%;
+                                    bottom: 15%;
+                                    width: 0.01rem;
+                                    background: #DCDFE6;
+                                }
+                                .el-select{
+                                    width: 100%;
+                                    margin: 0;
+                                    .el-input{
+                                        .el-input__inner{
+                                            height: 0.32rem;
+                                            padding: 0 0.1rem;
+                                            line-height: 0.32rem;
+                                            border: 0;
+                                        }
+                                    }
+                                }
+                            }
                         }
 
-                        .el-select /deep/ {
-                        float: right;
-                        // width: 30%;
-                        .el-input__inner {
-                            border-radius: 0.08rem;
-                            border: 1px solid #f8f8f8;
-                            color: #737373;
-                            font-size: 0.12rem;
-                            height: 0.24rem;
-                            line-height: 0.24rem;
-                            padding: 0 0.1rem;
-                        }
+                        // .el-select /deep/ {
+                        //     float: right;
+                        //     // width: 30%;
+                        //     .el-input__inner {
+                        //         border-radius: 0.08rem;
+                        //         border: 1px solid #f8f8f8;
+                        //         color: #737373;
+                        //         font-size: 0.12rem;
+                        //         height: 0.24rem;
+                        //         line-height: 0.24rem;
+                        //         padding: 0 0.1rem;
+                        //     }
 
-                        .el-input__icon {
-                            line-height: 0.24rem;
-                        }
-                        }
+                        //     .el-input__icon {
+                        //         line-height: 0.24rem;
+                        //     }
+                        // }
                     }
                 }
                 .form_table{

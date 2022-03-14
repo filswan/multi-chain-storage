@@ -1,9 +1,9 @@
 package models
 
 import (
-	"payment-bridge/common/constants"
-	"payment-bridge/common/utils"
-	"payment-bridge/database"
+	"multi-chain-storage/common/constants"
+	"multi-chain-storage/common/utils"
+	"multi-chain-storage/database"
 
 	"github.com/filswan/go-swan-lib/logs"
 	"github.com/shopspring/decimal"

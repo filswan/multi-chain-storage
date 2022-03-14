@@ -2,9 +2,9 @@ package models
 
 import (
 	"fmt"
-	"payment-bridge/common/constants"
-	"payment-bridge/common/utils"
-	"payment-bridge/database"
+	"multi-chain-storage/common/constants"
+	"multi-chain-storage/common/utils"
+	"multi-chain-storage/database"
 	"strconv"
 	"strings"
 

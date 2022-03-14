@@ -2,9 +2,9 @@ package models
 
 import (
 	"fmt"
-	"payment-bridge/common/constants"
-	"payment-bridge/common/utils"
-	"payment-bridge/database"
+	"multi-chain-storage/common/constants"
+	"multi-chain-storage/common/utils"
+	"multi-chain-storage/database"
 
 	"github.com/filswan/go-swan-lib/logs"
 	"github.com/shopspring/decimal"
@@ -28,6 +28,27 @@ type DealFile struct {
 	UpdateAt            int64           `json:"update_at"`
 }
 
+func GetDealFileById(id int64) (*DealFile, error) {
+	sql := "select a.* from deal_file a where a.id=?"
+
+	var dealFiles []*DealFile
+
+	err := database.GetDB().Raw(sql, id).Scan(&dealFiles).Error
+
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	if len(dealFiles) > 0 {
+		return dealFiles[0], nil
+	}
+
+	err = fmt.Errorf("deal file with id:%d not exists", id)
+	logs.GetLogger().Error(err)
+	return nil, err
+}
+
 func GetDealFileByDealId(dealId int64) (*DealFile, error) {
 	sql := "select a.* from deal_file a, offline_deal b where a.id=b.deal_file_id and b.deal_id=?"
 
@@ -44,7 +65,7 @@ func GetDealFileByDealId(dealId int64) (*DealFile, error) {
 		return dealFiles[0], nil
 	}
 
-	err = fmt.Errorf("deal with deal_id:%d not exists", dealId)
+	err = fmt.Errorf("deal file with deal_id:%d not exists", dealId)
 	logs.GetLogger().Error(err)
 	return nil, err
 }

@@ -14,7 +14,7 @@ export default {
         documentation: 'Documentation'
     },
     navbar: {
-        sidebar_header: 'Multi-Chain Payment',
+        sidebar_header: 'Multi-Chain Storage',
         "section": "Section",
         "myprofile": "My Profile",
         "support": "Support",
@@ -86,7 +86,8 @@ export default {
         curated_dataset: 'Curated Dataset:',
         upload_form_type: 'Type:',
         upload_form_file: 'CSV File:',
-        upload_form_file_tip: 'Maximum upload .csv file size: 2 MB',
+        upload_form_file_tip: 'The maximum size of the file is 1 GB',
+        upload_form_file_tip01: 'The minimum value of the file is 1 byte',
         upload_form_minerId: 'W3SS ID:',
         upload_form_dataset: 'Curated Dataset',
         upload_form_minerId_tips: 'W3SS ID cannot be null',
@@ -518,6 +519,9 @@ export default {
         detail_DAO_Signatures_tooltip: 'The signatures are used to unlock funds to provider.',
         detail_DAO_RKH_Address: 'DAO RKH Address',
         detail_Time: 'Time',
+        view_deal_logs: 'View deal logs',
+        deal_logs: 'Deal Logs',
+        no_logs: 'no logs',
         uploadFile_title: 'Please upload a file, an estimated storage cost will be calculated for you.',
         upload_funds: 'Insufficient funds? Get more Testnet tokens here.',
         Duration: 'Duration',
@@ -554,10 +558,13 @@ export default {
         View_Your_NFT_OpenSea: 'Click here to view your NFT on OpenSea',
         View_Your_NFT_Note: 'Note: The NFT will take some time to load on Opensea.',
         goTo: 'Go to',
-        goTopage: ''
+        goTopage: '',
+        xhr_tip: 'Upload file changed, please re-upload.'
     },
     billing: {
-        search_placeholder: 'Search by TX HASH',
+        search_placeholder: 'Search by ',
+        search_option_filename: 'File Name',
+        search_option_transaction: 'Transaction',
         search_btn: 'Search',
         clear_btn: 'Clear',
         TRANSACTION: 'Transaction',

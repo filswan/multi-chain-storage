@@ -22,13 +22,13 @@
                 <div class="fes-icon">
                     <div class="fes-icon-logo">
                         <a href="https://filswan.medium.com/" target="_block"><img :src="share_img1" alt=""></a>
-                        <a href="https://twitter.com/filswan1" target="_block"><img :src="share_img2" alt=""></a>
-                        <a href="https://github.com/filswan" target="_block"><img :src="share_img3" alt=""></a>
-                        <a href="https://www.facebook.com/filswan.technology" target="_block"><img :src="share_img5" alt=""></a>
-                        <a href="https://filswan.slack.com" target="_block"><img :src="share_img7" alt=""></a>
-                        <a href="https://youtube.com/channel/UCcvrZdNqFWYl3FwfcHS9xIg" target="_block"><img :src="share_img8" alt=""></a>
-                        <a href="https://t.me/filswan" target="_block"><img :src="share_img9" alt=""></a>
                         <a href="https://discord.gg/MSXGzVsSYf" target="_block"><img :src="share_img10" alt=""></a>
+                        <a href="https://twitter.com/0xfilswan" target="_block"><img :src="share_img2" alt=""></a>
+                        <a href="https://github.com/filswan" target="_block"><img :src="share_img3" alt=""></a>
+                        <!-- <a href="https://www.facebook.com/filswan.technology" target="_block"><img :src="share_img5" alt=""></a>
+                        <a href="https://filswan.slack.com" target="_block"><img :src="share_img7" alt=""></a>
+                        <a href="https://youtube.com/channel/UCcvrZdNqFWYl3FwfcHS9xIg" target="_block"><img :src="share_img8" alt=""></a> -->
+                        <a href="https://t.me/filswan" target="_block"><img :src="share_img9" alt=""></a>
                     </div>
                     <div class="fes-icon-copy">
                         <span>© 2022 FilSwan Canada</span>
@@ -111,6 +111,7 @@ export default {
                 window.location.reload();
             }
         }
+        console.log('update time: 2022-03-12')
     }
 };
 </script>

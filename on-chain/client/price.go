@@ -3,8 +3,8 @@ package client
 import (
 	"errors"
 	"math/big"
-	"payment-bridge/config"
-	"payment-bridge/on-chain/goBind"
+	"multi-chain-storage/config"
+	"multi-chain-storage/on-chain/goBind"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/filswan/go-swan-lib/logs"

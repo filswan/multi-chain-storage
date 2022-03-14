@@ -1,8 +1,8 @@
 package common
 
 import (
-	"payment-bridge/common"
-	"payment-bridge/models"
+	"multi-chain-storage/common"
+	"multi-chain-storage/models"
 	"runtime"
 
 	"github.com/filswan/go-swan-lib/logs"

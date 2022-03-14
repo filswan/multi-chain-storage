@@ -2,9 +2,9 @@ package scheduler
 
 import (
 	"fmt"
+	"multi-chain-storage/config"
 	"os"
 	"path/filepath"
-	"payment-bridge/config"
 	"sync"
 
 	"github.com/filswan/go-swan-lib/logs"
@@ -28,7 +28,12 @@ func GetSrcDir() string {
 
 func InitScheduler() {
 	createDir()
-	createScheduleJob()
+	//createScheduleJob()
+	CreateScheduler4CreateTask()
+	CreateScheduler4Refund()
+	CreateScheduler4ScanDeal()
+	CreateScheduler4SendDeal()
+	CreateScheduler4UnlockPayment()
 }
 
 func createScheduleJob() {

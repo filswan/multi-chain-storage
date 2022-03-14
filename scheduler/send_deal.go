@@ -1,21 +1,50 @@
 package scheduler
 
 import (
+	"sync"
+
 	"github.com/filswan/go-swan-client/command"
+	"github.com/robfig/cron"
 
+	"multi-chain-storage/common/constants"
+	"multi-chain-storage/config"
+	"multi-chain-storage/database"
+	"multi-chain-storage/models"
 	"path/filepath"
-	"payment-bridge/common/constants"
-	"payment-bridge/config"
-	"payment-bridge/database"
-	"payment-bridge/models"
 
-	"payment-bridge/common/utils"
+	"multi-chain-storage/common/utils"
 
 	"github.com/filswan/go-swan-lib/client/lotus"
 	"github.com/filswan/go-swan-lib/logs"
 
 	libconstants "github.com/filswan/go-swan-lib/constants"
 )
+
+func CreateScheduler4SendDeal() {
+	c := cron.New()
+	name := "send deal"
+	rule := config.GetConfig().ScheduleRule.SendDealRule
+	mutex := &sync.Mutex{}
+
+	err := c.AddFunc(rule, func() {
+		logs.GetLogger().Info(name, " start")
+
+		mutex.Lock()
+		logs.GetLogger().Info(name, " running")
+		err := SendDeal()
+		if err != nil {
+			logs.GetLogger().Error(err)
+		}
+		mutex.Unlock()
+		logs.GetLogger().Info(name, " end")
+	})
+
+	if err != nil {
+		logs.GetLogger().Fatal(err)
+	}
+
+	c.Start()
+}
 
 func SendDeal() error {
 	dealFiles, err := models.GetDeal2Send()
@@ -57,6 +86,7 @@ func SendDeal() error {
 
 		_, fileDescs, err := cmdAutoBidDeal.SendAutoBidDealsByTaskUuid(dealFile.TaskUuid)
 		if err != nil {
+			logs.GetLogger().Error(err)
 			dealFile.LockPaymentStatus = constants.PROCESS_STATUS_DEAL_SENT_FAILED
 			dealFile.ClientWalletAddress = cmdAutoBidDeal.SenderWallet
 			err = database.SaveOne(dealFile)

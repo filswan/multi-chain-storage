@@ -2,8 +2,8 @@ package client
 
 import (
 	"context"
-	"payment-bridge/config"
-	"payment-bridge/on-chain/goBind"
+	"multi-chain-storage/config"
+	"multi-chain-storage/on-chain/goBind"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"

@@ -1,13 +1,13 @@
 package billing
 
 import (
+	common "multi-chain-storage/common"
+	"multi-chain-storage/common/constants"
+	"multi-chain-storage/common/errorinfo"
+	"multi-chain-storage/common/utils"
+	"multi-chain-storage/models"
+	"multi-chain-storage/on-chain/client"
 	"net/http"
-	common "payment-bridge/common"
-	"payment-bridge/common/constants"
-	"payment-bridge/common/errorinfo"
-	"payment-bridge/common/utils"
-	"payment-bridge/models"
-	"payment-bridge/on-chain/client"
 	"strconv"
 	"strings"
 
@@ -145,12 +145,13 @@ func GetUserBillingHistory(c *gin.Context) {
 
 	fileName := strings.Trim(URL.Get("file_name"), " ")
 
-	totalRecords, err := getBillHistoriesByWalletAddress(walletAddress)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_COUNT_ERROR_CODE))
-		return
-	}
+	/*
+		totalRecords, err := getBillHistoriesByWalletAddress(walletAddress, fileName)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_COUNT_ERROR_CODE))
+			return
+		} */
 
 	billingResultList, err := getBillHistoryList(walletAddress, pageSize, strconv.FormatInt(offset, 10), txHash, fileName, orderByColumn, ASCorDESC)
 	if err != nil {
@@ -162,7 +163,7 @@ func GetUserBillingHistory(c *gin.Context) {
 	page := new(common.PageInfo)
 	page.PageNumber = pageNumber
 	page.PageSize = pageSize
-	page.TotalRecordCount = strconv.Itoa(len(totalRecords))
+	page.TotalRecordCount = strconv.Itoa(len(billingResultList))
 	c.JSON(http.StatusOK, common.NewSuccessResponseWithPageInfo(billingResultList, page))
 }
 

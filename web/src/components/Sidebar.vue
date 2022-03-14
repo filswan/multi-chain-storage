@@ -15,8 +15,8 @@
                 <template>
                     <!-- 折叠按钮 -->
                     <div class="header_logo pcShow" :class="{'header_left_hidd': collapseLocal}">
-                        <div class="logo" v-if="!collapseLocal"><img src="@/assets/images/MCP_logo_1.png"></div>
-                        <div class="logo_small" v-else><img src="@/assets/images/MCP_logo.png"></div>
+                        <div class="logo" v-if="!collapseLocal"><img src="@/assets/images/MCS_logo_1.png"></div>
+                        <div class="logo_small" v-else><img src="@/assets/images/MCS_logo.png"></div>
                         <div class="collapse-btn-cont" @click="collapseChage">
                             <div class="header_btn">
                                 <span></span>
@@ -121,8 +121,8 @@ export default {
         routerMenu() {
           return this.$store.getters.routerMenu.toString()
         },
-        languageMcp() {
-            return this.$store.getters.languageMcp
+        languageMcs() {
+            return this.$store.getters.languageMcs
         },
         email() {
             return this.$store.state.user.email
@@ -165,7 +165,7 @@ export default {
                 default:
             }
             if(!nameNow && !indexNow){
-                window.open('https://docs.filswan.com/multi-chain-payment/overview', "_blank")
+                window.open('https://docs.filswan.com/multi-chain-storage/overview', "_blank")
                 window.location.reload();
                 return false
             }
@@ -195,7 +195,7 @@ export default {
                   if(response.data.status == 'success'){
                     _this.$store.dispatch("FedLogOut").then(() => {
                         _this.$router.push("/supplierAllBack");
-                        _this.loginShow = localStorage.getItem("mcpLoginAccessToken") ? false : true
+                        _this.loginShow = localStorage.getItem("mcsLoginAccessToken") ? false : true
                     });
                   }else{
                       console.log(response.data.message);
@@ -215,7 +215,7 @@ export default {
                 
                     _this.$store.dispatch("FedLogOut").then(() => {
                         _this.$router.push("/login");
-                        _this.loginShow = localStorage.getItem("mcpLoginAccessToken") ? false : true
+                        _this.loginShow = localStorage.getItem("mcsLoginAccessToken") ? false : true
                     });
             });
 
@@ -270,6 +270,7 @@ export default {
     .menu_list{
         height: calc(100% - 1.2rem);
         padding: 0;
+        overflow-x: hidden;
         overflow-y: scroll;
         // 火狐浏览器滚动条样式设置
         scrollbar-color: #ccc transparent; //滚动条轨道颜色   滚动条滑块的颜色

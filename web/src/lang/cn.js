@@ -13,7 +13,7 @@ export default {
         documentation: '文档'
     },
     navbar: {
-        sidebar_header: 'Multi-Chain Payment',
+        sidebar_header: 'Multi-Chain Storage',
         "section": "部分",
         "myprofile": "个人信息",
         "support": "支持",
@@ -85,7 +85,8 @@ export default {
         curated_dataset: '数据集:',
         upload_form_type: '类型:',
         upload_form_file: 'CSV文件:',
-        upload_form_file_tip: '上传.csv文件最大不超过：2MB。',
+        upload_form_file_tip: '文件最大为 1 GB',
+        upload_form_file_tip01: '文件最小为 1 bytes',
         upload_form_minerId: '存储节点ID:',
         upload_form_dataset: '数据集:',
         upload_form_minerId_tips: '存储节点ID不能为空',
@@ -523,6 +524,9 @@ export default {
         detail_DAO_Signatures_tooltip: '签名是用来解锁资金给存储提供者。',
         detail_DAO_RKH_Address: 'DAO RKH地址',
         detail_Time: '日期',
+        view_deal_logs: '查看交易日志',
+        deal_logs: '交易日志',
+        no_logs: '无日志',
         uploadFile_title: '请上传您的文件，系统将为您计算预计存储费用。',
         upload_funds: '资金不足？点击此处获取更多测试网代币。',
         Duration: '存储时间',
@@ -559,10 +563,13 @@ export default {
         View_Your_NFT_OpenSea: '点击到OpenSea查看您的NFT',
         View_Your_NFT_Note: '注意：OpenSea需要一些时间加载您的NFT。',
         goTo: '前往',
-        goTopage: '页'
+        goTopage: '页',
+        xhr_tip: '上传文件已更改，请重新上传。'
     },
     billing: {
-        search_placeholder: '按交易哈希搜索',
+        search_placeholder: '搜索方式',
+        search_option_filename: '文件名',
+        search_option_transaction: '交易',
         search_btn: '搜索',
         clear_btn: '清除',
         TRANSACTION: '交易哈希',

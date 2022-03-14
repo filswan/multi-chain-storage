@@ -2,10 +2,6 @@ package polygon
 
 import (
 	"context"
-	"github.com/ethereum/go-ethereum"
-	"github.com/ethereum/go-ethereum/accounts/abi"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
 	"math/big"
 	"payment-bridge/common/constants"
 	"payment-bridge/common/utils"
@@ -16,6 +12,11 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/ethereum/go-ethereum"
+	"github.com/ethereum/go-ethereum/accounts/abi"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 )
 
 /**
@@ -28,8 +29,7 @@ import (
 func ScanPolygonLockPaymentEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) error {
 	//read contract api json file
 	logs.GetLogger().Println("polygon blockNoFrom=" + strconv.FormatInt(blockNoFrom, 10) + "--------------blockNoTo=" + strconv.FormatInt(blockNoTo, 10))
-	//paymentAbiString, err := utils.ReadContractAbiJsonFile(goBind.SwanPaymentMetaData.ABI)
-	paymentAbiString := goBind.SwanPaymentMetaData.ABI
+	paymentAbiString := goBind.SwanPaymentABI
 
 	//SwanPayment contract address
 	contractAddress := common.HexToAddress(GetConfig().PolygonMainnetNode.PaymentContractAddress)

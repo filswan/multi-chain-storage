@@ -29,8 +29,7 @@ import (
 func ScanPolygonExpirePaymentEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) error {
 	//read contract api json file
 	logs.GetLogger().Println("polygon expireEvent scan blockNoFrom=" + strconv.FormatInt(blockNoFrom, 10) + "--------------blockNoTo=" + strconv.FormatInt(blockNoTo, 10))
-	//paymentAbiString, err := utils.ReadContractAbiJsonFile(goBind.SwanPaymentMetaData.ABI)
-	expirePaymentAbiString := goBind.SwanPaymentMetaData.ABI
+	expirePaymentAbiString := goBind.SwanPaymentABI
 
 	//SwanPayment contract address
 	contractAddress := common.HexToAddress(GetConfig().PolygonMainnetNode.PaymentContractAddress)

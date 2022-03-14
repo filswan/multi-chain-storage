@@ -68,7 +68,7 @@ func ScanEventFromChainAndSaveDataToDbForNBAI() {
 				blockScanRecord.LastCurrentBlockNumber = end
 			}
 
-			blockScanRecord.NetworkType = constants.NETWORK_TYPE_NBAI
+			//blockScanRecord.NetworkType = constants.NETWORK_TYPE_NBAI
 			blockScanRecord.UpdateAt = strconv.FormatInt(utils.GetEpochInMillis(), 10)
 
 			err = database.SaveOne(blockScanRecord)

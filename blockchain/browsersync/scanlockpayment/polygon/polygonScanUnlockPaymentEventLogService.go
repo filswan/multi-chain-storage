@@ -2,9 +2,6 @@ package polygon
 
 import (
 	"context"
-	"github.com/ethereum/go-ethereum"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
 	"math/big"
 	"payment-bridge/common/utils"
 	"payment-bridge/config"
@@ -14,6 +11,10 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/ethereum/go-ethereum"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 )
 
 /**
@@ -26,9 +27,6 @@ import (
 func ScanPolygonUnLockPaymentEventFromChainAndSaveToDB(blockNoFrom, blockNoTo int64) error {
 	//read contract api json file
 	logs.GetLogger().Println("polygon scan unlock enven blockNoFrom=" + strconv.FormatInt(blockNoFrom, 10) + "--------------blockNoTo=" + strconv.FormatInt(blockNoTo, 10))
-	//paymentAbiString, err := utils.ReadContractAbiJsonFile(goBind.SwanPaymentMetaData.ABI)
-	//paymentAbiString := goBind.SwanPaymentMetaData.ABI
-
 	//SwanPayment contract address
 	contractAddress := common.HexToAddress(GetConfig().PolygonMainnetNode.PaymentUnlockContractAddress)
 	//SwanPayment contract function signature

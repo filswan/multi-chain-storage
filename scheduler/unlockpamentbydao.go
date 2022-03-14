@@ -2,12 +2,6 @@ package scheduler
 
 import (
 	"context"
-	"github.com/ethereum/go-ethereum/accounts/abi"
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/robfig/cron"
 	"log"
 	"math/big"
 	"os"
@@ -22,6 +16,13 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/ethereum/go-ethereum/accounts/abi"
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/robfig/cron"
 )
 
 func DAOUnlockPaymentSchedule() {
@@ -157,8 +158,7 @@ func doUnlockPaymentOnContract(daoEvent *models.EventDaoSignature, unlockParams 
 }
 
 func saveUnlockEventLogToDB(logsInChain []*types.Log, recipient string, unlockStatus string) error {
-	//paymentAbiString, err := utils.ReadContractAbiJsonFile(goBind.SwanPaymentMetaData.ABI)
-	paymentAbiString := goBind.SwanPaymentMetaData.ABI
+	paymentAbiString := goBind.SwanPaymentABI
 
 	//SwanPayment contract function signature
 	contractUnlockFunctionSignature := polygon.GetConfig().PolygonMainnetNode.ContractUnlockFunctionSignature

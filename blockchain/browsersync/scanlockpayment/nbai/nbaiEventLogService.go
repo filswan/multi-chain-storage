@@ -28,7 +28,7 @@ func ScanNbaiEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) err
 	//read contract api json file
 	logs.GetLogger().Println("nbai blockNoFrom=" + strconv.FormatInt(blockNoFrom, 10) + "--------------blockNoTo=" + strconv.FormatInt(blockNoTo, 10))
 	//paymentAbiString, err := utils.ReadContractAbiJsonFile(goBind.StateSenderABI)
-	paymentAbiString, err := abi.JSON(strings.NewReader(string(goBind.SwanPaymentMetaData.ABI)))
+	paymentAbiString, err := abi.JSON(strings.NewReader(string(goBind.SwanPaymentABI)))
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err

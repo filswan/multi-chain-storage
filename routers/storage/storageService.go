@@ -46,7 +46,10 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 		return "", "", needPay, err
 	}
 
-	timeStr := time.Now().Format("20060102_150405")
+	lowerChars := "abcdefghijklmnopqrstuvwxyz"
+	upperChars := strings.ToUpper(lowerChars)
+
+	timeStr := time.Now().Format("20060102_150405") + "_" + libutils.RandString(lowerChars+upperChars, 6)
 	temDirDeal = filepath.Join(temDirDeal, timeStr)
 	srcDir := filepath.Join(temDirDeal, "src")
 	carDir := filepath.Join(temDirDeal, "car")

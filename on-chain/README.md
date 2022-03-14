@@ -60,7 +60,13 @@ Chain ID: **80001**
 0x6f2B76024196e82D81c8bC5eDe7cff0B0276c9C1
 
 ## Development
+Generatse Go bind files
+```
 
+ cd scripts 
+ chmod +x ./abiGo.sh
+ ./abiGo.sh
+```
 ## FAQ
 ...
 

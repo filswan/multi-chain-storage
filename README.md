@@ -84,24 +84,32 @@ git checkout <release_branch>
 ./build_from_source.sh
 ```
 
-### 5 Run the project
-
-Enter payment-bridge/build/ directory, and execute the binary file of the payment-bridge project <br>
-Before actually running the payment bridege project, you need to read the section about config introduction below,
-and then fill in the configuration items as required, and then run this project<br>
-
-```console
-cd $GOPATH/src/payment-bridge/build/`
-chmod +x payment-bridge
-./payment_bridge
+## After Installation
+- Before executing, you should check your configuration in `~/.swan/mcs/config.toml` to ensure it is right.
+```shell
+vi ~/.swan/mcs/config.toml
+```
+- Before executing, you should check your enviornment variable in `~/.swan/mcs/.env` to ensure it is right.
+```shell
+vi ~/.swan/mcs/.env
+```
+- After set your config and env variable in the related files, you can run `multi-chain-storage` in `./build` directory
+```shell
+./build/multi-chain-storage
+```
+### Note
+- Logs are in directory `./logs`
+- You can add `nohup` before `./multi-chain-storage` to ignore the HUP (hangup) signal and therefore avoid stop when you log out.
+- You can add `>> mcs.log` in the command to let all the logs output to `mcs.log`.
+- You can add `&` at the end of the command to let the program run in background.
+- Such as:
+```shell
+nohup ./multi-chain-storage-0.2.1-rc1-unix >> mcs.log &   #After installation from Option 1
+nohup ./build/multi-chain-storage >> ./build/mcs.log &    #After installation from Option 2
 ```
 
-##### Note:
-you need to edit the config file and input your config params, the configuration items will be introduced below<br>
-Take payment on the polygon network as an example, before running the ./payment-bridge command<br>
-You need to edit two config file: 
-- $GOPATH/src/payment-bridge/build/config/config.toml
-- $GOPATH/src/payment-bridge/build/config/polygon/config_polygon.toml
+
+
 ## Configuration
 
 ### config.toml

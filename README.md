@@ -68,47 +68,20 @@
 #### Option:one: [install a lotus full node](https://lotus.filecoin.io/docs/set-up/install/)
 #### Option:two: [install a lotus lite node](https://lotus.filecoin.io/docs/set-up/lotus-lite/#amd-and-intel-based-computers)
 
-## Getting Started with PaymentBridge
-
-### 1 Clone code to $GOPATH/src
-
-```console
-git clone https://github.com/filswan/payment-bridge
+## Installation
+### Option:one:  **Prebuilt package**: See [release assets](https://github.com/filswan/multi-chain-payment/releases)
+```shell
+wget https://github.com/filswan/multi-chain-payment/releases/tag/v1.0.1/install.sh
+./install.sh
 ```
 
-
-### 2 Install MCP Dependencies
-If python3 or ansible is not yet installed in the system, please run `install_pre-requisite.sh` script first:
-```bash
-cd $GOPATH/src/payment-bridge/script/
-chmod +x ./install_pre-requisite.sh
-./install_pre-requisite.sh
-```
-To install dependencies for MCP, please run the following command in bash shell and input sudo password when prompt:
-```bash
-cd $GOPATH/src/payment-bridge/script/install_dependencies/
-ansible-playbook mcp_dependencies.yaml --ask-become-pass -vvv
-```
-
-### 3 Pull-in the submodules:
-
-```console
-cd $GOPATH/src/payment-bridge/
-git submodule update --init --recursive
-make ffi
-```
-
-### 4 Build project
-
-Enter payment-bridge directory,and execute the make command  <br>
-You can get a runnable binary file named payment_bridge and config file in $GOPATH/src/payment-bridge/config/ <br>
-We support multi-chain payment,for example<br>
-If you want to pay on polygon network,you also need to edit $GOPATH/src/payment-bridge/config/polygon/config_polygon.toml<br>
-If you want to pay on goerli network,you also need to edit$GOPATH/src/payment-bridge/config/goerli/config_goerli.toml<br>
-
-```console
-cd $GOPATH/src/payment-bridge/
-GO111MODULE=on make
+### Option:two:  Source Code
+:bell:**go 1.16+** is required
+```shell
+git clone https://github.com/filswan/multi-chain-payment.git
+cd multi-chain-payment
+git checkout <release_branch>
+./build_from_source.sh
 ```
 
 ### 5 Run the project

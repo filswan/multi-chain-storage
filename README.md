@@ -115,6 +115,8 @@ nohup ./build/multi-chain-storage >> ./build/mcs.log &    #After installation fr
 
 - **file_coin_wallet**: The wallet to pay file storage on filecoin network
 
+- **max_multipart_memory**: Set a lower memory limit for multipart forms
+
 #### [swan_api]
 
 swan_api section defines the token used for connecting with Swan platform.

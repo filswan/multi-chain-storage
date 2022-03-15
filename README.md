@@ -86,7 +86,7 @@ git checkout <release_branch>
 ```
 
 ## After Installation
-- Before executing, you should check your configuration to ensure they are right.
+- Before executing, you should check your configuration files to ensure they are right.
 ```shell
 vi ./build/config/config.toml
 vi ./build/config/polygon/config_polygon.toml

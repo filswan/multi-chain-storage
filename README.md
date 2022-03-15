@@ -36,6 +36,7 @@
 * [Data DAO](https://github.com/filswan/flink)
 * [IPFS](https://docs.ipfs.io/)
 * [Filecoin Storage](https://lotus.filecoin.io/docs/set-up/install/)
+* [FLink](https://github.com/filswan/flink)
 
 ### Token Swap
 1. Users pay USDC or other tokens, which are called user tokens, when uploading a file.

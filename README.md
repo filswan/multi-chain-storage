@@ -37,8 +37,11 @@
 * [IPFS](https://docs.ipfs.io/)
 * [Filecoin Storage](https://lotus.filecoin.io/docs/set-up/install/)
 
-## Token Swap
-Token Swap module is in charge of swap the user token to wrapped token, it can be USDC or other tokens
+### Token Swap
+1. Users pay USDC or other tokens, which are called user tokens, when uploading a file.
+2. MCS uses FIL, which is called wrapped token, to pay when store data to filecoin network.
+3. User tokens should be changed to wrapped token by this module and this step is called token exchange(swap).
+4. Token exchange(swap) is done through Sushi Swap which is a DEX.
 
 ### Lock payment
 When the user uploads the file, the amount that the user needs to pay will be estimated based on the average price of the entire network of the miner <br>

@@ -72,15 +72,15 @@
 ## Installation
 ### Option:one:  **Prebuilt package**: See [release assets](https://github.com/filswan/multi-chain-payment/releases)
 ```shell
-wget https://github.com/filswan/multi-chain-payment/releases/tag/v1.0.1/install.sh
+wget https://github.com/filswan/multi-chain-storage/releases/tag/v1.0.1/install.sh
 ./install.sh
 ```
 
 ### Option:two:  Source Code
 :bell:**go 1.16+** is required
 ```shell
-git clone https://github.com/filswan/multi-chain-payment.git
-cd multi-chain-payment
+git clone https://github.com/filswan/multi-chain-storage.git
+cd multi-chain-storage
 git checkout <release_branch>
 ./build_from_source.sh
 ```

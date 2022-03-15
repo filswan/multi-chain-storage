@@ -90,7 +90,7 @@ git checkout <release_branch>
 ```shell
 vi ./build/config/config.toml
 vi ./build/config/polygon/config_polygon.toml
-vi ./.env
+vi ./build/.env
 ```
 - After set your config and env variable in the related files, you can run `multi-chain-storage` in `./build` directory
 ```shell
@@ -98,16 +98,14 @@ vi ./.env
 ```
 ### Note
 - Logs are in directory `./logs`
-- You can add `nohup` before `./multi-chain-storage` to ignore the HUP (hangup) signal and therefore avoid stop when you log out.
-- You can add `>> mcs.log` in the command to let all the logs output to `mcs.log`.
+- You can add `nohup` before `./build/multi-chain-storage` to ignore the HUP (hangup) signal and therefore avoid stop when you log out.
+- You can add `>> ./build/mcs.log` in the command to let all the logs output to `./build/mcs.log`.
 - You can add `&` at the end of the command to let the program run in background.
 - Such as:
 ```shell
 nohup ./multi-chain-storage-0.2.1-rc1-unix >> mcs.log &   #After installation from Option 1
 nohup ./build/multi-chain-storage >> ./build/mcs.log &    #After installation from Option 2
 ```
-
-
 
 ## Configuration
 

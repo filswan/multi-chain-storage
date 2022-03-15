@@ -3,7 +3,7 @@ package polygon
 import (
 	"context"
 	"math/big"
-	"payment-bridge/logs"
+	"multi-chain-storage/logs"
 	"time"
 
 	"github.com/ethereum/go-ethereum/ethclient"

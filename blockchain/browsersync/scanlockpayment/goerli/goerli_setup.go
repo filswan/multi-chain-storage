@@ -2,10 +2,11 @@ package goerli
 
 import (
 	"context"
-	"github.com/ethereum/go-ethereum/ethclient"
 	"math/big"
-	"payment-bridge/logs"
+	"multi-chain-storage/logs"
 	"time"
+
+	"github.com/ethereum/go-ethereum/ethclient"
 )
 
 type ConnSetup struct {

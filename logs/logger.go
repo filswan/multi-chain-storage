@@ -1,9 +1,10 @@
 package logs
 
 import (
+	"multi-chain-storage/config"
+
 	"github.com/rifflock/lfshook"
 	"github.com/sirupsen/logrus"
-	"payment-bridge/config"
 )
 
 var logger *logrus.Logger

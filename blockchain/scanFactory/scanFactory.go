@@ -1,11 +1,11 @@
 package scanFactory
 
 import (
-	"payment-bridge/blockchain/browsersync/scanlockpayment/bsc"
-	"payment-bridge/blockchain/browsersync/scanlockpayment/goerli"
-	"payment-bridge/blockchain/browsersync/scanlockpayment/nbai"
-	"payment-bridge/blockchain/browsersync/scanlockpayment/polygon"
-	"payment-bridge/common/constants"
+	"multi-chain-storage/blockchain/browsersync/scanlockpayment/bsc"
+	"multi-chain-storage/blockchain/browsersync/scanlockpayment/goerli"
+	"multi-chain-storage/blockchain/browsersync/scanlockpayment/nbai"
+	"multi-chain-storage/blockchain/browsersync/scanlockpayment/polygon"
+	"multi-chain-storage/common/constants"
 )
 
 type IEventScanFactory struct {

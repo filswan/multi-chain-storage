@@ -2,12 +2,12 @@ package goerli
 
 import (
 	"math/big"
-	"payment-bridge/blockchain/browsersync/blockutils"
-	"payment-bridge/common/constants"
-	common2 "payment-bridge/common/utils"
-	"payment-bridge/database"
-	"payment-bridge/logs"
-	models2 "payment-bridge/models"
+	"multi-chain-storage/blockchain/browsersync/blockutils"
+	"multi-chain-storage/common/constants"
+	common2 "multi-chain-storage/common/utils"
+	"multi-chain-storage/database"
+	"multi-chain-storage/logs"
+	models2 "multi-chain-storage/models"
 	"strconv"
 	"sync"
 	"time"

@@ -180,7 +180,7 @@ Currently, USDC is supported for payment. Take polygon network as an example to 
 8. After more than half of the dao agree, MCS will unlock the user's payment, release the moeny spent on send deal to MCS payment receiver address, see [Swan Client](https://github.com/filswan/go-swan-client), and return the remaining money to user wallet address used when pay in step 2.
 
 ## Database table description
-You can get db table ddl sql script in $GOPATH/src/payment-bridge/script/dbschema.sql <br>
+You can get db table ddl sql script in $GOPATH/src/multi-chain-storage/script/dbschema.sql <br>
 There are two tables you need to initialize the data before you can use it<br>
 
 ### system_config_param
@@ -206,13 +206,13 @@ There are two tables you need to initialize the data before you can use it<br>
 |CREATE_AT              |create time            |
 
 ### Run Payment Bridge as system service
-Before running the playbook to start payment bridge as a system service, please first change the following line in `$GOPATH/src/payment-bridge/script/run_services/payment_bridge.service` to the actual path of payment bridge executable:
+Before running the playbook to start payment bridge as a system service, please first change the following line in `$GOPATH/src/multi-chain-storage/script/run_services/payment_bridge.service` to the actual path of payment bridge executable:
 ```
-ExecStart=/home/filswan/payment-bridge/build/payment-bridge
+ExecStart=/home/filswan/multi-chain-storage/build/multi-chain-storage
 ```
 Now we can run Payment Bridge as a system service by executing the following command in shell and entering sudo password when prompt:
 ```bash
-cd $GOPATH/src/payment-bridge/script/run_services
+cd $GOPATH/src/multi-chain-storage/script/run_services
 ansible-playbook run_payment_bridge_service.yaml --ask-become-pass -vvv
 ```
 

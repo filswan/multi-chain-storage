@@ -1,7 +1,7 @@
 package goerli
 
 import (
-	"payment-bridge/models"
+	"multi-chain-storage/models"
 )
 
 func Init() {

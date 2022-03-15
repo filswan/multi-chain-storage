@@ -2,19 +2,20 @@ package bsc
 
 import (
 	"context"
+	"math/big"
+	"multi-chain-storage/common/constants"
+	"multi-chain-storage/common/utils"
+	"multi-chain-storage/database"
+	"multi-chain-storage/logs"
+	"multi-chain-storage/models"
+	"strconv"
+	"strings"
+	"time"
+
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
-	"math/big"
-	"payment-bridge/common/constants"
-	"payment-bridge/common/utils"
-	"payment-bridge/database"
-	"payment-bridge/logs"
-	"payment-bridge/models"
-	"strconv"
-	"strings"
-	"time"
 )
 
 // EventLogSave Find the event that executed the contract and save to db

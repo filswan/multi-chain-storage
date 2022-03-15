@@ -5,9 +5,9 @@ import (
 	"crypto/ecdsa"
 	"fmt"
 	"math/big"
+	"multi-chain-storage/config"
+	"multi-chain-storage/on-chain/goBind"
 	"os"
-	"payment-bridge/config"
-	"payment-bridge/on-chain/goBind"
 	"strings"
 	"time"
 

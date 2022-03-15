@@ -1,15 +1,16 @@
 package routers
 
 import (
-	"github.com/gin-gonic/gin"
+	"multi-chain-storage/blockchain/browsersync/scanlockpayment/goerli"
+	"multi-chain-storage/blockchain/browsersync/scanlockpayment/polygon"
+	common "multi-chain-storage/common"
+	"multi-chain-storage/common/constants"
+	"multi-chain-storage/common/errorinfo"
+	"multi-chain-storage/logs"
+	"multi-chain-storage/models"
 	"net/http"
-	"payment-bridge/blockchain/browsersync/scanlockpayment/goerli"
-	"payment-bridge/blockchain/browsersync/scanlockpayment/polygon"
-	common "payment-bridge/common"
-	"payment-bridge/common/constants"
-	"payment-bridge/common/errorinfo"
-	"payment-bridge/logs"
-	"payment-bridge/models"
+
+	"github.com/gin-gonic/gin"
 )
 
 func EventLogManager(router *gin.RouterGroup) {

@@ -1,9 +1,9 @@
 package common
 
 import (
-	"payment-bridge/common"
-	"payment-bridge/logs"
-	"payment-bridge/models"
+	"multi-chain-storage/common"
+	"multi-chain-storage/logs"
+	"multi-chain-storage/models"
 	"runtime"
 )
 

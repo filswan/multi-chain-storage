@@ -1,4 +1,4 @@
-module payment-bridge
+module multi-chain-storage
 
 go 1.16
 

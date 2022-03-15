@@ -1,11 +1,11 @@
 package common
 
 import (
+	"multi-chain-storage/common"
+	"multi-chain-storage/common/constants"
+	"multi-chain-storage/common/errorinfo"
+	"multi-chain-storage/logs"
 	"net/http"
-	"payment-bridge/common"
-	"payment-bridge/common/constants"
-	"payment-bridge/common/errorinfo"
-	"payment-bridge/logs"
 	"strings"
 
 	"github.com/gin-gonic/gin"

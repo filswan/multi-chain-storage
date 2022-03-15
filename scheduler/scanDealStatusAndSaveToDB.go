@@ -2,12 +2,12 @@ package scheduler
 
 import (
 	"fmt"
-	"payment-bridge/common/constants"
-	"payment-bridge/common/utils"
-	"payment-bridge/config"
-	"payment-bridge/database"
-	"payment-bridge/logs"
-	"payment-bridge/models"
+	"multi-chain-storage/common/constants"
+	"multi-chain-storage/common/utils"
+	"multi-chain-storage/config"
+	"multi-chain-storage/database"
+	"multi-chain-storage/logs"
+	"multi-chain-storage/models"
 	"strconv"
 	"strings"
 	"time"

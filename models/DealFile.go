@@ -1,10 +1,10 @@
 package models
 
 import (
-	"payment-bridge/common/constants"
-	"payment-bridge/common/utils"
-	"payment-bridge/database"
-	"payment-bridge/logs"
+	"multi-chain-storage/common/constants"
+	"multi-chain-storage/common/utils"
+	"multi-chain-storage/database"
+	"multi-chain-storage/logs"
 	"strconv"
 )
 

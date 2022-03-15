@@ -3,11 +3,11 @@ package polygon
 import (
 	"context"
 	"math/big"
-	"payment-bridge/common/utils"
-	"payment-bridge/config"
-	"payment-bridge/database"
-	"payment-bridge/logs"
-	"payment-bridge/models"
+	"multi-chain-storage/common/utils"
+	"multi-chain-storage/config"
+	"multi-chain-storage/database"
+	"multi-chain-storage/logs"
+	"multi-chain-storage/models"
 	"strconv"
 	"strings"
 	"time"
@@ -20,7 +20,7 @@ import (
 /**
  * created on 08/10/21.
  * author: nebula-ai-zhiqiang
- * Copyright defined in payment-bridge/LICENSE
+ * Copyright defined in multi-chain-storage/LICENSE
  */
 
 //scan unlock payment event to db

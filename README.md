@@ -18,6 +18,12 @@
 - [Pay for Filecoin by Polygon](https://www.youtube.com/watch?v=c4Dvidz3plU)
 - [License](#License)
 
+## Functions
+- Make payment from multi chain for filecoin storage
+- Backup user's file to filecoin network
+- Supports payment with tokens such as USDC on polygon
+- Currently, USDC is supported for payment.
+
 # Payment-Bridge
 
 Payment bridge is designed for make payment from multi chain for filecoin storage,and backup user's file to filecoin

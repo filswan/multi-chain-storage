@@ -97,7 +97,7 @@ vi ./build/.env
 ./build/multi-chain-storage
 ```
 ### Note
-- Logs are in directory `./logs`
+- Logs are in directory `./build/logs`
 - You can add `nohup` before `./build/multi-chain-storage` to ignore the HUP (hangup) signal and therefore avoid stop when you log out.
 - You can add `>> ./build/mcs.log` in the command to let all the logs output to `./build/mcs.log`.
 - You can add `&` at the end of the command to let the program run in background.

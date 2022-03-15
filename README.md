@@ -28,14 +28,14 @@
 
 ![MCP-MCP Desgin](https://user-images.githubusercontent.com/8363795/143811916-f051ccce-f9b2-49eb-99ab-8da1a0d9f2f2.png)
 
-# Modules
-
-* [Token Swap](#Token Swap)
-* Lock payment
-* DAO Signature
-* Unlock payment
-* Data DAO : [Flink](https://github.com/filswan/flink)
-* IPFS/Filecoin Storage
+## Modules
+* [Token Swap](#Token-Swap)
+* [Payment Module](#Payment-Module)
+* [Swan Client API](https://github.com/filswan/go-swan-client)
+* [DAO Signature](#DAO-Signature)
+* [Data DAO](https://github.com/filswan/flink)
+* [IPFS](https://docs.ipfs.io/)
+* [Filecoin Storage](https://lotus.filecoin.io/docs/set-up/install/)
 
 ## Token Swap
 Token Swap module is in charge of swap the user token to wrapped token, it can be USDC or other tokens

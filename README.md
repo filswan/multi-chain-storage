@@ -86,13 +86,17 @@ git checkout <release_branch>
 ```
 
 ## After Installation
-- Before executing, you should check your configuration in `~/.swan/mcs/config.toml` to ensure it is right.
+- Before executing, you should check your configuration in `./build/config/config.toml` to ensure it is right.
 ```shell
-vi ~/.swan/mcs/config.toml
+vi ./build/config/config.toml
 ```
-- Before executing, you should check your enviornment variable in `~/.swan/mcs/.env` to ensure it is right.
+- Before executing, you should check your polygon configuration in `./build/config/polygon/config_polygon.toml` to ensure it is right.
 ```shell
-vi ~/.swan/mcs/.env
+vi ./build/config/polygon/config_polygon.toml
+```
+- Before executing, you should check your enviornment variable in `./.env` to ensure it is right.
+```shell
+vi ./.env
 ```
 - After set your config and env variable in the related files, you can run `multi-chain-storage` in `./build` directory
 ```shell

@@ -128,17 +128,16 @@ swan_api section defines the token used for connecting with Swan platform.
 
 #### [lotus]
 
-- **api_url:** Url of lotus client web api, such as: **http://[ip]:[port]/rpc/v0**, generally the [port] is **1234**.
+- **api_url**: Url of lotus client web api, such as: **http://[ip]:[port]/rpc/v0**, generally the [port] is **1234**.
   See [Lotus API](https://docs.filecoin.io/reference/lotus-api/)
 - **access_token:** Access token of lotus market web api. When market and miner are not separate, it is also the access
   token of miner access token. See [Obtaining Tokens](https://docs.filecoin.io/build/lotus/api-tokens/#obtaining-tokens)
 
 #### [ipfs_server]
 
-ipfs-server is used to upload and download generated Car files. You can upload generated Car files via `upstream_url`
-and storage provider will download Car files from this ipfs-server using `download_stream_url`. The downloadable URL in
-the CSV file is built with the following format: host+port+ipfs+hash, e.g. http://host:
-port/ipfs/QmPrQPfGCAHwYXDZDdmLXieoxZP5JtwQuZMUEGuspKFZKQ
+ipfs-server is used to upload and download generated Car files.
+- **upstream_url**: upload api url of IPFS Server
+- **download_stream_url**: download api url of IPFS Server
 
 #### [swan_task]
 

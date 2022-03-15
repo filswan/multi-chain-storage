@@ -86,16 +86,10 @@ git checkout <release_branch>
 ```
 
 ## After Installation
-- Before executing, you should check your configuration in `./build/config/config.toml` to ensure it is right.
+- Before executing, you should check your configuration to ensure they are right.
 ```shell
 vi ./build/config/config.toml
-```
-- Before executing, you should check your polygon configuration in `./build/config/polygon/config_polygon.toml` to ensure it is right.
-```shell
 vi ./build/config/polygon/config_polygon.toml
-```
-- Before executing, you should check your enviornment variable in `./.env` to ensure it is right.
-```shell
 vi ./.env
 ```
 - After set your config and env variable in the related files, you can run `multi-chain-storage` in `./build` directory

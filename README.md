@@ -40,43 +40,33 @@
 ### Token Swap
 1. Users pay USDC or other tokens, which are called user tokens, when uploading a file.
 2. MCS uses FIL, which is called wrapped token, to pay when store data to filecoin network.
-3. User tokens should be changed to wrapped token by this module and this step is called token exchange(swap).
+3. User tokens should be changed to wrapped tokens by this module and this step is called token exchange(swap).
 4. Token exchange(swap) is done through Sushi Swap which is a DEX.
 
-### Lock payment
-When the user uploads the file, the amount that the user needs to pay will be estimated based on the average price of the entire network of the miner <br>
-The token of the extra part that is locked will be returned to the user through the unlock operation later
-### DAO Organization
-If Dao detects that the file uploaded by the user has been chained, it will trigger a signature operation <br>
-### Unlock payment
-When more than half of the dao have been signed, the unlock operation will be triggered <br>
-The part that needs to be paid will be deducted from the locked token, and the remaining token will be returned to the user
+### Payment Module
+1. After a file is uploaded, the money to be paid is estimated based on: 
+   1. the average price of all the miners on the entire network
+   2. file size
+   3. duration
+2. Then the estimated amount of money will be locked to the payment contract address, see [Configuration](#Configuration)
+3. In unlock step, the amount pay to filcoin network by swan platform fil wallet, will be transfered to mcs payment receiver address, see [Configuration](#Configuration), and the overpayment part that is locked will be returned to user wallet
 
-### Prerequisite
+### DAO Signature
+- If DAO detects that the file uploaded has been chained, it will trigger a signature operation
+
+## Prerequisites
 - OS: Ubuntu 20.04 LTS
-- Ansible: Version 2.12+
-- Python 3.6+
-- Golang1.16 (minimum version)
-- Mysql5.5
-- Lotus lite node (Please make sure that lotus lite node and payment bridge project are running on the same server)
-- IPFS Client
+- Mysql5.5+
+- [Lotus Node](#Lotus-Node)
+- [IPFS Client](https://docs.ipfs.io/install/)
 
-If python3 or ansible is not yet installed in the system, please run `install_pre-requisite.sh` script first <br>
-You can get this script from our payment-bridge source code which will be introduced below 
-
-### Install lotus node
-
-Lotus node is Used for making car files and sending offline deals <br>
-You can use lotus full node, but the full node is too heavy, you can use lotus lite node instead <br>
-If you deploy the payment-bridge project, you need to deploy the payment-bridge and lotus full nodes on the same server <br>
-If you don’t want to deploy payment-bridge and lotus full node on the same server,you can also choose to deploy a lotus lite node<br>
-Please make sure that you already have a lotus full node, because lotus lite node needs to communicate with a full node  <br>
-#### Option one: **install a lotus full node**: See [lotus full node official installation document](https://lotus.filecoin.io/docs/set-up/install/)
-#### Option two: **install a lotus lite node**: See [lotus lite node official installation document](https://lotus.filecoin.io/docs/set-up/lotus-lite/#amd-and-intel-based-computers)
-
-### Install IPFS client
-#### **How to install IPFS client**: See [IPFS official installation document](https://docs.ipfs.io/install/)
-
+### Lotus Node
+- Lotus node is used for making car files and sending offline deals
+- Install lotus node or lotus lite node in the same machine as MCS
+- Lotus lite node is preferred since lotus full node is too heavy compared with lotus lite node 
+- Lotus lite node depends on a lotus node, so ensure that a lotus node exists somewhere when using lotus lite node
+#### Option:one: [install a lotus full node](https://lotus.filecoin.io/docs/set-up/install/)
+#### Option:two: [install a lotus lite node](https://lotus.filecoin.io/docs/set-up/lotus-lite/#amd-and-intel-based-computers)
 
 ## Getting Started with PaymentBridge
 

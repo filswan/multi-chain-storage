@@ -116,7 +116,7 @@ nohup ./build/multi-chain-storage >> ./build/mcs.log &    #After installation fr
 
 - **swan_payment_address_on_polygon**: The contract address of the swan payment gateway, used for lock and unlock user fees on polygon
 
-- **file_coin_wallet**: The wallet address of the user's paying for storage file to the filecoin network
+- **file_coin_wallet**: The wallet to pay file storage on filecoin network
 
 #### [swan_api]
 

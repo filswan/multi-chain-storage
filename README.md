@@ -162,11 +162,11 @@ Currently, USDC is supported for payment. Take polygon network as an example to 
 - **rpc_url**: the polygon network rpc url
 - **payment_contract_address**:  swan payment gateway address on polygon
 - **contract_function_signature**:  swan payment gateway's lock payment event's function signature on polygon
-- **dao_swan_oracle_address:**  swan dao address on polygon
-- **dao_event_function_signature:**  swan dao's signature event's function signature on polygon
-- **scan_step:**  the number of blocks scanned per scan
-- **start_from_blockNo:**  scan data from this block number
-- **start_from_blockNo:**  the time between each scan of the blockchain
+- **dao_swan_oracle_address**:  swan dao address on polygon
+- **dao_event_function_signature**:  swan dao's signature event's function signature on polygon
+- **scan_step**:  the number of blocks scanned per scan
+- **start_from_blockNo**:  scan data from this block number
+- **start_from_blockNo**:  the time between each scan of the blockchain
 
 ### .env
 - **privateKeyOnPolygon**: private key of the wallet used to execute contract methods on the polygon network and pay for gas

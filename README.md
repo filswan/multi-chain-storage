@@ -219,16 +219,6 @@ cd $GOPATH/src/payment-bridge/script/run_services
 ansible-playbook run_payment_bridge_service.yaml --ask-become-pass -vvv
 ```
 
+## License
 
-
-## Other Topics
-
-- [how to pay for filecoin network storage with polygon](https://www.youtube.com/watch?v=c4Dvidz3plU)
-
-## Versioning and Releases
-
-Feature branches and master are designated as **unstable** which are internal-only development builds.
-
-Periodically a build will be designated as **stable** and will be assigned a version number by tagging the repository
-using Semantic Versioning in the following format: `vMajor.Minor.Patch`.
-
+[MIT](https://github.com/filswan/multi-chain-payment/blob/main/LICENSE)

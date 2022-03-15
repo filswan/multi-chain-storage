@@ -157,21 +157,7 @@ ipfs-server is used to upload and download generated Car files.
 
 Currently, USDC is supported for payment. Take polygon network as an example to introduce configuration items
 
-```console
-[polygon_mainnet_node]
-#rpcUrl="https://rpc-mumbai.maticvigil.com"
-rpc_url = "https://polygon-mumbai.g.alchemy.com/v2/xxx"
-payment_contract_address = ""
-contract_function_signature = ""
-dao_swan_oracle_address = ""
-dao_event_function_signature = ""
-scan_step = 1000
-gas_limit = 8000000
-start_from_blockNo = 17590780
-cycle_time_interval = 10 #unit:second
-```
-
-#### polygon_mainnet_node
+#### [polygon_mainnet_node]
 
 - **rpc_url:** the polygon network rpc url
 - **payment_contract_address:**  swan payment gateway address on polygon

@@ -141,15 +141,15 @@ ipfs-server is used to upload and download generated Car files.
 
 #### [swan_task]
 
-- **dir_deal:** Output directory for saving generated Car files and CSVs
-- **verified_deal:** [true/false] Whether deals in this task are going to be sent as verified
-- **fast_retrieval:** [true/false] Indicates that data should be available for fast retrieval
-- **start_epoch_hours:** start_epoch for deals in hours from current time
-- **expired_days:** expected completion days for storage provider sealing data
-- **max_price:** Max price willing to pay per GiB/epoch for offline deal
-- **min_price:** Min price willing to pay per GiB/epoch for offline deal
-- **generate_md5:** [true/false] Whether to generate md5 for each car file, note: this is a resource consuming action
-- **relative_epoch_from_main_network:**  The difference between the block height of filecoin's mainnet and testnet. If
+- **dir_deal**: Output directory for saving generated Car files and CSVs
+- **verified_deal**: [true/false] Whether deals in this task are going to be sent as verified
+- **fast_retrieval**: [true/false] Indicates that data should be available for fast retrieval
+- **start_epoch_hours**: start_epoch for deals in hours from current time
+- **expired_days**: expected completion days for storage provider sealing data
+- **max_price**: Max price willing to pay per GiB/epoch for offline deal
+- **min_price**: Min price willing to pay per GiB/epoch for offline deal
+- **generate_md5**: [true/false] Whether to generate md5 for each car file, note: this is a resource consuming action
+- **relative_epoch_from_main_network**:  The difference between the block height of filecoin's mainnet and testnet. If
   the filecoin testnet is linked, this configuration item is set to -858481, and if the link is the mainnet, it is set
   to 0
 
@@ -159,9 +159,9 @@ Currently, USDC is supported for payment. Take polygon network as an example to 
 
 #### [polygon_mainnet_node]
 
-- **rpc_url:** the polygon network rpc url
-- **payment_contract_address:**  swan payment gateway address on polygon
-- **contract_function_signature:**  swan payment gateway's lock payment event's function signature on polygon
+- **rpc_url**: the polygon network rpc url
+- **payment_contract_address**:  swan payment gateway address on polygon
+- **contract_function_signature**:  swan payment gateway's lock payment event's function signature on polygon
 - **dao_swan_oracle_address:**  swan dao address on polygon
 - **dao_event_function_signature:**  swan dao's signature event's function signature on polygon
 - **scan_step:**  the number of blocks scanned per scan

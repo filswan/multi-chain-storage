@@ -22,6 +22,8 @@ const (
 	HTTP_REQUEST_GET_RESPONSE_ERROR_MSG               = "Get http response occurred error"
 	HTTP_REQUEST_PARAM_TYPE_ERROR_CODE                = "500002008"
 	HTTP_REQUEST_PARAM_TYPE_ERROR_MSG                 = "Http request param type is error"
+	HTTP_REQUEST_GET_MULTIPART_FORM_ERROR_CODE        = "500002009"
+	HTTP_REQUEST_GET_MULTIPART_FORM_ERROR_MSG         = "Getting multipart form occurred error"
 
 	//database err 003
 	GET_RECORD_COUNT_ERROR_CODE  = "500003001"

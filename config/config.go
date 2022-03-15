@@ -12,6 +12,7 @@ type Configuration struct {
 	Port                 string       `toml:"port"`
 	Database             database     `toml:"database"`
 	Dev                  bool         `toml:"dev"`
+	MaxMultipartMemory   int64        `toml:"max_multipart_memory"`
 	SwanApi              swanApi      `toml:"swan_api"`
 	IpfsServer           ipfsServer   `toml:"ipfs_server"`
 	Lotus                lotus        `toml:"lotus"`

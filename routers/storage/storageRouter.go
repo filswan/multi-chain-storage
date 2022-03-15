@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"multi-chain-storage/common"
 	"multi-chain-storage/common/constants"
 	"multi-chain-storage/common/errorinfo"
@@ -22,6 +23,7 @@ import (
 
 func SendDealManager(router *gin.RouterGroup) {
 	router.POST("/ipfs/upload", UploadFileToIpfs)
+	router.POST("/ipfs/batchupload", BatchUploadFileToIpfs)
 	//router.GET("/lotus/deal/:task_uuid", SendDeal)
 	router.GET("/tasks/deals", GetDealListFromLocal)
 	router.GET("/deal/detail/:deal_id", GetDealListFromFilink)
@@ -30,6 +32,82 @@ func SendDealManager(router *gin.RouterGroup) {
 	router.PUT("/dao/signature/deals", RecordDealListThatHaveBeenSignedByDao)
 	router.POST("/mint/info", RecordMintInfo)
 	router.GET("/deal/log/:deal_cid", GetDealLogs)
+}
+
+func BatchUploadFileToIpfs(c *gin.Context) {
+	walletAddress := c.PostForm("wallet_address")
+	if strings.Trim(walletAddress, " ") == "" {
+		errMsg := "wallet_address can not be null"
+		err := errors.New(errMsg)
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_CODE, errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_MSG+":"+errMsg))
+		return
+	}
+
+	form, err := c.MultipartForm()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_GET_MULTIPART_FORM_ERROR_CODE, errorinfo.HTTP_REQUEST_GET_MULTIPART_FORM_ERROR_MSG))
+		return
+	}
+	files := form.File["files"]
+	if len(files) == 0 {
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_CODE, errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_MSG+":get file from user occurred error,please try again"))
+		return
+	}
+	duration := c.PostForm("duration")
+	if strings.Trim(duration, " ") == "" {
+		errMsg := "duraion can not be null"
+		err = errors.New(errMsg)
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_CODE, errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_MSG+":"+errMsg))
+		return
+	}
+
+	durationInt, err := strconv.Atoi(duration)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.TYPE_TRANSFER_ERROR_CODE, errorinfo.TYPE_TRANSFER_ERROR_MSG+": duration is not a number"))
+		return
+	}
+	durationInt = durationInt * 24 * 60 * 60 / 30
+
+	if durationInt > 1540000 || durationInt < 518400 {
+		err := fmt.Errorf("duration should be in [180,534]")
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_CODE, err.Error()))
+		return
+	}
+
+	fileType := c.DefaultPostForm("file_type", "0")
+	fileTypeInt, err := strconv.Atoi(fileType)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.TYPE_TRANSFER_ERROR_CODE, errorinfo.TYPE_TRANSFER_ERROR_MSG+": file type is not a number"))
+		return
+	}
+	var uploadResultList []*uploadResult
+	for _, file := range files {
+		log.Println(file.Filename)
+		payloadCid, ipfsDownloadPath, needPay, err := SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c, file, durationInt, 0, walletAddress, fileTypeInt)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			continue
+		}
+		uploadResult := new(uploadResult)
+		if payloadCid != "" {
+			logs.GetLogger().Info("----------------------------payload_cid: ", payloadCid, "-----------------------------")
+			uploadResult.PayloadCid = payloadCid
+			uploadResult.NeedPay = needPay
+			uploadResult.IpfsUrl = ipfsDownloadPath
+			uploadResultList = append(uploadResultList, uploadResult)
+		}
+	}
+	if len(uploadResultList) == 0 {
+		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.SENDING_DEAL_GET_NULL_RETURN_VALUE_CODE, errorinfo.SENDING_DEAL_GET_NULL_RETURN_VALUE_MSG))
+		return
+	}
+	c.JSON(http.StatusOK, common.CreateSuccessResponse(uploadResultList))
 }
 
 func GetDealLogs(c *gin.Context) {

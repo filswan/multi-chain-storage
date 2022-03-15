@@ -48,6 +48,7 @@ func main() {
 	}()
 
 	r := gin.Default()
+	r.MaxMultipartMemory = config.GetConfig().MaxMultipartMemory << 20
 	r.Use(cors.Middleware(cors.Config{
 		Origins:         "*",
 		Methods:         "GET, PUT, POST, DELETE",

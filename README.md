@@ -122,9 +122,9 @@ nohup ./build/multi-chain-storage >> ./build/mcs.log &    #After installation fr
 
 swan_api section defines the token used for connecting with Swan platform.
 
-- **api_key & access_token:** Acquire from [Filswan](https://www.filswan.com) -> "My Profile"->"Developer Settings". You
+- **api_url**: Default: "https://api.filswan.com"
+- **api_key & access_token**: Acquire from [Filswan](https://www.filswan.com) -> "My Profile"->"Developer Settings". You
   can also check the [Guide](https://nebulaai.medium.com/how-to-use-api-key-in-swan-a2ebdb005aa4)
-- **api_url:** Default: "https://api.filswan.com"
 
 #### [lotus]
 

@@ -168,17 +168,26 @@ Currently, USDC is supported for payment. Take polygon network as an example to 
 - **start_from_blockNo:**  scan data from this block number
 - **start_from_blockNo:**  the time between each scan of the blockchain
 
+### .env
+- **privateKeyOnPolygon**: private key of the wallet used to execute contract methods on the polygon network and pay for gas
+
 ## The Payment Process
 
-- First, users upload a file they want to backup to filecoin network, then use the currencies we support to send tokens
-  to our contract address. <br>
-- Second, payment-biridge scans the events of the above transactions
-- Third, when the event data that get in second step meet the conditions, and then the user can perform the filecoin
-  network storage function
-- Fourth, when the user's storage is successful, it will be scanned by the dao organization, and then dao signed to
-  agree to unlock the user's payment.
-- Fifth, If more than half of the dao agree, the payment bridge will unlock the user's payment, deduct the user's
-  storage fee, and the remaining locked virtual currency Is returned to the customer's wallet
+1. Users upload a file they want to backup to filecoin network
+2. User pay currencies we support to send tokens to our payment contract address, see [Configuration](#Configuration)
+3. MCS writes the transaction info to our system
+4. MCS scan those source files uploaded and paid but not yet created to car files, and then do the following steps:
+   1. compute the max price for each source file, based on the source file size, token paid, and exchange rate betwee USDC and wFil
+   2. if the scanned source file size sum is more than 1GB or the earliest source file to be merged to car file is more 1 day ago, then MCS will do the following steps by calling Swan Client API, see [Swan Client](https://github.com/filswan/go-swan-client)
+      1. create car files, use the minimum max price among the source files to be merged as the max price for the whole car file
+      2. upload car files
+      3. create task on swan platform
+5. Market Matcher allocate miners for the car file created in last step
+6. MCS send deals by calling Swan Client API, see [Swan Client](https://github.com/filswan/go-swan-client)
+7. MCS Scan Scheduler module scan the deal info from lotus
+8. When DAO organization find the deal succeeds, and then they will sign to agree to unlock the user's payment.
+9. After more than half of the dao agree and after 1 minute later of the last DAO signature, MCS will unlock the user's payment, release the moeny spent on send deal to mcs payment receiver address, see [Swan Client](https://github.com/filswan/go-swan-client)
+10. After all deals of a car file are unlocked, MCS refund the remaining money to user wallet address used when pay in step 2.
 
 ## Database table description
 You can get db table ddl sql script in $GOPATH/src/payment-bridge/script/dbschema.sql <br>

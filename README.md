@@ -5,6 +5,18 @@
 
 - Join us on our [public discord channel](https://discord.com/invite/KKGhy8ZqzK) for news, discussions, and status updates. 
 - [Check out our medium](https://filswan.medium.com) for the latest posts and announcements.
+## Table of Contents
+- [Functions](#Functions)
+- [System Design](#System-Design)
+- [Modules](#Modules)
+- [Prerequisites](#Prerequisites)
+- [Installation](#Installation)
+- [After Installation](#After-Installation)
+- [Configuration](#Configuration)
+- [Payment Process](#Payment-Process)
+- [Database Table Introduction](#Database-Table-Introduction)
+- [Pay for Filecoin by Polygon](https://www.youtube.com/watch?v=c4Dvidz3plU)
+- [License](#License)
 
 # Payment-Bridge
 

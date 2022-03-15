@@ -24,12 +24,7 @@
 - Supports payment with tokens such as USDC on polygon
 - Currently, USDC is supported for payment.
 
-# Payment-Bridge
-
-Payment bridge is designed for make payment from multi chain for filecoin storage,and backup user's file to filecoin
-network. Now supports payment with tokens such as USDC on polygon
-
-# System Design
+## System Design
 
 ![MCP-MCP Desgin](https://user-images.githubusercontent.com/8363795/143811916-f051ccce-f9b2-49eb-99ab-8da1a0d9f2f2.png)
 

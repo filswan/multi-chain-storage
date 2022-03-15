@@ -1,11 +1,12 @@
 package database
 
 import (
+	"multi-chain-storage/config"
+	"multi-chain-storage/logs"
+
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
-	"payment-bridge/config"
-	"payment-bridge/logs"
 )
 
 type Database struct {

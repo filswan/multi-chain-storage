@@ -3,8 +3,8 @@ Description=Payment Bridge (MCP Backend) Service
 
 [Service]
 Type=simple
-ExecStart=/home/zzq/go/src/payment-bridge/build/payment-bridge
-StandardOutput=/home/zzq/go/src/payment-bridge/build/payment-bridge/build/pb_log.log
+ExecStart=/home/zzq/go/src/multi-chain-storage/build/multi-chain-storage
+StandardOutput=/home/zzq/go/src/multi-chain-storage/build/multi-chain-storage/build/pb_log.log
 Restart=always
 RestartSec=1
 KillMode=mixed

@@ -1,9 +1,9 @@
 package blockutils
 
 import (
-	"payment-bridge/common/constants"
-	"payment-bridge/logs"
-	models2 "payment-bridge/models"
+	"multi-chain-storage/common/constants"
+	"multi-chain-storage/logs"
+	models2 "multi-chain-storage/models"
 	"strconv"
 )
 

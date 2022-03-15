@@ -8,10 +8,10 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
+	"multi-chain-storage/logs"
 	"net"
 	"net/http"
 	"os"
-	"payment-bridge/logs"
 	"time"
 )
 

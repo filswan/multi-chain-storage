@@ -1,9 +1,9 @@
 package models
 
 import (
-	"payment-bridge/common/constants"
-	"payment-bridge/database"
-	"payment-bridge/logs"
+	"multi-chain-storage/common/constants"
+	"multi-chain-storage/database"
+	"multi-chain-storage/logs"
 )
 
 type EventDaoSignature struct {

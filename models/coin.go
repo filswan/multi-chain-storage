@@ -2,8 +2,8 @@ package models
 
 import (
 	"errors"
-	"payment-bridge/database"
-	"payment-bridge/logs"
+	"multi-chain-storage/database"
+	"multi-chain-storage/logs"
 )
 
 type Coin struct {

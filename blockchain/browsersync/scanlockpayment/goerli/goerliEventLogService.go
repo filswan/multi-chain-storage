@@ -2,25 +2,26 @@ package goerli
 
 import (
 	"context"
+	"math/big"
+	"multi-chain-storage/common/utils"
+	"multi-chain-storage/database"
+	"multi-chain-storage/logs"
+	"multi-chain-storage/models"
+	"multi-chain-storage/on-chain/goBind"
+	"strconv"
+	"strings"
+	"time"
+
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
-	"math/big"
-	"payment-bridge/common/utils"
-	"payment-bridge/database"
-	"payment-bridge/logs"
-	"payment-bridge/models"
-	"payment-bridge/on-chain/goBind"
-	"strconv"
-	"strings"
-	"time"
 )
 
 /**
  * created on 08/10/21.
  * author: nebula-ai-zhiqiang
- * Copyright defined in payment-bridge/LICENSE
+ * Copyright defined in multi-chain-storage/LICENSE
  */
 
 const SwanPaymentAbiJson = "on-chain/contracts/abi/SwanPayment.json"

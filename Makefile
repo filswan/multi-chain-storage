@@ -1,8 +1,8 @@
-PROJECT_NAME=payment-bridge
+PROJECT_NAME=multi-chain-storage
 PKG := "$(PROJECT_NAME)"
 PKG_LIST := $(shell go list ${PKG}/... | grep -v /vendor/)
 GO_FILES := $(shell find . -name '*.go' | grep -v /vendor/ | grep -v _test.go)
-BINARY_NAME=payment-bridge
+BINARY_NAME="$(PROJECT_NAME)"
 
 GOCMD=go
 GOBUILD=$(GOCMD) build
@@ -46,7 +46,7 @@ ffi:
 build: ## Build the binary file
 	@go mod download
 	@go mod tidy
-	@go build -o build/multi-chain-payment main.go
+	@go build -o build/$(PROJECT_NAME) main.go
 	@mkdir -p ./build/config ./build/config/bsc ./build/config/goerli ./build/config/nbai ./build/config/polygon
 	@mkdir -p ./build/on-chain/contracts/abi
 	@cp ./config/config.toml.example ./build/config/config.toml

@@ -78,7 +78,8 @@ func ScanDaoEventFromChainAndSaveEventLogData(blockNoFrom, blockNoTo int64) erro
 				var event = new(models.EventDaoSignature)
 				dataList, err := contractAbi.Unpack("SignTransaction", vLog.Data)
 				if err != nil {
-					logs.GetLogger().Error(err)
+					logs.GetLogger().Error(err, ", tx hash:", vLog.TxHash.Hex())
+					continue
 				}
 
 				block, err := WebConn.ConnWeb.BlockByNumber(context.Background(), big.NewInt(int64(vLog.BlockNumber)))

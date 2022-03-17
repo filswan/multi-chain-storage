@@ -524,7 +524,8 @@
                     // 判断大小是999999999左右，解决会显示成1.00e+3科学计数法
                     i += 1
                 }
-                return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];
+                if(i>2) return Number(bytes / Math.pow(k, i)) + ' ' + sizes[i];
+                else return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];
             },
             byteChange(limit){
                 var size = "";

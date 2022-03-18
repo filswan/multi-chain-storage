@@ -108,6 +108,7 @@ nohup ./build/multi-chain-storage >> ./build/mcs.log &    #After installation fr
 ```
 
 ## Configuration
+### config.toml
 
 - **admin_wallet_on_polygon**: The wallet address used to execute contract methods on the polygon network and pay for gas
 

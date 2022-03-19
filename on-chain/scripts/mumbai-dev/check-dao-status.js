@@ -3,14 +3,13 @@ const hre = require("hardhat");
 
 async function main() {
 
- // todo: change address
+ 
   const oracleDAOContractAddress = "0x6f83DA2C5f1C5AAC259aD8d817Bb92c2D863F74c";
 
-  // todo: update addresses
   const addressList = [
-    "0x6d2e5279b106843f6E924194401B50e6e27FE12a",
-    "0xbE14Eb1ffcA54861D3081560110a45F4A1A9e9c5",
-    "0xeA2bf08288bbfB0d3DBf534f35af32bF2c6E5e45"
+    "0x800210CfB747992790245eA878D32F188d01a03A",
+    "0x05856015d07F3E24936B7D20cB3CcfCa3D34B41d",
+    "0x6f2B76024196e82D81c8bC5eDe7cff0B0276c9C1"
   ];
 
   const [signer] = await ethers.getSigners();
@@ -18,17 +17,14 @@ async function main() {
   const contract = await hre.ethers.getContractFactory("FilswanOracle");
   const daoOracleInstance = await contract.attach(oracleDAOContractAddress);
 
-  const tx = await daoOracleInstance.connect(signer).setDAOUsers(addressList);
-  await tx.wait();
+  const result = await daoOracleInstance.getCarPaymentVotes('87204','0xc4fcaAdCb0b00a9501e56215c37B10fAF9e79c0a');
+  console.log(result);
 
-  const role = await daoOracleInstance.DAO_ROLE.call();
-  console.log(role);
+  // const hasRole = await daoOracleInstance.connect(signer).hasRole(
+  //   role,
+  //   addressList[0]);
 
-  const hasRole = await daoOracleInstance.connect(signer).hasRole(
-    role,
-    addressList[0]);
-
-  console.log(hasRole);
+  // console.log(hasRole);
 }
 
 // We recommend this pattern to be able to use async/await everywhere

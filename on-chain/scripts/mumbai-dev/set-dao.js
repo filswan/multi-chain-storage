@@ -4,7 +4,7 @@ const hre = require("hardhat");
 async function main() {
 
  // todo: change address
-  const oracleDAOContractAddress = "0x9208C2B417Ec2699454843A06A5E49fA6dd88422";
+  const oracleDAOContractAddress = "0x6f83DA2C5f1C5AAC259aD8d817Bb92c2D863F74c";
 
   // todo: update addresses
   const addressList = [

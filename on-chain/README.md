@@ -64,9 +64,9 @@ Chain ID: **80001**
 
 |Contract   |  Address |
 |---|---|
-| mcp_payment_contract  | 0x24B9c56BB6419f4c5AE6a63Fd64dE0dCFA1841F1  |
-| dao_contract  | 0x9208C2B417Ec2699454843A06A5E49fA6dd88422  |
-| flink_service_contract  | 0xB6312D719F6B496647703c81F6965EF38bF58B8D  |
+| mcp_payment_contract  | 0x80a186DCD922175019913b274568ab172F6E20b1  |
+| dao_contract  | 0x6f83DA2C5f1C5AAC259aD8d817Bb92c2D863F74c  |
+| flink_service_contract  | 0xef4828525f78991a2b7b1f108751948F16f25a3F  |
 | DEX pool price_feed_address  | 0xe8a67994c114e0c17E1c135d0CB599a2394f1505  |
 | usdc token address  | 0xe11A86849d99F524cAC3E7A0Ec1241828e332C62  |
 | wFil token address  | 0x97916e6CC8DD75c6E6982FFd949Fc1768CF8c055  |

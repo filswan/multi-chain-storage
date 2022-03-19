@@ -54,12 +54,12 @@ contract SwanPayment is IPaymentMinimal, Initializable {
         return true;
     }
 
-    function setChainlinkOracle(address _chainlinkOracle)
+    function setChainlinkOracle(address chainlinkOracle)
         public
         onlyOwner
         returns (bool)
     {
-        _chainlinkOracle = _chainlinkOracle;
+        _chainlinkOracle = chainlinkOracle;
         return true;
     }
 

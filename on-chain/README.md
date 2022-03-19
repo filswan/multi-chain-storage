@@ -44,22 +44,7 @@ After a file is uploaded, the cost of storage service is estimated based on foll
 ### Mumbai Testnet Blockchain Network
 RPC URL: **https://matic-mumbai.chainstacklabs.com**      
 Chain ID: **80001**
-#### Stable Env
-##### Contract List
-|Contract   |  Address |
-|---|---|
-| mcp_payment_contract  | 0x12EDC75CE16d778Dc450960d5f1a744477ee49a0  |
-| dao_contract  | 0xe3262c0848b0cc5cd43df7139103f1fbf26558cc  |
-| flink_service_contract  | 0xcE9A9e594db39dCD449E392d68F60959533c0D75  |
-| DEX pool price_feed_address  | 0xe8a67994c114e0c17E1c135d0CB599a2394f1505  |
-| usdc token address  | 0xe11A86849d99F524cAC3E7A0Ec1241828e332C62  |
-| wFil token address  | 0x97916e6CC8DD75c6E6982FFd949Fc1768CF8c055  |
-
-##### Wallet List
-... add wallet addresses
-
-
-#### Development Env
+#### Development Env multi miner version
 ##### Contract List
 
 |Contract   |  Address |

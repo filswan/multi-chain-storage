@@ -77,7 +77,7 @@ func GetDealInfoByLotusClientAndUpdateInfoToDB() error {
 		if strings.ToLower(dealInfo.Status) == strings.ToLower(constants.DEAL_STATUS_ACTIVE) {
 			paymentStatus = constants.LOCK_PAYMENT_STATUS_SUCCESS
 		} else if strings.ToLower(dealInfo.Status) == strings.ToLower(constants.DEAL_STATUS_ERROR) {
-			logs.GetLogger().Error("deal:", v.DealCid, ", status:", dealInfo.Status)
+			//logs.GetLogger().Error("deal:", v.DealCid, ", status:", dealInfo.Status)
 			//paymentStatus = constants.LOCK_PAYMENT_STATUS_WAITING
 			paymentStatus = constants.LOCK_PAYMENT_STATUS_PROCESSING
 		} else {
@@ -125,7 +125,7 @@ func SaveOfflineDealStatus(dealCid, status, message string) error {
 		}
 	}
 
-	logs.GetLogger().Info(dealCid, " on chain status:", status, " on chain message:", message)
+	//logs.GetLogger().Info(dealCid, " on chain status:", status, " on chain message:", message)
 	if logExists {
 		logs.GetLogger().Info(dealCid, " deal status not changed")
 		return nil
@@ -133,7 +133,7 @@ func SaveOfflineDealStatus(dealCid, status, message string) error {
 
 	err = database.SaveOne(&dealLog)
 	if err != nil {
-		logs.GetLogger().Error(err)
+		logs.GetLogger().Error(err, " deal:", dealCid, " on chain status:", status, " on chain message:", message)
 		return err
 	}
 

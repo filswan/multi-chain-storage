@@ -322,6 +322,8 @@ func GetSourceFileAndDealFileInfoCount(walletAddress string, payloadCid, fileNam
 	if strings.Trim(fileName, " ") != "" {
 		sql = sql + " and s.file_name like '%" + fileName + "%'"
 	}
+	sql = sql + " and IFNULL(s.file_type,'0') <>'1'"
+
 	var recordCount common.RecordCount
 	err := database.GetDB().Raw(sql).Scan(&recordCount).Error
 	if err != nil {

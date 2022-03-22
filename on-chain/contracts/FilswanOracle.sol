@@ -102,7 +102,7 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
 
         bytes32 voteKey = keccak256(
             abi.encodeWithSignature(
-                "f(string, string,address,string[])",
+                "f(string,string,address,string[])",
                 dealId,
                 network,
                 recipient,

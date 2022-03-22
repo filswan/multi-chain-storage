@@ -441,6 +441,9 @@ export default {
                         _this.addrChild = accounts[0]
                         _this.walletInfo()
                         _this.$store.dispatch('setMetaAddress', accounts[0])
+                        if(_this.$route.name == 'my_files_detail') {
+                            _this.$router.push({ path: '/my_files' })
+                        }
                         _this.$router.go(0)
                     // })
                 }else{

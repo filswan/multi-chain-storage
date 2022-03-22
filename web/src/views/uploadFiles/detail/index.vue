@@ -302,11 +302,11 @@ export default {
                                     : "-";
                         })
                     }
-
+                    
                     _this.dealCont = json.data
                     _this.dealCont.deal.created_at = 
                         _this.dealCont.deal.created_at && _this.dealCont.deal.created_at != 0? 
-                            moment(new Date(parseInt(_this.dealCont.deal.created_at))).format(
+                            moment(new Date(parseInt(String(_this.dealCont.deal.created_at).length<13?_this.dealCont.deal.created_at*1000:_this.dealCont.deal.created_at))).format(
                                 "YYYY-MM-DD HH:mm:ss"
                             )
                             : "-";
@@ -446,6 +446,15 @@ export default {
             .block{
                 position: relative;
                 min-height: 100px;
+                .el-timeline{
+                    .el-timeline-item{
+                        .el-card__body{
+                            p{
+                                word-break: break-word;
+                            }
+                        }
+                    }
+                }  
                 .noLogs{
                     font-size: 16px;
                     text-align: center;

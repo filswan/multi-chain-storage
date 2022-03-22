@@ -8,11 +8,14 @@ import (
 	"multi-chain-storage/database"
 	"multi-chain-storage/logs"
 	"multi-chain-storage/models"
+	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/filswan/go-swan-lib/client/lotus"
+	libutils "github.com/filswan/go-swan-lib/utils"
 	"github.com/robfig/cron"
 )
 
@@ -74,12 +77,20 @@ func GetDealInfoByLotusClientAndUpdateInfoToDB() error {
 		}
 
 		paymentStatus := ""
-		if strings.ToLower(dealInfo.Status) == strings.ToLower(constants.DEAL_STATUS_ACTIVE) {
+		if strings.EqualFold(dealInfo.Status, constants.DEAL_STATUS_ACTIVE) {
 			paymentStatus = constants.LOCK_PAYMENT_STATUS_SUCCESS
-		} else if strings.ToLower(dealInfo.Status) == strings.ToLower(constants.DEAL_STATUS_ERROR) {
+			err := deleteFilesInDealTemp(v.CarFilePath)
+			if err != nil {
+				logs.GetLogger().Error(err)
+			}
+		} else if strings.EqualFold(dealInfo.Status, constants.DEAL_STATUS_ERROR) {
 			//logs.GetLogger().Error("deal:", v.DealCid, ", status:", dealInfo.Status)
 			//paymentStatus = constants.LOCK_PAYMENT_STATUS_WAITING
 			paymentStatus = constants.LOCK_PAYMENT_STATUS_PROCESSING
+			err := deleteFilesInDealTemp(v.CarFilePath)
+			if err != nil {
+				logs.GetLogger().Error(err)
+			}
 		} else {
 			paymentStatus = constants.LOCK_PAYMENT_STATUS_PROCESSING
 		}
@@ -101,6 +112,20 @@ func GetDealInfoByLotusClientAndUpdateInfoToDB() error {
 			return err
 		}
 	}
+	return nil
+}
+
+func deleteFilesInDealTemp(carFilepath string) error {
+	fileDir := filepath.Base(filepath.Base(carFilepath))
+
+	if libutils.IsDirExists(fileDir) {
+		err := os.RemoveAll(fileDir)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return err
+		}
+	}
+
 	return nil
 }
 

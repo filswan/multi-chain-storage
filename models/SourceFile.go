@@ -29,7 +29,7 @@ func GetSourceFilesByDealFileId(dealFileId int64) ([]*SourceFile, error) {
 
 	sql := "select a.* from source_file a, source_file_deal_file_map b, deal_file c where c.id=? and c.id=b.deal_file_id and b.source_file_id=a.id"
 
-	err := database.GetDB().Raw(sql, dealFileId).First(&sourceFiles).Error
+	err := database.GetDB().Raw(sql, dealFileId).Find(&sourceFiles).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err

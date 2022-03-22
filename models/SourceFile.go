@@ -24,6 +24,20 @@ type SourceFile struct {
 	FileType      string `json:"file_type"`
 }
 
+func GetSourceFilesByDealFileId(dealFileId int64) ([]*SourceFile, error) {
+	var sourceFiles []*SourceFile
+
+	sql := "select a.* from source_file a, source_file_deal_file_map b, deal_file c where c.id=? and c.id=b.deal_file_id and b.source_file_id=a.id"
+
+	err := database.GetDB().Raw(sql, dealFileId).First(&sourceFiles).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	return sourceFiles, nil
+}
+
 // FindSourceFileList (&SourceFile{Id: "0xadeaCC802D0f2DFd31bE4Fa7434F15782Fd720ac"},"id desc","10","0")
 func FindSourceFileList(whereCondition interface{}, orderCondition, limit, offset string) ([]*SourceFile, error) {
 	db := database.GetDB()

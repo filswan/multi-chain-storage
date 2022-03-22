@@ -79,7 +79,7 @@ func GetDealInfoByLotusClientAndUpdateInfoToDB() error {
 		paymentStatus := ""
 		if strings.EqualFold(dealInfo.Status, constants.DEAL_STATUS_ACTIVE) {
 			paymentStatus = constants.LOCK_PAYMENT_STATUS_SUCCESS
-			err := deleteFilesInDealTemp(v.CarFilePath)
+			err := deleteFilesInDealTemp(v.ID, v.CarFilePath)
 			if err != nil {
 				logs.GetLogger().Error(err)
 			}
@@ -87,7 +87,7 @@ func GetDealInfoByLotusClientAndUpdateInfoToDB() error {
 			//logs.GetLogger().Error("deal:", v.DealCid, ", status:", dealInfo.Status)
 			//paymentStatus = constants.LOCK_PAYMENT_STATUS_WAITING
 			paymentStatus = constants.LOCK_PAYMENT_STATUS_PROCESSING
-			err := deleteFilesInDealTemp(v.CarFilePath)
+			err := deleteFilesInDealTemp(v.ID, v.CarFilePath)
 			if err != nil {
 				logs.GetLogger().Error(err)
 			}
@@ -115,14 +115,30 @@ func GetDealInfoByLotusClientAndUpdateInfoToDB() error {
 	return nil
 }
 
-func deleteFilesInDealTemp(carFilepath string) error {
-	fileDir := filepath.Base(filepath.Base(carFilepath))
+func deleteFilesInDealTemp(dealFileId int64, carFilepath string) error {
+	carFileDir := filepath.Base(filepath.Base(carFilepath))
 
-	if libutils.IsDirExists(fileDir) {
-		err := os.RemoveAll(fileDir)
+	if libutils.IsDirExists(carFileDir) {
+		err := os.RemoveAll(carFileDir)
 		if err != nil {
 			logs.GetLogger().Error(err)
-			return err
+		}
+	}
+
+	sourceFiles, err := models.GetSourceFilesByDealFileId(dealFileId)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	for _, srcFile := range sourceFiles {
+		srcFileDir := filepath.Base(filepath.Base(srcFile.ResourceUri))
+
+		if libutils.IsDirExists(srcFileDir) {
+			err := os.RemoveAll(srcFileDir)
+			if err != nil {
+				logs.GetLogger().Error(err)
+			}
 		}
 	}
 

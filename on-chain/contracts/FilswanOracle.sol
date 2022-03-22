@@ -124,7 +124,8 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
         string memory network,
         address recipient
     ) public view returns (bool) {
-        string[] memory cidList = cidListMap[dealId];
+        string memory key = concatenate(dealId, network);
+        string[] memory cidList = cidListMap[key];
         bytes32 voteKey = keccak256(
             abi.encodeWithSignature(
                 "f(string, string,address,string[])",
@@ -142,7 +143,8 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
         string memory network,
         address recipient
     ) public view returns (uint8) {
-        string[] memory cidList = cidListMap[dealId];
+        string memory key = concatenate(dealId, network);
+        string[] memory cidList = cidListMap[key];
         bytes32 voteKey = keccak256(
             abi.encodeWithSignature(
                 "f(string, string,address,string[])",

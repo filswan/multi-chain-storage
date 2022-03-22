@@ -274,23 +274,20 @@ export default {
                     }
 
                     _this.dealCont = json.data
+                    _this.dealCont.deal.created_at = 
+                        _this.dealCont.deal.created_at && _this.dealCont.deal.created_at != 0? 
+                            moment(new Date(parseInt(String(_this.dealCont.deal.created_at).length<13?_this.dealCont.deal.created_at*1000:_this.dealCont.deal.created_at))).format(
+                                "YYYY-MM-DD HH:mm:ss"
+                            )
+                            : "-";
 
                     if(json.data.deal.provider && json.data.found.payload_cid){
                         _this.copy_filename = 'lotus client retrieve --miner '+json.data.deal.provider+' '+json.data.found.payload_cid+' ~./output-file';
                     }else{
                         _this.copy_filename = localStorage.getItem('languageMcs') == 'cn'?"还不可用。":"It's not available yet.";
                     }
-
-                    if(!json.data.found){
-                        _this.dealCont.found = {}
-                    }else{
-                        _this.dealCont.found.create_at = 
-                            _this.dealCont.found.create_at? 
-                                moment(new Date(parseInt(_this.dealCont.found.create_at))).format(
-                                    "YYYY-MM-DD HH:mm:ss"
-                                )
-                                : "-";
-                    }
+                    
+                    if(!json.data.found) _this.dealCont.found = {}
                 }else{
                     _this.$message.error(json.message);
                     return false
@@ -421,6 +418,15 @@ export default {
                     font-size: 16px;
                     text-align: center;
                 }
+                .el-timeline{
+                    .el-timeline-item{
+                        .el-card__body{
+                            p{
+                                word-break: break-word;
+                            }
+                        }
+                    }
+                }    
                 .el-loading-mask{
                     .el-loading-spinner{
                         top: 50%;

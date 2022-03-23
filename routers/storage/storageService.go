@@ -116,11 +116,6 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 		return "", "", needPay, err
 	}
 
-	err = os.Remove(srcFilepath)
-	if err != nil {
-		logs.GetLogger().Error(err)
-	}
-
 	if len(sourceAndDealFileList) > 0 {
 		if sourceAndDealFileList[0].WalletAddress == walletAddress {
 			if len(lockPaymentList) > 0 {

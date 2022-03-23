@@ -56,7 +56,8 @@
                 <el-col :span="16" v-if="dealId == 0">-</el-col>
                 <el-col :span="16" v-else>{{dealCont.deal.deal_cid | NumFormat}}</el-col>
                 <el-col :span="8">{{$t('uploadFile.create_time')}}:</el-col>
-                <el-col :span="16">{{dealCont.deal.created_at | NumFormat}}</el-col>
+                <el-col :span="16" v-if="dealId == 0">-</el-col>
+                <el-col :span="16" v-else>{{dealCont.deal.created_at | NumFormat}}</el-col>
                 <el-col :span="8">{{$t('uploadFile.detail_MessageCID')}}:</el-col>
                 <el-col :span="16">{{dealCont.deal.message_cid | NumFormat}}</el-col>
                 <el-col :span="8">{{$t('uploadFile.detail_PieceCID')}}:</el-col>
@@ -148,9 +149,17 @@
         </div>
 
         <el-dialog
-            :title="$t('uploadFile.deal_logs')"
             :visible.sync="dialogVisible"
             :width="width" custom-class="dealLogs">
+            <div slot="title" class="dialog-title">
+                {{$t('uploadFile.deal_logs')}}
+                <el-tooltip effect="dark" placement="top">
+                    <div slot="content">
+                        <a :href="webLink" target="_blank" class="weblinkStyle">{{webLink}}</a>
+                    </div>
+                    <img src="@/assets/images/info.png"/>
+                </el-tooltip>
+            </div>
             <div class="block" v-loading="loadlogs">
                 <el-timeline v-if="dealLogsData.length>0">
                     <el-timeline-item v-for="(item, n) in dealLogsData" :key="n" :timestamp="item.create_at" placement="top">
@@ -192,7 +201,10 @@ export default {
             dialogVisible: false,
             width: document.body.clientWidth>600?'550px':'95%',
             loadlogs: true,
-            dealLogsData: []
+            dealLogsData: [],
+            webLink: localStorage.getItem('languageMcs') == 'cn'?
+                'https://filecoin-docs.froghub.io/get-started/store-and-retrieve/store-data/#%E6%9F%A5%E7%9C%8B%E4%BA%A4%E6%98%93%E7%8A%B6%E6%80%81':
+                'https://docs.filecoin.io/get-started/store-and-retrieve/store-data/#check-the-deal-status'
       };
     },
     computed: {},
@@ -377,6 +389,12 @@ export default {
 
 
 <style scoped lang="scss">
+.weblinkStyle{
+    color: #fff; 
+    &:hover{
+        text-decoration: underline;
+    }
+}
 .el-dialog__wrapper /deep/{
     display: flex;
     .dealLogs{
@@ -390,6 +408,15 @@ export default {
             color: #000;
             font-size: 20px;
             padding: 0.15rem;
+            .dialog-title{
+                display: flex;
+                align-items: center;
+                .el-tooltip{
+                    width: 20px;
+                    height: 20px;
+                    margin: 0 0 0 5px;
+                }
+            }
             .el-dialog__headerbtn{
                 position: relative;
                 top: auto;

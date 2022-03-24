@@ -58,7 +58,7 @@ func GetDealInfoByLotusClientAndUpdateInfoToDB() error {
 	fmt.Println(inList)
 	whereCondition := "deal_cid != '' and task_uuid != '' and lower(lock_payment_status) not in (lower('" + constants.LOCK_PAYMENT_STATUS_SUCCESS + "'), lower('" + constants.LOCK_PAYMENT_STATUS_REFUNDED + "'))"
 	//" and deal_status not in (" + inList + ")"
-	dealList, err := models.FindDealFileList(whereCondition, "create_at desc", "100", "0")
+	dealList, err := models.FindDealFileList(whereCondition, "create_at desc", "10000", "0")
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err

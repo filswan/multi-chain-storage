@@ -64,16 +64,17 @@ func GetDealInfoByLotusClientAndUpdateInfoToDB() error {
 		return err
 	}
 
+	lotusClient, err := lotus.LotusGetClient(config.GetConfig().Lotus.ApiUrl, config.GetConfig().Lotus.AccessToken)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
 	for _, v := range dealList {
-		lotusClient, err := lotus.LotusGetClient(config.GetConfig().Lotus.ApiUrl, config.GetConfig().Lotus.AccessToken)
-		if err != nil {
-			logs.GetLogger().Error(err)
-			return err
-		}
 		dealInfo, err := lotusClient.LotusClientGetDealInfo(v.DealCid)
 		if err != nil {
 			logs.GetLogger().Error(err)
-			return err
+			continue
 		}
 
 		paymentStatus := ""
@@ -103,13 +104,11 @@ func GetDealInfoByLotusClientAndUpdateInfoToDB() error {
 		err = database.SaveOne(v)
 		if err != nil {
 			logs.GetLogger().Error(err)
-			return err
 		}
 
 		err = SaveOfflineDealStatus(v.DealCid, dealInfo.Status, dealInfo.Message)
 		if err != nil {
 			logs.GetLogger().Error(err)
-			return err
 		}
 	}
 	return nil

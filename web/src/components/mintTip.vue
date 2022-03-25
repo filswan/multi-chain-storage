@@ -85,31 +85,17 @@
 
                             const metadataUploadResponse = await that.sendPostRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/storage/ipfs/upload`, formData)
                             const nftUrl = metadataUploadResponse.data.ipfs_url
-
+                            console.log('upload success')
                             let nftContract = new web3.eth.Contract(
                                 nftContractAbi,
                                 that.$root.MINT_CONTRACT,
                                 { from: that.metaAddress, gas: web3.utils.toHex(that.$root.PAY_GAS_LIMIT) },
                             )
-                            const transaction = await nftContract.methods
-                            .mintData(that.metaAddress, nftUrl)
-                            .send()
-                            .on('transactionHash', function(hash){
-                                that.nftHash = hash
-                                console.log('transactionHash console:', that.nftHash);
-                            })
-                            .on('receipt', function(receipt){
-                                // receipt example
-                                // console.log('receipt console:', receipt);
-                            })
-                            .on('error', function(error){
-                                console.log('error console:', error)
-                                that.hashload = false
-                                that.isload = false
-                            });
+
+                            const mintResult = await that.mintContract(nftContract, nftUrl)
 
                             that.tokenId = await nftContract.methods.totalSupply().call()                            
-                            
+                            console.log('totalSupply success', that.tokenId)                            
                             let mintInfoJson = {
                                 payload_cid: that.cid,
                                 tx_hash: that.nftHash,
@@ -125,6 +111,45 @@
                         return false;
                     }
                 });
+            },
+            async mintContract(nftContract, nftUrl) {
+                try {
+                    console.log('start mint contract')
+                    const transaction = await nftContract.methods
+                    .mintData(that.metaAddress, nftUrl)
+                    .send()
+                    .on('transactionHash', function(hash){
+                        that.nftHash = hash
+                        console.log('transactionHash console:', that.nftHash);
+                    })
+                    .on('receipt', function(receipt){
+                        // receipt example
+                        console.log('receipt console:', receipt);
+                        return true
+                    })
+                    .on('error', function(error){
+                        console.log('error console:', error)
+                        that.hashload = false
+                        that.isload = false
+                        return false
+                    });
+                    console.log('mintData success')
+                } catch (err) {
+                    console.log('err.response', err, err.response);
+                    if (err.includes('not mined within 50 blocks')) {
+                        const handle = setInterval(() => {
+                            web3.eth.getTransactionReceipt(err.response.transactionHash).then((resp) => {
+                                if (resp != null && resp.blockNumber > 0) {
+                                    clearInterval(handle);
+                                    return true
+                                }
+                            });
+                        },3000);
+                    } else {
+                        console.log(err.response);
+                        return false
+                    }
+                }
             },
             closeDia() {
                 that.$emit('getMintDialog', false)
@@ -155,6 +180,7 @@
                     return response.data
                 } catch (err) {
                     console.error(err)
+                    // if(err.response.status === 500) _this.$message.error(_this.$t('uploadFile.xhr_error500'))
                 }
             },
         },

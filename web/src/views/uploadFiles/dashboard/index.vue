@@ -736,7 +736,7 @@ export default {
             _this.txHash = receipt.transactionHash
         })
         .on('error', function(error){
-            // console.log('error console:', error)
+            console.log('error console:', error)
             // console.error
             _this.loading = false
             _this.loadMetamaskPay = false

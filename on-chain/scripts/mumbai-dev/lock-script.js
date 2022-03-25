@@ -5,7 +5,7 @@
 // Runtime Environment's members available in the global scope.
 const hre = require("hardhat");
 
-const erc20ABI = require('../artifacts/contracts/test/ERC20.sol/TestERC20.json').abi;
+const erc20ABI = require('../../artifacts/contracts/test/ERC20.sol/TestERC20.json').abi;
 
 const one = "10000000000000";
 const ten = "10000000000000000000";
@@ -36,17 +36,21 @@ async function main() {
   const contract = await hre.ethers.getContractFactory("SwanPayment");
   const paymentInstance = await contract.attach(gatewayContractAddress);
 
-  const tx = await paymentInstance.connect(payer).lockTokenPayment({
-    id: cid,
-    minPayment: one,
-    amount: ten,
-    lockTime: 60, // 6 days
-    recipient: recipientAddress,
-    size:100,
-    copyLimit: 2,
-  }, overrides);
+  // const tx = await paymentInstance.connect(payer).lockTokenPayment({
+  //   id: cid,
+  //   minPayment: one,
+  //   amount: ten,
+  //   lockTime: 60, // 6 days
+  //   recipient: recipientAddress,
+  //   size:100,
+  //   copyLimit: 2,
+  // }, overrides);
 
-  await tx.wait();
+  // await tx.wait();
+
+  const info = await paymentInstance.connect(payer).getLockedPaymentInfo(cid);
+
+  console.log(info);
 
 }
 

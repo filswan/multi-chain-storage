@@ -19,6 +19,7 @@ interface IPaymentMinimal {
         uint256 amount;
         address recipient;
     }
+    
     struct TxInfo {
         string id; // in filecoin, is CID
         address token;
@@ -30,6 +31,7 @@ interface IPaymentMinimal {
         bool _isExisted;
         uint256 size;
         uint8 copyLimit;
+        uint256 blockNumber;
     }
 
     /// @notice Returns the locked balance of caller in specific transaction

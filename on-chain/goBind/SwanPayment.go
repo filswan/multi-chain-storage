@@ -28,16 +28,17 @@ var (
 
 // IPaymentMinimalTxInfo is an auto generated low-level Go binding around an user-defined struct.
 type IPaymentMinimalTxInfo struct {
-	Id         string
-	Token      common.Address
-	MinPayment *big.Int
-	LockedFee  *big.Int
-	Owner      common.Address
-	Recipient  common.Address
-	Deadline   *big.Int
-	IsExisted  bool
-	Size       *big.Int
-	CopyLimit  uint8
+	Id          string
+	Token       common.Address
+	MinPayment  *big.Int
+	LockedFee   *big.Int
+	Owner       common.Address
+	Recipient   common.Address
+	Deadline    *big.Int
+	IsExisted   bool
+	Size        *big.Int
+	CopyLimit   uint8
+	BlockNumber *big.Int
 }
 
 // IPaymentMinimallockPaymentParam is an auto generated low-level Go binding around an user-defined struct.
@@ -61,7 +62,7 @@ type IPaymentMinimalunlockPaymentParam struct {
 }
 
 // SwanPaymentABI is the input ABI used to generate the binding from.
-const SwanPaymentABI = "[{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"string\",\"name\":\"id\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"}],\"name\":\"ExpirePayment\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"string\",\"name\":\"id\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"lockedFee\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"minPayment\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"deadline\",\"type\":\"uint256\"}],\"name\":\"LockPayment\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"string\",\"name\":\"id\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"cost\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"restToken\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"}],\"name\":\"UnlockPayment\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"NATIVE_TOKEN\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"cId\",\"type\":\"string\"}],\"name\":\"getLockedPaymentInfo\",\"outputs\":[{\"components\":[{\"internalType\":\"string\",\"name\":\"id\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"minPayment\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"lockedFee\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"deadline\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"_isExisted\",\"type\":\"bool\"},{\"internalType\":\"uint256\",\"name\":\"size\",\"type\":\"uint256\"},{\"internalType\":\"uint8\",\"name\":\"copyLimit\",\"type\":\"uint8\"}],\"internalType\":\"structIPaymentMinimal.TxInfo\",\"name\":\"tx\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"ERC20_TOKEN\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"oracle\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"priceFeed\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"chainlinkOracle\",\"type\":\"address\"}],\"name\":\"initialize\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"string\",\"name\":\"id\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"minPayment\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"lockTime\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"size\",\"type\":\"uint256\"},{\"internalType\":\"uint8\",\"name\":\"copyLimit\",\"type\":\"uint8\"}],\"internalType\":\"structIPaymentMinimal.lockPaymentParam\",\"name\":\"param\",\"type\":\"tuple\"}],\"name\":\"lockTokenPayment\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string[]\",\"name\":\"cidList\",\"type\":\"string[]\"}],\"name\":\"refund\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_chainlinkOracle\",\"type\":\"address\"}],\"name\":\"setChainlinkOracle\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"oracle\",\"type\":\"address\"}],\"name\":\"setOracle\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"priceFeed\",\"type\":\"address\"}],\"name\":\"setPriceFeed\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"dealId\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"network\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"}],\"name\":\"unlockCarPayment\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"string\",\"name\":\"id\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"orderId\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"dealId\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"}],\"internalType\":\"structIPaymentMinimal.unlockPaymentParam\",\"name\":\"param\",\"type\":\"tuple\"}],\"name\":\"unlockTokenPayment\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
+const SwanPaymentABI = "[{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"string\",\"name\":\"id\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"}],\"name\":\"ExpirePayment\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"string\",\"name\":\"id\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"lockedFee\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"minPayment\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"deadline\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"size\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint8\",\"name\":\"copyLimit\",\"type\":\"uint8\"}],\"name\":\"LockPayment\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"string\",\"name\":\"id\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"cost\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"restToken\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"}],\"name\":\"UnlockPayment\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"NATIVE_TOKEN\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"cId\",\"type\":\"string\"}],\"name\":\"getLockedPaymentInfo\",\"outputs\":[{\"components\":[{\"internalType\":\"string\",\"name\":\"id\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"minPayment\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"lockedFee\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"deadline\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"_isExisted\",\"type\":\"bool\"},{\"internalType\":\"uint256\",\"name\":\"size\",\"type\":\"uint256\"},{\"internalType\":\"uint8\",\"name\":\"copyLimit\",\"type\":\"uint8\"},{\"internalType\":\"uint256\",\"name\":\"blockNumber\",\"type\":\"uint256\"}],\"internalType\":\"structIPaymentMinimal.TxInfo\",\"name\":\"tx\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"ERC20_TOKEN\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"oracle\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"priceFeed\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"chainlinkOracle\",\"type\":\"address\"}],\"name\":\"initialize\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"string\",\"name\":\"id\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"minPayment\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"lockTime\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"size\",\"type\":\"uint256\"},{\"internalType\":\"uint8\",\"name\":\"copyLimit\",\"type\":\"uint8\"}],\"internalType\":\"structIPaymentMinimal.lockPaymentParam\",\"name\":\"param\",\"type\":\"tuple\"}],\"name\":\"lockTokenPayment\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string[]\",\"name\":\"cidList\",\"type\":\"string[]\"}],\"name\":\"refund\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"chainlinkOracle\",\"type\":\"address\"}],\"name\":\"setChainlinkOracle\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"oracle\",\"type\":\"address\"}],\"name\":\"setOracle\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"priceFeed\",\"type\":\"address\"}],\"name\":\"setPriceFeed\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"dealId\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"network\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"}],\"name\":\"unlockCarPayment\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"string\",\"name\":\"id\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"orderId\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"dealId\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"}],\"internalType\":\"structIPaymentMinimal.unlockPaymentParam\",\"name\":\"param\",\"type\":\"tuple\"}],\"name\":\"unlockTokenPayment\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
 
 // SwanPayment is an auto generated Go binding around an Ethereum contract.
 type SwanPayment struct {
@@ -238,7 +239,7 @@ func (_SwanPayment *SwanPaymentCallerSession) NATIVETOKEN() (common.Address, err
 
 // GetLockedPaymentInfo is a free data retrieval call binding the contract method 0xe063922b.
 //
-// Solidity: function getLockedPaymentInfo(string cId) view returns((string,address,uint256,uint256,address,address,uint256,bool,uint256,uint8) tx)
+// Solidity: function getLockedPaymentInfo(string cId) view returns((string,address,uint256,uint256,address,address,uint256,bool,uint256,uint8,uint256) tx)
 func (_SwanPayment *SwanPaymentCaller) GetLockedPaymentInfo(opts *bind.CallOpts, cId string) (IPaymentMinimalTxInfo, error) {
 	var out []interface{}
 	err := _SwanPayment.contract.Call(opts, &out, "getLockedPaymentInfo", cId)
@@ -255,14 +256,14 @@ func (_SwanPayment *SwanPaymentCaller) GetLockedPaymentInfo(opts *bind.CallOpts,
 
 // GetLockedPaymentInfo is a free data retrieval call binding the contract method 0xe063922b.
 //
-// Solidity: function getLockedPaymentInfo(string cId) view returns((string,address,uint256,uint256,address,address,uint256,bool,uint256,uint8) tx)
+// Solidity: function getLockedPaymentInfo(string cId) view returns((string,address,uint256,uint256,address,address,uint256,bool,uint256,uint8,uint256) tx)
 func (_SwanPayment *SwanPaymentSession) GetLockedPaymentInfo(cId string) (IPaymentMinimalTxInfo, error) {
 	return _SwanPayment.Contract.GetLockedPaymentInfo(&_SwanPayment.CallOpts, cId)
 }
 
 // GetLockedPaymentInfo is a free data retrieval call binding the contract method 0xe063922b.
 //
-// Solidity: function getLockedPaymentInfo(string cId) view returns((string,address,uint256,uint256,address,address,uint256,bool,uint256,uint8) tx)
+// Solidity: function getLockedPaymentInfo(string cId) view returns((string,address,uint256,uint256,address,address,uint256,bool,uint256,uint8,uint256) tx)
 func (_SwanPayment *SwanPaymentCallerSession) GetLockedPaymentInfo(cId string) (IPaymentMinimalTxInfo, error) {
 	return _SwanPayment.Contract.GetLockedPaymentInfo(&_SwanPayment.CallOpts, cId)
 }
@@ -332,23 +333,23 @@ func (_SwanPayment *SwanPaymentTransactorSession) Refund(cidList []string) (*typ
 
 // SetChainlinkOracle is a paid mutator transaction binding the contract method 0x7a9b0412.
 //
-// Solidity: function setChainlinkOracle(address _chainlinkOracle) returns(bool)
-func (_SwanPayment *SwanPaymentTransactor) SetChainlinkOracle(opts *bind.TransactOpts, _chainlinkOracle common.Address) (*types.Transaction, error) {
-	return _SwanPayment.contract.Transact(opts, "setChainlinkOracle", _chainlinkOracle)
+// Solidity: function setChainlinkOracle(address chainlinkOracle) returns(bool)
+func (_SwanPayment *SwanPaymentTransactor) SetChainlinkOracle(opts *bind.TransactOpts, chainlinkOracle common.Address) (*types.Transaction, error) {
+	return _SwanPayment.contract.Transact(opts, "setChainlinkOracle", chainlinkOracle)
 }
 
 // SetChainlinkOracle is a paid mutator transaction binding the contract method 0x7a9b0412.
 //
-// Solidity: function setChainlinkOracle(address _chainlinkOracle) returns(bool)
-func (_SwanPayment *SwanPaymentSession) SetChainlinkOracle(_chainlinkOracle common.Address) (*types.Transaction, error) {
-	return _SwanPayment.Contract.SetChainlinkOracle(&_SwanPayment.TransactOpts, _chainlinkOracle)
+// Solidity: function setChainlinkOracle(address chainlinkOracle) returns(bool)
+func (_SwanPayment *SwanPaymentSession) SetChainlinkOracle(chainlinkOracle common.Address) (*types.Transaction, error) {
+	return _SwanPayment.Contract.SetChainlinkOracle(&_SwanPayment.TransactOpts, chainlinkOracle)
 }
 
 // SetChainlinkOracle is a paid mutator transaction binding the contract method 0x7a9b0412.
 //
-// Solidity: function setChainlinkOracle(address _chainlinkOracle) returns(bool)
-func (_SwanPayment *SwanPaymentTransactorSession) SetChainlinkOracle(_chainlinkOracle common.Address) (*types.Transaction, error) {
-	return _SwanPayment.Contract.SetChainlinkOracle(&_SwanPayment.TransactOpts, _chainlinkOracle)
+// Solidity: function setChainlinkOracle(address chainlinkOracle) returns(bool)
+func (_SwanPayment *SwanPaymentTransactorSession) SetChainlinkOracle(chainlinkOracle common.Address) (*types.Transaction, error) {
+	return _SwanPayment.Contract.SetChainlinkOracle(&_SwanPayment.TransactOpts, chainlinkOracle)
 }
 
 // SetOracle is a paid mutator transaction binding the contract method 0x7adbf973.
@@ -647,12 +648,14 @@ type SwanPaymentLockPayment struct {
 	MinPayment *big.Int
 	Recipient  common.Address
 	Deadline   *big.Int
+	Size       *big.Int
+	CopyLimit  uint8
 	Raw        types.Log // Blockchain specific contextual infos
 }
 
-// FilterLockPayment is a free log retrieval operation binding the contract event 0x87b076911cb43e46012dbf762607ad5d0c5d6eb5e1d8fec72be99002451c18ba.
+// FilterLockPayment is a free log retrieval operation binding the contract event 0x02b378c796eaeef77d8eeb6de396f34a0c52642059581638741fc37260a1b62d.
 //
-// Solidity: event LockPayment(string id, address token, uint256 lockedFee, uint256 minPayment, address recipient, uint256 deadline)
+// Solidity: event LockPayment(string id, address token, uint256 lockedFee, uint256 minPayment, address recipient, uint256 deadline, uint256 size, uint8 copyLimit)
 func (_SwanPayment *SwanPaymentFilterer) FilterLockPayment(opts *bind.FilterOpts) (*SwanPaymentLockPaymentIterator, error) {
 
 	logs, sub, err := _SwanPayment.contract.FilterLogs(opts, "LockPayment")
@@ -662,9 +665,9 @@ func (_SwanPayment *SwanPaymentFilterer) FilterLockPayment(opts *bind.FilterOpts
 	return &SwanPaymentLockPaymentIterator{contract: _SwanPayment.contract, event: "LockPayment", logs: logs, sub: sub}, nil
 }
 
-// WatchLockPayment is a free log subscription operation binding the contract event 0x87b076911cb43e46012dbf762607ad5d0c5d6eb5e1d8fec72be99002451c18ba.
+// WatchLockPayment is a free log subscription operation binding the contract event 0x02b378c796eaeef77d8eeb6de396f34a0c52642059581638741fc37260a1b62d.
 //
-// Solidity: event LockPayment(string id, address token, uint256 lockedFee, uint256 minPayment, address recipient, uint256 deadline)
+// Solidity: event LockPayment(string id, address token, uint256 lockedFee, uint256 minPayment, address recipient, uint256 deadline, uint256 size, uint8 copyLimit)
 func (_SwanPayment *SwanPaymentFilterer) WatchLockPayment(opts *bind.WatchOpts, sink chan<- *SwanPaymentLockPayment) (event.Subscription, error) {
 
 	logs, sub, err := _SwanPayment.contract.WatchLogs(opts, "LockPayment")
@@ -699,9 +702,9 @@ func (_SwanPayment *SwanPaymentFilterer) WatchLockPayment(opts *bind.WatchOpts, 
 	}), nil
 }
 
-// ParseLockPayment is a log parse operation binding the contract event 0x87b076911cb43e46012dbf762607ad5d0c5d6eb5e1d8fec72be99002451c18ba.
+// ParseLockPayment is a log parse operation binding the contract event 0x02b378c796eaeef77d8eeb6de396f34a0c52642059581638741fc37260a1b62d.
 //
-// Solidity: event LockPayment(string id, address token, uint256 lockedFee, uint256 minPayment, address recipient, uint256 deadline)
+// Solidity: event LockPayment(string id, address token, uint256 lockedFee, uint256 minPayment, address recipient, uint256 deadline, uint256 size, uint8 copyLimit)
 func (_SwanPayment *SwanPaymentFilterer) ParseLockPayment(log types.Log) (*SwanPaymentLockPayment, error) {
 	event := new(SwanPaymentLockPayment)
 	if err := _SwanPayment.contract.UnpackLog(event, "LockPayment", log); err != nil {

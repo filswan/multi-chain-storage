@@ -87,7 +87,7 @@ export default {
         upload_form_type: 'Type:',
         upload_form_file: 'CSV File:',
         upload_form_file_tip: 'The maximum size of the file is 1 GB',
-        upload_form_file_tip01: 'The minimum value of the file is 1 byte',
+        upload_form_file_tip01: 'The minimum value of the file is 1 MB',
         upload_form_minerId: 'W3SS ID:',
         upload_form_dataset: 'Curated Dataset',
         upload_form_minerId_tips: 'W3SS ID cannot be null',
@@ -559,7 +559,8 @@ export default {
         View_Your_NFT_Note: 'Note: The NFT will take some time to load on Opensea.',
         goTo: 'Go to',
         goTopage: '',
-        xhr_tip: 'Upload file changed, please re-upload.'
+        xhr_tip: 'Upload file changed, please re-upload.',
+        xhr_error500: 'Failed to create a sending deal task, please contact the administrator.'
     },
     billing: {
         search_placeholder: 'Search by ',

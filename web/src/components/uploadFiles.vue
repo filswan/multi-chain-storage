@@ -242,6 +242,7 @@
                 percentIn: '',
                 loadMetamaskPay: false,
                 metamaskLoginTip: false,
+                lastTime: 0,
                 found_link: process.env.NODE_ENV == "production"?"https://calibration-faucet.filswan.com/":"http://192.168.88.216:8080/faucet/#/dashboard"
             };
         },
@@ -307,6 +308,18 @@
                             return false
                         }
                         if(_this.ruleForm.fileList_tip || isNaN(_this.ruleForm.amount)) return false
+
+                        let now = new Date().valueOf(); //防止短时间内连续点击后多次触发请求的操作
+                        if(_this.lastTime == 0){
+                            _this.lastTime = now;
+                        }else{
+                            if((now - _this.lastTime) > 2000){
+                                //重置上一次点击时间，设置的2秒间隔
+                                _this.lastTime = now;
+                            }else{
+                                return false
+                            }
+                        }
 
                         if(_this.metaAddress){
                             // 授权代币
@@ -386,6 +399,10 @@
                                             }
                                         }
                                     } else {
+                                        i += 1
+                                        if(i <= 1){
+                                            if (xhr.status === 500) _this.$message.error(_this.$t('uploadFile.xhr_error500'))
+                                        }
                                         _this.loading = false
                                         _this.fileUploadVisible = false
                                     }
@@ -525,10 +542,10 @@
                 this.ruleForm.file_size = this.sizeChange(this._file.size)
                 this.ruleForm.file_size_byte = this.byteChange(this._file.size)
                 console.log('bytes', this._file.size)
-                if (!isLt2M || this._file.size <= 0) {
+                if (!isLt2M || this._file.size < 1048576) {
                     // this.$message.error(this.$t('deal.upload_form_file_tip'))
                     this.ruleForm.fileList_tip = true
-                    this.ruleForm.fileList_tip_text = this._file.size <= 0 ? this.$t('deal.upload_form_file_tip01'):this.$t('deal.upload_form_file_tip')
+                    this.ruleForm.fileList_tip_text = this._file.size < 1048576 ? this.$t('deal.upload_form_file_tip01'):this.$t('deal.upload_form_file_tip')
                     return false
                 }else{
                     this.ruleForm.fileList_tip = false
@@ -545,8 +562,9 @@
                     // 判断大小是999999999左右，解决会显示成1.00e+3科学计数法
                     i += 1
                 }
-                if(i>2) return Number(bytes / Math.pow(k, i)) + ' ' + sizes[i];
-                else return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];
+
+                // if(i == 2) return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];
+                return Number(bytes / Math.pow(k, i)) + ' ' + sizes[i];
             },
             byteChange(limit){
                 var size = "";

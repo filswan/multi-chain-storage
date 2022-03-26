@@ -139,12 +139,13 @@
                     if (err.includes('not mined within 50 blocks')) {
                         const handle = setInterval(() => {
                             web3.eth.getTransactionReceipt(err.response.transactionHash).then((resp) => {
+                                console.log('checking ... ');
                                 if (resp != null && resp.blockNumber > 0) {
                                     clearInterval(handle);
                                     return true
                                 }
                             });
-                        },3000);
+                        },2000);
                     } else {
                         console.log(err.response);
                         return false

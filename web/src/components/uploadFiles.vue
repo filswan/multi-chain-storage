@@ -358,6 +358,7 @@
                                                 i += 1
                                                 if(i <= 1){
                                                     if(res.status == "success"){
+                                                        _this.percentIn = xhr.readyState === 4 ? '100%' : _this.percentIn
                                                         if(res.data.need_pay == 0 || res.data.need_pay == 2 || res.data.need_pay == 4){
                                                             contract_erc20.methods.allowance(_this.gatewayContractAddress, _this.metaAddress).call()
                                                             .then(resultUSDC => {
@@ -422,7 +423,8 @@
                                         if (event.lengthComputable) {
                                             let percentIn = Math.floor(event.loaded / event.total * 100);
                                             // 设置进度显示
-                                            _this.percentIn = percentIn+'%'
+                                            if(percentIn == 100 && event.loaded <= event.total) percentIn = 99
+                                            _this.percentIn = percentIn == 100 && event.loaded <= event.total ? '99%' : percentIn+'%'
                                             // console.log(percentIn+'%')
                                         }
                                     };

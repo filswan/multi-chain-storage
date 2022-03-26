@@ -74,7 +74,8 @@ export default {
         formTable14: '节点算力',
         formNotData: '空',
         ON: '开',
-        OFF:'关'
+        OFF:'关',
+        game_tips: '大赛进行中 ： 参与Multi-Chain Storage 测试网大赛，赢取 200 FIL 奖金'
     },
     deal: {
         upload_title: '创建您的离线任务',

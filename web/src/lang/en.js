@@ -75,7 +75,8 @@ export default {
         formTable14: 'ADJUSTED POWER',
         formNotData: 'No Data',
         ON: 'ON',
-        OFF:'OFF'
+        OFF:'OFF',
+        game_tips: 'Competition Live Now : Collect Points and Share a 200 FIL Prize Pool'
     },
     deal: {
         upload_title: 'Create Your Task for Offline Sealing',

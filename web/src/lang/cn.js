@@ -74,7 +74,8 @@ export default {
         formTable14: '节点算力',
         formNotData: '空',
         ON: '开',
-        OFF:'关'
+        OFF:'关',
+        game_tips: '大赛进行中 ： 参与Multi-Chain Storage 测试网大赛，赢取 200 FIL 奖金'
     },
     deal: {
         upload_title: '创建您的离线任务',
@@ -493,6 +494,8 @@ export default {
         data_tooltip: '文件或数据块的内容标识符。',
         payment_tip: '请等待资金锁定流程完成。',
         payment_tip_deal: '请耐心等待该过程完成。',
+        payment_tip_deal01: '您已上传成功。',
+        payment_tip_deal02: '请耐心等待支付完成。',
         COMPLETED: "转账成功", 
         SUCCESS: "您已转账成功，请查看转账历史记录。",
         CLOSE: "关闭",

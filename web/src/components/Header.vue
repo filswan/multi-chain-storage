@@ -1,5 +1,9 @@
 <template>
     <div class="header" :class="{'content-collapse': collapseLocal}">
+        <el-alert
+            type="info" center>
+            <a :href="competitionLink" target="_blank" slot="title">{{$t('dashboard.game_tips')}}</a>
+        </el-alert>
         <div class="header_arera">
             <div class="header_left">
                 <span v-if="!bodyWidth">{{headertitle}}</span>
@@ -127,7 +131,10 @@ export default {
             addrChild: '',
             wrongVisible: false,
             width: document.body.clientWidth>600?'450px':'95%',
-            copyClick: true
+            copyClick: true,
+            competitionLink: localStorage.getItem('languageMcs') == 'cn'?
+                'https://mirror.xyz/0xe6a951af1F22A7C63E56D9d796bFD44558A52F30/TO7xgRIYsciAsYUWHXboleVOkJXc7u6sngy3jrcCMiw':
+                'https://filswan.medium.com/multi-chain-storage-testnet-competition-collect-points-and-share-a-200-fil-prize-pool-b6d637953b48'
         };
     },
     props: ["meta"],
@@ -667,6 +674,20 @@ export default {
     background-color: #fff;
     -webkit-transition: left .3s ease-in-out;
     transition: left .3s ease-in-out;
+    .el-alert /deep/{
+        position: absolute;
+        z-index: 9999;
+        background-color: #1c23bc;
+        border-radius: 0;
+        color: #fff;
+        a{
+            display: block;
+            color: inherit;
+            &:hover{
+                text-decoration: underline;
+            }
+        }
+    }
     .menuMb{
         display: flex;
         justify-content: center;

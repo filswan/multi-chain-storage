@@ -29,7 +29,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var createDirMutext sync.Mutex
+var createDirMutext = &sync.Mutex{}
 
 func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multipart.FileHeader, duration, userId int, walletAddress string, fileType int) (string, string, int, error) {
 	temDirDeal := config.GetConfig().SwanTask.DirDeal
@@ -57,6 +57,12 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 	for libutils.IsDirExists(temDirDeal) {
 		temDirDeal = tempDirDealTemp + "_" + strconv.Itoa(i)
 		i++
+	}
+	err = libutils.CreateDir(temDirDeal)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		createDirMutext.Unlock()
+		return "", "", needPay, err
 	}
 	createDirMutext.Unlock()
 

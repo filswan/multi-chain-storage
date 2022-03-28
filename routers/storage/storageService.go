@@ -58,6 +58,12 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 		temDirDeal = tempDirDealTemp + "_" + strconv.Itoa(i)
 		i++
 	}
+	err = libutils.CreateDir(temDirDeal)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		createDirMutext.Unlock()
+		return "", "", needPay, err
+	}
 	createDirMutext.Unlock()
 
 	srcDir := filepath.Join(temDirDeal, "src")

@@ -29,7 +29,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var createDirMutext = &sync.Mutex{}
+var createDirMutext sync.Mutex
 
 func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multipart.FileHeader, duration, userId int, walletAddress string, fileType int) (string, string, int, error) {
 	temDirDeal := config.GetConfig().SwanTask.DirDeal

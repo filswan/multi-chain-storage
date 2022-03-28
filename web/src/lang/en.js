@@ -489,6 +489,8 @@ export default {
         data_tooltip: 'The content identifier for a file or a piece of data.',
         payment_tip: 'Please wait until the process of locking funds completed.',
         payment_tip_deal: 'Please wait until the process completed.',
+        payment_tip_deal01: 'You had uploaded successfully.',
+        payment_tip_deal02: 'Please wait until the payment completed.',
         COMPLETED: "Completed", 
         SUCCESS: "Your transaction has been submitted successfully. Check more detail in your transaction history. ",
         CLOSE:"Close",

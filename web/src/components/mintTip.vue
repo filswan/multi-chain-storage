@@ -2,7 +2,7 @@
 <div>
     <el-dialog :title="$t('uploadFile.nft_title')+'NFT'" :width="widthDia" :visible.sync="mineVisible"
         :before-close="closeDia">
-        <div v-loading="hashload" :element-loading-text="isload?$t('uploadFile.payment_tip_deal'):''">
+        <div v-loading="hashload" :element-loading-text="isload?isloadText:''">
             <el-form :model="ruleForm" :rules="rules" ref="ruleForm">
                 <el-form-item :label="'NFT '+$t('uploadFile.nft_Name')" prop="name">
                     <el-input v-model="ruleForm.name" placeholder=""></el-input>
@@ -54,6 +54,7 @@
                 widthDia: document.body.clientWidth<600?'90%':'500px',
                 hashload: false,
                 isload: false,
+                isloadText: this.$t('uploadFile.payment_tip_deal'),
                 nftHash: '',
                 tokenId: ''
             };
@@ -85,6 +86,7 @@
 
                             const metadataUploadResponse = await that.sendPostRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/storage/ipfs/upload`, formData)
                             const nftUrl = metadataUploadResponse.data.ipfs_url
+                            that.isloadText = that.$t('uploadFile.payment_tip_deal01')
                             console.log('upload success')
                             let nftContract = new web3.eth.Contract(
                                 nftContractAbi,
@@ -120,6 +122,7 @@
                     .send()
                     .on('transactionHash', function(hash){
                         that.nftHash = hash
+                        that.isloadText = that.$t('uploadFile.payment_tip_deal02')
                         console.log('transactionHash console:', that.nftHash);
                     })
                     .on('receipt', function(receipt){

@@ -87,7 +87,7 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 		logs.GetLogger().Error(err)
 		return "", "", needPay, err
 	}
-	logs.GetLogger().Info("car files created in ", carDir)
+	logs.GetLogger().Info("car files will be created in ", carDir)
 
 	confCar := clientmodel.ConfCar{
 		LotusClientApiUrl:      config.GetConfig().Lotus.ApiUrl,
@@ -100,7 +100,7 @@ func SaveFileAndCreateCarAndUploadToIPFSAndSaveDb(c *gin.Context, srcFile *multi
 		logs.GetLogger().Error(err)
 		return "", "", needPay, err
 	}
-	logs.GetLogger().Info("car files created in ", carDir, "payload_cid=", fileList[0].DataCid)
+	logs.GetLogger().Info("car files created in ", carDir, ", payload_cid=", fileList[0].DataCid)
 
 	uploadUrl := utils.UrlJoin(config.GetConfig().IpfsServer.UploadUrl, "api/v0/add?stream-channels=true&pin=true")
 	ipfsFileHash, err := ipfs.IpfsUploadFileByWebApi(uploadUrl, srcFilepath)

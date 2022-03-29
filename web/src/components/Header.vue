@@ -677,7 +677,7 @@ export default {
     .el-alert /deep/{
         position: absolute;
         z-index: 9999;
-        background-color: #1c23bc;
+        background-color: #f56c6c;
         border-radius: 0;
         color: #fff;
         a{
@@ -686,6 +686,9 @@ export default {
             &:hover{
                 text-decoration: underline;
             }
+        }
+        .el-alert__closebtn{
+            color: #fff;
         }
     }
     .menuMb{

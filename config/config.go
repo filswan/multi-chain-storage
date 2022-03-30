@@ -22,6 +22,7 @@ type Configuration struct {
 	FileCoinWallet       string       `toml:"file_coin_wallet"`
 	FilinkUrl            string       `toml:"filink_url"`
 	FilecoinNetwork      string       `toml:"filecoin_network"`
+	MaxBatchUploadNum    int          `toml:"max_batch_upload_num"`
 }
 
 type database struct {

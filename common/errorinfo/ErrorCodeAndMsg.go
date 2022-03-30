@@ -24,6 +24,8 @@ const (
 	HTTP_REQUEST_PARAM_TYPE_ERROR_MSG                 = "Http request param type is error"
 	HTTP_REQUEST_GET_MULTIPART_FORM_ERROR_CODE        = "500002009"
 	HTTP_REQUEST_GET_MULTIPART_FORM_ERROR_MSG         = "Getting multipart form occurred error"
+	HTTP_REQUEST_MAX_NUMBER_ERROR_CODE                = "500002010"
+	HTTP_REQUEST_MAX_NUMBER_ERROR_MSG                 = "The request parameter exceeds the maximum number"
 
 	//database err 003
 	GET_RECORD_COUNT_ERROR_CODE  = "500003001"

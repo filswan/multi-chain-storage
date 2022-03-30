@@ -55,6 +55,12 @@ func BatchUploadFileToIpfs(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_CODE, errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_MSG+":get file from user occurred error,please try again"))
 		return
 	}
+	if len(files) > config.GetConfig().MaxBatchUploadNum {
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_MAX_NUMBER_ERROR_CODE, errorinfo.HTTP_REQUEST_MAX_NUMBER_ERROR_MSG+":upload files number can not be more than "+strconv.Itoa(config.GetConfig().MaxBatchUploadNum)))
+		return
+	}
+
 	duration := c.PostForm("duration")
 	if strings.Trim(duration, " ") == "" {
 		errMsg := "duraion can not be null"

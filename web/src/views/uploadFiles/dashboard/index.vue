@@ -509,7 +509,8 @@ export default {
         storage_cost_average: 0,
         storage_cost_high: 0,
       },
-      metamaskLoginTip: false
+      metamaskLoginTip: false,
+      searchNowCurrent: ''
     };
   },
   computed: {
@@ -537,7 +538,9 @@ export default {
       _this.parma.is_ascending = ''
       _this.parmaChild.limit = 10
       _this.parmaChild.offset = 1
-      _this.getData()
+      
+      _this.searchNowCurrent = (new Date()).getTime()
+      _this.getData(_this.searchNowCurrent)
     }
   },
   created() {
@@ -1057,7 +1060,7 @@ export default {
             console.error(err)
         }
     },
-    getData() {
+    getData(currentData) {
       let _this = this;
       _this.loading = true;
       let offset =
@@ -1072,43 +1075,54 @@ export default {
 
       _this.tableData = []
 
-      let storage_api = `${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/storage/tasks/deals?${QS.stringify(parma)}`
-      // let storage_api = `./static/pay-status-response.json?${QS.stringify(parma)}`
+      let uploadRes = new Promise((resolve, reject) => {
+        let storage_api = `${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/storage/tasks/deals?${QS.stringify(parma)}`
+        // let storage_api = `./static/pay-status-response.json?${QS.stringify(parma)}`
 
-      axios.get(storage_api, {
-          headers: {
-              // 'Authorization': "Bearer "+ _this.$store.getters.accessToken
-          },
-      })
-      .then((response) => {
-          if(response.data.status == 'success'){
-            const data = response.data.data;
-            _this.parma.total = Number(response.data.page_info.total_record_count);
-            _this.tableData = response.data.data;
-            _this.tableData.map((item,s) => {
-              item.payloadAct = false
-              item.duration = item.duration/2880
-              item.file_size_byte = _this.byteChange(item.file_size)
-              item.create_at = item.create_at
-                ? item.create_at.length < 13
-                  ? moment(new Date(parseInt(item.create_at * 1000))).format(
-                      "YYYY-MM-DD HH:mm:ss"
-                    )
-                  : moment(new Date(parseInt(item.create_at))).format(
-                      "YYYY-MM-DD HH:mm:ss"
-                    )
-                : "-";
-            });
-            setTimeout(function(){
+        axios.get(storage_api, {
+            headers: {
+                // 'Authorization': "Bearer "+ _this.$store.getters.accessToken
+            },
+        })
+        .then((response) => {
+            if(response.data.status == 'success'){
+              if(currentData && _this.searchNowCurrent !== currentData) return false
+              const data = response.data.data;
+              _this.parma.total = Number(response.data.page_info.total_record_count);
+              _this.tableData = response.data.data;
+              _this.tableData.map((item,s) => {
+                item.payloadAct = false
+                item.duration = item.duration/2880
+                item.file_size_byte = _this.byteChange(item.file_size)
+                item.create_at = item.create_at
+                  ? item.create_at.length < 13
+                    ? moment(new Date(parseInt(item.create_at * 1000))).format(
+                        "YYYY-MM-DD HH:mm:ss"
+                      )
+                    : moment(new Date(parseInt(item.create_at))).format(
+                        "YYYY-MM-DD HH:mm:ss"
+                      )
+                  : "-";
+              });
+              setTimeout(function(){
+                _this.loading = false
+                // resolve('')
+              }, 2000)
+            } else {
+              _this.$message.error(response.message);
               _this.loading = false
-            }, 2000)
-          } else {
-            _this.$message.error(response.message);
-            _this.loading = false
-          }
-      }).catch(error => {
+              reject(response.message)
+            }
+        }).catch(error => {
+            console.log(error)
+            _this.loading = false;
+            reject(error)
+        })
+      })
+      Promise.all([uploadRes]).then((result) => {
+          console.log(result) 
+      }).catch((error) => {
           console.log(error)
-          _this.loading = false;
       })
       return false
     },

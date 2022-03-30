@@ -325,9 +325,9 @@ func GetSourceFileAndDealFileInfo(limit, offset string, walletAddress string, pa
 	if strings.Trim(mintStatus, " ") != "" {
 		switch mintStatus {
 		case "0": // Not mint
-			sql = sql + " and TRIM(s.nft_tx_hash) = '' "
+			sql = sql + " and TRIM(IFNULL(s.nft_tx_hash,'')) = '' "
 		case "1": // Mint
-			sql = sql + " and TRIM(s.nft_tx_hash) <> '' "
+			sql = sql + " and TRIM(IFNULL(s.nft_tx_hash,'')) <> '' "
 		default:
 
 		}
@@ -372,9 +372,9 @@ func GetSourceFileAndDealFileInfoCount(walletAddress string, payloadCid, fileNam
 	if strings.Trim(mintStatus, " ") != "" {
 		switch mintStatus {
 		case "0": // Not mint
-			sql = sql + " and TRIM(s.nft_tx_hash) = '' "
+			sql = sql + " and TRIM(IFNULL(s.nft_tx_hash,'')) = '' "
 		case "1": // Mint
-			sql = sql + " and TRIM(s.nft_tx_hash) <> '' "
+			sql = sql + " and TRIM(IFNULL(s.nft_tx_hash,'')) <> '' "
 		default:
 
 		}

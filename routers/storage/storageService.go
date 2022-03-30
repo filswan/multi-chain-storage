@@ -297,7 +297,7 @@ func saveDealFileAndMapRelation(fileInfoList []*libmodel.FileDesc, sourceFile *m
 	return nil
 }
 
-func GetSourceFileAndDealFileInfo(limit, offset string, walletAddress string, payloadCid, fileName string) ([]*SourceFileAndDealFileInfoExtend, error) {
+func GetSourceFileAndDealFileInfo(limit, offset string, walletAddress string, payloadCid, fileName string, paymentStatus string, mintStatus string) ([]*SourceFileAndDealFileInfoExtend, error) {
 	sql := "select s.file_name,s.file_size,s.pin_status,s.create_at,df.miner_fid,df.payload_cid,df.deal_cid,df.deal_id,df.piece_cid,df.deal_status,df.lock_payment_status as status,df.duration, evpm.locked_fee as locked_fee, s.nft_tx_hash, s.token_id, s.mint_address from source_file s " +
 		" inner join source_file_deal_file_map sfdfm on s.id = sfdfm.source_file_id" +
 		" inner join deal_file df on sfdfm.deal_file_id = df.id and wallet_address='" + walletAddress + "' "
@@ -306,6 +306,31 @@ func GetSourceFileAndDealFileInfo(limit, offset string, walletAddress string, pa
 	}
 	if strings.Trim(fileName, " ") != "" {
 		sql = sql + " and s.file_name like '%" + fileName + "%'"
+	}
+	if strings.Trim(paymentStatus, " ") != "" {
+		switch paymentStatus {
+		case "0": // Unpaid
+			sql = sql + " and df.lock_payment_status not in ('" + constants.LOCK_PAYMENT_STATUS_PAID + "','" + constants.LOCK_PAYMENT_STATUS_SUCCESS + "','" + constants.LOCK_PAYMENT_STATUS_REFUNDED + "','" + constants.LOCK_PAYMENT_STATUS_REFUNDING + "','" + constants.LOCK_PAYMENT_STATUS_PROCESSING + "')"
+		case "1": // Paid
+			sql = sql + " and df.lock_payment_status in ('" + constants.LOCK_PAYMENT_STATUS_PAID + "','" + constants.LOCK_PAYMENT_STATUS_SUCCESS + "','" + constants.LOCK_PAYMENT_STATUS_PROCESSING + "')"
+		case "2": // Refunding
+			sql = sql + " and df.lock_payment_status in ('" + constants.LOCK_PAYMENT_STATUS_REFUNDING + "')"
+		case "3": // Refunded
+			sql = sql + " and df.lock_payment_status in ('" + constants.LOCK_PAYMENT_STATUS_REFUNDED + "')"
+		default:
+
+		}
+	}
+
+	if strings.Trim(mintStatus, " ") != "" {
+		switch mintStatus {
+		case "0": // Not mint
+			sql = sql + " and TRIM(s.nft_tx_hash) = '' "
+		case "1": // Mint
+			sql = sql + " and TRIM(s.nft_tx_hash) <> '' "
+		default:
+
+		}
 	}
 	sql = sql + " left outer join event_lock_payment evpm on evpm.payload_cid = df.payload_cid"
 	sql = sql + " where IFNULL(s.file_type,'0') <>'1'"
@@ -318,7 +343,7 @@ func GetSourceFileAndDealFileInfo(limit, offset string, walletAddress string, pa
 	return results, nil
 }
 
-func GetSourceFileAndDealFileInfoCount(walletAddress string, payloadCid, fileName string) (int64, error) {
+func GetSourceFileAndDealFileInfoCount(walletAddress string, payloadCid, fileName string, paymentStatus string, mintStatus string) (int64, error) {
 	sql := "select count(1) as total_record from  source_file s " +
 		" inner join source_file_deal_file_map sfdfm on s.id = sfdfm.source_file_id" +
 		" inner join deal_file df on sfdfm.deal_file_id = df.id" +
@@ -328,6 +353,31 @@ func GetSourceFileAndDealFileInfoCount(walletAddress string, payloadCid, fileNam
 	}
 	if strings.Trim(fileName, " ") != "" {
 		sql = sql + " and s.file_name like '%" + fileName + "%'"
+	}
+	if strings.Trim(paymentStatus, " ") != "" {
+		switch paymentStatus {
+		case "0": // Unpaid
+			sql = sql + " and df.lock_payment_status not in ('" + constants.LOCK_PAYMENT_STATUS_PAID + "','" + constants.LOCK_PAYMENT_STATUS_SUCCESS + "','" + constants.LOCK_PAYMENT_STATUS_REFUNDED + "','" + constants.LOCK_PAYMENT_STATUS_REFUNDING + "','" + constants.LOCK_PAYMENT_STATUS_PROCESSING + "')"
+		case "1": // Paid
+			sql = sql + " and df.lock_payment_status in ('" + constants.LOCK_PAYMENT_STATUS_PAID + "','" + constants.LOCK_PAYMENT_STATUS_SUCCESS + "','" + constants.LOCK_PAYMENT_STATUS_PROCESSING + "')"
+		case "2": // Refunding
+			sql = sql + " and df.lock_payment_status in ('" + constants.LOCK_PAYMENT_STATUS_REFUNDING + "')"
+		case "3": // Refunded
+			sql = sql + " and df.lock_payment_status in ('" + constants.LOCK_PAYMENT_STATUS_REFUNDED + "')"
+		default:
+
+		}
+	}
+
+	if strings.Trim(mintStatus, " ") != "" {
+		switch mintStatus {
+		case "0": // Not mint
+			sql = sql + " and TRIM(s.nft_tx_hash) = '' "
+		case "1": // Mint
+			sql = sql + " and TRIM(s.nft_tx_hash) <> '' "
+		default:
+
+		}
 	}
 	sql = sql + " and IFNULL(s.file_type,'0') <>'1'"
 

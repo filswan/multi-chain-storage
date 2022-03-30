@@ -406,7 +406,9 @@ func GetDealListFromLocal(c *gin.Context) {
 	}
 	payloadCid := strings.Trim(URL.Get("payload_cid"), " ")
 	fileName := strings.Trim(URL.Get("file_name"), " ")
-	infoList, err := GetSourceFileAndDealFileInfo(pageSize, strconv.FormatInt(offset, 10), walletAddress, payloadCid, fileName)
+	paymentStatus := strings.Trim(URL.Get("payment_status"), " ") //0: Unpaid, 1: Paid, 2: Refunding, 3: Refunded
+	mintStatus := strings.Trim(URL.Get("mint_status"), " ")       //0: not mint, 1: mint
+	infoList, err := GetSourceFileAndDealFileInfo(pageSize, strconv.FormatInt(offset, 10), walletAddress, payloadCid, fileName, paymentStatus, mintStatus)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE, errorinfo.GET_RECORD_lIST_ERROR_MSG+": get source file and deal info from db occurred error"))
@@ -415,7 +417,7 @@ func GetDealListFromLocal(c *gin.Context) {
 	pageInfo := new(common.PageInfo)
 	pageInfo.PageSize = pageSize
 	pageInfo.PageNumber = pageNumber
-	totalCount, err := GetSourceFileAndDealFileInfoCount(walletAddress, payloadCid, fileName)
+	totalCount, err := GetSourceFileAndDealFileInfoCount(walletAddress, payloadCid, fileName, paymentStatus, mintStatus)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_COUNT_ERROR_CODE, errorinfo.GET_RECORD_COUNT_ERROR_MSG+": get source file and deal info total record number from db occurred error"))

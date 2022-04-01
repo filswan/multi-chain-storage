@@ -79,7 +79,7 @@ func FindExpiredLockPayment() ([]*EventLockPaymentQuery, error) {
 			"' and a.deadline < " + strconv.FormatInt(time.Now().Unix(), 10)
 	db := database.GetDB()
 	var models []*EventLockPaymentQuery
-	err := db.Raw(sql).Scan(&models).Limit(constants.DEFAULT_SELECT_LIMIT).Offset(0).Error
+	err := db.Raw(sql).Scan(&models).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err

@@ -562,6 +562,10 @@ border: 0;
   font-size: 35px;
 }
 
+.el-table-filter__bottom{
+  display: flex;
+}
+
 
 .elPopMiner{
   text-align: center;

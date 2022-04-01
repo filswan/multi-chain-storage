@@ -562,7 +562,13 @@ export default {
         goTo: 'Go to',
         goTopage: '',
         xhr_tip: 'Upload file changed, please re-upload.',
-        xhr_error500: 'Failed to create a sending deal task, please contact the administrator.'
+        xhr_error500: 'Failed to create a sending deal task, please contact the administrator.',
+        filter_minted: 'Minted',
+        filter_no_minted: 'Not minted',
+        filter_status_Unpaid: 'Unpaid',
+        filter_status_Paid: 'Paid',
+        filter_status_Refunding: 'Refunding',
+        filter_status_Refunded: 'Refunded',
     },
     billing: {
         search_placeholder: 'Search by ',

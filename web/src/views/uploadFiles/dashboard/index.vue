@@ -27,7 +27,7 @@
           style="width: 100%" max-height="580"
           :empty-text="$t('deal.formNotData')"
            v-loading="loading" @sort-change="sortChange"
-           :default-sort = "{prop: 'date', order: 'descending'}"
+           :default-sort = "{prop: 'date', order: 'descending'}" @filter-change="filterChange" 
         >
           <el-table-column prop="file_name" min-width="120" sortable="custom">
             <template slot="header" slot-scope="scope">
@@ -408,7 +408,10 @@
               {{ scope.row.create_at }}
             </template>
           </el-table-column>
-          <el-table-column prop="active" width="120" :label="$t('uploadFile.payment')">
+          <el-table-column prop="active" width="120" :label="$t('uploadFile.payment')"
+            :filters="[{text: $t('uploadFile.filter_status_Unpaid'), value: '0'}, {text: $t('uploadFile.filter_status_Paid'), value: '1'}, 
+                       {text: $t('uploadFile.filter_status_Refunding'), value: '2'}, {text: $t('uploadFile.filter_status_Refunded'), value: '3'}]"
+            :filter-multiple="false" :column-key="'payment'">
             <template slot-scope="scope">
               <div class="hot-cold-box">
                 <el-button class="uploadBtn blue" type="primary"
@@ -437,7 +440,9 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="MINT" width="100" :label="$t('uploadFile.MINT')">
+          <el-table-column prop="MINT" width="100" :label="$t('uploadFile.MINT')"
+            :filters="[{text: $t('uploadFile.filter_no_minted'), value: '0'}, {text: $t('uploadFile.filter_minted'), value: '1'}]"
+            :filter-multiple="false" :column-key="'minted'">
             <template slot-scope="scope">
               <div class="hot-cold-box">
                 <el-button class="uploadBtn blue" type="primary"
@@ -576,7 +581,9 @@ export default {
         total: 0,
         jumperOffset: 1,
         order_by: '',
-        is_ascending: ''
+        is_ascending: '',
+        payment_status: '',
+        mint_status: ''
       },
       parmaChild: {
         limit: 10,
@@ -663,6 +670,8 @@ export default {
       _this.parma.jumperOffset = 1
       _this.parma.order_by = ''
       _this.parma.is_ascending = ''
+      _this.parma.payment_status = ""
+      _this.parma.mint_status = ""
       _this.parmaChild.limit = 10
       _this.parmaChild.offset = 1
       
@@ -1163,6 +1172,10 @@ export default {
       _this.parma.jumperOffset = 1;
       _this.parma.order_by = ''
       _this.parma.is_ascending = ''
+      _this.parma.payment_status = ""
+      _this.parma.mint_status = ""
+      _this.$refs.singleTable.clearSort()
+      _this.$refs.singleTable.clearFilter();
       _this.getData();
     },
     clearAll() {
@@ -1173,6 +1186,10 @@ export default {
       _this.parma.jumperOffset = 1;
       _this.parma.order_by = ''
       _this.parma.is_ascending = ''
+      _this.parma.payment_status = ""
+      _this.parma.mint_status = ""
+      _this.$refs.singleTable.clearSort()
+      _this.$refs.singleTable.clearFilter();
       _this.getData();
     },
     handleCurrentChange(val) {
@@ -1251,9 +1268,33 @@ export default {
     },
     async sortChange(column) {
       // console.log(column);
+      await this.filterChange({})
       this.parma.order_by = await this.sortOrderBy(column.prop)
       this.parma.is_ascending = column.order == "ascending" ? 'y' : column.order == "descending" ? 'n' : ''
       this.loading = true
+      this.getData()
+    },
+    filterChange(filters){
+      if(("payment" in filters)) {
+        let data = filters.payment[0] || ""
+        if(data == this.parma.payment_status) return false
+        this.parma.payment_status = data
+        this.$refs.singleTable.clearFilter('minted');
+        this.parma.mint_status = ""
+      } else if(("minted" in filters)) {
+        let data = filters.minted[0] || ""
+        if(data == this.parma.mint_status) return false
+        this.parma.mint_status = data
+        this.$refs.singleTable.clearFilter('payment');
+        this.parma.payment_status = ""
+      }else{
+        this.$refs.singleTable.clearFilter();
+        this.parma.payment_status = ""
+        this.parma.mint_status = ""
+        return false
+      }
+      this.$refs.singleTable.clearSort()
+      this.parma.is_ascending = ""
       this.getData()
     },
     getData(currentData) {
@@ -1268,7 +1309,9 @@ export default {
         source_id: 4,
         wallet_address: _this.metaAddress,
         order_by: _this.parma.is_ascending?_this.parma.order_by:'',
-        is_ascending: _this.parma.is_ascending
+        is_ascending: _this.parma.is_ascending,
+        payment_status: _this.parma.payment_status,
+        mint_status: _this.parma.mint_status
       };
 
       _this.tableData = []
@@ -1817,6 +1860,14 @@ export default {
                         width: 15px;
                         height: 15px;
                     }
+                }
+              }
+              .el-table__column-filter-trigger{
+                i{
+                  font-size: 13px;
+                  font-weight: 600;
+                  margin-left: 4px;
+                  transform: scale(1);
                 }
               }
             }

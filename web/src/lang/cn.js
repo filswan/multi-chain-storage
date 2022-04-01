@@ -567,7 +567,13 @@ export default {
         goTo: '前往',
         goTopage: '页',
         xhr_tip: '上传文件已更改，请重新上传。',
-        xhr_error500: '创建交易失败，请联系管理员。'
+        xhr_error500: '创建交易失败，请联系管理员。',
+        filter_minted: '已铸造',
+        filter_no_minted: '未铸造',
+        filter_status_Unpaid: '未支付',
+        filter_status_Paid: '已支付',
+        filter_status_Refunding: '可退款',
+        filter_status_Refunded: '已退款',
     },
     billing: {
         search_placeholder: '搜索方式',

@@ -5,7 +5,6 @@ import (
 	"multi-chain-storage/blockchain/browsersync"
 	"multi-chain-storage/common/constants"
 	"multi-chain-storage/config"
-	"multi-chain-storage/database"
 	"multi-chain-storage/logs"
 	"multi-chain-storage/models"
 	"multi-chain-storage/routers"
@@ -23,8 +22,6 @@ import (
 
 func main() {
 	LoadEnv()
-	// init database
-	db := database.Init()
 
 	initMethod()
 	browsersync.Init()
@@ -39,13 +36,6 @@ func main() {
 	//scheduler.RefundUnlockPaymentSchedule()
 	scheduler.ScanDealInfoScheduler()
 	scheduler.ScanExpiredDealInfoScheduler()
-
-	defer func() {
-		err := db.Close()
-		if err != nil {
-			logs.GetLogger().Error(err)
-		}
-	}()
 
 	r := gin.Default()
 	r.MaxMultipartMemory = config.GetConfig().MaxMultipartMemory << 20

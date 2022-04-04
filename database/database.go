@@ -13,10 +13,8 @@ type Database struct {
 	*gorm.DB
 }
 
-var DB *gorm.DB
-
-// Opening a database and save the reference to `Database` struct.
-func Init() *gorm.DB {
+// Using this function to get a connection, you can create your connection pool here.
+func GetDB() *gorm.DB {
 	dbSource := config.GetConfig().Database.DbUsername + ":" + config.GetConfig().Database.DbPwd + "@tcp(" + config.GetConfig().Database.DbHost + ":" + config.GetConfig().Database.DbPort + ")/" + config.GetConfig().Database.DbSchemaName + "?" + config.GetConfig().Database.DbArgs
 	db, err := gorm.Open("mysql", dbSource)
 	if err != nil {
@@ -26,13 +24,15 @@ func Init() *gorm.DB {
 	db.DB().SetMaxIdleConns(10)
 	//db.LogMode(true)
 	db.LogMode(config.GetConfig().Dev)
-	DB = db
-	return DB
-}
 
-// Using this function to get a connection, you can create your connection pool here.
-func GetDB() *gorm.DB {
-	return DB
+	defer func() {
+		err = db.Close()
+		if err != nil {
+			logs.GetLogger().Error(err)
+		}
+	}()
+
+	return db
 }
 
 func SaveOne(data interface{}) error {

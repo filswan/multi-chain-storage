@@ -5,6 +5,7 @@ file_coin_wallet=""
 filink_url=""
 filecoin_network=""
 max_multipart_memory=64
+max_batch_upload_num=35
 
 [database]
 db_host="localhost"

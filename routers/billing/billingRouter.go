@@ -27,7 +27,7 @@ func BillingManager(router *gin.RouterGroup) {
 }
 
 func GetLockPaymentInfoByPayloadCid(c *gin.Context) {
-	logs.GetLogger().Info("ip:", c.ClientIP())
+	logs.GetLogger().Info("ip:", c.ClientIP(), ",port:", c.Request.URL.Port())
 	URL := c.Request.URL.Query()
 	var payloadCid = strings.Trim(URL.Get("payload_cid"), " ")
 	if payloadCid == "" {
@@ -51,7 +51,7 @@ func GetLockPaymentInfoByPayloadCid(c *gin.Context) {
 }
 
 func UpdateLockPaymentInfoByPayloadCid(c *gin.Context) {
-	logs.GetLogger().Info("ip:", c.ClientIP())
+	logs.GetLogger().Info("ip:", c.ClientIP(), ",port:", c.Request.URL.Port())
 	payloadCid := c.PostForm("payload_cid")
 	if strings.Trim(payloadCid, " ") == "" {
 		errMsg := "payload_cid can not be null when updating lock payment info"
@@ -104,7 +104,7 @@ func UpdateLockPaymentInfoByPayloadCid(c *gin.Context) {
 	c.JSON(http.StatusOK, common.CreateSuccessResponse(""))
 }
 func GetUserBillingHistory(c *gin.Context) {
-	logs.GetLogger().Info("ip:", c.ClientIP())
+	logs.GetLogger().Info("ip:", c.ClientIP(), ",port:", c.Request.URL.Port())
 	URL := c.Request.URL.Query()
 	walletAddress := URL.Get("wallet_address")
 	pageNumber := URL.Get("page_number")
@@ -166,7 +166,7 @@ func getWhereCondition(txHash, walletAddress string) string {
 }
 
 func GetFileCoinLastestPrice(c *gin.Context) {
-	logs.GetLogger().Info("ip:", c.ClientIP())
+	logs.GetLogger().Info("ip:", c.ClientIP(), ",port:", c.Request.URL.Port())
 	price, err := GetWfilPriceFromSushiPrice(polygon.WebConn.ConnWeb, "1")
 	if err != nil {
 		logs.GetLogger().Error(err)

@@ -35,6 +35,7 @@ func SendDealManager(router *gin.RouterGroup) {
 }
 
 func BatchUploadFileToIpfs(c *gin.Context) {
+	logs.GetLogger().Info("ip:", c.ClientIP())
 	walletAddress := c.PostForm("wallet_address")
 	if strings.Trim(walletAddress, " ") == "" {
 		errMsg := "wallet_address can not be null"
@@ -117,6 +118,7 @@ func BatchUploadFileToIpfs(c *gin.Context) {
 }
 
 func GetDealLogs(c *gin.Context) {
+	logs.GetLogger().Info("ip:", c.ClientIP())
 	dealCid := strings.Trim(c.Params.ByName("deal_cid"), " ")
 	if strings.Trim(dealCid, " ") == "" {
 		errMsg := "deal cid can not be null"
@@ -138,6 +140,7 @@ func GetDealLogs(c *gin.Context) {
 }
 
 func RecordDealListThatHaveBeenSignedByDao(c *gin.Context) {
+	logs.GetLogger().Info("ip:", c.ClientIP())
 	var dealIdList DealIdList
 	err := c.BindJSON(&dealIdList)
 	if err != nil {
@@ -168,6 +171,7 @@ func RecordDealListThatHaveBeenSignedByDao(c *gin.Context) {
 }
 
 func GetDealListForDaoToSign(c *gin.Context) {
+	logs.GetLogger().Info("ip:", c.ClientIP())
 	dealList, err := GetShoulBeSignDealListFromDB()
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -204,6 +208,7 @@ func GetDealListForDaoByDealId(c *gin.Context) {
 }
 
 func GetDealListFromFilink(c *gin.Context) {
+	logs.GetLogger().Info("ip:", c.ClientIP())
 	dealId := strings.Trim(c.Params.ByName("deal_id"), " ")
 	if strings.Trim(dealId, " ") == "" {
 		errMsg := "deal id can not be null"
@@ -313,6 +318,7 @@ func GetDealListFromFilink(c *gin.Context) {
 }
 
 func UploadFileToIpfs(c *gin.Context) {
+	logs.GetLogger().Info("ip:", c.ClientIP())
 	walletAddress := c.PostForm("wallet_address")
 	if strings.Trim(walletAddress, " ") == "" {
 		errMsg := "wallet_address can not be null"
@@ -378,6 +384,7 @@ func UploadFileToIpfs(c *gin.Context) {
 	}
 }
 func GetDealListFromLocal(c *gin.Context) {
+	logs.GetLogger().Info("ip:", c.ClientIP())
 	URL := c.Request.URL.Query()
 	pageNumber := URL.Get("page_number")
 	pageSize := URL.Get("page_size")
@@ -434,6 +441,7 @@ func GetDealListFromLocal(c *gin.Context) {
 }
 
 func RecordMintInfo(c *gin.Context) {
+	logs.GetLogger().Info("ip:", c.ClientIP())
 	var model mintInfoUpload
 	c.BindJSON(&model)
 	payloadCid := model.PayloadCid

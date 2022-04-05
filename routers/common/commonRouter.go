@@ -17,11 +17,13 @@ func HostManager(router *gin.RouterGroup) {
 }
 
 func GetSwanMinerVersion(c *gin.Context) {
+	logs.GetLogger().Info("ip:", c.ClientIP())
 	info := getSwanMinerHostInfo()
 	c.JSON(http.StatusOK, common.CreateSuccessResponse(info))
 }
 
 func GetSystemConfigParams(c *gin.Context) {
+	logs.GetLogger().Info("ip:", c.ClientIP())
 	limit := strings.Trim(c.Query("limit"), " ")
 	if limit == "" {
 		limit = constants.DEFAULT_SELECT_LIMIT

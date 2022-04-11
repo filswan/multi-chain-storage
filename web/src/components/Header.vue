@@ -675,6 +675,7 @@ export default {
     -webkit-transition: left .3s ease-in-out;
     transition: left .3s ease-in-out;
     .el-alert /deep/{
+        display: none;
         position: absolute;
         z-index: 9999;
         background-color: #f56c6c;

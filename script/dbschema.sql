@@ -11,3 +11,6 @@ create table offline_deal_log (
 );
 
 create index idx_offline_deal_log on offline_deal_log(deal_cid);
+
+create index idx_source_file_wallet_address on source_file(wallet_address);
+

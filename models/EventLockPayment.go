@@ -75,8 +75,9 @@ func FindExpiredLockPayment() ([]*EventLockPaymentQuery, error) {
 	sql :=
 		"SELECT b.id as deal_file_id, a.payload_cid, b.deal_id, a.address_from as recipient " +
 			"FROM event_lock_payment a, deal_file b " +
-			"WHERE a.payload_cid = b.payload_cid and a.payload_cid not in (SELECT payload_cid FROM event_unlock_payment c) and lock_payment_status not in ('" + constants.LOCK_PAYMENT_STATUS_REFUNDED + "','" + constants.LOCK_PAYMENT_STATUS_SUCCESS +
-			"') and a.deadline < " + strconv.FormatInt(time.Now().Unix(), 10)
+			"WHERE a.payload_cid = b.payload_cid and lock_payment_status = '" + constants.LOCK_PAYMENT_STATUS_PROCESSING + "'" +
+			" and a.deadline < " + strconv.FormatInt(time.Now().Unix(), 10) +
+			" and not exists (select 1 from event_unlock_payment c where a.payload_cid =c.payload_cid)"
 	db := database.GetDB()
 	var models []*EventLockPaymentQuery
 	err := db.Raw(sql).Scan(&models).Error
@@ -84,5 +85,6 @@ func FindExpiredLockPayment() ([]*EventLockPaymentQuery, error) {
 		logs.GetLogger().Error(err)
 		return nil, err
 	}
+
 	return models, nil
 }

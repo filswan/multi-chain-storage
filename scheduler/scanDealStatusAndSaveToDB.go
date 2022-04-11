@@ -37,20 +37,14 @@ func ScanDealInfoScheduler() {
 }
 
 func ScanExpiredDealInfoScheduler() {
-	c := cron.New()
-	err := c.AddFunc(config.GetConfig().ScheduleRule.UpdatePayStatusRule, func() {
-		logs.GetLogger().Info("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ scan expired deal info scheduler is running at " + time.Now().Format("2006-01-02 15:04:05"))
+	for {
 		err := GetExpiredDealInfoAndUpdateInfoToDB()
 		if err != nil {
 			logs.GetLogger().Error(err)
-			return
 		}
-	})
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return
+
+		time.Sleep(30 * time.Minute)
 	}
-	c.Start()
 }
 
 func GetDealInfoByLotusClientAndUpdateInfoToDB() error {

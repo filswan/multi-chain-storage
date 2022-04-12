@@ -38,12 +38,14 @@ func ScanDealInfoScheduler() {
 
 func ScanExpiredDealInfoScheduler() {
 	for {
+		logs.GetLogger().Info("start")
 		err := GetExpiredDealInfoAndUpdateInfoToDB()
 		if err != nil {
 			logs.GetLogger().Error(err)
 		}
+		logs.GetLogger().Info("end")
 
-		time.Sleep(30 * time.Minute)
+		time.Sleep(30 * time.Second)
 	}
 }
 

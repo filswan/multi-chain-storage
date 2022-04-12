@@ -1,3 +1,7 @@
+drop database mcs_v2;
+create database mcs_v2;
+use mcs_v2;
+
 create table wallet (
     id            bigint       not null auto_increment,
     address       varchar(100) not null,
@@ -49,8 +53,7 @@ create table source_file (
     create_at     bigint        not null,
     update_at     bigint        not null,
     primary key pk_source_file(id),
-    constraint un_source_file_resource_uri unique(resource_uri),
-    constraint fk_source_file_wallet_id foreign key (wallet_id) references wallet(id)
+    constraint un_source_file_resource_uri unique(resource_uri)
 );
 
 create table source_file_mint_info (
@@ -63,7 +66,7 @@ create table source_file_mint_info (
     constraint fk_source_file_mint_info_source_file_id foreign key (source_file_id) references source_file(id)
 );
 
-create table source_file_upload_history (
+create table source_file_upload (
     id             bigint        not null auto_increment,
     source_file_id bigint        not null,
     file_name      varchar(200)  not null,
@@ -71,9 +74,10 @@ create table source_file_upload_history (
     wallet_id      bigint        not null,
     create_at      bigint        not null,
     update_at      bigint        not null,
-    primary key pk_source_file_upload_history(id),
-    constraint un_source_file_upload_history unique(source_file_id,uuid),
-    constraint fk_source_file_upload_history_wallet_id foreign key (wallet_id) references wallet(id)
+    primary key pk_source_file_upload(id),
+    constraint un_source_file_upload unique(source_file_id,uuid),
+    constraint fk_source_file_upload_source_file_id foreign key (source_file_id) references source_file(id),
+    constraint fk_source_file_upload_wallet_id foreign key (wallet_id) references wallet(id)
 );
 
 create table deal_file (
@@ -89,7 +93,7 @@ create table deal_file (
     status         varchar(100)  not null,
     create_at      bigint        not null,
     update_at      bigint        not null,
-    primary key pk_deal_file(id),
+    primary key pk_deal_file(id)
 );
 
 create table source_file_deal_file_map (
@@ -129,28 +133,34 @@ create table offline_deal_log (
 );
 
 create table transaction_source_file (
-    id               bigint        not null auto_increment,
-    source_file_id   bigint        not null,
-    type             int           not null, #--0:pay, 1:refund after expired, 2: refund after unlock
-    tx_hash          varchar(100)  not null,
-    wallet_id_from   bigint        not null,
-    wallet_id_to     bigint        not null,
+    id                      bigint        not null auto_increment,
+    source_file_upload_id   bigint        not null,
+    type                    int           not null, #--0:pay, 1:refund after expired, 2: refund after unlock
+    tx_hash                 varchar(100)  not null,
+    wallet_id_from          bigint        not null,
+    wallet_id_to            bigint        not null,
+    coin_id                 bigint        not null,
+    amount                  decimal(20,0) not null,
     primary key pk_transaction_source_file(id),
-    constraint fk_transaction_source_file_source_file_id foreign key (source_file_id) references source_file(id),
+    constraint fk_transaction_source_file_source_file_upload_id foreign key (source_file_upload_id) references source_file_upload(id),
     constraint fk_transaction_source_file_wallet_id_from foreign key (wallet_id_from) references wallet(id),
-    constraint fk_transaction_source_file_wallet_id_to foreign key (wallet_id_to) references wallet(id)
+    constraint fk_transaction_source_file_wallet_id_to foreign key (wallet_id_to) references wallet(id),
+    constraint fk_transaction_source_file_coin_id foreign key (coin_id) references coin(id)
 );
 
 create table transaction_offline_deal (
-    id               bigint        not null auto_increment,
-    offline_deal_id  bigint        not null,
-    type             int           not null, #--0:unlock
-    tx_hash          varchar(100)  not null,
-    wallet_id_from   bigint        not null,
-    wallet_id_to     bigint        not null,
+    id                      bigint        not null auto_increment,
+    offline_deal_id         bigint        not null,
+    type                    int           not null, #--0:unlock
+    tx_hash                 varchar(100)  not null,
+    wallet_id_from          bigint        not null,
+    wallet_id_to            bigint        not null,
+    coin_id                 bigint        not null,
+    amount                  decimal(20,0) not null,
     primary key pk_transaction_offline_deal(id),
     constraint fk_transaction_offline_deal_offline_deal_id foreign key (offline_deal_id) references offline_deal(id),
     constraint fk_transaction_offline_deal_wallet_id_from foreign key (wallet_id_from) references wallet(id),
-    constraint fk_transaction_offline_deal_wallet_id_to foreign key (wallet_id_to) references wallet(id)
+    constraint fk_transaction_offline_deal_wallet_id_to foreign key (wallet_id_to) references wallet(id),
+    constraint fk_transaction_offline_deal_coin_id foreign key (coin_id) references coin(id)
 );
 

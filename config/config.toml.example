@@ -49,5 +49,5 @@ unlock_payment_rule = "0 */5 * * * ?"  #every minute
 send_deal_rule = "0 */3 * * * ?"  #every minute
 create_task_rule = "0 */2 * * * ?"
 scan_deal_status_rule = "0 */4 * * * ?"
-update_pay_status_rule = "*/1 * * * * ?"
+refund_interval_second = 2
 

@@ -45,7 +45,7 @@ func ScanExpiredDealInfoScheduler() {
 		}
 		logs.GetLogger().Info("end")
 
-		time.Sleep(30 * time.Second)
+		time.Sleep(config.GetConfig().ScheduleRule.RefundIntervalSecond * time.Second)
 	}
 }
 

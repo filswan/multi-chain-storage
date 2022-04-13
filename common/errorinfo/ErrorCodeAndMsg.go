@@ -7,6 +7,7 @@ const (
 	//http request
 	HTTP_REQUEST_PARAMS_JSON_FORMAT_ERROR_CODE        = "500002001"
 	HTTP_REQUEST_PARAMS_NULL_ERROR_CODE               = "500002002"
+	HTTP_REQUEST_PARAMS_TYPE_ERROR_CODE               = "500002009"
 	PAGE_NUMBER_OR_SIZE_FORMAT_ERROR_CODE             = "500002003"
 	HTTP_REQUEST_SEND_REQUEST_RETUREN_ERROR_CODE      = "500002004"
 	HTTP_REQUEST_PARSER_RESPONSE_TO_STRUCT_ERROR_CODE = "500002005"
@@ -40,6 +41,7 @@ func init() {
 		GET_EVENT_FROM_DB_ERROR_CODE:                      "Get event data from db error",
 		HTTP_REQUEST_PARAMS_JSON_FORMAT_ERROR_CODE:        "Request JSON format was error",
 		HTTP_REQUEST_PARAMS_NULL_ERROR_CODE:               "Request params value can not be null",
+		HTTP_REQUEST_PARAMS_TYPE_ERROR_CODE:               "Request params data type wrong",
 		PAGE_NUMBER_OR_SIZE_FORMAT_ERROR_CODE:             "Page number or page size format was wrong",
 		HTTP_REQUEST_SEND_REQUEST_RETUREN_ERROR_CODE:      "Return error when sending http request",
 		HTTP_REQUEST_PARSER_RESPONSE_TO_STRUCT_ERROR_CODE: "Parse http request to structure occurred error",

@@ -3,30 +3,18 @@ package storage
 import (
 	"context"
 	"errors"
-	"fmt"
 	"math/big"
-	"mime/multipart"
 	"multi-chain-storage/common/constants"
 	"multi-chain-storage/common/utils"
-	"multi-chain-storage/config"
 	"multi-chain-storage/database"
 	"multi-chain-storage/models"
 	"multi-chain-storage/on-chain/client"
-	"multi-chain-storage/scheduler"
-	"os"
-	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/filswan/go-swan-lib/logs"
-
-	"github.com/filswan/go-swan-lib/client/ipfs"
-
-	libutils "github.com/filswan/go-swan-lib/utils"
-
-	"github.com/gin-gonic/gin"
 )
 
 func GetSourceFiles(pageSize, offset string, walletAddress, payloadCid string, file_name string, orderByColumn int, ascdesc string) ([]*models.SourceFileExt, error) {
@@ -85,156 +73,6 @@ func GetOfflineDealsBySourceFileId(sourceFileId int64) ([]*models.OfflineDeal, *
 	}
 
 	return offlineDeals, sourceFile, nil
-}
-
-func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType int, walletAddress string) (*int64, *string, *string, *int, *int64, error) {
-	wallet, err := models.GetWalletByAddressType(walletAddress, constants.WALLET_TYPE_USER)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, nil, nil, nil, nil, err
-	}
-
-	if wallet == nil {
-		err := fmt.Errorf("wallet:%s not exists", walletAddress)
-		logs.GetLogger().Error(err)
-		return nil, nil, nil, nil, nil, err
-	}
-
-	srcDir := scheduler.GetSrcDir()
-
-	filename := srcFile.Filename
-	if libutils.IsFileExists(srcDir, filename) {
-		for i := 0; ; i++ {
-			filename = srcFile.Filename + strconv.Itoa(i)
-			if !libutils.IsFileExists(srcDir, filename) {
-				break
-			}
-		}
-	}
-
-	srcFilepath := filepath.Join(srcDir, filename)
-	logs.GetLogger().Info("saving source file to ", srcFilepath)
-	err = c.SaveUploadedFile(srcFile, srcFilepath)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, nil, nil, nil, nil, err
-	}
-	logs.GetLogger().Info("source file saved to ", srcFilepath)
-
-	uploadUrl := libutils.UrlJoin(config.GetConfig().IpfsServer.UploadUrlPrefix, "api/v0/add?stream-channels=true&pin=true")
-	ipfsFileHash, err := ipfs.IpfsUploadFileByWebApi(uploadUrl, srcFilepath)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, nil, nil, nil, nil, err
-	}
-
-	ipfsUrl := libutils.UrlJoin(config.GetConfig().IpfsServer.DownloadUrlPrefix, constants.IPFS_URL_PREFIX_BEFORE_HASH, *ipfsFileHash)
-
-	sourceFile, err := models.GetSourceFileByPayloadCid(*ipfsFileHash)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, nil, nil, nil, nil, err
-	}
-
-	needPay := 0
-
-	currentUtcMilliSec := utils.GetCurrentUtcMilliSecond()
-	// not uploaded by anyone yet
-	if sourceFile == nil {
-		sourceFile := models.SourceFile{
-			FileSize:    srcFile.Size,
-			ResourceUri: srcFilepath,
-			IpfsUrl:     ipfsUrl,
-			PinStatus:   constants.IPFS_File_PINNED_STATUS,
-			PayloadCid:  *ipfsFileHash,
-			FileType:    fileType,
-			CreateAt:    currentUtcMilliSec,
-			UpdateAt:    currentUtcMilliSec,
-		}
-
-		sourceFileCreated, err := models.CreateSourceFile(sourceFile)
-		if err != nil {
-			logs.GetLogger().Error(err)
-			err = os.Remove(srcFilepath)
-			if err != nil {
-				logs.GetLogger().Error(err)
-				return nil, nil, nil, nil, nil, err
-			}
-			return nil, nil, nil, nil, nil, err
-		}
-
-		sourceFileUpload := models.SourceFileUpload{
-			SourceFileId: sourceFileCreated.ID,
-			FileName:     srcFile.Filename,
-			WalletId:     wallet.ID,
-			Status:       constants.SOURCE_FILE_UPLOAD_STATUS_CREATED,
-			CreateAt:     currentUtcMilliSec,
-			UpdateAt:     currentUtcMilliSec,
-		}
-
-		err = database.SaveOne(&sourceFileUpload)
-		if err != nil {
-			logs.GetLogger().Error(err)
-			err = os.Remove(srcFilepath)
-			if err != nil {
-				logs.GetLogger().Error(err)
-				return nil, nil, nil, nil, nil, err
-			}
-			return nil, nil, nil, nil, nil, err
-		}
-
-		return &sourceFileCreated.ID, ipfsFileHash, &ipfsUrl, &needPay, &sourceFileCreated.FileSize, nil
-	}
-
-	// remove the current copy of file
-	err = os.Remove(srcFilepath)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, nil, nil, nil, nil, err
-	}
-
-	srcFiles, err := models.GetSourceFileUploadBySourceFileWallet(sourceFile.ID, wallet.ID)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, nil, nil, nil, nil, err
-	}
-
-	eventLockPayments, err := models.GetEventLockPaymentByPayloadCid(*ipfsFileHash)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, nil, nil, nil, nil, err
-	}
-
-	if len(srcFiles) == 0 {
-		sourceFileUpload := models.SourceFileUpload{
-			SourceFileId: sourceFile.ID,
-			FileName:     srcFile.Filename,
-			WalletId:     wallet.ID,
-			Status:       constants.SOURCE_FILE_UPLOAD_STATUS_CREATED,
-			CreateAt:     currentUtcMilliSec,
-			UpdateAt:     currentUtcMilliSec,
-		}
-
-		err = database.SaveOne(&sourceFileUpload)
-		if err != nil {
-			logs.GetLogger().Error(err)
-			return nil, nil, nil, nil, nil, err
-		}
-
-		if len(eventLockPayments) > 0 { // uploaded and paid by others
-			needPay = 3
-		} else { // uploaded but not paid by
-			needPay = 4
-		}
-	}
-
-	if len(eventLockPayments) > 0 { // uploaded and paid
-		needPay = 1
-	} else { // uploaded but not paid
-		needPay = 2
-	}
-
-	return &sourceFile.ID, &sourceFile.PayloadCid, &sourceFile.IpfsUrl, &needPay, &sourceFile.FileSize, nil
 }
 
 func GetSourceFileAndDealFileInfoByPayloadCid(payloadCid string) ([]*SourceFileAndDealFileInfo, error) {

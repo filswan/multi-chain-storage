@@ -103,7 +103,7 @@ create table car_file (
 
 create table car_file_source (
     id             bigint        not null auto_increment,
-    car_file_id   bigint         not null,
+    car_file_id    bigint        not null,
     source_file_id bigint        not null,
     create_at      bigint        not null,
     primary key pk_car_file_source(id),

@@ -17,7 +17,7 @@ type Coin struct {
 	UpdateAt    int64  `json:"update_at"`
 }
 
-func FindCoinByName(name string) (*Coin, error) {
+func GetCoinByName(name string) (*Coin, error) {
 	var coins []*Coin
 	err := database.GetDB().Where("name=?", name).Find(&coins).Error
 	if err != nil {

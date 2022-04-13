@@ -377,7 +377,7 @@ func SaveDaoEventFromTxHash(txHash string, payload_cid string, recipent string, 
 		eventDaoSignature.TxHash = txHash
 		eventDaoSignature.Recipient = recipent
 		eventDaoSignature.PayloadCid = payload_cid
-		wfilCoinId, err := models.FindCoinByFullName(constants.COIN_NAME_USDC)
+		wfilCoinId, err := models.GetCoinByName(constants.COIN_NAME_USDC)
 		if err != nil {
 			logs.GetLogger().Error(err)
 		} else {
@@ -463,7 +463,7 @@ func SaveExpirePaymentEvent(txHash string) (*models.EventExpirePayment, error) {
 			return nil, err
 		}
 		event.BlockNo = strconv.FormatUint(blockNumberInt64, 10)
-		wfilCoinId, err := models.FindCoinByFullName(constants.COIN_NAME_USDC)
+		wfilCoinId, err := models.GetCoinByName(constants.COIN_NAME_USDC)
 		if err != nil {
 			logs.GetLogger().Error(err)
 		} else {

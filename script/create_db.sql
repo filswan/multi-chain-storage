@@ -151,11 +151,11 @@ create table transaction (
     coin_id                 bigint        not null,
     amount                  varchar(100)  not null,
     create_at               bigint        not null,
-    primary key pk_transaction_source_file_upload(id),
-    constraint fk_transaction_source_file_upload_source_file_upload_id foreign key (source_file_upload_id) references source_file_upload(id),
-    constraint fk_transaction_source_file_upload_wallet_id_from foreign key (wallet_id_from) references wallet(id),
-    constraint fk_transaction_source_file_upload_wallet_id_to foreign key (wallet_id_to) references wallet(id),
-    constraint fk_transaction_source_file_upload_coin_id foreign key (coin_id) references coin(id)
+    primary key pk_transaction(id),
+    constraint fk_transaction_source_file_upload_id foreign key (source_file_upload_id) references source_file_upload(id),
+    constraint fk_transaction_wallet_id_from foreign key (wallet_id_from) references wallet(id),
+    constraint fk_transaction_wallet_id_to foreign key (wallet_id_to) references wallet(id),
+    constraint fk_transaction_coin_id foreign key (coin_id) references coin(id)
 );
 
 

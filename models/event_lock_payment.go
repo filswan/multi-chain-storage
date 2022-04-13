@@ -119,7 +119,7 @@ func CreateEventLockPayment(eventLockPayment EventLockPayment) error {
 	sql := "update source_file set status=?,update_at=? where id=?"
 
 	params := []interface{}{}
-	params = append(params, constants.SOURCE_FILE_STATUS_PAID)
+	params = append(params, constants.SOURCE_FILE_UPLOAD_STATUS_PAID)
 	params = append(params, currentUtcMilliSecond)
 	params = append(params, eventLockPayment.SourceFileId)
 

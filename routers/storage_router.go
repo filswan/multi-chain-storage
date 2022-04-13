@@ -44,7 +44,7 @@ func UploadFile(c *gin.Context) {
 	durationInt, err := strconv.Atoi(duration)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.TYPE_TRANSFER_ERROR_CODE, "duration is not a number"))
+		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAMS_TYPE_ERROR_CODE, "duration should be a number"))
 		return
 	}
 	durationInt = durationInt * 24 * 60 * 60 / 30

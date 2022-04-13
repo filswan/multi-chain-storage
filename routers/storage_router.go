@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"multi-chain-storage/common"
 	"multi-chain-storage/common/errorinfo"
+	"multi-chain-storage/service"
 	"net/http"
 	"strconv"
 	"strings"
@@ -11,6 +12,10 @@ import (
 	"github.com/filswan/go-swan-lib/logs"
 	"github.com/gin-gonic/gin"
 )
+
+func Storage(router *gin.RouterGroup) {
+	router.POST("/ipfs/upload", UploadFile)
+}
 
 func UploadFile(c *gin.Context) {
 	walletAddress := c.PostForm("wallet_address")
@@ -20,12 +25,14 @@ func UploadFile(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_CODE, err.Error()))
 		return
 	}
+
 	file, err := c.FormFile("file")
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_CODE, "get file from user occurred error,please try again"))
 		return
 	}
+
 	duration := c.PostForm("duration")
 	if strings.Trim(duration, " ") == "" {
 		err = fmt.Errorf("duraion can not be null")
@@ -52,18 +59,10 @@ func UploadFile(c *gin.Context) {
 		fileTypeInt = 0
 	}
 
-	srcFileId, payloadCid, ipfsDownloadPath, needPay, srcFileSize, err := SaveFile(c, file, durationInt, fileTypeInt, walletAddress)
+	uploadResult, err := service.SaveFile(c, file, durationInt, fileTypeInt, walletAddress)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.SAVE_FILE_ERROR))
 		return
-	}
-
-	uploadResult := UploadResult{
-		SourceFileId: *srcFileId,
-		PayloadCid:   *payloadCid,
-		NeedPay:      *needPay,
-		IpfsUrl:      *ipfsDownloadPath,
-		FileSize:     *srcFileSize,
 	}
 
 	c.JSON(http.StatusOK, common.CreateSuccessResponse(uploadResult))

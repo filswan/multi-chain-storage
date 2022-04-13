@@ -14,7 +14,7 @@ type Wallet struct {
 	CreateAt int64  `json:"create_at"`
 }
 
-func GeWalletByAddress(address string, walletType int) (*Wallet, error) {
+func GeWalletByAddressType(address string, walletType int) (*Wallet, error) {
 	var wallets []*Wallet
 	err := database.GetDB().Where("address=? and type=?", address, walletType).Find(&wallets).Error
 	if err != nil {
@@ -26,7 +26,7 @@ func GeWalletByAddress(address string, walletType int) (*Wallet, error) {
 		return wallets[0], nil
 	}
 
-	err = fmt.Errorf("no wallet for address:%s", address)
+	err = fmt.Errorf("no wallet for address:%s,type:%d", address, walletType)
 	logs.GetLogger().Error(err)
 
 	return nil, err

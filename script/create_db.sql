@@ -141,7 +141,7 @@ create table offline_deal_log (
     constraint fk_offline_deal_log_offline_deal_id foreign key (offline_deal_id) references offline_deal(id)
 );
 
-create table transaction_source_file (
+create table transaction_source_file_upload (
     id                      bigint        not null auto_increment,
     source_file_upload_id   bigint        not null,
     type                    int           not null, #--0:pay, 1:refund after expired, 2: refund after unlock
@@ -150,11 +150,11 @@ create table transaction_source_file (
     wallet_id_to            bigint        not null,
     coin_id                 bigint        not null,
     amount                  varchar(100)  not null,
-    primary key pk_transaction_source_file(id),
-    constraint fk_transaction_source_file_source_file_upload_id foreign key (source_file_upload_id) references source_file_upload(id),
-    constraint fk_transaction_source_file_wallet_id_from foreign key (wallet_id_from) references wallet(id),
-    constraint fk_transaction_source_file_wallet_id_to foreign key (wallet_id_to) references wallet(id),
-    constraint fk_transaction_source_file_coin_id foreign key (coin_id) references coin(id)
+    primary key pk_transaction_source_file_upload(id),
+    constraint fk_transaction_source_file_upload_source_file_upload_id foreign key (source_file_upload_id) references source_file_upload(id),
+    constraint fk_transaction_source_file_upload_wallet_id_from foreign key (wallet_id_from) references wallet(id),
+    constraint fk_transaction_source_file_upload_wallet_id_to foreign key (wallet_id_to) references wallet(id),
+    constraint fk_transaction_source_file_upload_coin_id foreign key (coin_id) references coin(id)
 );
 
 create table transaction_offline_deal (

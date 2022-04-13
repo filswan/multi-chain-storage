@@ -86,7 +86,7 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType 
 	currentUtcMilliSec := utils.GetCurrentUtcMilliSecond()
 	// not uploaded by anyone yet
 	if sourceFile == nil {
-		sourceFile := &models.SourceFile{
+		sourceFile = &models.SourceFile{
 			FileSize:    srcFile.Size,
 			ResourceUri: srcFilepath,
 			IpfsUrl:     ipfsUrl,

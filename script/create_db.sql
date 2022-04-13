@@ -58,14 +58,16 @@ create table source_file (
     constraint un_source_file_resource_uri unique(resource_uri)
 );
 
-create table source_file_mint_info (
+create table source_file_mint (
     id             bigint        not null auto_increment,
     source_file_id bigint        not null,
     nft_tx_hash    varchar(100)  not null,
     mint_address   varchar(100)  not null,
     token_id       varchar(100)  not null,
-    primary key pk_source_file_mint_info(id),
-    constraint fk_source_file_mint_info_source_file_id foreign key (source_file_id) references source_file(id)
+    create_at      bigint        not null,
+    update_at      bigint        not null,
+    primary key pk_source_file_mint(id),
+    constraint fk_source_file_mint_source_file_id foreign key (source_file_id) references source_file(id)
 );
 
 create table source_file_upload (

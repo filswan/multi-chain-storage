@@ -13,24 +13,17 @@ import (
 )
 
 type SourceFile struct {
-	ID           int64            `json:"id"`
-	ResourceUri  string           `json:"resource_uri"`
-	Status       string           `json:"status"`
-	FileSize     int64            `json:"file_size"`
-	Dataset      string           `json:"dataset"`
-	IpfsUrl      string           `json:"ipfs_url"`
-	PinStatus    string           `json:"pin_status"`
-	PayloadCid   string           `json:"payload_cid"`
-	NftTxHash    string           `json:"nft_tx_hash"`
-	TokenId      string           `json:"token_id"`
-	MintAddress  string           `json:"mint_address"`
-	FileType     int              `json:"file_type"`
-	RefundStatus *string          `json:"refund_status"`
-	RefundAmount *decimal.Decimal `json:"refund_amount"`
-	RefundAt     *int64           `json:"refund_at"`
-	RefundTxHash *string          `json:"refund_tx_hash"`
-	CreateAt     int64            `json:"create_at"`
-	UpdateAt     int64            `json:"update_at"`
+	ID          int64  `json:"id"`
+	FileType    int    `json:"file_type"`
+	Status      string `json:"status"`
+	PayloadCid  string `json:"payload_cid"`
+	ResourceUri string `json:"resource_uri"`
+	IpfsUrl     string `json:"ipfs_url"`
+	FileSize    int64  `json:"file_size"`
+	Dataset     string `json:"dataset"`
+	PinStatus   string `json:"pin_status"`
+	CreateAt    int64  `json:"create_at"`
+	UpdateAt    int64  `json:"update_at"`
 }
 
 type SourceFileExt struct {

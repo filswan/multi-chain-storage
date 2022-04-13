@@ -320,12 +320,10 @@ func saveCarInfo2DB(fileDesc *libmodel.FileDesc, srcFiles []*models.SourceFileEx
 	}
 
 	for _, srcFile := range srcFiles {
-		filepMap := models.SourceFileDealFileMap{
+		filepMap := models.CarFileSource{
+			CarFileId:    dealFile.ID,
 			SourceFileId: srcFile.ID,
-			DealFileId:   dealFile.ID,
-			FileIndex:    0,
 			CreateAt:     currentUtcMilliSecond,
-			UpdateAt:     currentUtcMilliSecond,
 		}
 		err = database.SaveOneInTransaction(db, filepMap)
 		if err != nil {

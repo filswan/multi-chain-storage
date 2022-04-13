@@ -2,6 +2,17 @@ drop database mcs_v2;
 create database mcs_v2;
 use mcs_v2;
 
+create table network (
+    id            bigint        not null auto_increment,
+    name          varchar(100)  not null,
+    rpc_url       varchar(1000) not null,
+    description   text,
+    create_at     bigint        not null,
+    update_at     bigint        not null,
+    primary key pk_network(id),
+    constraint un_network_name unique(name)
+);
+
 create table wallet (
     id            bigint       not null auto_increment,
     address       varchar(100) not null,
@@ -15,17 +26,6 @@ create table miner (
     fid           varchar(100) not null,
     create_at     bigint       not null,
     primary key pk_miner(id)
-);
-
-create table network (
-    id            bigint        not null auto_increment,
-    name          varchar(100)  not null,
-    rpc_url       varchar(1000) not null,
-    description   text,
-    create_at     bigint        not null,
-    update_at     bigint        not null,
-    primary key pk_network(id),
-    constraint un_network_name unique(name)
 );
 
 create table coin (

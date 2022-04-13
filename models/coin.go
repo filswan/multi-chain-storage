@@ -35,7 +35,7 @@ func GetCoinByName(name string) (*Coin, error) {
 	return nil, err
 }
 
-func FindCoinByAddress(address string) (*Coin, error) {
+func GetCoinByAddress(address string) (*Coin, error) {
 	var coins []*Coin
 	err := database.GetDB().Where("address=?", address).Find(&coins).Error
 	if err != nil {

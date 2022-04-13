@@ -35,7 +35,7 @@ func WriteLockPayment(c *gin.Context) {
 	lockedPayment, err := client.GetLockedPaymentInfo(eventLockPayment.PayloadCid)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		usdcCoin, err := models.FindCoinByFullName(constants.COIN_NAME_USDC)
+		usdcCoin, err := models.GetCoinByName(constants.COIN_NAME_USDC)
 		if err != nil {
 			logs.GetLogger().Error(err)
 		} else {
@@ -51,7 +51,7 @@ func WriteLockPayment(c *gin.Context) {
 		eventLockPayment.AddressFrom = lockedPayment.AddressFrom
 		eventLockPayment.AddressTo = lockedPayment.AddressTo
 		eventLockPayment.LockPaymentTime = utils.GetCurrentUtcMilliSecond()
-		coin, err := models.FindCoinByCoinAddress(lockedPayment.TokenAddress)
+		coin, err := models.GetCoinByAddress(lockedPayment.TokenAddress)
 		if err != nil {
 			logs.GetLogger().Error(err)
 		} else {

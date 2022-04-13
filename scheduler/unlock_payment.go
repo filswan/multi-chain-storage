@@ -131,7 +131,7 @@ func UnlockPayment() error {
 }
 
 func getDaoSignatures(ethClient *ethclient.Client, offlineDeal *models.OfflineDeal) error {
-	dealFile, err := models.GetDealFileById(offlineDeal.DealFileId)
+	dealFile, err := models.GetCarFileById(offlineDeal.DealFileId)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err

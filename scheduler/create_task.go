@@ -298,19 +298,18 @@ func createTask4SrcFiles(srcDir, carDir string, maxPrice decimal.Decimal, create
 func saveCarInfo2DB(fileDesc *libmodel.FileDesc, srcFiles []*models.SourceFileExt, maxPrice decimal.Decimal) error {
 	db := database.GetDBTransaction()
 	currentUtcMilliSecond := utils.GetCurrentUtcMilliSecond()
-	dealFile := models.DealFile{
-		CarFileName:       fileDesc.CarFileName,
-		CarFilePath:       fileDesc.CarFilePath,
-		CarFileSize:       fileDesc.CarFileSize,
-		CarMd5:            fileDesc.CarFileMd5,
-		PayloadCid:        fileDesc.PayloadCid,
-		PieceCid:          fileDesc.PieceCid,
-		CreateAt:          currentUtcMilliSecond,
-		UpdateAt:          currentUtcMilliSecond,
-		Duration:          constants.DURATION_DAYS_DEFAULT,
-		LockPaymentStatus: constants.PROCESS_STATUS_TASK_CREATED,
-		MaxPrice:          maxPrice,
-		TaskUuid:          fileDesc.Uuid,
+	dealFile := models.CarFile{
+		CarFileName: fileDesc.CarFileName,
+		CarFilePath: fileDesc.CarFilePath,
+		CarFileSize: fileDesc.CarFileSize,
+		PayloadCid:  fileDesc.PayloadCid,
+		PieceCid:    fileDesc.PieceCid,
+		CreateAt:    currentUtcMilliSecond,
+		UpdateAt:    currentUtcMilliSecond,
+		Duration:    constants.DURATION_DAYS_DEFAULT,
+		Status:      constants.PROCESS_STATUS_TASK_CREATED,
+		MaxPrice:    maxPrice,
+		TaskUuid:    fileDesc.Uuid,
 	}
 
 	err := database.SaveOneInTransaction(db, &dealFile)
@@ -338,7 +337,7 @@ func saveCarInfo2DB(fileDesc *libmodel.FileDesc, srcFiles []*models.SourceFileEx
 		sql := "update source_file set status=?,update_at=? where id=?"
 
 		params := []interface{}{}
-		params = append(params, constants.SOURCE_FILE_STATUS_TASK_CREATED)
+		params = append(params, constants.SOURCE_FILE_UPLOAD_STATUS_CREATED)
 		params = append(params, currentUtcMilliSecond)
 		params = append(params, srcFile.ID)
 
@@ -360,7 +359,7 @@ func saveCarInfo2DB(fileDesc *libmodel.FileDesc, srcFiles []*models.SourceFileEx
 }
 
 func CheckSourceFilesPaid() error {
-	srcFiles, err := models.GetSourceFilesByStatus(constants.SOURCE_FILE_STATUS_CREATED)
+	srcFiles, err := models.GetSourceFilesByStatus(constants.SOURCE_FILE_UPLOAD_STATUS_CREATED)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err

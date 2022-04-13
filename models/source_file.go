@@ -15,7 +15,6 @@ import (
 type SourceFile struct {
 	ID          int64  `json:"id"`
 	FileType    int    `json:"file_type"`
-	Status      string `json:"status"`
 	PayloadCid  string `json:"payload_cid"`
 	ResourceUri string `json:"resource_uri"`
 	IpfsUrl     string `json:"ipfs_url"`
@@ -65,18 +64,6 @@ func GetSourceFilesIn1CarBySourceFileId(sourceFileId int64) ([]*SourceFileExt, e
 	return sourceFiles, nil
 }
 
-func GetSourceFilesByPayloadCid(payloadCid string) ([]*SourceFile, error) {
-	var sourceFiles []*SourceFile
-
-	err := database.GetDB().Where("payload_cid=?", payloadCid).Order("create_at").Find(&sourceFiles).Error
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-
-	return sourceFiles, nil
-}
-
 func GetSourceFilesByStatus(status string) ([]*SourceFile, error) {
 	var sourceFiles []*SourceFile
 
@@ -92,7 +79,7 @@ func GetSourceFilesByStatus(status string) ([]*SourceFile, error) {
 func GetSourceFileByPayloadCid(payloadCid string) (*SourceFile, error) {
 	var sourceFiles []*SourceFile
 
-	err := database.GetDB().Where("payload_cid=?", payloadCid).Order("create_at").Find(&sourceFiles).Error
+	err := database.GetDB().Where("payload_cid=?", payloadCid).Find(&sourceFiles).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
@@ -102,9 +89,10 @@ func GetSourceFileByPayloadCid(payloadCid string) (*SourceFile, error) {
 		return sourceFiles[0], nil
 	}
 
-	err = fmt.Errorf("source file with payload_cid:%s not exists", payloadCid)
-	logs.GetLogger().Error(err)
-	return nil, err
+	msg := fmt.Sprintf("source file with payload_cid:%s not exists", payloadCid)
+	logs.GetLogger().Info(msg)
+
+	return nil, nil
 }
 
 func GetSourceFileExtByPayloadCid(payloadCid, walletAddress string) (*SourceFileExt, error) {
@@ -129,7 +117,7 @@ func GetSourceFileExtByPayloadCid(payloadCid, walletAddress string) (*SourceFile
 func GetSourceFilesNeed2Car() ([]*SourceFileExt, error) {
 	var sourceFiles []*SourceFileExt
 	sql := "select a.*,b.locked_fee from source_file a, event_lock_payment b where b.source_file_id=a.id and a.status=? and a.file_type=?"
-	err := database.GetDB().Raw(sql, constants.SOURCE_FILE_STATUS_PAID, constants.SOURCE_FILE_TYPE_NORMAL).Scan(&sourceFiles).Error
+	err := database.GetDB().Raw(sql, constants.SOURCE_FILE_UPLOAD_STATUS_CREATED, constants.SOURCE_FILE_TYPE_NORMAL).Scan(&sourceFiles).Error
 
 	if err != nil {
 		logs.GetLogger().Error(err)

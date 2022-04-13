@@ -72,7 +72,7 @@ func SendDeal() error {
 	currentUtcMilliSec := utils.GetCurrentUtcMilliSecond()
 	for _, dealFile := range dealFiles {
 		if currentUtcMilliSec-dealFile.CreateAt > 3*24*60*60*1000 {
-			dealFile.LockPaymentStatus = constants.PROCESS_STATUS_DEAL_SEND_CANCELLED
+			dealFile.Status = constants.PROCESS_STATUS_DEAL_SEND_CANCELLED
 			err = database.SaveOne(dealFile)
 			if err != nil {
 				logs.GetLogger().Error(err)
@@ -87,8 +87,8 @@ func SendDeal() error {
 		_, fileDescs, err := cmdAutoBidDeal.SendAutoBidDealsByTaskUuid(dealFile.TaskUuid)
 		if err != nil {
 			logs.GetLogger().Error(err)
-			dealFile.LockPaymentStatus = constants.PROCESS_STATUS_DEAL_SENT_FAILED
-			dealFile.ClientWalletAddress = cmdAutoBidDeal.SenderWallet
+			dealFile.Status = constants.PROCESS_STATUS_DEAL_SENT_FAILED
+			dealFile.Status = cmdAutoBidDeal.SenderWallet
 			err = database.SaveOne(dealFile)
 			if err != nil {
 				logs.GetLogger().Error(err)
@@ -102,8 +102,8 @@ func SendDeal() error {
 			continue
 		}
 
-		dealFile.LockPaymentStatus = constants.PROCESS_STATUS_DEAL_SENT
-		dealFile.ClientWalletAddress = cmdAutoBidDeal.SenderWallet
+		dealFile.Status = constants.PROCESS_STATUS_DEAL_SENT
+		dealFile.Status = cmdAutoBidDeal.SenderWallet
 		dealFile.UpdateAt = currentUtcMilliSec
 
 		db := database.GetDBTransaction()

@@ -451,18 +451,22 @@ func RecordMintInfo(c *gin.Context) {
 		return
 	}
 
-	sourceFile, err := models.GetSourceFilesByPayloadCid(payloadCid)
+	sourceFile, err := models.GetSourceFileByPayloadCid(payloadCid)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.SAVE_DATA_TO_DB_ERROR_CODE))
 		return
 	} else {
-		file := sourceFile[0]
-		file.NftTxHash = nftTxHash
-		file.TokenId = tokenId
-		file.MintAddress = mintAddress
-		database.SaveOneWithTransaction(file)
-		c.JSON(http.StatusOK, common.CreateSuccessResponse(file))
+		sourceFileMint := models.SourceFileMint{
+			SourceFileId: sourceFile.ID,
+			NftTxHash:    nftTxHash,
+			TokenId:      tokenId,
+			MintAddress:  mintAddress,
+			CreateAt:     utils.GetCurrentUtcMilliSecond(),
+		}
+
+		database.SaveOne(sourceFileMint)
+		c.JSON(http.StatusOK, common.CreateSuccessResponse(sourceFileMint))
 	}
 }
 

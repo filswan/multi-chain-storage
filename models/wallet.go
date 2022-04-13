@@ -1,7 +1,6 @@
 package models
 
 import (
-	"fmt"
 	"multi-chain-storage/database"
 
 	"github.com/filswan/go-swan-lib/logs"
@@ -14,7 +13,7 @@ type Wallet struct {
 	CreateAt int64  `json:"create_at"`
 }
 
-func GeWalletByAddressType(address string, walletType int) (*Wallet, error) {
+func GetWalletByAddressType(address string, walletType int) (*Wallet, error) {
 	var wallets []*Wallet
 	err := database.GetDB().Where("address=? and type=?", address, walletType).Find(&wallets).Error
 	if err != nil {
@@ -26,8 +25,5 @@ func GeWalletByAddressType(address string, walletType int) (*Wallet, error) {
 		return wallets[0], nil
 	}
 
-	err = fmt.Errorf("no wallet for address:%s,type:%d", address, walletType)
-	logs.GetLogger().Error(err)
-
-	return nil, err
+	return nil, nil
 }

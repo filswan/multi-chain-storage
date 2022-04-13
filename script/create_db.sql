@@ -45,7 +45,6 @@ create table coin (
 create table source_file (
     id            bigint        not null auto_increment,
     file_type     int           not null,  #--0:normal file, 1:mint file
-    status        varchar(100)  not null,
     payload_cid   varchar(100)  not null,
     resource_uri  varchar(1000) not null,
     ipfs_url      varchar(1000) not null,
@@ -55,6 +54,7 @@ create table source_file (
     create_at     bigint        not null,
     update_at     bigint        not null,
     primary key pk_source_file(id),
+    constraint un_source_file_payload_cid unique(payload_cid),
     constraint un_source_file_resource_uri unique(resource_uri)
 );
 
@@ -76,6 +76,7 @@ create table source_file_upload (
     file_name      varchar(200)  not null,
     uuid           varchar(100)  not null,
     wallet_id      bigint        not null,
+    status         varchar(100)  not null,
     create_at      bigint        not null,
     update_at      bigint        not null,
     primary key pk_source_file_upload(id),
@@ -84,7 +85,7 @@ create table source_file_upload (
     constraint fk_source_file_upload_wallet_id foreign key (wallet_id) references wallet(id)
 );
 
-create table deal_file (
+create table car_file (
     id             bigint        not null auto_increment,
     car_file_name  varchar(200)  not null,
     payload_cid    varchar(200)  not null,
@@ -97,10 +98,10 @@ create table deal_file (
     status         varchar(100)  not null,
     create_at      bigint        not null,
     update_at      bigint        not null,
-    primary key pk_deal_file(id)
+    primary key pk_car_file(id)
 );
 
-create table source_file_deal_file_map (
+create table source_file_car_file_map (
     id             bigint        not null auto_increment,
     source_file_id bigint        not null,
     deal_file_id   bigint        not null,

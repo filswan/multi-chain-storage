@@ -130,7 +130,7 @@ func UnlockPayment() error {
 	return nil
 }
 
-func getDaoSignatures(ethClient *ethclient.Client, offlineDeal *models.OfflineDeal, mcsPaymentReceiverAddress common.Address) error {
+func getDaoSignatures(ethClient *ethclient.Client, offlineDeal *models.OfflineDeal) error {
 	dealFile, err := models.GetDealFileById(offlineDeal.DealFileId)
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -275,8 +275,6 @@ func setUnlockPayment(offlineDeal *models.OfflineDeal) error {
 		unlockPayment.LockedFeeBeforeUnlock = lockedPayment.LockedFee
 
 		unlockPayment.TokenAddress = lockedPayment.TokenAddress
-		//unlockPayment.UnlockFromAddress = paymentInfo.Owner.String()
-		//unlockPayment.UnlockToAdminAddress = paymentInfo.Recipient.String()
 		unlockPayment.UnlockTime = utils.GetCurrentUtcMilliSecond()
 		coin, err := models.GetCoinByAddress(unlockPayment.TokenAddress)
 		if err != nil {

@@ -9,19 +9,17 @@ import (
 
 type Coin struct {
 	ID          int64  `json:"id"`
-	Name        string `json:"full_name"`
-	Address     string `json:"coin_address"`
+	Name        string `json:"name"`
+	Address     string `json:"address"`
 	NetworkId   int64  `json:"network_id"`
-	GasPrice    int    `json:"gas_price"`
-	GasLimit    int    `json:"gas_limit"`
 	Description string `json:"description"`
 	CreateAt    int64  `json:"create_at"`
 	UpdateAt    int64  `json:"update_at"`
 }
 
-func FindCoinByFullName(fullName string) (*Coin, error) {
+func FindCoinByName(name string) (*Coin, error) {
 	var coins []*Coin
-	err := database.GetDB().Where("full_name=?", fullName).Find(&coins).Error
+	err := database.GetDB().Where("name=?", name).Find(&coins).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
@@ -31,14 +29,15 @@ func FindCoinByFullName(fullName string) (*Coin, error) {
 		return coins[0], nil
 	}
 
-	err = fmt.Errorf("coin:%s not exists", fullName)
+	err = fmt.Errorf("coin:%s not exists", name)
 	logs.GetLogger().Error(err)
+
 	return nil, err
 }
 
-func FindCoinByCoinAddress(coinAddress string) (*Coin, error) {
+func FindCoinByAddress(address string) (*Coin, error) {
 	var coins []*Coin
-	err := database.GetDB().Where("coin_address=?", coinAddress).Find(&coins).Error
+	err := database.GetDB().Where("address=?", address).Find(&coins).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
@@ -48,7 +47,7 @@ func FindCoinByCoinAddress(coinAddress string) (*Coin, error) {
 		return coins[0], nil
 	}
 
-	err = fmt.Errorf("coin:%s not exists", coinAddress)
+	err = fmt.Errorf("coin:%s not exists", address)
 	logs.GetLogger().Error(err)
 	return nil, err
 }

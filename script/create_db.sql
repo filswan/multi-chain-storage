@@ -31,12 +31,14 @@ create table miner (
 create table coin (
     id            bigint       not null auto_increment,
     name          varchar(100) not null,
+    address       varchar(100) not null,
     network_id    bigint       not null,
     description   text,
     create_at     bigint       not null,
     update_at     bigint       not null,
     primary key pk_coin(id),
     constraint un_coin_name unique(name),
+    constraint un_coin_address unique(address),
     constraint fk_coin_network_id foreign key (network_id) references network(id)
 );
 

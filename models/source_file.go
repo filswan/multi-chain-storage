@@ -127,8 +127,8 @@ func GetSourceFilesNeed2Car() ([]*SourceFileExt, error) {
 	return sourceFiles, nil
 }
 
-func CreateSourceFile(sourceFile SourceFile) (*SourceFile, error) {
-	value, err := database.SaveOneWithResult(&sourceFile)
+func CreateSourceFile(sourceFile *SourceFile) (*SourceFile, error) {
+	value, err := database.SaveOneWithResult(sourceFile)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err

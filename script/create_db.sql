@@ -101,14 +101,14 @@ create table car_file (
     primary key pk_car_file(id)
 );
 
-create table source_file_car_file_map (
+create table car_file_source (
     id             bigint        not null auto_increment,
+    car_file_id   bigint         not null,
     source_file_id bigint        not null,
-    deal_file_id   bigint        not null,
     create_at      bigint        not null,
-    primary key pk_source_file_deal_file_map(id),
-    constraint fk_source_file_deal_file_map_source_file_id foreign key (source_file_id) references source_file(id),
-    constraint fk_source_file_deal_file_map_deal_file_id foreign key (deal_file_id) references deal_file(id)
+    primary key pk_car_file_source(id),
+    constraint fk_car_file_source_car_file_id foreign key (car_file_id) references car_file(id),
+    constraint fk_car_file_source_source_file_id foreign key (source_file_id) references source_file(id)
 );
 
 create table offline_deal (

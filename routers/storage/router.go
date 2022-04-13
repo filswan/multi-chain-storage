@@ -284,9 +284,9 @@ func GetDealListFromFilink(c *gin.Context) {
 	if srcFile != nil {
 		result.Data.Data.Deal.IpfsUrl = srcFile.IpfsUrl
 		result.Data.Data.Deal.FileName = srcFile.FileName
-		if srcFile.RefundStatus != nil {
-			unlockStatus = *srcFile.RefundStatus == constants.PROCESS_STATUS_UNLOCK_REFUNDED
-		}
+		//if srcFile.RefundStatus != nil {
+		//	unlockStatus = *srcFile.RefundStatus == constants.PROCESS_STATUS_UNLOCK_REFUNDED
+		//}
 	}
 	threshHold, err := client.GetThreshHold()
 	if err != nil {

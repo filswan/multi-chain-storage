@@ -278,7 +278,7 @@ func setUnlockPayment(offlineDeal *models.OfflineDeal) error {
 		//unlockPayment.UnlockFromAddress = paymentInfo.Owner.String()
 		//unlockPayment.UnlockToAdminAddress = paymentInfo.Recipient.String()
 		unlockPayment.UnlockTime = utils.GetCurrentUtcMilliSecond()
-		coin, err := models.FindCoinByCoinAddress(unlockPayment.TokenAddress)
+		coin, err := models.GetCoinByAddress(unlockPayment.TokenAddress)
 		if err != nil {
 			logs.GetLogger().Error(err)
 		} else {

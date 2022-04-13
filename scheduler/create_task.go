@@ -373,7 +373,7 @@ func CheckSourceFilesPaid() error {
 			continue
 		}
 
-		coin, err := models.FindCoinByCoinAddress(lockedPayment.TokenAddress)
+		coin, err := models.GetCoinByAddress(lockedPayment.TokenAddress)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			continue

@@ -61,7 +61,7 @@ func GetSourceFiles(pageSize, offset string, walletAddress, payloadCid string, f
 
 		for _, srcFile := range srcFiles {
 			for _, offlineDeal := range offlineDeals {
-				if offlineDeal.DealFileId == srcFile.DealFileId {
+				if offlineDeal.CarFileId == srcFile.DealFileId {
 					srcFile.OfflineDeals = append(srcFile.OfflineDeals, offlineDeal)
 				}
 			}

@@ -131,7 +131,7 @@ func UnlockPayment() error {
 }
 
 func getDaoSignatures(ethClient *ethclient.Client, offlineDeal *models.OfflineDeal) error {
-	dealFile, err := models.GetCarFileById(offlineDeal.DealFileId)
+	dealFile, err := models.GetCarFileById(offlineDeal.CarFileId)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
@@ -217,7 +217,7 @@ func checkUnlockable(ethClient *ethclient.Client, offlineDeal *models.OfflineDea
 }
 
 func updateUnlockPayment(offlineDeal *models.OfflineDeal, txHash string, rpcClient *rpc.Client) error {
-	srcFiles, err := models.GetSourceFilesByDealFileId(offlineDeal.DealFileId)
+	srcFiles, err := models.GetSourceFilesByDealFileId(offlineDeal.CarFileId)
 	if err != nil {
 		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 		return err
@@ -253,7 +253,7 @@ func updateUnlockPayment(offlineDeal *models.OfflineDeal, txHash string, rpcClie
 }
 
 func setUnlockPayment(offlineDeal *models.OfflineDeal) error {
-	srcFiles, err := models.GetSourceFilesByDealFileId(offlineDeal.DealFileId)
+	srcFiles, err := models.GetSourceFilesByDealFileId(offlineDeal.CarFileId)
 	if err != nil {
 		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 		return err
@@ -295,7 +295,7 @@ func setUnlockPayment(offlineDeal *models.OfflineDeal) error {
 }
 
 func getLog(offlineDeal *models.OfflineDeal, messages ...string) string {
-	text := fmt.Sprintf("id:%d,deal id:%d, deal file id:%d", offlineDeal.Id, offlineDeal.DealId, offlineDeal.DealFileId)
+	text := fmt.Sprintf("id:%d,deal id:%d, deal file id:%d", offlineDeal.Id, offlineDeal.DealId, offlineDeal.CarFileId)
 	if messages == nil {
 		return text
 	}

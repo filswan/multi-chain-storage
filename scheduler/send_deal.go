@@ -1,6 +1,7 @@
 package scheduler
 
 import (
+	"fmt"
 	"sync"
 
 	"github.com/filswan/go-swan-client/command"
@@ -70,6 +71,19 @@ func SendDeal() error {
 	}
 
 	currentUtcMilliSec := utils.GetCurrentUtcMilliSecond()
+
+	wallet, err := models.GetWalletByAddressType(cmdAutoBidDeal.SenderWallet, constants.WALLET_TYPE_FILE_COIN)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	if wallet == nil {
+		err = fmt.Errorf("wallet:%s not exists", cmdAutoBidDeal.SenderWallet)
+		logs.GetLogger().Error(err)
+		return err
+	}
+
 	for _, dealFile := range dealFiles {
 		if currentUtcMilliSec-dealFile.CreateAt > 3*24*60*60*1000 {
 			dealFile.Status = constants.PROCESS_STATUS_DEAL_SEND_CANCELLED
@@ -123,16 +137,15 @@ func SendDeal() error {
 			}
 
 			offlineDeal := models.OfflineDeal{
-				DealFileId:   dealFile.ID,
-				DealCid:      deal.DealCid,
-				MinerFid:     deal.MinerFid,
-				StartEpoch:   deal.StartEpoch,
-				SenderWallet: cmdAutoBidDeal.SenderWallet,
-				Status:       dealInfo.Status,
-				DealId:       dealInfo.DealId,
-				UnlockStatus: constants.OFFLINE_DEAL_UNLOCK_STATUS_NOT_UNLOCKED,
-				CreateAt:     currentUtcMilliSec,
-				UpdateAt:     currentUtcMilliSec,
+				CarFileId:      dealFile.ID,
+				DealCid:        deal.DealCid,
+				MinerId:        deal.MinerFid,
+				StartEpoch:     deal.StartEpoch,
+				SenderWalletId: wallet.ID,
+				Status:         dealInfo.Status,
+				DealId:         dealInfo.DealId,
+				CreateAt:       currentUtcMilliSec,
+				UpdateAt:       currentUtcMilliSec,
 			}
 
 			err = database.SaveOneInTransaction(db, &offlineDeal)

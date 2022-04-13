@@ -114,17 +114,20 @@ create table car_file_source (
 
 create table offline_deal (
     id               bigint        not null auto_increment,
-    deal_file_id     bigint        not null,
+    car_file_id      bigint        not null,
     deal_cid         varchar(100)  not null,
     miner_id         bigint        not null,
     verified         boolean       not null,
     start_epoch      int           not null,
     sender_wallet_id bigint        not null,
     deal_id          bigint,
+    status           varchar(100)  not null,
+    note             text,
     create_at        bigint        not null,
     update_at        bigint        not null,
+    unlock_at        bigint        not null,
     primary key pk_offline_deal(id),
-    constraint fk_offline_deal_deal_file_id foreign key (deal_file_id) references deal_file(id),
+    constraint fk_offline_deal_car_file_id foreign key (car_file_id) references car_file(id),
     constraint fk_offline_deal_miner_id foreign key (miner_id) references miner(id)
 );
 

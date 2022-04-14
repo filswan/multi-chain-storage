@@ -21,7 +21,7 @@ import (
 	"github.com/shopspring/decimal"
 )
 
-func CreateScheduler4CreateTask() {
+func CreateTaskJob() {
 	for {
 		logs.GetLogger().Info("start")
 		err := CreateTask()

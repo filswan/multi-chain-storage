@@ -15,7 +15,7 @@ import (
 	"github.com/filswan/go-swan-lib/client/lotus"
 )
 
-func CreateScheduler4ScanDeal() {
+func ScanDealJob() {
 	for {
 		logs.GetLogger().Info("start")
 		err := ScanDeal()

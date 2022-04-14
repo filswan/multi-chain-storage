@@ -28,11 +28,11 @@ func GetSrcDir() string {
 func InitScheduler() {
 	createDir()
 	//createScheduleJob()
-	CreateScheduler4CreateTask()
-	CreateScheduler4Refund()
-	CreateScheduler4ScanDeal()
-	CreateScheduler4SendDeal()
-	CreateScheduler4UnlockPayment()
+	go CreateTaskJob()
+	go RefundJob()
+	go ScanDealJob()
+	go SendDealJob()
+	go UnlockPaymentJob()
 }
 
 func createDir() {

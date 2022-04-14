@@ -13,7 +13,7 @@ import (
 	"github.com/filswan/go-swan-lib/logs"
 )
 
-func CreateScheduler4Refund() {
+func RefundJob() {
 	for {
 		logs.GetLogger().Info("start")
 		err := Refund()

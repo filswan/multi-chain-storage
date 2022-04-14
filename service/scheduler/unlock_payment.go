@@ -20,7 +20,7 @@ import (
 	"github.com/filswan/go-swan-lib/logs"
 )
 
-func CreateScheduler4UnlockPayment() {
+func UnlockPaymentJob() {
 	for {
 		logs.GetLogger().Info("start")
 		err := UnlockPayment()

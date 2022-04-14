@@ -20,7 +20,7 @@ import (
 	libconstants "github.com/filswan/go-swan-lib/constants"
 )
 
-func CreateScheduler4SendDeal() {
+func SendDealJob() {
 	for {
 		logs.GetLogger().Info("start")
 		err := SendDeal()

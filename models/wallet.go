@@ -36,7 +36,7 @@ func SaveWallet(address string, walletType int) (*Wallet, error) {
 		CreateAt: utils.GetEpochInMillis(),
 	}
 
-	walletResult := database.GetDB().Create(wallet)
+	walletResult := database.GetDB().Create(&wallet)
 	err := walletResult.Error
 	if err != nil {
 		logs.GetLogger().Error(err)

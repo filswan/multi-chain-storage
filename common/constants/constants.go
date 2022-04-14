@@ -74,4 +74,10 @@ const (
 	WALLET_TYPE_DAO       = 1
 	WALLET_TYPE_USER      = 2
 	WALLET_TYPE_FILE_COIN = 1000
+
+	//0:pay,1:unlock, 2: refund after unlock, 3:refund after expired
+	TRANSACTION_TYPE_PAY                  = 0
+	TRANSACTION_TYPE_UNLOCK               = 1
+	TRANSACTION_TYPE_REFUND_AFTER_UNLOCK  = 2
+	TRANSACTION_TYPE_REFUND_AFTER_EXPIRED = 3
 )

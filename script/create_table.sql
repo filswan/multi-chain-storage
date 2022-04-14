@@ -144,7 +144,7 @@ create table offline_deal_log (
 create table transaction (
     id                      bigint        not null auto_increment,
     source_file_upload_id   bigint        not null,
-    type                    int           not null, #--0:pay,1:unlock, 1: refund after unlock, 2:refund after expired
+    type                    int           not null, #--0:pay,1:unlock, 2: refund after unlock, 3:refund after expired
     tx_hash                 varchar(100)  not null,
     wallet_id_from          bigint        not null,
     wallet_id_to            bigint        not null,

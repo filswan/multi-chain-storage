@@ -7,37 +7,23 @@ import (
 	"multi-chain-storage/models"
 	"multi-chain-storage/on-chain/client"
 	"multi-chain-storage/on-chain/goBind"
-	"sync"
+	"time"
 
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/filswan/go-swan-lib/logs"
-	"github.com/robfig/cron"
 )
 
-func CreateScheduler4Refund() {
-	c := cron.New()
-	name := "refund"
-	rule := config.GetConfig().ScheduleRule.RefundRule
-	mutex := &sync.Mutex{}
-
-	err := c.AddFunc(rule, func() {
-		logs.GetLogger().Info(name, " start")
-
-		mutex.Lock()
-		logs.GetLogger().Info(name, " running")
+func RefundJob() {
+	for {
+		logs.GetLogger().Info("start")
 		err := Refund()
 		if err != nil {
 			logs.GetLogger().Error(err)
 		}
-		mutex.Unlock()
-		logs.GetLogger().Info(name, " end")
-	})
+		logs.GetLogger().Info("end")
 
-	if err != nil {
-		logs.GetLogger().Fatal(err)
+		time.Sleep(config.GetConfig().ScheduleRule.RefundIntervalSecond * time.Second)
 	}
-
-	c.Start()
 }
 
 func Refund() error {

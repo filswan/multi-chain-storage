@@ -4,10 +4,8 @@ import (
 	"multi-chain-storage/common/constants"
 	"multi-chain-storage/config"
 	"multi-chain-storage/database"
-	"multi-chain-storage/routers/billing"
-	"multi-chain-storage/routers/common"
-	"multi-chain-storage/routers/storage"
-	"multi-chain-storage/scheduler"
+	"multi-chain-storage/routers"
+	"multi-chain-storage/service/scheduler"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -49,9 +47,9 @@ func createGinServer() {
 	}))
 
 	v1 := r.Group("/api/v1")
-	common.HostManager(v1.Group(constants.URL_HOST_GET_COMMON))
-	billing.BillingManager(v1.Group(constants.URL_BILLING_PREFIX))
-	storage.SendDealManager(v1.Group(constants.URL_STORAGE_PREFIX))
+	routers.HostManager(v1.Group(constants.URL_HOST_GET_COMMON))
+	routers.BillingManager(v1.Group(constants.URL_BILLING_PREFIX))
+	routers.Storage(v1.Group(constants.URL_STORAGE_PREFIX))
 
 	err := r.Run(":" + strconv.Itoa(config.GetConfig().Port))
 	if err != nil {

@@ -78,11 +78,11 @@ type ipfsServer struct {
 }
 
 type ScheduleRule struct {
-	UnlockPaymentRule  string `toml:"unlock_payment_rule"`
-	CreateTaskRule     string `toml:"create_task_rule"`
-	SendDealRule       string `toml:"send_deal_rule"`
-	ScanDealStatusRule string `toml:"scan_deal_status_rule"`
-	RefundRule         string `toml:"refund_rule"`
+	UnlockIntervalSecond         time.Duration `toml:"unlock_interval_second"`
+	CreateTaskIntervalSecond     time.Duration `toml:"create_task_interval_second"`
+	SendDealIntervalSecond       time.Duration `toml:"send_deal_interval_second"`
+	ScanDealStatusIntervalSecond time.Duration `toml:"scan_deal_status_interval_second"`
+	RefundIntervalSecond         time.Duration `toml:"refund_interval_second"`
 }
 
 var config *Configuration
@@ -148,11 +148,11 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 		{"swan_task", "max_auto_bid_copy_number"},
 		{"swan_task", "min_file_size"},
 
-		{"schedule_rule", "unlock_payment_rule"},
-		{"schedule_rule", "create_task_rule"},
-		{"schedule_rule", "send_deal_rule"},
-		{"schedule_rule", "scan_deal_status_rule"},
-		{"schedule_rule", "refund_rule"},
+		{"schedule_rule", "unlock_interval_second"},
+		{"schedule_rule", "create_task_interval_second"},
+		{"schedule_rule", "send_deal_interval_second"},
+		{"schedule_rule", "scan_deal_status_interval_second"},
+		{"schedule_rule", "refund_interval_second"},
 
 		{"polygon", "polygon_rpc_url"},
 		{"polygon", "payment_contract_address"},

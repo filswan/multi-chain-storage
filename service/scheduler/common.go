@@ -6,10 +6,10 @@ import (
 	"os"
 	"path/filepath"
 	"sync"
+	"time"
 
 	"github.com/filswan/go-swan-lib/logs"
 	libutils "github.com/filswan/go-swan-lib/utils"
-	"github.com/robfig/cron"
 )
 
 type Schedule struct {
@@ -28,49 +28,31 @@ func GetSrcDir() string {
 
 func InitScheduler() {
 	createDir()
-	//createScheduleJob()
-	CreateScheduler4CreateTask()
-	CreateScheduler4Refund()
-	CreateScheduler4ScanDeal()
-	CreateScheduler4SendDeal()
-	CreateScheduler4UnlockPayment()
+
+	go runJob("CreateTask", CreateTask, config.GetConfig().ScheduleRule.CreateTaskIntervalSecond)
+	go runJob("Refund", Refund, config.GetConfig().ScheduleRule.RefundIntervalSecond)
+	go runJob("ScanDeal", ScanDeal, config.GetConfig().ScheduleRule.ScanDealStatusIntervalSecond)
+	go runJob("SendDeal", SendDeal, config.GetConfig().ScheduleRule.SendDealIntervalSecond)
+	go runJob("UnlockPayment", UnlockPayment, config.GetConfig().ScheduleRule.UnlockIntervalSecond)
+	//go CreateTaskJob()
+	//go RefundJob()
+	//go ScanDealJob()
+	//go SendDealJob()
+	//go UnlockPaymentJob()
 }
 
-func createScheduleJob() {
-	confScheduleRule := config.GetConfig().ScheduleRule
-	scheduleJobs := []Schedule{
-		{Name: "create task", Rule: confScheduleRule.CreateTaskRule, Func: CreateTask, Mutex: &sync.Mutex{}},
-		{Name: "send deal", Rule: confScheduleRule.SendDealRule, Func: SendDeal, Mutex: &sync.Mutex{}},
-		{Name: "scan deal", Rule: confScheduleRule.ScanDealStatusRule, Func: ScanDeal, Mutex: &sync.Mutex{}},
-		{Name: "unlock payment", Rule: confScheduleRule.UnlockPaymentRule, Func: UnlockPayment, Mutex: &sync.Mutex{}},
-		{Name: "refund", Rule: confScheduleRule.RefundRule, Func: Refund, Mutex: &sync.Mutex{}},
-	}
+func runJob(jobName string, func2Run func() error, intervalSecond time.Duration) {
+	for {
 
-	for _, scheduleJob := range scheduleJobs {
-		createScheduler(scheduleJob.Name, scheduleJob.Rule, scheduleJob.Func, scheduleJob.Mutex)
-	}
-}
-
-func createScheduler(name, rule string, func2Run func() error, mutex *sync.Mutex) {
-	c := cron.New()
-	err := c.AddFunc(rule, func() {
-		logs.GetLogger().Info(name, " start")
-
-		mutex.Lock()
-		logs.GetLogger().Info(name, " running")
+		logs.GetLogger().Info(func2Run, " start")
 		err := func2Run()
 		if err != nil {
 			logs.GetLogger().Error(err)
 		}
-		mutex.Unlock()
-		logs.GetLogger().Info(name, " end")
-	})
+		logs.GetLogger().Info(func2Run, "end")
 
-	if err != nil {
-		logs.GetLogger().Fatal(err)
+		time.Sleep(intervalSecond * time.Second)
 	}
-
-	c.Start()
 }
 
 func createDir() {

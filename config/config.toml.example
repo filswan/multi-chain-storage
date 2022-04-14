@@ -39,11 +39,11 @@ max_auto_bid_copy_number = 5 # max copy number you want to send
 min_file_size = 1024   # unit: byte
 
 [schedule_rule]
-unlock_payment_rule = "0 */5 * * * ?"  #every minute
-create_task_rule = "0 */2 * * * ?"
-send_deal_rule = "0 */3 * * * ?"  #every minute
-scan_deal_status_rule = "0 */4 * * * ?"
-refund_rule = "0 */5 * * * ?"  #every minute
+unlock_interval_second = 300
+create_task_interval_second = 120
+send_deal_interval_second = 180
+scan_deal_status_interval_second = 300
+refund_interval_second = 300
 
 [polygon]
 polygon_rpc_url = ""

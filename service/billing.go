@@ -1,4 +1,4 @@
-package billing
+package service
 
 import (
 	"encoding/json"
@@ -10,7 +10,7 @@ import (
 	"github.com/filswan/go-swan-lib/logs"
 )
 
-func getBillHistoryList(walletAddress, limit, offset string, txHash string, fileName string, orderByColumn int, ascdesc string) ([]*BillingResult, error) {
+func GetBillHistoryList(walletAddress, limit, offset string, txHash string, fileName string, orderByColumn int, ascdesc string) ([]*BillingResult, error) {
 	sql := "select a.tx_hash,a.locked_fee,b.cn_name coin_type,h.file_name,d.payload_cid,h.wallet_address address_from,d.refund_amount unlock_to_user_amount," +
 		"d.refund_at unlock_time,c.network_name network,a.lock_payment_time,a.deadline,h.source_file_id" +
 		" from event_lock_payment a, coin b, network c, source_file d, source_file_upload_history h" +
@@ -69,4 +69,34 @@ func GetTaskDealsService(url string) (*PriceResult, error) {
 		return nil, err
 	}
 	return price, nil
+}
+
+type BillingResult struct {
+	TxHash              string `json:"tx_hash"`
+	LockedFee           string `json:"locked_fee"`
+	Deadline            string `json:"deadline"`
+	PayloadCid          string `json:"payload_cid"`
+	AddressFrom         string `json:"address_from"`
+	Network             string `json:"network"`
+	CoinType            string `json:"coin_type"`
+	LockPaymentTime     string `json:"lock_payment_time"`
+	CreateAt            string `json:"create_at"`
+	UnlockToUserAddress string `json:"unlock_to_user_address"`
+	UnlockToUserAmount  string `json:"unlock_to_user_amount"`
+	UnlockTime          string `json:"unlock_time"`
+	FileName            string `json:"file_name"`
+	SourceFileId        int64  `json:"source_file_id"`
+}
+
+type BillingRequest struct {
+	TxHash        string `json:"tx_hash"`
+	WalletAddress string `json:"wallet_address"`
+	PageNumber    string `json:"page_number"`
+	PageSize      string `json:"page_size"`
+}
+
+type PriceResult struct {
+	Filecoin struct {
+		Usd float64 `json:"usd"`
+	} `json:"filecoin"`
 }

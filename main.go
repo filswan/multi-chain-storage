@@ -7,7 +7,7 @@ import (
 	"multi-chain-storage/routers/billing"
 	"multi-chain-storage/routers/common"
 	"multi-chain-storage/routers/storage"
-	"multi-chain-storage/scheduler"
+	"multi-chain-storage/service/scheduler"
 	"os"
 	"path/filepath"
 	"strconv"

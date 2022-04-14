@@ -7,7 +7,7 @@ import (
 	"multi-chain-storage/config"
 	"multi-chain-storage/database"
 	"multi-chain-storage/models"
-	"multi-chain-storage/scheduler"
+	"multi-chain-storage/service/scheduler"
 	"os"
 	"path/filepath"
 	"strconv"

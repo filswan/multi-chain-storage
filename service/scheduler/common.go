@@ -48,7 +48,7 @@ func runJob(jobName string, func2Run func() error, intervalSecond time.Duration)
 		if err != nil {
 			logs.GetLogger().Error(err)
 		}
-		logs.GetLogger().Info(func2Run, "end")
+		logs.GetLogger().Info(func2Run, " end")
 
 		time.Sleep(intervalSecond * time.Second)
 	}

@@ -1,9 +1,10 @@
-package common
+package routers
 
 import (
 	"multi-chain-storage/common"
 	"multi-chain-storage/common/constants"
 	"multi-chain-storage/common/errorinfo"
+	"multi-chain-storage/service"
 	"net/http"
 	"strings"
 
@@ -18,7 +19,7 @@ func HostManager(router *gin.RouterGroup) {
 }
 
 func GetHostInfo(c *gin.Context) {
-	info := getHostInfo()
+	info := service.GetHostInfo()
 	c.JSON(http.StatusOK, common.CreateSuccessResponse(info))
 }
 
@@ -28,7 +29,7 @@ func GetSystemConfigParams(c *gin.Context) {
 		limit = constants.DEFAULT_SELECT_LIMIT
 	}
 
-	params, err := getSystemConfigParams(limit)
+	params, err := service.GetSystemConfigParams(limit)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.JSON(http.StatusOK, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE, "getting system config from db occurred error"))

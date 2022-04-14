@@ -1,4 +1,4 @@
-package common
+package service
 
 import (
 	"multi-chain-storage/common"
@@ -8,7 +8,7 @@ import (
 	"github.com/filswan/go-swan-lib/logs"
 )
 
-func getHostInfo() *common.HostInfo {
+func GetHostInfo() *common.HostInfo {
 	hostInfo := common.HostInfo{
 		Version:         common.GetVersion(),
 		OperatingSystem: runtime.GOOS,
@@ -19,7 +19,7 @@ func getHostInfo() *common.HostInfo {
 	return &hostInfo
 }
 
-func getSystemConfigParams(limit string) ([]*models.SystemConfigParam, error) {
+func GetSystemConfigParams(limit string) ([]*models.SystemConfigParam, error) {
 	sysconfigs, err := models.GetSystemConfigParams(limit, "0")
 	if err != nil {
 		logs.GetLogger().Error(err)

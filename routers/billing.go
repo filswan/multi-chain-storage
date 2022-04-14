@@ -1,4 +1,4 @@
-package billing
+package routers
 
 import (
 	common "multi-chain-storage/common"
@@ -7,6 +7,7 @@ import (
 	"multi-chain-storage/common/utils"
 	"multi-chain-storage/models"
 	"multi-chain-storage/on-chain/client"
+	"multi-chain-storage/service"
 	"net/http"
 	"strconv"
 	"strings"
@@ -153,7 +154,7 @@ func GetUserBillingHistory(c *gin.Context) {
 			return
 		} */
 
-	billingResultList, err := getBillHistoryList(walletAddress, pageSize, strconv.FormatInt(offset, 10), txHash, fileName, orderByColumn, ASCorDESC)
+	billingResultList, err := service.GetBillHistoryList(walletAddress, pageSize, strconv.FormatInt(offset, 10), txHash, fileName, orderByColumn, ASCorDESC)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE))

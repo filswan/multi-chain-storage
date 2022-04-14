@@ -27,7 +27,6 @@ require (
 	github.com/mattn/go-runewidth v0.0.10 // indirect
 	github.com/onsi/ginkgo v1.16.4 // indirect
 	github.com/onsi/gomega v1.13.0 // indirect
-	github.com/robfig/cron v1.2.0
 	github.com/shopspring/decimal v1.3.1
 	github.com/ugorji/go v1.2.6 // indirect
 	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97 // indirect

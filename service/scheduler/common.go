@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"sync"
+	"time"
 
 	"github.com/filswan/go-swan-lib/logs"
 	libutils "github.com/filswan/go-swan-lib/utils"
@@ -28,11 +29,30 @@ func GetSrcDir() string {
 func InitScheduler() {
 	createDir()
 
-	go CreateTaskJob()
-	go RefundJob()
-	go ScanDealJob()
-	go SendDealJob()
-	go UnlockPaymentJob()
+	go runJob("CreateTask", CreateTask, config.GetConfig().ScheduleRule.CreateTaskIntervalSecond)
+	go runJob("Refund", Refund, config.GetConfig().ScheduleRule.RefundIntervalSecond)
+	go runJob("ScanDeal", ScanDeal, config.GetConfig().ScheduleRule.ScanDealStatusIntervalSecond)
+	go runJob("SendDeal", SendDeal, config.GetConfig().ScheduleRule.SendDealIntervalSecond)
+	go runJob("UnlockPayment", UnlockPayment, config.GetConfig().ScheduleRule.UnlockIntervalSecond)
+	//go CreateTaskJob()
+	//go RefundJob()
+	//go ScanDealJob()
+	//go SendDealJob()
+	//go UnlockPaymentJob()
+}
+
+func runJob(jobName string, func2Run func() error, intervalSecond time.Duration) {
+	for {
+
+		logs.GetLogger().Info(func2Run, " start")
+		err := func2Run()
+		if err != nil {
+			logs.GetLogger().Error(err)
+		}
+		logs.GetLogger().Info(func2Run, "end")
+
+		time.Sleep(intervalSecond * time.Second)
+	}
 }
 
 func createDir() {

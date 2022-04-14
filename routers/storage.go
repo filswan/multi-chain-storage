@@ -25,6 +25,7 @@ func Storage(router *gin.RouterGroup) {
 	router.GET("/tasks/deals", GetDealListFromLocal)
 	router.GET("/deal/detail/:deal_id", GetDealListFromFilink)
 	router.GET("/deal/file/:source_file_id", GetDeals4SourceFile)
+	router.POST("/deal/expire", RecordExpiredRefund)
 }
 
 func UploadFile(c *gin.Context) {
@@ -324,4 +325,23 @@ func GetDeals4SourceFile(c *gin.Context) {
 		"source_file": sourceFile,
 		"deals":       offlineDeals,
 	}))
+}
+
+func RecordExpiredRefund(c *gin.Context) {
+	URL := c.Request.URL.Query()
+	tx_hash := URL.Get("tx_hash")
+	if strings.Trim(tx_hash, " ") == "" {
+		err := fmt.Errorf("transaction hash is required")
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_CODE, err.Error()))
+		return
+	}
+	event, err := service.SaveExpirePaymentEvent(tx_hash)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.SAVE_DATA_TO_DB_ERROR_CODE))
+		return
+	} else {
+		c.JSON(http.StatusOK, common.CreateSuccessResponse(event))
+	}
 }

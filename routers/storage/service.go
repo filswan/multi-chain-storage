@@ -17,48 +17,6 @@ import (
 	"github.com/filswan/go-swan-lib/logs"
 )
 
-func GetSourceFiles(pageSize, offset string, walletAddress, payloadCid string, file_name string, orderByColumn int, ascdesc string) ([]*models.SourceFileExt, error) {
-	srcFiles, err := models.GetSourceFiles(pageSize, offset, walletAddress, payloadCid, file_name, orderByColumn, ascdesc)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-
-	dealFileIds := map[int64]bool{}
-
-	for _, srcFile := range srcFiles {
-		dealFileIds[srcFile.DealFileId] = true
-		if srcFile.Duration == 0 {
-			srcFile.Duration = constants.DURATION_DAYS_DEFAULT
-		}
-
-		srcFile.OfflineDeals = []*models.OfflineDeal{}
-	}
-
-	if len(dealFileIds) > 0 {
-		dealFileIdList := make([]int64, 0, len(dealFileIds))
-		for dealFileId := range dealFileIds {
-			dealFileIdList = append(dealFileIdList, dealFileId)
-		}
-
-		offlineDeals, err := models.GetOfflineDealsByDealFileIds(dealFileIdList)
-		if err != nil {
-			logs.GetLogger().Error(err)
-			return nil, err
-		}
-
-		for _, srcFile := range srcFiles {
-			for _, offlineDeal := range offlineDeals {
-				if offlineDeal.CarFileId == srcFile.DealFileId {
-					srcFile.OfflineDeals = append(srcFile.OfflineDeals, offlineDeal)
-				}
-			}
-		}
-	}
-
-	return srcFiles, nil
-}
-
 func GetOfflineDealsBySourceFileId(sourceFileId int64) ([]*models.OfflineDeal, *models.SourceFile, error) {
 	offlineDeals, err := models.GetOfflineDealsBySourceFileId(sourceFileId)
 	if err != nil {

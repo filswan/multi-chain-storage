@@ -11,7 +11,6 @@ import (
 	"multi-chain-storage/on-chain/client"
 	"os"
 	"path/filepath"
-	"sync"
 	"time"
 
 	"github.com/filswan/go-swan-client/command"
@@ -19,34 +18,20 @@ import (
 	"github.com/filswan/go-swan-lib/logs"
 	libmodel "github.com/filswan/go-swan-lib/model"
 	libutils "github.com/filswan/go-swan-lib/utils"
-	"github.com/robfig/cron"
 	"github.com/shopspring/decimal"
 )
 
 func CreateScheduler4CreateTask() {
-	c := cron.New()
-	name := "create task"
-	rule := config.GetConfig().ScheduleRule.CreateTaskRule
-	mutex := &sync.Mutex{}
-
-	err := c.AddFunc(rule, func() {
-		logs.GetLogger().Info(name, " start")
-
-		mutex.Lock()
-		logs.GetLogger().Info(name, " running")
+	for {
+		logs.GetLogger().Info("start")
 		err := CreateTask()
 		if err != nil {
 			logs.GetLogger().Error(err)
 		}
-		mutex.Unlock()
-		logs.GetLogger().Info(name, " end")
-	})
+		logs.GetLogger().Info("end")
 
-	if err != nil {
-		logs.GetLogger().Fatal(err)
+		time.Sleep(config.GetConfig().ScheduleRule.CreateTaskIntervalSecond * time.Second)
 	}
-
-	c.Start()
 }
 
 func CreateTask() error {

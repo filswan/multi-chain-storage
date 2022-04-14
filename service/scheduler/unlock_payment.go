@@ -11,11 +11,9 @@ import (
 	"multi-chain-storage/on-chain/client"
 	"multi-chain-storage/on-chain/goBind"
 	"strconv"
-	"sync"
 	"time"
 
 	"github.com/ethereum/go-ethereum/rpc"
-	"github.com/robfig/cron"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -23,29 +21,16 @@ import (
 )
 
 func CreateScheduler4UnlockPayment() {
-	c := cron.New()
-	name := "unlock payment"
-	rule := config.GetConfig().ScheduleRule.UnlockPaymentRule
-	mutex := &sync.Mutex{}
-
-	err := c.AddFunc(rule, func() {
-		logs.GetLogger().Info(name, " start")
-
-		mutex.Lock()
-		logs.GetLogger().Info(name, " running")
+	for {
+		logs.GetLogger().Info("start")
 		err := UnlockPayment()
 		if err != nil {
 			logs.GetLogger().Error(err)
 		}
-		mutex.Unlock()
-		logs.GetLogger().Info(name, " end")
-	})
+		logs.GetLogger().Info("end")
 
-	if err != nil {
-		logs.GetLogger().Fatal(err)
+		time.Sleep(config.GetConfig().ScheduleRule.UnlockIntervalSecond * time.Second)
 	}
-
-	c.Start()
 }
 
 func UnlockPayment() error {

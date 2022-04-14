@@ -9,5 +9,7 @@ type Transaction struct {
 	WalletIdTo         int64  `json:"wallet_id_to"`
 	CoinId             int64  `json:"coin_id"`
 	Amount             string `json:"amount"`
+	TransactionAt      int64  `json:"transaction_at"`
+	BlockNumber        int64  `json:"block_number"`
 	CreateAt           int64  `json:"create_at"`
 }

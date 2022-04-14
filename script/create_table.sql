@@ -150,6 +150,8 @@ create table transaction (
     wallet_id_to            bigint        not null,
     coin_id                 bigint        not null,
     amount                  varchar(100)  not null,
+    block_number            bigint        not null,
+    transaction_at          bigint        not null,
     create_at               bigint        not null,
     primary key pk_transaction(id),
     constraint fk_transaction_source_file_upload_id foreign key (source_file_upload_id) references source_file_upload(id),

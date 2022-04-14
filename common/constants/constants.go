@@ -47,9 +47,7 @@ const (
 	LOTUS_TASK_TYPE_VERIFIED = "verified"
 	LOTUS_TASK_TYPE_REGULAR  = "regular"
 
-	LOTUS_PRICE_MULTIPLE_1E18 = 1e18 // 10^18
-	FILE_BLOCK_NUMBER_MAX     = 999999999999999
-	TIME_HALF_AN_HOUR         = 30 * 60 * 1000
+	FILE_BLOCK_NUMBER_MAX = 999999999999999
 
 	SOURCE_FILE_UPLOAD_STATUS_CREATED      = "Created"
 	SOURCE_FILE_UPLOAD_STATUS_PAID         = "Paid"
@@ -59,7 +57,6 @@ const (
 	OFFLINE_DEAL_UNLOCK_STATUS_UNLOCKED      = "Unlocked"
 	OFFLINE_DEAL_UNLOCK_STATUS_UNLOCK_FAILED = "UnlockFailed"
 
-	SIGNATURE_DEFAULT_VALUE = "0" //init value,no unlock operation has been performed
 	SIGNATURE_SUCCESS_VALUE = "1" //init value,no unlock operation has been performed
 	SIGNATURE_FAILED_VALUE  = "2" //init value,no unlock operation has been performed
 

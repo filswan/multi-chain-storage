@@ -43,13 +43,12 @@ func InitScheduler() {
 
 func runJob(jobName string, func2Run func() error, intervalSecond time.Duration) {
 	for {
-
-		logs.GetLogger().Info(func2Run, " start")
+		logs.GetLogger().Info(jobName, " start")
 		err := func2Run()
 		if err != nil {
 			logs.GetLogger().Error(err)
 		}
-		logs.GetLogger().Info(func2Run, "end")
+		logs.GetLogger().Info(jobName, " end")
 
 		time.Sleep(intervalSecond * time.Second)
 	}

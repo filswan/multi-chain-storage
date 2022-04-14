@@ -4,7 +4,6 @@ const (
 	DEFAULT_SELECT_LIMIT    = "100"
 	PAGE_SIZE_DEFAULT_VALUE = "10"
 
-	URL_EVENT_PREFIX   = "events"
 	URL_BILLING_PREFIX = "billing"
 	URL_STORAGE_PREFIX = "storage"
 
@@ -18,12 +17,8 @@ const (
 	HTTP_CODE_500_INTERNAL_SERVER_ERROR = "500" //http.StatusInternalServerError
 	HTTP_REQUEST_HEADER_AUTHRORIZATION  = "Authorization"
 
-	NETWORK_NAME_POLYGON = "polygon"
-	COIN_NAME_USDC       = "USDC"
-	COIN_ADDRESS_USDC    = "0xe11A86849d99F524cAC3E7A0Ec1241828e332C62"
-
-	TRANSACTION_STATUS_SUCCESS = "success"
-	TRANSACTION_STATUS_FAIL    = "fail"
+	COIN_NAME_USDC    = "USDC"
+	COIN_ADDRESS_USDC = "0xe11A86849d99F524cAC3E7A0Ec1241828e332C62"
 
 	URL_HOST_GET_COMMON      = "/common"
 	URL_HOST_GET_HOST_INFO   = "/host/info"
@@ -52,9 +47,7 @@ const (
 	LOTUS_TASK_TYPE_VERIFIED = "verified"
 	LOTUS_TASK_TYPE_REGULAR  = "regular"
 
-	LOTUS_PRICE_MULTIPLE_1E18 = 1e18 // 10^18
-	FILE_BLOCK_NUMBER_MAX     = 999999999999999
-	TIME_HALF_AN_HOUR         = 30 * 60 * 1000
+	FILE_BLOCK_NUMBER_MAX = 999999999999999
 
 	SOURCE_FILE_UPLOAD_STATUS_CREATED      = "Created"
 	SOURCE_FILE_UPLOAD_STATUS_PAID         = "Paid"
@@ -64,7 +57,6 @@ const (
 	OFFLINE_DEAL_UNLOCK_STATUS_UNLOCKED      = "Unlocked"
 	OFFLINE_DEAL_UNLOCK_STATUS_UNLOCK_FAILED = "UnlockFailed"
 
-	SIGNATURE_DEFAULT_VALUE = "0" //init value,no unlock operation has been performed
 	SIGNATURE_SUCCESS_VALUE = "1" //init value,no unlock operation has been performed
 	SIGNATURE_FAILED_VALUE  = "2" //init value,no unlock operation has been performed
 
@@ -82,4 +74,10 @@ const (
 	WALLET_TYPE_DAO       = 1
 	WALLET_TYPE_USER      = 2
 	WALLET_TYPE_FILE_COIN = 1000
+
+	//0:pay,1:unlock, 2: refund after unlock, 3:refund after expired
+	TRANSACTION_TYPE_PAY                  = 0
+	TRANSACTION_TYPE_UNLOCK               = 1
+	TRANSACTION_TYPE_REFUND_AFTER_UNLOCK  = 2
+	TRANSACTION_TYPE_REFUND_AFTER_EXPIRED = 3
 )

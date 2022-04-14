@@ -144,12 +144,14 @@ create table offline_deal_log (
 create table transaction (
     id                      bigint        not null auto_increment,
     source_file_upload_id   bigint        not null,
-    type                    int           not null, #--0:pay,1:unlock, 1: refund after unlock, 2:refund after expired
+    type                    int           not null, #--0:pay,1:unlock, 2: refund after unlock, 3:refund after expired
     tx_hash                 varchar(100)  not null,
     wallet_id_from          bigint        not null,
     wallet_id_to            bigint        not null,
     coin_id                 bigint        not null,
     amount                  varchar(100)  not null,
+    block_number            bigint        not null,
+    transaction_at          bigint        not null,
     create_at               bigint        not null,
     primary key pk_transaction(id),
     constraint fk_transaction_source_file_upload_id foreign key (source_file_upload_id) references source_file_upload(id),

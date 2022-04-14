@@ -71,14 +71,16 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType 
 		return nil, err
 	}
 	logs.GetLogger().Info("source file saved to ", srcFilepath)
-	uploadMutext.Lock()
+	uploadMutext.Unlock()
 
+	logs.GetLogger().Info("uploading source file to ", config.GetConfig().IpfsServer.UploadUrlPrefix)
 	uploadUrl := libutils.UrlJoin(config.GetConfig().IpfsServer.UploadUrlPrefix, "api/v0/add?stream-channels=true&pin=true")
 	ipfsFileHash, err := ipfs.IpfsUploadFileByWebApi(uploadUrl, srcFilepath)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
 	}
+	logs.GetLogger().Info("source file uploaded to ", config.GetConfig().IpfsServer.UploadUrlPrefix)
 
 	ipfsUrl := libutils.UrlJoin(config.GetConfig().IpfsServer.DownloadUrlPrefix, constants.IPFS_URL_PREFIX_BEFORE_HASH, *ipfsFileHash)
 

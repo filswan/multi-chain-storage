@@ -19,7 +19,6 @@ import (
 )
 
 func SendDealManager(router *gin.RouterGroup) {
-	router.PUT("/dao/signature/deals", RecordDealListThatHaveBeenSignedByDao)
 	router.POST("/mint/info", RecordMintInfo)
 	router.POST("/deal/expire", RecordExpiredRefund)
 }
@@ -121,10 +120,4 @@ func RecordExpiredRefund(c *gin.Context) {
 	} else {
 		c.JSON(http.StatusOK, common.CreateSuccessResponse(event))
 	}
-}
-
-type daoBackendResponse struct {
-	PayloadCid      string `json:"payload_cid"`
-	DealId          string `json:"deal_id"`
-	SuccessDaoCount int    `json:"success_dao_count"`
 }

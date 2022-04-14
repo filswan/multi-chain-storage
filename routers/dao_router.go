@@ -16,6 +16,7 @@ import (
 
 func Dao(router *gin.RouterGroup) {
 	router.GET("/dao/signature/deals", GetDealListForDaoToSign)
+	router.PUT("/dao/signature/deals", RecordDealListThatHaveBeenSignedByDao)
 }
 
 func GetDealListForDaoToSign(c *gin.Context) {
@@ -35,6 +36,12 @@ type DealIdList struct {
 	TxHash1    string `json:"tx_hash_1"`
 	TxHash2    string `json:"tx_hash_2"`
 	TxHash3    string `json:"tx_hash_3"`
+}
+
+type daoBackendResponse struct {
+	PayloadCid      string `json:"payload_cid"`
+	DealId          string `json:"deal_id"`
+	SuccessDaoCount int    `json:"success_dao_count"`
 }
 
 func RecordDealListThatHaveBeenSignedByDao(c *gin.Context) {
@@ -61,7 +68,7 @@ func RecordDealListThatHaveBeenSignedByDao(c *gin.Context) {
 			if err != nil {
 				logs.GetLogger().Error(err)
 			} else {
-				err = SaveDaoEventFromTxHash(v.TxHash1, v.PayloadCid, v.Recipent, deal_id, verification1)
+				err = service.SaveDaoEventFromTxHash(v.TxHash1, v.PayloadCid, v.Recipent, deal_id, verification1)
 				if err != nil {
 					logs.GetLogger().Error(err)
 				}
@@ -72,11 +79,11 @@ func RecordDealListThatHaveBeenSignedByDao(c *gin.Context) {
 		}
 
 		if v.TxHash2 != "" {
-			verification2, err := VerifyDaoSigOnContract(v.TxHash2)
+			verification2, err := service.VerifyDaoSigOnContract(v.TxHash2)
 			if err != nil {
 				logs.GetLogger().Error(err)
 			} else {
-				err = SaveDaoEventFromTxHash(v.TxHash2, v.PayloadCid, v.Recipent, deal_id, verification2)
+				err = service.SaveDaoEventFromTxHash(v.TxHash2, v.PayloadCid, v.Recipent, deal_id, verification2)
 				if err != nil {
 					logs.GetLogger().Error(err)
 				}
@@ -87,11 +94,11 @@ func RecordDealListThatHaveBeenSignedByDao(c *gin.Context) {
 		}
 
 		if v.TxHash3 != "" {
-			verification3, err := VerifyDaoSigOnContract(v.TxHash3)
+			verification3, err := service.VerifyDaoSigOnContract(v.TxHash3)
 			if err != nil {
 				logs.GetLogger().Error(err)
 			} else {
-				err = SaveDaoEventFromTxHash(v.TxHash3, v.PayloadCid, v.Recipent, deal_id, verification3)
+				err = service.SaveDaoEventFromTxHash(v.TxHash3, v.PayloadCid, v.Recipent, deal_id, verification3)
 				if err != nil {
 					logs.GetLogger().Error(err)
 				}

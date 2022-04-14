@@ -190,3 +190,57 @@ func GetSourceFiles(pageSize, offset string, walletAddress, payloadCid string, f
 
 	return srcFiles, nil
 }
+
+type DaoInfoResult struct {
+	DaoName         string `json:"dao_name"`
+	DaoAddress      string `json:"dao_address"`
+	OrderIndex      string `json:"order_index"`
+	DealId          int64  `json:"deal_id"`
+	DaoPassTime     string `json:"dao_pass_time"`
+	PayloadCid      string `json:"payload_cid"`
+	DaoAddressEvent string `json:"dao_address_event"`
+	TxHash          string `json:"tx_hash"`
+	Status          string `json:"status"`
+}
+
+func GetDaoSignEventByDealId(dealId int64) ([]*DaoInfoResult, error) {
+	if dealId == 0 {
+		dealId = constants.FILE_BLOCK_NUMBER_MAX
+	}
+	finalSql := " select * from( " +
+		" (select dao_name, dao_address,order_index from dao_info order by order_index asc)) as d  left  join " +
+		" (select deal_id,tx_hash,dao_pass_time,if(deal_id > 0,1,2) as status,dao_address as dao_address_event,payload_cid  from event_dao_signature where deal_id = " + strconv.FormatInt(dealId, 10) + " ) as a " +
+		" on d.dao_address=a.dao_address_event"
+
+	var daoInfoResult []*DaoInfoResult
+	err := database.GetDB().Raw(finalSql).Scan(&daoInfoResult).Limit(0).Offset(constants.DEFAULT_SELECT_LIMIT).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+	return daoInfoResult, nil
+}
+
+type LockFound struct {
+	PayloadCid string `json:"payload_cid"`
+	CreateAt   string `json:"create_at"`
+	LockedFee  string `json:"locked_fee"`
+}
+
+func GetLockFoundInfoByPayloadCid(payloadCid string) (*LockFound, error) {
+	lockEventList, err := models.GetEventLockPaymentBySrcPayloadCid(payloadCid)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	lockFound := &LockFound{
+		PayloadCid: payloadCid,
+	}
+
+	if len(lockEventList) > 0 {
+		lockFound.LockedFee = lockEventList[0].LockedFee.String()
+		lockFound.CreateAt = strconv.FormatInt(lockEventList[0].CreateAt, 10)
+	}
+	return lockFound, nil
+}

@@ -68,24 +68,6 @@ func GetDaoSignatureInfoByDealId(dealId int64) ([]*DaoSignResult, error) {
 	return results, nil
 }
 
-func GetLockFoundInfoByPayloadCid(payloadCid string) (*LockFound, error) {
-	lockEventList, err := models.GetEventLockPaymentBySrcPayloadCid(payloadCid)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-
-	lockFound := &LockFound{
-		PayloadCid: payloadCid,
-	}
-
-	if len(lockEventList) > 0 {
-		lockFound.LockedFee = lockEventList[0].LockedFee.String()
-		lockFound.CreateAt = strconv.FormatInt(lockEventList[0].CreateAt, 10)
-	}
-	return lockFound, nil
-}
-
 func GetShoulBeSignDealListFromDB() ([]*DealForDaoSignResult, error) {
 	finalSql := "select a.id as deal_file_id, b.deal_id,a.deal_cid,a.piece_cid,a.payload_cid,a.cost,a.verified,a.miner_fid,duration,a.client_wallet_address,a.create_at from deal_file a left join offline_deal b on a.id = b.deal_file_id left join event_lock_payment c on a.payload_cid=c.payload_cid " +
 		" where b.deal_id not in  ( " +
@@ -119,24 +101,6 @@ func GetShoulBeSignDealListFromDB() ([]*DealForDaoSignResult, error) {
 		}
 	}
 	return dealForDaoSignResultList, nil
-}
-
-func GetDaoSignEventByDealId(dealId int64) ([]*DaoInfoResult, error) {
-	if dealId == 0 {
-		dealId = constants.FILE_BLOCK_NUMBER_MAX
-	}
-	finalSql := " select * from( " +
-		" (select dao_name, dao_address,order_index from dao_info order by order_index asc)) as d  left  join " +
-		" (select deal_id,tx_hash,dao_pass_time,if(deal_id > 0,1,2) as status,dao_address as dao_address_event,payload_cid  from event_dao_signature where deal_id = " + strconv.FormatInt(dealId, 10) + " ) as a " +
-		" on d.dao_address=a.dao_address_event"
-
-	var daoInfoResult []*DaoInfoResult
-	err := database.GetDB().Raw(finalSql).Scan(&daoInfoResult).Limit(0).Offset(constants.DEFAULT_SELECT_LIMIT).Error
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-	return daoInfoResult, nil
 }
 
 func SaveDaoEventFromTxHash(txHash string, payload_cid string, recipent string, deal_id int64, verification bool) error {

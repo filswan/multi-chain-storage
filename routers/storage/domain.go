@@ -54,15 +54,6 @@ type DaoSignResult struct {
 	Status     bool   `json:"status"`
 }
 
-type DealIdList struct {
-	DealId     string `json:"deal_id"`
-	PayloadCid string `json:"payload_cid"`
-	Recipent   string `json:"recipent"`
-	TxHash1    string `json:"tx_hash_1"`
-	TxHash2    string `json:"tx_hash_2"`
-	TxHash3    string `json:"tx_hash_3"`
-}
-
 type IpfsReturn struct {
 	Name string `json:"Name"`
 	Hash string `json:"Hash"`

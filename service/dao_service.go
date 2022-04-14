@@ -1,12 +1,17 @@
 package service
 
 import (
+	"context"
+	"errors"
 	"multi-chain-storage/common/constants"
 	"multi-chain-storage/database"
 	"multi-chain-storage/models"
+	"multi-chain-storage/on-chain/client"
 	"strconv"
+	"strings"
 	"time"
 
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/filswan/go-swan-lib/logs"
 )
 
@@ -58,4 +63,28 @@ func GetShoulBeSignDealListFromDB() ([]*DealForDaoSignResult, error) {
 		}
 	}
 	return dealForDaoSignResultList, nil
+}
+
+func VerifyDaoSigOnContract(tx_hash string) (bool, error) {
+	client, _, err := client.GetEthClient()
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return false, err
+	}
+	if tx_hash != "" && strings.HasPrefix(tx_hash, "0x") {
+		transaction, err := client.TransactionReceipt(context.Background(), common.HexToHash(tx_hash))
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return false, err
+		}
+		if transaction.Status == 1 {
+			return true, nil
+		} else {
+			return false, nil
+		}
+	} else {
+		err := errors.New("invalid transaction hash:" + tx_hash)
+		logs.GetLogger().Error(err)
+		return false, err
+	}
 }

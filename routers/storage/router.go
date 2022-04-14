@@ -19,7 +19,6 @@ import (
 )
 
 func SendDealManager(router *gin.RouterGroup) {
-	router.GET("/dao/signature/deals", GetDealListForDaoToSign)
 	router.PUT("/dao/signature/deals", RecordDealListThatHaveBeenSignedByDao)
 	router.POST("/mint/info", RecordMintInfo)
 	router.POST("/deal/expire", RecordExpiredRefund)
@@ -131,16 +130,6 @@ func RecordDealListThatHaveBeenSignedByDao(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, common.CreateSuccessResponse(&daoSignRes))
-}
-
-func GetDealListForDaoToSign(c *gin.Context) {
-	dealList, err := GetShoulBeSignDealListFromDB()
-	if err != nil {
-		logs.GetLogger().Error(err)
-		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE))
-		return
-	}
-	c.JSON(http.StatusOK, common.CreateSuccessResponse(dealList))
 }
 
 func GetDealListForDaoByDealId(c *gin.Context) {

@@ -21,19 +21,6 @@ import (
 	"github.com/shopspring/decimal"
 )
 
-func CreateTaskJob() {
-	for {
-		logs.GetLogger().Info("start")
-		err := CreateTask()
-		if err != nil {
-			logs.GetLogger().Error(err)
-		}
-		logs.GetLogger().Info("end")
-
-		time.Sleep(config.GetConfig().ScheduleRule.CreateTaskIntervalSecond * time.Second)
-	}
-}
-
 func CreateTask() error {
 	err := CheckSourceFilesPaid()
 	if err != nil {

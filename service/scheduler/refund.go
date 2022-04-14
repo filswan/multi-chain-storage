@@ -3,28 +3,13 @@ package scheduler
 import (
 	"fmt"
 	"multi-chain-storage/common/constants"
-	"multi-chain-storage/config"
 	"multi-chain-storage/models"
 	"multi-chain-storage/on-chain/client"
 	"multi-chain-storage/on-chain/goBind"
-	"time"
 
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/filswan/go-swan-lib/logs"
 )
-
-func RefundJob() {
-	for {
-		logs.GetLogger().Info("start")
-		err := Refund()
-		if err != nil {
-			logs.GetLogger().Error(err)
-		}
-		logs.GetLogger().Info("end")
-
-		time.Sleep(config.GetConfig().ScheduleRule.RefundIntervalSecond * time.Second)
-	}
-}
 
 func Refund() error {
 	ethClient, _, err := client.GetEthClient()

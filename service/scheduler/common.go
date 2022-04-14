@@ -34,11 +34,6 @@ func InitScheduler() {
 	go runJob("ScanDeal", ScanDeal, config.GetConfig().ScheduleRule.ScanDealStatusIntervalSecond)
 	go runJob("SendDeal", SendDeal, config.GetConfig().ScheduleRule.SendDealIntervalSecond)
 	go runJob("UnlockPayment", UnlockPayment, config.GetConfig().ScheduleRule.UnlockIntervalSecond)
-	//go CreateTaskJob()
-	//go RefundJob()
-	//go ScanDealJob()
-	//go SendDealJob()
-	//go UnlockPaymentJob()
 }
 
 func runJob(jobName string, func2Run func() error, intervalSecond time.Duration) {

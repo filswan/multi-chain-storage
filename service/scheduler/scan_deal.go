@@ -8,25 +8,11 @@ import (
 	"multi-chain-storage/models"
 	"multi-chain-storage/on-chain/client"
 	"strconv"
-	"time"
 
 	"github.com/filswan/go-swan-lib/logs"
 
 	"github.com/filswan/go-swan-lib/client/lotus"
 )
-
-func ScanDealJob() {
-	for {
-		logs.GetLogger().Info("start")
-		err := ScanDeal()
-		if err != nil {
-			logs.GetLogger().Error(err)
-		}
-		logs.GetLogger().Info("end")
-
-		time.Sleep(config.GetConfig().ScheduleRule.ScanDealStatusIntervalSecond * time.Second)
-	}
-}
 
 func ScanDeal() error {
 	dealList, err := models.GetOfflineDeals2BeScanned()

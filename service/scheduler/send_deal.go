@@ -2,7 +2,6 @@ package scheduler
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/filswan/go-swan-client/command"
 
@@ -19,19 +18,6 @@ import (
 
 	libconstants "github.com/filswan/go-swan-lib/constants"
 )
-
-func SendDealJob() {
-	for {
-		logs.GetLogger().Info("start")
-		err := SendDeal()
-		if err != nil {
-			logs.GetLogger().Error(err)
-		}
-		logs.GetLogger().Info("end")
-
-		time.Sleep(config.GetConfig().ScheduleRule.SendDealIntervalSecond * time.Second)
-	}
-}
 
 func SendDeal() error {
 	dealFiles, err := models.GetDeal2Send()

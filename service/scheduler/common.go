@@ -43,7 +43,6 @@ func InitScheduler() {
 
 func runJob(jobName string, func2Run func() error, intervalSecond time.Duration) {
 	for {
-
 		logs.GetLogger().Info(func2Run, " start")
 		err := func2Run()
 		if err != nil {

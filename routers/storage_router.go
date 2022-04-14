@@ -24,6 +24,7 @@ func Storage(router *gin.RouterGroup) {
 	router.POST("/ipfs/upload", UploadFile)
 	router.GET("/tasks/deals", GetDealListFromLocal)
 	router.GET("/deal/detail/:deal_id", GetDealListFromFilink)
+	router.GET("/deal/file/:source_file_id", GetDeals4SourceFile)
 }
 
 func UploadFile(c *gin.Context) {
@@ -293,5 +294,34 @@ func GetDealListFromFilink(c *gin.Context) {
 		"deal":             result.Data.Data.Deal,
 		"found":            foundInfo,
 		"dao":              daoSignList,
+	}))
+}
+func GetDeals4SourceFile(c *gin.Context) {
+	sourceFileIdStr := strings.Trim(c.Params.ByName("source_file_id"), " ")
+	if sourceFileIdStr == "" {
+		errMsg := "source file id can not be null"
+		logs.GetLogger().Error(errMsg)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAM_TYPE_ERROR_CODE, errMsg))
+		return
+	}
+
+	sourceFileId, err := strconv.ParseInt(sourceFileIdStr, 10, 64)
+	if err != nil {
+		errMsg := "source file id should be a valid number"
+		logs.GetLogger().Error(errMsg)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAM_TYPE_ERROR_CODE, errMsg))
+		return
+	}
+
+	offlineDeals, sourceFile, err := service.GetOfflineDealsBySourceFileId(sourceFileId)
+	if err != nil {
+		logs.GetLogger().Error(err.Error())
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE, err.Error()))
+		return
+	}
+
+	c.JSON(http.StatusOK, common.CreateSuccessResponse(gin.H{
+		"source_file": sourceFile,
+		"deals":       offlineDeals,
 	}))
 }

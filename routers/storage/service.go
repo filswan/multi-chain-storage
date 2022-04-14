@@ -17,22 +17,6 @@ import (
 	"github.com/filswan/go-swan-lib/logs"
 )
 
-func GetOfflineDealsBySourceFileId(sourceFileId int64) ([]*models.OfflineDeal, *models.SourceFile, error) {
-	offlineDeals, err := models.GetOfflineDealsBySourceFileId(sourceFileId)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, nil, err
-	}
-
-	sourceFile, err := models.GetSourceFileById(sourceFileId)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, nil, err
-	}
-
-	return offlineDeals, sourceFile, nil
-}
-
 func GetSourceFileAndDealFileInfoByPayloadCid(payloadCid string) ([]*SourceFileAndDealFileInfo, error) {
 	sql := "select h.wallet_address,s.ipfs_url,h.file_name,d.id,d.payload_cid,d.deal_cid,d.deal_id,d.lock_payment_status,s.create_at "
 	sql = sql + "from source_file s,source_file_deal_file_map m,deal_file d, source_file_upload_history h "

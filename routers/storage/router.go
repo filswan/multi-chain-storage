@@ -19,7 +19,6 @@ import (
 )
 
 func SendDealManager(router *gin.RouterGroup) {
-	router.GET("/deal/file/:source_file_id", GetDeals4SourceFile)
 	router.GET("/dao/signature/deals", GetDealListForDaoToSign)
 	router.PUT("/dao/signature/deals", RecordDealListThatHaveBeenSignedByDao)
 	router.POST("/mint/info", RecordMintInfo)
@@ -37,36 +36,6 @@ type UploadResult struct {
 	IpfsUrl      string `json:"ipfs_url"`
 	NeedPay      int    `json:"need_pay"`
 	FileSize     int64  `json:"file_size"`
-}
-
-func GetDeals4SourceFile(c *gin.Context) {
-	sourceFileIdStr := strings.Trim(c.Params.ByName("source_file_id"), " ")
-	if sourceFileIdStr == "" {
-		errMsg := "source file id can not be null"
-		logs.GetLogger().Error(errMsg)
-		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAM_TYPE_ERROR_CODE, errMsg))
-		return
-	}
-
-	sourceFileId, err := strconv.ParseInt(sourceFileIdStr, 10, 64)
-	if err != nil {
-		errMsg := "source file id should be a valid number"
-		logs.GetLogger().Error(errMsg)
-		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAM_TYPE_ERROR_CODE, errMsg))
-		return
-	}
-
-	offlineDeals, sourceFile, err := GetOfflineDealsBySourceFileId(sourceFileId)
-	if err != nil {
-		logs.GetLogger().Error(err.Error())
-		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE, err.Error()))
-		return
-	}
-
-	c.JSON(http.StatusOK, common.CreateSuccessResponse(gin.H{
-		"source_file": sourceFile,
-		"deals":       offlineDeals,
-	}))
 }
 
 func RecordDealListThatHaveBeenSignedByDao(c *gin.Context) {

@@ -244,3 +244,18 @@ func GetLockFoundInfoByPayloadCid(payloadCid string) (*LockFound, error) {
 	}
 	return lockFound, nil
 }
+func GetOfflineDealsBySourceFileId(sourceFileId int64) ([]*models.OfflineDeal, *models.SourceFile, error) {
+	offlineDeals, err := models.GetOfflineDealsBySourceFileId(sourceFileId)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, nil, err
+	}
+
+	sourceFile, err := models.GetSourceFileById(sourceFileId)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, nil, err
+	}
+
+	return offlineDeals, sourceFile, nil
+}

@@ -91,7 +91,7 @@ func CreateTransaction(sourceFileUploadId int64, txHash string) error {
 		WalletIdTo:         walletTo.ID,
 		CoinId:             coin.ID,
 		Amount:             lockPayment.LockedFee.String(),
-		BlockNumber:        0,
+		BlockNumber:        lockPayment.BlockNumber,
 		TransactionAt:      currentUtcSecond,
 		CreateAt:           currentUtcSecond,
 	}

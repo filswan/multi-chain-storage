@@ -28,12 +28,11 @@ import (
 var uploadMutext sync.Mutex
 
 type UploadResult struct {
-	SourceFileId int64  `json:"source_file_id"`
-	PayloadCid   string `json:"payload_cid"`
-	IpfsUrl      string `json:"ipfs_url"`
-	FileSize     int64  `json:"file_size"`
-	Uuid         string `json:"uuid"`
-	NeedPay      int    `json:"need_pay"`
+	SourceFileUploadId int64  `json:"source_file_upload_id"`
+	PayloadCid         string `json:"payload_cid"`
+	IpfsUrl            string `json:"ipfs_url"`
+	FileSize           int64  `json:"file_size"`
+	WCid               string `json:"w_cid"`
 }
 
 func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType int, walletAddress string) (*UploadResult, error) {
@@ -125,7 +124,7 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType 
 	}
 
 	sourceFileUploadUuid := uuid.NewString()
-	sourceFileUpload := models.SourceFileUpload{
+	sourceFileUpload := &models.SourceFileUpload{
 		SourceFileId: sourceFile.ID,
 		FileName:     srcFile.Filename,
 		WalletId:     wallet.ID,
@@ -135,7 +134,7 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType 
 		UpdateAt:     currentUtcMilliSec,
 	}
 
-	err = database.SaveOne(&sourceFileUpload)
+	sourceFileUpload, err = models.CreateSourceFileUpload(sourceFileUpload)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		err = os.Remove(srcFilepath)
@@ -147,12 +146,11 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType 
 	}
 
 	uploadResult := &UploadResult{
-		SourceFileId: sourceFile.ID,
-		PayloadCid:   sourceFileUploadUuid + *ipfsFileHash,
-		IpfsUrl:      ipfsUrl,
-		FileSize:     sourceFile.FileSize,
-		Uuid:         sourceFileUploadUuid,
-		NeedPay:      0,
+		SourceFileUploadId: sourceFileUpload.Id,
+		PayloadCid:         *ipfsFileHash,
+		IpfsUrl:            ipfsUrl,
+		FileSize:           sourceFile.FileSize,
+		WCid:               sourceFileUploadUuid + *ipfsFileHash,
 	}
 
 	return uploadResult, nil

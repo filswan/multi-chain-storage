@@ -44,3 +44,14 @@ func GetSourceFileUploadById(id int64) (*SourceFileUpload, error) {
 
 	return nil, nil
 }
+
+func CreateSourceFileUpload(sourceFileUpload *SourceFileUpload) (*SourceFileUpload, error) {
+	value, err := database.SaveOneWithResult(sourceFileUpload)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+	sourceFileUploadCreated := value.(*SourceFileUpload)
+
+	return sourceFileUploadCreated, nil
+}

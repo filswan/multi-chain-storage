@@ -18,6 +18,7 @@ type LockedPayment struct {
 	AddressTo    string
 	Deadline     string
 	Size         int64
+	BlockNumber  int64
 }
 
 func IsLockedPaymentExists(srcFilePayloadCid string) (*bool, error) {
@@ -69,6 +70,7 @@ func GetLockedPaymentInfo(srcFilePayloadCid string) (*LockedPayment, error) {
 		AddressTo:    paymentInfo.Recipient.String(),
 		Deadline:     paymentInfo.Deadline.String(),
 		Size:         paymentInfo.Size.Int64(),
+		BlockNumber:  paymentInfo.BlockNumber.Int64(),
 	}
 
 	return &lockedPayment, nil

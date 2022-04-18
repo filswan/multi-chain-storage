@@ -22,19 +22,17 @@ func GetHostInfo() *common.HostInfo {
 }
 
 func GetSystemConfigParams(limit string) (map[string]string, error) {
-	wallets, err := models.GetWalletsByType(constants.WALLET_TYPE_PAY_CONTRACT)
+	systemConf, err := models.GetSystemConf()
 	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-	if len(wallets) == 0 {
-		err := fmt.Errorf("payment contract wallet not found")
 		logs.GetLogger().Error(err)
 		return nil, err
 	}
 
 	config := map[string]string{}
-	config[constants.CONFIG_SWAN_PAYMENT_CONTRACT_ADDRESS] = wallets[0].Address
+
+	for _, conf := range systemConf {
+		config[conf.Name] = conf.Value
+	}
 
 	coin, err := models.GetCoinByName(constants.COIN_USDC_NAME)
 	if err != nil {

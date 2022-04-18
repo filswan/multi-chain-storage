@@ -16,23 +16,6 @@ create table network (
 insert into network(name,rpc_url,create_at,update_at) values('polygon','',unix_timestamp(),unix_timestamp());
 set @network_id_polygon:=@@identity;
 
-create table wallet (
-    id            bigint       not null auto_increment,
-    address       varchar(100) not null,
-    type          int          not null,  #--0:payment contract,1:pay admin fee, 2:dao, 2:user,1000:user,2000:file coin
-    create_at     bigint       not null,
-    primary key pk_wallet(id)
-);
-
-insert into wallet(address,type,create_at) values('0x80a186DCD922175019913b274568ab172F6E20b1',0,unix_timestamp());
-
-create table miner (
-    id            bigint       not null auto_increment,
-    fid           varchar(100) not null,
-    create_at     bigint       not null,
-    primary key pk_miner(id)
-);
-
 create table coin (
     id            bigint       not null auto_increment,
     name          varchar(100) not null,
@@ -48,6 +31,39 @@ create table coin (
 );
 
 insert into coin(name,address,network_id,create_at,update_at) values('USDC','0xe11A86849d99F524cAC3E7A0Ec1241828e332C62',@network_id_polygon,unix_timestamp(),unix_timestamp());
+
+create table system_conf (
+    id            bigint       not null auto_increment,
+    name          varchar(100) not null,
+    value         varchar(100) not null,
+    description   text,
+    create_at     bigint       not null,
+    update_at     bigint       not null,
+    primary key pk_system_conf(id),
+    constraint un_system_conf_name unique(name)
+);
+
+insert into system_conf(name,value,create_at,update_at) values('SWAN_PAYMENT_CONTRACT_ADDRESS','0x80a186DCD922175019913b274568ab172F6E20b1',unix_timestamp(),unix_timestamp());
+insert into system_conf(name,value,create_at,update_at) values('PAY_WITH_MULTIPLY_FACTOR','1.5',unix_timestamp(),unix_timestamp());
+insert into system_conf(name,value,create_at,update_at) values('LOCK_TIME','6',unix_timestamp(),unix_timestamp());
+insert into system_conf(name,value,create_at,update_at) values('RECIPIENT','0xc4fcaAdCb0b00a9501e56215c37B10fAF9e79c0a',unix_timestamp(),unix_timestamp());
+insert into system_conf(name,value,create_at,update_at) values('PAY_GAS_LIMIT','9999999',unix_timestamp(),unix_timestamp());
+insert into system_conf(name,value,create_at,update_at) values('MINT_CONTRACT','0x1A1e5AC88C493e0608C84c60b7bb5f04D9cF50B3',unix_timestamp(),unix_timestamp());
+
+create table wallet (
+    id            bigint       not null auto_increment,
+    address       varchar(100) not null,
+    create_at     bigint       not null,
+    primary key pk_wallet(id),
+    constraint un_wallet_address unique(address)
+);
+
+create table miner (
+    id            bigint       not null auto_increment,
+    fid           varchar(100) not null,
+    create_at     bigint       not null,
+    primary key pk_miner(id)
+);
 
 create table source_file (
     id            bigint        not null auto_increment,
@@ -114,7 +130,7 @@ create table car_file_source (
     source_file_upload_id bigint        not null,
     create_at             bigint        not null,
     primary key pk_car_file_source(id),
-    constraint un_car_file_source unique(car_file_id,source_file_id),
+    constraint un_car_file_source unique(car_file_id,source_file_upload_id),
     constraint fk_car_file_source_car_file_id foreign key (car_file_id) references car_file(id),
     constraint fk_car_file_source_source_file_upload_id foreign key (source_file_upload_id) references source_file_upload(id)
 );

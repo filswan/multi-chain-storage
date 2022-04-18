@@ -33,17 +33,18 @@ type UploadResult struct {
 	IpfsUrl      string `json:"ipfs_url"`
 	FileSize     int64  `json:"file_size"`
 	Uuid         string `json:"uuid"`
+	NeedPay      int    `json:"need_pay"`
 }
 
 func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType int, walletAddress string) (*UploadResult, error) {
-	wallet, err := models.GetWalletByAddressType(walletAddress, constants.WALLET_TYPE_USER)
+	wallet, err := models.GetWalletByAddress(walletAddress)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
 	}
 
 	if wallet == nil {
-		wallet, err = models.SaveWallet(walletAddress, constants.WALLET_TYPE_USER)
+		wallet, err = models.SaveWallet(walletAddress)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			return nil, err
@@ -147,10 +148,11 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType 
 
 	uploadResult := &UploadResult{
 		SourceFileId: sourceFile.ID,
-		PayloadCid:   *ipfsFileHash,
+		PayloadCid:   sourceFileUploadUuid + *ipfsFileHash,
 		IpfsUrl:      ipfsUrl,
 		FileSize:     sourceFile.FileSize,
 		Uuid:         sourceFileUploadUuid,
+		NeedPay:      0,
 	}
 
 	return uploadResult, nil

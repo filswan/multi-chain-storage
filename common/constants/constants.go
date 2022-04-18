@@ -66,20 +66,11 @@ const (
 
 	PRIVATE_KEY_ON_POLYGON = "privateKeyOnPolygon"
 
-	//0:payment contract,1:pay admin fee, 2:dao, 2:user,1000:user,2000:file coin
-	WALLET_TYPE_PAY_CONTRACT = 0
-	WALLET_TYPE_ADMIN_FEE    = 1
-	WALLET_TYPE_DAO          = 2
-	WALLET_TYPE_USER         = 1000
-	WALLET_TYPE_FILE_COIN    = 2000
-
 	//0:pay,1:unlock, 2: refund after unlock, 3:refund after expired
 	TRANSACTION_TYPE_PAY                  = 0
 	TRANSACTION_TYPE_UNLOCK               = 1
 	TRANSACTION_TYPE_REFUND_AFTER_UNLOCK  = 2
 	TRANSACTION_TYPE_REFUND_AFTER_EXPIRED = 3
-
-	CONFIG_SWAN_PAYMENT_CONTRACT_ADDRESS = "SWAN_PAYMENT_CONTRACT_ADDRESS"
 
 	COIN_USDC_NAME   = "USDC"
 	COIN_USDC_ADRESS = "USDC_ADDRESS"

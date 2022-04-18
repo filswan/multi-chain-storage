@@ -44,7 +44,7 @@ func SendDeal() error {
 
 	currentUtcMilliSec := utils.GetCurrentUtcSecond()
 
-	wallet, err := models.GetWalletByAddressType(cmdAutoBidDeal.SenderWallet, constants.WALLET_TYPE_FILE_COIN)
+	wallet, err := models.GetWalletByAddress(cmdAutoBidDeal.SenderWallet)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err

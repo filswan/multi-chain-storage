@@ -13,6 +13,9 @@ create table network (
     constraint un_network_name unique(name)
 );
 
+insert into network(name,rpc_url,create_at,update_at) values('polygon','',unix_timestamp(),unix_timestamp());
+set @network_id_polygon:=@@identity;
+
 create table wallet (
     id            bigint       not null auto_increment,
     address       varchar(100) not null,
@@ -43,6 +46,8 @@ create table coin (
     constraint un_coin_address unique(address),
     constraint fk_coin_network_id foreign key (network_id) references network(id)
 );
+
+insert into coin(name,address,network_id,create_at,update_at) values('USDC','0xe11A86849d99F524cAC3E7A0Ec1241828e332C62',@network_id_polygon,unix_timestamp(),unix_timestamp());
 
 create table source_file (
     id            bigint        not null auto_increment,

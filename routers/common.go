@@ -35,6 +35,7 @@ func GetSystemConfigParams(c *gin.Context) {
 		c.JSON(http.StatusOK, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE, "getting system config from db occurred error"))
 		return
 	}
+
 	config := map[string]string{}
 	for _, v := range params {
 		config[v.ParamKey] = v.ParamValue

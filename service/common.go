@@ -20,10 +20,11 @@ func GetHostInfo() *common.HostInfo {
 }
 
 func GetSystemConfigParams(limit string) ([]*models.SystemConfigParam, error) {
-	sysconfigs, err := models.GetSystemConfigParams(limit, "0")
+	sysconfigs, err := models.GetSystemConfigParams()
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
 	}
+
 	return sysconfigs, nil
 }

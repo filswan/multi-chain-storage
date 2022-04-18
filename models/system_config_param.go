@@ -1,7 +1,6 @@
 package models
 
 import (
-	"multi-chain-storage/common/constants"
 	"multi-chain-storage/database"
 
 	"github.com/filswan/go-swan-lib/logs"
@@ -14,16 +13,9 @@ type SystemConfigParam struct {
 	Module     string `json:"module"`
 }
 
-func GetSystemConfigParams(limit, offset string) ([]*SystemConfigParam, error) {
-	if offset == "" {
-		offset = "0"
-	}
-	if limit == "" {
-		limit = constants.PAGE_SIZE_DEFAULT_VALUE
-	}
-
+func GetSystemConfigParams() ([]*SystemConfigParam, error) {
 	var systemConfigParams []*SystemConfigParam
-	err := database.GetDB().Offset(offset).Limit(limit).Order("id desc").Find(&systemConfigParams).Error
+	err := database.GetDB().Find(&systemConfigParams).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err

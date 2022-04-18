@@ -43,7 +43,7 @@ func GetSystemConfigParams(limit string) (map[string]string, error) {
 	}
 
 	if coin == nil {
-		err := fmt.Errorf("USDC coin not found")
+		err := fmt.Errorf("coin:%s not found", constants.COIN_USDC_NAME)
 		logs.GetLogger().Error(err)
 		return nil, err
 	}

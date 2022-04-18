@@ -35,8 +35,20 @@ func GetSystemConfigParams(limit string) (map[string]string, error) {
 
 	config := map[string]string{}
 	config[constants.CONFIG_SWAN_PAYMENT_CONTRACT_ADDRESS] = wallets[0].Address
-	//config["RECIPIENT"] = "0xc4fcaAdCb0b00a9501e56215c37B10fAF9e79c0a"
-	config["USDC_ADDRESS"] = "0xe11A86849d99F524cAC3E7A0Ec1241828e332C62"
+
+	coin, err := models.GetCoinByName(constants.COIN_NAME_USDC)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	if coin == nil {
+		err := fmt.Errorf("USDC coin not found")
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	config[constants.COIN_USDC_ADRESS] = coin.Address
 
 	return config, nil
 }

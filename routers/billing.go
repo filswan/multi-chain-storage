@@ -24,50 +24,21 @@ func BillingManager(router *gin.RouterGroup) {
 	router.POST("/deal/lockpayment", WriteLockPayment)
 }
 
+type LockPayment struct {
+	SourceFileUploadId int64  `json:"source_file_upload_id"`
+	TxHash             string `json:"tx_hash"`
+}
+
 func WriteLockPayment(c *gin.Context) {
-	var eventLockPayment models.EventLockPayment
-	err := c.BindJSON(&eventLockPayment)
+	var lockPayment LockPayment
+	err := c.BindJSON(&lockPayment)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.JSON(http.StatusOK, common.CreateErrorResponse(err.Error()))
 		return
 	}
 
-	lockedPayment, err := client.GetLockedPaymentInfo(eventLockPayment.PayloadCid)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		usdcCoin, err := models.GetCoinByName(constants.COIN_USDC_NAME)
-		if err != nil {
-			logs.GetLogger().Error(err)
-		} else {
-			eventLockPayment.CoinId = usdcCoin.ID
-			eventLockPayment.NetworkId = usdcCoin.NetworkId
-			eventLockPayment.TokenAddress = usdcCoin.Address
-		}
-	} else {
-		eventLockPayment.MinPayment = lockedPayment.MinPayment
-		eventLockPayment.LockedFee = lockedPayment.LockedFee
-		eventLockPayment.Deadline = lockedPayment.Deadline
-		eventLockPayment.TokenAddress = lockedPayment.TokenAddress
-		eventLockPayment.AddressFrom = lockedPayment.AddressFrom
-		eventLockPayment.AddressTo = lockedPayment.AddressTo
-		eventLockPayment.LockPaymentTime = utils.GetCurrentUtcSecond()
-		coin, err := models.GetCoinByAddress(lockedPayment.TokenAddress)
-		if err != nil {
-			logs.GetLogger().Error(err)
-		} else {
-			eventLockPayment.CoinId = coin.ID
-			eventLockPayment.NetworkId = coin.NetworkId
-		}
-	}
-	srcFile, err := models.GetSourceFileByPayloadCid(eventLockPayment.PayloadCid)
-	if err != nil {
-		logs.GetLogger().Error(err)
-	} else {
-		eventLockPayment.SourceFileId = srcFile.ID
-	}
-
-	err = models.CreateEventLockPayment(eventLockPayment)
+	err = service.WriteLockPayment(lockPayment.SourceFileUploadId, lockPayment.TxHash)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.JSON(http.StatusOK, common.CreateErrorResponse(err.Error()))

@@ -36,9 +36,5 @@ func GetSystemConfigParams(c *gin.Context) {
 		return
 	}
 
-	config := map[string]string{}
-	for _, v := range params {
-		config[v.ParamKey] = v.ParamValue
-	}
-	c.JSON(http.StatusOK, common.CreateSuccessResponse(config))
+	c.JSON(http.StatusOK, common.CreateSuccessResponse(params))
 }

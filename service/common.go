@@ -1,7 +1,9 @@
 package service
 
 import (
+	"fmt"
 	"multi-chain-storage/common"
+	"multi-chain-storage/common/constants"
 	"multi-chain-storage/models"
 	"runtime"
 
@@ -19,12 +21,20 @@ func GetHostInfo() *common.HostInfo {
 	return &hostInfo
 }
 
-func GetSystemConfigParams(limit string) ([]*models.SystemConfigParam, error) {
-	sysconfigs, err := models.GetSystemConfigParams()
+func GetSystemConfigParams(limit string) (map[string]string, error) {
+	wallets, err := models.GetWalletsByType(constants.WALLET_TYPE_PAY_CONTRACT)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
 	}
+	if len(wallets) == 0 {
+		err := fmt.Errorf("payment contract wallet not found")
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
 
-	return sysconfigs, nil
+	config := map[string]string{}
+	config[constants.CONFIG_SWAN_PAYMENT_CONTRACT_ADDRESS] = wallets[0].Address
+
+	return config, nil
 }

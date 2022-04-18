@@ -36,7 +36,7 @@ func GetSystemConfigParams(limit string) (map[string]string, error) {
 	config := map[string]string{}
 	config[constants.CONFIG_SWAN_PAYMENT_CONTRACT_ADDRESS] = wallets[0].Address
 
-	coin, err := models.GetCoinByName(constants.COIN_NAME_USDC)
+	coin, err := models.GetCoinByName(constants.COIN_USDC_NAME)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err

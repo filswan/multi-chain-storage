@@ -36,7 +36,7 @@ func WriteLockPayment(c *gin.Context) {
 	lockedPayment, err := client.GetLockedPaymentInfo(eventLockPayment.PayloadCid)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		usdcCoin, err := models.GetCoinByName(constants.COIN_NAME_USDC)
+		usdcCoin, err := models.GetCoinByName(constants.COIN_USDC_NAME)
 		if err != nil {
 			logs.GetLogger().Error(err)
 		} else {

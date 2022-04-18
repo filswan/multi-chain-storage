@@ -306,7 +306,7 @@ func SaveExpirePaymentEvent(txHash string) (*models.EventExpirePayment, error) {
 			return nil, err
 		}
 		event.BlockNo = strconv.FormatUint(blockNumberInt64, 10)
-		wfilCoinId, err := models.GetCoinByName(constants.COIN_NAME_USDC)
+		wfilCoinId, err := models.GetCoinByName(constants.COIN_USDC_NAME)
 		if err != nil {
 			logs.GetLogger().Error(err)
 		} else {

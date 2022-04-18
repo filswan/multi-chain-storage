@@ -23,7 +23,7 @@ type Transaction struct {
 }
 
 func CreateTransaction(eventLockPayment EventLockPayment) error {
-	currentUtcMilliSecond := utils.GetCurrentUtcMilliSecond()
+	currentUtcMilliSecond := utils.GetCurrentUtcSecond()
 	eventLockPayment.CreateAt = currentUtcMilliSecond
 
 	eventLockPayments, err := GetEventLockPaymentByPayloadCid(eventLockPayment.PayloadCid)

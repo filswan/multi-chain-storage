@@ -121,7 +121,7 @@ func RecordDealListThatHaveBeenSignedByDao(c *gin.Context) {
 					continue
 				}
 				daoFetchedDeal.DealId = dealIdIntValue
-				daoFetchedDeal.CreateAt = utils.GetCurrentUtcMilliSecond()
+				daoFetchedDeal.CreateAt = utils.GetCurrentUtcSecond()
 				err = database.SaveOne(daoFetchedDeal)
 				if err != nil {
 					logs.GetLogger().Error(err)

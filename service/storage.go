@@ -90,7 +90,7 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType 
 		return nil, err
 	}
 
-	currentUtcMilliSec := utils.GetCurrentUtcMilliSecond()
+	currentUtcMilliSec := utils.GetCurrentUtcSecond()
 	// not uploaded by anyone yet
 	if sourceFile == nil {
 		sourceFile = &models.SourceFile{
@@ -332,7 +332,7 @@ func SaveExpirePaymentEvent(txHash string) (*models.EventExpirePayment, error) {
 				event.UserAddress = dataList[3].(common.Address).Hex()
 			}
 		}
-		event.CreateAt = strconv.FormatInt(utils.GetCurrentUtcMilliSecond(), 10)
+		event.CreateAt = strconv.FormatInt(utils.GetCurrentUtcSecond(), 10)
 		event.ContractAddress = transactionReceipt.ContractAddress.Hex()
 
 		eventList, err := models.FindEventExpirePayments(&models.EventExpirePayment{TxHash: txHash, BlockNo: strconv.

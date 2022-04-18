@@ -42,7 +42,7 @@ func SendDeal() error {
 		return err
 	}
 
-	currentUtcMilliSec := utils.GetCurrentUtcMilliSecond()
+	currentUtcMilliSec := utils.GetCurrentUtcSecond()
 
 	wallet, err := models.GetWalletByAddressType(cmdAutoBidDeal.SenderWallet, constants.WALLET_TYPE_FILE_COIN)
 	if err != nil {
@@ -100,7 +100,7 @@ func SendDeal() error {
 			return err
 		}
 
-		currentUtcMilliSec := utils.GetCurrentUtcMilliSecond()
+		currentUtcMilliSec := utils.GetCurrentUtcSecond()
 		for _, deal := range fileDescs[0].Deals {
 			dealInfo, err := lotusClient.LotusClientGetDealInfo(deal.DealCid)
 			if err != nil {

@@ -7,11 +7,8 @@ import (
 	"github.com/filswan/go-swan-lib/logs"
 )
 
-// GetEpochInMillis get current timestamp
-func GetCurrentUtcMilliSecond() (millis int64) {
-	nanos := time.Now().UnixNano()
-	millis = nanos / 1000000
-	return
+func GetCurrentUtcSecond() int64 {
+	return time.Now().UnixNano() / 1e9
 }
 
 func GetOffsetByPagenumber(pageNumber, pageSize string) (int64, error) {

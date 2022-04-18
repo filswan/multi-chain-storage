@@ -52,7 +52,7 @@ func RecordMintInfo(c *gin.Context) {
 			NftTxHash:    nftTxHash,
 			TokenId:      tokenId,
 			MintAddress:  mintAddress,
-			CreateAt:     utils.GetCurrentUtcMilliSecond(),
+			CreateAt:     utils.GetCurrentUtcSecond(),
 		}
 
 		database.SaveOne(sourceFileMint)

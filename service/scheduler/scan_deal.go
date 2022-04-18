@@ -37,7 +37,7 @@ func ScanDeal() error {
 		if deal.Status != dealInfo.Status || deal.DealId != dealInfo.DealId {
 			deal.Status = dealInfo.Status
 			deal.DealId = dealInfo.DealId
-			deal.UpdateAt = utils.GetCurrentUtcMilliSecond()
+			deal.UpdateAt = utils.GetCurrentUtcSecond()
 			err = database.SaveOne(deal)
 			if err != nil {
 				logs.GetLogger().Error(err)

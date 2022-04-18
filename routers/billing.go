@@ -51,7 +51,7 @@ func WriteLockPayment(c *gin.Context) {
 		eventLockPayment.TokenAddress = lockedPayment.TokenAddress
 		eventLockPayment.AddressFrom = lockedPayment.AddressFrom
 		eventLockPayment.AddressTo = lockedPayment.AddressTo
-		eventLockPayment.LockPaymentTime = utils.GetCurrentUtcMilliSecond()
+		eventLockPayment.LockPaymentTime = utils.GetCurrentUtcSecond()
 		coin, err := models.GetCoinByAddress(lockedPayment.TokenAddress)
 		if err != nil {
 			logs.GetLogger().Error(err)

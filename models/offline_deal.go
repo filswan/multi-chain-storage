@@ -136,7 +136,7 @@ func UpdateOfflineDealUnlockStatus(id int64, unlockStatus string, messages ...st
 
 	note = strings.Trim(note, ",")
 
-	curUtcMilliSec := utils.GetCurrentUtcMilliSecond()
+	curUtcMilliSec := utils.GetCurrentUtcSecond()
 
 	params := []interface{}{}
 	params = append(params, unlockStatus)

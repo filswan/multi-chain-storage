@@ -247,7 +247,7 @@ func setUnlockPayment(offlineDeal *models.OfflineDeal) error {
 		unlockPayment.LockedFeeBeforeUnlock = lockedPayment.LockedFee
 
 		unlockPayment.TokenAddress = lockedPayment.TokenAddress
-		unlockPayment.UnlockTime = utils.GetCurrentUtcMilliSecond()
+		unlockPayment.UnlockTime = utils.GetCurrentUtcSecond()
 		coin, err := models.GetCoinByAddress(unlockPayment.TokenAddress)
 		if err != nil {
 			logs.GetLogger().Error(err)

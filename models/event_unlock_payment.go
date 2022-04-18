@@ -55,7 +55,7 @@ func GetEventUnlockPaymentsByPayloadCid(payloadCid string, limit, offset string)
 func UpdateUnlockAmount(srcFileId, dealId int64, txHash, blockNo string, unlockedFee decimal.Decimal) error {
 	sql := "update event_unlock_payment set tx_hash=?,block_no=?,unlock_to_admin_amount=locked_fee_before_unlock-?,locked_fee_after_unlock=?,update_at=? where source_file_id=? and deal_id=?"
 
-	curUtcMilliSec := utils.GetCurrentUtcMilliSecond()
+	curUtcMilliSec := utils.GetCurrentUtcSecond()
 
 	params := []interface{}{}
 	params = append(params, txHash)

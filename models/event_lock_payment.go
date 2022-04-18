@@ -95,7 +95,7 @@ func FindExpiredLockPayment() ([]*EventLockPaymentQuery, error) {
 }
 
 func CreateEventLockPayment(eventLockPayment EventLockPayment) error {
-	currentUtcMilliSecond := utils.GetCurrentUtcMilliSecond()
+	currentUtcMilliSecond := utils.GetCurrentUtcSecond()
 	eventLockPayment.CreateAt = currentUtcMilliSecond
 
 	eventLockPayments, err := GetEventLockPaymentByPayloadCid(eventLockPayment.PayloadCid)

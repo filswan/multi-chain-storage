@@ -21,8 +21,8 @@ func GetHostInfo() *common.HostInfo {
 	return &hostInfo
 }
 
-func GetSystemConfigParams(limit string) (map[string]string, error) {
-	systemConf, err := models.GetSystemConf()
+func GetSystemParams() (map[string]string, error) {
+	systemConf, err := models.GetSystemParams()
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err

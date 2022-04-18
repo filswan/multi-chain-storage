@@ -6,7 +6,7 @@ import (
 	"github.com/filswan/go-swan-lib/logs"
 )
 
-type SystemConf struct {
+type SystemParam struct {
 	ID          int64  `json:"id"`
 	Name        string `json:"name"`
 	Value       string `json:"value"`
@@ -15,13 +15,13 @@ type SystemConf struct {
 	UpdateAt    int64  `json:"update_at"`
 }
 
-func GetSystemConf() ([]*SystemConf, error) {
-	var systemConf []*SystemConf
-	err := database.GetDB().Find(&systemConf).Error
+func GetSystemParams() ([]*SystemParam, error) {
+	var systemParams []*SystemParam
+	err := database.GetDB().Find(&systemParams).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
 	}
 
-	return systemConf, err
+	return systemParams, err
 }

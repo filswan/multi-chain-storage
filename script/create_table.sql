@@ -32,23 +32,23 @@ create table coin (
 
 insert into coin(name,address,network_id,create_at,update_at) values('USDC','0xe11A86849d99F524cAC3E7A0Ec1241828e332C62',@network_id_polygon,unix_timestamp(),unix_timestamp());
 
-create table system_conf (
+create table system_param (
     id            bigint       not null auto_increment,
     name          varchar(100) not null,
     value         varchar(100) not null,
     description   text,
     create_at     bigint       not null,
     update_at     bigint       not null,
-    primary key pk_system_conf(id),
-    constraint un_system_conf_name unique(name)
+    primary key pk_system_param(id),
+    constraint un_system_param_name unique(name)
 );
 
-insert into system_conf(name,value,create_at,update_at) values('SWAN_PAYMENT_CONTRACT_ADDRESS','0x80a186DCD922175019913b274568ab172F6E20b1',unix_timestamp(),unix_timestamp());
-insert into system_conf(name,value,create_at,update_at) values('PAY_WITH_MULTIPLY_FACTOR','1.5',unix_timestamp(),unix_timestamp());
-insert into system_conf(name,value,create_at,update_at) values('LOCK_TIME','6',unix_timestamp(),unix_timestamp());
-insert into system_conf(name,value,create_at,update_at) values('RECIPIENT','0xc4fcaAdCb0b00a9501e56215c37B10fAF9e79c0a',unix_timestamp(),unix_timestamp());
-insert into system_conf(name,value,create_at,update_at) values('PAY_GAS_LIMIT','9999999',unix_timestamp(),unix_timestamp());
-insert into system_conf(name,value,create_at,update_at) values('MINT_CONTRACT','0x1A1e5AC88C493e0608C84c60b7bb5f04D9cF50B3',unix_timestamp(),unix_timestamp());
+insert into system_param(name,value,create_at,update_at) values('SWAN_PAYMENT_CONTRACT_ADDRESS','0x80a186DCD922175019913b274568ab172F6E20b1',unix_timestamp(),unix_timestamp());
+insert into system_param(name,value,create_at,update_at) values('PAY_WITH_MULTIPLY_FACTOR','1.5',unix_timestamp(),unix_timestamp());
+insert into system_param(name,value,create_at,update_at) values('LOCK_TIME','6',unix_timestamp(),unix_timestamp());
+insert into system_param(name,value,create_at,update_at) values('RECIPIENT','0xc4fcaAdCb0b00a9501e56215c37B10fAF9e79c0a',unix_timestamp(),unix_timestamp());
+insert into system_param(name,value,create_at,update_at) values('PAY_GAS_LIMIT','9999999',unix_timestamp(),unix_timestamp());
+insert into system_param(name,value,create_at,update_at) values('MINT_CONTRACT','0x1A1e5AC88C493e0608C84c60b7bb5f04D9cF50B3',unix_timestamp(),unix_timestamp());
 
 create table wallet (
     id            bigint       not null auto_increment,

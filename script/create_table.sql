@@ -21,6 +21,8 @@ create table wallet (
     primary key pk_wallet(id)
 );
 
+insert into wallet(address,type,create_at) values('0x80a186DCD922175019913b274568ab172F6E20b1',0,unix_timestamp());
+
 create table miner (
     id            bigint       not null auto_increment,
     fid           varchar(100) not null,

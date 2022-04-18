@@ -17,10 +17,9 @@ type SourceFileUpload struct {
 	UpdateAt     int64  `json:"update_at"`
 }
 
-func GetSourceFileUploadBySourceFileWallet(sourceFileId int64, walletId int64) ([]*SourceFileUpload, error) {
+func GetSourceFileUploadBySourceFileIdWallet(sourceFileId int64, walletId int64) ([]*SourceFileUpload, error) {
 	var sourceFileUpload []*SourceFileUpload
-	sql := "select * from source_file_upload where source_file_id=? and wallet_id=?"
-	err := database.GetDB().Raw(sql, sourceFileId, walletId).Scan(&sourceFileUpload).Error
+	err := database.GetDB().Where("source_file_id=? and wallet_id=?", sourceFileId, walletId).Find(&sourceFileUpload).Error
 
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -28,4 +27,20 @@ func GetSourceFileUploadBySourceFileWallet(sourceFileId int64, walletId int64) (
 	}
 
 	return sourceFileUpload, nil
+}
+
+func GetSourceFileUploadById(id int64) (*SourceFileUpload, error) {
+	var sourceFileUpload []*SourceFileUpload
+	err := database.GetDB().Where("id=?", id).Find(&sourceFileUpload).Error
+
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	if len(sourceFileUpload) > 0 {
+		return sourceFileUpload[0], nil
+	}
+
+	return nil, nil
 }

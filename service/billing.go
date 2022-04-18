@@ -4,11 +4,22 @@ import (
 	"encoding/json"
 	"multi-chain-storage/common/httpClient"
 	"multi-chain-storage/database"
+	"multi-chain-storage/models"
 	"net/http"
 	"strconv"
 
 	"github.com/filswan/go-swan-lib/logs"
 )
+
+func WriteLockPayment(sourceFileUploadId int64, txHash string) error {
+	err := models.CreateTransaction(sourceFileUploadId, txHash)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	return nil
+}
 
 func GetBillHistoryList(walletAddress, limit, offset string, txHash string, fileName string, orderByColumn int, ascdesc string) ([]*BillingResult, error) {
 	sql := "select a.tx_hash,a.locked_fee,b.cn_name coin_type,h.file_name,d.payload_cid,h.wallet_address address_from,d.refund_amount unlock_to_user_amount," +

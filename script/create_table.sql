@@ -177,6 +177,7 @@ create table transaction (
     transaction_at          bigint        not null,
     create_at               bigint        not null,
     primary key pk_transaction(id),
+    constraint un_transaction unique(source_file_upload_id,type),
     constraint fk_transaction_source_file_upload_id foreign key (source_file_upload_id) references source_file_upload(id),
     constraint fk_transaction_wallet_id_from foreign key (wallet_id_from) references wallet(id),
     constraint fk_transaction_wallet_id_to foreign key (wallet_id_to) references wallet(id),

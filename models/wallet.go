@@ -25,7 +25,13 @@ func GetWalletByAddress(address string) (*Wallet, error) {
 		return wallets[0], nil
 	}
 
-	return nil, nil
+	wallet, err := SaveWallet(address)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	return wallet, nil
 }
 
 func SaveWallet(address string) (*Wallet, error) {

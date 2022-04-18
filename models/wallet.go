@@ -29,6 +29,17 @@ func GetWalletByAddressType(address string, walletType int) (*Wallet, error) {
 	return nil, nil
 }
 
+func GetWalletsByType(walletType int) ([]*Wallet, error) {
+	var wallets []*Wallet
+	err := database.GetDB().Where("type=?", walletType).Find(&wallets).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	return wallets, nil
+}
+
 func SaveWallet(address string, walletType int) (*Wallet, error) {
 	wallet := Wallet{
 		Address:  address,

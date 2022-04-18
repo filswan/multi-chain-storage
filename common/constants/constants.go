@@ -69,11 +69,12 @@ const (
 
 	PRIVATE_KEY_ON_POLYGON = "privateKeyOnPolygon"
 
-	//0:pay admin fee, 1:dao, 2:user,1000:file coin
-	WALLET_TYPE_ADMIN_FEE = 0
-	WALLET_TYPE_DAO       = 1
-	WALLET_TYPE_USER      = 2
-	WALLET_TYPE_FILE_COIN = 1000
+	//0:payment contract,1:pay admin fee, 2:dao, 2:user,1000:user,2000:file coin
+	WALLET_TYPE_PAY_CONTRACT = 0
+	WALLET_TYPE_ADMIN_FEE    = 1
+	WALLET_TYPE_DAO          = 2
+	WALLET_TYPE_USER         = 1000
+	WALLET_TYPE_FILE_COIN    = 2000
 
 	//0:pay,1:unlock, 2: refund after unlock, 3:refund after expired
 	TRANSACTION_TYPE_PAY                  = 0

@@ -16,7 +16,7 @@ create table network (
 create table wallet (
     id            bigint       not null auto_increment,
     address       varchar(100) not null,
-    type          int          not null,  #--0:pay admin fee, 1:dao, 2:user,1000:file coin
+    type          int          not null,  #--0:payment contract,1:pay admin fee, 2:dao, 2:user,1000:user,2000:file coin
     create_at     bigint       not null,
     primary key pk_wallet(id)
 );

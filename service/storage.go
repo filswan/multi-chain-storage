@@ -33,17 +33,18 @@ type UploadResult struct {
 	IpfsUrl      string `json:"ipfs_url"`
 	FileSize     int64  `json:"file_size"`
 	Uuid         string `json:"uuid"`
+	NeedPay      int    `json:"need_pay"`
 }
 
 func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType int, walletAddress string) (*UploadResult, error) {
-	wallet, err := models.GetWalletByAddressType(walletAddress, constants.WALLET_TYPE_USER)
+	wallet, err := models.GetWalletByAddress(walletAddress)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
 	}
 
 	if wallet == nil {
-		wallet, err = models.SaveWallet(walletAddress, constants.WALLET_TYPE_USER)
+		wallet, err = models.SaveWallet(walletAddress)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			return nil, err
@@ -90,7 +91,7 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType 
 		return nil, err
 	}
 
-	currentUtcMilliSec := utils.GetCurrentUtcMilliSecond()
+	currentUtcMilliSec := utils.GetCurrentUtcSecond()
 	// not uploaded by anyone yet
 	if sourceFile == nil {
 		sourceFile = &models.SourceFile{
@@ -147,10 +148,11 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType 
 
 	uploadResult := &UploadResult{
 		SourceFileId: sourceFile.ID,
-		PayloadCid:   *ipfsFileHash,
+		PayloadCid:   sourceFileUploadUuid + *ipfsFileHash,
 		IpfsUrl:      ipfsUrl,
 		FileSize:     sourceFile.FileSize,
 		Uuid:         sourceFileUploadUuid,
+		NeedPay:      0,
 	}
 
 	return uploadResult, nil
@@ -306,7 +308,7 @@ func SaveExpirePaymentEvent(txHash string) (*models.EventExpirePayment, error) {
 			return nil, err
 		}
 		event.BlockNo = strconv.FormatUint(blockNumberInt64, 10)
-		wfilCoinId, err := models.GetCoinByName(constants.COIN_NAME_USDC)
+		wfilCoinId, err := models.GetCoinByName(constants.COIN_USDC_NAME)
 		if err != nil {
 			logs.GetLogger().Error(err)
 		} else {
@@ -332,7 +334,7 @@ func SaveExpirePaymentEvent(txHash string) (*models.EventExpirePayment, error) {
 				event.UserAddress = dataList[3].(common.Address).Hex()
 			}
 		}
-		event.CreateAt = strconv.FormatInt(utils.GetCurrentUtcMilliSecond(), 10)
+		event.CreateAt = strconv.FormatInt(utils.GetCurrentUtcSecond(), 10)
 		event.ContractAddress = transactionReceipt.ContractAddress.Hex()
 
 		eventList, err := models.FindEventExpirePayments(&models.EventExpirePayment{TxHash: txHash, BlockNo: strconv.

@@ -109,7 +109,7 @@ func UpdateDealFileStatus(id int64, status string) error {
 
 	params := []interface{}{}
 	params = append(params, status)
-	params = append(params, utils.GetCurrentUtcMilliSecond())
+	params = append(params, utils.GetCurrentUtcSecond())
 	params = append(params, id)
 
 	err := database.GetDB().Exec(sql, params...).Error

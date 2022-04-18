@@ -1,7 +1,6 @@
 package models
 
 import (
-	"fmt"
 	"multi-chain-storage/database"
 
 	"github.com/filswan/go-swan-lib/logs"
@@ -29,10 +28,7 @@ func GetCoinByName(name string) (*Coin, error) {
 		return coins[0], nil
 	}
 
-	err = fmt.Errorf("coin:%s not exists", name)
-	logs.GetLogger().Error(err)
-
-	return nil, err
+	return nil, nil
 }
 
 func GetCoinByAddress(address string) (*Coin, error) {
@@ -47,7 +43,5 @@ func GetCoinByAddress(address string) (*Coin, error) {
 		return coins[0], nil
 	}
 
-	err = fmt.Errorf("coin:%s not exists", address)
-	logs.GetLogger().Error(err)
-	return nil, err
+	return nil, nil
 }

@@ -20,19 +20,6 @@ import (
 	"github.com/filswan/go-swan-lib/logs"
 )
 
-func UnlockPaymentJob() {
-	for {
-		logs.GetLogger().Info("start")
-		err := UnlockPayment()
-		if err != nil {
-			logs.GetLogger().Error(err)
-		}
-		logs.GetLogger().Info("end")
-
-		time.Sleep(config.GetConfig().ScheduleRule.UnlockIntervalSecond * time.Second)
-	}
-}
-
 func UnlockPayment() error {
 	offlineDeals, err := models.GetOfflineDeals2BeUnlocked()
 	//offlineDeals, err := models.GetOfflineDealByDealId(87843)
@@ -260,7 +247,7 @@ func setUnlockPayment(offlineDeal *models.OfflineDeal) error {
 		unlockPayment.LockedFeeBeforeUnlock = lockedPayment.LockedFee
 
 		unlockPayment.TokenAddress = lockedPayment.TokenAddress
-		unlockPayment.UnlockTime = utils.GetCurrentUtcMilliSecond()
+		unlockPayment.UnlockTime = utils.GetCurrentUtcSecond()
 		coin, err := models.GetCoinByAddress(unlockPayment.TokenAddress)
 		if err != nil {
 			logs.GetLogger().Error(err)

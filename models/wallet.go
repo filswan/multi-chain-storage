@@ -1,22 +1,21 @@
 package models
 
 import (
+	"multi-chain-storage/common/utils"
 	"multi-chain-storage/database"
 
 	"github.com/filswan/go-swan-lib/logs"
-	"github.com/filswan/go-swan-lib/utils"
 )
 
 type Wallet struct {
 	ID       int64  `json:"id"`
 	Address  string `json:"address"`
-	Type     int    `json:"type"`
 	CreateAt int64  `json:"create_at"`
 }
 
-func GetWalletByAddressType(address string, walletType int) (*Wallet, error) {
+func GetWalletByAddress(address string) (*Wallet, error) {
 	var wallets []*Wallet
-	err := database.GetDB().Where("address=? and type=?", address, walletType).Find(&wallets).Error
+	err := database.GetDB().Where("address=?", address).Find(&wallets).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
@@ -26,14 +25,19 @@ func GetWalletByAddressType(address string, walletType int) (*Wallet, error) {
 		return wallets[0], nil
 	}
 
-	return nil, nil
+	wallet, err := SaveWallet(address)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	return wallet, nil
 }
 
-func SaveWallet(address string, walletType int) (*Wallet, error) {
+func SaveWallet(address string) (*Wallet, error) {
 	wallet := Wallet{
 		Address:  address,
-		Type:     walletType,
-		CreateAt: utils.GetEpochInMillis(),
+		CreateAt: utils.GetCurrentUtcSecond(),
 	}
 
 	walletResult := database.GetDB().Create(&wallet)

@@ -17,9 +17,6 @@ const (
 	HTTP_CODE_500_INTERNAL_SERVER_ERROR = "500" //http.StatusInternalServerError
 	HTTP_REQUEST_HEADER_AUTHRORIZATION  = "Authorization"
 
-	COIN_NAME_USDC    = "USDC"
-	COIN_ADDRESS_USDC = "0xe11A86849d99F524cAC3E7A0Ec1241828e332C62"
-
 	URL_HOST_GET_COMMON      = "/common"
 	URL_HOST_GET_HOST_INFO   = "/host/info"
 	URL_SYSTEM_CONFIG_PARAMS = "/system/params"
@@ -69,15 +66,12 @@ const (
 
 	PRIVATE_KEY_ON_POLYGON = "privateKeyOnPolygon"
 
-	//0:pay admin fee, 1:dao, 2:user,1000:file coin
-	WALLET_TYPE_ADMIN_FEE = 0
-	WALLET_TYPE_DAO       = 1
-	WALLET_TYPE_USER      = 2
-	WALLET_TYPE_FILE_COIN = 1000
-
 	//0:pay,1:unlock, 2: refund after unlock, 3:refund after expired
 	TRANSACTION_TYPE_PAY                  = 0
 	TRANSACTION_TYPE_UNLOCK               = 1
 	TRANSACTION_TYPE_REFUND_AFTER_UNLOCK  = 2
 	TRANSACTION_TYPE_REFUND_AFTER_EXPIRED = 3
+
+	COIN_USDC_NAME   = "USDC"
+	COIN_USDC_ADRESS = "USDC_ADDRESS"
 )

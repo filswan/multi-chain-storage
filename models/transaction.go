@@ -4,6 +4,7 @@ import (
 	"multi-chain-storage/common/constants"
 	"multi-chain-storage/common/utils"
 	"multi-chain-storage/database"
+	"multi-chain-storage/on-chain/client"
 
 	"github.com/filswan/go-swan-lib/logs"
 )
@@ -22,34 +23,93 @@ type Transaction struct {
 	CreateAt           int64  `json:"create_at"`
 }
 
-func CreateTransaction(eventLockPayment EventLockPayment) error {
-	currentUtcMilliSecond := utils.GetCurrentUtcMilliSecond()
-	eventLockPayment.CreateAt = currentUtcMilliSecond
+func GetTransactionBySourceFileUploadIdType(sourceFileUploadId int64, transactionType int) ([]*Transaction, error) {
+	var transactions []*Transaction
+	err := database.GetDB().Where("source_file_upload_id=? and type=?", sourceFileUploadId, transactionType).Find(&transactions).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
 
-	eventLockPayments, err := GetEventLockPaymentByPayloadCid(eventLockPayment.PayloadCid)
+	return transactions, nil
+}
+
+func CreateTransaction(sourceFileUploadId int64, txHash string) error {
+	transactions, err := GetTransactionBySourceFileUploadIdType(sourceFileUploadId, constants.TRANSACTION_TYPE_PAY)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
 	}
 
-	if len(eventLockPayments) > 0 {
-		eventLockPayment.ID = eventLockPayments[0].ID
+	if len(transactions) > 0 {
+		return nil
+	}
+
+	sourceFileUpload, err := GetSourceFileUploadById(sourceFileUploadId)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	sourceFile, err := GetSourceFileById(sourceFileUpload.SourceFileId)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	wCid := sourceFileUpload.Uuid + sourceFile.PayloadCid
+
+	lockPayment, err := client.GetLockedPaymentInfo(wCid)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	walletFrom, err := GetWalletByAddress(lockPayment.AddressFrom)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+	walletTo, err := GetWalletByAddress(lockPayment.AddressTo)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	coin, err := GetCoinByName(constants.COIN_USDC_NAME)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	currentUtcSecond := utils.GetCurrentUtcSecond()
+	transaction := Transaction{
+		SourceFileUploadId: sourceFileUploadId,
+		Type:               constants.TRANSACTION_TYPE_PAY,
+		TxHash:             txHash,
+		WalletIdFrom:       walletFrom.ID,
+		WalletIdTo:         walletTo.ID,
+		CoinId:             coin.ID,
+		Amount:             lockPayment.LockedFee.String(),
+		BlockNumber:        0,
+		TransactionAt:      currentUtcSecond,
+		CreateAt:           currentUtcSecond,
 	}
 
 	db := database.GetDBTransaction()
-	err = database.SaveOneInTransaction(db, &eventLockPayment)
+	err = database.SaveOneInTransaction(db, &transaction)
 	if err != nil {
 		db.Rollback()
 		logs.GetLogger().Error(err)
 		return err
 	}
 
-	sql := "update source_file set status=?,update_at=? where id=?"
+	sql := "update source_file_upload set status=?,update_at=? where id=?"
 
 	params := []interface{}{}
 	params = append(params, constants.SOURCE_FILE_UPLOAD_STATUS_PAID)
-	params = append(params, currentUtcMilliSecond)
-	params = append(params, eventLockPayment.SourceFileId)
+	params = append(params, currentUtcSecond)
+	params = append(params, sourceFileUploadId)
 
 	err = db.Exec(sql, params...).Error
 	if err != nil {

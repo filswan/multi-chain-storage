@@ -2,7 +2,6 @@ package scheduler
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/filswan/go-swan-client/command"
 
@@ -19,19 +18,6 @@ import (
 
 	libconstants "github.com/filswan/go-swan-lib/constants"
 )
-
-func SendDealJob() {
-	for {
-		logs.GetLogger().Info("start")
-		err := SendDeal()
-		if err != nil {
-			logs.GetLogger().Error(err)
-		}
-		logs.GetLogger().Info("end")
-
-		time.Sleep(config.GetConfig().ScheduleRule.SendDealIntervalSecond * time.Second)
-	}
-}
 
 func SendDeal() error {
 	dealFiles, err := models.GetDeal2Send()
@@ -56,9 +42,9 @@ func SendDeal() error {
 		return err
 	}
 
-	currentUtcMilliSec := utils.GetCurrentUtcMilliSecond()
+	currentUtcMilliSec := utils.GetCurrentUtcSecond()
 
-	wallet, err := models.GetWalletByAddressType(cmdAutoBidDeal.SenderWallet, constants.WALLET_TYPE_FILE_COIN)
+	wallet, err := models.GetWalletByAddress(cmdAutoBidDeal.SenderWallet)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
@@ -114,7 +100,7 @@ func SendDeal() error {
 			return err
 		}
 
-		currentUtcMilliSec := utils.GetCurrentUtcMilliSecond()
+		currentUtcMilliSec := utils.GetCurrentUtcSecond()
 		for _, deal := range fileDescs[0].Deals {
 			dealInfo, err := lotusClient.LotusClientGetDealInfo(deal.DealCid)
 			if err != nil {

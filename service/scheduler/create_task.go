@@ -21,19 +21,6 @@ import (
 	"github.com/shopspring/decimal"
 )
 
-func CreateTaskJob() {
-	for {
-		logs.GetLogger().Info("start")
-		err := CreateTask()
-		if err != nil {
-			logs.GetLogger().Error(err)
-		}
-		logs.GetLogger().Info("end")
-
-		time.Sleep(config.GetConfig().ScheduleRule.CreateTaskIntervalSecond * time.Second)
-	}
-}
-
 func CreateTask() error {
 	err := CheckSourceFilesPaid()
 	if err != nil {
@@ -80,7 +67,7 @@ func createTask() (*int, error) {
 	}
 
 	totalSize := int64(0)
-	currentUtcMilliSec := utils.GetCurrentUtcMilliSecond()
+	currentUtcMilliSec := utils.GetCurrentUtcSecond()
 	createdTimeMin := currentUtcMilliSec
 	var maxPrice *decimal.Decimal
 
@@ -282,7 +269,7 @@ func createTask4SrcFiles(srcDir, carDir string, maxPrice decimal.Decimal, create
 
 func saveCarInfo2DB(fileDesc *libmodel.FileDesc, srcFiles []*models.SourceFileExt, maxPrice decimal.Decimal) error {
 	db := database.GetDBTransaction()
-	currentUtcMilliSecond := utils.GetCurrentUtcMilliSecond()
+	currentUtcMilliSecond := utils.GetCurrentUtcSecond()
 	dealFile := models.CarFile{
 		CarFileName: fileDesc.CarFileName,
 		CarFilePath: fileDesc.CarFilePath,
@@ -367,7 +354,7 @@ func CheckSourceFilesPaid() error {
 			continue
 		}
 
-		currentUtcMilliSecond := utils.GetCurrentUtcMilliSecond()
+		currentUtcMilliSecond := utils.GetCurrentUtcSecond()
 		eventLockPayment := models.EventLockPayment{
 			PayloadCid:      srcFile.PayloadCid,
 			MinPayment:      lockedPayment.MinPayment,

@@ -369,31 +369,20 @@
                                             if(i <= 1){
                                                 _this.percentIn = xhr.readyState === 4 ? '100%' : _this.percentIn
                                                 if(res.status == "success"){
-                                                    if(res.data.need_pay == 0 || res.data.need_pay == 2 || res.data.need_pay == 4){
-                                                        contract_erc20.methods.allowance(_this.gatewayContractAddress, _this.metaAddress).call()
-                                                        .then(resultUSDC => {
-                                                            console.log('allowance：'+ resultUSDC);
-                                                            if(resultUSDC < web3.utils.toWei(_this.ruleForm.amount, 'ether')){
-                                                                contract_erc20.methods.approve(_this.gatewayContractAddress, web3.utils.toWei(_this.ruleForm.amount, 'ether')).send({from:  _this.metaAddress})
-                                                                .then(receipt => {
-                                                                    // console.log(receipt)
-                                                                })
-                                                                .catch(error => {
-                                                                    // console.log('errorerrorerror', error)
-                                                                })
-                                                            }
-                                                            _this.contractSend(res.data)
-                                                        })
-                                                    }else if(res.data.need_pay == 3){
-                                                        _this.paymentPopup01 = true
-                                                        _this.loading = false
-                                                        return false
-                                                    }else{
-                                                        // res.data.need_pay == 1 && 其他情况
-                                                        _this.paymentPopup = true
-                                                        _this.loading = false
-                                                        return false
-                                                    }
+                                                    contract_erc20.methods.allowance(_this.gatewayContractAddress, _this.metaAddress).call()
+                                                    .then(resultUSDC => {
+                                                        console.log('allowance：'+ resultUSDC);
+                                                        if(resultUSDC < web3.utils.toWei(_this.ruleForm.amount, 'ether')){
+                                                            contract_erc20.methods.approve(_this.gatewayContractAddress, web3.utils.toWei(_this.ruleForm.amount, 'ether')).send({from:  _this.metaAddress})
+                                                            .then(receipt => {
+                                                                // console.log(receipt)
+                                                            })
+                                                            .catch(error => {
+                                                                // console.log('errorerrorerror', error)
+                                                            })
+                                                        }
+                                                        _this.contractSend(res.data)
+                                                    })
                                                 }else{
                                                     _this.$message.error(_this.$t('uploadFile.xhr_tip'))
                                                 }
@@ -461,7 +450,7 @@
                 };
                 
                 let lockObj = {
-                    id: resData.payload_cid,
+                    id: resData.w_cid,
                     minPayment: web3.utils.toWei(String(_this.ruleForm.amount_minprice), 'ether'),
                     amount: web3.utils.toWei(_this.ruleForm.amount, 'ether'),
                     lockTime: 86400 * Number(_this.$root.LOCK_TIME), // one day
@@ -518,13 +507,7 @@
             sendPayment(txHash, resData, lockObj, lockPaymentTime) {
                 let lockParam = {
                     "tx_hash": txHash,
-                    "payload_cid": resData.payload_cid,
-                    "min_payment": lockObj.minPayment,
-                    "contract_address": this.gatewayContractAddress,
-                    "address_from": this.metaAddress,
-                    "address_to": this.gatewayContractAddress,
-                    "lock_payment_time": lockPaymentTime,
-                    "source_file_id":resData.source_file_id
+                    "source_file_upload_id":resData.source_file_upload_id
                 }
 
                 axios.post(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/billing/deal/lockpayment`, lockParam)

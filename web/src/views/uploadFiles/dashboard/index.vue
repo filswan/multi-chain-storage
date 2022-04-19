@@ -910,13 +910,7 @@ export default {
                       const lockPaymentTime = await new Date().getTime();
                       const lockParam = {
                           "tx_hash": txHash,
-                          "payload_cid": resData.payload_cid,
-                          "min_payment": lockObj.minPayment,
-                          "contract_address": this.gatewayContractAddress,
-                          "address_from": this.metaAddress,
-                          "address_to": this.gatewayContractAddress,
-                          "lock_payment_time": lockPaymentTime,
-                          "source_file_id":resData.id
+                          "source_file_upload_id":resData.id
                       }
                       _this.sendPostRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/billing/deal/lockpayment`, lockParam)
                     }else{

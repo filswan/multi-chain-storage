@@ -56,7 +56,7 @@ create table wallet (
     address       varchar(100) not null,
     create_at     bigint       not null,
     primary key pk_wallet(id),
-    constraint un_wallet_address unique(address)
+    constraint un_wallet_address_type unique(address,type)
 );
 
 create table miner (

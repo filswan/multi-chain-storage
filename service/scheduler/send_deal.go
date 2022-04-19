@@ -11,7 +11,6 @@ import (
 
 	"multi-chain-storage/common/utils"
 
-	"github.com/filswan/go-swan-lib/client/lotus"
 	"github.com/filswan/go-swan-lib/logs"
 
 	libconstants "github.com/filswan/go-swan-lib/constants"
@@ -32,12 +31,6 @@ func SendDeal() error {
 		LotusClientAccessToken: config.GetConfig().Lotus.ClientAccessToken,
 		SenderWallet:           config.GetConfig().SwanPlatformFilWallet,
 		DealSourceIds:          []int{libconstants.TASK_SOURCE_ID_SWAN_PAYMENT},
-	}
-
-	lotusClient, err := lotus.LotusGetClient(config.GetConfig().Lotus.ClientApiUrl, config.GetConfig().Lotus.ClientAccessToken)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
 	}
 
 	currentUtcSec := utils.GetCurrentUtcSecond()
@@ -65,13 +58,11 @@ func SendDeal() error {
 		_, fileDescs, err := cmdAutoBidDeal.SendAutoBidDealsByTaskUuid(carFile.TaskUuid)
 		if err != nil {
 			logs.GetLogger().Error(err)
-			carFile.Status = constants.PROCESS_STATUS_DEAL_SENT_FAILED
-			carFile.Status = cmdAutoBidDeal.SenderWallet
+			carFile.Status = constants.CAR_FILE_STATUS_DEAL_SENT_FAILED
 			err = database.SaveOne(carFile)
 			if err != nil {
 				logs.GetLogger().Error(err)
 			}
-			logs.GetLogger().Error(err)
 			continue
 		}
 
@@ -80,8 +71,7 @@ func SendDeal() error {
 			continue
 		}
 
-		carFile.Status = constants.PROCESS_STATUS_DEAL_SENT
-		carFile.Status = cmdAutoBidDeal.SenderWallet
+		carFile.Status = constants.CAR_FILE_STATUS_DEAL_SENT
 		carFile.UpdateAt = currentUtcSec
 
 		db := database.GetDBTransaction()
@@ -92,24 +82,17 @@ func SendDeal() error {
 			return err
 		}
 
-		currentUtcMilliSec := utils.GetCurrentUtcSecond()
 		for _, deal := range fileDescs[0].Deals {
-			dealInfo, err := lotusClient.LotusClientGetDealInfo(deal.DealCid)
-			if err != nil {
-				logs.GetLogger().Error(err)
-				continue
-			}
-
 			offlineDeal := models.OfflineDeal{
 				CarFileId:      carFile.ID,
 				DealCid:        deal.DealCid,
 				MinerId:        deal.MinerFid,
 				StartEpoch:     deal.StartEpoch,
 				SenderWalletId: wallet.ID,
-				Status:         dealInfo.Status,
-				DealId:         dealInfo.DealId,
-				CreateAt:       currentUtcMilliSec,
-				UpdateAt:       currentUtcMilliSec,
+				Status:         constants.OFFLINE_DEAL_STATUS_CREATED,
+				DealId:         0,
+				CreateAt:       currentUtcSec,
+				UpdateAt:       currentUtcSec,
 			}
 
 			err = database.SaveOneInTransaction(db, &offlineDeal)

@@ -7,10 +7,10 @@ import (
 )
 
 type CarFileSource struct {
-	Id           int   `json:"id"`
-	CarFileId    int64 `json:"car_file_id"`
-	SourceFileId int64 `json:"source_file_id"`
-	CreateAt     int64 `json:"create_at"`
+	Id                 int   `json:"id"`
+	CarFileId          int64 `json:"car_file_id"`
+	SourceFileUploadId int64 `json:"source_file_upload_id"`
+	CreateAt           int64 `json:"create_at"`
 }
 
 func GetSourceFileDealFileMapBySourceFilePayloadCid(sourceFilePayloadCid string) ([]*CarFileSource, error) {

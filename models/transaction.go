@@ -113,8 +113,8 @@ func CreateTransaction(sourceFileUploadId int64, txHash string) error {
 
 	err = db.Exec(sql, params...).Error
 	if err != nil {
-		db.Rollback()
 		logs.GetLogger().Error(err)
+		db.Rollback()
 		return err
 	}
 

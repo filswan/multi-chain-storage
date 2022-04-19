@@ -284,7 +284,7 @@ func saveCarInfo2DB(fileDesc *libmodel.FileDesc, srcFiles []*models.SourceFileUp
 			SourceFileUploadId: srcFile.SourceFileUploadId,
 			CreateAt:           currentUtcSecond,
 		}
-		err = database.SaveOneInTransaction(db, filepMap)
+		err = database.SaveOneInTransaction(db, &filepMap)
 		if err != nil {
 			db.Rollback()
 			logs.GetLogger().Error(err)

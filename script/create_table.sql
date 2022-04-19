@@ -67,7 +67,6 @@ create table miner (
 
 create table source_file (
     id            bigint        not null auto_increment,
-    file_type     int           not null,  #--0:normal file, 1:mint file
     payload_cid   varchar(100)  not null,
     resource_uri  varchar(1000) not null,
     ipfs_url      varchar(1000) not null,
@@ -81,21 +80,10 @@ create table source_file (
     constraint un_source_file_resource_uri unique(resource_uri)
 );
 
-create table source_file_mint (
-    id             bigint        not null auto_increment,
-    source_file_id bigint        not null,
-    nft_tx_hash    varchar(100)  not null,
-    mint_address   varchar(100)  not null,
-    token_id       varchar(100)  not null,
-    create_at      bigint        not null,
-    update_at      bigint        not null,
-    primary key pk_source_file_mint(id),
-    constraint fk_source_file_mint_source_file_id foreign key (source_file_id) references source_file(id)
-);
-
 create table source_file_upload (
     id             bigint        not null auto_increment,
     source_file_id bigint        not null,
+    file_type      int           not null,  #--0:normal file, 1:mint file
     file_name      varchar(200)  not null,
     uuid           varchar(100)  not null,
     wallet_id      bigint        not null,
@@ -106,6 +94,19 @@ create table source_file_upload (
     constraint un_source_file_upload unique(source_file_id,uuid),
     constraint fk_source_file_upload_source_file_id foreign key (source_file_id) references source_file(id),
     constraint fk_source_file_upload_wallet_id foreign key (wallet_id) references wallet(id)
+);
+
+
+create table source_file_mint (
+    id                    bigint        not null auto_increment,
+    source_file_upload_id bigint        not null,
+    nft_tx_hash           varchar(100)  not null,
+    mint_address          varchar(100)  not null,
+    token_id              varchar(100)  not null,
+    create_at             bigint        not null,
+    update_at             bigint        not null,
+    primary key pk_source_file_mint(id),
+    constraint fk_source_file_mint_source_file_upload_id foreign key (source_file_upload_id) references source_file_upload(id)
 );
 
 create table car_file (

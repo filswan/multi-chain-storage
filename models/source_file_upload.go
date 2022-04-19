@@ -11,6 +11,7 @@ import (
 type SourceFileUpload struct {
 	Id           int64  `json:"id"`
 	SourceFileId int64  `json:"source_file_id"`
+	FileType     int    `json:"file_type"`
 	FileName     string `json:"file_name"`
 	Uuid         string `json:"uuid"`
 	WalletId     int64  `json:"wallet_id"`

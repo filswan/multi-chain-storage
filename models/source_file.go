@@ -14,7 +14,6 @@ import (
 
 type SourceFile struct {
 	ID          int64  `json:"id"`
-	FileType    int    `json:"file_type"`
 	PayloadCid  string `json:"payload_cid"`
 	ResourceUri string `json:"resource_uri"`
 	IpfsUrl     string `json:"ipfs_url"`

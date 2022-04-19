@@ -99,7 +99,6 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType 
 			IpfsUrl:     ipfsUrl,
 			PinStatus:   constants.IPFS_File_PINNED_STATUS,
 			PayloadCid:  *ipfsFileHash,
-			FileType:    fileType,
 			CreateAt:    currentUtcMilliSec,
 			UpdateAt:    currentUtcMilliSec,
 		}
@@ -126,6 +125,7 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType 
 	sourceFileUploadUuid := uuid.NewString()
 	sourceFileUpload := &models.SourceFileUpload{
 		SourceFileId: sourceFile.ID,
+		FileType:     fileType,
 		FileName:     srcFile.Filename,
 		WalletId:     wallet.ID,
 		Status:       constants.SOURCE_FILE_UPLOAD_STATUS_CREATED,

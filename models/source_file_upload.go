@@ -59,10 +59,10 @@ func CreateSourceFileUpload(sourceFileUpload *SourceFileUpload) (*SourceFileUplo
 	return sourceFileUploadCreated, nil
 }
 
-func GetSourceFileUploadsByStatus(status string) ([]*SourceFileUpload, error) {
+func GetSourceFileUploadsByFileTypeStatus(fileType int, status string) ([]*SourceFileUpload, error) {
 	var sourceFileUploads []*SourceFileUpload
 
-	err := database.GetDB().Where("status=?", status).Find(&sourceFileUploads).Error
+	err := database.GetDB().Where("file_type=? and status=?", fileType, status).Find(&sourceFileUploads).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
@@ -72,17 +72,19 @@ func GetSourceFileUploadsByStatus(status string) ([]*SourceFileUpload, error) {
 }
 
 type SourceFileUploadsNeed2Car struct {
-	SourceFileUploadId int64            `json:"source_file_upload_id"`
-	ResourceUri        string           `json:"resource_uri"`
-	FileSize           int64            `json:"file_size"`
-	CreateAt           int64            `json:"create_at"`
-	LockedFee          *decimal.Decimal `json:"locked_fee"`
+	SourceFileUploadId int64           `json:"source_file_upload_id"`
+	ResourceUri        string          `json:"resource_uri"`
+	FileSize           int64           `json:"file_size"`
+	CreateAt           int64           `json:"create_at"`
+	LockedFee          decimal.Decimal `json:"locked_fee"`
 }
 
 func GetSourceFileUploadsNeed2Car() ([]*SourceFileUploadsNeed2Car, error) {
 	var sourceFileUploadsNeed2Car []*SourceFileUploadsNeed2Car
-	sql := "select a.*,b.locked_fee from source_file a, event_lock_payment b where b.source_file_id=a.id and a.status=? and a.file_type=?"
-	err := database.GetDB().Raw(sql, constants.SOURCE_FILE_UPLOAD_STATUS_CREATED, constants.SOURCE_FILE_TYPE_NORMAL).Scan(&sourceFileUploadsNeed2Car).Error
+	sql := "select a.id source_file_upload_id,b.resource_uri,b.file_size,a.create_at,c.amount locked_fee" +
+		"from source_file_upload a, source_file b, transaction c" +
+		"where a.file_type=? and a.status=? and a.source_file_id=b.id and a.id=c.source_file_upload_id"
+	err := database.GetDB().Raw(sql, constants.SOURCE_FILE_TYPE_NORMAL, constants.SOURCE_FILE_UPLOAD_STATUS_PAID).Scan(&sourceFileUploadsNeed2Car).Error
 
 	if err != nil {
 		logs.GetLogger().Error(err)

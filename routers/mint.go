@@ -48,11 +48,11 @@ func RecordMintInfo(c *gin.Context) {
 		return
 	} else {
 		sourceFileMint := models.SourceFileMint{
-			SourceFileId: sourceFile.ID,
-			NftTxHash:    nftTxHash,
-			TokenId:      tokenId,
-			MintAddress:  mintAddress,
-			CreateAt:     utils.GetCurrentUtcSecond(),
+			SourceFileUploadId: sourceFile.ID,
+			NftTxHash:          nftTxHash,
+			TokenId:            tokenId,
+			MintAddress:        mintAddress,
+			CreateAt:           utils.GetCurrentUtcSecond(),
 		}
 
 		database.SaveOne(sourceFileMint)

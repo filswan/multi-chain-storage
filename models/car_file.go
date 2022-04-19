@@ -1,7 +1,6 @@
 package models
 
 import (
-	"multi-chain-storage/common/constants"
 	"multi-chain-storage/common/utils"
 	"multi-chain-storage/database"
 
@@ -63,23 +62,9 @@ func GetCarFileByDealId(dealId int64) (*CarFile, error) {
 }
 
 func GetCarFilesByStatus(status string) ([]*CarFile, error) {
-	sql := "select a.* from car_file a where a.status=?"
-	var carFile []*CarFile
-
-	err := database.GetDB().Raw(sql, status).Scan(&carFile).Error
-
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-
-	return carFile, nil
-}
-
-func GetDeal2Send() ([]*CarFile, error) {
 	var carFiles []*CarFile
 
-	err := database.GetDB().Where("status=? and task_uuid != ''", constants.PROCESS_STATUS_TASK_CREATED).Find(&carFiles).Error
+	err := database.GetDB().Where("status=?", status).Find(&carFiles).Error
 
 	if err != nil {
 		logs.GetLogger().Error(err)

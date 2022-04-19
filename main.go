@@ -26,6 +26,9 @@ func main() {
 
 	scheduler.InitScheduler()
 
+	//scheduler.CreateTask()
+	//scheduler.SendDeal()
+
 	createGinServer()
 }
 

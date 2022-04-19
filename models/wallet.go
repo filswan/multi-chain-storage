@@ -9,13 +9,14 @@ import (
 
 type Wallet struct {
 	ID       int64  `json:"id"`
+	Type     int    `json:"type"`
 	Address  string `json:"address"`
 	CreateAt int64  `json:"create_at"`
 }
 
-func GetWalletByAddress(address string) (*Wallet, error) {
+func GetWalletByAddress(address string, walletType int) (*Wallet, error) {
 	var wallets []*Wallet
-	err := database.GetDB().Where("address=?", address).Find(&wallets).Error
+	err := database.GetDB().Where("address=? and type=?", address, walletType).Find(&wallets).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
@@ -25,7 +26,7 @@ func GetWalletByAddress(address string) (*Wallet, error) {
 		return wallets[0], nil
 	}
 
-	wallet, err := SaveWallet(address)
+	wallet, err := SaveWallet(address, walletType)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
@@ -34,8 +35,9 @@ func GetWalletByAddress(address string) (*Wallet, error) {
 	return wallet, nil
 }
 
-func SaveWallet(address string) (*Wallet, error) {
+func SaveWallet(address string, walletType int) (*Wallet, error) {
 	wallet := Wallet{
+		Type:     walletType,
 		Address:  address,
 		CreateAt: utils.GetCurrentUtcSecond(),
 	}

@@ -36,18 +36,10 @@ type UploadResult struct {
 }
 
 func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType int, walletAddress string) (*UploadResult, error) {
-	wallet, err := models.GetWalletByAddress(walletAddress)
+	wallet, err := models.GetWalletByAddress(walletAddress, constants.WALLET_TYPE_META_MASK)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
-	}
-
-	if wallet == nil {
-		wallet, err = models.SaveWallet(walletAddress)
-		if err != nil {
-			logs.GetLogger().Error(err)
-			return nil, err
-		}
 	}
 
 	srcDir := scheduler.GetSrcDir()

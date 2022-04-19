@@ -23,17 +23,17 @@ const (
 
 	SOURCE_ID_OF_PAYMENT = 4
 
-	PROCESS_STATUS_WAITING_PAYMENT     = "Pending" //wait for payment
-	PROCESS_STATUS_PAID                = "Paid"
-	PROCESS_STATUS_PROCESSING          = "Processing"
-	PROCESS_STATUS_TASK_CREATED        = "TaskCreated"
-	PROCESS_STATUS_DEAL_SENT           = "DealSent"
-	PROCESS_STATUS_DEAL_SENT_FAILED    = "DealSentFailed"
-	PROCESS_STATUS_DEAL_SEND_CANCELLED = "DealSendCancelled"
-	PROCESS_STATUS_UNLOCK_REFUNDED     = "UnlockRefundSucceeded"
-	PROCESS_STATUS_UNLOCK_REFUNDFAILED = "UnlockRefundFailed"
-	PROCESS_STATUS_EXPIRE_REFUNDING    = "Refunding"
-	PROCESS_STATUS_EXPIRE_REFUNDED     = "Refunded"
+	PROCESS_STATUS_WAITING_PAYMENT      = "Pending" //wait for payment
+	PROCESS_STATUS_PAID                 = "Paid"
+	PROCESS_STATUS_PROCESSING           = "Processing"
+	CAR_FILE_STATUS_TASK_CREATED        = "TaskCreated"
+	PROCESS_STATUS_DEAL_SENT            = "DealSent"
+	PROCESS_STATUS_DEAL_SENT_FAILED     = "DealSentFailed"
+	CAR_FILE_STATUS_DEAL_SEND_CANCELLED = "DealSendCancelled"
+	PROCESS_STATUS_UNLOCK_REFUNDED      = "UnlockRefundSucceeded"
+	PROCESS_STATUS_UNLOCK_REFUNDFAILED  = "UnlockRefundFailed"
+	PROCESS_STATUS_EXPIRE_REFUNDING     = "Refunding"
+	PROCESS_STATUS_EXPIRE_REFUNDED      = "Refunded"
 
 	DEAL_STATUS_ACTIVE = "StorageDealActive"
 	DEAL_STATUS_ERROR  = "StorageDealError"
@@ -75,4 +75,7 @@ const (
 
 	COIN_USDC_NAME   = "USDC"
 	COIN_USDC_ADRESS = "USDC_ADDRESS"
+
+	WALLET_TYPE_META_MASK = 0
+	WALLET_TYPE_FILE_COIN = 1
 )

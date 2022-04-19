@@ -1,8 +1,6 @@
 package scheduler
 
 import (
-	"fmt"
-
 	"github.com/filswan/go-swan-client/command"
 
 	"multi-chain-storage/common/constants"
@@ -20,7 +18,7 @@ import (
 )
 
 func SendDeal() error {
-	dealFiles, err := models.GetDeal2Send()
+	carFiles, err := models.GetCarFilesByStatus(constants.CAR_FILE_STATUS_TASK_CREATED)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
@@ -42,24 +40,18 @@ func SendDeal() error {
 		return err
 	}
 
-	currentUtcMilliSec := utils.GetCurrentUtcSecond()
+	currentUtcSec := utils.GetCurrentUtcSecond()
 
-	wallet, err := models.GetWalletByAddress(cmdAutoBidDeal.SenderWallet)
+	wallet, err := models.GetWalletByAddress(cmdAutoBidDeal.SenderWallet, constants.WALLET_TYPE_FILE_COIN)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
 	}
 
-	if wallet == nil {
-		err = fmt.Errorf("wallet:%s not exists", cmdAutoBidDeal.SenderWallet)
-		logs.GetLogger().Error(err)
-		return err
-	}
-
-	for _, dealFile := range dealFiles {
-		if currentUtcMilliSec-dealFile.CreateAt > 3*24*60*60*1000 {
-			dealFile.Status = constants.PROCESS_STATUS_DEAL_SEND_CANCELLED
-			err = database.SaveOne(dealFile)
+	for _, carFile := range carFiles {
+		if currentUtcSec-carFile.CreateAt > 3*24*60*60*1000 {
+			carFile.Status = constants.CAR_FILE_STATUS_DEAL_SEND_CANCELLED
+			err = database.SaveOne(carFile)
 			if err != nil {
 				logs.GetLogger().Error(err)
 			}
@@ -67,15 +59,15 @@ func SendDeal() error {
 			continue
 		}
 
-		logs.GetLogger().Info("start to send deal for task:", dealFile.TaskUuid)
-		cmdAutoBidDeal.OutputDir = filepath.Dir(dealFile.CarFilePath)
+		logs.GetLogger().Info("start to send deal for task:", carFile.TaskUuid)
+		cmdAutoBidDeal.OutputDir = filepath.Dir(carFile.CarFilePath)
 
-		_, fileDescs, err := cmdAutoBidDeal.SendAutoBidDealsByTaskUuid(dealFile.TaskUuid)
+		_, fileDescs, err := cmdAutoBidDeal.SendAutoBidDealsByTaskUuid(carFile.TaskUuid)
 		if err != nil {
 			logs.GetLogger().Error(err)
-			dealFile.Status = constants.PROCESS_STATUS_DEAL_SENT_FAILED
-			dealFile.Status = cmdAutoBidDeal.SenderWallet
-			err = database.SaveOne(dealFile)
+			carFile.Status = constants.PROCESS_STATUS_DEAL_SENT_FAILED
+			carFile.Status = cmdAutoBidDeal.SenderWallet
+			err = database.SaveOne(carFile)
 			if err != nil {
 				logs.GetLogger().Error(err)
 			}
@@ -88,12 +80,12 @@ func SendDeal() error {
 			continue
 		}
 
-		dealFile.Status = constants.PROCESS_STATUS_DEAL_SENT
-		dealFile.Status = cmdAutoBidDeal.SenderWallet
-		dealFile.UpdateAt = currentUtcMilliSec
+		carFile.Status = constants.PROCESS_STATUS_DEAL_SENT
+		carFile.Status = cmdAutoBidDeal.SenderWallet
+		carFile.UpdateAt = currentUtcSec
 
 		db := database.GetDBTransaction()
-		err = database.SaveOneInTransaction(db, dealFile)
+		err = database.SaveOneInTransaction(db, carFile)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			db.Rollback()
@@ -109,7 +101,7 @@ func SendDeal() error {
 			}
 
 			offlineDeal := models.OfflineDeal{
-				CarFileId:      dealFile.ID,
+				CarFileId:      carFile.ID,
 				DealCid:        deal.DealCid,
 				MinerId:        deal.MinerFid,
 				StartEpoch:     deal.StartEpoch,

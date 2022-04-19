@@ -52,6 +52,7 @@ insert into system_param(name,value,create_at,update_at) values('MINT_CONTRACT',
 
 create table wallet (
     id            bigint       not null auto_increment,
+    type          int          not null, #--0:metamask, 1:filecoin
     address       varchar(100) not null,
     create_at     bigint       not null,
     primary key pk_wallet(id),
@@ -152,7 +153,8 @@ create table offline_deal (
     unlock_at        bigint        not null,
     primary key pk_offline_deal(id),
     constraint fk_offline_deal_car_file_id foreign key (car_file_id) references car_file(id),
-    constraint fk_offline_deal_miner_id foreign key (miner_id) references miner(id)
+    constraint fk_offline_deal_miner_id foreign key (miner_id) references miner(id),
+    constraint fk_offline_deal_sender_wallet_id foreign key (sender_wallet_id) references wallet(id)
 );
 
 create table offline_deal_log (

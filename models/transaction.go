@@ -65,12 +65,12 @@ func CreateTransaction(sourceFileUploadId int64, txHash string) error {
 		return err
 	}
 
-	walletFrom, err := GetWalletByAddress(lockPayment.AddressFrom)
+	walletFrom, err := GetWalletByAddress(lockPayment.AddressFrom, constants.WALLET_TYPE_META_MASK)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
 	}
-	walletTo, err := GetWalletByAddress(lockPayment.AddressTo)
+	walletTo, err := GetWalletByAddress(lockPayment.AddressTo, constants.WALLET_TYPE_META_MASK)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err

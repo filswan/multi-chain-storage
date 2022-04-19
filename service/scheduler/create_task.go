@@ -266,7 +266,7 @@ func saveCarInfo2DB(fileDesc *libmodel.FileDesc, srcFiles []*models.SourceFileUp
 		CreateAt:    currentUtcSecond,
 		UpdateAt:    currentUtcSecond,
 		Duration:    constants.DURATION_DAYS_DEFAULT,
-		Status:      constants.PROCESS_STATUS_TASK_CREATED,
+		Status:      constants.CAR_FILE_STATUS_TASK_CREATED,
 		MaxPrice:    maxPrice,
 		TaskUuid:    fileDesc.Uuid,
 	}

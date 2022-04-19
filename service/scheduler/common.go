@@ -29,7 +29,7 @@ func GetSrcDir() string {
 func InitScheduler() {
 	createDir()
 
-	go runJob("CreateTask", CreateTask, config.GetConfig().ScheduleRule.CreateTaskIntervalSecond)
+	//go runJob("CreateTask", CreateTask, config.GetConfig().ScheduleRule.CreateTaskIntervalSecond)
 	//go runJob("Refund", Refund, config.GetConfig().ScheduleRule.RefundIntervalSecond)
 	//go runJob("ScanDeal", ScanDeal, config.GetConfig().ScheduleRule.ScanDealStatusIntervalSecond)
 	//go runJob("SendDeal", SendDeal, config.GetConfig().ScheduleRule.SendDealIntervalSecond)

@@ -23,9 +23,11 @@ func main() {
 
 	db := database.Init()
 	defer database.CloseDB(db)
-	scheduler.SendDeal()
 
 	scheduler.InitScheduler()
+
+	//scheduler.CreateTask()
+	//scheduler.SendDeal()
 
 	createGinServer()
 }

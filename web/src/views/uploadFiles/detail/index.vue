@@ -323,7 +323,7 @@ export default {
                             )
                             : "-";
 
-                    if(json.data.deal.provider && json.data.found.payload_cid){
+                    if(json.data.deal.provider && json.data.found.payload_cid && json.data.deal.deal_id != 0){
                         _this.copy_filename = 'lotus client retrieve --miner '+json.data.deal.provider+' '+json.data.found.payload_cid+' ~./output-file';
                     }else{
                         _this.copy_filename = localStorage.getItem('languageMcs') == 'cn'?"还不可用。":"It's not available yet.";

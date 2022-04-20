@@ -42,7 +42,7 @@ func SendDeal() error {
 	}
 
 	for _, carFile := range carFiles {
-		if currentUtcSec-carFile.CreateAt > 3*24*60*60*1000 {
+		if currentUtcSec-carFile.CreateAt > 3*24*60*60 {
 			carFile.Status = constants.CAR_FILE_STATUS_DEAL_SEND_CANCELLED
 			err = database.SaveOne(carFile)
 			if err != nil {
@@ -79,14 +79,21 @@ func SendDeal() error {
 		if err != nil {
 			logs.GetLogger().Error(err)
 			db.Rollback()
-			return err
+			continue
 		}
 
 		for _, deal := range fileDescs[0].Deals {
+			miner, err := models.GeMinerByFid(deal.MinerFid)
+			if err != nil {
+				logs.GetLogger().Error(err)
+				db.Rollback()
+				continue
+			}
+
 			offlineDeal := models.OfflineDeal{
 				CarFileId:      carFile.ID,
 				DealCid:        deal.DealCid,
-				MinerId:        deal.MinerFid,
+				MinerId:        miner.ID,
 				StartEpoch:     deal.StartEpoch,
 				SenderWalletId: wallet.ID,
 				Status:         constants.OFFLINE_DEAL_STATUS_CREATED,
@@ -99,14 +106,14 @@ func SendDeal() error {
 			if err != nil {
 				logs.GetLogger().Error(err)
 				db.Rollback()
-				return err
+				continue
 			}
 		}
 
 		err = db.Commit().Error
 		if err != nil {
 			logs.GetLogger().Error(err)
-			return err
+			continue
 		}
 	}
 

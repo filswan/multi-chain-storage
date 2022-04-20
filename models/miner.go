@@ -1,7 +1,7 @@
 package models
 
 import (
-	"fmt"
+	"multi-chain-storage/common/utils"
 	"multi-chain-storage/database"
 
 	"github.com/filswan/go-swan-lib/logs"
@@ -25,8 +25,29 @@ func GeMinerByFid(fid string) (*Miner, error) {
 		return miners[0], nil
 	}
 
-	err = fmt.Errorf("no miner for fid:%s", fid)
-	logs.GetLogger().Error(err)
+	miner, err := SaveMiner(fid)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
 
-	return nil, err
+	return miner, nil
+}
+
+func SaveMiner(fid string) (*Miner, error) {
+	miner := Miner{
+		Fid:      fid,
+		CreateAt: utils.GetCurrentUtcSecond(),
+	}
+
+	minerResult := database.GetDB().Create(&miner)
+	err := minerResult.Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	minerCreated := minerResult.Value.(*Miner)
+
+	return minerCreated, nil
 }

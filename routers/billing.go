@@ -2,7 +2,6 @@ package routers
 
 import (
 	common "multi-chain-storage/common"
-	"multi-chain-storage/common/constants"
 	"multi-chain-storage/common/errorinfo"
 	"multi-chain-storage/common/utils"
 	"multi-chain-storage/models"
@@ -82,7 +81,7 @@ func GetUserBillingHistory(c *gin.Context) {
 	}
 
 	if strings.Trim(pageSize, " ") == "" {
-		pageSize = constants.PAGE_SIZE_DEFAULT_VALUE
+		pageSize = "constants.PAGE_SIZE_DEFAULT_VALUE"
 	}
 	if strings.Trim(walletAddress, " ") == "" {
 		errMsg := " :walletAddress can not be null"

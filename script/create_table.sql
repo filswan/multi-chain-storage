@@ -148,6 +148,7 @@ create table offline_deal (
     deal_id          bigint,
     status           varchar(100)  not null,
     note             text,
+    on_chain_status  varchar(100),
     create_at        bigint        not null,
     update_at        bigint        not null,
     unlock_at        bigint        not null,

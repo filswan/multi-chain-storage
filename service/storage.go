@@ -148,46 +148,35 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType 
 	return uploadResult, nil
 }
 
-func GetSourceFiles(pageSize, offset string, walletAddress, payloadCid string, file_name string, orderByColumn int, ascdesc string) ([]*models.SourceFileExt, error) {
-	srcFiles, err := models.GetSourceFiles(pageSize, offset, walletAddress, payloadCid, file_name, orderByColumn, ascdesc)
+func GetSourceFileUploads(walletAddress string, fileName *string, limit, offset int) ([]*models.SourceFileUploadResult, *int64, error) {
+	wallet, err := models.GetWalletByAddress(walletAddress, constants.WALLET_TYPE_META_MASK)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return nil, err
+		return nil, nil, err
 	}
 
-	dealFileIds := map[int64]bool{}
-
-	for _, srcFile := range srcFiles {
-		dealFileIds[srcFile.DealFileId] = true
-		if srcFile.Duration == 0 {
-			srcFile.Duration = constants.DURATION_DAYS_DEFAULT
-		}
-
-		srcFile.OfflineDeals = []*models.OfflineDeal{}
+	srcFileUploads, totalRecordCount, err := models.GetSourceFileUploads(wallet.ID, fileName, limit, offset)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, nil, err
 	}
 
-	if len(dealFileIds) > 0 {
-		dealFileIdList := make([]int64, 0, len(dealFileIds))
-		for dealFileId := range dealFileIds {
-			dealFileIdList = append(dealFileIdList, dealFileId)
-		}
-
-		offlineDeals, err := models.GetOfflineDealsByDealFileIds(dealFileIdList)
+	for _, srcFileUpload := range srcFileUploads {
+		offlineDeals, err := models.GetOfflineDealsByCarFileId(srcFileUpload.CarFileId)
 		if err != nil {
 			logs.GetLogger().Error(err)
-			return nil, err
+			return nil, nil, err
 		}
+		srcFileUpload.OfflineDeals = offlineDeals
 
-		for _, srcFile := range srcFiles {
-			for _, offlineDeal := range offlineDeals {
-				if offlineDeal.CarFileId == srcFile.DealFileId {
-					srcFile.OfflineDeals = append(srcFile.OfflineDeals, offlineDeal)
-				}
-			}
+		if srcFileUpload.SourceFileUploadStatus == constants.SOURCE_FILE_UPLOAD_STATUS_CREATED {
+			srcFileUpload.Status = constants.PROCESS_STATUS_WAITING_PAYMENT
+		} else {
+			srcFileUpload.Status = constants.PROCESS_STATUS_PROCESSING
 		}
 	}
 
-	return srcFiles, nil
+	return srcFileUploads, totalRecordCount, nil
 }
 
 type DaoInfoResult struct {

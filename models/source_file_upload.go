@@ -95,14 +95,16 @@ func GetSourceFileUploadsNeed2Car() ([]*SourceFileUploadsNeed2Car, error) {
 }
 
 type SourceFileUploadResult struct {
-	SourceFileUploadId     int64  `json:"source_file_upload_id"`
-	FileName               string `json:"file_name"`
-	FileSize               int64  `json:"file_size"`
-	UploadAt               int64  `json:"upload_at"`
-	PinStatus              string `json:"pin_status"`
-	PayloadCid             string `json:"payload_cid"`
-	SourceFileUploadStatus string `json:"source_file_upload_status"`
-	CarFileStatus          string `json:"car_file_status"`
+	SourceFileUploadId     int64          `json:"source_file_upload_id"`
+	CarFileId              int64          `json:"car_file_id"`
+	FileName               string         `json:"file_name"`
+	FileSize               int64          `json:"file_size"`
+	UploadAt               int64          `json:"upload_at"`
+	PinStatus              string         `json:"pin_status"`
+	PayloadCid             string         `json:"payload_cid"`
+	SourceFileUploadStatus string         `json:"source_file_upload_status"`
+	CarFileStatus          string         `json:"car_file_status"`
+	OfflineDeals           []*OfflineDeal `json:"offline_deal"`
 }
 
 func GetSourceFileUploads(walletId int64, fileName *string, limit, offset int) ([]*SourceFileUploadResult, *int64, error) {
@@ -111,7 +113,7 @@ func GetSourceFileUploads(walletId int64, fileName *string, limit, offset int) (
 		filterOnSourceFileUpload = filterOnSourceFileUpload + " and file_name like '%" + *fileName + "%'"
 	}
 	sql := "select\n" +
-		"a.id source_file_upload_id,a.file_name,b.file_size,a.create_at upload_at,\n" +
+		"a.id source_file_upload_id,d.id car_file_id,a.file_name,b.file_size,a.create_at upload_at,\n" +
 		"b.pin_status,d.payload_cid,a.status source_file_upload_status,d.status car_file_status\n" +
 		"from\n" +
 		"(\n" +

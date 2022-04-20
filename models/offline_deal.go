@@ -91,10 +91,9 @@ func GetOfflineDealsNotUnlockedByDealFileId(dealFileId int64) ([]*OfflineDeal, e
 	return offlineDeals, nil
 }
 
-func GetOfflineDealsByDealFileId(dealFileId int64) ([]*OfflineDeal, error) {
+func GetOfflineDealsByCarFileId(carFileId int64) ([]*OfflineDeal, error) {
 	var offlineDeals []*OfflineDeal
-	sql := "select a.* from offline_deal a where a.deal_file_id=?"
-	err := database.GetDB().Raw(sql, dealFileId).Scan(&offlineDeals).Error
+	err := database.GetDB().Where("car_file_id=?").Order("order by id").Find(&offlineDeals).Error
 
 	if err != nil {
 		logs.GetLogger().Error(err)

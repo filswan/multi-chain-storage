@@ -161,6 +161,15 @@ func GetSourceFileUploads(walletAddress string, fileName *string, limit, offset 
 		return nil, nil, err
 	}
 
+	for _, srcFileUpload := range srcFileUploads {
+		offlineDeals, err := models.GetOfflineDealsByCarFileId(srcFileUpload.CarFileId)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return nil, nil, err
+		}
+		srcFileUpload.OfflineDeals = offlineDeals
+	}
+
 	return srcFileUploads, totalRecordCount, nil
 }
 

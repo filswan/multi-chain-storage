@@ -35,6 +35,13 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
 
     event SignTransaction(string cid, string dealId, address recipient);
 
+    event SignCarTransaction(
+        string[] cidList,
+        string dealId,
+        string network,
+        address recipient
+    );
+
     function initialize(address admin, uint8 threshold) public initializer {
         __Ownable_init();
         __AccessControl_init();
@@ -117,6 +124,8 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
             cidListMap[key] = cidList;
             FilinkConsumer(_filinkAddress).requestDealInfo(dealId, network);
         }
+
+        emit SignCarTransaction(cidList, dealId, network, recipient);
     }
 
     function isCarPaymentAvailable(

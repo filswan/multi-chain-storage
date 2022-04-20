@@ -29,11 +29,11 @@ func GetSrcDir() string {
 func InitScheduler() {
 	createDir()
 
-	//go runJob("CreateTask", CreateTask, config.GetConfig().ScheduleRule.CreateTaskIntervalSecond)
-	//go runJob("Refund", Refund, config.GetConfig().ScheduleRule.RefundIntervalSecond)
-	//go runJob("ScanDeal", ScanDeal, config.GetConfig().ScheduleRule.ScanDealStatusIntervalSecond)
-	//go runJob("SendDeal", SendDeal, config.GetConfig().ScheduleRule.SendDealIntervalSecond)
+	go runJob("CreateTask", CreateTask, config.GetConfig().ScheduleRule.CreateTaskIntervalSecond)
+	go runJob("SendDeal", SendDeal, config.GetConfig().ScheduleRule.SendDealIntervalSecond)
+	go runJob("ScanDeal", ScanDeal, config.GetConfig().ScheduleRule.ScanDealStatusIntervalSecond)
 	//go runJob("UnlockPayment", UnlockPayment, config.GetConfig().ScheduleRule.UnlockIntervalSecond)
+	//go runJob("Refund", Refund, config.GetConfig().ScheduleRule.RefundIntervalSecond)
 }
 
 func runJob(jobName string, func2Run func() error, intervalSecond time.Duration) {

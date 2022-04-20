@@ -6,7 +6,6 @@ import (
 	"multi-chain-storage/common"
 	"multi-chain-storage/common/constants"
 	"multi-chain-storage/common/errorinfo"
-	"multi-chain-storage/common/utils"
 	"multi-chain-storage/config"
 	"multi-chain-storage/models"
 	"multi-chain-storage/on-chain/client"
@@ -22,7 +21,7 @@ import (
 
 func Storage(router *gin.RouterGroup) {
 	router.POST("/ipfs/upload", UploadFile)
-	router.GET("/tasks/deals", GetDealListFromLocal)
+	router.GET("/tasks/deals", GetDeals)
 	router.GET("/deal/detail/:deal_id", GetDealListFromFilink)
 	router.GET("/deal/file/:source_file_id", GetDeals4SourceFile)
 	router.POST("/deal/expire", RecordExpiredRefund)
@@ -79,76 +78,63 @@ func UploadFile(c *gin.Context) {
 	c.JSON(http.StatusOK, common.CreateSuccessResponse(uploadResult))
 }
 
-func GetDealListFromLocal(c *gin.Context) {
+func GetDeals(c *gin.Context) {
 	URL := c.Request.URL.Query()
-	pageNumber := URL.Get("page_number")
-	pageSize := URL.Get("page_size")
-	walletAddress := URL.Get("wallet_address")
-	if strings.Trim(walletAddress, " ") == "" {
+	pageNumber := strings.Trim(URL.Get("page_number"), " ")
+	var offset int = 1
+	if pageNumber != "" {
+		pageNumberTemp, err := strconv.Atoi(pageNumber)
+		if err != nil {
+			logs.GetLogger().Error(err)
+		} else {
+			if pageNumberTemp <= 0 {
+				offset = 1
+			} else {
+				offset = pageNumberTemp
+			}
+		}
+	}
+
+	pageSize := strings.Trim(URL.Get("page_size"), " ")
+	var limit int = constants.PAGE_SIZE_DEFAULT_VALUE
+	if pageSize != "" {
+		pageSizeTemp, err := strconv.Atoi(pageSize)
+		if err != nil {
+			logs.GetLogger().Error(err)
+		} else {
+			if pageSizeTemp <= 0 {
+				limit = constants.PAGE_SIZE_DEFAULT_VALUE
+			} else {
+				limit = pageSizeTemp
+			}
+		}
+	}
+
+	walletAddress := strings.Trim(URL.Get("wallet_address"), " ")
+	if walletAddress == "" {
 		err := fmt.Errorf("wallet_address is required")
 		logs.GetLogger().Error(err)
 		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_CODE, err.Error()))
 		return
 	}
 
-	if (strings.Trim(pageNumber, " ") == "") || (strings.Trim(pageNumber, " ") == "0") {
-		pageNumber = "1"
-	} else {
-		tmpPageNumber, err := strconv.Atoi(pageNumber)
-		if err != nil {
-			pageNumber = "1"
-		} else {
-			pageNumber = strconv.Itoa(tmpPageNumber)
-		}
-	}
-
-	if strings.Trim(pageSize, " ") == "" {
-		pageSize = constants.PAGE_SIZE_DEFAULT_VALUE
-	}
-
-	orderBy := URL.Get("order_by")
-	orderByColumn, err := strconv.Atoi(orderBy)
-
-	if err != nil {
-		orderByColumn = 5
-	}
-
-	isAscending := URL.Get("is_ascending")
-	ASCorDESC := "DESC"
-	if strings.Trim(isAscending, " ") != "" {
-		if strings.ToLower(strings.Trim(isAscending, " ")) == "y" {
-			ASCorDESC = "ASC"
-		}
-	}
-
-	offset, err := utils.GetOffsetByPagenumber(pageNumber, pageSize)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.PAGE_NUMBER_OR_SIZE_FORMAT_ERROR_CODE))
-		return
-	}
-	payloadCid := strings.Trim(URL.Get("payload_cid"), " ")
 	fileName := strings.Trim(URL.Get("file_name"), " ")
-	infoList, err := service.GetSourceFiles(pageSize, strconv.FormatInt(offset, 10), walletAddress, payloadCid, fileName, orderByColumn, ASCorDESC)
+	var fileNameTemp *string = nil
+	if fileName != "" {
+		fileNameTemp = &fileName
+	}
+
+	sourceFileUploads, totalRecordCount, err := service.GetSourceFileUploads(walletAddress, fileNameTemp, limit, offset)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE, err.Error()))
-
 		return
 	}
-	pageInfo := new(common.PageInfo)
-	pageInfo.PageSize = pageSize
-	pageInfo.PageNumber = pageNumber
-	/*
-		sourceFiles, err := models.GetSourceFilesByWalletAddress(walletAddress)
-		if err != nil {
-			logs.GetLogger().Error(err)
-			c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_COUNT_ERROR_CODE, err.Error()))
 
-			return
-		} */
-	pageInfo.TotalRecordCount = strconv.Itoa(len(infoList))
-	c.JSON(http.StatusOK, common.NewSuccessResponseWithPageInfo(infoList, pageInfo))
+	c.JSON(http.StatusOK, common.CreateSuccessResponse(gin.H{
+		"source_file_upload": sourceFileUploads,
+		"total_record_count": *totalRecordCount,
+	}))
 }
 
 type DealOnChainResult struct {

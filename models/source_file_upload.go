@@ -93,3 +93,48 @@ func GetSourceFileUploadsNeed2Car() ([]*SourceFileUploadsNeed2Car, error) {
 
 	return sourceFileUploadsNeed2Car, nil
 }
+
+type SourceFileUploadResult struct {
+	SourceFileUploadId     int64  `json:"source_file_upload_id"`
+	FileName               string `json:"file_name"`
+	FileSize               int64  `json:"file_size"`
+	UploadAt               int64  `json:"upload_at"`
+	PinStatus              string `json:"pin_status"`
+	PayloadCid             string `json:"payload_cid"`
+	SourceFileUploadStatus string `json:"source_file_upload_status"`
+	CarFileStatus          string `json:"car_file_status"`
+}
+
+func GetSourceFileUploads(walletId int64, fileName *string, limit, offset int) ([]*SourceFileUploadResult, *int64, error) {
+	filterOnSourceFileUpload := "wallet_id=? and file_type=0"
+	if fileName != nil {
+		filterOnSourceFileUpload = filterOnSourceFileUpload + " and file_name like '%" + *fileName + "%'"
+	}
+	sql := "select\n" +
+		"a.id source_file_upload_id,a.file_name,b.file_size,a.create_at upload_at,\n" +
+		"b.pin_status,d.payload_cid,a.status source_file_upload_status,d.status car_file_status\n" +
+		"from\n" +
+		"(\n" +
+		"Select * from source_file_upload where " + filterOnSourceFileUpload + " order by create_at desc LIMIT ? OFFSET ?\n" +
+		") a\n" +
+		"left join source_file b on a.source_file_id=b.id\n" +
+		"left outer join car_file_source c on a.id=c.source_file_upload_id\n" +
+		"left outer join car_file d on c.car_file_id=d.id\n"
+
+	var sourceFileUploadResult []*SourceFileUploadResult
+
+	err := database.GetDB().Raw(sql, walletId, limit, offset).Scan(&sourceFileUploadResult).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, nil, err
+	}
+
+	var totalRecordCount int64
+	err = database.GetDB().Table("source_file_upload").Where(filterOnSourceFileUpload).Count(&totalRecordCount).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, nil, err
+	}
+
+	return sourceFileUploadResult, &totalRecordCount, nil
+}

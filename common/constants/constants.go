@@ -2,7 +2,7 @@ package constants
 
 const (
 	DEFAULT_SELECT_LIMIT    = "100"
-	PAGE_SIZE_DEFAULT_VALUE = "10"
+	PAGE_SIZE_DEFAULT_VALUE = 10
 
 	URL_BILLING_PREFIX = "billing"
 	URL_STORAGE_PREFIX = "storage"

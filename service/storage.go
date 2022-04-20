@@ -168,6 +168,12 @@ func GetSourceFileUploads(walletAddress string, fileName *string, limit, offset 
 			return nil, nil, err
 		}
 		srcFileUpload.OfflineDeals = offlineDeals
+
+		if srcFileUpload.SourceFileUploadStatus == constants.SOURCE_FILE_UPLOAD_STATUS_CREATED {
+			srcFileUpload.Status = constants.PROCESS_STATUS_WAITING_PAYMENT
+		} else {
+			srcFileUpload.Status = constants.PROCESS_STATUS_PROCESSING
+		}
 	}
 
 	return srcFileUploads, totalRecordCount, nil

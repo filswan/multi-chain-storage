@@ -24,7 +24,6 @@ const (
 	SOURCE_ID_OF_PAYMENT = 4
 
 	PROCESS_STATUS_WAITING_PAYMENT      = "Pending" //wait for payment
-	PROCESS_STATUS_PAID                 = "Paid"
 	PROCESS_STATUS_PROCESSING           = "Processing"
 	CAR_FILE_STATUS_TASK_CREATED        = "TaskCreated"
 	CAR_FILE_STATUS_DEAL_SENT           = "DealSent"

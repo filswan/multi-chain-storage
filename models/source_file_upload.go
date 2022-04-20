@@ -95,19 +95,21 @@ func GetSourceFileUploadsNeed2Car() ([]*SourceFileUploadsNeed2Car, error) {
 }
 
 type SourceFileUploadResult struct {
-	SourceFileUploadId     int64          `json:"source_file_upload_id"`
-	CarFileId              int64          `json:"car_file_id"`
-	FileName               string         `json:"file_name"`
-	FileSize               int64          `json:"file_size"`
-	UploadAt               int64          `json:"upload_at"`
-	PinStatus              string         `json:"pin_status"`
-	PayloadCid             string         `json:"payload_cid"`
-	SourceFileUploadStatus string         `json:"source_file_upload_status"`
-	CarFileStatus          string         `json:"car_file_status"`
-	OfflineDeals           []*OfflineDeal `json:"offline_deal"`
+	SourceFileUploadId     int64             `json:"source_file_upload_id"`
+	CarFileId              int64             `json:"car_file_id"`
+	FileName               string            `json:"file_name"`
+	FileSize               int64             `json:"file_size"`
+	UploadAt               int64             `json:"upload_at"`
+	PinStatus              string            `json:"pin_status"`
+	PayloadCid             string            `json:"payload_cid"`
+	SourceFileUploadStatus string            `json:"source_file_upload_status"`
+	CarFileStatus          string            `json:"car_file_status"`
+	Status                 string            `json:"status"`
+	OfflineDeals           []*OfflineDealOut `json:"offline_deal"`
 }
 
 func GetSourceFileUploads(walletId int64, fileName *string, limit, offset int) ([]*SourceFileUploadResult, *int64, error) {
+	offset = offset - 1
 	filterOnSourceFileUpload := "wallet_id=? and file_type=0"
 	if fileName != nil {
 		filterOnSourceFileUpload = filterOnSourceFileUpload + " and file_name like '%" + *fileName + "%'"
@@ -132,7 +134,7 @@ func GetSourceFileUploads(walletId int64, fileName *string, limit, offset int) (
 	}
 
 	var totalRecordCount int64
-	err = database.GetDB().Table("source_file_upload").Where(filterOnSourceFileUpload).Count(&totalRecordCount).Error
+	err = database.GetDB().Table("source_file_upload").Where(filterOnSourceFileUpload, walletId).Count(&totalRecordCount).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, nil, err

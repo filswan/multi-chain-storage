@@ -27,6 +27,11 @@ type OfflineDeal struct {
 	UnlockAt       int64   `json:"unlock_at"`
 }
 
+type OfflineDealOut struct {
+	OfflineDeal
+	MinerFid string `json:"miner_fid"`
+}
+
 func GetOfflineDealsBySourceFileId(sourceFileId int64) ([]*OfflineDeal, error) {
 	var offlineDeals []*OfflineDeal
 	sql := "select a.* from offline_deal a, source_file_deal_file_map b where b.source_file_id=? and a.deal_file_id=b.deal_file_id"
@@ -91,9 +96,10 @@ func GetOfflineDealsNotUnlockedByDealFileId(dealFileId int64) ([]*OfflineDeal, e
 	return offlineDeals, nil
 }
 
-func GetOfflineDealsByCarFileId(carFileId int64) ([]*OfflineDeal, error) {
-	var offlineDeals []*OfflineDeal
-	err := database.GetDB().Where("car_file_id=?").Order("order by id").Find(&offlineDeals).Error
+func GetOfflineDealsByCarFileId(carFileId int64) ([]*OfflineDealOut, error) {
+	var offlineDeals []*OfflineDealOut
+	sql := "select a.*,b.fid miner_fid from offline_deal a,miner b where a.car_file_id=? and a.miner_id=b.id"
+	err := database.GetDB().Raw(sql, carFileId).Scan(&offlineDeals).Error
 
 	if err != nil {
 		logs.GetLogger().Error(err)

@@ -28,7 +28,7 @@ func main() {
 
 	//scheduler.CreateTask()
 	//scheduler.SendDeal()
-	scheduler.ScanDeal()
+	//scheduler.ScanDeal()
 
 	createGinServer()
 }

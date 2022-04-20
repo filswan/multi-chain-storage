@@ -11,19 +11,20 @@ import (
 )
 
 type OfflineDeal struct {
-	Id             int64  `json:"id"`
-	CarFileId      int64  `json:"car_file_id"`
-	DealCid        string `json:"deal_cid"`
-	MinerId        int64  `json:"miner_id"`
-	Verified       bool   `json:"verified"`
-	StartEpoch     int    `json:"start_epoch"`
-	SenderWalletId int64  `json:"sender_wallet_id"`
-	DealId         int64  `json:"deal_id"`
-	Status         string `json:"status"`
-	Note           string `json:"note"`
-	CreateAt       int64  `json:"create_at"`
-	UpdateAt       int64  `json:"update_at"`
-	UnlockAt       int64  `json:"unlock_at"`
+	Id             int64   `json:"id"`
+	CarFileId      int64   `json:"car_file_id"`
+	DealCid        string  `json:"deal_cid"`
+	MinerId        int64   `json:"miner_id"`
+	Verified       bool    `json:"verified"`
+	StartEpoch     int     `json:"start_epoch"`
+	SenderWalletId int64   `json:"sender_wallet_id"`
+	DealId         int64   `json:"deal_id"`
+	Status         string  `json:"status"`
+	Note           *string `json:"note"`
+	OnChainStatus  *string `json:"on_chain_status"`
+	CreateAt       int64   `json:"create_at"`
+	UpdateAt       int64   `json:"update_at"`
+	UnlockAt       int64   `json:"unlock_at"`
 }
 
 func GetOfflineDealsBySourceFileId(sourceFileId int64) ([]*OfflineDeal, error) {
@@ -41,8 +42,7 @@ func GetOfflineDealsBySourceFileId(sourceFileId int64) ([]*OfflineDeal, error) {
 
 func GetOfflineDeals2BeScanned() ([]*OfflineDeal, error) {
 	var offlineDeals []*OfflineDeal
-	sql := "select a.* from offline_deal a where a.status !=? and a.status!=?"
-	err := database.GetDB().Raw(sql, constants.DEAL_STATUS_ACTIVE, constants.DEAL_STATUS_ERROR).Scan(&offlineDeals).Error
+	err := database.GetDB().Where("on_chain_status is null ||(on_chain_status!=? and on_chain_status!=?)", constants.DEAL_STATUS_ACTIVE, constants.DEAL_STATUS_ERROR).Find(&offlineDeals).Error
 
 	if err != nil {
 		logs.GetLogger().Error(err)

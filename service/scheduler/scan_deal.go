@@ -34,23 +34,16 @@ func ScanDeal() error {
 			continue
 		}
 
-		if deal.Status != dealInfo.Status || deal.DealId != dealInfo.DealId {
-			deal.Status = dealInfo.Status
+		if deal.OnChainStatus == nil || *deal.OnChainStatus != dealInfo.Status || deal.DealId != dealInfo.DealId {
+			deal.OnChainStatus = &dealInfo.Status
 			deal.DealId = dealInfo.DealId
 			deal.UpdateAt = utils.GetCurrentUtcSecond()
 			err = database.SaveOne(deal)
 			if err != nil {
 				logs.GetLogger().Error(err)
-				return err
+				continue
 			}
 		}
-	}
-
-	err = GetExpiredDealInfoAndUpdateInfoToDB()
-
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
 	}
 
 	return nil

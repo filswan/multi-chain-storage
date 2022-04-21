@@ -1,7 +1,6 @@
 package models
 
 import (
-	"multi-chain-storage/common/constants"
 	"multi-chain-storage/common/utils"
 	"multi-chain-storage/database"
 
@@ -30,26 +29,6 @@ type EventUnlockPayment struct {
 	CoinId                int64           `json:"coin_id"`
 	UnlockStatus          string          `json:"unlock_status"`
 	SourceFileId          *int64          `json:"source_file_id"`
-}
-
-func GetEventUnlockPaymentsByPayloadCid(payloadCid string, limit, offset string) ([]*EventUnlockPayment, error) {
-	if offset == "" {
-		offset = "0"
-	}
-	if limit == "" {
-		limit = constants.DEFAULT_SELECT_LIMIT
-	}
-
-	var dealFiles []*EventUnlockPayment
-
-	err := database.GetDB().Where("payload_cid=?", payloadCid).Offset(offset).Limit(limit).Find(&dealFiles).Error
-
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-
-	return dealFiles, nil
 }
 
 func UpdateUnlockAmount(srcFileId, dealId int64, txHash, blockNo string, unlockedFee decimal.Decimal) error {

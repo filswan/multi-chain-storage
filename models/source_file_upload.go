@@ -105,6 +105,9 @@ type SourceFileUploadResult struct {
 	SourceFileUploadStatus string            `json:"source_file_upload_status"`
 	CarFileStatus          string            `json:"car_file_status"`
 	Status                 string            `json:"status"`
+	TokenId                string            `json:"token_id"`
+	MintAddress            string            `json:"mint_address"`
+	NftTxHash              string            `json:"nft_tx_hash"`
 	OfflineDeals           []*OfflineDealOut `json:"offline_deal"`
 }
 
@@ -116,14 +119,16 @@ func GetSourceFileUploads(walletId int64, fileName *string, limit, offset int) (
 	}
 	sql := "select\n" +
 		"a.id source_file_upload_id,d.id car_file_id,a.file_name,b.file_size,a.create_at upload_at,\n" +
-		"b.pin_status,d.payload_cid,a.status source_file_upload_status,d.status car_file_status\n" +
+		"b.pin_status,d.payload_cid,a.status source_file_upload_status,d.status car_file_status,\n" +
+		"e.token_id,e.mint_address,e.nft_tx_hash\n" +
 		"from\n" +
 		"(\n" +
 		"Select * from source_file_upload where " + filterOnSourceFileUpload + " order by create_at desc LIMIT ? OFFSET ?\n" +
 		") a\n" +
 		"left join source_file b on a.source_file_id=b.id\n" +
 		"left outer join car_file_source c on a.id=c.source_file_upload_id\n" +
-		"left outer join car_file d on c.car_file_id=d.id\n"
+		"left outer join car_file d on c.car_file_id=d.id\n" +
+		"left outer join source_file_mint e on a.id=e.source_file_upload_id\n"
 
 	var sourceFileUploadResult []*SourceFileUploadResult
 

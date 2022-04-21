@@ -1,9 +1,10 @@
 package routers
 
 import (
+	"fmt"
 	common "multi-chain-storage/common"
+	"multi-chain-storage/common/constants"
 	"multi-chain-storage/common/errorinfo"
-	"multi-chain-storage/common/utils"
 	"multi-chain-storage/models"
 	"multi-chain-storage/on-chain/client"
 	"multi-chain-storage/service"
@@ -72,70 +73,59 @@ func GetLockPaymentInfoByPayloadCid(c *gin.Context) {
 
 func GetUserBillingHistory(c *gin.Context) {
 	URL := c.Request.URL.Query()
-	walletAddress := URL.Get("wallet_address")
-	pageNumber := URL.Get("page_number")
-	pageSize := URL.Get("page_size")
-
-	if strings.Trim(pageNumber, " ") == "" {
-		pageNumber = "1"
-	}
-
-	if strings.Trim(pageSize, " ") == "" {
-		pageSize = "constants.PAGE_SIZE_DEFAULT_VALUE"
-	}
-	if strings.Trim(walletAddress, " ") == "" {
-		errMsg := " :walletAddress can not be null"
-		logs.GetLogger().Error("walletAddress")
-		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_CODE, errMsg))
-		return
-	}
-
-	offset, err := utils.GetOffsetByPagenumber(pageNumber, pageSize)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.PAGE_NUMBER_OR_SIZE_FORMAT_ERROR_CODE))
-		return
-	}
-
-	orderBy := URL.Get("order_by")
-	orderByColumn, err := strconv.Atoi(orderBy)
-
-	if err != nil {
-		orderByColumn = 11
-	}
-
-	isAscending := URL.Get("is_ascending")
-	ASCorDESC := "DESC"
-	if strings.Trim(isAscending, " ") != "" {
-		if strings.ToLower(strings.Trim(isAscending, " ")) == "y" {
-			ASCorDESC = "ASC"
+	pageNumber := strings.Trim(URL.Get("page_number"), " ")
+	var offset int = 1
+	if pageNumber != "" {
+		pageNumberTemp, err := strconv.Atoi(pageNumber)
+		if err != nil {
+			logs.GetLogger().Error(err)
+		} else {
+			if pageNumberTemp > 0 {
+				offset = pageNumberTemp
+			}
 		}
 	}
 
-	txHash := strings.Trim(URL.Get("tx_hash"), " ")
-
-	fileName := strings.Trim(URL.Get("file_name"), " ")
-
-	/*
-		totalRecords, err := getBillHistoriesByWalletAddress(walletAddress, fileName)
+	pageSize := strings.Trim(URL.Get("page_size"), " ")
+	var limit int = constants.PAGE_SIZE_DEFAULT_VALUE
+	if pageSize != "" {
+		pageSizeTemp, err := strconv.Atoi(pageSize)
 		if err != nil {
 			logs.GetLogger().Error(err)
-			c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_COUNT_ERROR_CODE))
-			return
-		} */
+		} else {
+			if pageSizeTemp > 0 {
+				limit = pageSizeTemp
+			}
+		}
+	}
 
-	billingResultList, err := service.GetBillHistoryList(walletAddress, pageSize, strconv.FormatInt(offset, 10), txHash, fileName, orderByColumn, ASCorDESC)
+	walletAddress := strings.Trim(URL.Get("wallet_address"), " ")
+	if walletAddress == "" {
+		err := fmt.Errorf("wallet_address is required")
+		logs.GetLogger().Error(err)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_CODE, err.Error()))
+		return
+	}
+
+	orderBy := strings.Trim(URL.Get("order_by"), " ")
+
+	isAscend := strings.Trim(URL.Get("is_ascend"), " ") == "y"
+
+	txHash := strings.Trim(URL.Get("tx_hash"), " ")
+
+	fileName := URL.Get("file_name")
+
+	billings, totalRecordCount, err := service.GetTransactions(walletAddress, txHash, fileName, orderBy, isAscend, limit, offset)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE))
 		return
 	}
 
-	page := new(common.PageInfo)
-	page.PageNumber = pageNumber
-	page.PageSize = pageSize
-	page.TotalRecordCount = strconv.Itoa(len(billingResultList))
-	c.JSON(http.StatusOK, common.NewSuccessResponseWithPageInfo(billingResultList, page))
+	c.JSON(http.StatusOK, common.CreateSuccessResponse(gin.H{
+		"billing":            billings,
+		"total_record_count": *totalRecordCount,
+	}))
 }
 
 func GetFileCoinLastestPrice(c *gin.Context) {

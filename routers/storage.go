@@ -86,12 +86,8 @@ func GetDeals(c *gin.Context) {
 		pageNumberTemp, err := strconv.Atoi(pageNumber)
 		if err != nil {
 			logs.GetLogger().Error(err)
-		} else {
-			if pageNumberTemp <= 0 {
-				offset = 1
-			} else {
-				offset = pageNumberTemp
-			}
+		} else if pageNumberTemp > 0 {
+			offset = pageNumberTemp
 		}
 	}
 
@@ -101,12 +97,8 @@ func GetDeals(c *gin.Context) {
 		pageSizeTemp, err := strconv.Atoi(pageSize)
 		if err != nil {
 			logs.GetLogger().Error(err)
-		} else {
-			if pageSizeTemp <= 0 {
-				limit = constants.PAGE_SIZE_DEFAULT_VALUE
-			} else {
-				limit = pageSizeTemp
-			}
+		} else if pageSizeTemp > 0 {
+			limit = pageSizeTemp
 		}
 	}
 
@@ -118,13 +110,13 @@ func GetDeals(c *gin.Context) {
 		return
 	}
 
-	fileName := strings.Trim(URL.Get("file_name"), " ")
-	var fileNameTemp *string = nil
-	if fileName != "" {
-		fileNameTemp = &fileName
-	}
+	fileName := URL.Get("file_name")
 
-	sourceFileUploads, totalRecordCount, err := service.GetSourceFileUploads(walletAddress, fileNameTemp, limit, offset)
+	orderBy := strings.Trim(URL.Get("order_by"), " ")
+
+	isAscend := strings.Trim(URL.Get("is_ascend"), " ") == "y"
+
+	sourceFileUploads, totalRecordCount, err := service.GetSourceFileUploads(walletAddress, fileName, orderBy, isAscend, limit, offset)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE, err.Error()))

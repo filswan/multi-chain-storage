@@ -5,21 +5,26 @@ import (
 	"multi-chain-storage/common/utils"
 	"multi-chain-storage/database"
 	"multi-chain-storage/on-chain/client"
+	"sort"
+	"strings"
 
 	"github.com/filswan/go-swan-lib/logs"
+	libutils "github.com/filswan/go-swan-lib/utils"
 )
 
 type Transaction struct {
 	ID                 int64  `json:"id"`
 	SourceFileUploadId int64  `json:"source_file_upload_id"`
 	Type               int    `json:"type"`
+	NetworkId          int64  `json:"network_id"`
+	CoinId             int64  `json:"coin_id"`
 	TxHash             string `json:"tx_hash"`
 	WalletIdFrom       int64  `json:"wallet_id_from"`
 	WalletIdTo         int64  `json:"wallet_id_to"`
-	CoinId             int64  `json:"coin_id"`
 	Amount             string `json:"amount"`
 	BlockNumber        int64  `json:"block_number"`
 	TransactionAt      int64  `json:"transaction_at"`
+	Deadline           int64  `json:"deadline"`
 	CreateAt           int64  `json:"create_at"`
 }
 
@@ -82,17 +87,24 @@ func CreateTransaction(sourceFileUploadId int64, txHash string) error {
 		return err
 	}
 
+	network, err := GetNetworkByName(constants.NETWORK_NAME_POLYGON)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
 	currentUtcSecond := utils.GetCurrentUtcSecond()
 	transaction := Transaction{
 		SourceFileUploadId: sourceFileUploadId,
 		Type:               constants.TRANSACTION_TYPE_PAY,
+		NetworkId:          network.ID,
+		CoinId:             coin.ID,
 		TxHash:             txHash,
 		WalletIdFrom:       walletFrom.ID,
 		WalletIdTo:         walletTo.ID,
-		CoinId:             coin.ID,
 		Amount:             lockPayment.LockedFee.String(),
 		BlockNumber:        lockPayment.BlockNumber,
-		TransactionAt:      currentUtcSecond,
+		Deadline:           lockPayment.Deadline,
 		CreateAt:           currentUtcSecond,
 	}
 
@@ -125,4 +137,126 @@ func CreateTransaction(sourceFileUploadId int64, txHash string) error {
 	}
 
 	return nil
+}
+
+type Billing struct {
+	PayId        int64  `json:"pay_id"`
+	PayTxHash    string `json:"pay_tx_hash"`
+	PayAmount    string `json:"pay_amount"`
+	UnlockAmount string `json:"unlock_amount"`
+	FileName     string `json:"file_name"`
+	PayloadCid   string `json:"payload_cid"`
+	PayAt        int64  `json:"pay_at"`
+	UnlockAt     int64  `json:"unlock_at"`
+	Deadline     int64  `json:"deadline"`
+	NetworkName  string `json:"network_name"`
+}
+
+type BillingByPayAt []*Billing
+
+func (a BillingByPayAt) Len() int           { return len(a) }
+func (a BillingByPayAt) Less(i, j int) bool { return a[i].PayAt < a[j].PayAt }
+func (a BillingByPayAt) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+
+type BillingByPayAmount []*Billing
+
+func (a BillingByPayAmount) Len() int           { return len(a) }
+func (a BillingByPayAmount) Less(i, j int) bool { return a[i].PayAmount < a[j].PayAmount }
+func (a BillingByPayAmount) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+
+type BillingByUnlockAmount []*Billing
+
+func (a BillingByUnlockAmount) Len() int           { return len(a) }
+func (a BillingByUnlockAmount) Less(i, j int) bool { return a[i].UnlockAmount < a[j].UnlockAmount }
+func (a BillingByUnlockAmount) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+
+type BillingByFileName []*Billing
+
+func (a BillingByFileName) Len() int           { return len(a) }
+func (a BillingByFileName) Less(i, j int) bool { return a[i].FileName < a[j].FileName }
+func (a BillingByFileName) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+
+type BillingByUnlockAt []*Billing
+
+func (a BillingByUnlockAt) Len() int           { return len(a) }
+func (a BillingByUnlockAt) Less(i, j int) bool { return a[i].UnlockAt < a[j].UnlockAt }
+func (a BillingByUnlockAt) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+
+func GetTransactions(walletId int64, txHash, fileName, orderBy string, isAscend bool, limit, offset int) ([]*Billing, *int, error) {
+	sql := "select\n" +
+		"a.id pay_id,a.tx_hash pay_tx_hash,a.amount pay_amount,e.amount unlock_amount,b.file_name,d.payload_cid,\n" +
+		"a.create_at pay_at,e.create_at unlock_at,a.deadline,f.name network_name\n" +
+		"from transaction_pay a\n" +
+		"left join source_file_upload b on a.source_file_upload_id=b.id\n" +
+		"left outer join car_file_source c on c.source_file_upload_id=a.source_file_upload_id\n" +
+		"left outer join car_file d on c.car_file_id=d.id\n" +
+		"left outer join transaction_unlock e on e.source_file_upload_id=a.source_file_upload_id\n" +
+		"left join network f on a.network_id=f.id\n" +
+		"where a.wallet_id_from=?"
+
+	params := []interface{}{}
+	params = append(params, walletId)
+
+	if !libutils.IsStrEmpty(&txHash) {
+		sql = sql + " and a.tx_hash =?"
+		params = append(params, txHash)
+	}
+
+	if !libutils.IsStrEmpty(&fileName) {
+		sql = sql + " and b.file_name like '%" + fileName + "%' "
+	}
+
+	var billings []*Billing
+	err := database.GetDB().Raw(sql, params...).Scan(&billings).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, nil, err
+
+	}
+
+	switch strings.Trim(orderBy, " ") {
+	case "pay_amount":
+		if isAscend {
+			sort.Sort(BillingByPayAmount(billings))
+		} else {
+			sort.Sort(sort.Reverse(BillingByPayAmount(billings)))
+		}
+	case "unlock_amount":
+		if isAscend {
+			sort.Sort(BillingByUnlockAmount(billings))
+		} else {
+			sort.Sort(sort.Reverse(BillingByUnlockAmount(billings)))
+		}
+	case "file_name":
+		if isAscend {
+			sort.Sort(BillingByFileName(billings))
+		} else {
+			sort.Sort(sort.Reverse(BillingByFileName(billings)))
+		}
+	case "pay_at":
+		if isAscend {
+			sort.Sort(BillingByPayAt(billings))
+		} else {
+			sort.Sort(sort.Reverse(BillingByPayAt(billings)))
+		}
+	case "unlock_at":
+		sort.Sort(BillingByUnlockAt(billings))
+	case "deadline":
+	default:
+		sort.Sort(BillingByPayAt(billings))
+	}
+
+	totalRecordCount := len(billings)
+	start := (offset - 1) * limit
+	end := start + limit
+	if start >= totalRecordCount {
+		return nil, &totalRecordCount, nil
+	}
+
+	if end >= totalRecordCount {
+		end = totalRecordCount
+	}
+
+	result := billings[start:end]
+	return result, &totalRecordCount, nil
 }

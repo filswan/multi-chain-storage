@@ -3,8 +3,11 @@ package models
 import (
 	"multi-chain-storage/common/constants"
 	"multi-chain-storage/database"
+	"sort"
+	"strings"
 
 	"github.com/filswan/go-swan-lib/logs"
+	libutils "github.com/filswan/go-swan-lib/utils"
 	"github.com/shopspring/decimal"
 )
 
@@ -105,40 +108,91 @@ type SourceFileUploadResult struct {
 	SourceFileUploadStatus string            `json:"source_file_upload_status"`
 	CarFileStatus          string            `json:"car_file_status"`
 	Status                 string            `json:"status"`
+	TokenId                string            `json:"token_id"`
+	MintAddress            string            `json:"mint_address"`
+	NftTxHash              string            `json:"nft_tx_hash"`
 	OfflineDeals           []*OfflineDealOut `json:"offline_deal"`
 }
+type SourceFileUploadResultByFileName []*SourceFileUploadResult
 
-func GetSourceFileUploads(walletId int64, fileName *string, limit, offset int) ([]*SourceFileUploadResult, *int64, error) {
-	offset = offset - 1
-	filterOnSourceFileUpload := "wallet_id=? and file_type=0"
-	if fileName != nil {
-		filterOnSourceFileUpload = filterOnSourceFileUpload + " and file_name like '%" + *fileName + "%'"
-	}
+func (a SourceFileUploadResultByFileName) Len() int           { return len(a) }
+func (a SourceFileUploadResultByFileName) Less(i, j int) bool { return a[i].FileName < a[j].FileName }
+func (a SourceFileUploadResultByFileName) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+
+type SourceFileUploadResultByFileSize []*SourceFileUploadResult
+
+func (a SourceFileUploadResultByFileSize) Len() int           { return len(a) }
+func (a SourceFileUploadResultByFileSize) Less(i, j int) bool { return a[i].FileSize < a[j].FileSize }
+func (a SourceFileUploadResultByFileSize) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+
+type SourceFileUploadResultByUploadAt []*SourceFileUploadResult
+
+func (a SourceFileUploadResultByUploadAt) Len() int           { return len(a) }
+func (a SourceFileUploadResultByUploadAt) Less(i, j int) bool { return a[i].UploadAt < a[j].UploadAt }
+func (a SourceFileUploadResultByUploadAt) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+
+func GetSourceFileUploads(walletId int64, fileName, orderBy string, isAscend bool, limit, offset int) ([]*SourceFileUploadResult, *int, error) {
 	sql := "select\n" +
 		"a.id source_file_upload_id,d.id car_file_id,a.file_name,b.file_size,a.create_at upload_at,\n" +
-		"b.pin_status,d.payload_cid,a.status source_file_upload_status,d.status car_file_status\n" +
-		"from\n" +
-		"(\n" +
-		"Select * from source_file_upload where " + filterOnSourceFileUpload + " order by create_at desc LIMIT ? OFFSET ?\n" +
-		") a\n" +
+		"b.pin_status,d.payload_cid,a.status source_file_upload_status,d.status car_file_status,\n" +
+		"e.token_id,e.mint_address,e.nft_tx_hash\n" +
+		"from source_file_upload a\n" +
 		"left join source_file b on a.source_file_id=b.id\n" +
 		"left outer join car_file_source c on a.id=c.source_file_upload_id\n" +
-		"left outer join car_file d on c.car_file_id=d.id\n"
+		"left outer join car_file d on c.car_file_id=d.id\n" +
+		"left outer join source_file_mint e on a.id=e.source_file_upload_id\n" +
+		"where a.wallet_id=? and a.file_type=0"
+
+	if !libutils.IsStrEmpty(&fileName) {
+		sql = sql + " and a.file_name like '%" + fileName + "%' "
+	}
 
 	var sourceFileUploadResult []*SourceFileUploadResult
 
-	err := database.GetDB().Raw(sql, walletId, limit, offset).Scan(&sourceFileUploadResult).Error
+	err := database.GetDB().Raw(sql, walletId).Scan(&sourceFileUploadResult).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, nil, err
 	}
 
-	var totalRecordCount int64
-	err = database.GetDB().Table("source_file_upload").Where(filterOnSourceFileUpload, walletId).Count(&totalRecordCount).Error
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, nil, err
+	switch strings.Trim(orderBy, " ") {
+	case "file_name":
+		if isAscend {
+			sort.Sort(SourceFileUploadResultByFileName(sourceFileUploadResult))
+		} else {
+			sort.Sort(sort.Reverse(SourceFileUploadResultByFileName(sourceFileUploadResult)))
+		}
+	case "file_size":
+		if isAscend {
+			sort.Sort(SourceFileUploadResultByFileSize(sourceFileUploadResult))
+		} else {
+			sort.Sort(sort.Reverse(SourceFileUploadResultByFileSize(sourceFileUploadResult)))
+		}
+	case "upload_at":
+		if isAscend {
+			sort.Sort(SourceFileUploadResultByUploadAt(sourceFileUploadResult))
+		} else {
+			sort.Sort(sort.Reverse(SourceFileUploadResultByUploadAt(sourceFileUploadResult)))
+		}
+	default:
+		if isAscend {
+			sort.Sort(SourceFileUploadResultByUploadAt(sourceFileUploadResult))
+		} else {
+			sort.Sort(sort.Reverse(SourceFileUploadResultByUploadAt(sourceFileUploadResult)))
+		}
 	}
 
-	return sourceFileUploadResult, &totalRecordCount, nil
+	totalRecordCount := len(sourceFileUploadResult)
+	start := (offset - 1) * limit
+	end := start + limit
+	if start >= totalRecordCount {
+		return nil, &totalRecordCount, nil
+	}
+
+	if end >= totalRecordCount {
+		end = totalRecordCount
+	}
+
+	result := sourceFileUploadResult[start:end]
+	return result, &totalRecordCount, nil
 }

@@ -78,4 +78,6 @@ const (
 
 	WALLET_TYPE_META_MASK = 0
 	WALLET_TYPE_FILE_COIN = 1
+
+	NETWORK_NAME_POLYGON = "polygon"
 )

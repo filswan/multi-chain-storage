@@ -139,7 +139,7 @@
               <div class="hot-cold-box hot-miner">
                 <div class="elTips">
                   <el-popover
-                      v-for="(miner, i) in scope.row.offline_deals" :key="i"
+                      v-for="(miner, i) in scope.row.offline_deal" :key="i"
                       placement="top"
                       trigger="hover" popper-class="elPopMiner"
                       v-model="scope.row.payloadAct">
@@ -263,12 +263,12 @@
                           </div>
                       </div>
                       <el-button slot="reference" @click="minerIdLink(miner.miner_fid)">
-                          {{miner.miner_fid}}<small v-if="i<scope.row.offline_deals.length-1">,&nbsp;</small>
+                          {{miner.miner_fid}}<small v-if="i<scope.row.offline_deal.length-1">,&nbsp;</small>
                       </el-button>
                   </el-popover>
                         
                   <el-popover
-                      v-if="!(scope.row.offline_deals&&scope.row.offline_deals.length>0)"
+                      v-if="!(scope.row.offline_deal&&scope.row.offline_deal.length>0)"
                       placement="top"
                       trigger="hover" popper-class="elPopMiner"
                       v-model="scope.row.payloadAct">
@@ -403,9 +403,9 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="create_at" :label="$t('uploadFile.upload_time')" width="100" sortable="custom">
+          <el-table-column prop="upload_at" :label="$t('uploadFile.upload_time')" width="100" sortable="custom">
             <template slot-scope="scope">
-              {{ scope.row.create_at }}
+              {{ scope.row.upload_at }}
             </template>
           </el-table-column>
           <el-table-column prop="active" width="120" :label="$t('uploadFile.payment')"
@@ -697,12 +697,12 @@ export default {
       }
     },
     toDetail(row){
-      if(row.offline_deals && row.offline_deals.length>0){
-        this.$router.push({name: 'my_files_detail', params: {id: row.offline_deals[0].deal_id, cid: row.payload_cid}})
+      if(row.offline_deal && row.offline_deal.length>0){
+        this.$router.push({name: 'my_files_detail', params: {id: row.offline_deal[0].deal_id, cid: row.payload_cid}})
       }else{
         this.$router.push({name: 'my_files_detail', params: {id: 0, cid: row.payload_cid}})
       }
-      localStorage.setItem('offlineDeals', row.offline_deals?JSON.stringify(row.offline_deals):[])
+      localStorage.setItem('offlineDeals', row.offline_deal?JSON.stringify(row.offline_deal):[])
       localStorage.setItem('offlineDealsIndex', '0')
     },
     clickRowHandle(row, column, event) {
@@ -1254,7 +1254,7 @@ export default {
           return 4;
         case 'payload_cid':
           return 6;
-        case 'create_at':
+        case 'upload_at':
           return 5;
         default:
           return ;
@@ -1323,20 +1323,14 @@ export default {
             if(response.data.status == 'success'){
               if(currentData && _this.searchNowCurrent !== currentData) return false
               const data = response.data.data;
-              _this.parma.total = Number(response.data.page_info.total_record_count);
-              _this.tableData = response.data.data;
+              _this.parma.total = Number(response.data.data.total_record_count);
+              _this.tableData = response.data.data.source_file_upload;
               _this.tableData.map((item,s) => {
                 item.payloadAct = false
                 item.duration = item.duration
                 item.file_size_byte = _this.byteChange(item.file_size)
-                item.create_at = item.create_at
-                  ? item.create_at.length < 13
-                    ? moment(new Date(parseInt(item.create_at * 1000))).format(
-                        "YYYY-MM-DD HH:mm:ss"
-                      )
-                    : moment(new Date(parseInt(item.create_at))).format(
-                        "YYYY-MM-DD HH:mm:ss"
-                      )
+                item.upload_at = item.upload_at
+                  ? moment(new Date(parseInt(item.upload_at * 1000))).format("YYYY-MM-DD HH:mm:ss")
                   : "-";
               });
               setTimeout(function(){
@@ -1344,9 +1338,9 @@ export default {
                 // resolve('')
               }, 2000)
             } else {
-              _this.$message.error(response.message);
+              _this.$message.error(response.data.message);
               _this.loading = false
-              reject(response.message)
+              reject(response.data.message)
             }
         }).catch(error => {
             console.log(error)

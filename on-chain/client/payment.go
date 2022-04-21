@@ -16,7 +16,7 @@ type LockedPayment struct {
 	LockedFee    decimal.Decimal
 	AddressFrom  string
 	AddressTo    string
-	Deadline     string
+	Deadline     int64
 	Size         int64
 	BlockNumber  int64
 }
@@ -68,7 +68,7 @@ func GetLockedPaymentInfo(srcFilePayloadCid string) (*LockedPayment, error) {
 		LockedFee:    lockedFee,
 		AddressFrom:  paymentInfo.Owner.String(),
 		AddressTo:    paymentInfo.Recipient.String(),
-		Deadline:     paymentInfo.Deadline.String(),
+		Deadline:     paymentInfo.Deadline.Int64(),
 		Size:         paymentInfo.Size.Int64(),
 		BlockNumber:  paymentInfo.BlockNumber.Int64(),
 	}

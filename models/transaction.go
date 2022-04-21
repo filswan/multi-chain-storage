@@ -16,13 +16,15 @@ type Transaction struct {
 	ID                 int64  `json:"id"`
 	SourceFileUploadId int64  `json:"source_file_upload_id"`
 	Type               int    `json:"type"`
+	NetworkId          int64  `json:"network_id"`
+	CoinId             int64  `json:"coin_id"`
 	TxHash             string `json:"tx_hash"`
 	WalletIdFrom       int64  `json:"wallet_id_from"`
 	WalletIdTo         int64  `json:"wallet_id_to"`
-	CoinId             int64  `json:"coin_id"`
 	Amount             string `json:"amount"`
 	BlockNumber        int64  `json:"block_number"`
 	TransactionAt      int64  `json:"transaction_at"`
+	Deadline           int64  `json:"deadline"`
 	CreateAt           int64  `json:"create_at"`
 }
 
@@ -85,17 +87,24 @@ func CreateTransaction(sourceFileUploadId int64, txHash string) error {
 		return err
 	}
 
+	network, err := GetNetworkByName(constants.NETWORK_NAME_POLYGON)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
 	currentUtcSecond := utils.GetCurrentUtcSecond()
 	transaction := Transaction{
 		SourceFileUploadId: sourceFileUploadId,
 		Type:               constants.TRANSACTION_TYPE_PAY,
+		NetworkId:          network.ID,
+		CoinId:             coin.ID,
 		TxHash:             txHash,
 		WalletIdFrom:       walletFrom.ID,
 		WalletIdTo:         walletTo.ID,
-		CoinId:             coin.ID,
 		Amount:             lockPayment.LockedFee.String(),
 		BlockNumber:        lockPayment.BlockNumber,
-		TransactionAt:      currentUtcSecond,
+		Deadline:           lockPayment.Deadline,
 		CreateAt:           currentUtcSecond,
 	}
 
@@ -194,7 +203,7 @@ func GetTransactions(walletId int64, txHash, fileName, orderBy string, isAscend 
 	}
 
 	if !libutils.IsStrEmpty(&fileName) {
-		sql = sql + " and b.file_name like '%" + fileName + "%') "
+		sql = sql + " and b.file_name like '%" + fileName + "%' "
 	}
 
 	var billings []*Billing

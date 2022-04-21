@@ -86,12 +86,8 @@ func GetDeals(c *gin.Context) {
 		pageNumberTemp, err := strconv.Atoi(pageNumber)
 		if err != nil {
 			logs.GetLogger().Error(err)
-		} else {
-			if pageNumberTemp <= 0 {
-				offset = 1
-			} else {
-				offset = pageNumberTemp
-			}
+		} else if pageNumberTemp > 0 {
+			offset = pageNumberTemp
 		}
 	}
 
@@ -101,12 +97,8 @@ func GetDeals(c *gin.Context) {
 		pageSizeTemp, err := strconv.Atoi(pageSize)
 		if err != nil {
 			logs.GetLogger().Error(err)
-		} else {
-			if pageSizeTemp <= 0 {
-				limit = constants.PAGE_SIZE_DEFAULT_VALUE
-			} else {
-				limit = pageSizeTemp
-			}
+		} else if pageSizeTemp > 0 {
+			limit = pageSizeTemp
 		}
 	}
 

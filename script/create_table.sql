@@ -172,20 +172,24 @@ create table transaction (
     id                      bigint        not null auto_increment,
     source_file_upload_id   bigint        not null,
     type                    int           not null, #--0:pay,1:unlock, 2: refund after unlock, 3:refund after expired
+    network_id              bigint        not null,
+    coin_id                 bigint        not null,
     tx_hash                 varchar(100)  not null,
     wallet_id_from          bigint        not null,
     wallet_id_to            bigint        not null,
-    coin_id                 bigint        not null,
     amount                  varchar(100)  not null,
     block_number            bigint        not null,
-    transaction_at          bigint        not null,
+    deadline                bigint,
     create_at               bigint        not null,
     primary key pk_transaction(id),
     constraint un_transaction unique(source_file_upload_id,type),
     constraint fk_transaction_source_file_upload_id foreign key (source_file_upload_id) references source_file_upload(id),
+    constraint fk_transaction_network_id foreign key (network_id) references network(id),
+    constraint fk_transaction_coin_id foreign key (coin_id) references coin(id),
     constraint fk_transaction_wallet_id_from foreign key (wallet_id_from) references wallet(id),
-    constraint fk_transaction_wallet_id_to foreign key (wallet_id_to) references wallet(id),
-    constraint fk_transaction_coin_id foreign key (coin_id) references coin(id)
+    constraint fk_transaction_wallet_id_to foreign key (wallet_id_to) references wallet(id)
 );
 
+create or replace view transaction_pay as select * from transaction where type=0;
+create or replace view transaction_unlock as select * from transaction where type=1;
 

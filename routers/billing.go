@@ -113,7 +113,7 @@ func GetUserBillingHistory(c *gin.Context) {
 
 	txHash := strings.Trim(URL.Get("tx_hash"), " ")
 
-	fileName := strings.Trim(URL.Get("file_name"), " ")
+	fileName := URL.Get("file_name")
 
 	billings, totalRecordCount, err := service.GetTransactions(walletAddress, txHash, fileName, orderBy, isAscend, limit, offset)
 	if err != nil {

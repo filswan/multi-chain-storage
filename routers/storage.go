@@ -118,13 +118,13 @@ func GetDeals(c *gin.Context) {
 		return
 	}
 
-	fileName := strings.Trim(URL.Get("file_name"), " ")
-	var fileNameTemp *string = nil
-	if fileName != "" {
-		fileNameTemp = &fileName
-	}
+	fileName := URL.Get("file_name")
 
-	sourceFileUploads, totalRecordCount, err := service.GetSourceFileUploads(walletAddress, fileNameTemp, limit, offset)
+	orderBy := strings.Trim(URL.Get("order_by"), " ")
+
+	isAscend := strings.Trim(URL.Get("is_ascend"), " ") == "y"
+
+	sourceFileUploads, totalRecordCount, err := service.GetSourceFileUploads(walletAddress, fileName, orderBy, isAscend, limit, offset)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE, err.Error()))

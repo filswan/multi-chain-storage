@@ -212,14 +212,12 @@ func GetTransactions(walletId int64, txHash, fileName, orderBy string, isAscend 
 		} else {
 			sort.Sort(sort.Reverse(BillingByPayAmount(billings)))
 		}
-
 	case "unlock_amount":
 		if isAscend {
 			sort.Sort(BillingByUnlockAmount(billings))
 		} else {
 			sort.Sort(sort.Reverse(BillingByUnlockAmount(billings)))
 		}
-
 	case "file_name":
 		if isAscend {
 			sort.Sort(BillingByFileName(billings))

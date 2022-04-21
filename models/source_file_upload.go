@@ -144,7 +144,7 @@ func GetSourceFileUploads(walletId int64, fileName, orderBy string, isAscend boo
 		"where a.wallet_id=? and a.file_type=0"
 
 	if !libutils.IsStrEmpty(&fileName) {
-		sql = sql + " and a.file_name like '%" + fileName + "%') "
+		sql = sql + " and a.file_name like '%" + fileName + "%' "
 	}
 
 	var sourceFileUploadResult []*SourceFileUploadResult

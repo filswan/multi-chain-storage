@@ -185,7 +185,14 @@ func GetTransactions(walletId int64, txHash, fileName, orderBy string, isAscend 
 	totalRecordCount := len(billings)
 	start := (offset - 1) * limit
 	end := start + limit
-	result := billings[start:end]
+	if start >= totalRecordCount {
+		return nil, &totalRecordCount, nil
+	}
 
+	if end >= totalRecordCount {
+		end = totalRecordCount
+	}
+
+	result := billings[start:end]
 	return result, &totalRecordCount, nil
 }

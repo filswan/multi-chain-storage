@@ -6,6 +6,7 @@ import (
 	"multi-chain-storage/database"
 	"multi-chain-storage/on-chain/client"
 	"sort"
+	"strings"
 
 	"github.com/filswan/go-swan-lib/logs"
 	libutils "github.com/filswan/go-swan-lib/utils"
@@ -148,6 +149,30 @@ func (a BillingByPayAt) Len() int           { return len(a) }
 func (a BillingByPayAt) Less(i, j int) bool { return a[i].PayAt < a[j].PayAt }
 func (a BillingByPayAt) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 
+type BillingByPayAmount []*Billing
+
+func (a BillingByPayAmount) Len() int           { return len(a) }
+func (a BillingByPayAmount) Less(i, j int) bool { return a[i].PayAmount < a[j].PayAmount }
+func (a BillingByPayAmount) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+
+type BillingByUnlockAmount []*Billing
+
+func (a BillingByUnlockAmount) Len() int           { return len(a) }
+func (a BillingByUnlockAmount) Less(i, j int) bool { return a[i].UnlockAmount < a[j].UnlockAmount }
+func (a BillingByUnlockAmount) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+
+type BillingByFileName []*Billing
+
+func (a BillingByFileName) Len() int           { return len(a) }
+func (a BillingByFileName) Less(i, j int) bool { return a[i].FileName < a[j].FileName }
+func (a BillingByFileName) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+
+type BillingByUnlockAt []*Billing
+
+func (a BillingByUnlockAt) Len() int           { return len(a) }
+func (a BillingByUnlockAt) Less(i, j int) bool { return a[i].UnlockAt < a[j].UnlockAt }
+func (a BillingByUnlockAt) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+
 func GetTransactions(walletId int64, txHash, fileName, orderBy string, isAscend bool, limit, offset int) ([]*Billing, *int, error) {
 	sql := "select\n" +
 		"a.id pay_id,a.tx_hash pay_tx_hash,a.amount pay_amount,e.amount unlock_amount,b.file_name,d.payload_cid,\n" +
@@ -180,7 +205,39 @@ func GetTransactions(walletId int64, txHash, fileName, orderBy string, isAscend 
 
 	}
 
-	sort.Sort(BillingByPayAt(billings))
+	switch strings.Trim(orderBy, " ") {
+	case "pay_amount":
+		if isAscend {
+			sort.Sort(BillingByPayAmount(billings))
+		} else {
+			sort.Sort(sort.Reverse(BillingByPayAmount(billings)))
+		}
+
+	case "unlock_amount":
+		if isAscend {
+			sort.Sort(BillingByUnlockAmount(billings))
+		} else {
+			sort.Sort(sort.Reverse(BillingByUnlockAmount(billings)))
+		}
+
+	case "file_name":
+		if isAscend {
+			sort.Sort(BillingByFileName(billings))
+		} else {
+			sort.Sort(sort.Reverse(BillingByFileName(billings)))
+		}
+	case "pay_at":
+		if isAscend {
+			sort.Sort(BillingByPayAt(billings))
+		} else {
+			sort.Sort(sort.Reverse(BillingByPayAt(billings)))
+		}
+	case "unlock_at":
+		sort.Sort(BillingByUnlockAt(billings))
+	case "deadline":
+	default:
+		sort.Sort(BillingByPayAt(billings))
+	}
 
 	totalRecordCount := len(billings)
 	start := (offset - 1) * limit

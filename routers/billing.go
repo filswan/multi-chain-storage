@@ -19,57 +19,9 @@ import (
 
 func BillingManager(router *gin.RouterGroup) {
 	router.GET("", GetUserBillingHistory)
-	router.GET("/price/filecoin", GetFileCoinLastestPrice)
-	router.GET("/deal/lockpayment/info", GetLockPaymentInfoByPayloadCid)
 	router.POST("/deal/lockpayment", WriteLockPayment)
-}
-
-type LockPayment struct {
-	SourceFileUploadId int64  `json:"source_file_upload_id"`
-	TxHash             string `json:"tx_hash"`
-}
-
-func WriteLockPayment(c *gin.Context) {
-	logs.GetLogger().Info("ip:", c.ClientIP(), ",port:", c.Request.URL.Port())
-	var lockPayment LockPayment
-	err := c.BindJSON(&lockPayment)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		c.JSON(http.StatusOK, common.CreateErrorResponse(errorinfo.ERROR_PARAM_PARSE_TO_STRUCT, err.Error()))
-		return
-	}
-
-	err = service.WriteLockPayment(lockPayment.SourceFileUploadId, lockPayment.TxHash)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		c.JSON(http.StatusOK, common.CreateErrorResponse(errorinfo.ERROR_INTERNAL, err.Error()))
-		return
-	}
-
-	c.JSON(http.StatusOK, common.CreateSuccessResponse(""))
-}
-
-func GetLockPaymentInfoByPayloadCid(c *gin.Context) {
-	URL := c.Request.URL.Query()
-	var payloadCid = strings.Trim(URL.Get("payload_cid"), " ")
-	if payloadCid == "" {
-		errMsg := "payload_cid can not be null"
-		logs.GetLogger().Error(errMsg)
-		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_WRONG_TYPE, errMsg))
-		return
-	}
-	lockPaymentList, err := models.GetEventLockPaymentBySrcPayloadCid(payloadCid)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.ERROR_INTERNAL))
-		return
-	}
-	if len(lockPaymentList) > 0 {
-		c.JSON(http.StatusOK, common.CreateSuccessResponse(gin.H{"tx_hash": lockPaymentList[0].TxHash, "payload_cid": lockPaymentList[0].PayloadCid, "locked_fee": lockPaymentList[0].LockedFee, "token_type": lockPaymentList[0].TokenAddress}))
-	} else {
-		c.JSON(http.StatusOK, common.CreateSuccessResponse(gin.H{"tx_hash": "", "payload_cid": payloadCid, "locked_fee": "", "token_type": ""}))
-	}
-
+	router.GET("/deal/lockpayment/info", GetLockPaymentInfoByPayloadCid)
+	router.GET("/price/filecoin", GetFileCoinLastestPrice)
 }
 
 func GetUserBillingHistory(c *gin.Context) {
@@ -128,6 +80,54 @@ func GetUserBillingHistory(c *gin.Context) {
 		"billing":            billings,
 		"total_record_count": *totalRecordCount,
 	}))
+}
+
+type LockPayment struct {
+	SourceFileUploadId int64  `json:"source_file_upload_id"`
+	TxHash             string `json:"tx_hash"`
+}
+
+func WriteLockPayment(c *gin.Context) {
+	logs.GetLogger().Info("ip:", c.ClientIP(), ",port:", c.Request.URL.Port())
+	var lockPayment LockPayment
+	err := c.BindJSON(&lockPayment)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusOK, common.CreateErrorResponse(errorinfo.ERROR_PARAM_PARSE_TO_STRUCT, err.Error()))
+		return
+	}
+
+	err = service.WriteLockPayment(lockPayment.SourceFileUploadId, lockPayment.TxHash)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusOK, common.CreateErrorResponse(errorinfo.ERROR_INTERNAL, err.Error()))
+		return
+	}
+
+	c.JSON(http.StatusOK, common.CreateSuccessResponse(""))
+}
+
+func GetLockPaymentInfoByPayloadCid(c *gin.Context) {
+	URL := c.Request.URL.Query()
+	var payloadCid = strings.Trim(URL.Get("payload_cid"), " ")
+	if payloadCid == "" {
+		errMsg := "payload_cid can not be null"
+		logs.GetLogger().Error(errMsg)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_WRONG_TYPE, errMsg))
+		return
+	}
+	lockPaymentList, err := models.GetEventLockPaymentBySrcPayloadCid(payloadCid)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.ERROR_INTERNAL))
+		return
+	}
+	if len(lockPaymentList) > 0 {
+		c.JSON(http.StatusOK, common.CreateSuccessResponse(gin.H{"tx_hash": lockPaymentList[0].TxHash, "payload_cid": lockPaymentList[0].PayloadCid, "locked_fee": lockPaymentList[0].LockedFee, "token_type": lockPaymentList[0].TokenAddress}))
+	} else {
+		c.JSON(http.StatusOK, common.CreateSuccessResponse(gin.H{"tx_hash": "", "payload_cid": payloadCid, "locked_fee": "", "token_type": ""}))
+	}
+
 }
 
 func GetFileCoinLastestPrice(c *gin.Context) {

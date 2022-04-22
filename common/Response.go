@@ -55,7 +55,3 @@ func NewSuccessResponseWithPageInfo(_data interface{}, _page *PageInfo) BasicRes
 		PageInfo: _page,
 	}
 }
-
-type RecordCount struct {
-	TotalRecord int64 `json:"total_record"`
-}

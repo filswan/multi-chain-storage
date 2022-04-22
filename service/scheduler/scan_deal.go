@@ -27,23 +27,28 @@ func ScanDeal() error {
 		return err
 	}
 
-	for _, deal := range dealList {
-		dealInfo, err := lotusClient.LotusClientGetDealInfo(deal.DealCid)
+	for _, offlineDeal := range dealList {
+		dealInfo, err := lotusClient.LotusClientGetDealInfo(offlineDeal.DealCid)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			continue
 		}
 
-		if deal.OnChainStatus == nil || *deal.OnChainStatus != dealInfo.Status || deal.DealId != dealInfo.DealId {
-			deal.OnChainStatus = &dealInfo.Status
-			deal.DealId = dealInfo.DealId
-			deal.UpdateAt = utils.GetCurrentUtcSecond()
-			err = database.SaveOne(deal)
+		if offlineDeal.OnChainStatus == nil || *offlineDeal.OnChainStatus != dealInfo.Status || offlineDeal.DealId != dealInfo.DealId {
+			offlineDeal.OnChainStatus = &dealInfo.Status
+			offlineDeal.DealId = dealInfo.DealId
+			offlineDeal.UpdateAt = utils.GetCurrentUtcSecond()
+			err = database.SaveOne(offlineDeal)
 			if err != nil {
 				logs.GetLogger().Error(err)
 				continue
 			}
 		}
+
+		err = models.CreateOfflineDealLog(offlineDeal.Id, dealInfo.Status, "")
+		if err != nil {
+			logs.GetLogger().Error(err)
+			continue
 	}
 
 	return nil

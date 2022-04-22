@@ -22,10 +22,11 @@ func Storage(router *gin.RouterGroup) {
 	router.GET("/deal/detail/:deal_id", GetDealFromFlink)
 	router.GET("/deal/file/:source_file_id", GetDeals4SourceFile)
 	router.POST("/deal/expire", RecordExpiredRefund)
-	router.GET("/deal/log/:deal_cid", GetDealLogs)
+	router.GET("/deal/log/:offline_deal_id", GetDealLogs)
 }
 
 func UploadFile(c *gin.Context) {
+	logs.GetLogger().Info("ip:", c.ClientIP(), ",port:", c.Request.URL.Port())
 	walletAddress := c.PostForm("wallet_address")
 	if strings.Trim(walletAddress, " ") == "" {
 		err := fmt.Errorf("wallet_address can not be null")
@@ -77,6 +78,7 @@ func UploadFile(c *gin.Context) {
 }
 
 func GetDeals(c *gin.Context) {
+	logs.GetLogger().Info("ip:", c.ClientIP(), ",port:", c.Request.URL.Port())
 	URL := c.Request.URL.Query()
 	pageNumber := strings.Trim(URL.Get("page_number"), " ")
 	var offset int = 1
@@ -128,6 +130,7 @@ func GetDeals(c *gin.Context) {
 }
 
 func GetDealFromFlink(c *gin.Context) {
+	logs.GetLogger().Info("ip:", c.ClientIP(), ",port:", c.Request.URL.Port())
 	dealIdStr := strings.Trim(c.Params.ByName("deal_id"), " ")
 	if dealIdStr == "" {
 		errMsg := "deal_id is required"

@@ -30,6 +30,7 @@ type LockPayment struct {
 }
 
 func WriteLockPayment(c *gin.Context) {
+	logs.GetLogger().Info("ip:", c.ClientIP(), ",port:", c.Request.URL.Port())
 	var lockPayment LockPayment
 	err := c.BindJSON(&lockPayment)
 	if err != nil {
@@ -72,6 +73,7 @@ func GetLockPaymentInfoByPayloadCid(c *gin.Context) {
 }
 
 func GetUserBillingHistory(c *gin.Context) {
+	logs.GetLogger().Info("ip:", c.ClientIP(), ",port:", c.Request.URL.Port())
 	URL := c.Request.URL.Query()
 	pageNumber := strings.Trim(URL.Get("page_number"), " ")
 	var offset int = 1

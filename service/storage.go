@@ -7,7 +7,7 @@ import (
 	"math/big"
 	"mime/multipart"
 	"multi-chain-storage/common/constants"
-	"multi-chain-storage/common/utils"
+
 	"multi-chain-storage/config"
 	"multi-chain-storage/database"
 	"multi-chain-storage/models"
@@ -85,7 +85,7 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType 
 		return nil, err
 	}
 
-	currentUtcMilliSec := utils.GetCurrentUtcSecond()
+	currentUtcMilliSec := libutils.GetCurrentUtcSecond()
 	// not uploaded by anyone yet
 	if sourceFile == nil {
 		sourceFile = &models.SourceFile{
@@ -413,7 +413,7 @@ func SaveExpirePaymentEvent(txHash string) (*models.EventExpirePayment, error) {
 				event.UserAddress = dataList[3].(common.Address).Hex()
 			}
 		}
-		event.CreateAt = strconv.FormatInt(utils.GetCurrentUtcSecond(), 10)
+		event.CreateAt = strconv.FormatInt(libutils.GetCurrentUtcSecond(), 10)
 		event.ContractAddress = transactionReceipt.ContractAddress.Hex()
 
 		eventList, err := models.FindEventExpirePayments(&models.EventExpirePayment{TxHash: txHash, BlockNo: strconv.

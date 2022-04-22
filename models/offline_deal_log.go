@@ -1,8 +1,9 @@
 package models
 
 import (
-	"multi-chain-storage/common/utils"
 	"multi-chain-storage/database"
+
+	libutils "github.com/filswan/go-swan-lib/utils"
 
 	"github.com/filswan/go-swan-lib/logs"
 )
@@ -42,7 +43,7 @@ func CreateOfflineDealLog(offlineDealId int64, onChainStatus, onChainMessage str
 		OfflineDealId:  offlineDealId,
 		OnChainStatus:  onChainStatus,
 		OnChainMessage: onChainMessage,
-		CreateAt:       utils.GetCurrentUtcSecond(),
+		CreateAt:       libutils.GetCurrentUtcSecond(),
 	}
 
 	err = database.SaveOne(&dealLog)

@@ -2,12 +2,13 @@ package scheduler
 
 import (
 	"multi-chain-storage/common/constants"
-	"multi-chain-storage/common/utils"
 	"multi-chain-storage/config"
 	"multi-chain-storage/database"
 	"multi-chain-storage/models"
 	"multi-chain-storage/on-chain/client"
 	"strconv"
+
+	libutils "github.com/filswan/go-swan-lib/utils"
 
 	"github.com/filswan/go-swan-lib/logs"
 
@@ -37,7 +38,7 @@ func ScanDeal() error {
 		if offlineDeal.OnChainStatus == nil || *offlineDeal.OnChainStatus != dealInfo.Status || offlineDeal.DealId != dealInfo.DealId {
 			offlineDeal.OnChainStatus = &dealInfo.Status
 			offlineDeal.DealId = dealInfo.DealId
-			offlineDeal.UpdateAt = utils.GetCurrentUtcSecond()
+			offlineDeal.UpdateAt = libutils.GetCurrentUtcSecond()
 			err = database.SaveOne(offlineDeal)
 			if err != nil {
 				logs.GetLogger().Error(err)

@@ -4,10 +4,11 @@ import (
 	"errors"
 	"multi-chain-storage/common"
 	"multi-chain-storage/common/errorinfo"
-	"multi-chain-storage/common/utils"
 	"multi-chain-storage/database"
 	"multi-chain-storage/models"
 	"net/http"
+
+	libutils "github.com/filswan/go-swan-lib/utils"
 
 	"github.com/filswan/go-swan-lib/logs"
 	"github.com/gin-gonic/gin"
@@ -52,7 +53,7 @@ func RecordMintInfo(c *gin.Context) {
 			NftTxHash:          nftTxHash,
 			TokenId:            tokenId,
 			MintAddress:        mintAddress,
-			CreateAt:           utils.GetCurrentUtcSecond(),
+			CreateAt:           libutils.GetCurrentUtcSecond(),
 		}
 
 		database.SaveOne(sourceFileMint)

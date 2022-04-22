@@ -1,8 +1,9 @@
 package models
 
 import (
-	"multi-chain-storage/common/utils"
 	"multi-chain-storage/database"
+
+	libutils "github.com/filswan/go-swan-lib/utils"
 
 	"github.com/filswan/go-swan-lib/logs"
 	"github.com/shopspring/decimal"
@@ -94,7 +95,7 @@ func UpdateDealFileStatus(id int64, status string) error {
 
 	params := []interface{}{}
 	params = append(params, status)
-	params = append(params, utils.GetCurrentUtcSecond())
+	params = append(params, libutils.GetCurrentUtcSecond())
 	params = append(params, id)
 
 	err := database.GetDB().Exec(sql, params...).Error

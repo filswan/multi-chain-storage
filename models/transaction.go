@@ -2,14 +2,15 @@ package models
 
 import (
 	"multi-chain-storage/common/constants"
-	"multi-chain-storage/common/utils"
+
 	"multi-chain-storage/database"
 	"multi-chain-storage/on-chain/client"
 	"sort"
 	"strings"
 
-	"github.com/filswan/go-swan-lib/logs"
 	libutils "github.com/filswan/go-swan-lib/utils"
+
+	"github.com/filswan/go-swan-lib/logs"
 )
 
 type Transaction struct {
@@ -96,7 +97,7 @@ func CreateTransaction(sourceFileUploadId int64, txHash string) error {
 		return err
 	}
 
-	currentUtcSecond := utils.GetCurrentUtcSecond()
+	currentUtcSecond := libutils.GetCurrentUtcSecond()
 	transaction := Transaction{
 		SourceFileUploadId: sourceFileUploadId,
 		Type:               constants.TRANSACTION_TYPE_PAY,

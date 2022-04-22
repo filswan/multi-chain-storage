@@ -3,8 +3,9 @@ package models
 import (
 	"fmt"
 	"multi-chain-storage/common/constants"
-	"multi-chain-storage/common/utils"
 	"multi-chain-storage/database"
+
+	libutils "github.com/filswan/go-swan-lib/utils"
 
 	"github.com/filswan/go-swan-lib/logs"
 	"github.com/shopspring/decimal"
@@ -149,7 +150,7 @@ func GetSourceFilesByDealFileId(dealFileId int64) ([]*SourceFile, error) {
 func UpdateSourceFileRefundAmount(srcFileId int64, refundAmount decimal.Decimal) error {
 	sql := "update source_file set refund_amount=?,update_at=? where id=?"
 
-	curUtcMilliSec := utils.GetCurrentUtcSecond()
+	curUtcMilliSec := libutils.GetCurrentUtcSecond()
 
 	params := []interface{}{}
 	params = append(params, refundAmount)
@@ -168,7 +169,7 @@ func UpdateSourceFileRefundAmount(srcFileId int64, refundAmount decimal.Decimal)
 func UpdateSourceFileRefundStatus(srcFileId int64, refundStatus string, refundTxHash string) error {
 	sql := "update source_file set refund_status=?,refund_tx_hash=?,refund_at=?,update_at=? where id=?"
 
-	curUtcMilliSec := utils.GetCurrentUtcSecond()
+	curUtcMilliSec := libutils.GetCurrentUtcSecond()
 
 	params := []interface{}{}
 	params = append(params, refundStatus)

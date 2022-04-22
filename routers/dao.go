@@ -3,12 +3,13 @@ package routers
 import (
 	"multi-chain-storage/common"
 	"multi-chain-storage/common/errorinfo"
-	"multi-chain-storage/common/utils"
 	"multi-chain-storage/database"
 	"multi-chain-storage/models"
 	"multi-chain-storage/service"
 	"net/http"
 	"strconv"
+
+	libutils "github.com/filswan/go-swan-lib/utils"
 
 	"github.com/filswan/go-swan-lib/logs"
 	"github.com/gin-gonic/gin"
@@ -121,7 +122,7 @@ func RecordDealListThatHaveBeenSignedByDao(c *gin.Context) {
 					continue
 				}
 				daoFetchedDeal.DealId = dealIdIntValue
-				daoFetchedDeal.CreateAt = utils.GetCurrentUtcSecond()
+				daoFetchedDeal.CreateAt = libutils.GetCurrentUtcSecond()
 				err = database.SaveOne(daoFetchedDeal)
 				if err != nil {
 					logs.GetLogger().Error(err)

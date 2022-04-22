@@ -2,10 +2,11 @@ package models
 
 import (
 	"multi-chain-storage/common/constants"
-	"multi-chain-storage/common/utils"
 	"multi-chain-storage/database"
 	"strconv"
 	"strings"
+
+	libutils "github.com/filswan/go-swan-lib/utils"
 
 	"github.com/filswan/go-swan-lib/logs"
 )
@@ -141,7 +142,7 @@ func UpdateOfflineDealUnlockStatus(id int64, unlockStatus string, messages ...st
 
 	note = strings.Trim(note, ",")
 
-	curUtcMilliSec := utils.GetCurrentUtcSecond()
+	curUtcMilliSec := libutils.GetCurrentUtcSecond()
 
 	params := []interface{}{}
 	params = append(params, unlockStatus)

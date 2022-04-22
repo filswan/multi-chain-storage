@@ -1,8 +1,9 @@
 package models
 
 import (
-	"multi-chain-storage/common/utils"
 	"multi-chain-storage/database"
+
+	libutils "github.com/filswan/go-swan-lib/utils"
 
 	"github.com/filswan/go-swan-lib/logs"
 	"github.com/shopspring/decimal"
@@ -34,7 +35,7 @@ type EventUnlockPayment struct {
 func UpdateUnlockAmount(srcFileId, dealId int64, txHash, blockNo string, unlockedFee decimal.Decimal) error {
 	sql := "update event_unlock_payment set tx_hash=?,block_no=?,unlock_to_admin_amount=locked_fee_before_unlock-?,locked_fee_after_unlock=?,update_at=? where source_file_id=? and deal_id=?"
 
-	curUtcMilliSec := utils.GetCurrentUtcSecond()
+	curUtcMilliSec := libutils.GetCurrentUtcSecond()
 
 	params := []interface{}{}
 	params = append(params, txHash)

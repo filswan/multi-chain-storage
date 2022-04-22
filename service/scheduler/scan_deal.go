@@ -15,7 +15,7 @@ import (
 )
 
 func ScanDeal() error {
-	dealList, err := models.GetOfflineDeals2BeScanned()
+	offlineDeals, err := models.GetOfflineDeals2BeScanned()
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
@@ -27,7 +27,7 @@ func ScanDeal() error {
 		return err
 	}
 
-	for _, offlineDeal := range dealList {
+	for _, offlineDeal := range offlineDeals {
 		dealInfo, err := lotusClient.LotusClientGetDealInfo(offlineDeal.DealCid)
 		if err != nil {
 			logs.GetLogger().Error(err)
@@ -45,10 +45,11 @@ func ScanDeal() error {
 			}
 		}
 
-		err = models.CreateOfflineDealLog(offlineDeal.Id, dealInfo.Status, "")
+		err = models.CreateOfflineDealLog(offlineDeal.Id, dealInfo.Status, dealInfo.Message)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			continue
+		}
 	}
 
 	return nil

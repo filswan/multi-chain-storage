@@ -7,7 +7,7 @@ import (
 
 type BasicResponse struct {
 	Status   string      `json:"status"`
-	Code     string      `json:"code"`
+	Code     int         `json:"code"`
 	Data     interface{} `json:"data,omitempty"`
 	Message  string      `json:"message,omitempty"`
 	PageInfo *PageInfo   `json:"page_info,omitempty"`
@@ -35,7 +35,7 @@ func CreateSuccessResponse(_data interface{}) BasicResponse {
 	}
 }
 
-func CreateErrorResponse(errCode string, errMsg ...string) BasicResponse {
+func CreateErrorResponse(errCode int, errMsg ...string) BasicResponse {
 	message := errorinfo.GetErrMsg(errCode)
 	if errMsg != nil {
 		message = message + ":" + errMsg[0]

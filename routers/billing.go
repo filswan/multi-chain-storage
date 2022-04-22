@@ -34,14 +34,14 @@ func WriteLockPayment(c *gin.Context) {
 	err := c.BindJSON(&lockPayment)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		c.JSON(http.StatusOK, common.CreateErrorResponse(err.Error()))
+		c.JSON(http.StatusOK, common.CreateErrorResponse(errorinfo.ERROR_PARAM_PARSE_TO_STRUCT, err.Error()))
 		return
 	}
 
 	err = service.WriteLockPayment(lockPayment.SourceFileUploadId, lockPayment.TxHash)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		c.JSON(http.StatusOK, common.CreateErrorResponse(err.Error()))
+		c.JSON(http.StatusOK, common.CreateErrorResponse(errorinfo.ERROR_INTERNAL, err.Error()))
 		return
 	}
 
@@ -54,13 +54,13 @@ func GetLockPaymentInfoByPayloadCid(c *gin.Context) {
 	if payloadCid == "" {
 		errMsg := "payload_cid can not be null"
 		logs.GetLogger().Error(errMsg)
-		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAM_ERROR_CODE_WRONG_TYPE, errMsg))
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_WRONG_TYPE, errMsg))
 		return
 	}
 	lockPaymentList, err := models.GetEventLockPaymentBySrcPayloadCid(payloadCid)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.DATABASE_ACCESS_ERROR_CODE))
+		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.ERROR_INTERNAL))
 		return
 	}
 	if len(lockPaymentList) > 0 {
@@ -103,7 +103,7 @@ func GetUserBillingHistory(c *gin.Context) {
 	if walletAddress == "" {
 		err := fmt.Errorf("wallet_address is required")
 		logs.GetLogger().Error(err)
-		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAM_ERROR_CODE_NULL, err.Error()))
+		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.ERROR_PARAM_NULL, err.Error()))
 		return
 	}
 
@@ -118,7 +118,7 @@ func GetUserBillingHistory(c *gin.Context) {
 	billings, totalRecordCount, err := service.GetTransactions(walletAddress, txHash, fileName, orderBy, isAscend, limit, offset)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.DATABASE_ACCESS_ERROR_CODE))
+		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.ERROR_INTERNAL, err.Error()))
 		return
 	}
 
@@ -132,7 +132,7 @@ func GetFileCoinLastestPrice(c *gin.Context) {
 	latestPrice, err := client.GetFileCoinLastestPrice()
 	if err != nil {
 		logs.GetLogger().Error(err)
-		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_LATEST_PRICE_OF_FILECOIN_ERROR_CODE))
+		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.ERROR_INTERNAL, err.Error()))
 		return
 	}
 

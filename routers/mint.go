@@ -37,14 +37,14 @@ func RecordMintInfo(c *gin.Context) {
 		errMsg := "payload_cid, tx_hash, token_id and mint_address cannot be nil"
 		err := errors.New(errMsg)
 		logs.GetLogger().Error(err)
-		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAM_ERROR_CODE_NULL, errMsg))
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_NULL, errMsg))
 		return
 	}
 
 	sourceFile, err := models.GetSourceFileByPayloadCid(payloadCid)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.DATABASE_ACCESS_ERROR_CODE))
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_INTERNAL, err.Error()))
 		return
 	} else {
 		sourceFileMint := models.SourceFileMint{

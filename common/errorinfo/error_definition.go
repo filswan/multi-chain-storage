@@ -1,39 +1,30 @@
 package errorinfo
 
 const (
-	//http request
-	HTTP_REQUEST_PARAM_ERROR_CODE_NULL            = "500002002"
-	HTTP_REQUEST_PARAM_ERROR_CODE_WRONG_TYPE      = "500002008"
-	HTTP_REQUEST_PARAM_ERROR_CODE_INVALID_VALUE   = "500002009"
-	HTTP_REQUEST_PARAM_ERROR_CODE_PARSE_TO_STRUCT = "500002005"
-
-	//database err 003
-	DATABASE_ACCESS_ERROR_CODE = "500003002"
-
-	//lotus send deal err  005
-	SAVE_FILE_ERROR                         = "500005001"
-	GET_LATEST_PRICE_OF_FILECOIN_ERROR_CODE = "500005002"
+	ERROR_PARAM_NULL            = 10001
+	ERROR_PARAM_WRONG_TYPE      = 10002
+	ERROR_PARAM_INVALID_VALUE   = 10003
+	ERROR_PARAM_PARSE_TO_STRUCT = 10004
+	ERROR_INTERNAL              = 20001
 )
 
-var errorMap map[string]string
+var errorMap map[int]string
 
 func init() {
-	errorMap = map[string]string{
-		HTTP_REQUEST_PARAM_ERROR_CODE_NULL:            "Request param cannot be null",
-		HTTP_REQUEST_PARAM_ERROR_CODE_WRONG_TYPE:      "Request param data type is wrong",
-		HTTP_REQUEST_PARAM_ERROR_CODE_INVALID_VALUE:   "Request param value is invalid",
-		HTTP_REQUEST_PARAM_ERROR_CODE_PARSE_TO_STRUCT: "Request params parse to structure fail",
-		DATABASE_ACCESS_ERROR_CODE:                    "Access database fail",
-		SAVE_FILE_ERROR:                               "Failed to save file on server, please contact the administrator",
-		GET_LATEST_PRICE_OF_FILECOIN_ERROR_CODE:       "Getting filecion latest price fail",
+	errorMap = map[int]string{
+		ERROR_PARAM_NULL:            "param cannot be null",
+		ERROR_PARAM_WRONG_TYPE:      "param data type is wrong",
+		ERROR_PARAM_INVALID_VALUE:   "param value is invalid",
+		ERROR_PARAM_PARSE_TO_STRUCT: "params parse to structure fail",
+		ERROR_INTERNAL:              "Internal error",
 	}
 }
 
-func GetErrMsg(errCode string) string {
+func GetErrMsg(errCode int) string {
 	errMsg := errorMap[errCode]
 
 	if errMsg == "" {
-		errMsg = "internal error"
+		errMsg = errorMap[ERROR_INTERNAL]
 	}
 
 	return errMsg

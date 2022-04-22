@@ -32,14 +32,14 @@ func UploadFile(c *gin.Context) {
 	if strings.Trim(walletAddress, " ") == "" {
 		err := fmt.Errorf("wallet_address can not be null")
 		logs.GetLogger().Error(err)
-		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAM_ERROR_CODE_NULL, err.Error()))
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_NULL, err.Error()))
 		return
 	}
 
 	file, err := c.FormFile("file")
 	if err != nil {
 		logs.GetLogger().Error(err)
-		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAM_ERROR_CODE_NULL, "get file from user occurred error,please try again"))
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_NULL, "get file from user occurred error,please try again"))
 		return
 	}
 
@@ -47,14 +47,14 @@ func UploadFile(c *gin.Context) {
 	if strings.Trim(duration, " ") == "" {
 		err = fmt.Errorf("duraion can not be null")
 		logs.GetLogger().Error(err)
-		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAM_ERROR_CODE_NULL, err.Error()))
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_NULL, err.Error()))
 		return
 	}
 
 	durationInt, err := strconv.Atoi(duration)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAM_ERROR_CODE_WRONG_TYPE, "duration should be a number"))
+		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.ERROR_PARAM_WRONG_TYPE, "duration should be a number"))
 		return
 	}
 	durationInt = durationInt * 24 * 60 * 60 / 30
@@ -71,7 +71,7 @@ func UploadFile(c *gin.Context) {
 
 	uploadResult, err := service.SaveFile(c, file, durationInt, fileTypeInt, walletAddress)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.SAVE_FILE_ERROR))
+		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.ERROR_INTERNAL, err.Error()))
 		return
 	}
 
@@ -106,7 +106,7 @@ func GetDeals(c *gin.Context) {
 	if walletAddress == "" {
 		err := fmt.Errorf("wallet_address is required")
 		logs.GetLogger().Error(err)
-		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAM_ERROR_CODE_NULL, err.Error()))
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_NULL, err.Error()))
 		return
 	}
 
@@ -119,7 +119,7 @@ func GetDeals(c *gin.Context) {
 	sourceFileUploads, totalRecordCount, err := service.GetSourceFileUploads(walletAddress, fileName, orderBy, isAscend, limit, offset)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.DATABASE_ACCESS_ERROR_CODE, err.Error()))
+		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.ERROR_INTERNAL, err.Error()))
 		return
 	}
 
@@ -182,21 +182,21 @@ func GetDealFromFlink(c *gin.Context) {
 	if dealId == "" {
 		errMsg := "deal_id is required"
 		logs.GetLogger().Error(errMsg)
-		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAM_ERROR_CODE_NULL, errMsg))
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_NULL, errMsg))
 		return
 	}
 	dealIdInt, err := strconv.Atoi(dealId)
 	if err != nil {
 		err := fmt.Errorf("deal_id must be a number")
 		logs.GetLogger().Error(err)
-		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAM_ERROR_CODE_WRONG_TYPE, err.Error()))
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_WRONG_TYPE, err.Error()))
 		return
 	}
 
 	if dealIdInt <= 0 {
 		err := fmt.Errorf("deal_id must be greater than 0")
 		logs.GetLogger().Error(err)
-		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAM_ERROR_CODE_INVALID_VALUE, err.Error()))
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_INVALID_VALUE, err.Error()))
 		return
 	}
 
@@ -205,7 +205,7 @@ func GetDealFromFlink(c *gin.Context) {
 	if srcFilePayloadCid == "" {
 		err := fmt.Errorf("payload_cid is required")
 		logs.GetLogger().Error(err)
-		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAM_ERROR_CODE_NULL, err.Error()))
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_NULL, err.Error()))
 		return
 	}
 
@@ -213,7 +213,7 @@ func GetDealFromFlink(c *gin.Context) {
 	if walletAddress == "" {
 		err := fmt.Errorf("wallet_address is required")
 		logs.GetLogger().Error(err)
-		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAM_ERROR_CODE_NULL, err.Error()))
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_NULL, err.Error()))
 		return
 	}
 
@@ -236,7 +236,7 @@ func GetDealFromFlink(c *gin.Context) {
 	daoSignList, err := service.GetDaoSignEventByDealId(int64(dealIdInt))
 	if err != nil {
 		logs.GetLogger().Error(err)
-		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.DATABASE_ACCESS_ERROR_CODE, errorinfo.DATABASE_ACCESS_ERROR_CODE+": get dao info from db occurred error"))
+		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.ERROR_INTERNAL, err.Error()))
 		return
 	}
 	signedDaoCount := 0
@@ -248,13 +248,13 @@ func GetDealFromFlink(c *gin.Context) {
 	foundInfo, err := service.GetLockFoundInfoByPayloadCid(srcFilePayloadCid)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.DATABASE_ACCESS_ERROR_CODE, errorinfo.DATABASE_ACCESS_ERROR_CODE+": get lock found info from db occurred error"))
+		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.ERROR_INTERNAL, err.Error()))
 		return
 	}
 	srcFile, err := models.GetSourceFileExtByPayloadCid(srcFilePayloadCid, walletAddress)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.DATABASE_ACCESS_ERROR_CODE, errorinfo.DATABASE_ACCESS_ERROR_CODE+": get deal file info from db occurred error"))
+		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.ERROR_INTERNAL, err.Error()))
 		return
 	}
 
@@ -287,7 +287,7 @@ func GetDeals4SourceFile(c *gin.Context) {
 	if sourceFileIdStr == "" {
 		errMsg := "source file id can not be null"
 		logs.GetLogger().Error(errMsg)
-		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAM_ERROR_CODE_NULL, errMsg))
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_NULL, errMsg))
 		return
 	}
 
@@ -295,14 +295,14 @@ func GetDeals4SourceFile(c *gin.Context) {
 	if err != nil {
 		errMsg := "source file id should be a valid number"
 		logs.GetLogger().Error(errMsg)
-		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAM_ERROR_CODE_WRONG_TYPE, errMsg))
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_WRONG_TYPE, errMsg))
 		return
 	}
 
 	offlineDeals, sourceFile, err := service.GetOfflineDealsBySourceFileId(sourceFileId)
 	if err != nil {
 		logs.GetLogger().Error(err.Error())
-		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.DATABASE_ACCESS_ERROR_CODE, err.Error()))
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_INTERNAL, err.Error()))
 		return
 	}
 
@@ -318,13 +318,13 @@ func RecordExpiredRefund(c *gin.Context) {
 	if strings.Trim(tx_hash, " ") == "" {
 		err := fmt.Errorf("transaction hash is required")
 		logs.GetLogger().Error(err)
-		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAM_ERROR_CODE_NULL, err.Error()))
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_NULL, err.Error()))
 		return
 	}
 	event, err := service.SaveExpirePaymentEvent(tx_hash)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.DATABASE_ACCESS_ERROR_CODE))
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_INTERNAL, err.Error()))
 		return
 	} else {
 		c.JSON(http.StatusOK, common.CreateSuccessResponse(event))

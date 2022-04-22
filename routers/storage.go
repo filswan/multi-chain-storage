@@ -165,7 +165,7 @@ func GetDealFromFlink(c *gin.Context) {
 		return
 	}
 
-	threshHold, err := client.GetThreshHold()
+	threshold, err := client.GetThreshHold()
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_INTERNAL, err.Error()))
@@ -181,7 +181,7 @@ func GetDealFromFlink(c *gin.Context) {
 
 	c.JSON(http.StatusOK, common.CreateSuccessResponse(gin.H{
 		"source_file_upload_deal": sourceFileUploadDeal,
-		"dao_thresh_hold":         threshHold,
+		"dao_threshold":           threshold,
 	}))
 }
 func GetDeals4SourceFile(c *gin.Context) {

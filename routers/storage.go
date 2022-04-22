@@ -21,6 +21,7 @@ func Storage(router *gin.RouterGroup) {
 	router.GET("/deal/detail/:deal_id", GetDealFromFlink)
 	router.GET("/deal/file/:source_file_id", GetDeals4SourceFile)
 	router.POST("/deal/expire", RecordExpiredRefund)
+	router.GET("/deal/log/:deal_cid", GetDealLogs)
 }
 
 func UploadFile(c *gin.Context) {

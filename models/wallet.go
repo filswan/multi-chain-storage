@@ -1,8 +1,9 @@
 package models
 
 import (
-	"multi-chain-storage/common/utils"
 	"multi-chain-storage/database"
+
+	libutils "github.com/filswan/go-swan-lib/utils"
 
 	"github.com/filswan/go-swan-lib/logs"
 )
@@ -39,7 +40,7 @@ func SaveWallet(address string, walletType int) (*Wallet, error) {
 	wallet := Wallet{
 		Type:     walletType,
 		Address:  address,
-		CreateAt: utils.GetCurrentUtcSecond(),
+		CreateAt: libutils.GetCurrentUtcSecond(),
 	}
 
 	walletResult := database.GetDB().Create(&wallet)

@@ -2,7 +2,6 @@ package models
 
 import (
 	"multi-chain-storage/common/constants"
-	"multi-chain-storage/common/utils"
 	"multi-chain-storage/database"
 	"strconv"
 	"time"
@@ -53,30 +52,6 @@ func GetEventLockPaymentBySrcPayloadCid(srcFilePayloadCid string) ([]*EventLockP
 	return eventLockPayments, nil
 }
 
-func GetEventLockPaymentByPayloadCidWallet(payloadCid, walletAddress string) ([]*EventLockPayment, error) {
-	var eventLockPayment []*EventLockPayment
-	err := database.GetDB().Where("payload_cid=? and address_from=?", payloadCid, walletAddress).Find((&eventLockPayment)).Error
-
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-
-	return eventLockPayment, nil
-}
-
-func GetEventLockPaymentByPayloadCid(payloadCid string) ([]*EventLockPayment, error) {
-	var eventLockPayment []*EventLockPayment
-	err := database.GetDB().Where("payload_cid=?", payloadCid).Find((&eventLockPayment)).Error
-
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-
-	return eventLockPayment, nil
-}
-
 func FindExpiredLockPayment() ([]*EventLockPaymentQuery, error) {
 	sql :=
 		"SELECT b.id as deal_file_id, a.payload_cid, b.deal_id, a.address_from as recipient " +
@@ -92,49 +67,4 @@ func FindExpiredLockPayment() ([]*EventLockPaymentQuery, error) {
 		return nil, err
 	}
 	return models, nil
-}
-
-func CreateEventLockPayment(eventLockPayment EventLockPayment) error {
-	currentUtcMilliSecond := utils.GetCurrentUtcSecond()
-	eventLockPayment.CreateAt = currentUtcMilliSecond
-
-	eventLockPayments, err := GetEventLockPaymentByPayloadCid(eventLockPayment.PayloadCid)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
-
-	if len(eventLockPayments) > 0 {
-		eventLockPayment.ID = eventLockPayments[0].ID
-	}
-
-	db := database.GetDBTransaction()
-	err = database.SaveOneInTransaction(db, &eventLockPayment)
-	if err != nil {
-		db.Rollback()
-		logs.GetLogger().Error(err)
-		return err
-	}
-
-	sql := "update source_file set status=?,update_at=? where id=?"
-
-	params := []interface{}{}
-	params = append(params, constants.SOURCE_FILE_UPLOAD_STATUS_PAID)
-	params = append(params, currentUtcMilliSecond)
-	params = append(params, eventLockPayment.SourceFileId)
-
-	err = db.Exec(sql, params...).Error
-	if err != nil {
-		db.Rollback()
-		logs.GetLogger().Error(err)
-		return err
-	}
-
-	err = db.Commit().Error
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
-
-	return nil
 }

@@ -1,8 +1,9 @@
 package models
 
 import (
-	"multi-chain-storage/common/utils"
 	"multi-chain-storage/database"
+
+	libutils "github.com/filswan/go-swan-lib/utils"
 
 	"github.com/filswan/go-swan-lib/logs"
 )
@@ -37,7 +38,7 @@ func GeMinerByFid(fid string) (*Miner, error) {
 func SaveMiner(fid string) (*Miner, error) {
 	miner := Miner{
 		Fid:      fid,
-		CreateAt: utils.GetCurrentUtcSecond(),
+		CreateAt: libutils.GetCurrentUtcSecond(),
 	}
 
 	minerResult := database.GetDB().Create(&miner)

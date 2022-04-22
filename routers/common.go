@@ -26,7 +26,7 @@ func GetSystemParams(c *gin.Context) {
 	params, err := service.GetSystemParams()
 	if err != nil {
 		logs.GetLogger().Error(err)
-		c.JSON(http.StatusOK, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE, "getting system config from db occurred error"))
+		c.JSON(http.StatusOK, common.CreateErrorResponse(errorinfo.ERROR_INTERNAL, err.Error()))
 		return
 	}
 

@@ -2,14 +2,15 @@ package models
 
 import (
 	"multi-chain-storage/common/constants"
-	"multi-chain-storage/common/utils"
+
 	"multi-chain-storage/database"
 	"multi-chain-storage/on-chain/client"
 	"sort"
 	"strings"
 
-	"github.com/filswan/go-swan-lib/logs"
 	libutils "github.com/filswan/go-swan-lib/utils"
+
+	"github.com/filswan/go-swan-lib/logs"
 )
 
 type Transaction struct {
@@ -23,12 +24,11 @@ type Transaction struct {
 	WalletIdTo         int64  `json:"wallet_id_to"`
 	Amount             string `json:"amount"`
 	BlockNumber        int64  `json:"block_number"`
-	TransactionAt      int64  `json:"transaction_at"`
 	Deadline           int64  `json:"deadline"`
 	CreateAt           int64  `json:"create_at"`
 }
 
-func GetTransactionBySourceFileUploadIdType(sourceFileUploadId int64, transactionType int) ([]*Transaction, error) {
+func GetTransactionBySourceFileUploadIdType(sourceFileUploadId int64, transactionType int) (*Transaction, error) {
 	var transactions []*Transaction
 	err := database.GetDB().Where("source_file_upload_id=? and type=?", sourceFileUploadId, transactionType).Find(&transactions).Error
 	if err != nil {
@@ -36,17 +36,21 @@ func GetTransactionBySourceFileUploadIdType(sourceFileUploadId int64, transactio
 		return nil, err
 	}
 
-	return transactions, nil
+	if len(transactions) > 0 {
+		return transactions[0], nil
+	}
+
+	return nil, nil
 }
 
 func CreateTransaction(sourceFileUploadId int64, txHash string) error {
-	transactions, err := GetTransactionBySourceFileUploadIdType(sourceFileUploadId, constants.TRANSACTION_TYPE_PAY)
+	transactionOld, err := GetTransactionBySourceFileUploadIdType(sourceFileUploadId, constants.TRANSACTION_TYPE_PAY)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
 	}
 
-	if len(transactions) > 0 {
+	if transactionOld != nil {
 		return nil
 	}
 
@@ -93,7 +97,7 @@ func CreateTransaction(sourceFileUploadId int64, txHash string) error {
 		return err
 	}
 
-	currentUtcSecond := utils.GetCurrentUtcSecond()
+	currentUtcSecond := libutils.GetCurrentUtcSecond()
 	transaction := Transaction{
 		SourceFileUploadId: sourceFileUploadId,
 		Type:               constants.TRANSACTION_TYPE_PAY,
@@ -182,6 +186,12 @@ func (a BillingByUnlockAt) Len() int           { return len(a) }
 func (a BillingByUnlockAt) Less(i, j int) bool { return a[i].UnlockAt < a[j].UnlockAt }
 func (a BillingByUnlockAt) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 
+type BillingByDeadline []*Billing
+
+func (a BillingByDeadline) Len() int           { return len(a) }
+func (a BillingByDeadline) Less(i, j int) bool { return a[i].Deadline < a[j].Deadline }
+func (a BillingByDeadline) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+
 func GetTransactions(walletId int64, txHash, fileName, orderBy string, isAscend bool, limit, offset int) ([]*Billing, *int, error) {
 	sql := "select\n" +
 		"a.id pay_id,a.tx_hash pay_tx_hash,a.amount pay_amount,e.amount unlock_amount,b.file_name,d.payload_cid,\n" +
@@ -240,10 +250,23 @@ func GetTransactions(walletId int64, txHash, fileName, orderBy string, isAscend 
 			sort.Sort(sort.Reverse(BillingByPayAt(billings)))
 		}
 	case "unlock_at":
-		sort.Sort(BillingByUnlockAt(billings))
+		if isAscend {
+			sort.Sort(BillingByUnlockAt(billings))
+		} else {
+			sort.Sort(sort.Reverse(BillingByUnlockAt(billings)))
+		}
 	case "deadline":
+		if isAscend {
+			sort.Sort(BillingByDeadline(billings))
+		} else {
+			sort.Sort(sort.Reverse(BillingByDeadline(billings)))
+		}
 	default:
-		sort.Sort(BillingByPayAt(billings))
+		if isAscend {
+			sort.Sort(BillingByPayAt(billings))
+		} else {
+			sort.Sort(sort.Reverse(BillingByPayAt(billings)))
+		}
 	}
 
 	totalRecordCount := len(billings)

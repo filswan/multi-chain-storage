@@ -3,12 +3,13 @@ package routers
 import (
 	"multi-chain-storage/common"
 	"multi-chain-storage/common/errorinfo"
-	"multi-chain-storage/common/utils"
 	"multi-chain-storage/database"
 	"multi-chain-storage/models"
 	"multi-chain-storage/service"
 	"net/http"
 	"strconv"
+
+	libutils "github.com/filswan/go-swan-lib/utils"
 
 	"github.com/filswan/go-swan-lib/logs"
 	"github.com/gin-gonic/gin"
@@ -23,7 +24,7 @@ func GetDealListForDaoToSign(c *gin.Context) {
 	dealList, err := service.GetShoulBeSignDealListFromDB()
 	if err != nil {
 		logs.GetLogger().Error(err)
-		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE))
+		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.ERROR_INTERNAL, err.Error()))
 		return
 	}
 	c.JSON(http.StatusOK, common.CreateSuccessResponse(dealList))
@@ -49,7 +50,7 @@ func RecordDealListThatHaveBeenSignedByDao(c *gin.Context) {
 	err := c.BindJSON(&dealIdList)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		c.AbortWithStatusJSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARSER_RESPONSE_TO_STRUCT_ERROR_CODE))
+		c.AbortWithStatusJSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_PARSE_TO_STRUCT))
 		return
 	}
 
@@ -121,7 +122,7 @@ func RecordDealListThatHaveBeenSignedByDao(c *gin.Context) {
 					continue
 				}
 				daoFetchedDeal.DealId = dealIdIntValue
-				daoFetchedDeal.CreateAt = utils.GetCurrentUtcSecond()
+				daoFetchedDeal.CreateAt = libutils.GetCurrentUtcSecond()
 				err = database.SaveOne(daoFetchedDeal)
 				if err != nil {
 					logs.GetLogger().Error(err)

@@ -9,7 +9,7 @@ import (
 	"multi-chain-storage/models"
 	"path/filepath"
 
-	"multi-chain-storage/common/utils"
+	libutils "github.com/filswan/go-swan-lib/utils"
 
 	"github.com/filswan/go-swan-lib/logs"
 
@@ -33,7 +33,7 @@ func SendDeal() error {
 		DealSourceIds:          []int{libconstants.TASK_SOURCE_ID_SWAN_PAYMENT},
 	}
 
-	currentUtcSec := utils.GetCurrentUtcSecond()
+	currentUtcSec := libutils.GetCurrentUtcSecond()
 
 	wallet, err := models.GetWalletByAddress(cmdAutoBidDeal.SenderWallet, constants.WALLET_TYPE_FILE_COIN)
 	if err != nil {

@@ -2,12 +2,13 @@ package scheduler
 
 import (
 	"multi-chain-storage/common/constants"
-	"multi-chain-storage/common/utils"
 	"multi-chain-storage/config"
 	"multi-chain-storage/database"
 	"multi-chain-storage/models"
 	"multi-chain-storage/on-chain/client"
 	"strconv"
+
+	libutils "github.com/filswan/go-swan-lib/utils"
 
 	"github.com/filswan/go-swan-lib/logs"
 
@@ -15,7 +16,7 @@ import (
 )
 
 func ScanDeal() error {
-	dealList, err := models.GetOfflineDeals2BeScanned()
+	offlineDeals, err := models.GetOfflineDeals2BeScanned()
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
@@ -27,22 +28,28 @@ func ScanDeal() error {
 		return err
 	}
 
-	for _, deal := range dealList {
-		dealInfo, err := lotusClient.LotusClientGetDealInfo(deal.DealCid)
+	for _, offlineDeal := range offlineDeals {
+		dealInfo, err := lotusClient.LotusClientGetDealInfo(offlineDeal.DealCid)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			continue
 		}
 
-		if deal.OnChainStatus == nil || *deal.OnChainStatus != dealInfo.Status || deal.DealId != dealInfo.DealId {
-			deal.OnChainStatus = &dealInfo.Status
-			deal.DealId = dealInfo.DealId
-			deal.UpdateAt = utils.GetCurrentUtcSecond()
-			err = database.SaveOne(deal)
+		if offlineDeal.OnChainStatus == nil || *offlineDeal.OnChainStatus != dealInfo.Status || offlineDeal.DealId != dealInfo.DealId {
+			offlineDeal.OnChainStatus = &dealInfo.Status
+			offlineDeal.DealId = dealInfo.DealId
+			offlineDeal.UpdateAt = libutils.GetCurrentUtcSecond()
+			err = database.SaveOne(offlineDeal)
 			if err != nil {
 				logs.GetLogger().Error(err)
 				continue
 			}
+		}
+
+		err = models.CreateOfflineDealLog(offlineDeal.Id, dealInfo.Status, dealInfo.Message)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			continue
 		}
 	}
 

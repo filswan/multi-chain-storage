@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"multi-chain-storage/common/constants"
-	"multi-chain-storage/common/utils"
 	"multi-chain-storage/config"
 	"multi-chain-storage/database"
 	"multi-chain-storage/models"
@@ -12,6 +11,8 @@ import (
 	"multi-chain-storage/on-chain/goBind"
 	"strconv"
 	"time"
+
+	libutils "github.com/filswan/go-swan-lib/utils"
 
 	"github.com/ethereum/go-ethereum/rpc"
 
@@ -247,7 +248,7 @@ func setUnlockPayment(offlineDeal *models.OfflineDeal) error {
 		unlockPayment.LockedFeeBeforeUnlock = lockedPayment.LockedFee
 
 		unlockPayment.TokenAddress = lockedPayment.TokenAddress
-		unlockPayment.UnlockTime = utils.GetCurrentUtcSecond()
+		unlockPayment.UnlockTime = libutils.GetCurrentUtcSecond()
 		coin, err := models.GetCoinByAddress(unlockPayment.TokenAddress)
 		if err != nil {
 			logs.GetLogger().Error(err)

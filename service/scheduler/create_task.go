@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"math/big"
 	"multi-chain-storage/common/constants"
-	"multi-chain-storage/common/utils"
 	"multi-chain-storage/config"
 	"multi-chain-storage/database"
 	"multi-chain-storage/models"
@@ -67,7 +66,7 @@ func createTask() (*int, error) {
 	}
 
 	totalSize := int64(0)
-	currentUtcMilliSec := utils.GetCurrentUtcSecond()
+	currentUtcMilliSec := libutils.GetCurrentUtcSecond()
 	createdTimeMin := currentUtcMilliSec
 	var maxPrice *decimal.Decimal
 
@@ -256,7 +255,7 @@ func createTask4SrcFiles(srcDir, carDir string, maxPrice decimal.Decimal) (*libm
 
 func saveCarInfo2DB(fileDesc *libmodel.FileDesc, srcFiles []*models.SourceFileUploadsNeed2Car, maxPrice decimal.Decimal) error {
 	db := database.GetDBTransaction()
-	currentUtcSecond := utils.GetCurrentUtcSecond()
+	currentUtcSecond := libutils.GetCurrentUtcSecond()
 	dealFile := models.CarFile{
 		CarFileName: fileDesc.CarFileName,
 		CarFilePath: fileDesc.CarFilePath,

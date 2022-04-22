@@ -26,7 +26,7 @@ func CreateErrorResponse(errCode int, errMsg ...string) BasicResponse {
 		message = message + ":" + errMsg[0]
 	}
 	return BasicResponse{
-		Status:  constants.HTTP_STATUS_ERROR,
+		Status:  constants.HTTP_STATUS_FAIL,
 		Code:    errCode,
 		Message: message,
 	}

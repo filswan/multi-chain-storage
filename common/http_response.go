@@ -5,27 +5,27 @@ import (
 	"multi-chain-storage/common/errorinfo"
 )
 
-type BasicResponse struct {
+type Response struct {
 	Status  string      `json:"status"`
 	Code    int         `json:"code"`
 	Data    interface{} `json:"data,omitempty"`
 	Message string      `json:"message,omitempty"`
 }
 
-func CreateSuccessResponse(_data interface{}) BasicResponse {
-	return BasicResponse{
+func CreateSuccessResponse(_data interface{}) Response {
+	return Response{
 		Status: constants.HTTP_STATUS_SUCCESS,
 		Code:   constants.HTTP_CODE_200_OK,
 		Data:   _data,
 	}
 }
 
-func CreateErrorResponse(errCode int, errMsg ...string) BasicResponse {
+func CreateErrorResponse(errCode int, errMsg ...string) Response {
 	message := errorinfo.GetErrMsg(errCode)
 	if errMsg != nil {
 		message = message + ":" + errMsg[0]
 	}
-	return BasicResponse{
+	return Response{
 		Status:  constants.HTTP_STATUS_FAIL,
 		Code:    errCode,
 		Message: message,

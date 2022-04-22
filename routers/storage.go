@@ -135,7 +135,7 @@ func GetDealFromFlink(c *gin.Context) {
 	}
 	dealId, err := strconv.Atoi(dealIdStr)
 	if err != nil {
-		err := fmt.Errorf("deal_id must be a number")
+		err := fmt.Errorf("deal_id must be a valid number")
 		logs.GetLogger().Error(err)
 		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_WRONG_TYPE, err.Error()))
 		return
@@ -172,7 +172,7 @@ func GetDealFromFlink(c *gin.Context) {
 		return
 	}
 
-	flinkDeal, filePayInfo, err := service.GetSourceFileUploadDeal(sourceFileUploadId, dealId)
+	sourceFileUploadDeal, err := service.GetSourceFileUploadDeal(sourceFileUploadId, dealId)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_INTERNAL, err.Error()))
@@ -180,9 +180,8 @@ func GetDealFromFlink(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, common.CreateSuccessResponse(gin.H{
-		"flink_deal":      flinkDeal,
-		"file_pay_info":   filePayInfo,
-		"dao_thresh_hold": threshHold,
+		"source_file_upload_deal": sourceFileUploadDeal,
+		"dao_thresh_hold":         threshHold,
 	}))
 }
 func GetDeals4SourceFile(c *gin.Context) {

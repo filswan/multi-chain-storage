@@ -182,7 +182,7 @@ func GetSourceFileUploads(walletAddress string, fileName, orderBy string, isAsce
 	return srcFileUploads, totalRecordCount, nil
 }
 
-type FlinkDeal struct {
+type SourceFileUploadDeal struct {
 	DealID                   int    `json:"deal_id"`
 	DealCid                  string `json:"deal_cid"`
 	MessageCid               string `json:"message_cid"`
@@ -205,13 +205,19 @@ type FlinkDeal struct {
 	Status                   int    `json:"status"`
 	NetworkName              string `json:"network_name"`
 	StoragePrice             int    `json:"storage_price"`
+	IpfsUrl                  string `json:"ipfs_url"`
+	FileName                 string `json:"file_name"`
+	WCid                     string `json:"w_cid"`
+	LockedAt                 int64  `json:"locked_at"`
+	LockedFee                string `json:"locked_fee"`
+	Unlocked                 bool   `json:"unlocked"`
 }
 type FlinkDealResult struct {
 	JobRunID int `json:"jobRunID"`
 	Data     struct {
 		Status string `json:"status"`
 		Data   struct {
-			Deal FlinkDeal `json:"deal"`
+			Deal SourceFileUploadDeal `json:"deal"`
 		} `json:"data"`
 		Result struct {
 		} `json:"result"`
@@ -229,16 +235,7 @@ type flinkParams struct {
 	} `json:"data"`
 }
 
-type FilePayInfo struct {
-	IpfsUrl   string `json:"ipfs_url"`
-	FileName  string `json:"file_name"`
-	WCid      string `json:"w_cid"`
-	CreateAt  int64  `json:"create_at"`
-	LockedFee string `json:"locked_fee"`
-	Unlocked  bool   `json:"unlocked"`
-}
-
-func GetSourceFileUploadDeal(sourceFileUploadId int64, dealId int) (*FlinkDeal, *FilePayInfo, error) {
+func GetSourceFileUploadDeal(sourceFileUploadId int64, dealId int) (*SourceFileUploadDeal, error) {
 	flinkDealResult := FlinkDealResult{}
 	if dealId > 0 {
 		url := config.GetConfig().FLinkUrl
@@ -260,50 +257,49 @@ func GetSourceFileUploadDeal(sourceFileUploadId int64, dealId int) (*FlinkDeal, 
 	sourceFileUpload, err := models.GetSourceFileUploadById(sourceFileUploadId)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return nil, nil, err
+		return nil, err
 	}
 
 	if sourceFileUpload == nil {
 		err := fmt.Errorf("source file upload:%d not exists", sourceFileUploadId)
 		logs.GetLogger().Error(err)
-		return nil, nil, err
+		return nil, err
 	}
 
 	sourceFile, err := models.GetSourceFileById(sourceFileUpload.SourceFileId)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return nil, nil, err
+		return nil, err
 	}
 
 	transactionPay, err := models.GetTransactionBySourceFileUploadIdType(sourceFileUploadId, constants.TRANSACTION_TYPE_PAY)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return nil, nil, err
+		return nil, err
 	}
 
 	transactionUnlock, err := models.GetTransactionBySourceFileUploadIdType(sourceFileUploadId, constants.TRANSACTION_TYPE_UNLOCK)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return nil, nil, err
+		return nil, err
 	}
 
-	filePayInfo := &FilePayInfo{
-		IpfsUrl:  sourceFile.IpfsUrl,
-		FileName: sourceFileUpload.FileName,
-		WCid:     sourceFileUpload.Uuid + sourceFile.PayloadCid,
-		Unlocked: false,
-	}
+	sourceFileUploadDeal := &flinkDealResult.Data.Data.Deal
+	sourceFileUploadDeal.IpfsUrl = sourceFile.IpfsUrl
+	sourceFileUploadDeal.FileName = sourceFileUpload.FileName
+	sourceFileUploadDeal.WCid = sourceFileUpload.Uuid + sourceFile.PayloadCid
+	sourceFileUploadDeal.Unlocked = false
 
 	if transactionPay != nil {
-		filePayInfo.CreateAt = transactionPay.CreateAt
-		filePayInfo.LockedFee = transactionPay.Amount
+		sourceFileUploadDeal.LockedAt = transactionPay.CreateAt
+		sourceFileUploadDeal.LockedFee = transactionPay.Amount
 	}
 
 	if transactionUnlock != nil {
-		filePayInfo.Unlocked = true
+		sourceFileUploadDeal.Unlocked = true
 	}
 
-	return &flinkDealResult.Data.Data.Deal, filePayInfo, nil
+	return sourceFileUploadDeal, nil
 }
 
 type DaoInfoResult struct {

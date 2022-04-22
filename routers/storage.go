@@ -22,7 +22,7 @@ import (
 func Storage(router *gin.RouterGroup) {
 	router.POST("/ipfs/upload", UploadFile)
 	router.GET("/tasks/deals", GetDeals)
-	router.GET("/deal/detail/:deal_id", GetDealListFromFilink)
+	router.GET("/deal/detail/:deal_id", GetDealFromFlink)
 	router.GET("/deal/file/:source_file_id", GetDeals4SourceFile)
 	router.POST("/deal/expire", RecordExpiredRefund)
 }
@@ -32,14 +32,14 @@ func UploadFile(c *gin.Context) {
 	if strings.Trim(walletAddress, " ") == "" {
 		err := fmt.Errorf("wallet_address can not be null")
 		logs.GetLogger().Error(err)
-		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_CODE, err.Error()))
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAM_ERROR_CODE_NULL, err.Error()))
 		return
 	}
 
 	file, err := c.FormFile("file")
 	if err != nil {
 		logs.GetLogger().Error(err)
-		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_CODE, "get file from user occurred error,please try again"))
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAM_ERROR_CODE_NULL, "get file from user occurred error,please try again"))
 		return
 	}
 
@@ -47,14 +47,14 @@ func UploadFile(c *gin.Context) {
 	if strings.Trim(duration, " ") == "" {
 		err = fmt.Errorf("duraion can not be null")
 		logs.GetLogger().Error(err)
-		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_CODE, err.Error()))
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAM_ERROR_CODE_NULL, err.Error()))
 		return
 	}
 
 	durationInt, err := strconv.Atoi(duration)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAMS_TYPE_ERROR_CODE, "duration should be a number"))
+		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAM_ERROR_CODE_WRONG_TYPE, "duration should be a number"))
 		return
 	}
 	durationInt = durationInt * 24 * 60 * 60 / 30
@@ -106,7 +106,7 @@ func GetDeals(c *gin.Context) {
 	if walletAddress == "" {
 		err := fmt.Errorf("wallet_address is required")
 		logs.GetLogger().Error(err)
-		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_CODE, err.Error()))
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAM_ERROR_CODE_NULL, err.Error()))
 		return
 	}
 
@@ -169,7 +169,7 @@ type DealOnChainResult struct {
 	StatusCode int `json:"statusCode"`
 }
 
-type filinkParams struct {
+type flinkParams struct {
 	ID   int `json:"id"`
 	Data struct {
 		Deal    int    `json:"deal"`
@@ -177,43 +177,50 @@ type filinkParams struct {
 	} `json:"data"`
 }
 
-func GetDealListFromFilink(c *gin.Context) {
+func GetDealFromFlink(c *gin.Context) {
 	dealId := strings.Trim(c.Params.ByName("deal_id"), " ")
-	if strings.Trim(dealId, " ") == "" {
-		errMsg := "deal id can not be null"
+	if dealId == "" {
+		errMsg := "deal_id is required"
 		logs.GetLogger().Error(errMsg)
-		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAM_TYPE_ERROR_CODE, errMsg))
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAM_ERROR_CODE_NULL, errMsg))
 		return
 	}
-	dealIdIntValue, err := strconv.Atoi(dealId)
+	dealIdInt, err := strconv.Atoi(dealId)
 	if err != nil {
-		errMsg := "deal_id must be a number"
+		err := fmt.Errorf("deal_id must be a number")
 		logs.GetLogger().Error(err)
-		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAM_TYPE_ERROR_CODE, errMsg))
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAM_ERROR_CODE_WRONG_TYPE, err.Error()))
+		return
+	}
+
+	if dealIdInt <= 0 {
+		err := fmt.Errorf("deal_id must be greater than 0")
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAM_ERROR_CODE_INVALID_VALUE, err.Error()))
 		return
 	}
 
 	URL := c.Request.URL.Query()
-	var srcFilePayloadCid = URL.Get("payload_cid")
-	if strings.Trim(srcFilePayloadCid, " ") == "" {
-		errMsg := "payload_cid can not be null"
-		logs.GetLogger().Error(errMsg)
-		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAM_TYPE_ERROR_CODE, errMsg))
+	var srcFilePayloadCid = strings.Trim(URL.Get("payload_cid"), " ")
+	if srcFilePayloadCid == "" {
+		err := fmt.Errorf("payload_cid is required")
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAM_ERROR_CODE_NULL, err.Error()))
 		return
 	}
 
-	var walletAddress = URL.Get("wallet_address")
-	if strings.Trim(srcFilePayloadCid, " ") == "" {
-		errMsg := "wallet_address can not be null"
-		logs.GetLogger().Error(errMsg)
-		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAM_TYPE_ERROR_CODE, errMsg))
+	var walletAddress = strings.Trim(URL.Get("wallet_address"), " ")
+	if walletAddress == "" {
+		err := fmt.Errorf("wallet_address is required")
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAM_ERROR_CODE_NULL, err.Error()))
 		return
 	}
 
 	result := DealOnChainResult{}
 	url := config.GetConfig().FLinkUrl
-	parameter := new(filinkParams)
-	parameter.Data.Deal = dealIdIntValue
+	parameter := new(flinkParams)
+	parameter.Data.Deal = dealIdInt
 	parameter.Data.Network = config.GetConfig().FilecoinNetwork
 
 	response, err := web.HttpGetNoToken(url, parameter)
@@ -226,7 +233,7 @@ func GetDealListFromFilink(c *gin.Context) {
 		}
 	}
 
-	daoSignList, err := service.GetDaoSignEventByDealId(int64(dealIdIntValue))
+	daoSignList, err := service.GetDaoSignEventByDealId(int64(dealIdInt))
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE, errorinfo.GET_RECORD_lIST_ERROR_CODE+": get dao info from db occurred error"))
@@ -280,7 +287,7 @@ func GetDeals4SourceFile(c *gin.Context) {
 	if sourceFileIdStr == "" {
 		errMsg := "source file id can not be null"
 		logs.GetLogger().Error(errMsg)
-		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAM_TYPE_ERROR_CODE, errMsg))
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAM_ERROR_CODE_NULL, errMsg))
 		return
 	}
 
@@ -288,7 +295,7 @@ func GetDeals4SourceFile(c *gin.Context) {
 	if err != nil {
 		errMsg := "source file id should be a valid number"
 		logs.GetLogger().Error(errMsg)
-		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAM_TYPE_ERROR_CODE, errMsg))
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAM_ERROR_CODE_WRONG_TYPE, errMsg))
 		return
 	}
 
@@ -311,7 +318,7 @@ func RecordExpiredRefund(c *gin.Context) {
 	if strings.Trim(tx_hash, " ") == "" {
 		err := fmt.Errorf("transaction hash is required")
 		logs.GetLogger().Error(err)
-		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_CODE, err.Error()))
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAM_ERROR_CODE_NULL, err.Error()))
 		return
 	}
 	event, err := service.SaveExpirePaymentEvent(tx_hash)

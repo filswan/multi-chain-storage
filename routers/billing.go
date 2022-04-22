@@ -54,7 +54,7 @@ func GetLockPaymentInfoByPayloadCid(c *gin.Context) {
 	if payloadCid == "" {
 		errMsg := "payload_cid can not be null"
 		logs.GetLogger().Error(errMsg)
-		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAM_TYPE_ERROR_CODE, errMsg))
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAM_ERROR_CODE_WRONG_TYPE, errMsg))
 		return
 	}
 	lockPaymentList, err := models.GetEventLockPaymentBySrcPayloadCid(payloadCid)
@@ -103,7 +103,7 @@ func GetUserBillingHistory(c *gin.Context) {
 	if walletAddress == "" {
 		err := fmt.Errorf("wallet_address is required")
 		logs.GetLogger().Error(err)
-		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_CODE, err.Error()))
+		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAM_ERROR_CODE_NULL, err.Error()))
 		return
 	}
 

@@ -37,7 +37,7 @@ func RecordMintInfo(c *gin.Context) {
 		errMsg := "payload_cid, tx_hash, token_id and mint_address cannot be nil"
 		err := errors.New(errMsg)
 		logs.GetLogger().Error(err)
-		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAMS_NULL_ERROR_CODE, errMsg))
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAM_ERROR_CODE_NULL, errMsg))
 		return
 	}
 

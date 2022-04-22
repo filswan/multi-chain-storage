@@ -12,11 +12,11 @@ type Response struct {
 	Message string      `json:"message,omitempty"`
 }
 
-func CreateSuccessResponse(_data interface{}) Response {
+func CreateSuccessResponse(data interface{}) Response {
 	return Response{
 		Status: constants.HTTP_STATUS_SUCCESS,
 		Code:   constants.HTTP_CODE_200_OK,
-		Data:   _data,
+		Data:   data,
 	}
 }
 

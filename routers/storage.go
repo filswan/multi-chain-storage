@@ -119,7 +119,7 @@ func GetDeals(c *gin.Context) {
 	sourceFileUploads, totalRecordCount, err := service.GetSourceFileUploads(walletAddress, fileName, orderBy, isAscend, limit, offset)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE, err.Error()))
+		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.DATABASE_ACCESS_ERROR_CODE, err.Error()))
 		return
 	}
 
@@ -236,7 +236,7 @@ func GetDealFromFlink(c *gin.Context) {
 	daoSignList, err := service.GetDaoSignEventByDealId(int64(dealIdInt))
 	if err != nil {
 		logs.GetLogger().Error(err)
-		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE, errorinfo.GET_RECORD_lIST_ERROR_CODE+": get dao info from db occurred error"))
+		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.DATABASE_ACCESS_ERROR_CODE, errorinfo.DATABASE_ACCESS_ERROR_CODE+": get dao info from db occurred error"))
 		return
 	}
 	signedDaoCount := 0
@@ -248,13 +248,13 @@ func GetDealFromFlink(c *gin.Context) {
 	foundInfo, err := service.GetLockFoundInfoByPayloadCid(srcFilePayloadCid)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE, errorinfo.GET_RECORD_lIST_ERROR_CODE+": get lock found info from db occurred error"))
+		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.DATABASE_ACCESS_ERROR_CODE, errorinfo.DATABASE_ACCESS_ERROR_CODE+": get lock found info from db occurred error"))
 		return
 	}
 	srcFile, err := models.GetSourceFileExtByPayloadCid(srcFilePayloadCid, walletAddress)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE, errorinfo.GET_RECORD_lIST_ERROR_CODE+": get deal file info from db occurred error"))
+		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.DATABASE_ACCESS_ERROR_CODE, errorinfo.DATABASE_ACCESS_ERROR_CODE+": get deal file info from db occurred error"))
 		return
 	}
 
@@ -302,7 +302,7 @@ func GetDeals4SourceFile(c *gin.Context) {
 	offlineDeals, sourceFile, err := service.GetOfflineDealsBySourceFileId(sourceFileId)
 	if err != nil {
 		logs.GetLogger().Error(err.Error())
-		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE, err.Error()))
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.DATABASE_ACCESS_ERROR_CODE, err.Error()))
 		return
 	}
 
@@ -324,7 +324,7 @@ func RecordExpiredRefund(c *gin.Context) {
 	event, err := service.SaveExpirePaymentEvent(tx_hash)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.SAVE_DATA_TO_DB_ERROR_CODE))
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.DATABASE_ACCESS_ERROR_CODE))
 		return
 	} else {
 		c.JSON(http.StatusOK, common.CreateSuccessResponse(event))

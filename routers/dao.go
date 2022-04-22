@@ -23,7 +23,7 @@ func GetDealListForDaoToSign(c *gin.Context) {
 	dealList, err := service.GetShoulBeSignDealListFromDB()
 	if err != nil {
 		logs.GetLogger().Error(err)
-		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE))
+		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.DATABASE_ACCESS_ERROR_CODE))
 		return
 	}
 	c.JSON(http.StatusOK, common.CreateSuccessResponse(dealList))
@@ -49,7 +49,7 @@ func RecordDealListThatHaveBeenSignedByDao(c *gin.Context) {
 	err := c.BindJSON(&dealIdList)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		c.AbortWithStatusJSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARSER_RESPONSE_TO_STRUCT_ERROR_CODE))
+		c.AbortWithStatusJSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.HTTP_REQUEST_PARAM_ERROR_CODE_PARSE_TO_STRUCT))
 		return
 	}
 

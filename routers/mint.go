@@ -44,7 +44,7 @@ func RecordMintInfo(c *gin.Context) {
 	sourceFile, err := models.GetSourceFileByPayloadCid(payloadCid)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.SAVE_DATA_TO_DB_ERROR_CODE))
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.DATABASE_ACCESS_ERROR_CODE))
 		return
 	} else {
 		sourceFileMint := models.SourceFileMint{

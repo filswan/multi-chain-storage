@@ -60,7 +60,7 @@ func GetLockPaymentInfoByPayloadCid(c *gin.Context) {
 	lockPaymentList, err := models.GetEventLockPaymentBySrcPayloadCid(payloadCid)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE))
+		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.DATABASE_ACCESS_ERROR_CODE))
 		return
 	}
 	if len(lockPaymentList) > 0 {
@@ -118,7 +118,7 @@ func GetUserBillingHistory(c *gin.Context) {
 	billings, totalRecordCount, err := service.GetTransactions(walletAddress, txHash, fileName, orderBy, isAscend, limit, offset)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.GET_RECORD_lIST_ERROR_CODE))
+		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.DATABASE_ACCESS_ERROR_CODE))
 		return
 	}
 

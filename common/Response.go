@@ -6,25 +6,10 @@ import (
 )
 
 type BasicResponse struct {
-	Status   string      `json:"status"`
-	Code     int         `json:"code"`
-	Data     interface{} `json:"data,omitempty"`
-	Message  string      `json:"message,omitempty"`
-	PageInfo *PageInfo   `json:"page_info,omitempty"`
-}
-
-type PageInfo struct {
-	PageNumber       string `json:"page_number"`
-	PageSize         string `json:"page_size"`
-	TotalRecordCount string `json:"total_record_count"`
-}
-
-type MixedResponse struct {
-	BasicResponse
-	MixData struct {
-		Success interface{} `json:"success"`
-		Fail    interface{} `json:"fail"`
-	} `json:"mix_data"`
+	Status  string      `json:"status"`
+	Code    int         `json:"code"`
+	Data    interface{} `json:"data,omitempty"`
+	Message string      `json:"message,omitempty"`
 }
 
 func CreateSuccessResponse(_data interface{}) BasicResponse {
@@ -44,14 +29,5 @@ func CreateErrorResponse(errCode int, errMsg ...string) BasicResponse {
 		Status:  constants.HTTP_STATUS_ERROR,
 		Code:    errCode,
 		Message: message,
-	}
-}
-
-func NewSuccessResponseWithPageInfo(_data interface{}, _page *PageInfo) BasicResponse {
-	return BasicResponse{
-		Status:   constants.HTTP_STATUS_SUCCESS,
-		Code:     constants.HTTP_CODE_200_OK,
-		Data:     _data,
-		PageInfo: _page,
 	}
 }

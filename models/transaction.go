@@ -27,7 +27,7 @@ type Transaction struct {
 	CreateAt           int64  `json:"create_at"`
 }
 
-func GetTransactionBySourceFileUploadIdType(sourceFileUploadId int64, transactionType int) ([]*Transaction, error) {
+func GetTransactionBySourceFileUploadIdType(sourceFileUploadId int64, transactionType int) (*Transaction, error) {
 	var transactions []*Transaction
 	err := database.GetDB().Where("source_file_upload_id=? and type=?", sourceFileUploadId, transactionType).Find(&transactions).Error
 	if err != nil {
@@ -35,17 +35,21 @@ func GetTransactionBySourceFileUploadIdType(sourceFileUploadId int64, transactio
 		return nil, err
 	}
 
-	return transactions, nil
+	if len(transactions) > 0 {
+		return transactions[0], nil
+	}
+
+	return nil, nil
 }
 
 func CreateTransaction(sourceFileUploadId int64, txHash string) error {
-	transactions, err := GetTransactionBySourceFileUploadIdType(sourceFileUploadId, constants.TRANSACTION_TYPE_PAY)
+	transactionOld, err := GetTransactionBySourceFileUploadIdType(sourceFileUploadId, constants.TRANSACTION_TYPE_PAY)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
 	}
 
-	if len(transactions) > 0 {
+	if transactionOld != nil {
 		return nil
 	}
 

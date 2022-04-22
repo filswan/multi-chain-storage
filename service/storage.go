@@ -2,6 +2,8 @@ package service
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"math/big"
 	"mime/multipart"
 	"multi-chain-storage/common/constants"
@@ -19,6 +21,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/filswan/go-swan-lib/client/ipfs"
+	"github.com/filswan/go-swan-lib/client/web"
 	"github.com/filswan/go-swan-lib/logs"
 	libutils "github.com/filswan/go-swan-lib/utils"
 	"github.com/gin-gonic/gin"
@@ -179,6 +182,130 @@ func GetSourceFileUploads(walletAddress string, fileName, orderBy string, isAsce
 	return srcFileUploads, totalRecordCount, nil
 }
 
+type FlinkDeal struct {
+	DealID                   int    `json:"deal_id"`
+	DealCid                  string `json:"deal_cid"`
+	MessageCid               string `json:"message_cid"`
+	Height                   int    `json:"height"`
+	PieceCid                 string `json:"piece_cid"`
+	VerifiedDeal             bool   `json:"verified_deal"`
+	StoragePricePerEpoch     int    `json:"storage_price_per_epoch"`
+	Signature                string `json:"signature"`
+	SignatureType            string `json:"signature_type"`
+	CreatedAt                int    `json:"created_at"`
+	PieceSizeFormat          string `json:"piece_size_format"`
+	StartHeight              int    `json:"start_height"`
+	EndHeight                int    `json:"end_height"`
+	Client                   string `json:"client"`
+	ClientCollateralFormat   string `json:"client_collateral_format"`
+	Provider                 string `json:"provider"`
+	ProviderTag              string `json:"provider_tag"`
+	VerifiedProvider         int    `json:"verified_provider"`
+	ProviderCollateralFormat string `json:"provider_collateral_format"`
+	Status                   int    `json:"status"`
+	NetworkName              string `json:"network_name"`
+	StoragePrice             int    `json:"storage_price"`
+}
+type FlinkDealResult struct {
+	JobRunID int `json:"jobRunID"`
+	Data     struct {
+		Status string `json:"status"`
+		Data   struct {
+			Deal FlinkDeal `json:"deal"`
+		} `json:"data"`
+		Result struct {
+		} `json:"result"`
+	} `json:"data"`
+	Result struct {
+	} `json:"result"`
+	StatusCode int `json:"statusCode"`
+}
+
+type flinkParams struct {
+	ID   int `json:"id"`
+	Data struct {
+		Deal    int    `json:"deal"`
+		Network string `json:"network"`
+	} `json:"data"`
+}
+
+type FilePayInfo struct {
+	IpfsUrl   string `json:"ipfs_url"`
+	FileName  string `json:"file_name"`
+	WCid      string `json:"w_cid"`
+	CreateAt  int64  `json:"create_at"`
+	LockedFee string `json:"locked_fee"`
+	Unlocked  bool   `json:"unlocked"`
+}
+
+func GetSourceFileUploadDeal(sourceFileUploadId int64, dealId int) (*FlinkDeal, *FilePayInfo, error) {
+	flinkDealResult := FlinkDealResult{}
+	if dealId > 0 {
+		url := config.GetConfig().FLinkUrl
+		parameter := new(flinkParams)
+		parameter.Data.Deal = dealId
+		parameter.Data.Network = config.GetConfig().FilecoinNetwork
+
+		response, err := web.HttpGetNoToken(url, parameter)
+		if err != nil {
+			logs.GetLogger().Error(err)
+		} else {
+			err = json.Unmarshal(response, &flinkDealResult)
+			if err != nil {
+				logs.GetLogger().Error(err)
+			}
+		}
+	}
+
+	sourceFileUpload, err := models.GetSourceFileUploadById(sourceFileUploadId)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, nil, err
+	}
+
+	if sourceFileUpload == nil {
+		err := fmt.Errorf("source file upload:%d not exists", sourceFileUploadId)
+		logs.GetLogger().Error(err)
+		return nil, nil, err
+	}
+
+	sourceFile, err := models.GetSourceFileById(sourceFileUpload.SourceFileId)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, nil, err
+	}
+
+	transactionPay, err := models.GetTransactionBySourceFileUploadIdType(sourceFileUploadId, constants.TRANSACTION_TYPE_PAY)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, nil, err
+	}
+
+	transactionUnlock, err := models.GetTransactionBySourceFileUploadIdType(sourceFileUploadId, constants.TRANSACTION_TYPE_UNLOCK)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, nil, err
+	}
+
+	filePayInfo := &FilePayInfo{
+		IpfsUrl:  sourceFile.IpfsUrl,
+		FileName: sourceFileUpload.FileName,
+		WCid:     sourceFileUpload.Uuid + sourceFile.PayloadCid,
+		Unlocked: false,
+	}
+
+	if transactionPay != nil {
+		filePayInfo.CreateAt = transactionPay.CreateAt
+		filePayInfo.LockedFee = transactionPay.Amount
+	}
+
+	if transactionUnlock != nil {
+		filePayInfo.Unlocked = true
+	}
+
+	return &flinkDealResult.Data.Data.Deal, filePayInfo, nil
+}
+
 type DaoInfoResult struct {
 	DaoName         string `json:"dao_name"`
 	DaoAddress      string `json:"dao_address"`
@@ -209,29 +336,6 @@ func GetDaoSignEventByDealId(dealId int64) ([]*DaoInfoResult, error) {
 	return daoInfoResult, nil
 }
 
-type LockFound struct {
-	PayloadCid string `json:"payload_cid"`
-	CreateAt   string `json:"create_at"`
-	LockedFee  string `json:"locked_fee"`
-}
-
-func GetLockFoundInfoByPayloadCid(payloadCid string) (*LockFound, error) {
-	lockEventList, err := models.GetEventLockPaymentBySrcPayloadCid(payloadCid)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-
-	lockFound := &LockFound{
-		PayloadCid: payloadCid,
-	}
-
-	if len(lockEventList) > 0 {
-		lockFound.LockedFee = lockEventList[0].LockedFee.String()
-		lockFound.CreateAt = strconv.FormatInt(lockEventList[0].CreateAt, 10)
-	}
-	return lockFound, nil
-}
 func GetOfflineDealsBySourceFileId(sourceFileId int64) ([]*models.OfflineDeal, *models.SourceFile, error) {
 	offlineDeals, err := models.GetOfflineDealsBySourceFileId(sourceFileId)
 	if err != nil {

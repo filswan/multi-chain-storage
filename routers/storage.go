@@ -5,6 +5,7 @@ import (
 	"multi-chain-storage/common"
 	"multi-chain-storage/common/constants"
 	"multi-chain-storage/common/errorinfo"
+	"multi-chain-storage/models"
 	"multi-chain-storage/on-chain/client"
 	"multi-chain-storage/service"
 	"net/http"
@@ -185,6 +186,44 @@ func GetDealFromFlink(c *gin.Context) {
 		"dao_threshold":           threshold,
 	}))
 }
+
+func GetDealLogs(c *gin.Context) {
+	logs.GetLogger().Info("ip:", c.ClientIP(), ",port:", c.Request.URL.Port())
+	offlineDealIdStr := strings.Trim(c.Params.ByName("offline_deal_id"), " ")
+	if offlineDealIdStr == "" {
+		err := fmt.Errorf("offline_deal_id is required")
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_NULL, err.Error()))
+		return
+	}
+
+	offlineDealId, err := strconv.ParseInt(offlineDealIdStr, 10, 64)
+	if err != nil {
+		err := fmt.Errorf("offline_deal_id must be a valid number")
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_WRONG_TYPE, err.Error()))
+		return
+	}
+
+	if offlineDealId <= 0 {
+		err := fmt.Errorf("offline_deal_id must be greater than 0")
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_INVALID_VALUE, err.Error()))
+		return
+	}
+
+	offlineDealLogs, err := models.GetOfflineDealLogsByOfflineDealId(offlineDealId)
+	if err != nil {
+		logs.GetLogger().Error(err.Error())
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_INTERNAL, err.Error()))
+		return
+	}
+
+	c.JSON(http.StatusOK, common.CreateSuccessResponse(gin.H{
+		"offline_deal_log": offlineDealLogs,
+	}))
+}
+
 func GetDeals4SourceFile(c *gin.Context) {
 	sourceFileIdStr := strings.Trim(c.Params.ByName("source_file_id"), " ")
 	if sourceFileIdStr == "" {

@@ -698,9 +698,9 @@ export default {
     },
     toDetail(row){
       if(row.offline_deal && row.offline_deal.length>0){
-        this.$router.push({name: 'my_files_detail', params: {id: row.offline_deal[0].deal_id, cid: row.payload_cid}})
+        this.$router.push({name: 'my_files_detail', params: {id: row.offline_deal[0].id, deal_id: row.offline_deal[0].deal_id,cid: row.payload_cid, source_file_upload_id: row.source_file_upload_id}})
       }else{
-        this.$router.push({name: 'my_files_detail', params: {id: 0, cid: row.payload_cid}})
+        this.$router.push({name: 'my_files_detail', params: {id: 0, deal_id: 0, cid: row.payload_cid, source_file_upload_id: row.source_file_upload_id}})
       }
       localStorage.setItem('offlineDeals', row.offline_deal?JSON.stringify(row.offline_deal):[])
       localStorage.setItem('offlineDealsIndex', '0')

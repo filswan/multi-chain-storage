@@ -13,15 +13,18 @@ type CarFileSource struct {
 	CreateAt           int64 `json:"create_at"`
 }
 
-func GetSourceFileDealFileMapBySourceFilePayloadCid(sourceFilePayloadCid string) ([]*CarFileSource, error) {
-	var carFileSource []*CarFileSource
-	sql := "select a.* from car_file_source a, source_file b where a.source_file_id=b.id and b.payload_cid=?"
-	err := database.GetDB().Raw(sql, sourceFilePayloadCid).Scan(&carFileSource).Error
+func GetCarFileSourceBySourceFileUploadId(sourceFileUploadId int64) (*CarFileSource, error) {
+	var carFileSources []*CarFileSource
+	err := database.GetDB().Where("source_file_upload_id=?", sourceFileUploadId).Scan(&carFileSources).Error
 
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
 	}
 
-	return carFileSource, nil
+	if len(carFileSources) > 0 {
+		return carFileSources[0], nil
+	}
+
+	return nil, nil
 }

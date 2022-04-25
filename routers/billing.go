@@ -109,13 +109,22 @@ func WriteLockPayment(c *gin.Context) {
 
 func GetLockPaymentInfoByPayloadCid(c *gin.Context) {
 	URL := c.Request.URL.Query()
-	var payloadCid = strings.Trim(URL.Get("payload_cid"), " ")
-	if payloadCid == "" {
-		errMsg := "payload_cid can not be null"
-		logs.GetLogger().Error(errMsg)
-		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_WRONG_TYPE, errMsg))
+	sourceFileUploadIdStr := strings.Trim(URL.Get("source_file_upload_id"), " ")
+	if sourceFileUploadIdStr == "" {
+		err := fmt.Errorf("source_file_upload_id is required")
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_NULL, err.Error()))
 		return
 	}
+
+	sourceFileUploadId, err := strconv.Atoi(sourceFileUploadIdStr)
+	if err != nil {
+		err := fmt.Errorf("source_file_upload_id must be a valid number")
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_WRONG_TYPE, err.Error()))
+		return
+	}
+
 	lockPaymentList, err := models.GetEventLockPaymentBySrcPayloadCid(payloadCid)
 	if err != nil {
 		logs.GetLogger().Error(err)

@@ -36,22 +36,6 @@ type EventLockPaymentQuery struct {
 	DealFileId int64  `json:"deal_file_id"`
 }
 
-func GetEventLockPaymentBySrcPayloadCid(srcFilePayloadCid string) ([]*EventLockPayment, error) {
-	var eventLockPayments []*EventLockPayment
-	sql := "select * from event_lock_payment a where a.payload_cid=?"
-
-	query := database.GetDB().Raw(sql, srcFilePayloadCid).Scan(&eventLockPayments)
-
-	err := query.Error
-
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-
-	return eventLockPayments, nil
-}
-
 func FindExpiredLockPayment() ([]*EventLockPaymentQuery, error) {
 	sql :=
 		"SELECT b.id as deal_file_id, a.payload_cid, b.deal_id, a.address_from as recipient " +

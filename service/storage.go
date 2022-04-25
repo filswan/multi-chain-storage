@@ -332,22 +332,6 @@ func GetDaoSignEventByDealId(dealId int64) ([]*DaoInfoResult, error) {
 	return daoInfoResult, nil
 }
 
-func GetOfflineDealsBySourceFileId(sourceFileId int64) ([]*models.OfflineDeal, *models.SourceFile, error) {
-	offlineDeals, err := models.GetOfflineDealsBySourceFileId(sourceFileId)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, nil, err
-	}
-
-	sourceFile, err := models.GetSourceFileById(sourceFileId)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, nil, err
-	}
-
-	return offlineDeals, sourceFile, nil
-}
-
 func SaveExpirePaymentEvent(txHash string) (*models.EventExpirePayment, error) {
 
 	ethClient, rpcClient, err := client.GetEthClient()

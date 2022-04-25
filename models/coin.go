@@ -16,6 +16,21 @@ type Coin struct {
 	UpdateAt    int64  `json:"update_at"`
 }
 
+func GetCoinById(id int64) (*Coin, error) {
+	var coins []*Coin
+	err := database.GetDB().Where("id=?", id).Find(&coins).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	if len(coins) > 0 {
+		return coins[0], nil
+	}
+
+	return nil, nil
+}
+
 func GetCoinByName(name string) (*Coin, error) {
 	var coins []*Coin
 	err := database.GetDB().Where("name=?", name).Find(&coins).Error

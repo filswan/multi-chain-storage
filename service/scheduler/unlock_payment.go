@@ -249,12 +249,12 @@ func setUnlockPayment(offlineDeal *models.OfflineDeal) error {
 
 		unlockPayment.TokenAddress = lockedPayment.TokenAddress
 		unlockPayment.UnlockTime = libutils.GetCurrentUtcSecond()
-		coin, err := models.GetCoinByAddress(unlockPayment.TokenAddress)
+		token, err := models.GetTokenByAddress(unlockPayment.TokenAddress)
 		if err != nil {
 			logs.GetLogger().Error(err)
 		} else {
-			unlockPayment.CoinId = coin.ID
-			unlockPayment.NetworkId = coin.NetworkId
+			unlockPayment.CoinId = token.ID
+			unlockPayment.NetworkId = token.NetworkId
 		}
 
 		err = database.SaveOne(&unlockPayment)

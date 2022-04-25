@@ -46,7 +46,7 @@ func GetTokenByName(name string) (*Token, error) {
 	return nil, nil
 }
 
-func GetCoinByAddress(address string) (*Token, error) {
+func GetTokenByAddress(address string) (*Token, error) {
 	var tokens []*Token
 	err := database.GetDB().Where("address=?", address).Find(&tokens).Error
 	if err != nil {

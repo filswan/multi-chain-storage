@@ -2,13 +2,11 @@ package routers
 
 import (
 	"errors"
+	"fmt"
 	"multi-chain-storage/common"
 	"multi-chain-storage/common/errorinfo"
-	"multi-chain-storage/database"
-	"multi-chain-storage/models"
+	"multi-chain-storage/service"
 	"net/http"
-
-	libutils "github.com/filswan/go-swan-lib/utils"
 
 	"github.com/filswan/go-swan-lib/logs"
 	"github.com/gin-gonic/gin"
@@ -19,44 +17,42 @@ func Mint(router *gin.RouterGroup) {
 }
 
 type mintInfoUpload struct {
-	PayloadCid  string `json:"payload_cid"`
-	TxHash      string `json:"tx_hash"`
-	TokenId     string `json:"token_id"`
-	MintAddress string `json:"mint_address"`
+	SourceFileIploadId int64  `json:"source_file_upload_id"`
+	TxHash             string `json:"tx_hash"`
+	TokenId            string `json:"token_id"`
+	MintAddress        string `json:"mint_address"`
 }
 
 func RecordMintInfo(c *gin.Context) {
 	var model mintInfoUpload
 	c.BindJSON(&model)
 
-	payloadCid := model.PayloadCid
+	sourceFileIploadId := model.SourceFileIploadId
 	nftTxHash := model.TxHash
 	tokenId := model.TokenId
 	mintAddress := model.MintAddress
 
-	if payloadCid == "" || nftTxHash == "" || tokenId == "" || mintAddress == "" {
-		errMsg := "payload_cid, tx_hash, token_id and mint_address cannot be nil"
+	if sourceFileIploadId <= 0 || nftTxHash == "" || tokenId == "" || mintAddress == "" {
+		err := fmt.Errorf("source_file_upload_id must be greater than 0")
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_INVALID_VALUE, err.Error()))
+		return
+	}
+
+	if nftTxHash == "" || tokenId == "" || mintAddress == "" {
+		errMsg := "tx_hash, token_id and mint_address cannot be empty"
 		err := errors.New(errMsg)
 		logs.GetLogger().Error(err)
 		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_NULL, errMsg))
 		return
 	}
 
-	sourceFile, err := models.GetSourceFileByPayloadCid(payloadCid)
+	sourceFileMint, err := service.RecordMintInfo(sourceFileIploadId, nftTxHash, tokenId, mintAddress)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_INTERNAL, err.Error()))
 		return
-	} else {
-		sourceFileMint := models.SourceFileMint{
-			SourceFileUploadId: sourceFile.ID,
-			NftTxHash:          nftTxHash,
-			TokenId:            tokenId,
-			MintAddress:        mintAddress,
-			CreateAt:           libutils.GetCurrentUtcSecond(),
-		}
-
-		database.SaveOne(sourceFileMint)
-		c.JSON(http.StatusOK, common.CreateSuccessResponse(sourceFileMint))
 	}
+
+	c.JSON(http.StatusOK, common.CreateSuccessResponse(sourceFileMint))
 }

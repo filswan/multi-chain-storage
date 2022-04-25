@@ -16,7 +16,7 @@ create table network (
 insert into network(name,rpc_url,create_at,update_at) values('polygon','',unix_timestamp(),unix_timestamp());
 set @network_id_polygon:=@@identity;
 
-create table coin (
+create table token (
     id            bigint       not null auto_increment,
     name          varchar(100) not null,
     address       varchar(100) not null,
@@ -24,13 +24,13 @@ create table coin (
     description   text,
     create_at     bigint       not null,
     update_at     bigint       not null,
-    primary key pk_coin(id),
-    constraint un_coin_name unique(name),
-    constraint un_coin_address unique(address),
-    constraint fk_coin_network_id foreign key (network_id) references network(id)
+    primary key pk_token(id),
+    constraint un_token_name unique(name),
+    constraint un_token_address unique(address),
+    constraint fk_token_network_id foreign key (network_id) references network(id)
 );
 
-insert into coin(name,address,network_id,create_at,update_at) values('USDC','0xe11A86849d99F524cAC3E7A0Ec1241828e332C62',@network_id_polygon,unix_timestamp(),unix_timestamp());
+insert into token(name,address,network_id,create_at,update_at) values('USDC','0xe11A86849d99F524cAC3E7A0Ec1241828e332C62',@network_id_polygon,unix_timestamp(),unix_timestamp());
 
 create table system_param (
     id            bigint       not null auto_increment,
@@ -69,7 +69,7 @@ create table miner (
 create table source_file (
     id            bigint        not null auto_increment,
     payload_cid   varchar(100)  not null,
-    resource_uri  varchar(1000) not null,
+    resource_uri  varchar(750)  not null,
     ipfs_url      varchar(1000) not null,
     file_size     bigint        not null,
     dataset       varchar(100),
@@ -173,7 +173,7 @@ create table transaction (
     source_file_upload_id   bigint        not null,
     type                    int           not null, #--0:pay,1:unlock, 2: refund after unlock, 3:refund after expired
     network_id              bigint        not null,
-    coin_id                 bigint        not null,
+    token_id                 bigint        not null,
     tx_hash                 varchar(100)  not null,
     wallet_id_from          bigint        not null,
     wallet_id_to            bigint        not null,
@@ -185,7 +185,7 @@ create table transaction (
     constraint un_transaction unique(source_file_upload_id,type),
     constraint fk_transaction_source_file_upload_id foreign key (source_file_upload_id) references source_file_upload(id),
     constraint fk_transaction_network_id foreign key (network_id) references network(id),
-    constraint fk_transaction_coin_id foreign key (coin_id) references coin(id),
+    constraint fk_transaction_token_id foreign key (token_id) references token(id),
     constraint fk_transaction_wallet_id_from foreign key (wallet_id_from) references wallet(id),
     constraint fk_transaction_wallet_id_to foreign key (wallet_id_to) references wallet(id)
 );

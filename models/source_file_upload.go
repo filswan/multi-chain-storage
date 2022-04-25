@@ -23,6 +23,26 @@ type SourceFileUpload struct {
 	UpdateAt     int64  `json:"update_at"`
 }
 
+type SourceFileUploadOut struct {
+	SourceFileUpload
+	PayloadCid string `json:"payload_cid"`
+}
+
+func GetSourceFileUploadsByCarFileId(carFileId int64) ([]*SourceFileUploadOut, error) {
+	var sourceFileUploadOut []*SourceFileUploadOut
+	sql := "select a.*,b.payload_cid from source_file_upload a\n" +
+		"left join source_file b on a.source_file_id=b.id\n" +
+		"where a.id in (select source_file_upload_id from car_file_source where car_file_id=?)"
+	err := database.GetDB().Raw(sql, carFileId).Scan(&sourceFileUploadOut).Error
+
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	return sourceFileUploadOut, nil
+}
+
 func GetSourceFileUploadBySourceFileIdWallet(sourceFileId int64, walletId int64) ([]*SourceFileUpload, error) {
 	var sourceFileUpload []*SourceFileUpload
 	err := database.GetDB().Where("source_file_id=? and wallet_id=?", sourceFileId, walletId).Find(&sourceFileUpload).Error

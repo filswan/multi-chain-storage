@@ -5,7 +5,6 @@ import (
 	common "multi-chain-storage/common"
 	"multi-chain-storage/common/constants"
 	"multi-chain-storage/common/errorinfo"
-	"multi-chain-storage/models"
 	"multi-chain-storage/on-chain/client"
 	"multi-chain-storage/service"
 	"net/http"
@@ -109,25 +108,30 @@ func WriteLockPayment(c *gin.Context) {
 
 func GetLockPaymentInfoByPayloadCid(c *gin.Context) {
 	URL := c.Request.URL.Query()
-	var payloadCid = strings.Trim(URL.Get("payload_cid"), " ")
-	if payloadCid == "" {
-		errMsg := "payload_cid can not be null"
-		logs.GetLogger().Error(errMsg)
-		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_WRONG_TYPE, errMsg))
+	sourceFileUploadIdStr := strings.Trim(URL.Get("source_file_upload_id"), " ")
+	if sourceFileUploadIdStr == "" {
+		err := fmt.Errorf("source_file_upload_id is required")
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_NULL, err.Error()))
 		return
 	}
-	lockPaymentList, err := models.GetEventLockPaymentBySrcPayloadCid(payloadCid)
+
+	sourceFileUploadId, err := strconv.ParseInt(sourceFileUploadIdStr, 10, 64)
+	if err != nil {
+		err := fmt.Errorf("source_file_upload_id must be a valid number")
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_WRONG_TYPE, err.Error()))
+		return
+	}
+
+	sourceFileUploadInfo, err := service.GetSourceFileUploadInfo(sourceFileUploadId)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.ERROR_INTERNAL))
 		return
 	}
-	if len(lockPaymentList) > 0 {
-		c.JSON(http.StatusOK, common.CreateSuccessResponse(gin.H{"tx_hash": lockPaymentList[0].TxHash, "payload_cid": lockPaymentList[0].PayloadCid, "locked_fee": lockPaymentList[0].LockedFee, "token_type": lockPaymentList[0].TokenAddress}))
-	} else {
-		c.JSON(http.StatusOK, common.CreateSuccessResponse(gin.H{"tx_hash": "", "payload_cid": payloadCid, "locked_fee": "", "token_type": ""}))
-	}
 
+	c.JSON(http.StatusOK, common.CreateSuccessResponse(sourceFileUploadInfo))
 }
 
 func GetFileCoinLastestPrice(c *gin.Context) {

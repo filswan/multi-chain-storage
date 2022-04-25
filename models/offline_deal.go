@@ -33,19 +33,6 @@ type OfflineDealOut struct {
 	MinerFid string `json:"miner_fid"`
 }
 
-func GetOfflineDealsBySourceFileId(sourceFileId int64) ([]*OfflineDeal, error) {
-	var offlineDeals []*OfflineDeal
-	sql := "select a.* from offline_deal a, source_file_deal_file_map b where b.source_file_id=? and a.deal_file_id=b.deal_file_id"
-	err := database.GetDB().Raw(sql, sourceFileId).Scan(&offlineDeals).Error
-
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-
-	return offlineDeals, nil
-}
-
 func GetOfflineDeals2BeScanned() ([]*OfflineDeal, error) {
 	var offlineDeals []*OfflineDeal
 	err := database.GetDB().Where("on_chain_status is null ||(on_chain_status!=? and on_chain_status!=?)", constants.DEAL_STATUS_ACTIVE, constants.DEAL_STATUS_ERROR).Find(&offlineDeals).Error

@@ -332,22 +332,6 @@ func GetDaoSignEventByDealId(dealId int64) ([]*DaoInfoResult, error) {
 	return daoInfoResult, nil
 }
 
-func GetOfflineDealsBySourceFileId(sourceFileId int64) ([]*models.OfflineDeal, *models.SourceFile, error) {
-	offlineDeals, err := models.GetOfflineDealsBySourceFileId(sourceFileId)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, nil, err
-	}
-
-	sourceFile, err := models.GetSourceFileById(sourceFileId)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, nil, err
-	}
-
-	return offlineDeals, sourceFile, nil
-}
-
 func SaveExpirePaymentEvent(txHash string) (*models.EventExpirePayment, error) {
 
 	ethClient, rpcClient, err := client.GetEthClient()
@@ -387,7 +371,7 @@ func SaveExpirePaymentEvent(txHash string) (*models.EventExpirePayment, error) {
 			return nil, err
 		}
 		event.BlockNo = strconv.FormatUint(blockNumberInt64, 10)
-		wfilCoinId, err := models.GetCoinByName(constants.COIN_USDC_NAME)
+		wfilCoinId, err := models.GetTokenByName(constants.TOKEN_USDC_NAME)
 		if err != nil {
 			logs.GetLogger().Error(err)
 		} else {
@@ -430,4 +414,22 @@ func SaveExpirePaymentEvent(txHash string) (*models.EventExpirePayment, error) {
 		return event, nil
 	}
 	return nil, nil
+}
+
+func RecordMintInfo(sourceFileIploadId int64, txHash string, tokenId string, mintAddress string) (*models.SourceFileMint, error) {
+	sourceFileMint := models.SourceFileMint{
+		SourceFileUploadId: sourceFileIploadId,
+		NftTxHash:          txHash,
+		TokenId:            tokenId,
+		MintAddress:        mintAddress,
+		CreateAt:           libutils.GetCurrentUtcSecond(),
+	}
+
+	err := database.SaveOne(sourceFileMint)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	return &sourceFileMint, nil
 }

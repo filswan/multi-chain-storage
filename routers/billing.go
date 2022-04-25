@@ -5,7 +5,6 @@ import (
 	common "multi-chain-storage/common"
 	"multi-chain-storage/common/constants"
 	"multi-chain-storage/common/errorinfo"
-	"multi-chain-storage/models"
 	"multi-chain-storage/on-chain/client"
 	"multi-chain-storage/service"
 	"net/http"
@@ -117,7 +116,7 @@ func GetLockPaymentInfoByPayloadCid(c *gin.Context) {
 		return
 	}
 
-	sourceFileUploadId, err := strconv.Atoi(sourceFileUploadIdStr)
+	sourceFileUploadId, err := strconv.ParseInt(sourceFileUploadIdStr, 10, 64)
 	if err != nil {
 		err := fmt.Errorf("source_file_upload_id must be a valid number")
 		logs.GetLogger().Error(err)
@@ -125,18 +124,14 @@ func GetLockPaymentInfoByPayloadCid(c *gin.Context) {
 		return
 	}
 
-	lockPaymentList, err := models.GetEventLockPaymentBySrcPayloadCid(payloadCid)
+	sourceFileUploadInfo, err := service.GetSourceFileUploadInfo(sourceFileUploadId)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.ERROR_INTERNAL))
 		return
 	}
-	if len(lockPaymentList) > 0 {
-		c.JSON(http.StatusOK, common.CreateSuccessResponse(gin.H{"tx_hash": lockPaymentList[0].TxHash, "payload_cid": lockPaymentList[0].PayloadCid, "locked_fee": lockPaymentList[0].LockedFee, "token_type": lockPaymentList[0].TokenAddress}))
-	} else {
-		c.JSON(http.StatusOK, common.CreateSuccessResponse(gin.H{"tx_hash": "", "payload_cid": payloadCid, "locked_fee": "", "token_type": ""}))
-	}
 
+	c.JSON(http.StatusOK, common.CreateSuccessResponse(sourceFileUploadInfo))
 }
 
 func GetFileCoinLastestPrice(c *gin.Context) {

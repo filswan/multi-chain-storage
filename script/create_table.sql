@@ -69,7 +69,7 @@ create table miner (
 create table source_file (
     id            bigint        not null auto_increment,
     payload_cid   varchar(100)  not null,
-    resource_uri  varchar(1000) not null,
+    resource_uri  varchar(750)  not null,
     ipfs_url      varchar(1000) not null,
     file_size     bigint        not null,
     dataset       varchar(100),

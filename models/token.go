@@ -6,7 +6,7 @@ import (
 	"github.com/filswan/go-swan-lib/logs"
 )
 
-type Coin struct {
+type Token struct {
 	ID          int64  `json:"id"`
 	Name        string `json:"name"`
 	Address     string `json:"address"`
@@ -16,46 +16,46 @@ type Coin struct {
 	UpdateAt    int64  `json:"update_at"`
 }
 
-func GetCoinById(id int64) (*Coin, error) {
-	var coins []*Coin
-	err := database.GetDB().Where("id=?", id).Find(&coins).Error
+func GetTokenById(id int64) (*Token, error) {
+	var tokens []*Token
+	err := database.GetDB().Where("id=?", id).Find(&tokens).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
 	}
 
-	if len(coins) > 0 {
-		return coins[0], nil
+	if len(tokens) > 0 {
+		return tokens[0], nil
 	}
 
 	return nil, nil
 }
 
-func GetCoinByName(name string) (*Coin, error) {
-	var coins []*Coin
-	err := database.GetDB().Where("name=?", name).Find(&coins).Error
+func GetTokenByName(name string) (*Token, error) {
+	var tokens []*Token
+	err := database.GetDB().Where("name=?", name).Find(&tokens).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
 	}
 
-	if len(coins) > 0 {
-		return coins[0], nil
+	if len(tokens) > 0 {
+		return tokens[0], nil
 	}
 
 	return nil, nil
 }
 
-func GetCoinByAddress(address string) (*Coin, error) {
-	var coins []*Coin
-	err := database.GetDB().Where("address=?", address).Find(&coins).Error
+func GetCoinByAddress(address string) (*Token, error) {
+	var tokens []*Token
+	err := database.GetDB().Where("address=?", address).Find(&tokens).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
 	}
 
-	if len(coins) > 0 {
-		return coins[0], nil
+	if len(tokens) > 0 {
+		return tokens[0], nil
 	}
 
 	return nil, nil

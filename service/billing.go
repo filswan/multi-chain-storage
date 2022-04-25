@@ -67,7 +67,7 @@ func GetSourceFileUploadInfo(sourceFileUploadId int64) (*SourceFileUploadInfo, e
 		return nil, err
 	}
 
-	token, err := models.GetCoinById(transactionPay.CoinId)
+	token, err := models.GetTokenById(transactionPay.TokenId)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err

@@ -34,19 +34,19 @@ func GetSystemParams() (map[string]string, error) {
 		config[conf.Name] = conf.Value
 	}
 
-	coin, err := models.GetCoinByName(constants.COIN_USDC_NAME)
+	coin, err := models.GetTokenByName(constants.TOKEN_USDC_NAME)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
 	}
 
 	if coin == nil {
-		err := fmt.Errorf("coin:%s not found", constants.COIN_USDC_NAME)
+		err := fmt.Errorf("coin:%s not found", constants.TOKEN_USDC_NAME)
 		logs.GetLogger().Error(err)
 		return nil, err
 	}
 
-	config[constants.COIN_USDC_ADRESS] = coin.Address
+	config[constants.TOKEN_USDC_ADRESS] = coin.Address
 
 	return config, nil
 }

@@ -18,7 +18,7 @@ type Transaction struct {
 	SourceFileUploadId int64  `json:"source_file_upload_id"`
 	Type               int    `json:"type"`
 	NetworkId          int64  `json:"network_id"`
-	CoinId             int64  `json:"coin_id"`
+	TokenId            int64  `json:"token_id"`
 	TxHash             string `json:"tx_hash"`
 	WalletIdFrom       int64  `json:"wallet_id_from"`
 	WalletIdTo         int64  `json:"wallet_id_to"`
@@ -85,7 +85,7 @@ func CreateTransaction(sourceFileUploadId int64, txHash string) error {
 		return err
 	}
 
-	coin, err := GetCoinByName(constants.COIN_USDC_NAME)
+	coin, err := GetTokenByName(constants.TOKEN_USDC_NAME)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
@@ -102,7 +102,7 @@ func CreateTransaction(sourceFileUploadId int64, txHash string) error {
 		SourceFileUploadId: sourceFileUploadId,
 		Type:               constants.TRANSACTION_TYPE_PAY,
 		NetworkId:          network.ID,
-		CoinId:             coin.ID,
+		TokenId:            coin.ID,
 		TxHash:             txHash,
 		WalletIdFrom:       walletFrom.ID,
 		WalletIdTo:         walletTo.ID,

@@ -146,120 +146,120 @@
                       <div class="upload_form_right">
                           <div
                             class="statusStyle"
-                            v-if="miner.status == 'Created'"
+                            v-if="miner.on_chain_status == 'Created'"
                             :style="$status_color.Task_color('Created')">
                             {{ languageMcs == "en" ? "Created" : "已创建" }}
                           </div>
                           <div
                             class="statusStyle"
-                            v-else-if="miner.status == 'Assigned'"
+                            v-else-if="miner.on_chain_status == 'Assigned'"
                             :style="$status_color.Task_color('Assigned')"
                           >
                             {{ languageMcs == "en" ? "Assigned" : "已分配" }}
                           </div>
                           <div
                             class="statusStyle"
-                            v-else-if="miner.status == 'Accepted'"
+                            v-else-if="miner.on_chain_status == 'Accepted'"
                             :style="$status_color.Task_color('Accepted')"
                           >
                             {{ languageMcs == "en" ? "Accepted" : "已接受" }}
                           </div>
                           <div
                             class="statusStyle"
-                            v-else-if="miner.status == 'Completed'"
+                            v-else-if="miner.on_chain_status == 'Completed'"
                             :style="$status_color.Task_color('Completed')"
                           >
                             {{ languageMcs == "en" ? "Completed" : "已完成" }}
                           </div>
                           <div
                             class="statusStyle"
-                            v-else-if="miner.status == 'Failed'"
+                            v-else-if="miner.on_chain_status == 'Failed'"
                             :style="$status_color.Task_color('Failed')"
                           >
                             {{ languageMcs == "en" ? "Failed" : "已失败" }}
                           </div>
                           <div
                             class="statusStyle"
-                            v-else-if="miner.status == 'Cancelled'"
+                            v-else-if="miner.on_chain_status == 'Cancelled'"
                             :style="$status_color.Task_color('Cancelled')"
                           >
                             {{ languageMcs == "en" ? "Cancelled" : "已取消" }}
                           </div>
                           <div
                             class="statusStyle"
-                            v-else-if="miner.status == 'Closed'"
+                            v-else-if="miner.on_chain_status == 'Closed'"
                             :style="$status_color.Task_color('Closed')"
                           >
                             {{ languageMcs == "en" ? "Closed" : "已关闭" }}
                           </div>
                           <div
                             class="statusStyle"
-                            v-else-if="miner.status == 'Expired'"
+                            v-else-if="miner.on_chain_status == 'Expired'"
                             :style="$status_color.Task_color('Expired')"
                           >
                             {{ languageMcs == "en" ? "Expired" : "已过期" }}
                           </div>
                           <div
                               class="statusStyle"
-                              v-else-if="miner.status == 'ActionRequired'"
+                              v-else-if="miner.on_chain_status == 'ActionRequired'"
                               :style="$status_color.Task_color('ActionRequired')">
                               {{ languageMcs == 'en' ? 'ActionRequired' : '需要操作' }}
                           </div>
                           <div
                               class="statusStyle"
-                              v-else-if="miner.status == 'DealSent'"
+                              v-else-if="miner.on_chain_status == 'DealSent'"
                               :style="$status_color.Task_color('DealSent')">
                               {{ languageMcs == 'en' ? 'DealSent' : '交易已发送' }}
                           </div>
                           <div class="statusStyle"
-                                v-else-if="miner.status == 'FileImporting'"
+                                v-else-if="miner.on_chain_status == 'FileImporting'"
                                 :style="$status_color.Task_color('FileImporting')">
                               {{ languageMcs == 'en' ? 'FileImporting' : '文件导入中' }}
                           </div>
                           <div class="statusStyle"
-                                v-else-if="miner.status == 'FileImported'"
+                                v-else-if="miner.on_chain_status == 'FileImported'"
                                 :style="$status_color.Task_color('FileImported')">
                               {{ languageMcs == 'en' ? 'FileImported' : '文件已导入' }}
                           </div>
                           <div class="statusStyle"
-                                v-else-if="miner.status == 'ImportFailed'"
+                                v-else-if="miner.on_chain_status == 'ImportFailed'"
                                 :style="$status_color.Task_color('ImportFailed')">
                               {{ languageMcs == 'en' ? 'ImportFailed' : '导入失败' }}
                           </div>
                           <div class="statusStyle"
-                                v-else-if="miner.status == 'Downloading'"
+                                v-else-if="miner.on_chain_status == 'Downloading'"
                                 :style="$status_color.Task_color('Downloading')">
                               {{ languageMcs == 'en' ? 'Downloading' : '下载中' }}
                           </div>
                           <div class="statusStyle"
-                                v-else-if="miner.status == 'DownloadFailed'"
+                                v-else-if="miner.on_chain_status == 'DownloadFailed'"
                                 :style="$status_color.Task_color('DownloadFailed')">
                               {{ languageMcs == 'en' ? 'DownloadFailed' : '下载失败' }}
                           </div>
                           <div class="statusStyle"
-                                v-else-if="miner.status == 'DealActive'"
+                                v-else-if="miner.on_chain_status == 'DealActive'"
                                 :style="$status_color.Task_color('DealActive')">
                               {{ languageMcs == 'en' ? 'DealActive' : '有效交易' }}
                           </div>
                           <div class="statusStyle"
-                                v-else-if="miner.status == 'Waiting'"
+                                v-else-if="miner.on_chain_status == 'Waiting'"
                                 :style="$status_color.Task_color('Waiting')">
                               {{ languageMcs == 'en' ? 'Waiting' : '等待中' }}
                           </div>
                           <div class="statusStyle"
-                                v-else-if="miner.status == 'ReadyForImport'"
+                                v-else-if="miner.on_chain_status == 'ReadyForImport'"
                                 :style="$status_color.Task_color('ReadyForImport')">
                               {{ languageMcs == 'en' ? 'ReadyForImport' : '准备导入' }}
                           </div>
                           <div
                               class="statusStyle"
-                              v-else-if="miner.status == ''">
+                              v-else-if="miner.on_chain_status == ''">
                               -
                           </div>
                           <div
                               class="statusStyle"
                               v-else>
-                              {{ miner.status }}
+                              {{ miner.on_chain_status }}
                           </div>
                       </div>
                       <el-button slot="reference" @click="minerIdLink(miner.miner_fid)">

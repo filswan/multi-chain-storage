@@ -32,7 +32,7 @@ func RecordMintInfo(c *gin.Context) {
 	tokenId := model.TokenId
 	mintAddress := model.MintAddress
 
-	if sourceFileIploadId <= 0 || nftTxHash == "" || tokenId == "" || mintAddress == "" {
+	if sourceFileIploadId <= 0 {
 		err := fmt.Errorf("source_file_upload_id must be greater than 0")
 		logs.GetLogger().Error(err)
 		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_INVALID_VALUE, err.Error()))

@@ -21,7 +21,7 @@ func Storage(router *gin.RouterGroup) {
 	router.POST("/ipfs/upload", UploadFile)
 	router.GET("/tasks/deals", GetDeals)
 	router.GET("/deal/detail/:deal_id", GetDealFromFlink)
-	router.POST("/deal/expire", RecordExpiredRefund)
+	router.POST("/deal/refund", CreateTransaction4Refund)
 	router.GET("/deal/log/:offline_deal_id", GetDealLogs)
 	router.POST("/mint/info", RecordMintInfo)
 }
@@ -237,23 +237,24 @@ func GetDealLogs(c *gin.Context) {
 	}))
 }
 
-func RecordExpiredRefund(c *gin.Context) {
+func CreateTransaction4Refund(c *gin.Context) {
 	URL := c.Request.URL.Query()
-	tx_hash := URL.Get("tx_hash")
-	if strings.Trim(tx_hash, " ") == "" {
-		err := fmt.Errorf("transaction hash is required")
+	txHash := strings.Trim(URL.Get("tx_hash"), " ")
+	if txHash == "" {
+		err := fmt.Errorf("tx_hash is required")
 		logs.GetLogger().Error(err)
 		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_NULL, err.Error()))
 		return
 	}
-	event, err := service.SaveExpirePaymentEvent(tx_hash)
+
+	event, err := service.CreateTransaction4Refund(txHash)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_INTERNAL, err.Error()))
 		return
-	} else {
-		c.JSON(http.StatusOK, common.CreateSuccessResponse(event))
 	}
+
+	c.JSON(http.StatusOK, common.CreateSuccessResponse(event))
 }
 
 type mintInfoUpload struct {

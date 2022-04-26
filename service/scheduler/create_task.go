@@ -322,7 +322,7 @@ func CheckSourceFilesPaid() error {
 	}
 
 	for _, srcFileUpload := range srcFileUploads {
-		err = models.CreateTransaction(srcFileUpload.Id, "")
+		err = models.CreateTransaction4Pay(srcFileUpload.Id, "")
 		if err != nil {
 			logs.GetLogger().Error(err)
 			continue

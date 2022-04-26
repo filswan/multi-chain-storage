@@ -333,8 +333,7 @@ func GetDaoSignEventByDealId(dealId int64) ([]*DaoInfoResult, error) {
 	return daoInfoResult, nil
 }
 
-func SaveExpirePaymentEvent(txHash string) (*models.EventExpirePayment, error) {
-
+func CreateTransaction4Refund(txHash string) (*models.EventExpirePayment, error) {
 	ethClient, rpcClient, err := client.GetEthClient()
 
 	if err != nil {

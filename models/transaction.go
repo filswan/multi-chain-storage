@@ -43,7 +43,7 @@ func GetTransactionBySourceFileUploadIdType(sourceFileUploadId int64, transactio
 	return nil, nil
 }
 
-func CreateTransaction(sourceFileUploadId int64, txHash string) error {
+func CreateTransaction4Pay(sourceFileUploadId int64, txHash string) error {
 	transactionOld, err := GetTransactionBySourceFileUploadIdType(sourceFileUploadId, constants.TRANSACTION_TYPE_PAY)
 	if err != nil {
 		logs.GetLogger().Error(err)

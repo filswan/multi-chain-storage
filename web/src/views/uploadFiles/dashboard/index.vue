@@ -267,138 +267,15 @@
                       </el-button>
                   </el-popover>
                         
-                  <el-popover
-                      v-if="!(scope.row.offline_deal&&scope.row.offline_deal.length>0)"
-                      placement="top"
-                      trigger="hover" popper-class="elPopMiner"
-                      v-model="scope.row.payloadAct">
-                      <div class="upload_form_right">
-                          <div
-                            class="statusStyle"
-                            v-if="scope.row.deal_status == 'Created'"
-                            :style="$status_color.Task_color('Created')">
-                            {{ languageMcs == "en" ? "Created" : "已创建" }}
-                          </div>
-                          <div
-                            class="statusStyle"
-                            v-else-if="scope.row.deal_status == 'Assigned'"
-                            :style="$status_color.Task_color('Assigned')"
-                          >
-                            {{ languageMcs == "en" ? "Assigned" : "已分配" }}
-                          </div>
-                          <div
-                            class="statusStyle"
-                            v-else-if="scope.row.deal_status == 'Accepted'"
-                            :style="$status_color.Task_color('Accepted')"
-                          >
-                            {{ languageMcs == "en" ? "Accepted" : "已接受" }}
-                          </div>
-                          <div
-                            class="statusStyle"
-                            v-else-if="scope.row.deal_status == 'Completed'"
-                            :style="$status_color.Task_color('Completed')"
-                          >
-                            {{ languageMcs == "en" ? "Completed" : "已完成" }}
-                          </div>
-                          <div
-                            class="statusStyle"
-                            v-else-if="scope.row.deal_status == 'Failed'"
-                            :style="$status_color.Task_color('Failed')"
-                          >
-                            {{ languageMcs == "en" ? "Failed" : "已失败" }}
-                          </div>
-                          <div
-                            class="statusStyle"
-                            v-else-if="scope.row.deal_status == 'Cancelled'"
-                            :style="$status_color.Task_color('Cancelled')"
-                          >
-                            {{ languageMcs == "en" ? "Cancelled" : "已取消" }}
-                          </div>
-                          <div
-                            class="statusStyle"
-                            v-else-if="scope.row.deal_status == 'Closed'"
-                            :style="$status_color.Task_color('Closed')"
-                          >
-                            {{ languageMcs == "en" ? "Closed" : "已关闭" }}
-                          </div>
-                          <div
-                            class="statusStyle"
-                            v-else-if="scope.row.deal_status == 'Expired'"
-                            :style="$status_color.Task_color('Expired')"
-                          >
-                            {{ languageMcs == "en" ? "Expired" : "已过期" }}
-                          </div>
-                          <div
-                              class="statusStyle"
-                              v-else-if="scope.row.deal_status == 'ActionRequired'"
-                              :style="$status_color.Task_color('ActionRequired')">
-                              {{ languageMcs == 'en' ? 'ActionRequired' : '需要操作' }}
-                          </div>
-                          <div
-                              class="statusStyle"
-                              v-else-if="scope.row.deal_status == 'DealSent'"
-                              :style="$status_color.Task_color('DealSent')">
-                              {{ languageMcs == 'en' ? 'DealSent' : '交易已发送' }}
-                          </div>
-                          <div class="statusStyle"
-                                v-else-if="scope.row.deal_status == 'FileImporting'"
-                                :style="$status_color.Task_color('FileImporting')">
-                              {{ languageMcs == 'en' ? 'FileImporting' : '文件导入中' }}
-                          </div>
-                          <div class="statusStyle"
-                                v-else-if="scope.row.deal_status == 'FileImported'"
-                                :style="$status_color.Task_color('FileImported')">
-                              {{ languageMcs == 'en' ? 'FileImported' : '文件已导入' }}
-                          </div>
-                          <div class="statusStyle"
-                                v-else-if="scope.row.deal_status == 'ImportFailed'"
-                                :style="$status_color.Task_color('ImportFailed')">
-                              {{ languageMcs == 'en' ? 'ImportFailed' : '导入失败' }}
-                          </div>
-                          <div class="statusStyle"
-                                v-else-if="scope.row.deal_status == 'Downloading'"
-                                :style="$status_color.Task_color('Downloading')">
-                              {{ languageMcs == 'en' ? 'Downloading' : '下载中' }}
-                          </div>
-                          <div class="statusStyle"
-                                v-else-if="scope.row.deal_status == 'DownloadFailed'"
-                                :style="$status_color.Task_color('DownloadFailed')">
-                              {{ languageMcs == 'en' ? 'DownloadFailed' : '下载失败' }}
-                          </div>
-                          <div class="statusStyle"
-                                v-else-if="scope.row.deal_status == 'DealActive'"
-                                :style="$status_color.Task_color('DealActive')">
-                              {{ languageMcs == 'en' ? 'DealActive' : '有效交易' }}
-                          </div>
-                          <div class="statusStyle"
-                                v-else-if="scope.row.deal_status == 'Waiting'"
-                                :style="$status_color.Task_color('Waiting')">
-                              {{ languageMcs == 'en' ? 'Waiting' : '等待中' }}
-                          </div>
-                          <div class="statusStyle"
-                                v-else-if="scope.row.deal_status == 'ReadyForImport'"
-                                :style="$status_color.Task_color('ReadyForImport')">
-                              {{ languageMcs == 'en' ? 'ReadyForImport' : '准备导入' }}
-                          </div>
-                          <div
-                              class="statusStyle"
-                              v-else-if="scope.row.deal_status == ''">
-                              -
-                          </div>
-                          <div
-                              class="statusStyle"
-                              v-else>
-                              {{ scope.row.deal_status }}
-                          </div>
-                      </div>
-                      <div slot="reference" style="display: flex;align-items: center;">
+                  <div class="elPopMiner"
+                      v-if="!(scope.row.offline_deal&&scope.row.offline_deal.length>0)" 
+                      style="display: flex;align-items: center;">
                         {{$t('uploadFile.w3ss_id_nothing')}}
                         
                         <el-tooltip effect="dark" :content="$t('uploadFile.w3ss_id_nothing_tooltip')" placement="top">
                             {{$t('uploadFile.w3ss_id_nothing')}}<img src="@/assets/images/info.png"/>
                         </el-tooltip>
-                      </div>
-                  </el-popover>
+                  </div>
                 </div>
               </div>
             </template>

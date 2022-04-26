@@ -31,7 +31,7 @@
                             v-loading="loading" :data="tableData" style="width: 100%" 
                             :empty-text="$t('deal.formNotData')" max-height="580" @sort-change="sortChange"
                             :default-sort = "{prop: 'date', order: 'descending'}">
-                                <el-table-column prop="tx_hash" :label="$t('billing.TRANSACTION')" min-width="190">
+                                <el-table-column prop="pay_tx_hash" :label="$t('billing.TRANSACTION')" min-width="190">
                                     <template slot-scope="scope">
                                         <div class="hot-cold-box">
                                             <el-popover
@@ -39,21 +39,21 @@
                                                 trigger="hover" width="200"
                                                 v-model="scope.row.txHashVis">
                                                 <div class="upload_form_right">
-                                                    <p>{{scope.row.tx_hash}}</p>
+                                                    <p>{{scope.row.pay_tx_hash}}</p>
                                                 </div>
-                                                <el-button slot="reference" @click="networkLink(scope.row.tx_hash, scope.row.network)" :class="{'color': scope.row.network&&scope.row.network.toLowerCase() == 'polygon'}">
+                                                <el-button slot="reference" @click="networkLink(scope.row.pay_tx_hash, scope.row.network_name)" :class="{'color': scope.row.network_name&&scope.row.network_name.toLowerCase() == 'polygon'}">
                                                     <!-- <img src="@/assets/images/copy.png" alt=""> -->
-                                                    {{scope.row.tx_hash}}
+                                                    {{scope.row.pay_tx_hash}}
                                                 </el-button>
                                             </el-popover>
                                         </div>
                                     </template>                    
                                 </el-table-column>
-                                <el-table-column prop="locked_fee" :label="$t('billing.AMOUNT')" min-width="150" sortable="custom">
-                                    <template slot-scope="scope">{{scope.row.locked_fee | balanceFilter}}</template>
+                                <el-table-column prop="pay_amount" :label="$t('billing.AMOUNT')" min-width="150" sortable="custom">
+                                    <template slot-scope="scope">{{scope.row.pay_amount | balanceFilter}}</template>
                                 </el-table-column>
-                                <el-table-column prop="unlock_to_user_amount" :label="$t('billing.UNLOCKAMOUNT')" min-width="150" sortable="custom">
-                                    <template slot-scope="scope">{{scope.row.unlock_to_user_amount | balanceFilter}}</template>
+                                <el-table-column prop="unlock_amount" :label="$t('billing.UNLOCKAMOUNT')" min-width="150" sortable="custom">
+                                    <template slot-scope="scope">{{scope.row.unlock_amount | balanceFilter}}</template>
                                 </el-table-column>
                                 <el-table-column prop="coin_type" :label="$t('billing.TOKEN')" min-width="120"></el-table-column>
                                 <el-table-column prop="file_name" :label="$t('billing.FILENAME')" min-width="180" sortable="custom"></el-table-column>
@@ -75,7 +75,7 @@
                                         </div>
                                     </template>                    
                                 </el-table-column>
-                                <el-table-column prop="address_from" :label="$t('billing.WALLET')" min-width="140">
+                                <!-- <el-table-column prop="address_from" :label="$t('billing.WALLET')" min-width="140">
                                     <template slot-scope="scope">
                                         <div class="hot-cold-box">
                                             <el-popover
@@ -83,19 +83,19 @@
                                                 trigger="hover" width="300"
                                                 v-model="scope.row.walletVis">
                                                 <div class="upload_form_right">
-                                                    <p>{{scope.row.address_from}}</p>
+                                                    <p>{{metaAddress}}</p>
                                                 </div>
-                                                <el-button slot="reference" @click="copyTextToClipboard(scope.row.address_from)">
+                                                <el-button slot="reference" @click="copyTextToClipboard(metaAddress)">
                                                     <img src="@/assets/images/copy.png" alt="">
-                                                    {{scope.row.address_from}}
+                                                    {{metaAddress}}
                                                 </el-button>
                                             </el-popover>
                                         </div>
                                     </template>                    
-                                </el-table-column>
-                                <el-table-column prop="network" :label="$t('billing.NETWORK')" min-width="120"></el-table-column>
-                                <el-table-column prop="lock_payment_time" :label="$t('billing.PAYMENTDATE')" min-width="140" sortable="custom"></el-table-column>
-                                <el-table-column prop="unlock_time" :label="$t('billing.UNLOCKDATE')" min-width="140" sortable="custom"></el-table-column>
+                                </el-table-column> -->
+                                <el-table-column prop="network_name" :label="$t('billing.NETWORK')" min-width="120"></el-table-column>
+                                <el-table-column prop="pay_at" :label="$t('billing.PAYMENTDATE')" min-width="140" sortable="custom"></el-table-column>
+                                <el-table-column prop="unlock_at" :label="$t('billing.UNLOCKDATE')" min-width="140" sortable="custom"></el-table-column>
                                 <el-table-column prop="deadline" :label="$t('billing.Deadline')" min-width="140" sortable="custom"></el-table-column>
                             </el-table>
                         </div>
@@ -234,11 +234,11 @@
             },
             async sortOrderBy(sort) {
                 switch(sort) {
-                    case 'tx_hash':
+                    case 'pay_tx_hash':
                         return 1;
-                    case 'locked_fee':
+                    case 'pay_amount':
                         return 2;
-                    case 'unlock_to_user_amount':
+                    case 'unlock_amount':
                         return 7;
                     case 'coin_type':
                         return 3;
@@ -248,11 +248,11 @@
                         return 5;
                     case 'address_from':
                         return 6;
-                    case 'network':
+                    case 'network_name':
                         return 9;
-                    case 'lock_payment_time':
+                    case 'pay_at':
                         return 10;
-                    case 'unlock_time':
+                    case 'unlock_at':
                         return 8;
                     case 'deadline':
                         return 11;
@@ -286,25 +286,25 @@
                 .then((json) => {
                     if(json.data.status == 'success'){
                         _this.tableData = []
-                        _this.tableData = json.data.data;
+                        _this.tableData = json.data.data.billing;
                         _this.tableData.map(item => {
                             item.txHashVis = false
                             item.payloadVis = false
                             item.walletVis = false
-                            item.lock_payment_time =
-                                item.lock_payment_time?
-                                    String(item.lock_payment_time).length<13?
-                                        moment(new Date(parseInt(item.lock_payment_time * 1000))).format("YYYY-MM-DD HH:mm:ss")
+                            item.pay_at =
+                                item.pay_at?
+                                    String(item.pay_at).length<13?
+                                        moment(new Date(parseInt(item.pay_at * 1000))).format("YYYY-MM-DD HH:mm:ss")
                                         :
-                                        moment(new Date(parseInt(item.lock_payment_time))).format("YYYY-MM-DD HH:mm:ss")
+                                        moment(new Date(parseInt(item.pay_at))).format("YYYY-MM-DD HH:mm:ss")
                                     :
                                     '-'
-                            item.unlock_time =
-                                item.unlock_time?
-                                    String(item.unlock_time).length<13?
-                                        moment(new Date(parseInt(item.unlock_time * 1000))).format("YYYY-MM-DD HH:mm:ss")
+                            item.unlock_at =
+                                item.unlock_at?
+                                    String(item.unlock_at).length<13?
+                                        moment(new Date(parseInt(item.unlock_at * 1000))).format("YYYY-MM-DD HH:mm:ss")
                                         :
-                                        moment(new Date(parseInt(item.unlock_time))).format("YYYY-MM-DD HH:mm:ss")
+                                        moment(new Date(parseInt(item.unlock_at))).format("YYYY-MM-DD HH:mm:ss")
                                     :
                                     '-'
                             item.deadline =
@@ -318,7 +318,7 @@
                             // item.locked_fee = web3.utils.fromWei(item.locked_fee, 'ether')
                             // item.locked_fee = 0.000000000000000001 * item.locked_fee
                         })
-                        _this.parma.total = Number(json.data.page_info.total_record_count)
+                        _this.parma.total = Number(json.data.data.total_record_count)
                     }else{
                         _this.$message.error(json.data.message)
                     }

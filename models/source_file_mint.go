@@ -31,3 +31,14 @@ func GetSourceFileMintBySourceFileUploadId(sourceFileUploadId int64) (*SourceFil
 
 	return nil, nil
 }
+
+func CreateSourceFileMint(sourceFileMint *SourceFileMint) (*SourceFileMint, error) {
+	value, err := database.SaveOneWithResult(sourceFileMint)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+	sourceFileMintCreated := value.(*SourceFileMint)
+
+	return sourceFileMintCreated, nil
+}

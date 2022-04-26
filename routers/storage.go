@@ -1,6 +1,7 @@
 package routers
 
 import (
+	"errors"
 	"fmt"
 	"multi-chain-storage/common"
 	"multi-chain-storage/common/constants"
@@ -22,6 +23,7 @@ func Storage(router *gin.RouterGroup) {
 	router.GET("/deal/detail/:deal_id", GetDealFromFlink)
 	router.POST("/deal/expire", RecordExpiredRefund)
 	router.GET("/deal/log/:offline_deal_id", GetDealLogs)
+	router.POST("/mint/info", RecordMintInfo)
 }
 
 func UploadFile(c *gin.Context) {
@@ -41,33 +43,42 @@ func UploadFile(c *gin.Context) {
 		return
 	}
 
-	duration := c.PostForm("duration")
-	if strings.Trim(duration, " ") == "" {
-		err = fmt.Errorf("duraion can not be null")
+	durationStr := strings.Trim(c.PostForm("duration"), " ")
+	if durationStr == "" {
+		err = fmt.Errorf("duraion is required")
 		logs.GetLogger().Error(err)
 		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_NULL, err.Error()))
 		return
 	}
 
-	durationInt, err := strconv.Atoi(duration)
+	duration, err := strconv.Atoi(durationStr)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.ERROR_PARAM_WRONG_TYPE, "duration should be a number"))
 		return
 	}
-	durationInt = durationInt * 24 * 60 * 60 / 30
 
-	fileType := c.PostForm("file_type")
-	if strings.Trim(fileType, " ") == "" {
-		fileType = "0"
+	//if duration < 180 || duration > 530 {
+	//	err := fmt.Errorf("duration must be in [180,530]")
+	if duration != 525 {
+		err := fmt.Errorf("duration must be 525")
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.ERROR_PARAM_WRONG_TYPE, err.Error()))
+		return
+
 	}
 
-	fileTypeInt, err := strconv.Atoi(fileType)
+	fileTypeStr := strings.Trim(c.PostForm("file_type"), " ")
+	if fileTypeStr == "" {
+		fileTypeStr = "0"
+	}
+
+	fileType, err := strconv.Atoi(fileTypeStr)
 	if err != nil {
-		fileTypeInt = 0
+		fileType = 0
 	}
 
-	uploadResult, err := service.SaveFile(c, file, durationInt, fileTypeInt, walletAddress)
+	uploadResult, err := service.SaveFile(c, file, duration, fileType, walletAddress)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.ERROR_INTERNAL, err.Error()))
 		return
@@ -243,4 +254,45 @@ func RecordExpiredRefund(c *gin.Context) {
 	} else {
 		c.JSON(http.StatusOK, common.CreateSuccessResponse(event))
 	}
+}
+
+type mintInfoUpload struct {
+	SourceFileIploadId int64  `json:"source_file_upload_id"`
+	TxHash             string `json:"tx_hash"`
+	TokenId            string `json:"token_id"`
+	MintAddress        string `json:"mint_address"`
+}
+
+func RecordMintInfo(c *gin.Context) {
+	var model mintInfoUpload
+	c.BindJSON(&model)
+
+	sourceFileIploadId := model.SourceFileIploadId
+	nftTxHash := model.TxHash
+	tokenId := model.TokenId
+	mintAddress := model.MintAddress
+
+	if sourceFileIploadId <= 0 {
+		err := fmt.Errorf("source_file_upload_id must be greater than 0")
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_INVALID_VALUE, err.Error()))
+		return
+	}
+
+	if nftTxHash == "" || tokenId == "" || mintAddress == "" {
+		errMsg := "tx_hash, token_id and mint_address cannot be empty"
+		err := errors.New(errMsg)
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_NULL, errMsg))
+		return
+	}
+
+	sourceFileMint, err := service.RecordMintInfo(sourceFileIploadId, nftTxHash, tokenId, mintAddress)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_INTERNAL, err.Error()))
+		return
+	}
+
+	c.JSON(http.StatusOK, common.CreateSuccessResponse(sourceFileMint))
 }

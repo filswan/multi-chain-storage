@@ -15,7 +15,7 @@ type CarFileSource struct {
 
 func GetCarFileSourceBySourceFileUploadId(sourceFileUploadId int64) (*CarFileSource, error) {
 	var carFileSources []*CarFileSource
-	err := database.GetDB().Where("source_file_upload_id=?", sourceFileUploadId).Scan(&carFileSources).Error
+	err := database.GetDB().Where("source_file_upload_id=?", sourceFileUploadId).Find(&carFileSources).Error
 
 	if err != nil {
 		logs.GetLogger().Error(err)

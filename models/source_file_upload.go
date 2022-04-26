@@ -19,6 +19,7 @@ type SourceFileUpload struct {
 	Uuid         string `json:"uuid"`
 	WalletId     int64  `json:"wallet_id"`
 	Status       string `json:"status"`
+	DurationDay  int    `json:"duration_day"`
 	CreateAt     int64  `json:"create_at"`
 	UpdateAt     int64  `json:"update_at"`
 }
@@ -123,6 +124,7 @@ type SourceFileUploadResult struct {
 	FileName               string            `json:"file_name"`
 	FileSize               int64             `json:"file_size"`
 	UploadAt               int64             `json:"upload_at"`
+	Duration               int               `json:"duration"`
 	PinStatus              string            `json:"pin_status"`
 	PayloadCid             string            `json:"payload_cid"`
 	SourceFileUploadStatus string            `json:"source_file_upload_status"`
@@ -153,7 +155,7 @@ func (a SourceFileUploadResultByUploadAt) Swap(i, j int)      { a[i], a[j] = a[j
 
 func GetSourceFileUploads(walletId int64, fileName, orderBy string, isAscend bool, limit, offset int) ([]*SourceFileUploadResult, *int, error) {
 	sql := "select\n" +
-		"a.id source_file_upload_id,d.id car_file_id,a.file_name,b.file_size,a.create_at upload_at,\n" +
+		"a.id source_file_upload_id,d.id car_file_id,a.file_name,b.file_size,a.create_at upload_at,a.duration,\n" +
 		"b.pin_status,d.payload_cid,a.status source_file_upload_status,d.status car_file_status,\n" +
 		"e.token_id,e.mint_address,e.nft_tx_hash\n" +
 		"from source_file_upload a\n" +

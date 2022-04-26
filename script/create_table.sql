@@ -89,6 +89,7 @@ create table source_file_upload (
     uuid           varchar(100)  not null,
     wallet_id      bigint        not null,
     status         varchar(100)  not null,
+    duration       int           not null,  #--unit:day
     create_at      bigint        not null,
     update_at      bigint        not null,
     primary key pk_source_file_upload(id),

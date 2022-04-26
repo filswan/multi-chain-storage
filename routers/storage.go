@@ -41,33 +41,40 @@ func UploadFile(c *gin.Context) {
 		return
 	}
 
-	duration := c.PostForm("duration")
-	if strings.Trim(duration, " ") == "" {
-		err = fmt.Errorf("duraion can not be null")
+	durationStr := strings.Trim(c.PostForm("duration"), " ")
+	if durationStr == "" {
+		err = fmt.Errorf("duraion is required")
 		logs.GetLogger().Error(err)
 		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_NULL, err.Error()))
 		return
 	}
 
-	durationInt, err := strconv.Atoi(duration)
+	duration, err := strconv.Atoi(durationStr)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.ERROR_PARAM_WRONG_TYPE, "duration should be a number"))
 		return
 	}
-	durationInt = durationInt * 24 * 60 * 60 / 30
 
-	fileType := c.PostForm("file_type")
-	if strings.Trim(fileType, " ") == "" {
-		fileType = "0"
+	if duration < 180 || duration > 530 {
+		err := fmt.Errorf("duration must be in [180,530]")
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.ERROR_PARAM_WRONG_TYPE, err.Error()))
+		return
+
 	}
 
-	fileTypeInt, err := strconv.Atoi(fileType)
+	fileTypeStr := strings.Trim(c.PostForm("file_type"), " ")
+	if fileTypeStr == "" {
+		fileTypeStr = "0"
+	}
+
+	fileType, err := strconv.Atoi(fileTypeStr)
 	if err != nil {
-		fileTypeInt = 0
+		fileType = 0
 	}
 
-	uploadResult, err := service.SaveFile(c, file, durationInt, fileTypeInt, walletAddress)
+	uploadResult, err := service.SaveFile(c, file, duration, fileType, walletAddress)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.ERROR_INTERNAL, err.Error()))
 		return

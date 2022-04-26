@@ -418,19 +418,21 @@ func SaveExpirePaymentEvent(txHash string) (*models.EventExpirePayment, error) {
 }
 
 func RecordMintInfo(sourceFileIploadId int64, txHash string, tokenId string, mintAddress string) (*models.SourceFileMint, error) {
-	sourceFileMint := models.SourceFileMint{
+	currentUtcSecond := libutils.GetCurrentUtcSecond()
+	sourceFileMint := &models.SourceFileMint{
 		SourceFileUploadId: sourceFileIploadId,
 		NftTxHash:          txHash,
 		TokenId:            tokenId,
 		MintAddress:        mintAddress,
-		CreateAt:           libutils.GetCurrentUtcSecond(),
+		CreateAt:           currentUtcSecond,
+		UpdateAt:           currentUtcSecond,
 	}
 
-	err := database.SaveOne(sourceFileMint)
+	sourceFileMint, err := models.CreateSourceFileMint(sourceFileMint)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
 	}
 
-	return &sourceFileMint, nil
+	return sourceFileMint, nil
 }

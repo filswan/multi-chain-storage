@@ -56,8 +56,10 @@ func UploadFile(c *gin.Context) {
 		return
 	}
 
-	if duration < 180 || duration > 530 {
-		err := fmt.Errorf("duration must be in [180,530]")
+	//if duration < 180 || duration > 530 {
+	//	err := fmt.Errorf("duration must be in [180,530]")
+	if duration != 525 {
+		err := fmt.Errorf("duration must be 525")
 		logs.GetLogger().Error(err)
 		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.ERROR_PARAM_WRONG_TYPE, err.Error()))
 		return

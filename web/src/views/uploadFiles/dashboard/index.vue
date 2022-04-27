@@ -673,7 +673,7 @@ export default {
       if(_this.metaAddress){
         _this.loading = true
         // 发起请求
-        axios.get(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/billing/deal/lockpayment/info?payload_cid=${_this.payRow.payload_cid}&wallet_address=${_this.metaAddress}`,{
+        axios.get(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/billing/deal/lockpayment/info?payload_cid=${_this.payRow.payload_cid}&source_file_upload_id=${_this.payRow.source_file_upload_id}&wallet_address=${_this.metaAddress}`,{
             headers: {
             // 'Authorization': "Bearer "
             },
@@ -681,7 +681,7 @@ export default {
         .then((res) => {
             if (res.data.status == "success") {
                 if(res.data.data.tx_hash){
-                    _this.$message.error('This file has been paid.')
+                    _this.$message.error(_this.$t('deal.file_error'))
                     _this.loading = false
                     _this.getData()
                     return false

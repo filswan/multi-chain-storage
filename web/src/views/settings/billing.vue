@@ -55,7 +55,7 @@
                                 <el-table-column prop="unlock_amount" :label="$t('billing.UNLOCKAMOUNT')" min-width="150" sortable="custom">
                                     <template slot-scope="scope">{{scope.row.unlock_amount | balanceFilter}}</template>
                                 </el-table-column>
-                                <el-table-column prop="coin_type" :label="$t('billing.TOKEN')" min-width="120"></el-table-column>
+                                <el-table-column prop="token_name" :label="$t('billing.TOKEN')" min-width="120"></el-table-column>
                                 <el-table-column prop="file_name" :label="$t('billing.FILENAME')" min-width="180" sortable="custom"></el-table-column>
                                 <el-table-column prop="payload_cid" :label="$t('billing.PAYLOADCID')" min-width="140">
                                     <template slot-scope="scope">
@@ -240,7 +240,7 @@
                         return 2;
                     case 'unlock_amount':
                         return 7;
-                    case 'coin_type':
+                    case 'token_name':
                         return 3;
                     case 'file_name':
                         return 4;
@@ -705,7 +705,7 @@
                                     display: flex;
                                     align-items: center;
                                     justify-content: center;
-                                    padding-right: 0;
+                                    // padding-right: 0;
                                     word-break: break-word;
                                     font-weight: 500;
                                     color: #737373;

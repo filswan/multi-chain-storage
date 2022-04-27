@@ -213,28 +213,20 @@ func getLog(offlineDeal *models.OfflineDeal, messages ...string) string {
 }
 
 func unlockDeal(offlineDeal *models.OfflineDeal, ethClient *ethclient.Client, swanPaymentTransactor *goBind.SwanPaymentTransactor, mcsPaymentReceiverAddress common.Address) (*string, error) {
-	privateKey, publicKeyAddress, err := client.GetPrivateKeyPublicKey(constants.PRIVATE_KEY_ON_POLYGON)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-
-	tansactOpts, err := client.GetTransactOpts(ethClient, privateKey, *publicKeyAddress)
+	tansactOpts, err := client.GetTransactOpts(ethClient, adminWalletPrivateKey, *adminWalletPublicKey)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
 	}
 
 	dealIdStr := strconv.FormatInt(offlineDeal.DealId, 10)
-	unlockStatusFailed := constants.OFFLINE_DEAL_UNLOCK_STATUS_UNLOCK_FAILED
+	unlockStatusFailed := constants.OFFLINE_DEAL_STATUS_UNLOCK_FAILED
 
 	filecoinNetwork := config.GetConfig().FilecoinNetwork
 	tx, err := swanPaymentTransactor.UnlockCarPayment(tansactOpts, dealIdStr, filecoinNetwork, mcsPaymentReceiverAddress)
 	txHash := ""
 	if tx != nil {
 		txHash = tx.Hash().Hex()
-	} else {
-		logs.GetLogger().Info("tx hash is nil")
 	}
 
 	logs.GetLogger().Info(getLog(offlineDeal, txHash))
@@ -247,12 +239,6 @@ func unlockDeal(offlineDeal *models.OfflineDeal, ethClient *ethclient.Client, sw
 			return nil, err
 		}
 
-		return nil, err
-	}
-
-	if tx == nil {
-		err := fmt.Errorf("tx hash is nil")
-		logs.GetLogger().Error(err)
 		return nil, err
 	}
 
@@ -270,7 +256,7 @@ func unlockDeal(offlineDeal *models.OfflineDeal, ethClient *ethclient.Client, sw
 	}
 
 	if txReceipt.Status != uint64(1) {
-		err := fmt.Errorf("unlock failed! txHash=%s", tx.Hash().Hex())
+		err := fmt.Errorf("unlock failed! txHash=%s, status:%d", tx.Hash().Hex(), txReceipt.Status)
 		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 
 		err = models.UpdateOfflineDealUnlockStatus(offlineDeal.Id, unlockStatusFailed, "txHash="+txHash, err.Error())
@@ -283,9 +269,8 @@ func unlockDeal(offlineDeal *models.OfflineDeal, ethClient *ethclient.Client, sw
 	}
 
 	logs.GetLogger().Info(getLog(offlineDeal, "unlock success", "txHash="+tx.Hash().Hex()))
-	logs.GetLogger().Info(getLog(offlineDeal, "unlock success", "recipient.Hex()="+mcsPaymentReceiverAddress.Hex()))
 
-	unlockStatusUnlocked := constants.OFFLINE_DEAL_UNLOCK_STATUS_UNLOCKED
+	unlockStatusUnlocked := constants.OFFLINE_DEAL_STATUS_UNLOCKED
 	err = models.UpdateOfflineDealUnlockStatus(offlineDeal.Id, unlockStatusUnlocked)
 	if err != nil {
 		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))

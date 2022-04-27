@@ -4,7 +4,9 @@ import (
 	"multi-chain-storage/common/constants"
 	"multi-chain-storage/database"
 	"sort"
+	"strconv"
 	"strings"
+	"time"
 
 	"github.com/filswan/go-swan-lib/logs"
 	libutils "github.com/filswan/go-swan-lib/utils"
@@ -217,4 +219,21 @@ func GetSourceFileUploads(walletId int64, fileName, orderBy string, isAscend boo
 
 	result := sourceFileUploadResult[start:end]
 	return result, &totalRecordCount, nil
+}
+
+func FindExpiredLockPayment() ([]*EventLockPaymentQuery, error) {
+	sql :=
+		"SELECT b.id as deal_file_id, a.payload_cid, b.deal_id, a.address_from as recipient " +
+			"FROM event_lock_payment a, deal_file b " +
+			"WHERE a.payload_cid = b.payload_cid and a.payload_cid not in (SELECT payload_cid FROM event_unlock_payment c) and lock_payment_status <> '" + constants.PROCESS_STATUS_EXPIRE_REFUNDED +
+			"' and a.deadline < " + strconv.FormatInt(time.Now().Unix(), 10) +
+			" and not exists (select 1 from offline_deal d where d.deal_file_id = b.id and unlock_status ='Unlocked') and b.deal_id <> 0"
+	db := database.GetDB()
+	var models []*EventLockPaymentQuery
+	err := db.Raw(sql).Scan(&models).Limit(constants.DEFAULT_SELECT_LIMIT).Offset(0).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+	return models, nil
 }

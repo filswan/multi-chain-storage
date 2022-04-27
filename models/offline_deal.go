@@ -60,8 +60,8 @@ func GetOfflineDealByDealId(dealId int64) ([]*OfflineDeal, error) {
 
 func GetOfflineDeals2BeUnlocked() ([]*OfflineDeal, error) {
 	var offlineDeals []*OfflineDeal
-	sql := "select a.* from offline_deal a where a.deal_id>0 and a.unlock_status=?"
-	err := database.GetDB().Raw(sql, constants.OFFLINE_DEAL_UNLOCK_STATUS_NOT_UNLOCKED).Scan(&offlineDeals).Error
+	sql := "select a.* from offline_deal a where a.deal_id>0 and a.status=?"
+	err := database.GetDB().Raw(sql, constants.OFFLINE_DEAL_STATUS_CREATED).Scan(&offlineDeals).Error
 
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -74,7 +74,7 @@ func GetOfflineDeals2BeUnlocked() ([]*OfflineDeal, error) {
 func GetOfflineDealsNotUnlockedByDealFileId(dealFileId int64) ([]*OfflineDeal, error) {
 	var offlineDeals []*OfflineDeal
 	sql := "select a.* from offline_deal a where a.deal_file_id=? and a.unlock_status in (?,?)"
-	err := database.GetDB().Raw(sql, dealFileId, constants.OFFLINE_DEAL_UNLOCK_STATUS_NOT_UNLOCKED, constants.OFFLINE_DEAL_UNLOCK_STATUS_UNLOCK_FAILED).Scan(&offlineDeals).Error
+	err := database.GetDB().Raw(sql, dealFileId, constants.OFFLINE_DEAL_STATUS_CREATED, constants.OFFLINE_DEAL_UNLOCK_STATUS_UNLOCK_FAILED).Scan(&offlineDeals).Error
 
 	if err != nil {
 		logs.GetLogger().Error(err)

@@ -19,7 +19,7 @@ import (
 func BillingManager(router *gin.RouterGroup) {
 	router.GET("", GetUserBillingHistory)
 	router.POST("/deal/lockpayment", WriteLockPayment)
-	router.GET("/deal/lockpayment/info", GetLockPaymentInfoByPayloadCid)
+	router.GET("/deal/lockpayment/info", GetLockPaymentInfo)
 	router.GET("/price/filecoin", GetFileCoinLastestPrice)
 	router.POST("/deal/expire", WriteRefundAfterExpired)
 }
@@ -107,7 +107,7 @@ func WriteLockPayment(c *gin.Context) {
 	c.JSON(http.StatusOK, common.CreateSuccessResponse(""))
 }
 
-func GetLockPaymentInfoByPayloadCid(c *gin.Context) {
+func GetLockPaymentInfo(c *gin.Context) {
 	URL := c.Request.URL.Query()
 	sourceFileUploadIdStr := strings.Trim(URL.Get("source_file_upload_id"), " ")
 	if sourceFileUploadIdStr == "" {
@@ -144,6 +144,11 @@ func GetFileCoinLastestPrice(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, common.CreateSuccessResponse(*latestPrice))
+}
+
+type RefundAfterExpired struct {
+	SourceFileUploadIds []int64 `json:"source_file_upload_id"`
+	TxHash              string  `json:"tx_hash"`
 }
 
 func WriteRefundAfterExpired(c *gin.Context) {

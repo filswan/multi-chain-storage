@@ -103,50 +103,6 @@ func UnlockPayment() error {
 	return nil
 }
 
-func getDaoSignatures(ethClient *ethclient.Client, offlineDeal *models.OfflineDeal) error {
-	dealFile, err := models.GetCarFileById(offlineDeal.CarFileId)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
-
-	filswanOracleSession, err := client.GetFilswanOracleSession(ethClient)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
-
-	dealIdStr := strconv.FormatInt(offlineDeal.DealId, 10)
-	filecoinNetwork := config.GetConfig().FilecoinNetwork
-	daoSignatures, err := filswanOracleSession.GetSignatureList(dealIdStr, filecoinNetwork)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
-
-	for _, daoSingature := range daoSignatures {
-		eventDaoSignature := models.EventDaoSignature{
-			Recipient:   daoSingature.Recipient.Hex(),
-			PayloadCid:  dealFile.PayloadCid,
-			DealId:      offlineDeal.DealId,
-			DaoAddress:  daoSingature.Signer.Hex(),
-			BlockNo:     daoSingature.BlockNumber.Uint64(),
-			BlockTime:   daoSingature.Timestamp.String(),
-			DaoPassTime: daoSingature.Timestamp.String(),
-			Status:      daoSingature.Status,
-		}
-		err = database.SaveOne(eventDaoSignature)
-		if err != nil {
-			logs.GetLogger().Error(err)
-			return err
-		}
-		logs.GetLogger().Info(daoSingature.Paid)
-		logs.GetLogger().Info(daoSingature.Terms)
-	}
-
-	return nil
-}
-
 func checkUnlockable(ethClient *ethclient.Client, offlineDeal *models.OfflineDeal, filswanOracleSession *goBind.FilswanOracleSession, mcsPaymentReceiverAddress common.Address) (bool, error) {
 	dealIdStr := strconv.FormatInt(offlineDeal.DealId, 10)
 	filecoinNetwork := config.GetConfig().FilecoinNetwork
@@ -161,14 +117,14 @@ func checkUnlockable(ethClient *ethclient.Client, offlineDeal *models.OfflineDea
 		return false, nil
 	}
 
-	daoSignatures, err := models.GetEventDaoSignaturesByDealId(offlineDeal.DealId)
+	filswanOracleTransactions, err := filswanOracleSession.GetSignatureList(strconv.FormatInt(offlineDeal.DealId, 10), filecoinNetwork)
 	if err != nil {
 		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 		return false, err
 	}
 
-	if len(daoSignatures) == 0 {
-		logs.GetLogger().Info("no dao sigatures yet")
+	if len(filswanOracleTransactions) == 0 {
+		logs.GetLogger().Info(getLog(offlineDeal, "no dao sigatures yet"))
 		return false, nil
 	}
 
@@ -178,12 +134,15 @@ func checkUnlockable(ethClient *ethclient.Client, offlineDeal *models.OfflineDea
 		return false, err
 	}
 
-	blockInterval := int64(currentBlockNo - daoSignatures[0].BlockNo)
+	for _, filswanOracleTransaction := range filswanOracleTransactions {
+		daoBlockNo := filswanOracleTransaction.BlockNumber.Uint64()
+		blockInterval := int64(currentBlockNo - daoBlockNo)
 
-	if blockInterval < config.GetConfig().Polygon.IntervalDaoUnlockBlock {
-		msg := fmt.Sprintf("current block number:%d minus last dao block number:%d is less than block interval:%d", currentBlockNo, daoSignatures[0].BlockNo, blockInterval)
-		logs.GetLogger().Info(offlineDeal, msg)
-		return false, nil
+		if blockInterval < config.GetConfig().Polygon.IntervalDaoUnlockBlock {
+			msg := fmt.Sprintf("current block number:%d - dao block number:%d is less than block interval:%d", currentBlockNo, daoBlockNo, blockInterval)
+			logs.GetLogger().Info(offlineDeal, msg)
+			return false, nil
+		}
 	}
 
 	return true, nil

@@ -42,12 +42,16 @@ func GetTransactions(walletAddress, txHash, fileName, orderBy string, isAscend b
 	return billings, totalRecordCount, nil
 }
 
+type SourceFileUploadInfoWcid struct {
+	SourceFileUploadId int64  `json:"source_file_upload_id"`
+	WCID               string `json:"w_cid"`
+}
 type SourceFileUploadInfo struct {
-	WCid              string   `json:"w_cid"`
-	LockedFee         string   `json:"locked_fee"`
-	TxHash            string   `json:"tx_hash"`
-	TokenAddress      string   `json:"token_address"`
-	WCidInSameCarFile []string `json:"w_cid_in_same_car_file"`
+	WCid              string                      `json:"w_cid"`
+	LockedFee         string                      `json:"locked_fee"`
+	TxHash            string                      `json:"tx_hash"`
+	TokenAddress      string                      `json:"token_address"`
+	WCidInSameCarFile []*SourceFileUploadInfoWcid `json:"w_cid_in_same_car_file"`
 }
 
 func GetSourceFileUploadInfo(sourceFileUploadId int64) (*SourceFileUploadInfo, error) {
@@ -86,7 +90,7 @@ func GetSourceFileUploadInfo(sourceFileUploadId int64) (*SourceFileUploadInfo, e
 		LockedFee:         transactionPay.Amount,
 		TxHash:            transactionPay.TxHash,
 		TokenAddress:      token.Address,
-		WCidInSameCarFile: []string{},
+		WCidInSameCarFile: []*SourceFileUploadInfoWcid{},
 	}
 
 	carFileSource, err := models.GetCarFileSourceBySourceFileUploadId(sourceFileUploadId)
@@ -106,7 +110,11 @@ func GetSourceFileUploadInfo(sourceFileUploadId int64) (*SourceFileUploadInfo, e
 	}
 
 	for _, sourceFileUpload1 := range sourceFileUploads {
-		sourceFileUploadInfo.WCidInSameCarFile = append(sourceFileUploadInfo.WCidInSameCarFile, sourceFileUpload1.Uuid+sourceFileUpload1.PayloadCid)
+		sourceFileUploadInfoWcid := &SourceFileUploadInfoWcid{
+			SourceFileUploadId: sourceFileUpload1.Id,
+			WCID:               sourceFileUpload1.Uuid + sourceFileUpload1.PayloadCid,
+		}
+		sourceFileUploadInfo.WCidInSameCarFile = append(sourceFileUploadInfo.WCidInSameCarFile, sourceFileUploadInfoWcid)
 	}
 
 	return sourceFileUploadInfo, nil

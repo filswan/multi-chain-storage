@@ -2,7 +2,6 @@ package models
 
 import (
 	"fmt"
-	"multi-chain-storage/common/constants"
 	"multi-chain-storage/database"
 
 	libutils "github.com/filswan/go-swan-lib/utils"
@@ -45,23 +44,6 @@ func GetSourceFileById(id int64) (*SourceFile, error) {
 	return &sourceFile, nil
 }
 
-func GetSourceFilesIn1CarBySourceFileId(sourceFileId int64) ([]*SourceFileExt, error) {
-	var sourceFiles []*SourceFileExt
-	sql := "select b.*,c.payload_cid deal_file_payload_cid from ( " +
-		"select b.source_file_id,b.deal_file_id from source_file_deal_file_map a, source_file_deal_file_map b " +
-		"where a.source_file_id=? and a.deal_file_id=b.deal_file_id " +
-		") a, source_file b, deal_file c " +
-		"where a.source_file_id=b.id and a.deal_file_id=c.id"
-	err := database.GetDB().Raw(sql, sourceFileId).Scan(&sourceFiles).Error
-
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-
-	return sourceFiles, nil
-}
-
 func GetSourceFileByPayloadCid(payloadCid string) (*SourceFile, error) {
 	var sourceFiles []*SourceFile
 
@@ -81,25 +63,6 @@ func GetSourceFileByPayloadCid(payloadCid string) (*SourceFile, error) {
 	return nil, nil
 }
 
-func GetSourceFileExtByPayloadCid(payloadCid, walletAddress string) (*SourceFileExt, error) {
-	var sourceFiles []*SourceFileExt
-	sql := "select a.*,b.file_name from source_file a, source_file_upload_history b where b.source_file_id=a.id and a.payload_cid=? and b.wallet_address=?"
-	err := database.GetDB().Raw(sql, payloadCid, walletAddress).Scan(&sourceFiles).Error
-
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-
-	if len(sourceFiles) > 0 {
-		return sourceFiles[0], nil
-	}
-	err = fmt.Errorf("source file with payload_cid:%s wallet_address:%s not exists", payloadCid, walletAddress)
-	logs.GetLogger().Error(err)
-
-	return nil, nil
-}
-
 func CreateSourceFile(sourceFile *SourceFile) (*SourceFile, error) {
 	value, err := database.SaveOneWithResult(sourceFile)
 	if err != nil {
@@ -109,42 +72,6 @@ func CreateSourceFile(sourceFile *SourceFile) (*SourceFile, error) {
 	sourceFileCreated := value.(*SourceFile)
 
 	return sourceFileCreated, nil
-}
-
-func GetSourceFilesByWalletAddress(walletAddress string) ([]*SourceFileExt, error) {
-	sql := "select s.id, h.file_name,s.file_size,s.pin_status,s.create_at,s.payload_cid,s.ipfs_url,h.wallet_address,s.mint_address, s.nft_tx_hash, s.token_id,df.id deal_file_id,df.lock_payment_status status,df.duration, evpm.locked_fee from source_file s "
-	sql = sql + "left join source_file_upload_history h on s.id=h.source_file_id "
-	sql = sql + "left join source_file_deal_file_map sfdfm on s.id = sfdfm.source_file_id "
-	sql = sql + "left join deal_file df on sfdfm.deal_file_id = df.id "
-
-	params := []interface{}{}
-	sql = sql + "left outer join event_lock_payment evpm on evpm.payload_cid = s.payload_cid "
-	sql = sql + "where h.wallet_address=? and s.file_type=?"
-	params = append(params, walletAddress, constants.SOURCE_FILE_TYPE_NORMAL)
-
-	var results []*SourceFileExt
-
-	err := database.GetDB().Raw(sql, params...).Order("create_at desc").Scan(&results).Error
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-
-	return results, nil
-}
-
-func GetSourceFilesByDealFileId(dealFileId int64) ([]*SourceFile, error) {
-	var sourceFiles []*SourceFile
-
-	sql := "select a.* from source_file a, source_file_deal_file_map b where a.id=b.source_file_id and b.deal_file_id=?"
-
-	err := database.GetDB().Raw(sql, dealFileId).Scan(&sourceFiles).Error
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-
-	return sourceFiles, nil
 }
 
 func UpdateSourceFileRefundAmount(srcFileId int64, refundAmount decimal.Decimal) error {

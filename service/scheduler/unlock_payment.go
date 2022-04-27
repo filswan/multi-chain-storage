@@ -5,14 +5,11 @@ import (
 	"fmt"
 	"multi-chain-storage/common/constants"
 	"multi-chain-storage/config"
-	"multi-chain-storage/database"
 	"multi-chain-storage/models"
 	"multi-chain-storage/on-chain/client"
 	"multi-chain-storage/on-chain/goBind"
 	"strconv"
 	"time"
-
-	libutils "github.com/filswan/go-swan-lib/utils"
 
 	"github.com/ethereum/go-ethereum/rpc"
 
@@ -84,7 +81,7 @@ func UnlockPayment() error {
 		}
 
 		unlockCnt = unlockCnt + 1
-		txHash, err := doUnlockDeal(offlineDeal, ethClient, swanPaymentTransactor, mcsPaymentReceiverAddress)
+		txHash, err := unlockDeal(offlineDeal, ethClient, swanPaymentTransactor, mcsPaymentReceiverAddress)
 		if err != nil {
 			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 			continue
@@ -149,7 +146,7 @@ func checkUnlockable(ethClient *ethclient.Client, offlineDeal *models.OfflineDea
 }
 
 func updateUnlockPayment(offlineDeal *models.OfflineDeal, txHash string, rpcClient *rpc.Client) error {
-	srcFiles, err := models.GetSourceFilesByDealFileId(offlineDeal.CarFileId)
+	srcFiles, err := models.GetSourceFileUploadsByCarFileId(offlineDeal.CarFileId)
 	if err != nil {
 		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 		return err
@@ -174,7 +171,7 @@ func updateUnlockPayment(offlineDeal *models.OfflineDeal, txHash string, rpcClie
 			blockNo = *rpcTransaction.BlockNumber
 		}
 
-		err = models.UpdateUnlockAmount(srcFile.ID, offlineDeal.DealId, txHash, blockNo, lockedPayment.LockedFee)
+		err = models.UpdateUnlockAmount(srcFile.Id, offlineDeal.DealId, txHash, blockNo, lockedPayment.LockedFee)
 		if err != nil {
 			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 			continue
@@ -185,41 +182,17 @@ func updateUnlockPayment(offlineDeal *models.OfflineDeal, txHash string, rpcClie
 }
 
 func setUnlockPayment(offlineDeal *models.OfflineDeal) error {
-	srcFiles, err := models.GetSourceFilesByDealFileId(offlineDeal.CarFileId)
+	srcFileUploads, err := models.GetSourceFileUploadsByCarFileId(offlineDeal.CarFileId)
 	if err != nil {
 		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 		return err
 	}
 
-	for _, srcFile := range srcFiles {
-		unlockPayment := models.EventUnlockPayment{
-			PayloadCid:   srcFile.PayloadCid,
-			SourceFileId: &srcFile.ID,
-			DealId:       offlineDeal.DealId,
-		}
-
-		lockedPayment, err := client.GetLockedPaymentInfo(srcFile.PayloadCid)
+	for _, srcFileUpload := range srcFileUploads {
+		err = models.CreateTransaction4Unlock(srcFileUpload.Id, srcFileUpload.Uuid+srcFileUpload.PayloadCid)
 		if err != nil {
 			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 			return err
-		}
-
-		unlockPayment.LockedFeeBeforeUnlock = lockedPayment.LockedFee
-
-		unlockPayment.TokenAddress = lockedPayment.TokenAddress
-		unlockPayment.UnlockTime = libutils.GetCurrentUtcSecond()
-		token, err := models.GetTokenByAddress(unlockPayment.TokenAddress)
-		if err != nil {
-			logs.GetLogger().Error(err)
-		} else {
-			unlockPayment.CoinId = token.ID
-			unlockPayment.NetworkId = token.NetworkId
-		}
-
-		err = database.SaveOne(&unlockPayment)
-		if err != nil {
-			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
-			continue
 		}
 	}
 
@@ -239,7 +212,7 @@ func getLog(offlineDeal *models.OfflineDeal, messages ...string) string {
 	return text
 }
 
-func doUnlockDeal(offlineDeal *models.OfflineDeal, ethClient *ethclient.Client, swanPaymentTransactor *goBind.SwanPaymentTransactor, mcsPaymentReceiverAddress common.Address) (*string, error) {
+func unlockDeal(offlineDeal *models.OfflineDeal, ethClient *ethclient.Client, swanPaymentTransactor *goBind.SwanPaymentTransactor, mcsPaymentReceiverAddress common.Address) (*string, error) {
 	privateKey, publicKeyAddress, err := client.GetPrivateKeyPublicKey(constants.PRIVATE_KEY_ON_POLYGON)
 	if err != nil {
 		logs.GetLogger().Error(err)

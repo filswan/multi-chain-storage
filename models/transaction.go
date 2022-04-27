@@ -19,18 +19,19 @@ import (
 )
 
 type Transaction struct {
-	ID                 int64  `json:"id"`
-	SourceFileUploadId int64  `json:"source_file_upload_id"`
-	Type               int    `json:"type"`
-	NetworkId          int64  `json:"network_id"`
-	TokenId            int64  `json:"token_id"`
-	TxHash             string `json:"tx_hash"`
-	WalletIdFrom       int64  `json:"wallet_id_from"`
-	WalletIdTo         int64  `json:"wallet_id_to"`
-	Amount             string `json:"amount"`
-	BlockNumber        int64  `json:"block_number"`
-	Deadline           int64  `json:"deadline"`
-	CreateAt           int64  `json:"create_at"`
+	ID                 int64   `json:"id"`
+	SourceFileUploadId int64   `json:"source_file_upload_id"`
+	Type               int     `json:"type"`
+	Status             string  `json:"status"`
+	NetworkId          int64   `json:"network_id"`
+	TokenId            int64   `json:"token_id"`
+	TxHash             *string `json:"tx_hash"`
+	WalletIdFrom       *int64  `json:"wallet_id_from"`
+	WalletIdTo         *int64  `json:"wallet_id_to"`
+	Amount             string  `json:"amount"`
+	BlockNumber        int64   `json:"block_number"`
+	Deadline           int64   `json:"deadline"`
+	CreateAt           int64   `json:"create_at"`
 }
 
 func GetTransactionBySourceFileUploadIdType(sourceFileUploadId int64, transactionType int) (*Transaction, error) {
@@ -46,6 +47,82 @@ func GetTransactionBySourceFileUploadIdType(sourceFileUploadId int64, transactio
 	}
 
 	return nil, nil
+}
+
+func CreateTransaction4Unlock(sourceFileUploadId int64, wCid string) error {
+	transactionOld, err := GetTransactionBySourceFileUploadIdType(sourceFileUploadId, constants.TRANSACTION_TYPE_UNLOCK)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	if transactionOld != nil {
+		return nil
+	}
+
+	lockPayment, err := client.GetLockedPaymentInfo(wCid)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	token, err := GetTokenByName(constants.TOKEN_USDC_NAME)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	network, err := GetNetworkByName(constants.NETWORK_NAME_POLYGON)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	currentUtcSecond := libutils.GetCurrentUtcSecond()
+	transaction := Transaction{
+		SourceFileUploadId: sourceFileUploadId,
+		Type:               constants.TRANSACTION_TYPE_UNLOCK,
+		Status:             constants.TRANSACTION_STATUS_CREATED,
+		NetworkId:          network.ID,
+		TokenId:            token.ID,
+		TxHash:             nil,
+		WalletIdFrom:       nil,
+		WalletIdTo:         nil,
+		Amount:             lockPayment.LockedFee.String(),
+		BlockNumber:        lockPayment.BlockNumber,
+		Deadline:           lockPayment.Deadline,
+		CreateAt:           currentUtcSecond,
+	}
+
+	db := database.GetDBTransaction()
+	err = database.SaveOneInTransaction(db, &transaction)
+	if err != nil {
+		db.Rollback()
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	sql := "update source_file_upload set status=?,update_at=? where id=?"
+
+	params := []interface{}{}
+	params = append(params, constants.SOURCE_FILE_UPLOAD_STATUS_PAID)
+	params = append(params, currentUtcSecond)
+	params = append(params, sourceFileUploadId)
+
+	err = db.Exec(sql, params...).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		db.Rollback()
+		return err
+	}
+
+	err = db.Commit().Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	return nil
 }
 
 func CreateTransaction4Pay(sourceFileUploadId int64, txHash string) error {
@@ -106,11 +183,12 @@ func CreateTransaction4Pay(sourceFileUploadId int64, txHash string) error {
 	transaction := Transaction{
 		SourceFileUploadId: sourceFileUploadId,
 		Type:               constants.TRANSACTION_TYPE_PAY,
+		Status:             constants.TRANSACTION_STATUS_SUCCESS,
 		NetworkId:          network.ID,
 		TokenId:            coin.ID,
-		TxHash:             txHash,
-		WalletIdFrom:       walletFrom.ID,
-		WalletIdTo:         walletTo.ID,
+		TxHash:             &txHash,
+		WalletIdFrom:       &walletFrom.ID,
+		WalletIdTo:         &walletTo.ID,
 		Amount:             lockPayment.LockedFee.String(),
 		BlockNumber:        lockPayment.BlockNumber,
 		Deadline:           lockPayment.Deadline,

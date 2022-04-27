@@ -88,9 +88,12 @@ func GetSourceFileUploadInfo(sourceFileUploadId int64) (*SourceFileUploadInfo, e
 	sourceFileUploadInfo := &SourceFileUploadInfo{
 		WCid:              sourceFileUpload.Uuid + sourceFile.PayloadCid,
 		LockedFee:         transactionPay.Amount,
-		TxHash:            transactionPay.TxHash,
 		TokenAddress:      token.Address,
 		WCidInSameCarFile: []*SourceFileUploadInfoWcid{},
+	}
+
+	if transactionPay.TxHash != nil {
+		sourceFileUploadInfo.TxHash = *transactionPay.TxHash
 	}
 
 	carFileSource, err := models.GetCarFileSourceBySourceFileUploadId(sourceFileUploadId)

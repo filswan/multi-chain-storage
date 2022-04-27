@@ -21,6 +21,7 @@ func BillingManager(router *gin.RouterGroup) {
 	router.POST("/deal/lockpayment", WriteLockPayment)
 	router.GET("/deal/lockpayment/info", GetLockPaymentInfoByPayloadCid)
 	router.GET("/price/filecoin", GetFileCoinLastestPrice)
+	router.POST("/deal/expire", WriteRefundAfterExpired)
 }
 
 func GetUserBillingHistory(c *gin.Context) {
@@ -143,4 +144,31 @@ func GetFileCoinLastestPrice(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, common.CreateSuccessResponse(*latestPrice))
+}
+
+func WriteRefundAfterExpired(c *gin.Context) {
+	URL := c.Request.URL.Query()
+	txHash := strings.Trim(URL.Get("tx_hash"), " ")
+	if txHash == "" {
+		err := fmt.Errorf("tx_hash is required")
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_NULL, err.Error()))
+		return
+	}
+
+	if !strings.HasPrefix(txHash, "0x") {
+		err := fmt.Errorf("tx_hash must start with 0x")
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_INVALID_VALUE, err.Error()))
+		return
+	}
+
+	event, err := service.WriteRefundAfterExpired(txHash)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_INTERNAL, err.Error()))
+		return
+	}
+
+	c.JSON(http.StatusOK, common.CreateSuccessResponse(event))
 }

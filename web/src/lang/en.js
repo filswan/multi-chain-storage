@@ -150,6 +150,7 @@ export default {
         proposal_not_null: 'Describe your proposal cannot be null!',
         please_tip01: 'Please enter a task name',
         please_tip02: 'Please enter W3SS ID',
+        file_error: 'This file has been paid.'
     },
     miner: {
         search_place: 'Search for Tasks...',

@@ -149,6 +149,7 @@ export default {
         proposal_not_null: '描述您的建议不能为空！',
         please_tip01: '请输入任务名称',
         please_tip02: '请输入目标存储提供者',
+        file_error: '这个文件已经付款了。'
     },
     miner: {
         search_place: '搜索任务...',

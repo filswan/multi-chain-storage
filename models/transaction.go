@@ -208,6 +208,39 @@ func UpdateTransactionUnlockInfo(sourceFileUploadId int64, unlockAmount decimal.
 	return nil
 }
 
+func UpdateTransactionRefundAfterExpired(sourceFileUploadId int64, refundTxHash string, refundAmount decimal.Decimal) error {
+	transaction, err := GetTransactionBySourceFileUploadId(sourceFileUploadId)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	if transaction != nil {
+		err := fmt.Errorf("transaction not exists for source file upload:%d", sourceFileUploadId)
+		logs.GetLogger().Error(err)
+		return nil
+	}
+
+	sql := "update transaction set status=?,tx_hash_refund_after_expired=?,amount_refund_after_expired=?,refund_after_expired_at=?,update_at=? where id=?"
+
+	currentUtcSecond := utils.GetCurrentUtcSecond()
+	params := []interface{}{}
+	params = append(params, constants.TRANSACTION_STATUS_UNLOCKING)
+	params = append(params, refundTxHash)
+	params = append(params, refundAmount.String())
+	params = append(params, currentUtcSecond)
+	params = append(params, currentUtcSecond)
+	params = append(params, transaction.ID)
+
+	err = database.GetDB().Exec(sql, params...).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	return nil
+}
+
 type Billing struct {
 	PayId        int64  `json:"pay_id"`
 	PayTxHash    string `json:"pay_tx_hash"`

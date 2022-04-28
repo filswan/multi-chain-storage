@@ -22,9 +22,10 @@ type OfflineDeal struct {
 	Status         string  `json:"status"`
 	Note           *string `json:"note"`
 	OnChainStatus  *string `json:"on_chain_status"`
+	TxHashUnlock   *string `json:"tx_hash_unlock"`
+	UnlockAt       int64   `json:"unlock_at"`
 	CreateAt       int64   `json:"create_at"`
 	UpdateAt       int64   `json:"update_at"`
-	UnlockAt       int64   `json:"unlock_at"`
 }
 
 type OfflineDealOut struct {
@@ -83,8 +84,8 @@ func GetOfflineDealsByCarFileId(carFileId int64) ([]*OfflineDealOut, error) {
 	return offlineDeals, nil
 }
 
-func UpdateOfflineDealUnlockStatus(id int64, unlockStatus string, messages ...string) error {
-	sql := "update offline_deal set status=?,note=?,update_at=?,unlock_at=? where id=?"
+func UpdateOfflineDealUnlockInfo(id int64, status string, txHashUnlock string, messages ...string) error {
+	sql := "update offline_deal set status=?,note=?,tx_hash_unlock=?,unlock_at=?,update_at=? where id=?"
 
 	note := ""
 	for _, message := range messages {
@@ -96,8 +97,9 @@ func UpdateOfflineDealUnlockStatus(id int64, unlockStatus string, messages ...st
 	curUtcMilliSec := libutils.GetCurrentUtcSecond()
 
 	params := []interface{}{}
-	params = append(params, unlockStatus)
+	params = append(params, status)
 	params = append(params, note)
+	params = append(params, txHashUnlock)
 	params = append(params, curUtcMilliSec)
 	params = append(params, curUtcMilliSec)
 	params = append(params, id)

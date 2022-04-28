@@ -51,8 +51,9 @@ const (
 	OFFLINE_DEAL_STATUS_UNLOCKED      = "Unlocked"
 	OFFLINE_DEAL_STATUS_UNLOCK_FAILED = "UnlockFailed"
 
-	TRANSACTION_STATUS_CREATED = "Created"
-	TRANSACTION_STATUS_SUCCESS = "Success"
+	TRANSACTION_STATUS_PAID      = "Paid"
+	TRANSACTION_STATUS_UNLOCKING = "Unlocking"
+	TRANSACTION_STATUS_UNLOCKED  = "Unlocked"
 
 	SIGNATURE_SUCCESS_VALUE = "1" //init value,no unlock operation has been performed
 	SIGNATURE_FAILED_VALUE  = "2" //init value,no unlock operation has been performed
@@ -66,12 +67,6 @@ const (
 	EPOCH_PER_DAY = 24 * 60 * 2
 
 	PRIVATE_KEY_ON_POLYGON = "privateKeyOnPolygon"
-
-	//0:pay,1:unlock, 2: refund after unlock, 3:refund after expired
-	TRANSACTION_TYPE_PAY                  = 0
-	TRANSACTION_TYPE_UNLOCK               = 1
-	TRANSACTION_TYPE_REFUND_AFTER_UNLOCK  = 2
-	TRANSACTION_TYPE_REFUND_AFTER_EXPIRED = 3
 
 	TOKEN_USDC_NAME   = "USDC"
 	TOKEN_USDC_ADRESS = "USDC_ADDRESS"

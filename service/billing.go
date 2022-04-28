@@ -73,7 +73,7 @@ func GetSourceFileUploadInfo(sourceFileUploadId int64) (*SourceFileUploadInfo, e
 		return nil, err
 	}
 
-	transactionPay, err := models.GetTransactionBySourceFileUploadIdType(sourceFileUploadId, constants.TRANSACTION_TYPE_PAY)
+	transactionPay, err := models.GetTransactionBySourceFileUploadId(sourceFileUploadId)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
@@ -87,13 +87,10 @@ func GetSourceFileUploadInfo(sourceFileUploadId int64) (*SourceFileUploadInfo, e
 
 	sourceFileUploadInfo := &SourceFileUploadInfo{
 		WCid:              sourceFileUpload.Uuid + sourceFile.PayloadCid,
-		LockedFee:         transactionPay.Amount,
+		LockedFee:         transactionPay.AmountLock,
+		TxHash:            transactionPay.TxHashPay,
 		TokenAddress:      token.Address,
 		WCidInSameCarFile: []*SourceFileUploadInfoWcid{},
-	}
-
-	if transactionPay.TxHash != nil {
-		sourceFileUploadInfo.TxHash = *transactionPay.TxHash
 	}
 
 	carFileSource, err := models.GetCarFileSourceBySourceFileUploadId(sourceFileUploadId)

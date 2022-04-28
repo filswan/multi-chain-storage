@@ -11,8 +11,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/ethereum/go-ethereum/rpc"
-
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/filswan/go-swan-lib/logs"
@@ -31,7 +29,7 @@ func UnlockPayment() error {
 		return nil
 	}
 
-	ethClient, rpcClient, err := client.GetEthClient()
+	ethClient, _, err := client.GetEthClient()
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
@@ -72,27 +70,20 @@ func UnlockPayment() error {
 			time.Sleep(unlockInterval)
 		}
 
-		logs.GetLogger().Info(getLog(offlineDeal, "start to unlock"))
-
-		err = setUnlockPayment(offlineDeal)
+		srcFileUploads, err := setUnlockPayment(offlineDeal)
 		if err != nil {
 			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 			continue
 		}
 
 		unlockCnt = unlockCnt + 1
-		txHash, err := unlockDeal(offlineDeal, ethClient, swanPaymentTransactor, mcsPaymentReceiverAddress)
+		_, err = unlockDeal(offlineDeal, ethClient, swanPaymentTransactor, mcsPaymentReceiverAddress)
 		if err != nil {
 			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 			continue
 		}
 
-		if txHash == nil {
-			logs.GetLogger().Info(getLog(offlineDeal, " no tx hash returned"))
-			continue
-		}
-
-		err = updateUnlockPayment(offlineDeal, *txHash, rpcClient)
+		err = updateUnlockPayment(offlineDeal, srcFileUploads)
 		if err != nil {
 			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 		}
@@ -114,7 +105,7 @@ func checkUnlockable(ethClient *ethclient.Client, offlineDeal *models.OfflineDea
 		return false, nil
 	}
 
-	filswanOracleTransactions, err := filswanOracleSession.GetSignatureList(strconv.FormatInt(offlineDeal.DealId, 10), filecoinNetwork)
+	filswanOracleTransactions, err := filswanOracleSession.GetSignatureList(dealIdStr, filecoinNetwork)
 	if err != nil {
 		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 		return false, err
@@ -145,54 +136,40 @@ func checkUnlockable(ethClient *ethclient.Client, offlineDeal *models.OfflineDea
 	return true, nil
 }
 
-func updateUnlockPayment(offlineDeal *models.OfflineDeal, txHash string, rpcClient *rpc.Client) error {
-	srcFiles, err := models.GetSourceFileUploadsByCarFileId(offlineDeal.CarFileId)
-	if err != nil {
-		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
-		return err
-	}
-
-	var rpcTransaction *models.RpcTransaction
-	err = rpcClient.CallContext(context.Background(), &rpcTransaction, "eth_getTransactionByHash", common.HexToHash(txHash))
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
-
-	for _, srcFile := range srcFiles {
-		lockedPayment, err := client.GetLockedPaymentInfo(srcFile.PayloadCid)
-		if err != nil {
-			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
-			continue
-		}
-
-		blockNo := ""
-		if rpcTransaction.BlockNumber != nil {
-			blockNo = *rpcTransaction.BlockNumber
-		}
-
-		err = models.UpdateUnlockAmount(srcFile.Id, offlineDeal.DealId, txHash, blockNo, lockedPayment.LockedFee)
-		if err != nil {
-			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
-			continue
-		}
-	}
-
-	return nil
-}
-
-func setUnlockPayment(offlineDeal *models.OfflineDeal) error {
+func setUnlockPayment(offlineDeal *models.OfflineDeal) ([]*models.SourceFileUploadOut, error) {
 	srcFileUploads, err := models.GetSourceFileUploadsByCarFileId(offlineDeal.CarFileId)
 	if err != nil {
 		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
-		return err
+		return nil, err
 	}
 
 	for _, srcFileUpload := range srcFileUploads {
-		err = models.CreateTransaction4Unlock(srcFileUpload.Id, srcFileUpload.Uuid+srcFileUpload.PayloadCid)
+		wCid := srcFileUpload.Uuid + srcFileUpload.PayloadCid
+		lockPayment, err := client.GetLockedPaymentInfo(wCid)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return nil, err
+		}
+		srcFileUpload.LockedFeeBeforeUnlock = lockPayment.LockedFee
+	}
+
+	return srcFileUploads, nil
+}
+
+func updateUnlockPayment(offlineDeal *models.OfflineDeal, srcFileUploads []*models.SourceFileUploadOut) error {
+	for _, srcFileUpload := range srcFileUploads {
+		wCid := srcFileUpload.Uuid + srcFileUpload.PayloadCid
+		lockPayment, err := client.GetLockedPaymentInfo(wCid)
 		if err != nil {
 			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
-			return err
+			continue
+		}
+
+		unlockAmount := srcFileUpload.LockedFeeBeforeUnlock.Sub(lockPayment.LockedFee)
+		err = models.UpdateTransactionUnlockInfo(srcFileUpload.Id, unlockAmount)
+		if err != nil {
+			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
+			continue
 		}
 	}
 
@@ -233,7 +210,7 @@ func unlockDeal(offlineDeal *models.OfflineDeal, ethClient *ethclient.Client, sw
 	if err != nil {
 		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 
-		err = models.UpdateOfflineDealUnlockStatus(offlineDeal.Id, unlockStatusFailed, "txHash="+txHash, err.Error())
+		err = models.UpdateOfflineDealUnlockInfo(offlineDeal.Id, unlockStatusFailed, txHash, err.Error())
 		if err != nil {
 			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 			return nil, err
@@ -246,7 +223,7 @@ func unlockDeal(offlineDeal *models.OfflineDeal, ethClient *ethclient.Client, sw
 	if err != nil {
 		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 
-		err = models.UpdateOfflineDealUnlockStatus(offlineDeal.Id, unlockStatusFailed, "txHash="+txHash, err.Error())
+		err = models.UpdateOfflineDealUnlockInfo(offlineDeal.Id, unlockStatusFailed, txHash, err.Error())
 		if err != nil {
 			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 			return nil, err
@@ -259,7 +236,7 @@ func unlockDeal(offlineDeal *models.OfflineDeal, ethClient *ethclient.Client, sw
 		err := fmt.Errorf("unlock failed! txHash=%s, status:%d", tx.Hash().Hex(), txReceipt.Status)
 		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 
-		err = models.UpdateOfflineDealUnlockStatus(offlineDeal.Id, unlockStatusFailed, "txHash="+txHash, err.Error())
+		err = models.UpdateOfflineDealUnlockInfo(offlineDeal.Id, unlockStatusFailed, txHash, err.Error())
 		if err != nil {
 			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 			return nil, err
@@ -271,7 +248,7 @@ func unlockDeal(offlineDeal *models.OfflineDeal, ethClient *ethclient.Client, sw
 	logs.GetLogger().Info(getLog(offlineDeal, "unlock success", "txHash="+tx.Hash().Hex()))
 
 	unlockStatusUnlocked := constants.OFFLINE_DEAL_STATUS_UNLOCKED
-	err = models.UpdateOfflineDealUnlockStatus(offlineDeal.Id, unlockStatusUnlocked)
+	err = models.UpdateOfflineDealUnlockInfo(offlineDeal.Id, unlockStatusUnlocked, txHash)
 	if err != nil {
 		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 		return nil, err

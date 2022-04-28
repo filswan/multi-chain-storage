@@ -268,13 +268,13 @@ func GetSourceFileUploadDeal(sourceFileUploadId int64, dealId int) (*SourceFileU
 		return nil, err
 	}
 
-	transactionPay, err := models.GetTransactionBySourceFileUploadIdType(sourceFileUploadId, constants.TRANSACTION_TYPE_PAY)
+	transactionPay, err := models.GetTransactionBySourceFileUploadId(sourceFileUploadId)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
 	}
 
-	transactionUnlock, err := models.GetTransactionBySourceFileUploadIdType(sourceFileUploadId, constants.TRANSACTION_TYPE_UNLOCK)
+	transactionUnlock, err := models.GetTransactionBySourceFileUploadId(sourceFileUploadId)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
@@ -288,7 +288,7 @@ func GetSourceFileUploadDeal(sourceFileUploadId int64, dealId int) (*SourceFileU
 
 	if transactionPay != nil {
 		sourceFileUploadDeal.LockedAt = transactionPay.CreateAt
-		sourceFileUploadDeal.LockedFee = transactionPay.Amount
+		sourceFileUploadDeal.LockedFee = transactionPay.AmountLock
 	}
 
 	if transactionUnlock != nil {

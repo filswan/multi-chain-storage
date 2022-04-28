@@ -6,7 +6,6 @@ import (
 	"multi-chain-storage/database"
 	"multi-chain-storage/models"
 	"multi-chain-storage/on-chain/client"
-	"strconv"
 
 	libutils "github.com/filswan/go-swan-lib/utils"
 
@@ -16,6 +15,20 @@ import (
 )
 
 func ScanDeal() error {
+	err := updateOfflineDealStatusAndLog()
+	if err != nil {
+		logs.GetLogger().Error(err)
+	}
+
+	err = updateExpiredSourceFileUploadStatus()
+	if err != nil {
+		logs.GetLogger().Error(err)
+	}
+
+	return nil
+}
+
+func updateOfflineDealStatusAndLog() error {
 	offlineDeals, err := models.GetOfflineDeals2BeScanned()
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -56,50 +69,31 @@ func ScanDeal() error {
 	return nil
 }
 
-func GetExpiredDealInfoAndUpdateInfoToDB() error {
-	eventLockPayment, err := models.FindExpiredLockPayment()
+func updateExpiredSourceFileUploadStatus() error {
+	sourceFileUploads, err := models.GetSourceFileUploadsExpired()
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
 	}
 
-	for _, v := range eventLockPayment {
-		isLockedPaymentExists, err := client.IsLockedPaymentExists(v.PayloadCid)
+	for _, sourceFileUpload := range sourceFileUploads {
+		wCid := sourceFileUpload.Uuid + sourceFileUpload.PayloadCid
+		isLockedPaymentExists, err := client.IsLockedPaymentExists(wCid)
 		if err != nil {
 			logs.GetLogger().Error(err)
-		} else {
-			if !*isLockedPaymentExists {
-				err = models.UpdateDealFileStatus(v.DealFileId, constants.PROCESS_STATUS_EXPIRE_REFUNDED)
-				if err != nil {
-					logs.GetLogger().Error(err)
-				}
-			}
 			continue
 		}
 
-		_dealFileId := v.DealFileId
-		paymentStatus := constants.PROCESS_STATUS_EXPIRE_REFUNDING
-		eventExpireList, err := models.FindEventExpirePayments(&models.EventExpirePayment{PayloadCid: v.PayloadCid}, "id desc", "10", "0")
-		if err != nil {
-			logs.GetLogger().Error(err)
-			return err
-		}
-		for _, e := range eventExpireList {
-			lockAmount, err := strconv.ParseInt(e.ExpireUserAmount, 10, 64)
-			if err != nil {
-				logs.GetLogger().Error(err)
-				return err
-			}
-			if lockAmount > 0 {
-				paymentStatus = constants.PROCESS_STATUS_EXPIRE_REFUNDED
-			}
-		}
-		err = models.UpdateDealFileStatus(_dealFileId, paymentStatus)
-		if err != nil {
-			logs.GetLogger().Error(err)
-			return err
+		sourceFileUploadStatus := constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDED
+		if *isLockedPaymentExists {
+			sourceFileUploadStatus = constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDABLE
 		}
 
+		err = models.UpdatSourceFileUploadStatus(sourceFileUpload.Id, sourceFileUploadStatus)
+		if err != nil {
+			logs.GetLogger().Error(err)
+		}
 	}
+
 	return nil
 }

@@ -4,9 +4,7 @@ import (
 	"multi-chain-storage/common/constants"
 	"multi-chain-storage/database"
 	"sort"
-	"strconv"
 	"strings"
-	"time"
 
 	"github.com/filswan/go-swan-lib/logs"
 	libutils "github.com/filswan/go-swan-lib/utils"
@@ -47,6 +45,19 @@ func GetSourceFileUploadsByCarFileId(carFileId int64) ([]*SourceFileUploadOut, e
 	return sourceFileUploadOut, nil
 }
 
+func GetSourceFileUploadsExpired() ([]*SourceFileUploadOut, error) {
+	sql := "select a.*,b.payload_cid \n" +
+		"from source_file_upload a, source_file b, transaction c\n" +
+		"where a.file_type=? and a.source_file_id=b.id and a.id=c.source_file_upload_id and c.deadline<? and c.status=?"
+
+	var models []*SourceFileUploadOut
+	err := database.GetDB().Raw(sql).Scan(&models).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+	return models, nil
+}
 func GetSourceFileUploadBySourceFileIdWallet(sourceFileId int64, walletId int64) ([]*SourceFileUpload, error) {
 	var sourceFileUpload []*SourceFileUpload
 	err := database.GetDB().Where("source_file_id=? and wallet_id=?", sourceFileId, walletId).Find(&sourceFileUpload).Error
@@ -222,19 +233,19 @@ func GetSourceFileUploads(walletId int64, fileName, orderBy string, isAscend boo
 	return result, &totalRecordCount, nil
 }
 
-func FindExpiredLockPayment() ([]*EventLockPaymentQuery, error) {
-	sql :=
-		"SELECT b.id as deal_file_id, a.payload_cid, b.deal_id, a.address_from as recipient " +
-			"FROM event_lock_payment a, deal_file b " +
-			"WHERE a.payload_cid = b.payload_cid and a.payload_cid not in (SELECT payload_cid FROM event_unlock_payment c) and lock_payment_status <> '" + constants.PROCESS_STATUS_EXPIRE_REFUNDED +
-			"' and a.deadline < " + strconv.FormatInt(time.Now().Unix(), 10) +
-			" and not exists (select 1 from offline_deal d where d.deal_file_id = b.id and unlock_status ='Unlocked') and b.deal_id <> 0"
-	db := database.GetDB()
-	var models []*EventLockPaymentQuery
-	err := db.Raw(sql).Scan(&models).Limit(constants.DEFAULT_SELECT_LIMIT).Offset(0).Error
+func UpdatSourceFileUploadStatus(id int64, status string) error {
+	sql := "update source_file_upload set status=?,update_at=? where id=?"
+
+	params := []interface{}{}
+	params = append(params, status)
+	params = append(params, libutils.GetCurrentUtcSecond())
+	params = append(params, id)
+
+	err := database.GetDB().Exec(sql, params...).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return nil, err
+		return err
 	}
-	return models, nil
+
+	return nil
 }

@@ -1,25 +1,19 @@
 package models
 
 import (
-	"context"
 	"fmt"
-	"math/big"
 	"multi-chain-storage/common/constants"
 	"multi-chain-storage/config"
-	"strconv"
 
 	"multi-chain-storage/database"
 	"multi-chain-storage/on-chain/client"
 	"sort"
 	"strings"
 
-	"github.com/filswan/go-swan-lib/utils"
 	libutils "github.com/filswan/go-swan-lib/utils"
 	"github.com/shopspring/decimal"
 
 	"github.com/filswan/go-swan-lib/logs"
-
-	"github.com/ethereum/go-ethereum/common"
 )
 
 type Transaction struct {
@@ -191,7 +185,7 @@ func UpdateTransactionUnlockInfo(sourceFileUploadId int64, unlockAmount decimal.
 
 	sql := "update transaction set status=?,amount_unlock=?,last_unlock_at=?,update_at=? where id=?"
 
-	currentUtcSecond := utils.GetCurrentUtcSecond()
+	currentUtcSecond := libutils.GetCurrentUtcSecond()
 	params := []interface{}{}
 	params = append(params, constants.TRANSACTION_STATUS_UNLOCKING)
 	params = append(params, unlockAmountNew.String())
@@ -223,7 +217,7 @@ func UpdateTransactionRefundAfterExpired(sourceFileUploadId int64, refundTxHash 
 
 	sql := "update transaction set status=?,tx_hash_refund_after_expired=?,amount_refund_after_expired=?,refund_after_expired_at=?,update_at=? where id=?"
 
-	currentUtcSecond := utils.GetCurrentUtcSecond()
+	currentUtcSecond := libutils.GetCurrentUtcSecond()
 	params := []interface{}{}
 	params = append(params, constants.TRANSACTION_STATUS_UNLOCKING)
 	params = append(params, refundTxHash)
@@ -382,77 +376,4 @@ func GetTransactions(walletId int64, txHash, fileName, orderBy string, isAscend 
 
 	result := billings[start:end]
 	return result, &totalRecordCount, nil
-}
-
-func CreateTransaction4RefundAfterExpired(txHash string) error {
-	ethClient, rpcClient, err := client.GetEthClient()
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
-
-	var rpcTransaction *RpcTransaction
-	err = rpcClient.CallContext(context.Background(), &rpcTransaction, "eth_getTransactionByHash", common.HexToHash(txHash))
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
-	transaction, _, _ := ethClient.TransactionByHash(context.Background(), common.HexToHash(txHash))
-	transactionReceipt, err := ethClient.TransactionReceipt(context.Background(), common.HexToHash(txHash))
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
-	logs.GetLogger().Info("rpcTransaction.From:", rpcTransaction.From)
-	logs.GetLogger().Info("rpcTransaction.BlockNumber:", rpcTransaction.BlockNumber)
-	logs.GetLogger().Info("transaction.To():", transaction.To())
-	logs.GetLogger().Info("transaction.Value():", transaction.Value())
-	logs.GetLogger().Info("transactionReceipt.ContractAddress:", transactionReceipt.ContractAddress)
-
-	event := new(EventExpirePayment)
-	event.TxHash = txHash
-
-	block, err := ethClient.BlockByHash(context.Background(), *rpcTransaction.BlockHash)
-	if err != nil {
-		logs.GetLogger().Error(err)
-	} else {
-		event.BlockTime = strconv.FormatUint(block.Time(), 10)
-	}
-	blockNumberStr := strings.Replace(*rpcTransaction.BlockNumber, "0x", "", -1)
-	blockNumberInt64, err := strconv.ParseUint(blockNumberStr, 16, 64)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
-	event.BlockNo = strconv.FormatUint(blockNumberInt64, 10)
-	wfilCoinId, err := GetTokenByName(constants.TOKEN_USDC_NAME)
-	if err != nil {
-		logs.GetLogger().Error(err)
-	} else {
-		event.CoinId = wfilCoinId.ID
-		event.NetworkId = wfilCoinId.NetworkId
-	}
-
-	contrackABI, err := client.GetContractAbi()
-
-	if err != nil {
-		logs.GetLogger().Error(err)
-	}
-
-	for _, v := range transactionReceipt.Logs {
-		if v.Topics[0].Hex() == "0xe704d5e6168e602e91f017f25d889b182d9e11a90fd939a489cc2f04734c1f8a" {
-			dataList, err := contrackABI.Unpack("ExpirePayment", v.Data)
-			if err != nil {
-				logs.GetLogger().Error(err)
-			}
-			event.PayloadCid = dataList[0].(string)
-			event.TokenAddress = dataList[1].(common.Address).Hex()
-			event.ExpireUserAmount = dataList[2].(*big.Int).String()
-			event.UserAddress = dataList[3].(common.Address).Hex()
-		}
-	}
-	event.CreateAt = strconv.FormatInt(libutils.GetCurrentUtcSecond(), 10)
-	event.ContractAddress = transactionReceipt.ContractAddress.Hex()
-
-	return nil
 }

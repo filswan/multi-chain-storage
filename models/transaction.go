@@ -1,7 +1,9 @@
 package models
 
 import (
+	"fmt"
 	"multi-chain-storage/common/constants"
+	"multi-chain-storage/config"
 
 	"multi-chain-storage/database"
 	"multi-chain-storage/on-chain/client"
@@ -9,28 +11,39 @@ import (
 	"strings"
 
 	libutils "github.com/filswan/go-swan-lib/utils"
+	"github.com/shopspring/decimal"
 
 	"github.com/filswan/go-swan-lib/logs"
 )
 
 type Transaction struct {
-	ID                 int64  `json:"id"`
-	SourceFileUploadId int64  `json:"source_file_upload_id"`
-	Type               int    `json:"type"`
-	NetworkId          int64  `json:"network_id"`
-	TokenId            int64  `json:"token_id"`
-	TxHash             string `json:"tx_hash"`
-	WalletIdFrom       int64  `json:"wallet_id_from"`
-	WalletIdTo         int64  `json:"wallet_id_to"`
-	Amount             string `json:"amount"`
-	BlockNumber        int64  `json:"block_number"`
-	Deadline           int64  `json:"deadline"`
-	CreateAt           int64  `json:"create_at"`
+	ID                       int64  `json:"id"`
+	SourceFileUploadId       int64  `json:"source_file_upload_id"`
+	Status                   string `json:"status"`
+	NetworkId                int64  `json:"network_id"`
+	TokenId                  int64  `json:"token_id"`
+	WalletIdPay              int64  `json:"wallet_id_pay"`
+	WalletIdRecipient        int64  `json:"wallet_id_recipient"`
+	WalletIdContract         int64  `json:"wallet_id_contract"`
+	TxHashPay                string `json:"tx_hash_pay"`
+	TxHashRefundAfterExpired string `json:"tx_hash_refund_after_expired"`
+	TxHashRefundAfterUnlock  string `json:"tx_hash_refund_after_unlock"`
+	AmountLock               string `json:"amount_lock"`
+	AmountUnlock             string `json:"amount_unlock"`
+	AmountRefundAfterExpired string `json:"amount_refund_after_expired"`
+	AmountRefundAfterUnlock  string `json:"amount_refund_after_unlock"`
+	Deadline                 int64  `json:"deadline"`
+	PayAt                    int64  `json:"pay_at"`
+	LastUnlockAt             int64  `json:"last_unlock_at"`
+	RefundAfterExpiredAt     int64  `json:"refund_after_expired_at"`
+	RefundAfterUnlockAt      int64  `json:"refund_after_unlock_at"`
+	CreateAt                 int64  `json:"create_at"`
+	UpdateAt                 int64  `json:"update_at"`
 }
 
-func GetTransactionBySourceFileUploadIdType(sourceFileUploadId int64, transactionType int) (*Transaction, error) {
+func GetTransactionBySourceFileUploadId(sourceFileUploadId int64) (*Transaction, error) {
 	var transactions []*Transaction
-	err := database.GetDB().Where("source_file_upload_id=? and type=?", sourceFileUploadId, transactionType).Find(&transactions).Error
+	err := database.GetDB().Where("source_file_upload_id=?", sourceFileUploadId).Find(&transactions).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
@@ -43,8 +56,8 @@ func GetTransactionBySourceFileUploadIdType(sourceFileUploadId int64, transactio
 	return nil, nil
 }
 
-func CreateTransaction(sourceFileUploadId int64, txHash string) error {
-	transactionOld, err := GetTransactionBySourceFileUploadIdType(sourceFileUploadId, constants.TRANSACTION_TYPE_PAY)
+func CreateTransaction4Pay(sourceFileUploadId int64, txHash string) error {
+	transactionOld, err := GetTransactionBySourceFileUploadId(sourceFileUploadId)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
@@ -74,12 +87,17 @@ func CreateTransaction(sourceFileUploadId int64, txHash string) error {
 		return err
 	}
 
-	walletFrom, err := GetWalletByAddress(lockPayment.AddressFrom, constants.WALLET_TYPE_META_MASK)
+	walletIdPay, err := GetWalletByAddress(lockPayment.AddressFrom, constants.WALLET_TYPE_META_MASK)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
 	}
-	walletTo, err := GetWalletByAddress(lockPayment.AddressTo, constants.WALLET_TYPE_META_MASK)
+	walletIdRecipient, err := GetWalletByAddress(lockPayment.AddressTo, constants.WALLET_TYPE_META_MASK)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+	walletIdContract, err := GetWalletByAddress(config.GetConfig().Polygon.PaymentContractAddress, constants.WALLET_TYPE_META_MASK)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
@@ -100,15 +118,16 @@ func CreateTransaction(sourceFileUploadId int64, txHash string) error {
 	currentUtcSecond := libutils.GetCurrentUtcSecond()
 	transaction := Transaction{
 		SourceFileUploadId: sourceFileUploadId,
-		Type:               constants.TRANSACTION_TYPE_PAY,
+		Status:             constants.TRANSACTION_STATUS_PAID,
 		NetworkId:          network.ID,
 		TokenId:            coin.ID,
-		TxHash:             txHash,
-		WalletIdFrom:       walletFrom.ID,
-		WalletIdTo:         walletTo.ID,
-		Amount:             lockPayment.LockedFee.String(),
-		BlockNumber:        lockPayment.BlockNumber,
+		WalletIdPay:        walletIdPay.ID,
+		WalletIdRecipient:  walletIdRecipient.ID,
+		WalletIdContract:   walletIdContract.ID,
+		TxHashPay:          txHash,
+		AmountLock:         lockPayment.LockedFee.String(),
 		Deadline:           lockPayment.Deadline,
+		PayAt:              currentUtcSecond,
 		CreateAt:           currentUtcSecond,
 	}
 
@@ -135,6 +154,79 @@ func CreateTransaction(sourceFileUploadId int64, txHash string) error {
 	}
 
 	err = db.Commit().Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	return nil
+}
+
+func UpdateTransactionUnlockInfo(sourceFileUploadId int64, unlockAmount decimal.Decimal) error {
+	transaction, err := GetTransactionBySourceFileUploadId(sourceFileUploadId)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	if transaction != nil {
+		err := fmt.Errorf("transaction not exists for source file upload:%d", sourceFileUploadId)
+		logs.GetLogger().Error(err)
+		return nil
+	}
+
+	unlockAmountBefore, err := decimal.NewFromString(transaction.AmountUnlock)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		unlockAmountBefore = decimal.NewFromInt(0)
+	}
+
+	unlockAmountNew := unlockAmountBefore.Add(unlockAmount)
+
+	sql := "update transaction set status=?,amount_unlock=?,last_unlock_at=?,update_at=? where id=?"
+
+	currentUtcSecond := libutils.GetCurrentUtcSecond()
+	params := []interface{}{}
+	params = append(params, constants.TRANSACTION_STATUS_UNLOCKING)
+	params = append(params, unlockAmountNew.String())
+	params = append(params, currentUtcSecond)
+	params = append(params, currentUtcSecond)
+	params = append(params, transaction.ID)
+
+	err = database.GetDB().Exec(sql, params...).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	return nil
+}
+
+func UpdateTransactionRefundAfterExpired(sourceFileUploadId int64, refundTxHash string, refundAmount decimal.Decimal) error {
+	transaction, err := GetTransactionBySourceFileUploadId(sourceFileUploadId)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	if transaction != nil {
+		err := fmt.Errorf("transaction not exists for source file upload:%d", sourceFileUploadId)
+		logs.GetLogger().Error(err)
+		return nil
+	}
+
+	sql := "update transaction set status=?,tx_hash_refund_after_expired=?,amount_refund_after_expired=?,refund_after_expired_at=?,update_at=? where id=?"
+
+	currentUtcSecond := libutils.GetCurrentUtcSecond()
+	params := []interface{}{}
+	params = append(params, constants.TRANSACTION_STATUS_UNLOCKING)
+	params = append(params, refundTxHash)
+	params = append(params, refundAmount.String())
+	params = append(params, currentUtcSecond)
+	params = append(params, currentUtcSecond)
+	params = append(params, transaction.ID)
+
+	err = database.GetDB().Exec(sql, params...).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err

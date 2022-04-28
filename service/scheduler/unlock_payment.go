@@ -5,16 +5,11 @@ import (
 	"fmt"
 	"multi-chain-storage/common/constants"
 	"multi-chain-storage/config"
-	"multi-chain-storage/database"
 	"multi-chain-storage/models"
 	"multi-chain-storage/on-chain/client"
 	"multi-chain-storage/on-chain/goBind"
 	"strconv"
 	"time"
-
-	libutils "github.com/filswan/go-swan-lib/utils"
-
-	"github.com/ethereum/go-ethereum/rpc"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -34,7 +29,7 @@ func UnlockPayment() error {
 		return nil
 	}
 
-	ethClient, rpcClient, err := client.GetEthClient()
+	ethClient, _, err := client.GetEthClient()
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
@@ -75,75 +70,24 @@ func UnlockPayment() error {
 			time.Sleep(unlockInterval)
 		}
 
-		logs.GetLogger().Info(getLog(offlineDeal, "start to unlock"))
-
-		err = setUnlockPayment(offlineDeal)
+		srcFileUploads, err := setUnlockPayment(offlineDeal)
 		if err != nil {
 			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 			continue
 		}
 
 		unlockCnt = unlockCnt + 1
-		txHash, err := doUnlockDeal(offlineDeal, ethClient, swanPaymentTransactor, mcsPaymentReceiverAddress)
+		_, err = unlockDeal(offlineDeal, ethClient, swanPaymentTransactor, mcsPaymentReceiverAddress)
 		if err != nil {
 			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 			continue
 		}
 
-		if txHash == nil {
-			logs.GetLogger().Info(getLog(offlineDeal, " no tx hash returned"))
-			continue
-		}
-
-		err = updateUnlockPayment(offlineDeal, *txHash, rpcClient)
+		err = updateUnlockPayment(offlineDeal, srcFileUploads)
 		if err != nil {
 			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 		}
 	}
-	return nil
-}
-
-func getDaoSignatures(ethClient *ethclient.Client, offlineDeal *models.OfflineDeal) error {
-	dealFile, err := models.GetCarFileById(offlineDeal.CarFileId)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
-
-	filswanOracleSession, err := client.GetFilswanOracleSession(ethClient)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
-
-	dealIdStr := strconv.FormatInt(offlineDeal.DealId, 10)
-	filecoinNetwork := config.GetConfig().FilecoinNetwork
-	daoSignatures, err := filswanOracleSession.GetSignatureList(dealIdStr, filecoinNetwork)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
-
-	for _, daoSingature := range daoSignatures {
-		eventDaoSignature := models.EventDaoSignature{
-			Recipient:   daoSingature.Recipient.Hex(),
-			PayloadCid:  dealFile.PayloadCid,
-			DealId:      offlineDeal.DealId,
-			DaoAddress:  daoSingature.Signer.Hex(),
-			BlockNo:     daoSingature.BlockNumber.Uint64(),
-			BlockTime:   daoSingature.Timestamp.String(),
-			DaoPassTime: daoSingature.Timestamp.String(),
-			Status:      daoSingature.Status,
-		}
-		err = database.SaveOne(eventDaoSignature)
-		if err != nil {
-			logs.GetLogger().Error(err)
-			return err
-		}
-		logs.GetLogger().Info(daoSingature.Paid)
-		logs.GetLogger().Info(daoSingature.Terms)
-	}
-
 	return nil
 }
 
@@ -161,14 +105,14 @@ func checkUnlockable(ethClient *ethclient.Client, offlineDeal *models.OfflineDea
 		return false, nil
 	}
 
-	daoSignatures, err := models.GetEventDaoSignaturesByDealId(offlineDeal.DealId)
+	filswanOracleTransactions, err := filswanOracleSession.GetSignatureList(dealIdStr, filecoinNetwork)
 	if err != nil {
 		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 		return false, err
 	}
 
-	if len(daoSignatures) == 0 {
-		logs.GetLogger().Info("no dao sigatures yet")
+	if len(filswanOracleTransactions) == 0 {
+		logs.GetLogger().Info(getLog(offlineDeal, "no dao sigatures yet"))
 		return false, nil
 	}
 
@@ -178,86 +122,51 @@ func checkUnlockable(ethClient *ethclient.Client, offlineDeal *models.OfflineDea
 		return false, err
 	}
 
-	blockInterval := int64(currentBlockNo - daoSignatures[0].BlockNo)
+	for _, filswanOracleTransaction := range filswanOracleTransactions {
+		daoBlockNo := filswanOracleTransaction.BlockNumber.Uint64()
+		blockInterval := int64(currentBlockNo - daoBlockNo)
 
-	if blockInterval < config.GetConfig().Polygon.IntervalDaoUnlockBlock {
-		msg := fmt.Sprintf("current block number:%d minus last dao block number:%d is less than block interval:%d", currentBlockNo, daoSignatures[0].BlockNo, blockInterval)
-		logs.GetLogger().Info(offlineDeal, msg)
-		return false, nil
+		if blockInterval < config.GetConfig().Polygon.IntervalDaoUnlockBlock {
+			msg := fmt.Sprintf("current block number:%d - dao block number:%d is less than block interval:%d", currentBlockNo, daoBlockNo, blockInterval)
+			logs.GetLogger().Info(offlineDeal, msg)
+			return false, nil
+		}
 	}
 
 	return true, nil
 }
 
-func updateUnlockPayment(offlineDeal *models.OfflineDeal, txHash string, rpcClient *rpc.Client) error {
-	srcFiles, err := models.GetSourceFilesByDealFileId(offlineDeal.CarFileId)
+func setUnlockPayment(offlineDeal *models.OfflineDeal) ([]*models.SourceFileUploadOut, error) {
+	srcFileUploads, err := models.GetSourceFileUploadsByCarFileId(offlineDeal.CarFileId)
 	if err != nil {
 		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
-		return err
+		return nil, err
 	}
 
-	var rpcTransaction *models.RpcTransaction
-	err = rpcClient.CallContext(context.Background(), &rpcTransaction, "eth_getTransactionByHash", common.HexToHash(txHash))
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
-
-	for _, srcFile := range srcFiles {
-		lockedPayment, err := client.GetLockedPaymentInfo(srcFile.PayloadCid)
-		if err != nil {
-			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
-			continue
-		}
-
-		blockNo := ""
-		if rpcTransaction.BlockNumber != nil {
-			blockNo = *rpcTransaction.BlockNumber
-		}
-
-		err = models.UpdateUnlockAmount(srcFile.ID, offlineDeal.DealId, txHash, blockNo, lockedPayment.LockedFee)
-		if err != nil {
-			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
-			continue
-		}
-	}
-
-	return nil
-}
-
-func setUnlockPayment(offlineDeal *models.OfflineDeal) error {
-	srcFiles, err := models.GetSourceFilesByDealFileId(offlineDeal.CarFileId)
-	if err != nil {
-		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
-		return err
-	}
-
-	for _, srcFile := range srcFiles {
-		unlockPayment := models.EventUnlockPayment{
-			PayloadCid:   srcFile.PayloadCid,
-			SourceFileId: &srcFile.ID,
-			DealId:       offlineDeal.DealId,
-		}
-
-		lockedPayment, err := client.GetLockedPaymentInfo(srcFile.PayloadCid)
-		if err != nil {
-			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
-			return err
-		}
-
-		unlockPayment.LockedFeeBeforeUnlock = lockedPayment.LockedFee
-
-		unlockPayment.TokenAddress = lockedPayment.TokenAddress
-		unlockPayment.UnlockTime = libutils.GetCurrentUtcSecond()
-		token, err := models.GetTokenByAddress(unlockPayment.TokenAddress)
+	for _, srcFileUpload := range srcFileUploads {
+		wCid := srcFileUpload.Uuid + srcFileUpload.PayloadCid
+		lockPayment, err := client.GetLockedPaymentInfo(wCid)
 		if err != nil {
 			logs.GetLogger().Error(err)
-		} else {
-			unlockPayment.CoinId = token.ID
-			unlockPayment.NetworkId = token.NetworkId
+			return nil, err
+		}
+		srcFileUpload.LockedFeeBeforeUnlock = lockPayment.LockedFee
+	}
+
+	return srcFileUploads, nil
+}
+
+func updateUnlockPayment(offlineDeal *models.OfflineDeal, srcFileUploads []*models.SourceFileUploadOut) error {
+	for _, srcFileUpload := range srcFileUploads {
+		wCid := srcFileUpload.Uuid + srcFileUpload.PayloadCid
+		lockPayment, err := client.GetLockedPaymentInfo(wCid)
+		if err != nil {
+			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
+			continue
 		}
 
-		err = database.SaveOne(&unlockPayment)
+		unlockAmount := srcFileUpload.LockedFeeBeforeUnlock.Sub(lockPayment.LockedFee)
+		err = models.UpdateTransactionUnlockInfo(srcFileUpload.Id, unlockAmount)
 		if err != nil {
 			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 			continue
@@ -280,36 +189,28 @@ func getLog(offlineDeal *models.OfflineDeal, messages ...string) string {
 	return text
 }
 
-func doUnlockDeal(offlineDeal *models.OfflineDeal, ethClient *ethclient.Client, swanPaymentTransactor *goBind.SwanPaymentTransactor, mcsPaymentReceiverAddress common.Address) (*string, error) {
-	privateKey, publicKeyAddress, err := client.GetPrivateKeyPublicKey(constants.PRIVATE_KEY_ON_POLYGON)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-
-	tansactOpts, err := client.GetTransactOpts(ethClient, privateKey, *publicKeyAddress)
+func unlockDeal(offlineDeal *models.OfflineDeal, ethClient *ethclient.Client, swanPaymentTransactor *goBind.SwanPaymentTransactor, mcsPaymentReceiverAddress common.Address) (*string, error) {
+	tansactOpts, err := client.GetTransactOpts(ethClient, adminWalletPrivateKey, *adminWalletPublicKey)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
 	}
 
 	dealIdStr := strconv.FormatInt(offlineDeal.DealId, 10)
-	unlockStatusFailed := constants.OFFLINE_DEAL_UNLOCK_STATUS_UNLOCK_FAILED
+	unlockStatusFailed := constants.OFFLINE_DEAL_STATUS_UNLOCK_FAILED
 
 	filecoinNetwork := config.GetConfig().FilecoinNetwork
 	tx, err := swanPaymentTransactor.UnlockCarPayment(tansactOpts, dealIdStr, filecoinNetwork, mcsPaymentReceiverAddress)
 	txHash := ""
 	if tx != nil {
 		txHash = tx.Hash().Hex()
-	} else {
-		logs.GetLogger().Info("tx hash is nil")
 	}
 
 	logs.GetLogger().Info(getLog(offlineDeal, txHash))
 	if err != nil {
 		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 
-		err = models.UpdateOfflineDealUnlockStatus(offlineDeal.Id, unlockStatusFailed, "txHash="+txHash, err.Error())
+		err = models.UpdateOfflineDealUnlockInfo(offlineDeal.Id, unlockStatusFailed, txHash, err.Error())
 		if err != nil {
 			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 			return nil, err
@@ -318,17 +219,11 @@ func doUnlockDeal(offlineDeal *models.OfflineDeal, ethClient *ethclient.Client, 
 		return nil, err
 	}
 
-	if tx == nil {
-		err := fmt.Errorf("tx hash is nil")
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-
 	txReceipt, err := client.CheckTx(ethClient, tx)
 	if err != nil {
 		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 
-		err = models.UpdateOfflineDealUnlockStatus(offlineDeal.Id, unlockStatusFailed, "txHash="+txHash, err.Error())
+		err = models.UpdateOfflineDealUnlockInfo(offlineDeal.Id, unlockStatusFailed, txHash, err.Error())
 		if err != nil {
 			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 			return nil, err
@@ -338,10 +233,10 @@ func doUnlockDeal(offlineDeal *models.OfflineDeal, ethClient *ethclient.Client, 
 	}
 
 	if txReceipt.Status != uint64(1) {
-		err := fmt.Errorf("unlock failed! txHash=%s", tx.Hash().Hex())
+		err := fmt.Errorf("unlock failed! txHash=%s, status:%d", tx.Hash().Hex(), txReceipt.Status)
 		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 
-		err = models.UpdateOfflineDealUnlockStatus(offlineDeal.Id, unlockStatusFailed, "txHash="+txHash, err.Error())
+		err = models.UpdateOfflineDealUnlockInfo(offlineDeal.Id, unlockStatusFailed, txHash, err.Error())
 		if err != nil {
 			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 			return nil, err
@@ -351,10 +246,9 @@ func doUnlockDeal(offlineDeal *models.OfflineDeal, ethClient *ethclient.Client, 
 	}
 
 	logs.GetLogger().Info(getLog(offlineDeal, "unlock success", "txHash="+tx.Hash().Hex()))
-	logs.GetLogger().Info(getLog(offlineDeal, "unlock success", "recipient.Hex()="+mcsPaymentReceiverAddress.Hex()))
 
-	unlockStatusUnlocked := constants.OFFLINE_DEAL_UNLOCK_STATUS_UNLOCKED
-	err = models.UpdateOfflineDealUnlockStatus(offlineDeal.Id, unlockStatusUnlocked)
+	unlockStatusUnlocked := constants.OFFLINE_DEAL_STATUS_UNLOCKED
+	err = models.UpdateOfflineDealUnlockInfo(offlineDeal.Id, unlockStatusUnlocked, txHash)
 	if err != nil {
 		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 		return nil, err

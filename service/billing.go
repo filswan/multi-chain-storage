@@ -6,10 +6,11 @@ import (
 	"multi-chain-storage/models"
 
 	"github.com/filswan/go-swan-lib/logs"
+	"github.com/shopspring/decimal"
 )
 
 func WriteLockPayment(sourceFileUploadId int64, txHash string) error {
-	err := models.CreateTransaction(sourceFileUploadId, txHash)
+	err := models.CreateTransaction4Pay(sourceFileUploadId, txHash)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
@@ -34,12 +35,16 @@ func GetTransactions(walletAddress, txHash, fileName, orderBy string, isAscend b
 	return billings, totalRecordCount, nil
 }
 
+type SourceFileUploadInfoWcid struct {
+	SourceFileUploadId int64  `json:"source_file_upload_id"`
+	WCID               string `json:"w_cid"`
+}
 type SourceFileUploadInfo struct {
-	WCid              string   `json:"w_cid"`
-	LockedFee         string   `json:"locked_fee"`
-	TxHash            string   `json:"tx_hash"`
-	TokenAddress      string   `json:"token_address"`
-	WCidInSameCarFile []string `json:"w_cid_in_same_car_file"`
+	WCid              string                      `json:"w_cid"`
+	LockedFee         string                      `json:"locked_fee"`
+	TxHash            string                      `json:"tx_hash"`
+	TokenAddress      string                      `json:"token_address"`
+	WCidInSameCarFile []*SourceFileUploadInfoWcid `json:"w_cid_in_same_car_file"`
 }
 
 func GetSourceFileUploadInfo(sourceFileUploadId int64) (*SourceFileUploadInfo, error) {
@@ -61,7 +66,7 @@ func GetSourceFileUploadInfo(sourceFileUploadId int64) (*SourceFileUploadInfo, e
 		return nil, err
 	}
 
-	transactionPay, err := models.GetTransactionBySourceFileUploadIdType(sourceFileUploadId, constants.TRANSACTION_TYPE_PAY)
+	transactionPay, err := models.GetTransactionBySourceFileUploadId(sourceFileUploadId)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
@@ -75,10 +80,10 @@ func GetSourceFileUploadInfo(sourceFileUploadId int64) (*SourceFileUploadInfo, e
 
 	sourceFileUploadInfo := &SourceFileUploadInfo{
 		WCid:              sourceFileUpload.Uuid + sourceFile.PayloadCid,
-		LockedFee:         transactionPay.Amount,
-		TxHash:            transactionPay.TxHash,
+		LockedFee:         transactionPay.AmountLock,
+		TxHash:            transactionPay.TxHashPay,
 		TokenAddress:      token.Address,
-		WCidInSameCarFile: []string{},
+		WCidInSameCarFile: []*SourceFileUploadInfoWcid{},
 	}
 
 	carFileSource, err := models.GetCarFileSourceBySourceFileUploadId(sourceFileUploadId)
@@ -98,8 +103,22 @@ func GetSourceFileUploadInfo(sourceFileUploadId int64) (*SourceFileUploadInfo, e
 	}
 
 	for _, sourceFileUpload1 := range sourceFileUploads {
-		sourceFileUploadInfo.WCidInSameCarFile = append(sourceFileUploadInfo.WCidInSameCarFile, sourceFileUpload1.Uuid+sourceFileUpload1.PayloadCid)
+		sourceFileUploadInfoWcid := &SourceFileUploadInfoWcid{
+			SourceFileUploadId: sourceFileUpload1.Id,
+			WCID:               sourceFileUpload1.Uuid + sourceFileUpload1.PayloadCid,
+		}
+		sourceFileUploadInfo.WCidInSameCarFile = append(sourceFileUploadInfo.WCidInSameCarFile, sourceFileUploadInfoWcid)
 	}
 
 	return sourceFileUploadInfo, nil
+}
+
+func WriteRefundAfterExpired(sourceFileUploadId int64, refundTxHash string, refundAmount decimal.Decimal) error {
+	err := models.UpdateTransactionRefundAfterExpired(sourceFileUploadId, refundTxHash, refundAmount)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	return nil
 }

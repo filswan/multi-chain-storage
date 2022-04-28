@@ -26,7 +26,8 @@ type SourceFileUpload struct {
 
 type SourceFileUploadOut struct {
 	SourceFileUpload
-	PayloadCid string `json:"payload_cid"`
+	PayloadCid            string `json:"payload_cid"`
+	LockedFeeBeforeUnlock decimal.Decimal
 }
 
 func GetSourceFileUploadsByCarFileId(carFileId int64) ([]*SourceFileUploadOut, error) {
@@ -44,6 +45,19 @@ func GetSourceFileUploadsByCarFileId(carFileId int64) ([]*SourceFileUploadOut, e
 	return sourceFileUploadOut, nil
 }
 
+func GetSourceFileUploadsExpired() ([]*SourceFileUploadOut, error) {
+	sql := "select a.*,b.payload_cid \n" +
+		"from source_file_upload a, source_file b, transaction c\n" +
+		"where a.file_type=? and a.source_file_id=b.id and a.id=c.source_file_upload_id and c.deadline<? and c.status=?"
+
+	var models []*SourceFileUploadOut
+	err := database.GetDB().Raw(sql).Scan(&models).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+	return models, nil
+}
 func GetSourceFileUploadBySourceFileIdWallet(sourceFileId int64, walletId int64) ([]*SourceFileUpload, error) {
 	var sourceFileUpload []*SourceFileUpload
 	err := database.GetDB().Where("source_file_id=? and wallet_id=?", sourceFileId, walletId).Find(&sourceFileUpload).Error
@@ -217,4 +231,21 @@ func GetSourceFileUploads(walletId int64, fileName, orderBy string, isAscend boo
 
 	result := sourceFileUploadResult[start:end]
 	return result, &totalRecordCount, nil
+}
+
+func UpdatSourceFileUploadStatus(id int64, status string) error {
+	sql := "update source_file_upload set status=?,update_at=? where id=?"
+
+	params := []interface{}{}
+	params = append(params, status)
+	params = append(params, libutils.GetCurrentUtcSecond())
+	params = append(params, id)
+
+	err := database.GetDB().Exec(sql, params...).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	return nil
 }

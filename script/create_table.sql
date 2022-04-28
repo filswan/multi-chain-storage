@@ -150,9 +150,10 @@ create table offline_deal (
     status           varchar(100)  not null,
     note             text,
     on_chain_status  varchar(100),
+    tx_hash_unlock   varchar(100),
+    unlock_at        bigint        not null,
     create_at        bigint        not null,
     update_at        bigint        not null,
-    unlock_at        bigint        not null,
     primary key pk_offline_deal(id),
     constraint fk_offline_deal_car_file_id foreign key (car_file_id) references car_file(id),
     constraint fk_offline_deal_miner_id foreign key (miner_id) references miner(id),
@@ -170,27 +171,35 @@ create table offline_deal_log (
 );
 
 create table transaction (
-    id                      bigint        not null auto_increment,
-    source_file_upload_id   bigint        not null,
-    type                    int           not null, #--0:pay,1:unlock, 2: refund after unlock, 3:refund after expired
-    network_id              bigint        not null,
-    token_id                 bigint        not null,
-    tx_hash                 varchar(100)  not null,
-    wallet_id_from          bigint        not null,
-    wallet_id_to            bigint        not null,
-    amount                  varchar(100)  not null,
-    block_number            bigint        not null,
-    deadline                bigint,
-    create_at               bigint        not null,
+    id                           bigint        not null auto_increment,
+    source_file_upload_id        bigint        not null,
+    status                       varchar(100)  not null,
+    network_id                   bigint        not null,
+    token_id                     bigint        not null,
+    wallet_id_pay                bigint        not null,
+    wallet_id_recipient          bigint        not null,
+    wallet_id_contract           bigint        not null,
+    tx_hash_pay                  varchar(100)  not null,
+    tx_hash_refund_after_expired varchar(100),
+    tx_hash_refund_after_unlock  varchar(100),
+    amount_lock                  varchar(100)  not null,
+    amount_unlock                varchar(100),
+    amount_refund_after_expired  varchar(100),
+    amount_refund_after_unlock   varchar(100),
+    deadline                     bigint        not null,
+    pay_at                       bigint,
+    last_unlock_at               bigint,
+    refund_after_expired_at      bigint,
+    refund_after_unlock_at       bigint,
+    create_at                    bigint        not null,
+    update_at                    bigint        not null,
     primary key pk_transaction(id),
-    constraint un_transaction unique(source_file_upload_id,type),
+    constraint un_transaction unique(source_file_upload_id),
     constraint fk_transaction_source_file_upload_id foreign key (source_file_upload_id) references source_file_upload(id),
     constraint fk_transaction_network_id foreign key (network_id) references network(id),
     constraint fk_transaction_token_id foreign key (token_id) references token(id),
-    constraint fk_transaction_wallet_id_from foreign key (wallet_id_from) references wallet(id),
-    constraint fk_transaction_wallet_id_to foreign key (wallet_id_to) references wallet(id)
+    constraint fk_transaction_wallet_id_pay foreign key (wallet_id_pay) references wallet(id),
+    constraint fk_transaction_wallet_id_recipient foreign key (wallet_id_recipient) references wallet(id),
+    constraint fk_transaction_wallet_id_contract foreign key (wallet_id_contract) references wallet(id)
 );
-
-create or replace view transaction_pay as select * from transaction where type=0;
-create or replace view transaction_unlock as select * from transaction where type=1;
 

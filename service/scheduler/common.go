@@ -1,13 +1,17 @@
 package scheduler
 
 import (
+	"crypto/ecdsa"
 	"fmt"
+	"multi-chain-storage/common/constants"
 	"multi-chain-storage/config"
+	"multi-chain-storage/on-chain/client"
 	"os"
 	"path/filepath"
 	"sync"
 	"time"
 
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/filswan/go-swan-lib/logs"
 	libutils "github.com/filswan/go-swan-lib/utils"
 )
@@ -22,12 +26,16 @@ type Schedule struct {
 var carDir string
 var srcDir string
 
+var adminWalletPrivateKey *ecdsa.PrivateKey = nil
+var adminWalletPublicKey *common.Address = nil
+
 func GetSrcDir() string {
 	return srcDir
 }
 
 func InitScheduler() {
 	createDir()
+	setAdminWallet()
 
 	go runJob("CreateTask", CreateTask, config.GetConfig().ScheduleRule.CreateTaskIntervalSecond)
 	go runJob("SendDeal", SendDeal, config.GetConfig().ScheduleRule.SendDealIntervalSecond)
@@ -57,7 +65,7 @@ func createDir() {
 	}
 
 	if len(dealDir) < 2 {
-		err := fmt.Errorf("deal directory config error, please contact administrator")
+		err := fmt.Errorf("deal directory config error")
 		logs.GetLogger().Fatal(err)
 	}
 
@@ -82,4 +90,14 @@ func createDir() {
 		logs.GetLogger().Error(err)
 		logs.GetLogger().Fatal("creating dir:", carDir, " failed")
 	}
+}
+
+func setAdminWallet() {
+	privateKey, publicKey, err := client.GetPrivateKeyPublicKey(constants.PRIVATE_KEY_ON_POLYGON)
+	if err != nil {
+		logs.GetLogger().Fatal(err)
+	}
+
+	adminWalletPrivateKey = privateKey
+	adminWalletPublicKey = publicKey
 }

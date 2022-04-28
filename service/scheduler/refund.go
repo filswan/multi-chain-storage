@@ -56,7 +56,7 @@ func refund(ethClient *ethclient.Client, dealFileId int64, swanPaymentTransactor
 		return nil
 	}
 
-	srcFiles, err := models.GetSourceFilesByDealFileId(dealFileId)
+	srcFiles, err := models.GetSourceFileUploadsByCarFileId(dealFileId)
 	if err != nil {
 		logs.GetLogger().Error(err.Error())
 		return err
@@ -70,7 +70,7 @@ func refund(ethClient *ethclient.Client, dealFileId int64, swanPaymentTransactor
 			return err
 		}
 
-		err = models.UpdateSourceFileRefundAmount(srcFile.ID, lockedPayment.LockedFee)
+		err = models.UpdateSourceFileRefundAmount(srcFile.Id, lockedPayment.LockedFee)
 		if err != nil {
 			logs.GetLogger().Error(err.Error())
 			return err
@@ -106,7 +106,7 @@ func refund(ethClient *ethclient.Client, dealFileId int64, swanPaymentTransactor
 
 		logs.GetLogger().Info("refund stats:", refundStatus, " tx hash:", txHash)
 
-		err = models.UpdateSourceFileRefundStatus(srcFile.ID, refundStatus, txHash)
+		err = models.UpdateSourceFileRefundStatus(srcFile.Id, refundStatus, txHash)
 		if err != nil {
 			logs.GetLogger().Error(err.Error())
 			continue

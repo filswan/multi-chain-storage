@@ -3,7 +3,6 @@ package models
 import (
 	"multi-chain-storage/common/constants"
 	"multi-chain-storage/database"
-	"strconv"
 	"strings"
 
 	libutils "github.com/filswan/go-swan-lib/utils"
@@ -23,9 +22,10 @@ type OfflineDeal struct {
 	Status         string  `json:"status"`
 	Note           *string `json:"note"`
 	OnChainStatus  *string `json:"on_chain_status"`
+	TxHashUnlock   *string `json:"tx_hash_unlock"`
+	UnlockAt       int64   `json:"unlock_at"`
 	CreateAt       int64   `json:"create_at"`
 	UpdateAt       int64   `json:"update_at"`
-	UnlockAt       int64   `json:"unlock_at"`
 }
 
 type OfflineDealOut struct {
@@ -45,23 +45,10 @@ func GetOfflineDeals2BeScanned() ([]*OfflineDeal, error) {
 	return offlineDeals, nil
 }
 
-func GetOfflineDealByDealId(dealId int64) ([]*OfflineDeal, error) {
-	var offlineDeals []*OfflineDeal
-	sql := "select a.* from offline_deal a where a.deal_id=?"
-	err := database.GetDB().Raw(sql, dealId).Scan(&offlineDeals).Error
-
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-
-	return offlineDeals, nil
-}
-
 func GetOfflineDeals2BeUnlocked() ([]*OfflineDeal, error) {
 	var offlineDeals []*OfflineDeal
-	sql := "select a.* from offline_deal a where a.deal_id>0 and a.unlock_status=?"
-	err := database.GetDB().Raw(sql, constants.OFFLINE_DEAL_UNLOCK_STATUS_NOT_UNLOCKED).Scan(&offlineDeals).Error
+	sql := "select a.* from offline_deal a where a.deal_id>0 and a.status=?"
+	err := database.GetDB().Raw(sql, constants.OFFLINE_DEAL_STATUS_CREATED).Scan(&offlineDeals).Error
 
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -74,7 +61,7 @@ func GetOfflineDeals2BeUnlocked() ([]*OfflineDeal, error) {
 func GetOfflineDealsNotUnlockedByDealFileId(dealFileId int64) ([]*OfflineDeal, error) {
 	var offlineDeals []*OfflineDeal
 	sql := "select a.* from offline_deal a where a.deal_file_id=? and a.unlock_status in (?,?)"
-	err := database.GetDB().Raw(sql, dealFileId, constants.OFFLINE_DEAL_UNLOCK_STATUS_NOT_UNLOCKED, constants.OFFLINE_DEAL_UNLOCK_STATUS_UNLOCK_FAILED).Scan(&offlineDeals).Error
+	err := database.GetDB().Raw(sql, dealFileId, constants.OFFLINE_DEAL_STATUS_CREATED, constants.OFFLINE_DEAL_STATUS_UNLOCK_FAILED).Scan(&offlineDeals).Error
 
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -97,30 +84,8 @@ func GetOfflineDealsByCarFileId(carFileId int64) ([]*OfflineDealOut, error) {
 	return offlineDeals, nil
 }
 
-func GetOfflineDealsByDealFileIds(dealFileIds []int64) ([]*OfflineDeal, error) {
-	dealFileIdsStr := ""
-
-	for _, dealFileId := range dealFileIds {
-		dealFileIdsStr = dealFileIdsStr + "," + strconv.FormatInt(dealFileId, 10)
-	}
-
-	dealFileIdsStr = strings.Trim(dealFileIdsStr, ",")
-	dealFileIdsStr = "(" + dealFileIdsStr + ")"
-
-	var offlineDeals []*OfflineDeal
-	sql := "select a.* from offline_deal a where a.deal_file_id in " + dealFileIdsStr
-	err := database.GetDB().Raw(sql).Scan(&offlineDeals).Error
-
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-
-	return offlineDeals, nil
-}
-
-func UpdateOfflineDealUnlockStatus(id int64, unlockStatus string, messages ...string) error {
-	sql := "update offline_deal set unlock_status=?,note=?,update_at=?,unlock_at=? where id=?"
+func UpdateOfflineDealUnlockInfo(id int64, status string, txHashUnlock string, messages ...string) error {
+	sql := "update offline_deal set status=?,note=?,tx_hash_unlock=?,unlock_at=?,update_at=? where id=?"
 
 	note := ""
 	for _, message := range messages {
@@ -132,8 +97,9 @@ func UpdateOfflineDealUnlockStatus(id int64, unlockStatus string, messages ...st
 	curUtcMilliSec := libutils.GetCurrentUtcSecond()
 
 	params := []interface{}{}
-	params = append(params, unlockStatus)
+	params = append(params, status)
 	params = append(params, note)
+	params = append(params, txHashUnlock)
 	params = append(params, curUtcMilliSec)
 	params = append(params, curUtcMilliSec)
 	params = append(params, id)

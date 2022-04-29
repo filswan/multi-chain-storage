@@ -18,7 +18,7 @@ Run the following command to run the latest stable image of MCS Web
 
 ```bash
 docker build -t filswan/mcs-web .
-docker run filswan/mcs-web
+docker run  -p 8080:8080 filswan/mcs-web
 ```
 The service will be Available on:
 

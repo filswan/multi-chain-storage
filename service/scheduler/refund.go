@@ -82,10 +82,10 @@ func refund(ethClient *ethclient.Client, carFileId int64, swanPaymentTransactor 
 		return err
 	}
 
-	refundStatus := constants.PROCESS_STATUS_UNLOCK_REFUNDED
+	refundStatus := constants.CAR_FILE_STATUS_UNLOCK_REFUNDED
 	tx, err := swanPaymentTransactor.Refund(tansactOpts, srcFileUploadWCids)
 	if err != nil {
-		refundStatus = constants.PROCESS_STATUS_UNLOCK_REFUNDFAILED
+		refundStatus = constants.CAR_FILE_STATUS_UNLOCK_REFUNDFAILED
 		logs.GetLogger().Error(err.Error())
 	}
 	txHash := ""

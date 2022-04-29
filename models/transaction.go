@@ -219,7 +219,7 @@ func UpdateTransactionRefundAfterExpired(sourceFileUploadId int64, refundTxHash 
 
 	currentUtcSecond := libutils.GetCurrentUtcSecond()
 	params := []interface{}{}
-	params = append(params, constants.TRANSACTION_STATUS_UNLOCKING)
+	params = append(params, constants.TRANSACTION_STATUS_REFUNDED_AFTER_EXPIRED)
 	params = append(params, refundTxHash)
 	params = append(params, refundAmount.String())
 	params = append(params, currentUtcSecond)

@@ -56,57 +56,55 @@ func refund(ethClient *ethclient.Client, carFileId int64, swanPaymentTransactor 
 		return nil
 	}
 
-	srcFiles, err := models.GetSourceFileUploadsByCarFileId(carFileId)
+	sourceFileUploads, err := models.GetSourceFileUploadsByCarFileId(carFileId)
 	if err != nil {
 		logs.GetLogger().Error(err.Error())
 		return err
 	}
 
-	var srcFilePayloadCids []string
-	for _, srcFile := range srcFiles {
-		lockedPayment, err := client.GetLockedPaymentInfo(srcFile.PayloadCid)
+	var srcFileUploadWCids []string
+	for _, sourceFileUpload := range sourceFileUploads {
+		wCid := sourceFileUpload.Uuid + sourceFileUpload.PayloadCid
+		lockedPayment, err := client.GetLockedPaymentInfo(wCid)
 		if err != nil {
 			logs.GetLogger().Error(err.Error())
 			return err
 		}
 
-		err = models.UpdateSourceFileRefundAmount(srcFile.Id, lockedPayment.LockedFee)
-		if err != nil {
-			logs.GetLogger().Error(err.Error())
-			return err
-		}
+		sourceFileUpload.LockedFeeBeforeRefund = lockedPayment.LockedFee
 
-		srcFilePayloadCids = append(srcFilePayloadCids, srcFile.PayloadCid)
+		srcFileUploadWCids = append(srcFileUploadWCids, wCid)
 	}
 
-	privateKey, publicKeyAddress, err := client.GetPrivateKeyPublicKey(constants.PRIVATE_KEY_ON_POLYGON)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
-
-	tansactOpts, err := client.GetTransactOpts(ethClient, privateKey, *publicKeyAddress)
+	tansactOpts, err := client.GetTransactOpts(ethClient, adminWalletPrivateKey, *adminWalletPublicKey)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
 	}
 
 	refundStatus := constants.PROCESS_STATUS_UNLOCK_REFUNDED
-	tx, err := swanPaymentTransactor.Refund(tansactOpts, srcFilePayloadCids)
+	tx, err := swanPaymentTransactor.Refund(tansactOpts, srcFileUploadWCids)
 	if err != nil {
 		refundStatus = constants.PROCESS_STATUS_UNLOCK_REFUNDFAILED
 		logs.GetLogger().Error(err.Error())
 	}
+	txHash := ""
+	if tx != nil {
+		txHash = tx.Hash().Hex()
+	}
 
-	for _, srcFile := range srcFiles {
-		txHash := ""
-		if tx != nil {
-			txHash = tx.Hash().Hex()
+	logs.GetLogger().Info("refund stats:", refundStatus, " tx hash:", txHash)
+
+	for _, sourceFileUpload := range sourceFileUploads {
+		wCid := sourceFileUpload.Uuid + sourceFileUpload.PayloadCid
+		lockedPayment, err := client.GetLockedPaymentInfo(wCid)
+		if err != nil {
+			logs.GetLogger().Error(err.Error())
+			return err
 		}
 
-		logs.GetLogger().Info("refund stats:", refundStatus, " tx hash:", txHash)
-
-		err = models.UpdateSourceFileRefundStatus(srcFile.Id, refundStatus, txHash)
+		refundAmount := sourceFileUpload.LockedFeeBeforeRefund.Sub(lockedPayment.LockedFee)
+		err = models.UpdateTransactionRefundAfterUnlock(sourceFileUpload.Id, txHash, refundAmount)
 		if err != nil {
 			logs.GetLogger().Error(err.Error())
 			continue

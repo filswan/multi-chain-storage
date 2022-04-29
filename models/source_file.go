@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"multi-chain-storage/database"
 
-	libutils "github.com/filswan/go-swan-lib/utils"
-
 	"github.com/filswan/go-swan-lib/logs"
 	"github.com/shopspring/decimal"
 )
@@ -72,44 +70,4 @@ func CreateSourceFile(sourceFile *SourceFile) (*SourceFile, error) {
 	sourceFileCreated := value.(*SourceFile)
 
 	return sourceFileCreated, nil
-}
-
-func UpdateSourceFileRefundAmount(srcFileId int64, refundAmount decimal.Decimal) error {
-	sql := "update source_file set refund_amount=?,update_at=? where id=?"
-
-	curUtcMilliSec := libutils.GetCurrentUtcSecond()
-
-	params := []interface{}{}
-	params = append(params, refundAmount)
-	params = append(params, curUtcMilliSec)
-	params = append(params, srcFileId)
-
-	err := database.GetDB().Exec(sql, params...).Error
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
-
-	return nil
-}
-
-func UpdateSourceFileRefundStatus(srcFileId int64, refundStatus string, refundTxHash string) error {
-	sql := "update source_file set refund_status=?,refund_tx_hash=?,refund_at=?,update_at=? where id=?"
-
-	curUtcMilliSec := libutils.GetCurrentUtcSecond()
-
-	params := []interface{}{}
-	params = append(params, refundStatus)
-	params = append(params, refundTxHash)
-	params = append(params, curUtcMilliSec)
-	params = append(params, curUtcMilliSec)
-	params = append(params, srcFileId)
-
-	err := database.GetDB().Exec(sql, params...).Error
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
-
-	return nil
 }

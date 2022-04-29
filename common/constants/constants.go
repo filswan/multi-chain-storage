@@ -53,9 +53,10 @@ const (
 	OFFLINE_DEAL_STATUS_UNLOCKED      = "Unlocked"
 	OFFLINE_DEAL_STATUS_UNLOCK_FAILED = "UnlockFailed"
 
-	TRANSACTION_STATUS_PAID      = "Paid"
-	TRANSACTION_STATUS_UNLOCKING = "Unlocking"
-	TRANSACTION_STATUS_UNLOCKED  = "Unlocked"
+	TRANSACTION_STATUS_PAID                  = "Paid"
+	TRANSACTION_STATUS_UNLOCKING             = "Unlocking"
+	TRANSACTION_STATUS_UNLOCKED              = "Unlocked"
+	TRANSACTION_STATUS_REFUNDED_AFTER_UNLOCK = "RefundedAfterUnlock"
 
 	SIGNATURE_SUCCESS_VALUE = "1" //init value,no unlock operation has been performed
 	SIGNATURE_FAILED_VALUE  = "2" //init value,no unlock operation has been performed

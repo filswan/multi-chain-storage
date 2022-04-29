@@ -28,6 +28,7 @@ type SourceFileUploadOut struct {
 	SourceFileUpload
 	PayloadCid            string `json:"payload_cid"`
 	LockedFeeBeforeUnlock decimal.Decimal
+	LockedFeeBeforeRefund decimal.Decimal
 }
 
 func GetSourceFileUploadsByCarFileId(carFileId int64) ([]*SourceFileUploadOut, error) {

@@ -26,14 +26,14 @@ func Refund() error {
 
 	//refund(int64(903), swanPaymentTransactor, tansactOpts)
 
-	dealFiles, err := models.GetCarFilesByStatus(constants.CAR_FILE_STATUS_DEAL_SENT)
+	carFiles, err := models.GetCarFilesByStatus(constants.CAR_FILE_STATUS_DEAL_SENT)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
 	}
 
-	for _, dealFile := range dealFiles {
-		err = refund(ethClient, dealFile.ID, swanPaymentTransactor)
+	for _, carFile := range carFiles {
+		err = refund(ethClient, carFile.ID, swanPaymentTransactor)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			continue
@@ -43,20 +43,20 @@ func Refund() error {
 	return nil
 }
 
-func refund(ethClient *ethclient.Client, dealFileId int64, swanPaymentTransactor *goBind.SwanPaymentTransactor) error {
-	offlineDealsNotUnlocked, err := models.GetOfflineDealsNotUnlockedByDealFileId(dealFileId)
+func refund(ethClient *ethclient.Client, carFileId int64, swanPaymentTransactor *goBind.SwanPaymentTransactor) error {
+	offlineDealsNotUnlocked, err := models.GetOfflineDealsNotUnlockedByCarFileId(carFileId)
 	if err != nil {
 		logs.GetLogger().Error(err.Error())
 		return err
 	}
 
 	if len(offlineDealsNotUnlocked) > 0 {
-		msg := fmt.Sprintf("%d deals not unlocked or unlock failed, cannot refund for the deal file", len(offlineDealsNotUnlocked))
+		msg := fmt.Sprintf("%d deals not unlocked or unlock failed, cannot refund for the car file", len(offlineDealsNotUnlocked))
 		logs.GetLogger().Info(msg)
 		return nil
 	}
 
-	srcFiles, err := models.GetSourceFileUploadsByCarFileId(dealFileId)
+	srcFiles, err := models.GetSourceFileUploadsByCarFileId(carFileId)
 	if err != nil {
 		logs.GetLogger().Error(err.Error())
 		return err
@@ -113,7 +113,7 @@ func refund(ethClient *ethclient.Client, dealFileId int64, swanPaymentTransactor
 		}
 	}
 
-	err = models.UpdateDealFileStatus(dealFileId, refundStatus)
+	err = models.UpdateDealFileStatus(carFileId, refundStatus)
 	if err != nil {
 		logs.GetLogger().Error(err.Error())
 		return err

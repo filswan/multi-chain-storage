@@ -19,7 +19,7 @@ type SourceFileUpload struct {
 	Uuid         string `json:"uuid"`
 	WalletId     int64  `json:"wallet_id"`
 	Status       string `json:"status"`
-	DurationDay  int    `json:"duration_day"`
+	Duration     int    `json:"duration"`
 	CreateAt     int64  `json:"create_at"`
 	UpdateAt     int64  `json:"update_at"`
 }

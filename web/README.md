@@ -17,8 +17,8 @@ https://docs.docker.com/compose/install/
 Run the following command to run the latest stable image of MCS Web
 
 ```bash
-docker build -t filswan/mcp-web .
-docker run filswan/mcp-web
+docker build -t filswan/mcs-web .
+docker run filswan/mcs-web
 ```
 The service will be Available on:
 

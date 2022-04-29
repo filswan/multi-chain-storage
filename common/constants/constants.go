@@ -29,8 +29,6 @@ const (
 	CAR_FILE_STATUS_DEAL_SEND_CANCELLED = "DealSendCancelled"
 	PROCESS_STATUS_UNLOCK_REFUNDED      = "UnlockRefundSucceeded"
 	PROCESS_STATUS_UNLOCK_REFUNDFAILED  = "UnlockRefundFailed"
-	PROCESS_STATUS_EXPIRE_REFUNDING     = "Refunding"
-	PROCESS_STATUS_EXPIRE_REFUNDED      = "Refunded"
 
 	DEAL_STATUS_ACTIVE = "StorageDealActive"
 	DEAL_STATUS_ERROR  = "StorageDealError"
@@ -46,18 +44,14 @@ const (
 	SOURCE_FILE_UPLOAD_STATUS_CREATED      = "Created"
 	SOURCE_FILE_UPLOAD_STATUS_PAID         = "Paid"
 	SOURCE_FILE_UPLOAD_STATUS_TASK_CREATED = "TaskCreated"
-	SOURCE_FILE_UPLOAD_STATUS_REFUNDED     = "Refunded"
+	SOURCE_FILE_UPLOAD_STATUS_UNLOCKING    = "Unlocking"
+	SOURCE_FILE_UPLOAD_STATUS_UNLOCKED     = "Unlocked"
 	SOURCE_FILE_UPLOAD_STATUS_REFUNDABLE   = "Refundable"
+	SOURCE_FILE_UPLOAD_STATUS_REFUNDED     = "Refunded"
 
 	OFFLINE_DEAL_STATUS_CREATED       = "Created"
 	OFFLINE_DEAL_STATUS_UNLOCKED      = "Unlocked"
 	OFFLINE_DEAL_STATUS_UNLOCK_FAILED = "UnlockFailed"
-
-	TRANSACTION_STATUS_PAID                   = "Paid"
-	TRANSACTION_STATUS_UNLOCKING              = "Unlocking"
-	TRANSACTION_STATUS_UNLOCKED               = "Unlocked"
-	TRANSACTION_STATUS_REFUNDED_AFTER_UNLOCK  = "RefundedAfterUnlock"
-	TRANSACTION_STATUS_REFUNDED_AFTER_EXPIRED = "RefundedAfterExpired"
 
 	SIGNATURE_SUCCESS_VALUE = "1" //init value,no unlock operation has been performed
 	SIGNATURE_FAILED_VALUE  = "2" //init value,no unlock operation has been performed

@@ -89,7 +89,7 @@ func updateExpiredSourceFileUploadStatus() error {
 			sourceFileUploadStatus = constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDABLE
 		}
 
-		err = models.UpdatSourceFileUploadStatus(sourceFileUpload.Id, sourceFileUploadStatus)
+		err = models.UpdateSourceFileUploadStatus(sourceFileUpload.Id, sourceFileUploadStatus)
 		if err != nil {
 			logs.GetLogger().Error(err)
 		}

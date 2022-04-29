@@ -19,7 +19,6 @@ import (
 type Transaction struct {
 	ID                       int64  `json:"id"`
 	SourceFileUploadId       int64  `json:"source_file_upload_id"`
-	Status                   string `json:"status"`
 	NetworkId                int64  `json:"network_id"`
 	TokenId                  int64  `json:"token_id"`
 	WalletIdPay              int64  `json:"wallet_id_pay"`
@@ -118,7 +117,6 @@ func CreateTransaction4Pay(sourceFileUploadId int64, txHash string) error {
 	currentUtcSecond := libutils.GetCurrentUtcSecond()
 	transaction := Transaction{
 		SourceFileUploadId: sourceFileUploadId,
-		Status:             constants.TRANSACTION_STATUS_PAID,
 		NetworkId:          network.ID,
 		TokenId:            coin.ID,
 		WalletIdPay:        walletIdPay.ID,
@@ -183,17 +181,22 @@ func UpdateTransactionUnlockInfo(sourceFileUploadId int64, unlockAmount decimal.
 
 	unlockAmountNew := unlockAmountBefore.Add(unlockAmount)
 
-	sql := "update transaction set status=?,amount_unlock=?,last_unlock_at=?,update_at=? where id=?"
+	sql := "update transaction set amount_unlock=?,last_unlock_at=?,update_at=? where id=?"
 
 	currentUtcSecond := libutils.GetCurrentUtcSecond()
 	params := []interface{}{}
-	params = append(params, constants.TRANSACTION_STATUS_UNLOCKING)
 	params = append(params, unlockAmountNew.String())
 	params = append(params, currentUtcSecond)
 	params = append(params, currentUtcSecond)
 	params = append(params, transaction.ID)
 
 	err = database.GetDB().Exec(sql, params...).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	err = UpdateSourceFileUploadStatus(sourceFileUploadId, constants.SOURCE_FILE_UPLOAD_STATUS_UNLOCKING)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
@@ -215,11 +218,10 @@ func UpdateTransactionRefundAfterExpired(sourceFileUploadId int64, refundTxHash 
 		return nil
 	}
 
-	sql := "update transaction set status=?,tx_hash_refund_after_expired=?,amount_refund_after_expired=?,refund_after_expired_at=?,update_at=? where id=?"
+	sql := "update transaction set tx_hash_refund_after_expired=?,amount_refund_after_expired=?,refund_after_expired_at=?,update_at=? where id=?"
 
 	currentUtcSecond := libutils.GetCurrentUtcSecond()
 	params := []interface{}{}
-	params = append(params, constants.TRANSACTION_STATUS_REFUNDED_AFTER_EXPIRED)
 	params = append(params, refundTxHash)
 	params = append(params, refundAmount.String())
 	params = append(params, currentUtcSecond)
@@ -227,6 +229,12 @@ func UpdateTransactionRefundAfterExpired(sourceFileUploadId int64, refundTxHash 
 	params = append(params, transaction.ID)
 
 	err = database.GetDB().Exec(sql, params...).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	err = UpdateSourceFileUploadStatus(sourceFileUploadId, constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDED)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
@@ -248,11 +256,10 @@ func UpdateTransactionRefundAfterUnlock(sourceFileUploadId int64, refundTxHash s
 		return nil
 	}
 
-	sql := "update transaction set status=?,tx_hash_refund_after_unlock=?,amount_refund_after_unlock=?,refund_after_unlock_at=?,update_at=? where id=?"
+	sql := "update transaction set tx_hash_refund_after_unlock=?,amount_refund_after_unlock=?,refund_after_unlock_at=?,update_at=? where id=?"
 
 	currentUtcSecond := libutils.GetCurrentUtcSecond()
 	params := []interface{}{}
-	params = append(params, constants.TRANSACTION_STATUS_REFUNDED_AFTER_UNLOCK)
 	params = append(params, refundTxHash)
 	params = append(params, refundAmount.String())
 	params = append(params, currentUtcSecond)
@@ -260,6 +267,12 @@ func UpdateTransactionRefundAfterUnlock(sourceFileUploadId int64, refundTxHash s
 	params = append(params, transaction.ID)
 
 	err = database.GetDB().Exec(sql, params...).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	err = UpdateSourceFileUploadStatus(sourceFileUploadId, constants.SOURCE_FILE_UPLOAD_STATUS_UNLOCKED)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err

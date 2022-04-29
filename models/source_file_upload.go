@@ -234,7 +234,7 @@ func GetSourceFileUploads(walletId int64, fileName, orderBy string, isAscend boo
 	return result, &totalRecordCount, nil
 }
 
-func UpdatSourceFileUploadStatus(id int64, status string) error {
+func UpdateSourceFileUploadStatus(id int64, status string) error {
 	sql := "update source_file_upload set status=?,update_at=? where id=?"
 
 	params := []interface{}{}

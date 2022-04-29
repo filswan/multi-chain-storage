@@ -173,7 +173,6 @@ create table offline_deal_log (
 create table transaction (
     id                           bigint        not null auto_increment,
     source_file_upload_id        bigint        not null,
-    status                       varchar(100)  not null,
     network_id                   bigint        not null,
     token_id                     bigint        not null,
     wallet_id_pay                bigint        not null,

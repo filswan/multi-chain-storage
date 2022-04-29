@@ -93,6 +93,18 @@ func refund(ethClient *ethclient.Client, carFileId int64, swanPaymentTransactor 
 		txHash = tx.Hash().Hex()
 	}
 
+	txReceipt, err := client.CheckTx(ethClient, tx)
+	if err != nil {
+		logs.GetLogger().Error(err.Error())
+		return err
+	}
+
+	if txReceipt.Status != uint64(1) {
+		err := fmt.Errorf("unlock failed! txHash=%s, status:%d", tx.Hash().Hex(), txReceipt.Status)
+		logs.GetLogger().Error(err.Error())
+		return err
+	}
+
 	logs.GetLogger().Info("refund stats:", refundStatus, " tx hash:", txHash)
 
 	for _, sourceFileUpload := range sourceFileUploads {
@@ -100,7 +112,7 @@ func refund(ethClient *ethclient.Client, carFileId int64, swanPaymentTransactor 
 		lockedPayment, err := client.GetLockedPaymentInfo(wCid)
 		if err != nil {
 			logs.GetLogger().Error(err.Error())
-			return err
+			continue
 		}
 
 		refundAmount := sourceFileUpload.LockedFeeBeforeRefund.Sub(lockedPayment.LockedFee)
@@ -111,7 +123,7 @@ func refund(ethClient *ethclient.Client, carFileId int64, swanPaymentTransactor 
 		}
 	}
 
-	err = models.UpdateDealFileStatus(carFileId, refundStatus)
+	err = models.UpdateCarFileStatus(carFileId, refundStatus)
 	if err != nil {
 		logs.GetLogger().Error(err.Error())
 		return err

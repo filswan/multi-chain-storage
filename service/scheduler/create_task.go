@@ -315,7 +315,7 @@ func saveCarInfo2DB(fileDesc *libmodel.FileDesc, srcFiles []*models.SourceFileUp
 }
 
 func CheckSourceFilesPaid() error {
-	srcFileUploads, err := models.GetSourceFileUploadsByFileTypeStatus(constants.SOURCE_FILE_TYPE_NORMAL, constants.SOURCE_FILE_UPLOAD_STATUS_CREATED)
+	srcFileUploads, err := models.GetSourceFileUploadsByFileTypeStatus(constants.SOURCE_FILE_TYPE_NORMAL, constants.SOURCE_FILE_UPLOAD_STATUS_PENDING)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err

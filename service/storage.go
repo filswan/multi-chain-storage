@@ -119,7 +119,7 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType 
 		FileName:     srcFile.Filename,
 		Uuid:         sourceFileUploadUuid,
 		WalletId:     wallet.ID,
-		Status:       constants.SOURCE_FILE_UPLOAD_STATUS_CREATED,
+		Status:       constants.SOURCE_FILE_UPLOAD_STATUS_PENDING,
 		Duration:     duration,
 		CreateAt:     currentUtcMilliSec,
 		UpdateAt:     currentUtcMilliSec,
@@ -168,10 +168,8 @@ func GetSourceFileUploads(walletAddress string, fileName, orderBy string, isAsce
 		}
 		srcFileUpload.OfflineDeals = offlineDeals
 
-		if srcFileUpload.SourceFileUploadStatus == constants.SOURCE_FILE_UPLOAD_STATUS_CREATED {
-			srcFileUpload.Status = constants.PROCESS_STATUS_WAITING_PAYMENT
-		} else {
-			srcFileUpload.Status = constants.PROCESS_STATUS_PROCESSING
+		if srcFileUpload.SourceFileUploadStatus != constants.SOURCE_FILE_UPLOAD_STATUS_PENDING {
+			srcFileUpload.Status = constants.SOURCE_FILE_UPLOAD_STATUS_PROCESSING
 		}
 	}
 

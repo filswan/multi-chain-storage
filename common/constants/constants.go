@@ -30,17 +30,6 @@ const (
 	PROCESS_STATUS_UNLOCK_REFUNDED      = "UnlockRefundSucceeded"
 	PROCESS_STATUS_UNLOCK_REFUNDFAILED  = "UnlockRefundFailed"
 
-	DEAL_STATUS_ACTIVE = "StorageDealActive"
-	DEAL_STATUS_ERROR  = "StorageDealError"
-
-	IPFS_URL_PREFIX_BEFORE_HASH = "/ipfs/"
-	IPFS_File_PINNED_STATUS     = "Pinned"
-
-	LOTUS_TASK_TYPE_VERIFIED = "verified"
-	LOTUS_TASK_TYPE_REGULAR  = "regular"
-
-	FILE_BLOCK_NUMBER_MAX = 999999999999999
-
 	SOURCE_FILE_UPLOAD_STATUS_CREATED      = "Created"
 	SOURCE_FILE_UPLOAD_STATUS_PAID         = "Paid"
 	SOURCE_FILE_UPLOAD_STATUS_TASK_CREATED = "TaskCreated"
@@ -52,6 +41,17 @@ const (
 	OFFLINE_DEAL_STATUS_CREATED       = "Created"
 	OFFLINE_DEAL_STATUS_UNLOCKED      = "Unlocked"
 	OFFLINE_DEAL_STATUS_UNLOCK_FAILED = "UnlockFailed"
+
+	DEAL_STATUS_ACTIVE = "StorageDealActive"
+	DEAL_STATUS_ERROR  = "StorageDealError"
+
+	IPFS_URL_PREFIX_BEFORE_HASH = "/ipfs/"
+	IPFS_File_PINNED_STATUS     = "Pinned"
+
+	LOTUS_TASK_TYPE_VERIFIED = "verified"
+	LOTUS_TASK_TYPE_REGULAR  = "regular"
+
+	FILE_BLOCK_NUMBER_MAX = 999999999999999
 
 	SIGNATURE_SUCCESS_VALUE = "1" //init value,no unlock operation has been performed
 	SIGNATURE_FAILED_VALUE  = "2" //init value,no unlock operation has been performed

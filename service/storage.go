@@ -120,7 +120,7 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType 
 		Uuid:         sourceFileUploadUuid,
 		WalletId:     wallet.ID,
 		Status:       constants.SOURCE_FILE_UPLOAD_STATUS_CREATED,
-		DurationDay:  duration,
+		Duration:     duration,
 		CreateAt:     currentUtcMilliSec,
 		UpdateAt:     currentUtcMilliSec,
 	}

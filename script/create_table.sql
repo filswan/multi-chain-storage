@@ -49,8 +49,8 @@ insert into system_param(name,value,create_at,update_at) values('DAO_CONTRACT_AD
 insert into system_param(name,value,create_at,update_at) values('MINT_CONTRACT_ADDRESS','0x1A1e5AC88C493e0608C84c60b7bb5f04D9cF50B3',unix_timestamp(),unix_timestamp());
 insert into system_param(name,value,create_at,update_at) values('SUSHI_DEX_ADDRESS','0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506',unix_timestamp(),unix_timestamp());
 insert into system_param(name,value,create_at,update_at) values('USDC_WFIL_POOL_CONTRACT_ADDRESS','0x74038ed7D891A043d4aF41FeA242ED01914c2636',unix_timestamp(),unix_timestamp());
-insert into system_param(name,value,create_at,update_at) values('PAY_WITH_MULTIPLY_FACTOR','1.5',unix_timestamp(),unix_timestamp());
 insert into system_param(name,value,create_at,update_at) values('GAS_LIMIT','9999999',unix_timestamp(),unix_timestamp());
+insert into system_param(name,value,create_at,update_at) values('PAY_WITH_MULTIPLY_FACTOR','1.5',unix_timestamp(),unix_timestamp());
 insert into system_param(name,value,create_at,update_at) values('LOCK_TIME','6',unix_timestamp(),unix_timestamp());
 
 create table wallet (

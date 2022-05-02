@@ -90,8 +90,8 @@ func GetCarFileBySourceFilePayloadCid(srcFilePayloadCid string) ([]*CarFile, err
 	return carFiles, nil
 }
 
-func UpdateDealFileStatus(id int64, status string) error {
-	sql := "update deal_file set lock_payment_status=?,update_at=? where id=?"
+func UpdateCarFileStatus(id int64, status string) error {
+	sql := "update car_file set status=?,update_at=? where id=?"
 
 	params := []interface{}{}
 	params = append(params, status)

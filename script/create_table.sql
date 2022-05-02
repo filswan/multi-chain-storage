@@ -32,24 +32,6 @@ create table token (
 
 insert into token(name,address,network_id,create_at,update_at) values('USDC','0xe11A86849d99F524cAC3E7A0Ec1241828e332C62',@network_id_polygon,unix_timestamp(),unix_timestamp());
 
-create table system_param (
-    id            bigint       not null auto_increment,
-    name          varchar(100) not null,
-    value         varchar(100) not null,
-    description   text,
-    create_at     bigint       not null,
-    update_at     bigint       not null,
-    primary key pk_system_param(id),
-    constraint un_system_param_name unique(name)
-);
-
-insert into system_param(name,value,create_at,update_at) values('SWAN_PAYMENT_CONTRACT_ADDRESS','0x80a186DCD922175019913b274568ab172F6E20b1',unix_timestamp(),unix_timestamp());
-insert into system_param(name,value,create_at,update_at) values('PAY_WITH_MULTIPLY_FACTOR','1.5',unix_timestamp(),unix_timestamp());
-insert into system_param(name,value,create_at,update_at) values('LOCK_TIME','6',unix_timestamp(),unix_timestamp());
-insert into system_param(name,value,create_at,update_at) values('RECIPIENT','0xc4fcaAdCb0b00a9501e56215c37B10fAF9e79c0a',unix_timestamp(),unix_timestamp());
-insert into system_param(name,value,create_at,update_at) values('PAY_GAS_LIMIT','9999999',unix_timestamp(),unix_timestamp());
-insert into system_param(name,value,create_at,update_at) values('MINT_CONTRACT','0x1A1e5AC88C493e0608C84c60b7bb5f04D9cF50B3',unix_timestamp(),unix_timestamp());
-
 create table wallet (
     id            bigint       not null auto_increment,
     type          int          not null, #--0:metamask, 1:filecoin
@@ -173,24 +155,23 @@ create table offline_deal_log (
 create table transaction (
     id                           bigint        not null auto_increment,
     source_file_upload_id        bigint        not null,
-    status                       varchar(100)  not null,
     network_id                   bigint        not null,
     token_id                     bigint        not null,
     wallet_id_pay                bigint        not null,
     wallet_id_recipient          bigint        not null,
     wallet_id_contract           bigint        not null,
-    tx_hash_pay                  varchar(100)  not null,
-    tx_hash_refund_after_expired varchar(100),
-    tx_hash_refund_after_unlock  varchar(100),
-    amount_lock                  varchar(100)  not null,
-    amount_unlock                varchar(100),
-    amount_refund_after_expired  varchar(100),
-    amount_refund_after_unlock   varchar(100),
+    pay_tx_hash                  varchar(100)  not null,
+    pay_amount                   varchar(100)  not null,
+    pay_at                       bigint        not null,
     deadline                     bigint        not null,
-    pay_at                       bigint,
+    unlock_amount                varchar(100),
     last_unlock_at               bigint,
-    refund_after_expired_at      bigint,
+    refund_after_unlock_tx_hash  varchar(100),
+    refund_after_unlock_amount   varchar(100),
     refund_after_unlock_at       bigint,
+    refund_after_expired_tx_hash varchar(100),
+    refund_after_expired_amount  varchar(100),
+    refund_after_expired_at      bigint,
     create_at                    bigint        not null,
     update_at                    bigint        not null,
     primary key pk_transaction(id),

@@ -119,7 +119,7 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType 
 		FileName:     srcFile.Filename,
 		Uuid:         sourceFileUploadUuid,
 		WalletId:     wallet.ID,
-		Status:       constants.SOURCE_FILE_UPLOAD_STATUS_CREATED,
+		Status:       constants.SOURCE_FILE_UPLOAD_STATUS_PENDING,
 		Duration:     duration,
 		CreateAt:     currentUtcMilliSec,
 		UpdateAt:     currentUtcMilliSec,
@@ -168,10 +168,11 @@ func GetSourceFileUploads(walletAddress string, fileName, orderBy string, isAsce
 		}
 		srcFileUpload.OfflineDeals = offlineDeals
 
-		if srcFileUpload.SourceFileUploadStatus == constants.SOURCE_FILE_UPLOAD_STATUS_CREATED {
-			srcFileUpload.Status = constants.PROCESS_STATUS_WAITING_PAYMENT
-		} else {
-			srcFileUpload.Status = constants.PROCESS_STATUS_PROCESSING
+		if srcFileUpload.Status != constants.SOURCE_FILE_UPLOAD_STATUS_PENDING &&
+			srcFileUpload.Status != constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDABLE &&
+			srcFileUpload.Status != constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDED &&
+			srcFileUpload.Status != constants.SOURCE_FILE_UPLOAD_STATUS_ACTIVE {
+			srcFileUpload.Status = constants.SOURCE_FILE_UPLOAD_STATUS_PROCESSING
 		}
 	}
 
@@ -274,12 +275,6 @@ func GetSourceFileUploadDeal(sourceFileUploadId int64, dealId int) (*SourceFileU
 		return nil, err
 	}
 
-	transactionUnlock, err := models.GetTransactionBySourceFileUploadId(sourceFileUploadId)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-
 	sourceFileUploadDeal := &flinkDealResult.Data.Data.Deal
 	sourceFileUploadDeal.IpfsUrl = sourceFile.IpfsUrl
 	sourceFileUploadDeal.FileName = sourceFileUpload.FileName
@@ -288,10 +283,10 @@ func GetSourceFileUploadDeal(sourceFileUploadId int64, dealId int) (*SourceFileU
 
 	if transactionPay != nil {
 		sourceFileUploadDeal.LockedAt = transactionPay.CreateAt
-		sourceFileUploadDeal.LockedFee = transactionPay.AmountLock
+		sourceFileUploadDeal.LockedFee = transactionPay.PayAmount
 	}
 
-	if transactionUnlock != nil {
+	if sourceFileUpload.Status == constants.SOURCE_FILE_UPLOAD_STATUS_UNLOCKED || sourceFileUpload.Status == constants.SOURCE_FILE_UPLOAD_STATUS_ACTIVE {
 		sourceFileUploadDeal.Unlocked = true
 	}
 

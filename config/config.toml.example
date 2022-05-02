@@ -48,11 +48,14 @@ refund_interval_second = 300
 [polygon]
 polygon_rpc_url = ""
 payment_contract_address = ""                # user pay from his/her wallet address to this address
+payment_recipient_address = ""
+dao_contract_address = ""
+mint_contract_address = ""
 sushi_dex_address = ""
 usdc_wFil_pool_contract = ""
-dao_contract_address = ""
-mcs_payment_receiver_address = ""
 gas_limit = 8000000
+lock_time = 6
+pay_multiply_factor = 1.5
 unlock_interval_minute = 1
-interval_dao_unlock_block = 5 
+dao_unlock_interval_block = 5 
 

@@ -19,24 +19,23 @@ import (
 type Transaction struct {
 	ID                       int64  `json:"id"`
 	SourceFileUploadId       int64  `json:"source_file_upload_id"`
-	Status                   string `json:"status"`
 	NetworkId                int64  `json:"network_id"`
 	TokenId                  int64  `json:"token_id"`
 	WalletIdPay              int64  `json:"wallet_id_pay"`
 	WalletIdRecipient        int64  `json:"wallet_id_recipient"`
 	WalletIdContract         int64  `json:"wallet_id_contract"`
-	TxHashPay                string `json:"tx_hash_pay"`
-	TxHashRefundAfterExpired string `json:"tx_hash_refund_after_expired"`
-	TxHashRefundAfterUnlock  string `json:"tx_hash_refund_after_unlock"`
-	AmountLock               string `json:"amount_lock"`
-	AmountUnlock             string `json:"amount_unlock"`
-	AmountRefundAfterExpired string `json:"amount_refund_after_expired"`
-	AmountRefundAfterUnlock  string `json:"amount_refund_after_unlock"`
-	Deadline                 int64  `json:"deadline"`
+	PayTxHash                string `json:"pay_tx_hash"`
+	PayAmount                string `json:"pay_amount"`
 	PayAt                    int64  `json:"pay_at"`
+	Deadline                 int64  `json:"deadline"`
+	UnlockAmount             string `json:"unlock_amount"`
 	LastUnlockAt             int64  `json:"last_unlock_at"`
-	RefundAfterExpiredAt     int64  `json:"refund_after_expired_at"`
+	RefundAfterUnlockTxHash  string `json:"refund_after_unlock_tx_hash"`
+	RefundAfterUnlockAmount  string `json:"refund_after_unlock_amount"`
 	RefundAfterUnlockAt      int64  `json:"refund_after_unlock_at"`
+	RefundAfterExpiredTxHash string `json:"refund_after_expired_tx_hash"`
+	RefundAfterExpiredAmount string `json:"refund_after_expired_amount"`
+	RefundAfterExpiredAt     int64  `json:"refund_after_expired_at"`
 	CreateAt                 int64  `json:"create_at"`
 	UpdateAt                 int64  `json:"update_at"`
 }
@@ -73,6 +72,12 @@ func CreateTransaction4Pay(sourceFileUploadId int64, txHash string) error {
 		return err
 	}
 
+	if sourceFileUpload == nil {
+		err := fmt.Errorf("source file upload:%d not exists", sourceFileUploadId)
+		logs.GetLogger().Error(err)
+		return err
+	}
+
 	sourceFile, err := GetSourceFileById(sourceFileUpload.SourceFileId)
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -103,8 +108,14 @@ func CreateTransaction4Pay(sourceFileUploadId int64, txHash string) error {
 		return err
 	}
 
-	coin, err := GetTokenByName(constants.TOKEN_USDC_NAME)
+	token, err := GetTokenByName(constants.TOKEN_USDC_NAME)
 	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	if token == nil {
+		err := fmt.Errorf("token:%s not exists", constants.TOKEN_USDC_NAME)
 		logs.GetLogger().Error(err)
 		return err
 	}
@@ -115,20 +126,26 @@ func CreateTransaction4Pay(sourceFileUploadId int64, txHash string) error {
 		return err
 	}
 
+	if network == nil {
+		err := fmt.Errorf("network:%s not exists", constants.NETWORK_NAME_POLYGON)
+		logs.GetLogger().Error(err)
+		return err
+	}
+
 	currentUtcSecond := libutils.GetCurrentUtcSecond()
 	transaction := Transaction{
 		SourceFileUploadId: sourceFileUploadId,
-		Status:             constants.TRANSACTION_STATUS_PAID,
 		NetworkId:          network.ID,
-		TokenId:            coin.ID,
+		TokenId:            token.ID,
 		WalletIdPay:        walletIdPay.ID,
 		WalletIdRecipient:  walletIdRecipient.ID,
 		WalletIdContract:   walletIdContract.ID,
-		TxHashPay:          txHash,
-		AmountLock:         lockPayment.LockedFee.String(),
-		Deadline:           lockPayment.Deadline,
+		PayTxHash:          txHash,
+		PayAmount:          lockPayment.LockedFee.String(),
 		PayAt:              currentUtcSecond,
+		Deadline:           lockPayment.Deadline,
 		CreateAt:           currentUtcSecond,
+		UpdateAt:           currentUtcSecond,
 	}
 
 	db := database.GetDBTransaction()
@@ -175,7 +192,7 @@ func UpdateTransactionUnlockInfo(sourceFileUploadId int64, unlockAmount decimal.
 		return nil
 	}
 
-	unlockAmountBefore, err := decimal.NewFromString(transaction.AmountUnlock)
+	unlockAmountBefore, err := decimal.NewFromString(transaction.UnlockAmount)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		unlockAmountBefore = decimal.NewFromInt(0)
@@ -183,17 +200,60 @@ func UpdateTransactionUnlockInfo(sourceFileUploadId int64, unlockAmount decimal.
 
 	unlockAmountNew := unlockAmountBefore.Add(unlockAmount)
 
-	sql := "update transaction set status=?,amount_unlock=?,last_unlock_at=?,update_at=? where id=?"
+	sql := "update transaction set unlock_amount=?,last_unlock_at=?,update_at=? where id=?"
 
 	currentUtcSecond := libutils.GetCurrentUtcSecond()
 	params := []interface{}{}
-	params = append(params, constants.TRANSACTION_STATUS_UNLOCKING)
 	params = append(params, unlockAmountNew.String())
 	params = append(params, currentUtcSecond)
 	params = append(params, currentUtcSecond)
 	params = append(params, transaction.ID)
 
 	err = database.GetDB().Exec(sql, params...).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	err = UpdateSourceFileUploadStatus(sourceFileUploadId, constants.SOURCE_FILE_UPLOAD_STATUS_UNLOCKING)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	return nil
+}
+
+func UpdateTransactionRefundAfterUnlock(sourceFileUploadId int64, refundTxHash string, refundAmount decimal.Decimal) error {
+	transaction, err := GetTransactionBySourceFileUploadId(sourceFileUploadId)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	if transaction != nil {
+		err := fmt.Errorf("transaction not exists for source file upload:%d", sourceFileUploadId)
+		logs.GetLogger().Error(err)
+		return nil
+	}
+
+	sql := "update transaction set refund_after_unlock_tx_hash=?,refund_after_unlock_amount=?,refund_after_unlock_at=?,update_at=? where id=?"
+
+	currentUtcSecond := libutils.GetCurrentUtcSecond()
+	params := []interface{}{}
+	params = append(params, refundTxHash)
+	params = append(params, refundAmount.String())
+	params = append(params, currentUtcSecond)
+	params = append(params, currentUtcSecond)
+	params = append(params, transaction.ID)
+
+	err = database.GetDB().Exec(sql, params...).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	err = UpdateSourceFileUploadStatus(sourceFileUploadId, constants.SOURCE_FILE_UPLOAD_STATUS_UNLOCKED)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
@@ -215,11 +275,10 @@ func UpdateTransactionRefundAfterExpired(sourceFileUploadId int64, refundTxHash 
 		return nil
 	}
 
-	sql := "update transaction set status=?,tx_hash_refund_after_expired=?,amount_refund_after_expired=?,refund_after_expired_at=?,update_at=? where id=?"
+	sql := "update transaction set refund_after_expired_tx_hash=?,refund_after_expired_amount=?,refund_after_expired_at=?,update_at=? where id=?"
 
 	currentUtcSecond := libutils.GetCurrentUtcSecond()
 	params := []interface{}{}
-	params = append(params, constants.TRANSACTION_STATUS_UNLOCKING)
 	params = append(params, refundTxHash)
 	params = append(params, refundAmount.String())
 	params = append(params, currentUtcSecond)
@@ -227,6 +286,12 @@ func UpdateTransactionRefundAfterExpired(sourceFileUploadId int64, refundTxHash 
 	params = append(params, transaction.ID)
 
 	err = database.GetDB().Exec(sql, params...).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	err = UpdateSourceFileUploadStatus(sourceFileUploadId, constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDED)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
@@ -287,16 +352,15 @@ func (a BillingByDeadline) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 
 func GetTransactions(walletId int64, txHash, fileName, orderBy string, isAscend bool, limit, offset int) ([]*Billing, *int, error) {
 	sql := "select\n" +
-		"a.id pay_id,a.tx_hash pay_tx_hash,a.amount pay_amount,e.amount unlock_amount,b.file_name,d.payload_cid,\n" +
-		"a.create_at pay_at,e.create_at unlock_at,a.deadline,f.name network_name,g.name token_name\n" +
-		"from transaction_pay a\n" +
+		"a.id pay_id,a.pay_tx_hash,a.pay_amount,a.unlock_amount,b.file_name,d.payload_cid,\n" +
+		"a.pay_at,a.last_unlock_at unlock_at,a.deadline,e.name network_name,f.name token_name\n" +
+		"from transaction a\n" +
 		"left join source_file_upload b on a.source_file_upload_id=b.id\n" +
 		"left outer join car_file_source c on c.source_file_upload_id=a.source_file_upload_id\n" +
 		"left outer join car_file d on c.car_file_id=d.id\n" +
-		"left outer join transaction_unlock e on e.source_file_upload_id=a.source_file_upload_id\n" +
-		"left join network f on a.network_id=f.id\n" +
-		"left join token g on a.token_id=g.id\n" +
-		"where a.wallet_id_from=?"
+		"left join network e on a.network_id=e.id\n" +
+		"left join token f on a.token_id=f.id\n" +
+		"where a.wallet_id_pay=?"
 
 	params := []interface{}{}
 	params = append(params, walletId)

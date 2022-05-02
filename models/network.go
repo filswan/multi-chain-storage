@@ -1,7 +1,6 @@
 package models
 
 import (
-	"fmt"
 	"multi-chain-storage/database"
 
 	"github.com/filswan/go-swan-lib/logs"
@@ -28,8 +27,5 @@ func GetNetworkByName(name string) (*Network, error) {
 		return networks[0], nil
 	}
 
-	err = fmt.Errorf("no network for name:%s", name)
-	logs.GetLogger().Error(err)
-
-	return nil, err
+	return nil, nil
 }

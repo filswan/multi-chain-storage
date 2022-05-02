@@ -27,15 +27,18 @@ type Configuration struct {
 }
 
 type polygon struct {
-	PolygonRpcUrl             string        `toml:"polygon_rpc_url"`
-	PaymentContractAddress    string        `toml:"payment_contract_address"`
-	SushiDexAddress           string        `toml:"sushi_dex_address"`
-	UsdcWFilPoolContract      string        `toml:"usdc_wFil_pool_contract"`
-	DaoContractAddress        string        `toml:"dao_contract_address"`
-	McsPaymentReceiverAddress string        `toml:"mcs_payment_receiver_address"`
-	GasLimit                  uint64        `toml:"gas_limit"`
-	UnlockIntervalMinute      time.Duration `toml:"unlock_interval_minute"`
-	IntervalDaoUnlockBlock    int64         `toml:"interval_dao_unlock_block"`
+	PolygonRpcUrl           string        `toml:"polygon_rpc_url"`
+	PaymentContractAddress  string        `toml:"payment_contract_address"`
+	PaymentRecipientAddress string        `toml:"payment_recipient_address"`
+	DaoContractAddress      string        `toml:"dao_contract_address"`
+	MintContractAddress     string        `toml:"mint_contract_address"`
+	SushiDexAddress         string        `toml:"sushi_dex_address"`
+	UsdcWFilPoolContract    string        `toml:"usdc_wFil_pool_contract"`
+	GasLimit                uint64        `toml:"gas_limit"`
+	LockTime                int           `toml:"lock_time"`
+	PayMultiplyFactor       float32       `toml:"pay_multiply_factor"`
+	UnlockIntervalMinute    time.Duration `toml:"unlock_interval_minute"`
+	DaoUnlockIntervalBlock  int64         `toml:"dao_unlock_interval_block"`
 }
 
 type database struct {
@@ -156,13 +159,16 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 
 		{"polygon", "polygon_rpc_url"},
 		{"polygon", "payment_contract_address"},
+		{"polygon", "payment_recipient_address"},
+		{"polygon", "dao_contract_address"},
+		{"polygon", "mint_contract_address"},
 		{"polygon", "sushi_dex_address"},
 		{"polygon", "usdc_wFil_pool_contract"},
-		{"polygon", "dao_contract_address"},
-		{"polygon", "mcs_payment_receiver_address"},
 		{"polygon", "gas_limit"},
+		{"polygon", "lock_time"},
+		{"polygon", "pay_multiply_factor"},
 		{"polygon", "unlock_interval_minute"},
-		{"polygon", "interval_dao_unlock_block"},
+		{"polygon", "dao_unlock_interval_block"},
 	}
 
 	for _, v := range requiredFields {

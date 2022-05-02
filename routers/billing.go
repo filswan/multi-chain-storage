@@ -126,7 +126,7 @@ func GetLockPaymentInfo(c *gin.Context) {
 		return
 	}
 
-	sourceFileUploadInfo, err := service.GetSourceFileUploadInfo(sourceFileUploadId)
+	sourceFileUploadInfo, err := service.GetLockPaymentInfo(sourceFileUploadId)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.ERROR_INTERNAL))

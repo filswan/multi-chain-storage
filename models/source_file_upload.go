@@ -28,6 +28,7 @@ type SourceFileUploadOut struct {
 	SourceFileUpload
 	PayloadCid            string `json:"payload_cid"`
 	LockedFeeBeforeUnlock decimal.Decimal
+	LockedFeeBeforeRefund decimal.Decimal
 }
 
 func GetSourceFileUploadsByCarFileId(carFileId int64) ([]*SourceFileUploadOut, error) {
@@ -48,10 +49,11 @@ func GetSourceFileUploadsByCarFileId(carFileId int64) ([]*SourceFileUploadOut, e
 func GetSourceFileUploadsExpired() ([]*SourceFileUploadOut, error) {
 	sql := "select a.*,b.payload_cid \n" +
 		"from source_file_upload a, source_file b, transaction c\n" +
-		"where a.file_type=? and a.source_file_id=b.id and a.id=c.source_file_upload_id and c.deadline<? and c.status=?"
+		"where a.file_type=? and a.source_file_id=b.id and a.id=c.source_file_upload_id and c.deadline<? and a.status!=?"
 
+	currentUtcSecond := libutils.GetCurrentUtcSecond()
 	var models []*SourceFileUploadOut
-	err := database.GetDB().Raw(sql).Scan(&models).Error
+	err := database.GetDB().Raw(sql, constants.SOURCE_FILE_TYPE_NORMAL, currentUtcSecond, constants.SOURCE_FILE_UPLOAD_STATUS_ACTIVE).Scan(&models).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
@@ -109,17 +111,17 @@ func GetSourceFileUploadsByFileTypeStatus(fileType int, status string) ([]*Sourc
 	return sourceFileUploads, nil
 }
 
-type SourceFileUploadsNeed2Car struct {
+type SourceFileUploadNeed2Car struct {
 	SourceFileUploadId int64           `json:"source_file_upload_id"`
 	ResourceUri        string          `json:"resource_uri"`
 	FileSize           int64           `json:"file_size"`
 	CreateAt           int64           `json:"create_at"`
-	LockedFee          decimal.Decimal `json:"locked_fee"`
+	PayAmount          decimal.Decimal `json:"pay_amount"`
 }
 
-func GetSourceFileUploadsNeed2Car() ([]*SourceFileUploadsNeed2Car, error) {
-	var sourceFileUploadsNeed2Car []*SourceFileUploadsNeed2Car
-	sql := "select a.id source_file_upload_id,b.resource_uri,b.file_size,a.create_at,c.amount locked_fee\n" +
+func GetSourceFileUploadsNeed2Car() ([]*SourceFileUploadNeed2Car, error) {
+	var sourceFileUploadsNeed2Car []*SourceFileUploadNeed2Car
+	sql := "select a.id source_file_upload_id,b.resource_uri,b.file_size,a.create_at,c.pay_amount\n" +
 		"from source_file_upload a, source_file b, transaction c\n" +
 		"where a.file_type=? and a.status=? and a.source_file_id=b.id and a.id=c.source_file_upload_id"
 	err := database.GetDB().Raw(sql, constants.SOURCE_FILE_TYPE_NORMAL, constants.SOURCE_FILE_UPLOAD_STATUS_PAID).Scan(&sourceFileUploadsNeed2Car).Error
@@ -133,21 +135,19 @@ func GetSourceFileUploadsNeed2Car() ([]*SourceFileUploadsNeed2Car, error) {
 }
 
 type SourceFileUploadResult struct {
-	SourceFileUploadId     int64             `json:"source_file_upload_id"`
-	CarFileId              int64             `json:"car_file_id"`
-	FileName               string            `json:"file_name"`
-	FileSize               int64             `json:"file_size"`
-	UploadAt               int64             `json:"upload_at"`
-	Duration               int               `json:"duration"`
-	PinStatus              string            `json:"pin_status"`
-	PayloadCid             string            `json:"payload_cid"`
-	SourceFileUploadStatus string            `json:"source_file_upload_status"`
-	CarFileStatus          string            `json:"car_file_status"`
-	Status                 string            `json:"status"`
-	TokenId                string            `json:"token_id"`
-	MintAddress            string            `json:"mint_address"`
-	NftTxHash              string            `json:"nft_tx_hash"`
-	OfflineDeals           []*OfflineDealOut `json:"offline_deal"`
+	SourceFileUploadId int64             `json:"source_file_upload_id"`
+	CarFileId          int64             `json:"car_file_id"`
+	FileName           string            `json:"file_name"`
+	FileSize           int64             `json:"file_size"`
+	UploadAt           int64             `json:"upload_at"`
+	Duration           int               `json:"duration"`
+	PinStatus          string            `json:"pin_status"`
+	PayloadCid         string            `json:"payload_cid"`
+	Status             string            `json:"status"`
+	TokenId            string            `json:"token_id"`
+	MintAddress        string            `json:"mint_address"`
+	NftTxHash          string            `json:"nft_tx_hash"`
+	OfflineDeals       []*OfflineDealOut `json:"offline_deal"`
 }
 type SourceFileUploadResultByFileName []*SourceFileUploadResult
 
@@ -170,7 +170,7 @@ func (a SourceFileUploadResultByUploadAt) Swap(i, j int)      { a[i], a[j] = a[j
 func GetSourceFileUploads(walletId int64, fileName, orderBy string, isAscend bool, limit, offset int) ([]*SourceFileUploadResult, *int, error) {
 	sql := "select\n" +
 		"a.id source_file_upload_id,d.id car_file_id,a.file_name,b.file_size,a.create_at upload_at,a.duration,\n" +
-		"b.pin_status,d.payload_cid,a.status source_file_upload_status,d.status car_file_status,\n" +
+		"b.pin_status,d.payload_cid,a.status,\n" +
 		"e.token_id,e.mint_address,e.nft_tx_hash\n" +
 		"from source_file_upload a\n" +
 		"left join source_file b on a.source_file_id=b.id\n" +
@@ -233,7 +233,7 @@ func GetSourceFileUploads(walletId int64, fileName, orderBy string, isAscend boo
 	return result, &totalRecordCount, nil
 }
 
-func UpdatSourceFileUploadStatus(id int64, status string) error {
+func UpdateSourceFileUploadStatus(id int64, status string) error {
 	sql := "update source_file_upload set status=?,update_at=? where id=?"
 
 	params := []interface{}{}

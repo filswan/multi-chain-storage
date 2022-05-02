@@ -72,6 +72,12 @@ func CreateTransaction4Pay(sourceFileUploadId int64, txHash string) error {
 		return err
 	}
 
+	if sourceFileUpload == nil {
+		err := fmt.Errorf("source file upload:%d not exists", sourceFileUploadId)
+		logs.GetLogger().Error(err)
+		return err
+	}
+
 	sourceFile, err := GetSourceFileById(sourceFileUpload.SourceFileId)
 	if err != nil {
 		logs.GetLogger().Error(err)

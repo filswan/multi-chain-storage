@@ -54,5 +54,5 @@ usdc_wFil_pool_contract = ""
 dao_contract_address = ""
 gas_limit = 8000000
 unlock_interval_minute = 1
-interval_dao_unlock_block = 5 
+dao_unlock_interval_block = 5 
 

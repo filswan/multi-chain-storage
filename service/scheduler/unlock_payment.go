@@ -126,7 +126,7 @@ func checkUnlockable(ethClient *ethclient.Client, offlineDeal *models.OfflineDea
 		daoBlockNo := filswanOracleTransaction.BlockNumber.Uint64()
 		blockInterval := int64(currentBlockNo - daoBlockNo)
 
-		if blockInterval < config.GetConfig().Polygon.IntervalDaoUnlockBlock {
+		if blockInterval < config.GetConfig().Polygon.DaoUnlockIntervalBlock {
 			msg := fmt.Sprintf("current block number:%d - dao block number:%d is less than block interval:%d", currentBlockNo, daoBlockNo, blockInterval)
 			logs.GetLogger().Info(offlineDeal, msg)
 			return false, nil

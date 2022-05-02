@@ -35,7 +35,7 @@ type polygon struct {
 	DaoContractAddress      string        `toml:"dao_contract_address"`
 	GasLimit                uint64        `toml:"gas_limit"`
 	UnlockIntervalMinute    time.Duration `toml:"unlock_interval_minute"`
-	IntervalDaoUnlockBlock  int64         `toml:"interval_dao_unlock_block"`
+	DaoUnlockIntervalBlock  int64         `toml:"dao_unlock_interval_block"`
 }
 
 type database struct {

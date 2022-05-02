@@ -333,16 +333,15 @@ func (a BillingByDeadline) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 
 func GetTransactions(walletId int64, txHash, fileName, orderBy string, isAscend bool, limit, offset int) ([]*Billing, *int, error) {
 	sql := "select\n" +
-		"a.id pay_id,a.tx_hash pay_tx_hash,a.amount pay_amount,e.amount unlock_amount,b.file_name,d.payload_cid,\n" +
-		"a.create_at pay_at,e.create_at unlock_at,a.deadline,f.name network_name,g.name token_name\n" +
-		"from transaction_pay a\n" +
+		"a.id pay_id,a.tx_hash_pay,a.amount_lock pay_amount,a.amount_unlock unlock_amount,b.file_name,d.payload_cid,\n" +
+		"a.pay_at,a.last_unlock_at unlock_at,a.deadline,e.name network_name,f.name token_name\n" +
+		"from transaction a\n" +
 		"left join source_file_upload b on a.source_file_upload_id=b.id\n" +
 		"left outer join car_file_source c on c.source_file_upload_id=a.source_file_upload_id\n" +
 		"left outer join car_file d on c.car_file_id=d.id\n" +
-		"left outer join transaction_unlock e on e.source_file_upload_id=a.source_file_upload_id\n" +
-		"left join network f on a.network_id=f.id\n" +
-		"left join token g on a.token_id=g.id\n" +
-		"where a.wallet_id_from=?"
+		"left join network e on a.network_id=e.id\n" +
+		"left join token f on a.token_id=f.id\n" +
+		"where a.wallet_id_pay=?"
 
 	params := []interface{}{}
 	params = append(params, walletId)

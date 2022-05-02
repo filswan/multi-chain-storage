@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"multi-chain-storage/common"
 	"multi-chain-storage/common/constants"
+	"multi-chain-storage/config"
 	"multi-chain-storage/models"
 	"runtime"
 
@@ -21,18 +22,14 @@ func GetHostInfo() *common.HostInfo {
 	return &hostInfo
 }
 
-func GetSystemParams() (map[string]string, error) {
-	systemConf, err := models.GetSystemParams()
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-
-	config := map[string]string{}
-
-	for _, conf := range systemConf {
-		config[conf.Name] = conf.Value
-	}
+func GetSystemParams() (map[string]interface{}, error) {
+	systemParams := map[string]interface{}{}
+	systemParams[constants.SYSTEM_PARAM_PAYMENT_CONTRACT_ADDRESS] = config.GetConfig().Polygon.PaymentContractAddress
+	systemParams[constants.SYSTEM_PARAM_PAYMENT_RECIPIENT_ADDRESS] = config.GetConfig().Polygon.PaymentRecipientAddress
+	systemParams[constants.SYSTEM_PARAM_MINT_CONTRACT_ADDRESS] = config.GetConfig().Polygon.MintContractAddress
+	systemParams[constants.SYSTEM_PARAM_GAS_LIMIT] = config.GetConfig().Polygon.GasLimit
+	systemParams[constants.SYSTEM_PARAM_LOCK_TIME] = config.GetConfig().Polygon.LockTime
+	systemParams[constants.SYSTEM_PARAM_PAY_MULTIPLY_FACTOR] = config.GetConfig().Polygon.PayMultiplyFactor
 
 	token, err := models.GetTokenByName(constants.TOKEN_USDC_NAME)
 	if err != nil {
@@ -46,7 +43,7 @@ func GetSystemParams() (map[string]string, error) {
 		return nil, err
 	}
 
-	config[constants.TOKEN_USDC_ADRESS] = token.Address
+	systemParams[constants.TOKEN_USDC_ADRESS] = token.Address
 
-	return config, nil
+	return systemParams, nil
 }

@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/filswan/go-swan-lib/logs"
 )
 
@@ -89,6 +90,17 @@ func VerifyDaoSigOnContract(tx_hash string) (bool, error) {
 	}
 }
 
+type RpcTransaction struct {
+	tx *types.Transaction
+	txExtraInfo
+}
+
+type txExtraInfo struct {
+	BlockNumber *string         `json:"blockNumber,omitempty"`
+	BlockHash   *common.Hash    `json:"blockHash,omitempty"`
+	From        *common.Address `json:"from,omitempty"`
+}
+
 func SaveDaoEventFromTxHash(txHash string, payload_cid string, recipent string, deal_id int64, verification bool) error {
 	ethClient, rpcClient, err := client.GetEthClient()
 	if err != nil {
@@ -97,7 +109,7 @@ func SaveDaoEventFromTxHash(txHash string, payload_cid string, recipent string, 
 	}
 
 	if txHash != "" && strings.HasPrefix(txHash, "0x") {
-		var rpcTransaction *models.RpcTransaction
+		var rpcTransaction *RpcTransaction
 		err = rpcClient.CallContext(context.Background(), &rpcTransaction, "eth_getTransactionByHash", common.HexToHash(txHash))
 		if err != nil {
 			logs.GetLogger().Error(err)

@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/filswan/go-swan-lib/logs"
+	"github.com/filswan/go-swan-lib/utils"
 	libutils "github.com/filswan/go-swan-lib/utils"
 	"github.com/shopspring/decimal"
 )
@@ -49,10 +50,11 @@ func GetSourceFileUploadsByCarFileId(carFileId int64) ([]*SourceFileUploadOut, e
 func GetSourceFileUploadsExpired() ([]*SourceFileUploadOut, error) {
 	sql := "select a.*,b.payload_cid \n" +
 		"from source_file_upload a, source_file b, transaction c\n" +
-		"where a.file_type=? and a.source_file_id=b.id and a.id=c.source_file_upload_id and c.deadline<? and c.status=?"
+		"where a.file_type=? and a.source_file_id=b.id and a.id=c.source_file_upload_id and c.deadline<? and a.status!=?"
 
+	currentUtcSecond := utils.GetCurrentUtcSecond()
 	var models []*SourceFileUploadOut
-	err := database.GetDB().Raw(sql).Scan(&models).Error
+	err := database.GetDB().Raw(sql, constants.SOURCE_FILE_TYPE_NORMAL, currentUtcSecond, constants.SOURCE_FILE_UPLOAD_STATUS_ACTIVE).Scan(&models).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
@@ -120,7 +122,7 @@ type SourceFileUploadsNeed2Car struct {
 
 func GetSourceFileUploadsNeed2Car() ([]*SourceFileUploadsNeed2Car, error) {
 	var sourceFileUploadsNeed2Car []*SourceFileUploadsNeed2Car
-	sql := "select a.id source_file_upload_id,b.resource_uri,b.file_size,a.create_at,c.amount locked_fee\n" +
+	sql := "select a.id source_file_upload_id,b.resource_uri,b.file_size,a.create_at,c.amount_lock locked_fee\n" +
 		"from source_file_upload a, source_file b, transaction c\n" +
 		"where a.file_type=? and a.status=? and a.source_file_id=b.id and a.id=c.source_file_upload_id"
 	err := database.GetDB().Raw(sql, constants.SOURCE_FILE_TYPE_NORMAL, constants.SOURCE_FILE_UPLOAD_STATUS_PAID).Scan(&sourceFileUploadsNeed2Car).Error

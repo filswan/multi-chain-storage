@@ -334,7 +334,7 @@ func (a BillingByDeadline) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 
 func GetTransactions(walletId int64, txHash, fileName, orderBy string, isAscend bool, limit, offset int) ([]*Billing, *int, error) {
 	sql := "select\n" +
-		"a.id pay_id,a.tx_hash_pay,a.amount_lock pay_amount,a.amount_unlock unlock_amount,b.file_name,d.payload_cid,\n" +
+		"a.id pay_id,a.tx_hash_pay,a.pay_amount,a.unlock_amount,b.file_name,d.payload_cid,\n" +
 		"a.pay_at,a.last_unlock_at unlock_at,a.deadline,e.name network_name,f.name token_name\n" +
 		"from transaction a\n" +
 		"left join source_file_upload b on a.source_file_upload_id=b.id\n" +

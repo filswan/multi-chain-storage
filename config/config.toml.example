@@ -48,7 +48,7 @@ refund_interval_second = 300
 [polygon]
 polygon_rpc_url = ""
 payment_contract_address = ""                # user pay from his/her wallet address to this address
-payment_receiver_address = ""
+payment_recipient_address = ""
 dao_contract_address = ""
 mint_contract_address = ""
 sushi_dex_address = ""

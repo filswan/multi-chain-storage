@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/filswan/go-swan-lib/logs"
-	"github.com/filswan/go-swan-lib/utils"
 	libutils "github.com/filswan/go-swan-lib/utils"
 	"github.com/shopspring/decimal"
 )
@@ -52,7 +51,7 @@ func GetSourceFileUploadsExpired() ([]*SourceFileUploadOut, error) {
 		"from source_file_upload a, source_file b, transaction c\n" +
 		"where a.file_type=? and a.source_file_id=b.id and a.id=c.source_file_upload_id and c.deadline<? and a.status!=?"
 
-	currentUtcSecond := utils.GetCurrentUtcSecond()
+	currentUtcSecond := libutils.GetCurrentUtcSecond()
 	var models []*SourceFileUploadOut
 	err := database.GetDB().Raw(sql, constants.SOURCE_FILE_TYPE_NORMAL, currentUtcSecond, constants.SOURCE_FILE_UPLOAD_STATUS_ACTIVE).Scan(&models).Error
 	if err != nil {

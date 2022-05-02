@@ -79,8 +79,8 @@ func GetLockPaymentInfo(sourceFileUploadId int64) (*LockPaymentInfo, error) {
 
 	lockPaymentInfo := &LockPaymentInfo{
 		WCid:         sourceFileUpload.Uuid + sourceFile.PayloadCid,
-		LockedFee:    transactionPay.AmountLock,
-		TxHash:       transactionPay.TxHashPay,
+		LockedFee:    transactionPay.PayAmount,
+		TxHash:       transactionPay.PayTxHash,
 		TokenAddress: token.Address,
 	}
 

@@ -275,12 +275,6 @@ func GetSourceFileUploadDeal(sourceFileUploadId int64, dealId int) (*SourceFileU
 		return nil, err
 	}
 
-	transactionUnlock, err := models.GetTransactionBySourceFileUploadId(sourceFileUploadId)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-
 	sourceFileUploadDeal := &flinkDealResult.Data.Data.Deal
 	sourceFileUploadDeal.IpfsUrl = sourceFile.IpfsUrl
 	sourceFileUploadDeal.FileName = sourceFileUpload.FileName
@@ -289,10 +283,10 @@ func GetSourceFileUploadDeal(sourceFileUploadId int64, dealId int) (*SourceFileU
 
 	if transactionPay != nil {
 		sourceFileUploadDeal.LockedAt = transactionPay.CreateAt
-		sourceFileUploadDeal.LockedFee = transactionPay.AmountLock
+		sourceFileUploadDeal.LockedFee = transactionPay.PayAmount
 	}
 
-	if transactionUnlock != nil {
+	if sourceFileUpload.Status == constants.SOURCE_FILE_UPLOAD_STATUS_UNLOCKED || sourceFileUpload.Status == constants.SOURCE_FILE_UPLOAD_STATUS_ACTIVE {
 		sourceFileUploadDeal.Unlocked = true
 	}
 

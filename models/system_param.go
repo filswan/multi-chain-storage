@@ -25,3 +25,18 @@ func GetSystemParams() ([]*SystemParam, error) {
 
 	return systemParams, err
 }
+
+func GetSystemParamByName(name string) (*SystemParam, error) {
+	var systemParams []*SystemParam
+	err := database.GetDB().Where("name=?", name).Find(&systemParams).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	if len(systemParams) > 0 {
+		return systemParams[0], nil
+	}
+
+	return nil, nil
+}

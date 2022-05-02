@@ -102,8 +102,14 @@ func CreateTransaction4Pay(sourceFileUploadId int64, txHash string) error {
 		return err
 	}
 
-	coin, err := GetTokenByName(constants.TOKEN_USDC_NAME)
+	token, err := GetTokenByName(constants.TOKEN_USDC_NAME)
 	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	if token == nil {
+		err := fmt.Errorf("token:%s not exists", constants.TOKEN_USDC_NAME)
 		logs.GetLogger().Error(err)
 		return err
 	}
@@ -114,11 +120,17 @@ func CreateTransaction4Pay(sourceFileUploadId int64, txHash string) error {
 		return err
 	}
 
+	if network == nil {
+		err := fmt.Errorf("network:%s not exists", constants.NETWORK_NAME_POLYGON)
+		logs.GetLogger().Error(err)
+		return err
+	}
+
 	currentUtcSecond := libutils.GetCurrentUtcSecond()
 	transaction := Transaction{
 		SourceFileUploadId: sourceFileUploadId,
 		NetworkId:          network.ID,
-		TokenId:            coin.ID,
+		TokenId:            token.ID,
 		WalletIdPay:        walletIdPay.ID,
 		WalletIdRecipient:  walletIdRecipient.ID,
 		WalletIdContract:   walletIdContract.ID,

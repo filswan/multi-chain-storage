@@ -168,7 +168,10 @@ func GetSourceFileUploads(walletAddress string, fileName, orderBy string, isAsce
 		}
 		srcFileUpload.OfflineDeals = offlineDeals
 
-		if srcFileUpload.SourceFileUploadStatus != constants.SOURCE_FILE_UPLOAD_STATUS_PENDING {
+		if srcFileUpload.Status != constants.SOURCE_FILE_UPLOAD_STATUS_PENDING &&
+			srcFileUpload.Status != constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDABLE &&
+			srcFileUpload.Status != constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDED &&
+			srcFileUpload.Status != constants.SOURCE_FILE_UPLOAD_STATUS_ACTIVE {
 			srcFileUpload.Status = constants.SOURCE_FILE_UPLOAD_STATUS_PROCESSING
 		}
 	}

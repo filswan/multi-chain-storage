@@ -39,15 +39,14 @@ type SourceFileUploadInfoWcid struct {
 	SourceFileUploadId int64  `json:"source_file_upload_id"`
 	WCID               string `json:"w_cid"`
 }
-type SourceFileUploadInfo struct {
-	WCid              string                      `json:"w_cid"`
-	LockedFee         string                      `json:"locked_fee"`
-	TxHash            string                      `json:"tx_hash"`
-	TokenAddress      string                      `json:"token_address"`
-	WCidInSameCarFile []*SourceFileUploadInfoWcid `json:"w_cid_in_same_car_file"`
+type LockPaymentInfo struct {
+	WCid         string `json:"w_cid"`
+	LockedFee    string `json:"locked_fee"`
+	TxHash       string `json:"tx_hash"`
+	TokenAddress string `json:"token_address"`
 }
 
-func GetSourceFileUploadInfo(sourceFileUploadId int64) (*SourceFileUploadInfo, error) {
+func GetLockPaymentInfo(sourceFileUploadId int64) (*LockPaymentInfo, error) {
 	sourceFileUpload, err := models.GetSourceFileUploadById(sourceFileUploadId)
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -78,39 +77,14 @@ func GetSourceFileUploadInfo(sourceFileUploadId int64) (*SourceFileUploadInfo, e
 		return nil, err
 	}
 
-	sourceFileUploadInfo := &SourceFileUploadInfo{
-		WCid:              sourceFileUpload.Uuid + sourceFile.PayloadCid,
-		LockedFee:         transactionPay.AmountLock,
-		TxHash:            transactionPay.TxHashPay,
-		TokenAddress:      token.Address,
-		WCidInSameCarFile: []*SourceFileUploadInfoWcid{},
+	lockPaymentInfo := &LockPaymentInfo{
+		WCid:         sourceFileUpload.Uuid + sourceFile.PayloadCid,
+		LockedFee:    transactionPay.AmountLock,
+		TxHash:       transactionPay.TxHashPay,
+		TokenAddress: token.Address,
 	}
 
-	carFileSource, err := models.GetCarFileSourceBySourceFileUploadId(sourceFileUploadId)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-
-	if carFileSource == nil {
-		return sourceFileUploadInfo, nil
-	}
-
-	sourceFileUploads, err := models.GetSourceFileUploadsByCarFileId(carFileSource.CarFileId)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-
-	for _, sourceFileUpload1 := range sourceFileUploads {
-		sourceFileUploadInfoWcid := &SourceFileUploadInfoWcid{
-			SourceFileUploadId: sourceFileUpload1.Id,
-			WCID:               sourceFileUpload1.Uuid + sourceFileUpload1.PayloadCid,
-		}
-		sourceFileUploadInfo.WCidInSameCarFile = append(sourceFileUploadInfo.WCidInSameCarFile, sourceFileUploadInfoWcid)
-	}
-
-	return sourceFileUploadInfo, nil
+	return lockPaymentInfo, nil
 }
 
 func WriteRefundAfterExpired(sourceFileUploadId int64, refundTxHash string, refundAmount decimal.Decimal) error {

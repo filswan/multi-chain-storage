@@ -101,7 +101,7 @@ type txExtraInfo struct {
 	From        *common.Address `json:"from,omitempty"`
 }
 
-func SaveDaoEventFromTxHash(txHash string, payload_cid string, recipent string, deal_id int64, verification bool) error {
+func SaveDaoEventFromTxHash(txHash string, recipent string, deal_id int64, verification bool) error {
 	ethClient, rpcClient, err := client.GetEthClient()
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -126,52 +126,34 @@ func SaveDaoEventFromTxHash(txHash string, payload_cid string, recipent string, 
 			logs.GetLogger().Error(err)
 			return err
 		}
-		eventDaoSignature, err := models.GetEventDaoSignatures(&models.EventDaoSignature{PayloadCid: payload_cid, TxHash: txHash})
+		eventDaoSignature, err := models.GetDaoSignaturesByDealIdTxHash(deal_id, txHash)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			return err
 		}
 
 		if eventDaoSignature == nil {
-			eventDaoSignature = &models.EventDaoSignature{}
+			eventDaoSignature = &models.DaoSignature{}
 		}
 
 		eventDaoSignature.TxHash = txHash
 		eventDaoSignature.Recipient = recipent
-		eventDaoSignature.PayloadCid = payload_cid
-		wfilCoinId, err := models.GetTokenByName(constants.TOKEN_USDC_NAME)
-		if err != nil {
-			logs.GetLogger().Error(err)
-		} else {
-			eventDaoSignature.CoinId = wfilCoinId.ID
-			eventDaoSignature.NetworkId = wfilCoinId.NetworkId
-		}
-		eventDaoSignature.DealId = deal_id
-		block, err := ethClient.BlockByHash(context.Background(), *rpcTransaction.BlockHash)
-		if err != nil {
-			logs.GetLogger().Error(err)
-		} else {
-			eventDaoSignature.BlockTime = strconv.FormatUint(block.Time(), 10)
-			eventDaoSignature.DaoPassTime = strconv.FormatUint(block.Time(), 10)
-		}
-		blockNumberStr := strings.Replace(*rpcTransaction.BlockNumber, "0x", "", -1)
-		blockNumberInt64, err := strconv.ParseUint(blockNumberStr, 16, 64)
+		network, err := models.GetNetworkByName(constants.NETWORK_NAME_POLYGON)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			return err
 		}
-		eventDaoSignature.BlockNo = blockNumberInt64
+
+		eventDaoSignature.NetworkId = network.ID
+
+		eventDaoSignature.DealId = deal_id
+
 		if transReceipt.Status == 1 {
 			eventDaoSignature.Status = true
 		} else {
 			eventDaoSignature.Status = false
 		}
 
-		if verification {
-			eventDaoSignature.SignatureUnlockStatus = constants.SIGNATURE_SUCCESS_VALUE
-		} else {
-			eventDaoSignature.SignatureUnlockStatus = constants.SIGNATURE_FAILED_VALUE
-		}
 		addrInfo, err := client.GetFromAndToAddressByTxHash(ethClient, transaction.ChainId(), common.HexToHash(txHash))
 		if err != nil {
 			logs.GetLogger().Error(err)

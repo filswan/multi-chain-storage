@@ -69,7 +69,7 @@ func RecordDealListThatHaveBeenSignedByDao(c *gin.Context) {
 			if err != nil {
 				logs.GetLogger().Error(err)
 			} else {
-				err = service.SaveDaoEventFromTxHash(v.TxHash1, v.PayloadCid, v.Recipent, deal_id, verification1)
+				err = service.SaveDaoEventFromTxHash(v.TxHash1, v.Recipent, deal_id, verification1)
 				if err != nil {
 					logs.GetLogger().Error(err)
 				}
@@ -84,7 +84,7 @@ func RecordDealListThatHaveBeenSignedByDao(c *gin.Context) {
 			if err != nil {
 				logs.GetLogger().Error(err)
 			} else {
-				err = service.SaveDaoEventFromTxHash(v.TxHash2, v.PayloadCid, v.Recipent, deal_id, verification2)
+				err = service.SaveDaoEventFromTxHash(v.TxHash2, v.Recipent, deal_id, verification2)
 				if err != nil {
 					logs.GetLogger().Error(err)
 				}
@@ -99,7 +99,7 @@ func RecordDealListThatHaveBeenSignedByDao(c *gin.Context) {
 			if err != nil {
 				logs.GetLogger().Error(err)
 			} else {
-				err = service.SaveDaoEventFromTxHash(v.TxHash3, v.PayloadCid, v.Recipent, deal_id, verification3)
+				err = service.SaveDaoEventFromTxHash(v.TxHash3, v.Recipent, deal_id, verification3)
 				if err != nil {
 					logs.GetLogger().Error(err)
 				}
@@ -109,7 +109,7 @@ func RecordDealListThatHaveBeenSignedByDao(c *gin.Context) {
 			}
 		}
 
-		events, err := models.GetEventDaoSignaturesByDealId(deal_id)
+		events, err := models.GetDaoSignaturesByDealId(deal_id)
 
 		if err != nil {
 			logs.GetLogger().Error(err)

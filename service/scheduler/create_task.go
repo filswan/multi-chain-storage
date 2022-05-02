@@ -44,13 +44,13 @@ func CreateTask() error {
 }
 
 func createTask() (*int, error) {
-	srcFiles, err := models.GetSourceFileUploadsNeed2Car()
+	srcFileUploads, err := models.GetSourceFileUploadsNeed2Car()
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
 	}
 
-	if len(srcFiles) == 0 {
+	if len(srcFileUploads) == 0 {
 		logs.GetLogger().Info("0 source file upload to be created to car file")
 		return nil, nil
 	}
@@ -77,18 +77,18 @@ func createTask() (*int, error) {
 	}
 
 	fileSizeMin := config.GetConfig().SwanTask.MinFileSize
-	var srcFiles2Merged []*models.SourceFileUploadsNeed2Car
-	for _, srcFile := range srcFiles {
-		srcFilepathTemp := filepath.Join(carSrcDir, filepath.Base(srcFile.ResourceUri))
+	var srcFiles2Merged []*models.SourceFileUploadNeed2Car
+	for _, srcFileUpload := range srcFileUploads {
+		srcFilepathTemp := filepath.Join(carSrcDir, filepath.Base(srcFileUpload.ResourceUri))
 
-		bytesCopied, err := libutils.CopyFile(srcFile.ResourceUri, srcFilepathTemp)
+		bytesCopied, err := libutils.CopyFile(srcFileUpload.ResourceUri, srcFilepathTemp)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			os.Remove(srcFilepathTemp)
 			continue
 		}
 
-		maxPriceTemp, err := getMaxPrice(srcFile.FileSize, srcFile.LockedFee, fileCoinPriceInUsdc)
+		maxPriceTemp, err := getMaxPrice(srcFileUpload.FileSize, srcFileUpload.PayAmount, fileCoinPriceInUsdc)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			os.Remove(srcFilepathTemp)
@@ -103,11 +103,11 @@ func createTask() (*int, error) {
 
 		totalSize = totalSize + bytesCopied
 
-		if srcFile.CreateAt < createdTimeMin {
-			createdTimeMin = srcFile.CreateAt
+		if srcFileUpload.CreateAt < createdTimeMin {
+			createdTimeMin = srcFileUpload.CreateAt
 		}
 
-		srcFiles2Merged = append(srcFiles2Merged, srcFile)
+		srcFiles2Merged = append(srcFiles2Merged, srcFileUpload)
 
 		if totalSize >= fileSizeMin {
 			logs.GetLogger().Info("total size is:", totalSize, ", ", len(srcFiles2Merged), " files to be created to car file")
@@ -253,7 +253,7 @@ func createTask4SrcFiles(srcDir, carDir string, maxPrice decimal.Decimal) (*libm
 	return fileDesc, nil
 }
 
-func saveCarInfo2DB(fileDesc *libmodel.FileDesc, srcFiles []*models.SourceFileUploadsNeed2Car, maxPrice decimal.Decimal) error {
+func saveCarInfo2DB(fileDesc *libmodel.FileDesc, srcFiles []*models.SourceFileUploadNeed2Car, maxPrice decimal.Decimal) error {
 	db := database.GetDBTransaction()
 	currentUtcSecond := libutils.GetCurrentUtcSecond()
 	dealFile := models.CarFile{

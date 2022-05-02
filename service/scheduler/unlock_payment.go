@@ -41,7 +41,7 @@ func UnlockPayment() error {
 		return err
 	}
 
-	mcsPaymentReceiverAddress := common.HexToAddress(config.GetConfig().Polygon.McsPaymentReceiverAddress)
+	paymentRecipientAddress := common.HexToAddress(config.GetConfig().Polygon.PaymentRecipientAddress)
 
 	filswanOracleSession, err := client.GetFilswanOracleSession(ethClient)
 	if err != nil {
@@ -54,7 +54,7 @@ func UnlockPayment() error {
 
 	unlockCnt := 0
 	for _, offlineDeal := range offlineDeals {
-		isUnlockable, err := checkUnlockable(ethClient, offlineDeal, filswanOracleSession, mcsPaymentReceiverAddress)
+		isUnlockable, err := checkUnlockable(ethClient, offlineDeal, filswanOracleSession, paymentRecipientAddress)
 		if err != nil {
 			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 			continue
@@ -77,7 +77,7 @@ func UnlockPayment() error {
 		}
 
 		unlockCnt = unlockCnt + 1
-		_, err = unlockDeal(offlineDeal, ethClient, swanPaymentTransactor, mcsPaymentReceiverAddress)
+		_, err = unlockDeal(offlineDeal, ethClient, swanPaymentTransactor, paymentRecipientAddress)
 		if err != nil {
 			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 			continue

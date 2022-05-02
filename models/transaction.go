@@ -62,10 +62,6 @@ func CreateTransaction4Pay(sourceFileUploadId int64, txHash string) error {
 		return err
 	}
 
-	if transactionOld != nil {
-		return nil
-	}
-
 	sourceFileUpload, err := GetSourceFileUploadById(sourceFileUploadId)
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -146,6 +142,10 @@ func CreateTransaction4Pay(sourceFileUploadId int64, txHash string) error {
 		Deadline:           lockPayment.Deadline,
 		CreateAt:           currentUtcSecond,
 		UpdateAt:           currentUtcSecond,
+	}
+
+	if transactionOld != nil {
+		transaction.ID = transactionOld.ID
 	}
 
 	db := database.GetDBTransaction()

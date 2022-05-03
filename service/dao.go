@@ -14,7 +14,6 @@ import (
 	"time"
 
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/filswan/go-swan-lib/logs"
 	"github.com/filswan/go-swan-lib/utils"
 )
@@ -91,17 +90,6 @@ func VerifyDaoSigOnContract(tx_hash string) (bool, error) {
 		logs.GetLogger().Error(err)
 		return false, err
 	}
-}
-
-type RpcTransaction struct {
-	tx *types.Transaction
-	txExtraInfo
-}
-
-type txExtraInfo struct {
-	BlockNumber *string         `json:"blockNumber,omitempty"`
-	BlockHash   *common.Hash    `json:"blockHash,omitempty"`
-	From        *common.Address `json:"from,omitempty"`
 }
 
 func SaveDaoEventFromTxHash(txHash string, recipent string, dealId int64, verification bool) error {

@@ -99,6 +99,7 @@
                             that.tokenId = await nftContract.methods.totalSupply().call()                            
                             console.log('totalSupply success', that.tokenId)
                             let mintInfoJson = {
+                                source_file_upload_id: that.mintRow.source_file_upload_id,
                                 payload_cid: that.mintRow.payload_cid,
                                 tx_hash: that.nftHash,
                                 token_id: that.tokenId,
@@ -164,8 +165,8 @@
                 that.ruleForm.name = that.mintRow.file_name
                 that.ruleForm.image = that.mintRow.ipfs_url
 
-                const hashRes = await that.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/billing/deal/lockpayment/info?payload_cid=${that.mintRow.payload_cid}&wallet_address=${that.metaAddress}`)
-                that.ruleForm.tx_hash = hashRes.data.tx_hash
+                const hashRes = await that.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/billing/deal/lockpayment/info?payload_cid=${that.mintRow.payload_cid}&wallet_address=${that.metaAddress}&source_file_upload_id=${that.mintRow.source_file_upload_id}`)
+                that.ruleForm.tx_hash = hashRes.data.pay_tx_hash
 
                 that.hashload = false
             },

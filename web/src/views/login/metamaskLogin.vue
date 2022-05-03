@@ -95,7 +95,7 @@
     max-width: 550px;
     padding: 3%;
     background: #fff;
-    border-radius: 3px;
+    border-radius: 0.2rem;
     .titleCont{
       font-weight: 600;
       font-size: 0.24rem;
@@ -129,7 +129,7 @@
         cursor: pointer;
         img{
           display: block;
-          height: 0.24rem;
+          height: 0.3rem;
           margin: 0 0.15rem 0 0;
           order: 1;
           @media screen and (max-width:600px){
@@ -138,7 +138,7 @@
         }
         span{
           order: 2;
-          font-size: 0.14rem;
+          font-size: 0.18rem;
           @media screen and (max-width:600px){
               font-size: 14px;
           }
@@ -152,12 +152,12 @@
       .el-button{
         display: block;
         width: 100%;
-        font-size: 0.14rem;
-        height: 0.4rem;
+        font-size: 0.22rem;
+        height: 0.5rem;
         padding: 0;
-        background: #5c3cd3;
+        background: linear-gradient(45deg,#4f8aff, #4b5eff);
         color: #fff;
-        border-radius: 0.08rem;
+        border-radius: 0.06rem;
         @media screen and (max-width:600px){
             font-size: 14px;
         }

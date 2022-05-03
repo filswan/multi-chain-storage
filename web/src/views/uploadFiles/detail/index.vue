@@ -2,7 +2,7 @@
     <div id="dealManagement">
         <div class="backTo" @click="back">
             <span class="el-icon-back"></span>
-            <span style="font-size:0.18rem;margin-left:0.05rem">{{$t('deal.backto')}}</span>
+            <span style="font-size:0.22rem;margin-left:0.05rem">{{$t('deal.backto')}}</span>
         </div>
         <div class="detailStyle">
             <el-tabs v-model="activeName" :tab-position="tabPosition" type="card" @tab-click="handleClick">
@@ -49,47 +49,47 @@
                 <div class="upload">
                     <el-row>
                         <el-col :span="8">{{$t('uploadFile.file_name')}}:</el-col>
-                        <el-col :span="16">{{dealCont.deal.file_name | NumFormat}}</el-col>
+                        <el-col :span="16">{{dealCont.source_file_upload_deal.file_name | NumFormat}}</el-col>
                         <el-col :span="8">{{$t('uploadFile.detail_IPFSDownload')}}:</el-col>
                         <el-col :span="16">
-                            <a :href="dealCont.deal.ipfs_url" target="_blank" v-if="dealCont.deal.ipfs_url" class="linkTo">{{dealCont.deal.ipfs_url}}</a>
+                            <a :href="dealCont.source_file_upload_deal.ipfs_url" target="_blank" v-if="dealCont.source_file_upload_deal.ipfs_url" class="linkTo">{{dealCont.source_file_upload_deal.ipfs_url}}</a>
                             <span v-else>-</span>
                         </el-col>
                         <el-col :span="8">{{$t('uploadFile.detail_Network')}}:</el-col>
-                        <el-col :span="16">{{dealCont.deal.network_name | NumFormat}}</el-col>
+                        <el-col :span="16">{{dealCont.source_file_upload_deal.network_name | NumFormat}}</el-col>
                         <el-col :span="8">{{$t('uploadFile.detail_Locked_funds')}}:</el-col>
                         <el-col :span="16">{{dealCont.found.locked_fee | NumFormatPrice}} USDC</el-col>
                         <el-col :span="8">{{$t('uploadFile.w3ss_id')}}:</el-col>
                         <el-col :span="16" v-if="dealId == 0">-</el-col>
-                        <el-col :span="16" v-else>{{dealCont.deal.provider | NumFormat}}</el-col>
+                        <el-col :span="16" v-else>{{dealCont.source_file_upload_deal.provider | NumFormat}}</el-col>
                         <el-col :span="8">{{$t('uploadFile.detail_Storage_Price')}}:</el-col>
                         <el-col :span="16" v-if="dealId == 0">-</el-col>
-                        <el-col :span="16" v-else>{{dealCont.deal.storage_price | NumFormatPrice}} FIL</el-col>
+                        <el-col :span="16" v-else>{{dealCont.source_file_upload_deal.storage_price | NumFormatPrice}} FIL</el-col>
                         <el-col :span="8">{{$t('billing.PAYLOADCID')}}:</el-col>
                         <el-col :span="16">{{dealCont.found.payload_cid | NumFormat}}</el-col>
                         <el-col :span="8">{{$t('uploadFile.detail_ProposalCID')}}:</el-col>
                         <el-col :span="16" v-if="dealId == 0">-</el-col>
-                        <el-col :span="16" v-else>{{dealCont.deal.deal_cid | NumFormat}}</el-col>
+                        <el-col :span="16" v-else>{{dealCont.source_file_upload_deal.deal_cid | NumFormat}}</el-col>
                         <el-col :span="8">{{$t('uploadFile.create_time')}}:</el-col>
                         <el-col :span="16" v-if="dealId == 0">-</el-col>
-                        <el-col :span="16" v-else>{{dealCont.deal.created_at | NumFormat}}</el-col>
+                        <el-col :span="16" v-else>{{dealCont.source_file_upload_deal.created_at | NumFormat}}</el-col>
                         <el-col :span="8">{{$t('uploadFile.detail_MessageCID')}}:</el-col>
-                        <el-col :span="16">{{dealCont.deal.message_cid | NumFormat}}</el-col>
+                        <el-col :span="16">{{dealCont.source_file_upload_deal.message_cid | NumFormat}}</el-col>
                         <el-col :span="8">{{$t('uploadFile.detail_PieceCID')}}:</el-col>
                         <el-col :span="16" v-if="dealId == 0">-</el-col>
-                        <el-col :span="16" v-else>{{dealCont.deal.piece_cid | NumFormat}}</el-col>
+                        <el-col :span="16" v-else>{{dealCont.source_file_upload_deal.piece_cid | NumFormat}}</el-col>
                         <el-col :span="8">{{$t('uploadFile.detail_Client_Address')}}:</el-col>
                         <el-col :span="16" v-if="dealId == 0">-</el-col>
-                        <el-col :span="16" v-else>{{dealCont.deal.client | NumFormat}}</el-col>
+                        <el-col :span="16" v-else>{{dealCont.source_file_upload_deal.client | NumFormat}}</el-col>
                         <el-col :span="8">{{$t('uploadFile.detail_Verified_Deal')}}:</el-col>
-                        <el-col :span="16">{{dealCont.deal.verified_deal?'True':'False'}}</el-col>
+                        <el-col :span="16">{{dealCont.source_file_upload_deal.verified_deal?'True':'False'}}</el-col>
                         <el-col :span="8">{{$t('uploadFile.detail_Storage_Price_Per_Epoch')}}:</el-col>
                         <el-col :span="16" v-if="dealId == 0">-</el-col>
-                        <el-col :span="16" v-else>{{dealCont.deal.storage_price_per_epoch | NumFormatPrice}} FIL</el-col>
+                        <el-col :span="16" v-else>{{dealCont.source_file_upload_deal.storage_price_per_epoch | NumFormatPrice}} FIL</el-col>
                         <el-col :span="8">{{$t('uploadFile.detail_Signature_Type')}}:</el-col>
-                        <el-col :span="16">{{dealCont.deal.signature_type | NumFormat}}</el-col>
+                        <el-col :span="16">{{dealCont.source_file_upload_deal.signature_type | NumFormat}}</el-col>
                         <el-col :span="8">{{$t('my_profile.miner_add_Signature')}}:</el-col>
-                        <el-col :span="16">{{dealCont.deal.signature | NumFormat}}</el-col>
+                        <el-col :span="16">{{dealCont.source_file_upload_deal.signature | NumFormat}}</el-col>
                         <el-col :span="24">
                             <div class="lotupTitle">
                                 {{$t('uploadFile.detail_Retrieval_Filecoin')}}
@@ -99,7 +99,7 @@
                                 
                                 <img class="img" src="@/assets/images/copy.png" @click="copyTextToClipboard(copy_filename)" alt="">
                             </div>
-                            <div class="lotupContent" :class="{'color': !dealCont.deal.provider && !dealCont.found.payload_cid}" @click="copyTextToClipboard(copy_filename)">{{copy_filename}}</div>
+                            <div class="lotupContent" :class="{'color': !dealCont.source_file_upload_deal.provider && !dealCont.found.payload_cid}" @click="copyTextToClipboard(copy_filename)">{{copy_filename}}</div>
                         </el-col>
                     </el-row>
                         
@@ -181,8 +181,8 @@
                 <el-timeline v-if="dealLogsData.length>0">
                     <el-timeline-item v-for="(item, n) in dealLogsData" :key="n" :timestamp="item.create_at" placement="top">
                         <el-card>
-                            <h4>{{item.status}}</h4>
-                            <p>{{item.message}}</p>
+                            <h4>{{item.on_chain_status}}</h4>
+                            <p>{{item.on_chain_message}}</p>
                         </el-card>
                     </el-timeline-item>
                 </el-timeline>
@@ -210,8 +210,8 @@ export default {
             bodyWidth: document.documentElement.clientWidth<1024?true:false,
             dealId: '',
             dealCont: {
-                deal: {},
-                found: {}
+                found: {},
+                source_file_upload_deal: {}
             },
             daoCont: [],
             copy_filename: '',
@@ -229,7 +229,7 @@ export default {
     computed: {},
     watch: {
         $route: function (to, from) {
-            this.dealId = to.params.id
+            this.dealId = to.params.deal_id
             this.getData()
         },
     },
@@ -239,8 +239,10 @@ export default {
             this.$router.push({
                 name: 'my_files_detail', 
                 params: {
-                    id: this.offline_deals_data[tab.index].deal_id, 
-                    cid: this.$route.params.cid
+                    id: this.offline_deals_data[tab.index].id, 
+                    deal_id: this.offline_deals_data[tab.index].deal_id,
+                    cid: this.$route.params.cid,
+                    source_file_upload_id: this.$route.params.source_file_upload_id
                 }
             })
         },
@@ -290,6 +292,7 @@ export default {
             _this.loading = true
 
             let dataCid = {
+                source_file_upload_id: _this.$route.params.source_file_upload_id,
                 payload_cid: _this.$route.params.cid,
                 wallet_address: _this.$store.getters.metaAddress
             }
@@ -316,15 +319,15 @@ export default {
                     }
                     
                     _this.dealCont = json.data
-                    _this.dealCont.deal.created_at = 
-                        _this.dealCont.deal.created_at && _this.dealCont.deal.created_at != 0? 
-                            moment(new Date(parseInt(String(_this.dealCont.deal.created_at).length<13?_this.dealCont.deal.created_at*1000:_this.dealCont.deal.created_at))).format(
+                    _this.dealCont.source_file_upload_deal.created_at = 
+                        _this.dealCont.source_file_upload_deal.created_at && _this.dealCont.source_file_upload_deal.created_at != 0? 
+                            moment(new Date(parseInt(String(_this.dealCont.source_file_upload_deal.created_at).length<13?_this.dealCont.source_file_upload_deal.created_at*1000:_this.dealCont.source_file_upload_deal.created_at))).format(
                                 "YYYY-MM-DD HH:mm:ss"
                             )
                             : "-";
 
-                    if(json.data.deal.provider && json.data.found.payload_cid && json.data.deal.deal_id != 0){
-                        _this.copy_filename = 'lotus client retrieve --miner '+json.data.deal.provider+' '+json.data.found.payload_cid+' ~./output-file';
+                    if(json.data.source_file_upload_deal.provider && json.data.found.payload_cid && json.data.source_file_upload_deal.deal_id != 0){
+                        _this.copy_filename = 'lotus client retrieve --miner '+json.data.source_file_upload_deal.provider+' '+json.data.found.payload_cid+' ~./output-file';
                     }else{
                         _this.copy_filename = localStorage.getItem('languageMcs') == 'cn'?"还不可用。":"It's not available yet.";
                     }
@@ -348,7 +351,7 @@ export default {
             let obj = {
                 wallet_address: _this.$store.getters.metaAddress
             }
-            axios.get(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/storage/deal/log/${_this.dealCont.deal.deal_cid}?${QS.stringify(obj)}`, {headers: {
+            axios.get(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/storage/deal/log/${_this.$route.params.id}?${QS.stringify(obj)}`, {headers: {
             // axios.get(`./static/deal_logs.json`, {headers: {
                     // 'Authorization':"Bearer "
             }}).then((response) => {
@@ -356,12 +359,12 @@ export default {
                 _this.loadlogs = false
                 if (json.status == 'success') {
                     if(!json.data) return false
-                    if(json.data.offline_deal_logs){
-                        _this.dealLogsData = json.data.offline_deal_logs
+                    if(json.data.offline_deal_log){
+                        _this.dealLogsData = json.data.offline_deal_log
                         _this.dealLogsData.map(item => {
                             item.create_at =  
                                 item.create_at? 
-                                    moment(new Date(parseInt(item.create_at))).format(
+                                    moment(new Date(parseInt(item.create_at*1000))).format(
                                         "YYYY-MM-DD HH:mm:ss"
                                     )
                                     : "-";
@@ -379,7 +382,7 @@ export default {
     },
     mounted() {
         let _this = this
-        _this.dealId = _this.$route.params.id
+        _this.dealId = _this.$route.params.deal_id
         if(localStorage.getItem('offlineDeals')) _this.offline_deals_data = JSON.parse(localStorage.getItem('offlineDeals'))
         _this.getData()
         document.getElementById("content-box").scrollTop = 0;
@@ -508,7 +511,7 @@ export default {
 
 }
 #dealManagement{
-    padding: 0.25rem 0.2rem 0.2rem;
+    padding: 0.3rem;
     .backTo{
         display: flex;
         align-items: center;
@@ -529,7 +532,7 @@ export default {
                 float: none;
             }
             .el-tabs__header{
-                margin: 0.34rem 1px 0 0;
+                margin: 0.44rem 1px 0 0;
                 background: transparent;
                 @media screen and (max-width: 1024px) {
                     margin: 0;
@@ -610,7 +613,7 @@ export default {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        font-size: 0.16rem;
+        font-size: 0.22rem;
         font-weight: bold;
         line-height: 2;
         @media screen and (max-width:600px){
@@ -642,7 +645,7 @@ export default {
                 align-items: center;
                 padding-left: 5px;
                 color: red;
-                font-size: 0.145rem;
+                font-size: 0.18rem;
                 @media screen and (max-width:600px){
                     font-size: 14px;
                 }
@@ -661,8 +664,8 @@ export default {
                 font-size: 13px;
                 font-weight: normal;
                 img{
-                    width: 0.16rem;
-                    height: 0.16rem;
+                    width: 0.2rem;
+                    height: 0.2rem;
                     margin: 0 0 0 5px;
                     cursor: pointer;
                     @media screen and (max-width:600px){
@@ -674,7 +677,8 @@ export default {
         }
         .el-button {
             padding: 0.06rem 0.1rem;
-            font-size: 14px;
+            font-size: 0.2rem;
+            font-family: inherit;
             border-radius: 0.07rem;
             @media screen and (max-width:600px){
                 margin: 0 0 5px;
@@ -692,8 +696,8 @@ export default {
             max-width: 800px;
             padding: 0 0 0.15rem;
             .el-col{
-                padding: 0.05rem 0;
-                font-size: 0.1375rem;
+                padding: 0.1rem 0;
+                font-size: 0.18rem;
                 font-weight: 600;
                 line-height: 1.3;
                 color: #333;
@@ -714,8 +718,8 @@ export default {
                             color: inherit;
                             
                             img { 
-                                width: 0.16rem;
-                                height: 0.16rem;
+                                width: 0.2rem;
+                                height: 0.2rem;
                                 margin: 0 0 0 3px;
                                 cursor: pointer;
                                 @media screen and (max-width:600px){
@@ -763,7 +767,7 @@ export default {
             padding: 0.1rem 0;
             line-height: 1.5;
             text-align: center;
-            font-size: 0.145rem;
+            font-size: 0.18rem;
             font-weight: 600;
             white-space: normal;
             color: #333;
@@ -774,8 +778,8 @@ export default {
                 font-size: 16px;
             }
             img{
-                width: 0.16rem;
-                height: 0.16rem;
+                width: 0.2rem;
+                height: 0.2rem;
                 margin: 0 0 0 5px;
                 cursor: pointer;
                 @media screen and (max-width:600px){

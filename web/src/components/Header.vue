@@ -1,13 +1,11 @@
 <template>
     <div class="header" :class="{'content-collapse': collapseLocal}">
         <div class="header_arera">
-            <div class="header_left">
-                <div v-if="!bodyWidth" class="createTask">
-                    {{headertitle}}
-                </div>
-                <img v-else src="@/assets/images/MCS_logo.png" alt="">
-            </div>
             <div class="header-right">
+                <div class="lang_style">
+                    <span v-if="languageMcs === 'en'" @click="handleSetLanguage('cn')">EN</span>
+                    <span v-else @click="handleSetLanguage('en')">中</span>
+                </div>
                 <div :class="{'online': addrChild, 'feh-metamask': 1==1}">
                     <div v-if="!addrChild" class="logged_in">
                         <el-tooltip class="item" effect="dark" :content="$t('fs3Login.toptip_03')" placement="bottom">
@@ -17,44 +15,14 @@
                     </div>
                     
                     <div v-else class="logged_in">
-                        <span class="text textTrue">{{metaNetworkInfo.name}}</span>
+                        <!-- <span class="text textTrue">{{metaNetworkInfo.name}}</span> -->
                         <div class="info">
                             <h5>{{priceAccound}} {{ metaNetworkInfo.unit}}</h5>
-                            <h4 @click="wrongVisible=true">{{addrChild | hiddAddress}} <i class="el-icon-user-solid"></i></h4>
+                            <h4 @click="wrongVisible=true">{{addrChild | hiddAddress}}</h4>
                         </div>
                         <el-button v-if="!bodyWidth" class="text textTrue" @click="signOutFun">{{$t('fs3.Disconnect')}}</el-button>
                     </div>
                 </div>
-
-                <!-- 国际化 -->
-                <el-dropdown
-                    trigger="click"
-                    class="language leftBoth"
-                    @command="handleSetLanguage" v-if="!bodyWidth"
-                >
-                    <div class="background">
-                    <span v-if="languageMcs === 'cn'" style="cursor: pointer;">CN <i class="el-icon-arrow-down"></i></span>
-                    <span v-if="languageMcs === 'en'" style="cursor: pointer;">EN <i class="el-icon-arrow-down"></i></span>
-                    </div>
-                    <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item command="cn" :disabled="languageMcs === 'cn'">
-                        <img src="../assets/images/cn.jpg" class="elImg" />简体中文
-                    </el-dropdown-item>
-                    <el-dropdown-item command="en" :disabled="languageMcs === 'en'">
-                        <img src="../assets/images/en.jpg" class="elImg" />English
-                    </el-dropdown-item>
-                    </el-dropdown-menu>
-                </el-dropdown>
-                <!-- <div class="sighChild" v-if="!email">
-                    <span @click="pageJump(1)">
-                        {{$t('navbar.log_in')}}
-                    </span>
-                    /
-                    <span @click="pageJump(2)">
-                        {{$t('navbar.sign_up')}}
-                    </span>
-                </div> -->
-                <!-- <a href="javascript:;" @click="logout" class="sighChild" v-if="email && !bodyWidth">{{$t('navbar.logout')}}</a> -->
                 <!-- mobile显示 -->
                 <div class="mobileShow">
                     <div class="collapse-btn-cont" @click="collapseChage">
@@ -481,13 +449,23 @@ export default {
             })
             .then((json) => {
                 if(json.data.status == 'success'){
+                    // _this.$root.LOCK_TIME = json.data.data.LOCK_TIME
+                    // _this.$root.PAY_GAS_LIMIT = json.data.data.PAY_GAS_LIMIT
+                    // _this.$root.PAY_WITH_MULTIPLY_FACTOR = json.data.data.PAY_WITH_MULTIPLY_FACTOR
+                    // _this.$root.RECIPIENT = json.data.data.RECIPIENT
+                    // _this.$root.SWAN_PAYMENT_CONTRACT_ADDRESS = json.data.data.SWAN_PAYMENT_CONTRACT_ADDRESS
+                    // _this.$root.USDC_ADDRESS = json.data.data.USDC_ADDRESS
+                    // _this.$root.MINT_CONTRACT = json.data.data.MINT_CONTRACT
+
+
+                    
                     _this.$root.LOCK_TIME = json.data.data.LOCK_TIME
-                    _this.$root.PAY_GAS_LIMIT = json.data.data.PAY_GAS_LIMIT
-                    _this.$root.PAY_WITH_MULTIPLY_FACTOR = json.data.data.PAY_WITH_MULTIPLY_FACTOR
-                    _this.$root.RECIPIENT = json.data.data.RECIPIENT
-                    _this.$root.SWAN_PAYMENT_CONTRACT_ADDRESS = json.data.data.SWAN_PAYMENT_CONTRACT_ADDRESS
+                    _this.$root.PAY_GAS_LIMIT = json.data.data.GAS_LIMIT
+                    _this.$root.PAY_WITH_MULTIPLY_FACTOR = json.data.data.PAY_MULTIPLY_FACTOR
+                    _this.$root.RECIPIENT = json.data.data.PAYMENT_RECIPIENT_ADDRESS
+                    _this.$root.SWAN_PAYMENT_CONTRACT_ADDRESS = json.data.data.PAYMENT_CONTRACT_ADDRESS
                     _this.$root.USDC_ADDRESS = json.data.data.USDC_ADDRESS
-                    _this.$root.MINT_CONTRACT = json.data.data.MINT_CONTRACT
+                    _this.$root.MINT_CONTRACT = json.data.data.MINT_CONTRACT_ADDRESS
                 }
             }).catch(error => {
                 console.log(error)
@@ -660,9 +638,9 @@ export default {
     position: absolute;
     top: 0;
     right: 0;
-    left: 2.37rem;
+    left: 3.33rem;
     box-sizing: border-box;
-    height: 0.86rem;
+    height: 1.1rem;
     font-size: 0.22rem;
     color: #fff;
     background-color: #fff;
@@ -826,14 +804,11 @@ export default {
 .header_arera{
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    // width: calc(100% - 3.87rem);
-    height: 0.42rem;
-    padding: 0 0.2rem;
-    margin: 0.35rem 0.55rem 0 0.48rem;
-    border-bottom: 1px solid #e6e6e6;
+    justify-content: flex-end;
+    height: 100%;
+    padding: 0;
+    margin: 0 0.6rem;
     @media screen and (max-width: 1260px) {
-        margin: 0.35rem 0.15rem 0 0.18rem;
     }
 }
 .header_arera_hidd{
@@ -963,38 +938,69 @@ export default {
     align-items: center;
     font-size: 0.1372rem;
     color: #959595;
+    .lang_style{    
+        width: 0.26rem;
+        margin: 0 0.4rem 0 0;
+        line-height: 0.26rem;
+        font-size: 0.14rem;
+        font-weight: 500;
+        color: #000;
+        border: 2px solid;
+        border-radius: 6px;
+        text-align: center;
+        @media screen and (min-width:1800px) {
+            font-size: 16px;
+        }
+        @media screen and (max-width:999px) {
+            font-size: 13px;
+        }
+        @media screen and (max-width:441px) {
+            width: 25px;
+            margin: 0;
+            line-height: 25px;
+        }
+        span{
+            cursor: pointer;
+            color: inherit;
+            &:hover{
+                color: #4b5eff;
+            }
+        }
+    }
     .feh-metamask{
         display: flex;
         align-items: center;
         position: relative;
         width: auto;
-        height: 30px;
-        margin: 0 10px 0 0;
+        padding: 0.15rem 0.3rem;
+        margin: 0;    
         cursor: pointer;
+        border-radius: 0.14rem;
+        background: linear-gradient(45deg,#4f8aff, #4b5eff);
         @media screen and (max-width:999px) {
             margin: 0;
         }
         img{
             display: block;
             width: auto;
-            height: 30px;
+            height: 0.3rem;
             cursor: pointer;
-            margin: 0 5px 0 0;
+            margin: 0 0.1rem 0 0;
         }
-        &:before{
-            position: absolute;
-            left: 30px;
-            top: -4px;
-            content: "";
-            width: 5px;
-            height: 5px;
-            border-radius: 100%;
-            background: #d7d6d6;
-        }
+        // &:before{
+        //     position: absolute;
+        //     left: 30px;
+        //     top: -4px;
+        //     content: "";
+        //     width: 5px;
+        //     height: 5px;
+        //     border-radius: 100%;
+        //     background: #d7d6d6;
+        // }
         .logged_in{
             display: flex;
             align-items: center;
-            font-size: 14px;
+            font-size: 0.22rem;
             color: #333;
             h3, h4, h5{
                 font-size: inherit;
@@ -1004,27 +1010,30 @@ export default {
                 font-size: inherit;
             }
             .text, .el-button{
-                padding: 0.05rem 0.1rem;
+                padding: 0;
                 font-size: inherit;
-                background: #f56c6c;
                 color: #fff;
-                border-radius: 0.08rem;
-                line-height: 1.5;
-                cursor: text;
+                line-height: 1.36;
+                cursor: pointer;
                 @media screen and (max-width:600px) {
                     font-size: 12px;
                 }
             }
             .textTrue{
-                background: #4326ab;
+                // background: #4326ab;
+                // display: none;
             }
             .el-button{
-                background: #c9f7f5;
-                color: #13c1b8;
+                padding: 0.08rem 0.3rem;
+                margin: 0 0 0 0.2rem;
+                line-height: 2;
+                color: #fff;
                 cursor: pointer;
                 border: 0;
                 font-weight: normal;
                 font-family: inherit;
+                background: linear-gradient(45deg,#4f8aff, #4b5eff);
+                border-radius: 0.14rem;
                 &:hover{
                     opacity: .9;
                 }
@@ -1032,27 +1041,27 @@ export default {
             .info{
                 display: flex;
                 align-items: center;
-                padding: 2px 3px 2px 8px;
-                margin: 0 8px;
-                border-radius: 0.08rem;
-                background: rgba(67, 38, 171, 0.85);
+                padding: 0.08rem 0.1rem;
+                margin: 0;
                 line-height: 1.5;
                 color: #fff;
                 font-size: inherit;
                 cursor: text;
+                border-radius: 0.14rem;
+                background: linear-gradient(45deg,#4f8aff, #4b5eff);
                 h4{
-                    padding: 0 5px 0 8px;
-                    margin-left: 8px;
-                    background: #4326ab;
+                    padding: 0 0.17rem 0 0.1rem;
+                    margin-left: 0.1rem;
+                    background: #2d43e7;
                     line-height: 2;
-                    border-radius: 0.05rem;
+                    border-radius: 0.14rem;
                     cursor: pointer;
                     @media screen and (max-width:600px) {
                         margin: 0;
                     }
-                }
-                &:hover{
-                    background: rgba(67, 38, 171, 0.9);
+                    &:hover{
+                        opacity: .9;
+                    }
                 }
                 @media screen and (max-width:600px) {
                     font-size: 12px;
@@ -1063,6 +1072,10 @@ export default {
         }
     }
     .online{
+        // padding: 0.08rem 0.1rem;
+        padding: 0;
+        border-radius: 0;
+        background: transparent;
         &:before{
             // background: #0fce7c;
             display: none;

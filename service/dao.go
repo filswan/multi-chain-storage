@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"multi-chain-storage/common/constants"
 	"multi-chain-storage/config"
@@ -68,31 +67,7 @@ func GetShoulBeSignDealListFromDB() ([]*DealForDaoSignResult, error) {
 	return dealForDaoSignResultList, nil
 }
 
-func VerifyDaoSigOnContract(tx_hash string) (bool, error) {
-	client, _, err := client.GetEthClient()
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return false, err
-	}
-	if tx_hash != "" && strings.HasPrefix(tx_hash, "0x") {
-		transaction, err := client.TransactionReceipt(context.Background(), common.HexToHash(tx_hash))
-		if err != nil {
-			logs.GetLogger().Error(err)
-			return false, err
-		}
-		if transaction.Status == 1 {
-			return true, nil
-		} else {
-			return false, nil
-		}
-	} else {
-		err := errors.New("invalid transaction hash:" + tx_hash)
-		logs.GetLogger().Error(err)
-		return false, err
-	}
-}
-
-func SaveDaoEventFromTxHash(txHash string, recipent string, dealId int64, verification bool) error {
+func WriteDaoSignature(txHash string, recipent string, dealId int64) error {
 	ethClient, _, err := client.GetEthClient()
 	if err != nil {
 		logs.GetLogger().Error(err)

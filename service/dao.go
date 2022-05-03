@@ -121,7 +121,20 @@ func WriteDaoSignature(txHash string, recipent string, dealId int64) error {
 		logs.GetLogger().Error(err)
 		return err
 	}
-	daoSignature, err := models.GetDaoSignaturesByDealIdTxHash(dealId, txHash)
+
+	offlineDeal, err := models.GetOfflineDealByDealId(dealId)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	if offlineDeal == nil {
+		err := fmt.Errorf("offline deal with deal id: %d not exists", dealId)
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	daoSignature, err := models.GetDaoSignaturesByOfflineDealIdTxHash(offlineDeal.Id, txHash)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
@@ -135,7 +148,7 @@ func WriteDaoSignature(txHash string, recipent string, dealId int64) error {
 	}
 
 	daoSignature.NetworkId = network.ID
-	daoSignature.DealId = dealId
+	daoSignature.OfflineDealId = offlineDeal.Id
 	if transReceipt.Status == 1 {
 		daoSignature.Status = constants.DAO_SIGNATURE_STATUS_SUCCESS
 	} else {

@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"multi-chain-storage/common/constants"
 	"multi-chain-storage/database"
 	"strings"
@@ -80,6 +81,28 @@ func GetOfflineDealsByCarFileId(carFileId int64) ([]*OfflineDealOut, error) {
 	}
 
 	return offlineDeals, nil
+}
+
+func GetOfflineDealByDealId(dealId int64) (*OfflineDeal, error) {
+	if dealId == 0 {
+		err := fmt.Errorf("deal id must be greater than 0")
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	var offlineDeals []*OfflineDeal
+	err := database.GetDB().Where("deal_id=?", dealId).Find(&offlineDeals).Error
+
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	if len(offlineDeals) > 0 {
+		return offlineDeals[0], nil
+	}
+
+	return nil, nil
 }
 
 func UpdateOfflineDealUnlockInfo(id int64, status string, txHashUnlock string, messages ...string) error {

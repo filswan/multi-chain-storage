@@ -775,7 +775,7 @@ export default {
                       const lockPaymentTime = await new Date().getTime();
                       const lockParam = {
                           "tx_hash": txHash,
-                          "source_file_upload_id":resData.id
+                          "source_file_upload_id":resData.source_file_upload_id
                       }
                       _this.sendPostRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/billing/deal/lockpayment`, lockParam)
                     }else{

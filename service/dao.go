@@ -21,7 +21,7 @@ type Deal2BeSigned struct {
 	WCids               []string `json:"w_cid"`
 }
 
-func GetDeal2BeSigned(signerWalletAddress string) ([]*Deal2BeSigned, error) {
+func GetDeals2BeSigned(signerWalletAddress string) ([]*Deal2BeSigned, error) {
 	signerWallet, err := models.GetWalletByAddress(signerWalletAddress, constants.WALLET_TYPE_META_MASK)
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -34,10 +34,33 @@ func GetDeal2BeSigned(signerWalletAddress string) ([]*Deal2BeSigned, error) {
 		return nil, err
 	}
 
-	return dealForDaoSignResultList, nil
+	deals2BeSigned := []*Deal2BeSigned{}
+
+	for _, offlineDeal := range offlineDeals {
+		deal2BeSigned := &Deal2BeSigned{
+			DealId: *offlineDeal.DealId,
+		}
+
+		sourceFileUploads, err := models.GetSourceFileUploadsByCarFileId(offlineDeal.CarFileId)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return nil, err
+		}
+
+		wCids := []string{}
+
+		for _, sourceFileUpload := range sourceFileUploads {
+			wCids = append(wCids, sourceFileUpload.Uuid+sourceFileUpload.PayloadCid)
+		}
+		deal2BeSigned.WCids = wCids
+
+		deals2BeSigned = append(deals2BeSigned, deal2BeSigned)
+	}
+
+	return deals2BeSigned, nil
 }
 
-func WriteDaoSignature(txHash string, recipent string, dealId int64) error {
+func WriteDaoSignature(txHash string, signerWalletAddress string, dealId int64) error {
 	ethClient, _, err := client.GetEthClient()
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -74,7 +97,7 @@ func WriteDaoSignature(txHash string, recipent string, dealId int64) error {
 		return err
 	}
 
-	walletRecipient, err := models.GetWalletByAddress(recipent, constants.WALLET_TYPE_META_MASK)
+	walletSigner, err := models.GetWalletByAddress(signerWalletAddress, constants.WALLET_TYPE_META_MASK)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
@@ -125,8 +148,8 @@ func WriteDaoSignature(txHash string, recipent string, dealId int64) error {
 		daoSignature.Status = constants.DAO_SIGNATURE_STATUS_FAIL
 	}
 	daoSignature.TxHash = txHash
-	daoSignature.RecipientId = walletRecipient.ID
-	daoSignature.DaoAddressId = walletDao.ID
+	daoSignature.SignerWalletId = walletSigner.ID
+	daoSignature.DaoRecipientId = walletDao.ID
 	daoSignature.UpdateAt = currentUtcSecond
 
 	err = database.SaveOne(daoSignature)

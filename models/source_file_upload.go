@@ -141,6 +141,7 @@ type SourceFileUploadResult struct {
 	FileSize           int64             `json:"file_size"`
 	UploadAt           int64             `json:"upload_at"`
 	Duration           int               `json:"duration"`
+	IpfsUrl            string            `json:"ipfs_url"`
 	PinStatus          string            `json:"pin_status"`
 	PayloadCid         string            `json:"payload_cid"`
 	WCid               string            `json:"w_cid"`
@@ -171,7 +172,7 @@ func (a SourceFileUploadResultByUploadAt) Swap(i, j int)      { a[i], a[j] = a[j
 func GetSourceFileUploads(walletId int64, fileName, orderBy string, isAscend bool, limit, offset int) ([]*SourceFileUploadResult, *int, error) {
 	sql := "select\n" +
 		"a.id source_file_upload_id,d.id car_file_id,a.file_name,b.file_size,a.create_at upload_at,a.duration,\n" +
-		"b.pin_status,d.payload_cid,concat(a.uuid,b.payload_cid) w_cid,a.status,\n" +
+		"b.ipfs_url,b.pin_status,d.payload_cid,concat(a.uuid,b.payload_cid) w_cid,a.status,\n" +
 		"e.token_id,e.mint_address,e.nft_tx_hash\n" +
 		"from source_file_upload a\n" +
 		"left join source_file b on a.source_file_id=b.id\n" +

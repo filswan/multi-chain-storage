@@ -27,7 +27,7 @@ func GetDeal2BeSigned(c *gin.Context) {
 		return
 	}
 
-	dealList, err := service.GetDeal2BeSigned(signerWalletAddress)
+	dealList, err := service.GetDeals2BeSigned(signerWalletAddress)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.ERROR_INTERNAL, err.Error()))

@@ -673,7 +673,7 @@
                 position: static;
                 .el-col{
                     text-align: left;
-                    font-size: 0.14rem;
+                    font-size: 0.18rem;
                     img{
                     float: right;
                     height: 0.24rem;
@@ -686,7 +686,7 @@
                 .dialog-footer{
                 .el-button{
                     width: 100%;
-                    font-size: 0.14rem;
+                    font-size: 0.18rem;
                     height: 0.4rem;
                     padding: 0;
                     background: #5c3cd3;
@@ -772,7 +772,7 @@
                 padding: 0.1rem 0.2rem 0.2rem;
                 h3{   
                     margin: 0 0 0.1rem;
-                    font-size: 0.14rem;
+                    font-size: 0.18rem;
                     font-weight: normal;
                     line-height: 1.2;
                     color: #666;
@@ -842,7 +842,7 @@
                 width: 100%;
                 margin: 0.1rem 0 0.3rem;
                 text-align: left;
-                font-size: 0.15rem;
+                font-size: 0.2rem;
                 font-weight: 600;
                 color: #000;
                 line-height: 1.5;
@@ -871,7 +871,7 @@
                             // max-width: 2rem;
                             line-height: 1.5;
                             text-align: left;
-                            font-size: 0.1372rem;
+                            font-size: 0.18rem;
                             white-space: normal;
                             color: #000;
                             font-weight: 500;
@@ -890,7 +890,7 @@
                         .el-form-item__content{
                             display: flex;
                             align-items: center;
-                            font-size: 0.14rem;
+                            font-size: 0.18rem;
                             white-space: normal;
                             word-break: break-word;
                             line-height: 1.5;
@@ -964,7 +964,7 @@
                                         border: 1px solid #2c4c9e;
                                         border-radius: 0.08rem;
                                         color: #2c4c9e;
-                                        font-size: 0.1372rem;
+                                        font-size: 0.18rem;
                                     }
                                 }
                                 .el-upload-list{
@@ -1017,7 +1017,7 @@
                     margin: 0.3rem 0 0;
                     line-height: 1.5;
                     text-align: center;
-                    font-size: 0.15rem;
+                    font-size: 0.2rem;
                     white-space: normal;
                     color: #000;
                     font-weight: 500;
@@ -1034,7 +1034,7 @@
                     margin: 0 0 0.1rem;
                     line-height: 1.5;
                     text-align: center;
-                    font-size: 0.13rem;
+                    font-size: 0.18rem;
                     white-space: normal;
                     color: #999;
                     font-weight: normal;
@@ -1056,10 +1056,10 @@
                             .el-radio__label{
                                 .title{
                                     margin: 0 0 0.05rem;
-                                    font-size: 0.13rem;
+                                    font-size: 0.18rem;
                                 }
                                 .cont{
-                                    font-size: 0.145rem;
+                                    font-size: 0.18rem;
                                     font-weight: bold;
                                     line-height: 1.5;
                                     text-align: center;
@@ -1117,12 +1117,12 @@
                 width: 100%;
                 margin: 0.25rem auto 0.15rem;
                 .el-button /deep/{
-                    height: 0.35rem;
+                    height: 0.45rem;
                     padding: 0 0.4rem;
                     margin-left: 0;
                     background-color: #0b318f;
-                    line-height: 0.35rem;
-                    font-size: 0.1372rem;
+                    line-height: 0.45rem;
+                    font-size: 0.18rem;
                     color: #fff;
                     border: 0;
                 }
@@ -1134,7 +1134,7 @@
                     text-align: center;
                     a{
                         text-decoration: underline;
-                        font-size: 13px;
+                        font-size: 0.18rem;
                         color: rgb(11, 49, 143);
                         cursor: pointer;
                     }
@@ -1151,7 +1151,7 @@
                     margin: 0.15rem 0 0;
                     h5{
                         width: 100%;
-                        font-size: 0.14rem;
+                        font-size: 0.18rem;
                         font-weight: 500;
                         line-height: 1.3;
                         color: #000;

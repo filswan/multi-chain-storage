@@ -4,6 +4,7 @@
             <div class="title">{{generateState('network_overview')}}</div>
             <div class="main">
                 <div v-for="(item,key,index) in list" :key="index" class="info">
+                    <img src="@/assets/images/icon_shangzhang.png" alt="">
                     <div class="info-up">
                         {{ item.title }}
                     </div>
@@ -118,51 +119,57 @@
 
 <style lang="scss" scoped>
 .statsCont{
-    padding: 0.25rem 0.2rem 0.5rem;
+    padding: 0.3rem 0.2rem;
     .stats {
-        /*width: 100%;*/
-        padding: 10px;
-        background: white;
-        border-radius: 10px;
         .title {
-            font-size: 20px;
-            border-bottom: 1px solid #ededed;
-            padding-left: 20px;
+            margin: 0 0.1rem;
+            font-size: 0.26rem;
+            font-weight: 700;
+            color: #333;
+            line-height: 1.5;
         }
 
         .main {
             font-size: 18px;
-            width: calc(100% - 40px);
-            padding: 20px;
+            width: 100%;
+            padding: 0.1rem 0 0;
             display: flex;
             flex-wrap: wrap;
             .info-num{
                 width: 100%;
                 text-align: center;
-                font-weight: bold;
+                font-size: 0.26rem;
+                font-weight: 500;
+                color: #000;
+            }
+            img{
+                display: block;
+                width: 0.44rem;
+                margin: 0 auto 0.3rem;
             }
         }
 
         .info {
-            width: calc(33.33% - 30px);
-            padding: 10px;
-            height: 100px;
+            width: calc(33.33% - 0.2rem);
+            padding: 0.5rem 0;
+            min-height: 100px;
             display: flex;
             justify-content: center;
             /*align-items: center;*/
             flex-direction: column;
-            background: #f2f3f8;
-            margin: 5px;
+            background: #ffffff;
+            border-radius: 0.2rem;
+            margin: 0.1rem;
+            line-height: 1;
         }
 
         .info-up {
-            font-size: 14px;
-            color: #0b318f;
+            font-size: 0.22rem;
+            color: #2C7FF8;
             width: 100%;
             text-align: center;
-            font-weight: bold;
-            margin-bottom: 10px;
-            height: 30px;
+            font-weight: 500;
+            margin-bottom: 0.2rem;
         }
 
         .el-icon-dog{

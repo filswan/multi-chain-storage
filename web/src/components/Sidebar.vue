@@ -5,8 +5,8 @@
             class="sidebar-el-menu"
             :default-active="routerMenu"
             :collapse="collapseLocal"
-            background-color="#0b318f"
-            text-color="#fff"
+            background-color="#080B29"
+            text-color="#B3C0E7"
             active-text-color="#fff"
             unique-opened
             router
@@ -15,13 +15,7 @@
                 <template>
                     <!-- 折叠按钮 -->
                     <div class="header_logo pcShow" :class="{'header_left_hidd': collapseLocal}">
-                        <div class="logo" v-if="!collapseLocal"><img src="@/assets/images/MCS_logo_1.png"></div>
-                        <div class="logo_small" v-else><img src="@/assets/images/MCS_logo.png"></div>
-                        <div class="collapse-btn-cont" @click="collapseChage">
-                            <div class="header_btn">
-                                <span></span>
-                            </div>
-                        </div>
+                        <div class="logo" v-if="!collapseLocal"><img src="@/assets/images/LOGO_MCS@2x.png"></div>
                     </div>
                     <div class="menu_list">
                         <el-menu-item v-for="(item, i) in items" :key="i" :index="item.index" @click="sidebarLiIndex(item.name, item.index, item.type)">
@@ -45,6 +39,16 @@
                             <i class="el-icon-location"></i>
                             <span>English</span>
                         </li>
+                    </div>
+                    <div class="fes-icon-logo">
+                        <a href="https://filswan.medium.com/" target="_block"><img :src="share_img1" alt=""></a>
+                        <a href="https://discord.com/invite/KKGhy8ZqzK" target="_block"><img :src="share_img10" alt=""></a>
+                        <a href="https://twitter.com/0xfilswan" target="_block"><img :src="share_img2" alt=""></a>
+                        <a href="https://github.com/filswan" target="_block"><img :src="share_img3" alt=""></a>
+                        <!-- <a href="https://www.facebook.com/filswan.technology" target="_block"><img :src="share_img5" alt=""></a>
+                        <a href="https://filswan.slack.com" target="_block"><img :src="share_img7" alt=""></a>
+                        <a href="https://youtube.com/channel/UCcvrZdNqFWYl3FwfcHS9xIg" target="_block"><img :src="share_img8" alt=""></a> -->
+                        <a href="https://t.me/filswan" target="_block"><img :src="share_img9" alt=""></a>
                     </div>
                 </template>
             </template>
@@ -115,6 +119,14 @@ export default {
                     type: ''
                 },
             ],
+            share_img1: require('@/assets/images/landing/medium.png'),
+            share_img2: require('@/assets/images/landing/twitter.png'),
+            share_img3: require('@/assets/images/landing/github-fill.png'),
+            share_img5: require('@/assets/images/landing/facebook-fill.png'),
+            share_img7: require('@/assets/images/landing/slack.png'),
+            share_img8: require('@/assets/images/landing/youtube.png'),
+            share_img9: require('@/assets/images/landing/telegram.png'),
+            share_img10: require('@/assets/images/landing/discord.png'),
         };
     },
     computed: {
@@ -245,7 +257,7 @@ export default {
     bottom: 0;
     z-index: 9999;
     transition: all .3s;
-    background: #0b318f;
+    background: #080B29;
     .sidebar_close{
         position: absolute;
         right: 0;
@@ -261,14 +273,15 @@ export default {
     }
 }
 .sidebar-el-menu{
-    width: 0.65rem;
+    // width: 0.65rem;
     // height: calc(100% - 0.31rem);
     height: 100%;
     padding: 0;
     border-right: 0;
     // transition: width .3s;
     .menu_list{
-        height: calc(100% - 1.2rem);
+        // height: calc(100% - 1.2rem);
+        margin: 0 0.2rem;
         padding: 0;
         overflow-x: hidden;
         overflow-y: scroll;
@@ -294,18 +307,17 @@ export default {
     .header_logo{
         display: flex;
         align-items: center;
-        justify-content: space-between;
+        justify-content: center;
         width: calc(100% - 0.3rem);
-        height: 0.51rem;
-        padding: 0.3rem 0.15rem 0.39rem;
-        background-color: #0b318f;
+        padding: 0.41rem 0 0.62rem;
+        background-color: #080B29;
         // transition: width .3s;
         .logo {
-            float: left;
-            width: calc(90% - 0.32rem);
+            width: 2.1rem;
             img{
                 display: block;
                 width: 100%;
+                height: auto;
             }
         }
         .header_btn{
@@ -381,6 +393,24 @@ export default {
             }
         }
     }
+    .fes-icon-logo{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        padding: 0.1rem 0 0.3rem;
+        img{
+            display: block;
+            height: 24px;
+            margin: 0 0.18rem;
+            @media screen and (max-width: 999px) {
+                height: 20px;
+            }
+        }
+    }
     .collapse-btn-cont {
         float: left;
         padding: 0;
@@ -389,12 +419,16 @@ export default {
         display: flex;
     }
     li{
-        align-items: center;
         display: flex;
-        font-size: 0.14rem;
-        font-weight: 400;
-        height: 0.48rem;
-        line-height: 0.48rem;
+        height: 0.5rem;
+        padding: 0 0.28rem;
+        margin: 0.12rem 0;
+        font-size: 0.24rem;
+        font-weight: 500;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+        line-height: 0.5rem;
         div{
             display: flex;
             align-items: center;
@@ -402,7 +436,8 @@ export default {
         }
         i{
             position: relative;
-            height: 24px;
+            height: 0.2rem;
+            margin-right: 0.22rem;
             &::before{
                 position: absolute;
                 left: 0;
@@ -410,7 +445,7 @@ export default {
                 width: 100%;
                 height: 100%;
                 content: '';
-                background-size: 17px !important;
+                background-size: 0.2rem !important;
             }
         }
         .el-icon-s-home{
@@ -430,7 +465,7 @@ export default {
         }
         .el-icon-s-deal{
             &::before{
-                background: url(../assets/images/menuIcon/myTask.png) no-repeat center;
+                background: url(../assets/images/menuIcon/icon_Files@2x.png) no-repeat center;
             }
         }
         .el-icon-s-myFs3{
@@ -450,12 +485,12 @@ export default {
         }
         .el-icon-s-Stats{
             &::before{
-                background: url(../assets/images/menuIcon/Statistics.png) no-repeat center;
+                background: url(../assets/images/menuIcon/icon_Statistics@2x.png) no-repeat center;
             }
         }
         .el-icon-s-documentation{
             &::before{
-                background: url(../assets/images/menuIcon/documentation.png) no-repeat center;
+                background: url(../assets/images/menuIcon/icon_documentation@2x.png) no-repeat center;
             }
         }
         .el-icon-language{
@@ -481,14 +516,15 @@ export default {
         }
         .el-icon-s-billing{
             &::before{
-                background: url(../assets/images/menuIcon/billing.png) no-repeat center;
+                background: url(../assets/images/menuIcon/billing@2x.png) no-repeat center;
             }
         }
     }
 
     .el-menu-item:hover, .is-active {
-        background-color: #f2f3f8 !important;
-        color: #0b318f !important;
+        background: linear-gradient(45deg,#4f8aff, #4b5eff);
+        border-radius: 0.06rem;
+        color: #fff !important;
         .el-icon-s-home{
             &::before{
                 background: url(../assets/images/menuIcon/Dashboard-1.png) no-repeat center;
@@ -506,7 +542,7 @@ export default {
         }
         .el-icon-s-deal{
             &::before{
-                background: url(../assets/images/menuIcon/myTask-1.png) no-repeat center;
+                background: url(../assets/images/menuIcon/icon_Files@2x-1.png) no-repeat center;
             }
         }
         .el-icon-s-myFs3{
@@ -526,12 +562,12 @@ export default {
         }
         .el-icon-s-Stats{
             &::before{
-                background: url(../assets/images/menuIcon/Statistics-1.png) no-repeat center;
+                background: url(../assets/images/menuIcon/icon_Statistics@2x-1.png) no-repeat center;
             }
         }
         .el-icon-s-documentation{
             &::before{
-                background: url(../assets/images/menuIcon/documentation-1.png) no-repeat center;
+                background: url(../assets/images/menuIcon/icon_documentation@2x-1.png) no-repeat center;
             }
         }
         .el-icon-language{
@@ -557,7 +593,7 @@ export default {
         }
         .el-icon-s-billing{
             &::before{
-                background: url(../assets/images/menuIcon/billing-1.png) no-repeat center;
+                background: url(../assets/images/menuIcon/billing@2x-1.png) no-repeat center;
             }
         }
     }
@@ -573,7 +609,7 @@ export default {
         bottom: 7px;
         margin: auto;
         height: 2px;
-        background-color: #0b318f;
+        background-color: #080B29;
         transition: all 0.4s ease;
     }
     .el-menu-item span:hover::after{
@@ -581,7 +617,7 @@ export default {
         width: 100%;
     }
     &:not(.el-menu--collapse) {
-        width: 2.37rem;
+        width: 3.33rem;
         li{
           width: auto;
         }
@@ -589,7 +625,7 @@ export default {
 }
 .copyStyle {
   padding: 0 0 0 0.1rem;
-  background: #0b318f;
+  background: #080B29;
   font-size: 0.12rem;
   line-height: 0.3rem;
   color: #9c9c9c;
@@ -600,21 +636,21 @@ export default {
 @media screen and (max-width:999px){
   .sidebar{
     top: 0;
-    left: -2.37rem;
+    left: -3.33rem;
     -webkit-transition: all 0.3s ease;
     -moz-transition: all 0.3s ease;
     -ms-transition: all 0.3s ease;
     -o-transition: all 0.3s ease;
     transition: all 0.3s ease;
     .sidebar-el-menu {
-        width: 2.37rem;
+        width: 3.33rem;
       .menu_list{
-        height: calc(100% - 0.5rem);
+        // height: calc(100% - 0.5rem);
         padding: 0.5rem 0 0;
       }
 
       &:not(.el-menu--collapse) {
-          width: 2.37rem;
+          width: 3.33rem;
       }
     }
     .pcShow{

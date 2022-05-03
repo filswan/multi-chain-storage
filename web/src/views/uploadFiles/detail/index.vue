@@ -2,7 +2,7 @@
     <div id="dealManagement">
         <div class="backTo" @click="back">
             <span class="el-icon-back"></span>
-            <span style="font-size:0.18rem;margin-left:0.05rem">{{$t('deal.backto')}}</span>
+            <span style="font-size:0.22rem;margin-left:0.05rem">{{$t('deal.backto')}}</span>
         </div>
         <div class="detailStyle">
             <el-tabs v-model="activeName" :tab-position="tabPosition" type="card" @tab-click="handleClick">
@@ -511,7 +511,7 @@ export default {
 
 }
 #dealManagement{
-    padding: 0.25rem 0.2rem 0.2rem;
+    padding: 0.3rem;
     .backTo{
         display: flex;
         align-items: center;
@@ -532,7 +532,7 @@ export default {
                 float: none;
             }
             .el-tabs__header{
-                margin: 0.34rem 1px 0 0;
+                margin: 0.44rem 1px 0 0;
                 background: transparent;
                 @media screen and (max-width: 1024px) {
                     margin: 0;
@@ -613,7 +613,7 @@ export default {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        font-size: 0.16rem;
+        font-size: 0.22rem;
         font-weight: bold;
         line-height: 2;
         @media screen and (max-width:600px){
@@ -645,7 +645,7 @@ export default {
                 align-items: center;
                 padding-left: 5px;
                 color: red;
-                font-size: 0.145rem;
+                font-size: 0.18rem;
                 @media screen and (max-width:600px){
                     font-size: 14px;
                 }
@@ -664,8 +664,8 @@ export default {
                 font-size: 13px;
                 font-weight: normal;
                 img{
-                    width: 0.16rem;
-                    height: 0.16rem;
+                    width: 0.2rem;
+                    height: 0.2rem;
                     margin: 0 0 0 5px;
                     cursor: pointer;
                     @media screen and (max-width:600px){
@@ -677,7 +677,8 @@ export default {
         }
         .el-button {
             padding: 0.06rem 0.1rem;
-            font-size: 14px;
+            font-size: 0.2rem;
+            font-family: inherit;
             border-radius: 0.07rem;
             @media screen and (max-width:600px){
                 margin: 0 0 5px;
@@ -695,8 +696,8 @@ export default {
             max-width: 800px;
             padding: 0 0 0.15rem;
             .el-col{
-                padding: 0.05rem 0;
-                font-size: 0.1375rem;
+                padding: 0.1rem 0;
+                font-size: 0.18rem;
                 font-weight: 600;
                 line-height: 1.3;
                 color: #333;
@@ -717,8 +718,8 @@ export default {
                             color: inherit;
                             
                             img { 
-                                width: 0.16rem;
-                                height: 0.16rem;
+                                width: 0.2rem;
+                                height: 0.2rem;
                                 margin: 0 0 0 3px;
                                 cursor: pointer;
                                 @media screen and (max-width:600px){
@@ -766,7 +767,7 @@ export default {
             padding: 0.1rem 0;
             line-height: 1.5;
             text-align: center;
-            font-size: 0.145rem;
+            font-size: 0.18rem;
             font-weight: 600;
             white-space: normal;
             color: #333;
@@ -777,8 +778,8 @@ export default {
                 font-size: 16px;
             }
             img{
-                width: 0.16rem;
-                height: 0.16rem;
+                width: 0.2rem;
+                height: 0.2rem;
                 margin: 0 0 0 5px;
                 cursor: pointer;
                 @media screen and (max-width:600px){

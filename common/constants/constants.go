@@ -53,8 +53,8 @@ const (
 
 	FILE_BLOCK_NUMBER_MAX = 999999999999999
 
-	SIGNATURE_SUCCESS_VALUE = "1" //init value,no unlock operation has been performed
-	SIGNATURE_FAILED_VALUE  = "2" //init value,no unlock operation has been performed
+	DAO_SIGNATURE_STATUS_SUCCESS = "Success"
+	DAO_SIGNATURE_STATUS_FAIL    = "Fail"
 
 	DURATION_DAYS_DEFAULT = 525
 

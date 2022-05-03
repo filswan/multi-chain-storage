@@ -7,15 +7,15 @@ import (
 )
 
 type DaoSignature struct {
-	ID         int64  `json:"id"`
-	NetworkId  int64  `json:"network_id"`
-	TxHash     string `json:"tx_hash"`
-	Recipient  string `json:"recipient"`
-	DealId     int64  `json:"deal_id"`
-	Status     bool   `json:"status"`
-	DaoAddress string `json:"dao_address"`
-	CreateAt   int64  `json:"create_at"`
-	UpdateAt   int64  `json:"update_at"`
+	ID           int64  `json:"id"`
+	NetworkId    int64  `json:"network_id"`
+	DealId       int64  `json:"deal_id"`
+	Status       string `json:"status"`
+	TxHash       string `json:"tx_hash"`
+	RecipientId  int64  `json:"recipient_id"`
+	DaoAddressId int64  `json:"dao_address_id"`
+	CreateAt     int64  `json:"create_at"`
+	UpdateAt     int64  `json:"update_at"`
 }
 
 func GetDaoSignaturesByDealId(dealId int64) ([]*DaoSignature, error) {

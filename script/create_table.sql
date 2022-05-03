@@ -137,6 +137,7 @@ create table offline_deal (
     create_at        bigint        not null,
     update_at        bigint        not null,
     primary key pk_offline_deal(id),
+    constraint un_offline_deal_deal_id unique(deal_id),
     constraint fk_offline_deal_car_file_id foreign key (car_file_id) references car_file(id),
     constraint fk_offline_deal_miner_id foreign key (miner_id) references miner(id),
     constraint fk_offline_deal_sender_wallet_id foreign key (sender_wallet_id) references wallet(id)
@@ -187,7 +188,7 @@ create table transaction (
 create table dao_signature (
     id                           bigint        not null auto_increment,
     network_id                   bigint        not null,
-    deal_id                      bigint        not null,
+    offline_deal_id              bigint        not null,
     status                       varchar(100)  not null,
     tx_hash                      varchar(100)  not null,
     recipient_id                 bigint        not null,
@@ -195,6 +196,7 @@ create table dao_signature (
     create_at                    bigint        not null,
     update_at                    bigint        not null,
     primary key pk_dao_signature(id),
-    constraint un_dao_signature unique(deal_id,tx_hash),
-    constraint fk_dao_signature_network_id foreign key (network_id) references network(id)
+    constraint un_dao_signature unique(offline_deal_id,tx_hash),
+    constraint fk_dao_signature_network_id foreign key (network_id) references network(id),
+    constraint fk_dao_signature_offline_deal_id foreign key (offline_deal_id) references offline_deal(id)
 );

@@ -18,7 +18,7 @@ type OfflineDeal struct {
 	Verified       bool    `json:"verified"`
 	StartEpoch     int     `json:"start_epoch"`
 	SenderWalletId int64   `json:"sender_wallet_id"`
-	DealId         int64   `json:"deal_id"`
+	DealId         *int64  `json:"deal_id"`
 	Status         string  `json:"status"`
 	Note           *string `json:"note"`
 	OnChainStatus  *string `json:"on_chain_status"`

@@ -92,7 +92,13 @@ func UnlockPayment() error {
 }
 
 func checkUnlockable(ethClient *ethclient.Client, offlineDeal *models.OfflineDeal, filswanOracleSession *goBind.FilswanOracleSession, mcsPaymentReceiverAddress common.Address) (bool, error) {
-	dealIdStr := strconv.FormatInt(offlineDeal.DealId, 10)
+	if offlineDeal.DealId == nil {
+		err := fmt.Errorf("deal id is null")
+		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
+		return false, err
+	}
+
+	dealIdStr := strconv.FormatInt(*offlineDeal.DealId, 10)
 	filecoinNetwork := config.GetConfig().FilecoinNetwork
 	isPaymentAvailable, err := filswanOracleSession.IsCarPaymentAvailable(dealIdStr, filecoinNetwork, mcsPaymentReceiverAddress)
 	if err != nil {
@@ -196,7 +202,13 @@ func unlockDeal(offlineDeal *models.OfflineDeal, ethClient *ethclient.Client, sw
 		return nil, err
 	}
 
-	dealIdStr := strconv.FormatInt(offlineDeal.DealId, 10)
+	if offlineDeal.DealId == nil {
+		err := fmt.Errorf("deal id is null")
+		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
+		return nil, err
+	}
+
+	dealIdStr := strconv.FormatInt(*offlineDeal.DealId, 10)
 	unlockStatusFailed := constants.OFFLINE_DEAL_STATUS_UNLOCK_FAILED
 
 	filecoinNetwork := config.GetConfig().FilecoinNetwork

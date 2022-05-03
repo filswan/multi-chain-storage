@@ -48,9 +48,11 @@ func updateOfflineDealStatusAndLog() error {
 			continue
 		}
 
-		if offlineDeal.OnChainStatus == nil || *offlineDeal.OnChainStatus != dealInfo.Status || offlineDeal.DealId != dealInfo.DealId {
+		if offlineDeal.OnChainStatus == nil || *offlineDeal.OnChainStatus != dealInfo.Status || offlineDeal.DealId == nil || *offlineDeal.DealId != dealInfo.DealId {
 			offlineDeal.OnChainStatus = &dealInfo.Status
-			offlineDeal.DealId = dealInfo.DealId
+			if dealInfo.DealId != 0 {
+				offlineDeal.DealId = &dealInfo.DealId
+			}
 			offlineDeal.UpdateAt = libutils.GetCurrentUtcSecond()
 			err = database.SaveOne(offlineDeal)
 			if err != nil {

@@ -85,26 +85,15 @@ func GetOfflineDealsByCarFileId(carFileId int64) ([]*OfflineDealOut, error) {
 }
 
 func UpdateOfflineDealUnlockInfo(id int64, status string, txHashUnlock string, messages ...string) error {
-	sql := "update offline_deal set status=?,note=?,tx_hash_unlock=?,unlock_at=?,update_at=? where id=?"
+	currentUtcSecond := libutils.GetCurrentUtcSecond()
+	fields2BeUpdated := make(map[string]interface{})
+	fields2BeUpdated["status"] = status
+	fields2BeUpdated["note"] = strings.Join(messages, ",")
+	fields2BeUpdated["tx_hash_unlock"] = txHashUnlock
+	fields2BeUpdated["unlock_at"] = currentUtcSecond
+	fields2BeUpdated["update_at"] = currentUtcSecond
 
-	note := ""
-	for _, message := range messages {
-		note = note + "," + message
-	}
-
-	note = strings.Trim(note, ",")
-
-	curUtcMilliSec := libutils.GetCurrentUtcSecond()
-
-	params := []interface{}{}
-	params = append(params, status)
-	params = append(params, note)
-	params = append(params, txHashUnlock)
-	params = append(params, curUtcMilliSec)
-	params = append(params, curUtcMilliSec)
-	params = append(params, id)
-
-	err := database.GetDB().Exec(sql, params...).Error
+	err := database.GetDB().Model(OfflineDeal{}).Where("id=?", id).Update(fields2BeUpdated).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err

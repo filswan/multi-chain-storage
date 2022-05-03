@@ -290,14 +290,12 @@ func saveCarInfo2DB(fileDesc *libmodel.FileDesc, srcFiles []*models.SourceFileUp
 			return err
 		}
 
-		sql := "update source_file_upload set status=?,update_at=? where id=?"
+		currentUtcSecond := libutils.GetCurrentUtcSecond()
+		fields2BeUpdated := make(map[string]interface{})
+		fields2BeUpdated["status"] = constants.SOURCE_FILE_UPLOAD_STATUS_TASK_CREATED
+		fields2BeUpdated["update_at"] = currentUtcSecond
 
-		params := []interface{}{}
-		params = append(params, constants.SOURCE_FILE_UPLOAD_STATUS_TASK_CREATED)
-		params = append(params, currentUtcSecond)
-		params = append(params, srcFile.SourceFileUploadId)
-
-		err = db.Exec(sql, params...).Error
+		err := db.Model(models.SourceFileUpload{}).Where("id=?", srcFile.SourceFileUploadId).Update(fields2BeUpdated).Error
 		if err != nil {
 			db.Rollback()
 			logs.GetLogger().Error(err)

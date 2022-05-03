@@ -184,3 +184,17 @@ create table transaction (
     constraint fk_transaction_wallet_id_contract foreign key (wallet_id_contract) references wallet(id)
 );
 
+create table dao_signature (
+    id                           bigint        not null auto_increment,
+    network_id                   bigint        not null,
+    deal_id                      bigint        not null,
+    status                       varchar(100)  not null,
+    tx_hash                      varchar(100)  not null,
+    recipient_id                 bigint        not null,
+    dao_address_id               bigint        not null,
+    create_at                    bigint        not null,
+    update_at                    bigint        not null,
+    primary key pk_dao_signature(id),
+    constraint un_dao_signature unique(deal_id,tx_hash),
+    constraint fk_dao_signature_network_id foreign key (network_id) references network(id)
+);

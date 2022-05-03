@@ -91,14 +91,12 @@ func GetCarFileBySourceFilePayloadCid(srcFilePayloadCid string) ([]*CarFile, err
 }
 
 func UpdateCarFileStatus(id int64, status string) error {
-	sql := "update car_file set status=?,update_at=? where id=?"
+	currentUtcSecond := libutils.GetCurrentUtcSecond()
+	fields2BeUpdated := make(map[string]interface{})
+	fields2BeUpdated["status"] = status
+	fields2BeUpdated["update_at"] = currentUtcSecond
 
-	params := []interface{}{}
-	params = append(params, status)
-	params = append(params, libutils.GetCurrentUtcSecond())
-	params = append(params, id)
-
-	err := database.GetDB().Exec(sql, params...).Error
+	err := database.GetDB().Model(CarFile{}).Where("id=?", id).Update(fields2BeUpdated).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err

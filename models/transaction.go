@@ -62,10 +62,6 @@ func CreateTransaction4Pay(sourceFileUploadId int64, txHash string) error {
 		return err
 	}
 
-	if transactionOld != nil {
-		return nil
-	}
-
 	sourceFileUpload, err := GetSourceFileUploadById(sourceFileUploadId)
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -148,6 +144,10 @@ func CreateTransaction4Pay(sourceFileUploadId int64, txHash string) error {
 		UpdateAt:           currentUtcSecond,
 	}
 
+	if transactionOld != nil {
+		transaction.ID = transactionOld.ID
+	}
+
 	db := database.GetDBTransaction()
 	err = database.SaveOneInTransaction(db, &transaction)
 	if err != nil {
@@ -156,17 +156,14 @@ func CreateTransaction4Pay(sourceFileUploadId int64, txHash string) error {
 		return err
 	}
 
-	sql := "update source_file_upload set status=?,update_at=? where id=?"
+	fields2BeUpdated := make(map[string]interface{})
+	fields2BeUpdated["status"] = constants.SOURCE_FILE_UPLOAD_STATUS_PAID
+	fields2BeUpdated["update_at"] = currentUtcSecond
 
-	params := []interface{}{}
-	params = append(params, constants.SOURCE_FILE_UPLOAD_STATUS_PAID)
-	params = append(params, currentUtcSecond)
-	params = append(params, sourceFileUploadId)
-
-	err = db.Exec(sql, params...).Error
+	err = db.Model(SourceFileUpload{}).Where("id=?", sourceFileUploadId).Update(fields2BeUpdated).Error
 	if err != nil {
-		logs.GetLogger().Error(err)
 		db.Rollback()
+		logs.GetLogger().Error(err)
 		return err
 	}
 
@@ -200,16 +197,13 @@ func UpdateTransactionUnlockInfo(sourceFileUploadId int64, unlockAmount decimal.
 
 	unlockAmountNew := unlockAmountBefore.Add(unlockAmount)
 
-	sql := "update transaction set unlock_amount=?,last_unlock_at=?,update_at=? where id=?"
-
 	currentUtcSecond := libutils.GetCurrentUtcSecond()
-	params := []interface{}{}
-	params = append(params, unlockAmountNew.String())
-	params = append(params, currentUtcSecond)
-	params = append(params, currentUtcSecond)
-	params = append(params, transaction.ID)
+	fields2BeUpdated := make(map[string]interface{})
+	fields2BeUpdated["unlock_amount"] = unlockAmountNew.String()
+	fields2BeUpdated["last_unlock_at"] = currentUtcSecond
+	fields2BeUpdated["update_at"] = currentUtcSecond
 
-	err = database.GetDB().Exec(sql, params...).Error
+	err = database.GetDB().Model(Transaction{}).Where("id=?", transaction.ID).Update(fields2BeUpdated).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
@@ -237,17 +231,14 @@ func UpdateTransactionRefundAfterUnlock(sourceFileUploadId int64, refundTxHash s
 		return nil
 	}
 
-	sql := "update transaction set refund_after_unlock_tx_hash=?,refund_after_unlock_amount=?,refund_after_unlock_at=?,update_at=? where id=?"
-
 	currentUtcSecond := libutils.GetCurrentUtcSecond()
-	params := []interface{}{}
-	params = append(params, refundTxHash)
-	params = append(params, refundAmount.String())
-	params = append(params, currentUtcSecond)
-	params = append(params, currentUtcSecond)
-	params = append(params, transaction.ID)
+	fields2BeUpdated := make(map[string]interface{})
+	fields2BeUpdated["refund_after_unlock_tx_hash"] = refundTxHash
+	fields2BeUpdated["refund_after_unlock_amount"] = refundAmount.String()
+	fields2BeUpdated["refund_after_unlock_at"] = currentUtcSecond
+	fields2BeUpdated["update_at"] = currentUtcSecond
 
-	err = database.GetDB().Exec(sql, params...).Error
+	err = database.GetDB().Model(Transaction{}).Where("id=?", transaction.ID).Update(fields2BeUpdated).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
@@ -275,17 +266,14 @@ func UpdateTransactionRefundAfterExpired(sourceFileUploadId int64, refundTxHash 
 		return nil
 	}
 
-	sql := "update transaction set refund_after_expired_tx_hash=?,refund_after_expired_amount=?,refund_after_expired_at=?,update_at=? where id=?"
-
 	currentUtcSecond := libutils.GetCurrentUtcSecond()
-	params := []interface{}{}
-	params = append(params, refundTxHash)
-	params = append(params, refundAmount.String())
-	params = append(params, currentUtcSecond)
-	params = append(params, currentUtcSecond)
-	params = append(params, transaction.ID)
+	fields2BeUpdated := make(map[string]interface{})
+	fields2BeUpdated["refund_after_expired_tx_hash"] = refundTxHash
+	fields2BeUpdated["refund_after_expired_amount"] = refundAmount.String()
+	fields2BeUpdated["refund_after_expired_at"] = currentUtcSecond
+	fields2BeUpdated["update_at"] = currentUtcSecond
 
-	err = database.GetDB().Exec(sql, params...).Error
+	err = database.GetDB().Model(Transaction{}).Where("id=?", transaction.ID).Update(fields2BeUpdated).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err

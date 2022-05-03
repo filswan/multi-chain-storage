@@ -97,7 +97,7 @@ func SendDeal() error {
 				StartEpoch:     deal.StartEpoch,
 				SenderWalletId: wallet.ID,
 				Status:         constants.OFFLINE_DEAL_STATUS_CREATED,
-				DealId:         0,
+				DealId:         nil,
 				CreateAt:       currentUtcSec,
 				UpdateAt:       currentUtcSec,
 			}

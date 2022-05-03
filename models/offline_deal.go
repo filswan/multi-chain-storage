@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"multi-chain-storage/common/constants"
 	"multi-chain-storage/database"
 	"strings"
@@ -18,7 +19,7 @@ type OfflineDeal struct {
 	Verified       bool    `json:"verified"`
 	StartEpoch     int     `json:"start_epoch"`
 	SenderWalletId int64   `json:"sender_wallet_id"`
-	DealId         int64   `json:"deal_id"`
+	DealId         *int64  `json:"deal_id"`
 	Status         string  `json:"status"`
 	Note           *string `json:"note"`
 	OnChainStatus  *string `json:"on_chain_status"`
@@ -45,10 +46,24 @@ func GetOfflineDeals2BeScanned() ([]*OfflineDeal, error) {
 	return offlineDeals, nil
 }
 
+func GetOfflineDeals2BeSigned(signerWalletId int64) ([]*OfflineDeal, error) {
+	var offlineDeals []*OfflineDeal
+	sql := "select * from offline_deal a\n" +
+		"left outer join dao_signature b on a.id=b.offline_deal_id\n" +
+		"where a.deal_id is not null and a.deal_id>0 and a.status=? and b.status=?and b.signer_wallet_id=? and b.id is null \n"
+	err := database.GetDB().Raw(sql, constants.OFFLINE_DEAL_STATUS_CREATED, constants.DAO_SIGNATURE_STATUS_SUCCESS, signerWalletId).Scan(&offlineDeals).Error
+
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	return offlineDeals, nil
+}
+
 func GetOfflineDeals2BeUnlocked() ([]*OfflineDeal, error) {
 	var offlineDeals []*OfflineDeal
-	sql := "select a.* from offline_deal a where a.deal_id>0 and a.status=?"
-	err := database.GetDB().Raw(sql, constants.OFFLINE_DEAL_STATUS_CREATED).Scan(&offlineDeals).Error
+	err := database.GetDB().Where("deal_id>0 and status=?", constants.OFFLINE_DEAL_STATUS_CREATED).Find(&offlineDeals).Error
 
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -60,8 +75,7 @@ func GetOfflineDeals2BeUnlocked() ([]*OfflineDeal, error) {
 
 func GetOfflineDealsNotUnlockedByCarFileId(carFileId int64) ([]*OfflineDeal, error) {
 	var offlineDeals []*OfflineDeal
-	sql := "select a.* from offline_deal a where a.deal_file_id=? and a.unlock_status in (?,?)"
-	err := database.GetDB().Raw(sql, carFileId, constants.OFFLINE_DEAL_STATUS_CREATED, constants.OFFLINE_DEAL_STATUS_UNLOCK_FAILED).Scan(&offlineDeals).Error
+	err := database.GetDB().Where("car_file_id=? and a.unlock_status in (?,?)", carFileId, constants.OFFLINE_DEAL_STATUS_CREATED, constants.OFFLINE_DEAL_STATUS_UNLOCK_FAILED).Find(&offlineDeals).Error
 
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -84,27 +98,38 @@ func GetOfflineDealsByCarFileId(carFileId int64) ([]*OfflineDealOut, error) {
 	return offlineDeals, nil
 }
 
-func UpdateOfflineDealUnlockInfo(id int64, status string, txHashUnlock string, messages ...string) error {
-	sql := "update offline_deal set status=?,note=?,tx_hash_unlock=?,unlock_at=?,update_at=? where id=?"
-
-	note := ""
-	for _, message := range messages {
-		note = note + "," + message
+func GetOfflineDealByDealId(dealId int64) (*OfflineDeal, error) {
+	if dealId == 0 {
+		err := fmt.Errorf("deal id must be greater than 0")
+		logs.GetLogger().Error(err)
+		return nil, err
 	}
 
-	note = strings.Trim(note, ",")
+	var offlineDeals []*OfflineDeal
+	err := database.GetDB().Where("deal_id=?", dealId).Find(&offlineDeals).Error
 
-	curUtcMilliSec := libutils.GetCurrentUtcSecond()
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
 
-	params := []interface{}{}
-	params = append(params, status)
-	params = append(params, note)
-	params = append(params, txHashUnlock)
-	params = append(params, curUtcMilliSec)
-	params = append(params, curUtcMilliSec)
-	params = append(params, id)
+	if len(offlineDeals) > 0 {
+		return offlineDeals[0], nil
+	}
 
-	err := database.GetDB().Exec(sql, params...).Error
+	return nil, nil
+}
+
+func UpdateOfflineDealUnlockInfo(id int64, status string, txHashUnlock string, messages ...string) error {
+	currentUtcSecond := libutils.GetCurrentUtcSecond()
+	fields2BeUpdated := make(map[string]interface{})
+	fields2BeUpdated["status"] = status
+	fields2BeUpdated["note"] = strings.Join(messages, ",")
+	fields2BeUpdated["tx_hash_unlock"] = txHashUnlock
+	fields2BeUpdated["unlock_at"] = currentUtcSecond
+	fields2BeUpdated["update_at"] = currentUtcSecond
+
+	err := database.GetDB().Model(OfflineDeal{}).Where("id=?", id).Update(fields2BeUpdated).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err

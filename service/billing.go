@@ -41,8 +41,8 @@ type SourceFileUploadInfoWcid struct {
 }
 type LockPaymentInfo struct {
 	WCid         string `json:"w_cid"`
-	LockedFee    string `json:"locked_fee"`
-	TxHash       string `json:"tx_hash"`
+	PayAmount    string `json:"pay_amount"`
+	PayTxHash    string `json:"pay_tx_hash"`
 	TokenAddress string `json:"token_address"`
 }
 
@@ -65,23 +65,24 @@ func GetLockPaymentInfo(sourceFileUploadId int64) (*LockPaymentInfo, error) {
 		return nil, err
 	}
 
+	lockPaymentInfo := &LockPaymentInfo{
+		WCid: sourceFileUpload.Uuid + sourceFile.PayloadCid,
+	}
 	transactionPay, err := models.GetTransactionBySourceFileUploadId(sourceFileUploadId)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
 	}
 
-	token, err := models.GetTokenById(transactionPay.TokenId)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-
-	lockPaymentInfo := &LockPaymentInfo{
-		WCid:         sourceFileUpload.Uuid + sourceFile.PayloadCid,
-		LockedFee:    transactionPay.PayAmount,
-		TxHash:       transactionPay.PayTxHash,
-		TokenAddress: token.Address,
+	if transactionPay != nil {
+		token, err := models.GetTokenById(transactionPay.TokenId)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return nil, err
+		}
+		lockPaymentInfo.PayAmount = transactionPay.PayAmount
+		lockPaymentInfo.PayTxHash = transactionPay.PayTxHash
+		lockPaymentInfo.TokenAddress = token.Address
 	}
 
 	return lockPaymentInfo, nil

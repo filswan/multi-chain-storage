@@ -1,141 +1,82 @@
 package routers
 
 import (
+	"fmt"
 	"multi-chain-storage/common"
 	"multi-chain-storage/common/errorinfo"
-	"multi-chain-storage/database"
-	"multi-chain-storage/models"
 	"multi-chain-storage/service"
 	"net/http"
-	"strconv"
-
-	libutils "github.com/filswan/go-swan-lib/utils"
+	"strings"
 
 	"github.com/filswan/go-swan-lib/logs"
 	"github.com/gin-gonic/gin"
 )
 
 func Dao(router *gin.RouterGroup) {
-	router.GET("/dao/signature/deals", GetDealListForDaoToSign)
-	router.PUT("/dao/signature/deals", RecordDealListThatHaveBeenSignedByDao)
+	router.GET("/dao/signature/deals_to_sign/:signer_wallet_address", GetDeal2BeSigned)
+	router.POST("/dao/signature", WriteDaoSignature)
 }
 
-func GetDealListForDaoToSign(c *gin.Context) {
-	dealList, err := service.GetShoulBeSignDealListFromDB()
+func GetDeal2BeSigned(c *gin.Context) {
+	logs.GetLogger().Info("ip:", c.ClientIP(), ",port:", c.Request.URL.Port())
+	signerWalletAddress := strings.Trim(c.Params.ByName("signer_wallet_address"), " ")
+	if signerWalletAddress == "" || !strings.HasPrefix(signerWalletAddress, "0x") {
+		errMsg := "signer_wallet_address is required and should be valid address"
+		logs.GetLogger().Error(errMsg)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_INVALID_VALUE, errMsg))
+		return
+	}
+
+	dealList, err := service.GetDeals2BeSigned(signerWalletAddress)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.ERROR_INTERNAL, err.Error()))
 		return
 	}
+
 	c.JSON(http.StatusOK, common.CreateSuccessResponse(dealList))
 }
 
-type DealIdList struct {
-	DealId     string `json:"deal_id"`
-	PayloadCid string `json:"payload_cid"`
-	Recipent   string `json:"recipent"`
-	TxHash1    string `json:"tx_hash_1"`
-	TxHash2    string `json:"tx_hash_2"`
-	TxHash3    string `json:"tx_hash_3"`
+type DaoSignature struct {
+	DealId   int64  `json:"deal_id"`
+	Recipent string `json:"recipent"`
+	TxHash   string `json:"tx_hash"`
 }
 
-type daoBackendResponse struct {
-	PayloadCid      string `json:"payload_cid"`
-	DealId          string `json:"deal_id"`
-	SuccessDaoCount int    `json:"success_dao_count"`
-}
-
-func RecordDealListThatHaveBeenSignedByDao(c *gin.Context) {
-	var dealIdList []DealIdList
-	err := c.BindJSON(&dealIdList)
+func WriteDaoSignature(c *gin.Context) {
+	var daoSignature DaoSignature
+	err := c.BindJSON(&daoSignature)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.AbortWithStatusJSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_PARSE_TO_STRUCT))
 		return
 	}
 
-	daoSignRes := []daoBackendResponse{}
-
-	for _, v := range dealIdList {
-		daosignCount := 0
-		deal_id, err := strconv.ParseInt(v.DealId, 10, 64)
-		if err != nil {
-			logs.GetLogger().Error(err)
-		}
-
-		if v.TxHash1 != "" {
-			verification1, err := service.VerifyDaoSigOnContract(v.TxHash1)
-
-			if err != nil {
-				logs.GetLogger().Error(err)
-			} else {
-				err = service.SaveDaoEventFromTxHash(v.TxHash1, v.PayloadCid, v.Recipent, deal_id, verification1)
-				if err != nil {
-					logs.GetLogger().Error(err)
-				}
-				if verification1 {
-					daosignCount++
-				}
-			}
-		}
-
-		if v.TxHash2 != "" {
-			verification2, err := service.VerifyDaoSigOnContract(v.TxHash2)
-			if err != nil {
-				logs.GetLogger().Error(err)
-			} else {
-				err = service.SaveDaoEventFromTxHash(v.TxHash2, v.PayloadCid, v.Recipent, deal_id, verification2)
-				if err != nil {
-					logs.GetLogger().Error(err)
-				}
-				if verification2 {
-					daosignCount++
-				}
-			}
-		}
-
-		if v.TxHash3 != "" {
-			verification3, err := service.VerifyDaoSigOnContract(v.TxHash3)
-			if err != nil {
-				logs.GetLogger().Error(err)
-			} else {
-				err = service.SaveDaoEventFromTxHash(v.TxHash3, v.PayloadCid, v.Recipent, deal_id, verification3)
-				if err != nil {
-					logs.GetLogger().Error(err)
-				}
-				if verification3 {
-					daosignCount++
-				}
-			}
-		}
-
-		events, err := models.GetEventDaoSignaturesByDealId(deal_id)
-
-		if err != nil {
-			logs.GetLogger().Error(err)
-		} else {
-			if daosignCount >= 2 || len(events) >= 2 {
-				daoFetchedDeal := new(models.DaoFetchedDeal)
-				dealIdIntValue, err := strconv.ParseInt(v.DealId, 10, 64)
-				if err != nil {
-					logs.GetLogger().Error(err)
-					continue
-				}
-				daoFetchedDeal.DealId = dealIdIntValue
-				daoFetchedDeal.CreateAt = libutils.GetCurrentUtcSecond()
-				err = database.SaveOne(daoFetchedDeal)
-				if err != nil {
-					logs.GetLogger().Error(err)
-					continue
-				}
-				var response daoBackendResponse
-				response.DealId = v.DealId
-				response.PayloadCid = v.PayloadCid
-				response.SuccessDaoCount = len(events)
-				daoSignRes = append(daoSignRes, response)
-			}
-		}
+	if daoSignature.DealId <= 0 {
+		err := fmt.Errorf("deal_id should be greater than 0")
+		logs.GetLogger().Error(err)
+		c.AbortWithStatusJSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_INVALID_VALUE))
+		return
 	}
 
-	c.JSON(http.StatusOK, common.CreateSuccessResponse(&daoSignRes))
+	if daoSignature.TxHash == "" || !strings.HasPrefix(daoSignature.TxHash, "0x") {
+		err := fmt.Errorf("tx_hash is invalid")
+		logs.GetLogger().Error(err)
+		c.AbortWithStatusJSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_INVALID_VALUE))
+		return
+	}
+
+	if daoSignature.Recipent == "" {
+		err := fmt.Errorf("recipent is required")
+		logs.GetLogger().Error(err)
+		c.AbortWithStatusJSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_NULL))
+		return
+	}
+
+	err = service.WriteDaoSignature(daoSignature.TxHash, daoSignature.Recipent, daoSignature.DealId)
+	if err != nil {
+		logs.GetLogger().Error(err)
+	}
+
+	c.JSON(http.StatusOK, common.CreateSuccessResponse(""))
 }

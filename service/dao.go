@@ -39,6 +39,7 @@ func GetDeals2BeSigned(signerWalletAddress string) ([]*Deal2BeSigned, error) {
 	for _, offlineDeal := range offlineDeals {
 		deal2BeSigned := &Deal2BeSigned{
 			DealId: *offlineDeal.DealId,
+			WCids:  []string{},
 		}
 
 		sourceFileUploads, err := models.GetSourceFileUploadsByCarFileId(offlineDeal.CarFileId)
@@ -47,12 +48,9 @@ func GetDeals2BeSigned(signerWalletAddress string) ([]*Deal2BeSigned, error) {
 			return nil, err
 		}
 
-		wCids := []string{}
-
 		for _, sourceFileUpload := range sourceFileUploads {
-			wCids = append(wCids, sourceFileUpload.Uuid+sourceFileUpload.PayloadCid)
+			deal2BeSigned.WCids = append(deal2BeSigned.WCids, sourceFileUpload.Uuid+sourceFileUpload.PayloadCid)
 		}
-		deal2BeSigned.WCids = wCids
 
 		deals2BeSigned = append(deals2BeSigned, deal2BeSigned)
 	}

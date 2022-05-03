@@ -3,12 +3,6 @@
     <div class="form">
       <div class="form_top">
         <div class="search_file">
-          <div class="createTask">
-            <router-link :to="{name: 'upload_file'}">
-                <span>{{$t('uploadFile.Upload_More_Files')}}</span>
-                <i class="el-icon-s-upload"></i>
-            </router-link>
-          </div>
           <div class="search_right">
             <el-input
               :placeholder="$t('uploadFile.search_title')"
@@ -16,6 +10,12 @@
               v-model="searchValue" clearable
             >
             </el-input>
+          </div>
+          <div class="createTask">
+            <router-link :to="{name: 'upload_file'}">
+                <img src="@/assets/images/my_file/icon_Upload@2x.png" alt="">
+                <span>{{$t('uploadFile.Upload_More_Files')}}</span>
+            </router-link>
           </div>
         </div>
       </div>
@@ -29,7 +29,7 @@
            v-loading="loading" @sort-change="sortChange"
            :default-sort = "{prop: 'date', order: 'descending'}" @filter-change="filterChange" 
         >
-          <el-table-column prop="file_name" min-width="120" sortable="custom">
+          <el-table-column prop="file_name" min-width="100" sortable="custom">
             <template slot="header" slot-scope="scope">
               <div class="tips">
                 {{$t('uploadFile.file_name')}}
@@ -41,7 +41,7 @@
             </template>
             <template slot-scope="scope">
               <div class="hot-cold-box" style="text-decoration: underline;" @click="toDetail(scope.row)">
-                <span target="_blank" style="color: inherit;font-weight:600;">{{ scope.row.file_name }}</span>
+                <span target="_blank" style="color: inherit;">{{ scope.row.file_name }}</span>
               </div>
             </template>
           </el-table-column>
@@ -52,32 +52,32 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="status" :label="$t('uploadFile.file_status')" width="140">
+          <el-table-column prop="status" :label="$t('uploadFile.file_status')" width="130">
             <template slot-scope="scope">
               <el-button type="danger" class="statusStyle" v-if="scope.row.status&&scope.row.status.toLowerCase()=='failed'">
                   {{ languageMcs == "en" ? "Fail" : '失败'}}
               </el-button>
-              <el-button type="pending" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='pending'">
+              <el-button plain type="pending" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='pending'">
                   {{ languageMcs == "en" ? "Pending" : '待支付'}}
               </el-button>
-              <el-button type="primary" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='processing'">
+              <el-button plain type="primary" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='processing'">
                   {{ languageMcs == "en" ? "Processing" : '处理中'}}
               </el-button>
-              <el-button type="success" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='active'">
+              <el-button plain type="success" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='active'">
                   {{ languageMcs == "en" ? "Active" : '完成'}}
               </el-button>
-              <el-button type="info" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='refunded'">
+              <el-button plain type="info" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='refunded'">
                   {{ languageMcs == "en" ? "Refunded" : '已退款'}}
               </el-button>
-              <el-button type="refunding" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='refunding'">
+              <el-button plain type="refunding" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='refunding'">
                   {{ languageMcs == "en" ? "Refunding" : '可退款'}}
               </el-button>
-              <el-button type="info" plain class="statusStyle" v-else>
+              <el-button plain type="info" class="statusStyle" v-else>
                   {{scope.row.status}}
               </el-button>
             </template>
           </el-table-column>
-          <el-table-column prop="pin_status" width="140">
+          <el-table-column prop="pin_status" width="120">
             <template slot="header" slot-scope="scope">
               <div class="tips">
                 {{$t('uploadFile.status')}}
@@ -91,7 +91,7 @@
               <div class="statusStyle" style="color: #6c757d" v-if="scope.row.pin_status&&scope.row.pin_status.toLowerCase()=='unpinned'">
                   {{scope.row.pin_status}}
               </div>
-              <div class="statusStyle" style="color: #ff9900" v-if="scope.row.pin_status&&scope.row.pin_status.toLowerCase()=='pinned'">
+              <div class="statusStyle" style="color: #FF9966" v-if="scope.row.pin_status&&scope.row.pin_status.toLowerCase()=='pinned'">
                   {{scope.row.pin_status}}
               </div>
             </template>
@@ -280,12 +280,12 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="upload_at" :label="$t('uploadFile.upload_time')" width="100" sortable="custom">
+          <el-table-column prop="upload_at" :label="$t('uploadFile.upload_time')" width="140" sortable="custom">
             <template slot-scope="scope">
               {{ scope.row.upload_at }}
             </template>
           </el-table-column>
-          <el-table-column prop="active" width="120" :label="$t('uploadFile.payment')"
+          <el-table-column prop="active" width="130" :label="$t('uploadFile.payment')"
             :filters="[{text: $t('uploadFile.filter_status_Unpaid'), value: '0'}, {text: $t('uploadFile.filter_status_Paid'), value: '1'}, 
                        {text: $t('uploadFile.filter_status_Refunding'), value: '2'}, {text: $t('uploadFile.filter_status_Refunded'), value: '3'}]"
             :filter-multiple="false" :column-key="'payment'">
@@ -317,7 +317,7 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="MINT" width="100" :label="$t('uploadFile.MINT')"
+          <el-table-column prop="MINT" width="125" :label="$t('uploadFile.MINT')"
             :filters="[{text: $t('uploadFile.filter_no_minted'), value: '0'}, {text: $t('uploadFile.filter_minted'), value: '1'}]"
             :filter-multiple="false" :column-key="'minted'">
             <template slot-scope="scope">
@@ -343,24 +343,12 @@
           <div class="pagination">
             <el-pagination
               :total="parma.total"
-              :page-sizes="[10, 20, 30]"
               :page-size="parma.limit"
               :current-page="parma.offset"
-              :pager-count="bodyWidth ? 5 : 7"
-              background
-              :layout="
-                bodyWidth
-                  ? 'prev, pager, next'
-                  : 'total, sizes, prev, pager, next'
-              "
+              :layout="'prev, pager, next'"
               @current-change="handleCurrentChange"
               @size-change="handleSizeChange"
             />
-            <div class="span" v-if="!bodyWidth">
-              <span>{{$t('uploadFile.goTo')}}</span>
-              <el-input class="paginaInput" @change="pageSizeChange" v-model.number="parma.jumperOffset" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')" autocomplete="off"></el-input>
-              <span>{{$t('uploadFile.goTopage')}}</span>
-            </div>
           </div>
         </div>
       </div>
@@ -680,7 +668,7 @@ export default {
         })
         .then((res) => {
             if (res.data.status == "success") {
-                if(res.data.data.tx_hash){
+                if(res.data.data.pay_tx_hash){
                     _this.$message.error(_this.$t('deal.file_error'))
                     _this.loading = false
                     _this.getData()
@@ -711,7 +699,7 @@ export default {
                                   // console.log('errorerrorerror', error)
                                 })
                             }
-                            _this.contractSend(res.data.data.payload_cid, web3.utils.toWei(rowAmount, 'ether'))
+                            _this.contractSend(res.data.data.w_cid, web3.utils.toWei(rowAmount, 'ether'))
                         })
                       }
                   })
@@ -1290,7 +1278,7 @@ export default {
 <style scoped lang="scss">
 #dealManagement {
   position: relative;
-  padding: 0.25rem 0.2rem 0.2rem;
+  padding: 0.3rem;
   .el-alert /deep/{
       position: absolute;
       left: 0;
@@ -1468,7 +1456,7 @@ export default {
 
   .form {
     position: relative;
-    padding: 0.1rem 0.17rem 0.2rem;
+    padding: 0.3rem;
     background-color: #fff;
     border-radius: 0.1rem;
 
@@ -1498,7 +1486,7 @@ export default {
       display: flex;
       align-items: center;
       flex-wrap: wrap;
-
+      margin: 0 auto 0.3rem;
       .title {
         width: 100%;
         margin: 0;
@@ -1576,8 +1564,7 @@ export default {
         align-items: center;
         justify-content: space-between;
         width: 100%;
-        height: 0.42rem;
-        margin: 0.1rem 0 0;
+        margin: 0;
         p{
           font-size: 0.13rem;
           color: #222;
@@ -1586,24 +1573,37 @@ export default {
           background-color: #fff;
           border-radius: 0.1rem;
           a {
-            display: block;
-            padding: 0 0.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.23rem;
+            padding: 0.15rem 0;
             margin: 0;
-            background-color: #4326ab;
-            line-height: 2;
-            border-radius: 4px;
+            background: linear-gradient(45deg,#4e88ff, #4b5fff);
+            border-radius: 0.14rem;
+            line-height: 1.5;
             text-align: center;
             color: #fff;
-            font-size: 0.16rem;
+            font-size: 0.2rem;
             border: 0;
             outline: none;
+            transition: background-color .3s, border-color .3s, color .3s, box-shadow .3s;
+            img{
+              display: inline-block;
+              height: 0.3rem;
+              margin: 0 0.1rem 0 0;
+            }
+            &:hover{
+              opacity: .9;
+              box-shadow: 0 12px 12px -12px rgba(12, 22, 44, 0.32);
+            }
           }
         }
         .search_right {
           display: flex;
           align-items: center;
-          width: 50%;
-          // margin-left: 0.3rem;
+          width: 100%;
+          margin-right: 0.9rem;
           .el-button /deep/ {
               height: 0.3rem;
               padding: 0 0.15rem;
@@ -1618,19 +1618,45 @@ export default {
         }
         .el-input /deep/ {
           float: left;
-
+          padding: 0 0.3rem 0 0.8rem;
+          background: #f7f7f7;
+          border-radius: 0.2rem;
           .el-input__inner {
             width: 100%;
-            color: #737373;
-            font-size: 0.12rem;
-            height: 0.3rem;
+            color: #555;
+            font-size: 0.2rem;
+            font-weight: 500;
+            height: 0.6rem;
             line-height: 0.3rem;
-            padding: 0 0.27rem;
+            padding: 0;
+            background: transparent;
+            border: 0;
+            border-radius: 0.2rem;
           }
-
+          .el-input__prefix{
+            left: 0.3rem;
+            i{
+              display: flex;
+              align-items: center;
+              font-size: 0.3rem;
+              color: #000;
+            }
+          }
           .el-input__icon {
             line-height: 0.3rem;
           }
+          ::-webkit-input-placeholder{
+            color: #555;
+          }    /* 使用webkit内核的浏览器 */
+          :-moz-placeholder{
+            color: #555;
+          }                  /* Firefox版本4-18 */
+          ::-moz-placeholder{
+            color: #555;
+          }                  /* Firefox版本19+ */
+          :-ms-input-placeholder{
+            color: #555;
+          }           /* IE浏览器 */
         }
       }
     }
@@ -1649,29 +1675,42 @@ export default {
 
     .form_table {
       position: relative;
-      margin: 0.1rem 0 0.1rem;
-      border: 1px solid #e6e6e6;
-      border-radius: 4px;
+      margin: 0;
       overflow: hidden;
       .statusStyle /deep/{
         display: inline-block;
+        background: transparent;
         border: 1px solid;
-        padding: 0.04rem 0.05rem;
-        border-radius: 0.05rem;
+        padding: 0.07rem 0.13rem;
+        border-radius: 0.14rem;
         line-height: 1.5;
+        font-size: inherit;
         // color: inherit !important;
         span{
           white-space: normal;
         }
       }
+      .el-button--primary:hover{
+        color: #409EFF;
+      }
+      .el-button--success:hover{
+        color: #67c23a;
+      }
+      .el-button--info:hover{
+        color: #909399;
+      }
+      .el-button--warning:hover{
+        color: #e6a23c;
+      }
+      .el-button--danger:hover{
+        color: #f78989;
+      }
       .el-button--refunding{
-        color: #FFF;
-        background-color: #f9d54b;
+        color: #f9d54b;
         border-color: #f9d54b;
       }
       .el-button--pending{
-        color: #FFF;
-        background-color: #f2a942;
+        color: #f2a942;
         border-color: #f2a942;
       }
 
@@ -1686,24 +1725,26 @@ export default {
         .el-table__body-wrapper,
         .el-table__header-wrapper {
           // overflow: visible;
+          border-radius: 0.2rem;
         }
 
         tr {
           cursor: pointer;
           th {
-            height: 0.5rem;
+            height: 0.7rem;
             padding: 0;
-            background-color: #f2f2f2 !important;
+            background-color: #e5eeff !important;
             text-align: center;
 
             .cell {
               display: flex;
               align-items: center;
               justify-content: center;
-              word-break: break-word;
+              word-break: break-word;    
+              font-size: 0.2rem;
               font-weight: 500;
-              color: #737373;
-              text-transform: uppercase;
+              color: #555;
+              text-transform: capitalize;
               .caret-wrapper{
                 // display: none;
                 width: 10px;
@@ -1717,8 +1758,8 @@ export default {
                 align-items: center;    
                 justify-content: center;
                 img{
-                    width: 0.16rem;
-                    height: 0.16rem;
+                    width: 0.2rem;
+                    height: 0.2rem;
                     margin: 0 0 0 5px;
                     cursor: pointer;
                     @media screen and (max-width:600px){
@@ -1780,11 +1821,11 @@ export default {
 
           td {
             padding: 0.15rem 0.05rem;
-            border-bottom: 1px solid #f2f2f2;
+            border-bottom: 1px solid #dfdfdf;
 
             .cell {
               padding: 0;
-              font-size: 0.1372rem;
+              font-size: 0.18rem;
               word-break: break-word;
               color: #000;
               text-align: center;
@@ -1901,11 +1942,12 @@ export default {
                     border: 0;
                     padding: 0;
                     background-color: transparent;
-                    font-size: 0.1372rem;
+                    font-size: 0.18rem;
+                    font-family: inherit;
                     word-break: break-word;
                     color: #000;
                     text-align: center;
-                    line-height: 0.25rem;
+                    line-height: 1.5;
                     overflow: hidden;
                     text-overflow: ellipsis;
                     white-space: normal;
@@ -1913,7 +1955,7 @@ export default {
                     -webkit-line-clamp: 2;
                     -webkit-box-orient: vertical;
                     span{
-                        line-height: 0.25rem;
+                        line-height: 1.5;
                         overflow: hidden;
                         text-overflow: ellipsis;
                         white-space: normal;
@@ -1935,17 +1977,22 @@ export default {
                 }
                 .uploadBtn{
                   width: auto;
-                  padding: 0 0.1rem;
+                  padding: 0.07rem 0.23rem;
                   margin: auto;
-                  color: #5a5a5a;
-                  box-shadow: 0 0 0.06rem rgba(191, 191, 191, 0.32);
-                  border-radius: 4px;
+                  color: #555555;
+                  // box-shadow: 0 0 0.06rem rgba(191, 191, 191, 0.32);
+                  box-shadow: none;
+                  border-radius: 0.14rem;
                   border: 1px solid #DCDFE6;
                   white-space: nowrap;
                   display: inline-block;
                   &:hover{
-                    background-color: #fff;
+                    opacity: .9;
                   }
+                }
+                .blue{
+                  background: #4f87ff;
+                  color: #fff;
                 }
                 .opacity{
                   box-shadow: none;
@@ -2258,6 +2305,9 @@ export default {
           }
         }
       }
+      .el-table::before{
+        display: none;
+      }
 
       .actionStyle {
         position: relative;
@@ -2360,16 +2410,35 @@ export default {
       align-items: center;
       height: 0.35rem;
       text-align: center;
-      margin: 0.05rem 0;
-      padding: 0 5% 0 0;
+      margin: 0.5rem 0 0.06rem;
+      padding: 0;
       @media screen and (max-width: 1024px){
         padding: 0;
       }
       .pagination {
         display: flex;
         align-items: center;
-        font-size: 0.1372rem;
+        font-size: 0.18rem;
         color: #000;
+        .el-pagination /deep/{
+          .el-icon{
+              font-size: 0.18rem;
+          }
+          .el-pager{
+            li{
+              min-width: 30px;
+              height: 30px;
+              font-size: 0.18rem;
+              font-weight: normal;
+              line-height: 30px;
+            }
+            .active{
+              border: 1px solid #6798f5;
+              border-radius: 5px;
+              color: #000;
+            }
+          }
+        }
         .el-select /deep/{
           max-width: 100px;
           margin-right: 0.15rem;

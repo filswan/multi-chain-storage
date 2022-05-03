@@ -13,7 +13,8 @@ const app = {
         metaInfo: {},
         avater: localStorage.getItem('oaxLoginAvater') || require('../../assets/images/user_big.png'),
         htmlGo:{},
-        collapseL:  localStorage.getItem('collapseL') || false,
+        // collapseL:  localStorage.getItem('collapseL') || false,
+        collapseL:  false,
         metaAddress: sessionStorage.getItem('metaAddress') || '',
         networkID: sessionStorage.getItem('networkID') || 0,
         metaNetworkInfo: sessionStorage.getItem('metaNetworkInfo') || {}

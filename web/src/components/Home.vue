@@ -20,16 +20,6 @@
                     </transition>
                 </div>
                 <div class="fes-icon">
-                    <div class="fes-icon-logo">
-                        <a href="https://filswan.medium.com/" target="_block"><img :src="share_img1" alt=""></a>
-                        <a href="https://discord.com/invite/KKGhy8ZqzK" target="_block"><img :src="share_img10" alt=""></a>
-                        <a href="https://twitter.com/0xfilswan" target="_block"><img :src="share_img2" alt=""></a>
-                        <a href="https://github.com/filswan" target="_block"><img :src="share_img3" alt=""></a>
-                        <!-- <a href="https://www.facebook.com/filswan.technology" target="_block"><img :src="share_img5" alt=""></a>
-                        <a href="https://filswan.slack.com" target="_block"><img :src="share_img7" alt=""></a>
-                        <a href="https://youtube.com/channel/UCcvrZdNqFWYl3FwfcHS9xIg" target="_block"><img :src="share_img8" alt=""></a> -->
-                        <a href="https://t.me/filswan" target="_block"><img :src="share_img9" alt=""></a>
-                    </div>
                     <div class="fes-icon-copy">
                         <span>© 2022 FilSwan Canada</span>
                         <el-divider direction="vertical"></el-divider>
@@ -111,7 +101,7 @@ export default {
                 window.location.reload();
             }
         }
-        console.log('update time: 2022-04-27')
+        console.log('update time: 2022-05-03')
     }
 };
 </script>
@@ -122,18 +112,18 @@ export default {
     position: relative;
     display: flex;
     flex-wrap: wrap;
-    width: 18rem;
+    width: 19.2rem;
     max-width: 100%;
     margin: auto;
-    @media screen and (max-width: 1800px) { 
-        width: 16.9rem;
-    }
-    @media screen and (max-width: 1600px) { 
-        width: 15rem;
-    }
-    @media screen and (max-width: 1440px) { 
-        width: 13.5rem;
-    }
+    // @media screen and (max-width: 1800px) { 
+    //     width: 16.9rem;
+    // }
+    // @media screen and (max-width: 1600px) { 
+    //     width: 15rem;
+    // }
+    // @media screen and (max-width: 1440px) { 
+    //     width: 13.5rem;
+    // }
     .content{
         position: relative;
         height: 100%;
@@ -161,7 +151,7 @@ export default {
         // }
         .content_body{
             // position: relative;
-            min-height: calc(100% - 65px);
+            min-height: calc(100% - 0.84rem);
             .el-alert{
                 position: absolute;
                 left: 0;
@@ -194,11 +184,11 @@ export default {
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                padding: 0 0 10px;
+                padding: 0.3rem 0;
                 span, a{
-                    font-size: 12px;
-                    color: #333;
-                    line-height: 15px;
+                    font-size: 0.16rem;
+                    color: #888;
+                    line-height: 1.5;
                 }
                 a{
                     &:hover{

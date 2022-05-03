@@ -103,25 +103,13 @@
                         <div class="form_pagination">
                             <div class="pagination">
                                 <el-pagination
-                                :total="parma.total"
-                                :page-sizes="[10, 20, 30]"
-                                :page-size="parma.limit"
-                                :current-page="parma.offset"
-                                :pager-count="bodyWidth ? 5 : 7"
-                                background
-                                :layout="
-                                    bodyWidth
-                                    ? 'prev, pager, next'
-                                    : 'total, sizes, prev, pager, next'
-                                "
-                                @current-change="handleCurrentChange"
-                                @size-change="handleSizeChange"
+                                    :total="parma.total"
+                                    :page-size="parma.limit"
+                                    :current-page="parma.offset"
+                                    :layout="'prev, pager, next'"
+                                    @current-change="handleCurrentChange"
+                                    @size-change="handleSizeChange"
                                 />
-                                <div class="span" v-if="!bodyWidth">
-                                    <span>{{$t('uploadFile.goTo')}}</span>
-                                    <el-input class="paginaInput" @change="pageSizeChange" v-model.number="parma.jumperOffset" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')" autocomplete="off"></el-input>
-                                    <span>{{$t('uploadFile.goTopage')}}</span>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -509,6 +497,7 @@
                 .el-button{
                     width: 100%;
                     font-size: 0.14rem;
+                    font-family: inherit;
                     height: 0.4rem;
                     padding: 0;
                     background: #5c3cd3;
@@ -529,7 +518,7 @@
     }
 }
 #dealManagement{
-    padding: 0.25rem 0.2rem 0.2rem;
+    padding: 0.3rem;
     .metatips /deep/{
         position: absolute;
         left: 0;
@@ -540,12 +529,12 @@
         }
     }
     .upload{
-        padding: 0.1rem 0.35rem 0.2rem 0.2rem;
+        padding: 0.3rem;
         background-color: #fff;
         border-radius: 0.1rem;
         overflow: hidden;
         #billing{
-            padding: 0.25rem 0;
+            padding: 0;
             .backTo{
                 display: flex;
                 align-items: center;
@@ -555,7 +544,7 @@
                 cursor: pointer;
             }
             .form{
-                margin: 0 0 0.2rem;
+                margin: 0;
                 padding: 0;
                 background-color: #fff;
                 border-radius: 0.1rem;
@@ -578,8 +567,7 @@
                         align-items: center;
                         justify-content: flex-start;
                         width: 100%;
-                        height: 0.42rem;
-                        font-size: 0.13rem;
+                        font-size: 0.18rem;
                         color: #737373;
                         @media screen and (max-width: 600px){
                             font-size: 12px;
@@ -598,37 +586,41 @@
                         }
 
                         .el-button /deep/ {
-                            height: 0.34rem;
+                            height: 0.6rem;
                             padding: 0 0.4rem;
                             margin: 0 0.1rem 0 0;
                             color: #fff;
-                            line-height: 0.34rem;
-                            font-size: 0.1372rem;
+                            line-height: 0.6rem;
+                            font-size: 0.2rem;
+                            font-family: inherit;
                             border: 0;
-                            border-radius: 4px;
+                            border-radius: 0.14rem;
                         }
-
                         .el-input /deep/ {
                             float: left;
                             width: 35%;
                             margin-right: 0.1rem;
+                            padding: 0 0.3rem 0 0;
+                            background: #f7f7f7;
+                            border-radius: 0.2rem;
                             .el-input__inner {
                                 width: 100%;
-                                color: #737373;
-                                font-family: inherit;
-                                font-size: 0.13rem;
-                                height: 0.34rem;
-                                line-height: 0.34rem;
-                                padding: 0 0.1rem;
-                                border-left: 0;
-                                border-color: #DCDFE6 !important;
+                                color: #555;
+                                font-size: 0.2rem;
+                                font-weight: 500;
+                                height: 0.6rem;
+                                line-height: 0.3rem;
+                                padding: 0;
+                                background: transparent;
+                                border: 0;
+                                border-radius: 0.2rem;
                                 @media screen and (max-width: 600px){
                                     font-size: 12px;
                                 }
                             }
 
                             .el-input__icon {
-                                line-height: 0.24rem;
+                                line-height: 0.3rem;
                             }
 
                             .el-input-group__prepend {
@@ -636,6 +628,7 @@
                                 width: 130px;
                                 padding: 0;
                                 background: transparent;
+                                border: 0;
                                 &::before{
                                     content: '';
                                     position: absolute;
@@ -658,6 +651,18 @@
                                     }
                                 }
                             }
+                            ::-webkit-input-placeholder{
+                                color: #555;
+                            }    /* 使用webkit内核的浏览器 */
+                            :-moz-placeholder{
+                                color: #555;
+                            }                  /* Firefox版本4-18 */
+                            ::-moz-placeholder{
+                                color: #555;
+                            }                  /* Firefox版本19+ */
+                            :-ms-input-placeholder{
+                                color: #555;
+                            }           /* IE浏览器 */
                         }
 
                         // .el-select /deep/ {
@@ -697,9 +702,9 @@
                             border-radius: 0.08rem;
                             // cursor: pointer;
                             th{
-                                height: 0.5rem;
+                                height: 0.7rem;
                                 padding: 0;
-                                background-color: #f2f2f2 !important;
+                                background-color: #e5eeff !important;
                                 text-align: center;
                                 .cell{
                                     display: flex;
@@ -707,9 +712,10 @@
                                     justify-content: center;
                                     // padding-right: 0;
                                     word-break: break-word;
+                                    font-size: 0.2rem;
                                     font-weight: 500;
-                                    color: #737373;
-                                    text-transform: uppercase;
+                                    color: #555;
+                                    text-transform: capitalize;
                                 }
                             }
                             th.is-leaf{
@@ -724,10 +730,11 @@
                                 border-bottom-right-radius: 0.08rem;
                             }
                             td{
-                                border-bottom: 1px solid #f2f2f2;
+                                padding: 0.15rem 0.05rem;
+                                border-bottom: 1px solid #dfdfdf;
                                 .cell{
                                     padding: 0 0.05rem;
-                                    font-size: 0.1372rem;
+                                    font-size: 0.18rem;
                                     word-break: break-word;
                                     color: #000;
                                     text-align: center;
@@ -744,7 +751,8 @@
                                             padding: 0;
                                             margin: 0;
                                             background-color: transparent;
-                                            font-size: 0.1372rem;
+                                            font-size: 0.18rem;
+                                            font-family: inherit;
                                             word-break: break-word;
                                             color: #000;
                                             text-align: center;
@@ -873,16 +881,35 @@
                     align-items: center;
                     height: 0.35rem;
                     text-align: center;
-                    margin: 0.05rem 0;
-                    padding: 0 5% 0 0;
+                    margin: 0.5rem 0 0.06rem;
+                    padding: 0;
                     @media screen and (max-width: 1024px){
                         padding: 0;
                     }
                     .pagination {
                         display: flex;
                         align-items: center;
-                        font-size: 0.1372rem;
+                        font-size: 0.18rem;
                         color: #000;
+                        .el-pagination /deep/{
+                        .el-icon{
+                            font-size: 0.18rem;
+                        }
+                        .el-pager{
+                            li{
+                            min-width: 30px;
+                            height: 30px;
+                            font-size: 0.18rem;
+                            font-weight: normal;
+                            line-height: 30px;
+                            }
+                            .active{
+                            border: 1px solid #6798f5;
+                            border-radius: 5px;
+                            color: #000;
+                            }
+                        }
+                        }
                         .el-select /deep/{
                         max-width: 100px;
                         margin-right: 0.15rem;
@@ -967,8 +994,9 @@
                             }
 
                             .el-button /deep/ {
-                            padding: 0 0.2rem;
-                            font-size: 0.1372rem;
+                                padding: 0 0.2rem;
+                                font-size: 0.1372rem;
+                                font-family: inherit;
                             }
                         }
                         }

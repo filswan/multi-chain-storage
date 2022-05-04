@@ -15,13 +15,13 @@ import (
 	"github.com/filswan/go-swan-lib/utils"
 )
 
-type Deal2BeSigned struct {
+type Deal2Sign struct {
 	SignerWalletAddress string   `json:"signer_wallet_address"`
 	DealId              int64    `json:"deal_id"`
 	WCids               []string `json:"w_cid"`
 }
 
-func GetDeals2BeSigned(signerWalletAddress string) ([]*Deal2BeSigned, error) {
+func GetDeals2Sign(signerWalletAddress string) ([]*Deal2Sign, error) {
 	signerWallet, err := models.GetWalletByAddress(signerWalletAddress, constants.WALLET_TYPE_META_MASK)
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -34,10 +34,10 @@ func GetDeals2BeSigned(signerWalletAddress string) ([]*Deal2BeSigned, error) {
 		return nil, err
 	}
 
-	deals2BeSigned := []*Deal2BeSigned{}
+	deals2Sign := []*Deal2Sign{}
 
 	for _, offlineDeal := range offlineDeals {
-		deal2BeSigned := &Deal2BeSigned{
+		deal2BeSigned := &Deal2Sign{
 			DealId: *offlineDeal.DealId,
 			WCids:  []string{},
 		}
@@ -52,10 +52,10 @@ func GetDeals2BeSigned(signerWalletAddress string) ([]*Deal2BeSigned, error) {
 			deal2BeSigned.WCids = append(deal2BeSigned.WCids, sourceFileUpload.Uuid+sourceFileUpload.PayloadCid)
 		}
 
-		deals2BeSigned = append(deals2BeSigned, deal2BeSigned)
+		deals2Sign = append(deals2Sign, deal2BeSigned)
 	}
 
-	return deals2BeSigned, nil
+	return deals2Sign, nil
 }
 
 func WriteDaoSignature(txHash string, signerWalletAddress string, dealId int64) error {

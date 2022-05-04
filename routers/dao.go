@@ -13,8 +13,8 @@ import (
 )
 
 func Dao(router *gin.RouterGroup) {
-	router.GET("/dao/signature/deals_to_sign/:signer_wallet_address", GetDeal2BeSigned)
-	router.POST("/dao/signature", WriteDaoSignature)
+	router.GET("/signature/deals_to_sign/:signer_wallet_address", GetDeal2BeSigned)
+	router.POST("/signature", WriteDaoSignature)
 }
 
 func GetDeal2BeSigned(c *gin.Context) {

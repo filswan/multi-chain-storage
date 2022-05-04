@@ -2,7 +2,6 @@ package routers
 
 import (
 	"multi-chain-storage/common"
-	"multi-chain-storage/common/constants"
 	"multi-chain-storage/common/errorinfo"
 	"multi-chain-storage/service"
 	"net/http"
@@ -13,8 +12,8 @@ import (
 )
 
 func HostManager(router *gin.RouterGroup) {
-	router.GET(constants.URL_HOST_GET_HOST_INFO, GetHostInfo)
-	router.GET(constants.URL_SYSTEM_CONFIG_PARAMS, GetSystemParams)
+	router.GET("/host/info", GetHostInfo)
+	router.GET("/system/params", GetSystemParams)
 }
 
 func GetHostInfo(c *gin.Context) {

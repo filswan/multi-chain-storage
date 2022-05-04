@@ -13,11 +13,11 @@ import (
 )
 
 func Dao(router *gin.RouterGroup) {
-	router.GET("/dao/signature/deals_to_sign/:signer_wallet_address", GetDeal2BeSigned)
-	router.POST("/dao/signature", WriteDaoSignature)
+	router.GET("/signature/deals_to_sign/:signer_wallet_address", GetDeals2Sign)
+	router.POST("/signature", WriteDaoSignature)
 }
 
-func GetDeal2BeSigned(c *gin.Context) {
+func GetDeals2Sign(c *gin.Context) {
 	logs.GetLogger().Info("ip:", c.ClientIP(), ",port:", c.Request.URL.Port())
 	signerWalletAddress := strings.Trim(c.Params.ByName("signer_wallet_address"), " ")
 	if signerWalletAddress == "" || !strings.HasPrefix(signerWalletAddress, "0x") {
@@ -27,7 +27,7 @@ func GetDeal2BeSigned(c *gin.Context) {
 		return
 	}
 
-	dealList, err := service.GetDeals2BeSigned(signerWalletAddress)
+	dealList, err := service.GetDeals2Sign(signerWalletAddress)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.ERROR_INTERNAL, err.Error()))

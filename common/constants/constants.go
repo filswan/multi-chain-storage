@@ -4,9 +4,6 @@ const (
 	DEFAULT_SELECT_LIMIT    = "100"
 	PAGE_SIZE_DEFAULT_VALUE = 10
 
-	URL_BILLING_PREFIX = "billing"
-	URL_STORAGE_PREFIX = "storage"
-
 	HTTP_STATUS_SUCCESS = "success"
 	HTTP_STATUS_ERROR   = "error"
 
@@ -14,10 +11,6 @@ const (
 	HTTP_CODE_400_BAD_REQUEST           = 400 //http.StatusBadRequest
 	HTTP_CODE_401_UNAUTHORIZED          = 401 //http.StatusUnauthorized
 	HTTP_CODE_500_INTERNAL_SERVER_ERROR = 500 //http.StatusInternalServerError
-
-	URL_HOST_GET_COMMON      = "/common"
-	URL_HOST_GET_HOST_INFO   = "/host/info"
-	URL_SYSTEM_CONFIG_PARAMS = "/system/params"
 
 	SOURCE_ID_OF_PAYMENT = 4
 

@@ -623,16 +623,18 @@ export default {
             gas: web3.utils.toHex(_this.$root.PAY_GAS_LIMIT),
         };
         
-        let lockObj = {
-            id: row.payload_cid,
-            orderId: "",
-            dealId: row.deal_id,
-            amount: row.locked_fee,
-            recipient: _this.recipientAddress, //todo:
-        }
-        console.log(lockObj)
+        let cidArray = []
+        // if(row.offline_deal) {
+        //   row.offline_deal.forEach(deal => {
+        //     cidArray.push(deal.deal_cid)
+        //   }); 
+        // }else{
+        //   return false
+        // }
+        cidArray.push(row.w_cid)
+        console.log('cid:', cidArray)
         try{
-          contract_instance.methods.unlockTokenPayment(lockObj)
+          contract_instance.methods.refund(cidArray)
           .send(payObject)
           .on('transactionHash', function(hash){
               console.log('unlock hash console:', hash);
@@ -2591,6 +2593,7 @@ export default {
     }
     .completeDia{
         text-align: center;
+        border-radius: 0.2rem;
         .el-dialog__header{
         display: none;
         }
@@ -2625,9 +2628,9 @@ export default {
             text-align: center;
         }
         h3, a{
-            font-size: 0.16rem;
+            font-size: 0.22rem;
             font-weight: 500;
-            line-height: 1.2;
+            line-height: 1.4;
             color: #191919;
             word-break: break-word;
         }

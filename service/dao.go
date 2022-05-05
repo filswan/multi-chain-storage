@@ -57,12 +57,13 @@ func GetDeals2Sign(signerWalletAddress string) ([]*Deal2Sign, error) {
 	return deals2Sign, nil
 }
 
-func WriteDaoSignature(txHash string, signerWalletAddress string, recipient string, dealId int64) error {
+func WriteDaoSignature(txHash string, recipientWalletAddress string, dealId int64) error {
 	ethClient, _, err := client.GetEthClient()
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
 	}
+
 	if txHash == "" || !strings.HasPrefix(txHash, "0x") {
 		err := fmt.Errorf("invalid tx hash:%s", txHash)
 		logs.GetLogger().Error(err)
@@ -71,6 +72,7 @@ func WriteDaoSignature(txHash string, signerWalletAddress string, recipient stri
 
 	transaction, _, err := ethClient.TransactionByHash(context.Background(), common.HexToHash(txHash))
 	if err != nil {
+		err := fmt.Errorf("failed to get transaction by tx hash: %s, %s", txHash, err.Error())
 		logs.GetLogger().Error(err)
 		return err
 	}
@@ -79,8 +81,16 @@ func WriteDaoSignature(txHash string, signerWalletAddress string, recipient stri
 		logs.GetLogger().Error(err)
 		return err
 	}
-	logs.GetLogger().Info("addrInfo.AddrFrom:", addrInfo.AddrFrom)
-	logs.GetLogger().Info("addrInfo.AddrTo:", addrInfo.AddrTo)
+	logs.GetLogger().Info("addrInfo.AddrFrom:", addrInfo.AddrFrom) //this is signer wallet address
+	logs.GetLogger().Info("addrInfo.AddrTo:", addrInfo.AddrTo)     //this is dao contract address
+	signerWalletAddress := addrInfo.AddrFrom
+	daoContractAddress := addrInfo.AddrTo
+	daoContractAddressConfig := config.GetConfig().Polygon.DaoContractAddress
+	if !strings.EqualFold(daoContractAddress, daoContractAddressConfig) {
+		err := fmt.Errorf("dao contract address:%s not match config:%s for tx hash:%s", daoContractAddress, daoContractAddressConfig, txHash)
+		logs.GetLogger().Error(err)
+		//return err
+	}
 
 	network, err := models.GetNetworkByName(constants.NETWORK_NAME_POLYGON)
 	if err != nil {
@@ -100,19 +110,19 @@ func WriteDaoSignature(txHash string, signerWalletAddress string, recipient stri
 		return err
 	}
 
-	walletContract, err := models.GetWalletByAddress(config.GetConfig().Polygon.DaoContractAddress, constants.WALLET_TYPE_META_MASK)
+	walletContract, err := models.GetWalletByAddress(daoContractAddress, constants.WALLET_TYPE_META_MASK)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
 	}
 
-	walletRecipient, err := models.GetWalletByAddress(recipient, constants.WALLET_TYPE_META_MASK)
+	walletRecipient, err := models.GetWalletByAddress(recipientWalletAddress, constants.WALLET_TYPE_META_MASK)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
 	}
 
-	transReceipt, err := ethClient.TransactionReceipt(context.Background(), common.HexToHash(txHash))
+	transactionReceipt, err := ethClient.TransactionReceipt(context.Background(), common.HexToHash(txHash))
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
@@ -145,7 +155,7 @@ func WriteDaoSignature(txHash string, signerWalletAddress string, recipient stri
 
 	daoSignature.NetworkId = network.ID
 	daoSignature.OfflineDealId = offlineDeal.Id
-	if transReceipt.Status == 1 {
+	if transactionReceipt.Status == 1 {
 		daoSignature.Status = constants.DAO_SIGNATURE_STATUS_SUCCESS
 	} else {
 		daoSignature.Status = constants.DAO_SIGNATURE_STATUS_FAIL

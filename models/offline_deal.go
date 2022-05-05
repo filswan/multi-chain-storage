@@ -99,7 +99,7 @@ func GetOfflineDealsByCarFileId(carFileId int64) ([]*OfflineDealOut, error) {
 }
 
 func GetOfflineDealByDealId(dealId int64) (*OfflineDeal, error) {
-	if dealId == 0 {
+	if dealId <= 0 {
 		err := fmt.Errorf("deal id must be greater than 0")
 		logs.GetLogger().Error(err)
 		return nil, err

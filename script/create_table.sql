@@ -187,18 +187,20 @@ create table transaction (
 
 create table dao_signature (
     id                           bigint        not null auto_increment,
-    network_id                   bigint        not null,
     offline_deal_id              bigint        not null,
-    status                       varchar(100)  not null,
+    network_id                   bigint        not null,
+    wallet_id_signer             bigint        not null,
+    wallet_id_recipient          bigint        not null,
+    wallet_id_contract           bigint        not null,
     tx_hash                      varchar(100)  not null,
-    signer_wallet_id             bigint        not null,
-    dao_recipient_id             bigint        not null,
+    status                       varchar(100)  not null,
     create_at                    bigint        not null,
     update_at                    bigint        not null,
     primary key pk_dao_signature(id),
     constraint un_dao_signature unique(offline_deal_id,tx_hash),
     constraint fk_dao_signature_network_id foreign key (network_id) references network(id),
     constraint fk_dao_signature_offline_deal_id foreign key (offline_deal_id) references offline_deal(id),
-    constraint fk_dao_signature_signer_wallet_id foreign key (signer_wallet_id) references wallet(id),
-    constraint fk_dao_signature_dao_recipient_id foreign key (dao_recipient_id) references wallet(id)
+    constraint fk_dao_signature_wallet_id_signer foreign key (wallet_id_signer) references wallet(id),
+    constraint fk_dao_signature_wallet_id_recipient foreign key (wallet_id_recipient) references wallet(id),
+    constraint fk_dao_signature_wallet_id_contract foreign key (wallet_id_contract) references wallet(id)
 );

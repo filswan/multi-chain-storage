@@ -40,6 +40,7 @@ func GetDeals2Sign(c *gin.Context) {
 type DaoSignature struct {
 	DealId              int64  `json:"deal_id"`
 	SignerWalletAddress string `json:"signer_wallet_address"`
+	Recipient           string `json:"recipient"`
 	TxHash              string `json:"tx_hash"`
 }
 
@@ -73,7 +74,7 @@ func WriteDaoSignature(c *gin.Context) {
 		return
 	}
 
-	err = service.WriteDaoSignature(daoSignature.TxHash, daoSignature.SignerWalletAddress, daoSignature.DealId)
+	err = service.WriteDaoSignature(daoSignature.TxHash, daoSignature.SignerWalletAddress, daoSignature.Recipient, daoSignature.DealId)
 	if err != nil {
 		logs.GetLogger().Error(err)
 	}

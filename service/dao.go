@@ -58,7 +58,7 @@ func GetDeals2Sign(signerWalletAddress string) ([]*Deal2Sign, error) {
 	return deals2Sign, nil
 }
 
-func WriteDaoSignature(txHash string, signerWalletAddress string, dealId int64) error {
+func WriteDaoSignature(txHash string, signerWalletAddress string, recipient string, dealId int64) error {
 	ethClient, _, err := client.GetEthClient()
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -101,7 +101,13 @@ func WriteDaoSignature(txHash string, signerWalletAddress string, dealId int64) 
 		return err
 	}
 
-	walletDao, err := models.GetWalletByAddress(config.GetConfig().Polygon.DaoContractAddress, constants.WALLET_TYPE_META_MASK)
+	walletContract, err := models.GetWalletByAddress(config.GetConfig().Polygon.DaoContractAddress, constants.WALLET_TYPE_META_MASK)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	walletRecipient, err := models.GetWalletByAddress(recipient, constants.WALLET_TYPE_META_MASK)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
@@ -146,8 +152,9 @@ func WriteDaoSignature(txHash string, signerWalletAddress string, dealId int64) 
 		daoSignature.Status = constants.DAO_SIGNATURE_STATUS_FAIL
 	}
 	daoSignature.TxHash = txHash
-	daoSignature.SignerWalletId = walletSigner.ID
-	daoSignature.DaoRecipientId = walletDao.ID
+	daoSignature.WalletIdSigner = walletSigner.ID
+	daoSignature.WalletIdRecipient = walletRecipient.ID
+	daoSignature.WalletIdContract = walletContract.ID
 	daoSignature.UpdateAt = currentUtcSecond
 
 	err = database.SaveOne(daoSignature)

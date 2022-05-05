@@ -16,9 +16,8 @@ import (
 )
 
 type Deal2Sign struct {
-	SignerWalletAddress string   `json:"signer_wallet_address"`
-	DealId              int64    `json:"deal_id"`
-	WCids               []string `json:"w_cid"`
+	DealId int64    `json:"deal_id"`
+	WCids  []string `json:"w_cid"`
 }
 
 func GetDeals2Sign(signerWalletAddress string) ([]*Deal2Sign, error) {

@@ -7,11 +7,6 @@ const (
 	HTTP_STATUS_SUCCESS = "success"
 	HTTP_STATUS_ERROR   = "error"
 
-	HTTP_CODE_200_OK                    = 200 //http.StatusOk
-	HTTP_CODE_400_BAD_REQUEST           = 400 //http.StatusBadRequest
-	HTTP_CODE_401_UNAUTHORIZED          = 401 //http.StatusUnauthorized
-	HTTP_CODE_500_INTERNAL_SERVER_ERROR = 500 //http.StatusInternalServerError
-
 	SOURCE_ID_OF_PAYMENT = 4
 
 	CAR_FILE_STATUS_TASK_CREATED        = "TaskCreated"

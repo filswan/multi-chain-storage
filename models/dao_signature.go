@@ -7,15 +7,16 @@ import (
 )
 
 type DaoSignature struct {
-	ID             int64  `json:"id"`
-	NetworkId      int64  `json:"network_id"`
-	OfflineDealId  int64  `json:"offline_deal_id"`
-	Status         string `json:"status"`
-	TxHash         string `json:"tx_hash"`
-	SignerWalletId int64  `json:"signer_wallet_id"`
-	DaoRecipientId int64  `json:"dao_recipient_id"`
-	CreateAt       int64  `json:"create_at"`
-	UpdateAt       int64  `json:"update_at"`
+	ID                int64  `json:"id"`
+	OfflineDealId     int64  `json:"offline_deal_id"`
+	NetworkId         int64  `json:"network_id"`
+	WalletIdSigner    int64  `json:"wallet_id_signer"`
+	WalletIdRecipient int64  `json:"wallet_id_recipient"`
+	WalletIdContract  int64  `json:"wallet_id_contract"`
+	TxHash            string `json:"tx_hash"`
+	Status            string `json:"status"`
+	CreateAt          int64  `json:"create_at"`
+	UpdateAt          int64  `json:"update_at"`
 }
 
 func GetDaoSignaturesByOfflineDealId(offlineDealId int64) ([]*DaoSignature, error) {

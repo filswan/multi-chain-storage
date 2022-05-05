@@ -49,9 +49,9 @@ func GetOfflineDeals2BeScanned() ([]*OfflineDeal, error) {
 func GetOfflineDeals2BeSigned(signerWalletId int64) ([]*OfflineDeal, error) {
 	var offlineDeals []*OfflineDeal
 	sql := "select * from offline_deal a\n" +
-		"left outer join dao_signature b on a.id=b.offline_deal_id\n" +
-		"where a.deal_id is not null and a.deal_id>0 and a.status=? and b.status=? and b.signer_wallet_id=? and b.id is null \n"
-	err := database.GetDB().Raw(sql, constants.OFFLINE_DEAL_STATUS_CREATED, constants.DAO_SIGNATURE_STATUS_SUCCESS, signerWalletId).Scan(&offlineDeals).Error
+		"left outer join dao_signature b on a.id=b.offline_deal_id and b.status=? and b.wallet_id_signer=?\n" +
+		"where a.deal_id is not null and a.deal_id>0 and a.status=? and b.id is null \n"
+	err := database.GetDB().Raw(sql, constants.DAO_SIGNATURE_STATUS_SUCCESS, signerWalletId, constants.OFFLINE_DEAL_STATUS_CREATED).Scan(&offlineDeals).Error
 
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -99,7 +99,7 @@ func GetOfflineDealsByCarFileId(carFileId int64) ([]*OfflineDealOut, error) {
 }
 
 func GetOfflineDealByDealId(dealId int64) (*OfflineDeal, error) {
-	if dealId == 0 {
+	if dealId <= 0 {
 		err := fmt.Errorf("deal id must be greater than 0")
 		logs.GetLogger().Error(err)
 		return nil, err

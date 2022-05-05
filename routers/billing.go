@@ -105,7 +105,7 @@ func WriteLockPayment(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, common.CreateSuccessResponse(""))
+	c.JSON(http.StatusOK, common.CreateSuccessResponse(nil))
 }
 
 func GetLockPaymentInfo(c *gin.Context) {

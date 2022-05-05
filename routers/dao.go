@@ -38,9 +38,9 @@ func GetDeals2Sign(c *gin.Context) {
 }
 
 type DaoSignature struct {
-	DealId   int64  `json:"deal_id"`
-	Recipent string `json:"recipent"`
-	TxHash   string `json:"tx_hash"`
+	DealId              int64  `json:"deal_id"`
+	SignerWalletAddress string `json:"signer_wallet_address"`
+	TxHash              string `json:"tx_hash"`
 }
 
 func WriteDaoSignature(c *gin.Context) {
@@ -66,14 +66,14 @@ func WriteDaoSignature(c *gin.Context) {
 		return
 	}
 
-	if daoSignature.Recipent == "" {
-		err := fmt.Errorf("recipent is required")
+	if daoSignature.SignerWalletAddress == "" {
+		err := fmt.Errorf("signer_wallet_address is required")
 		logs.GetLogger().Error(err)
 		c.AbortWithStatusJSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_NULL))
 		return
 	}
 
-	err = service.WriteDaoSignature(daoSignature.TxHash, daoSignature.Recipent, daoSignature.DealId)
+	err = service.WriteDaoSignature(daoSignature.TxHash, daoSignature.SignerWalletAddress, daoSignature.DealId)
 	if err != nil {
 		logs.GetLogger().Error(err)
 	}

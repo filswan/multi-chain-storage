@@ -51,7 +51,7 @@
       isLogin() {
         var _this = this
         if (_this.metaAddress && _this.networkID == 80001) {
-          _this.$router.push({ path: '/upload_file' })
+          _this.$router.push({ path: '/my_files' })
         }
       }
     },
@@ -153,11 +153,11 @@
         display: block;
         width: 100%;
         font-size: 0.22rem;
-        height: 0.5rem;
+        height: 0.6rem;
         padding: 0;
         background: linear-gradient(45deg,#4f8aff, #4b5eff);
         color: #fff;
-        border-radius: 0.06rem;
+        border-radius: 0.14rem;
         @media screen and (max-width:600px){
             font-size: 14px;
         }

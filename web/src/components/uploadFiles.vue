@@ -1,13 +1,24 @@
 <template>
     <div id="Create">
-        <div class="upload" v-loading="loading">
-            <div class="upload_title">{{$t('uploadFile.uploadFile_title')}}</div>
+        <el-dialog :modal="true" :close-on-click-modal="false" :width="widthDia" :visible.sync="uploadDigShow"
+            custom-class="uploadDig"
+            :before-close="closeDia">
+            <div class="loadMetamaskPay" v-if="loading">
+                <div>
+                    <div class="el-loading-spinner"><svg viewBox="25 25 50 50" class="circular"><circle cx="50" cy="50" r="20" fill="none" class="path"></circle></svg><!----></div>
+                    <p v-if="loadMetamaskPay">{{$t('uploadFile.payment_tip')}}</p>
+                </div>
+            </div>
+            <template slot="title">
+                {{$t('uploadFile.upload')}}  
+                
+                <el-tooltip effect="dark" :content="$t('uploadFile.uploadFile_title')" placement="top">
+                    <img src="@/assets/images/info.png"/>
+                </el-tooltip>
+            </template>
             <div class="upload_form">
                 <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" class="demo-ruleForm">
-                    <el-form-item prop="fileList" style="align-items: flex-start;">
-                        <label slot="label" style="line-height:0.32rem">
-                            {{$t('uploadFile.upload')}}
-                        </label>
+                    <el-form-item prop="fileList" :label="$t('uploadFile.upload')" :style="{'align-items': ruleForm.fileList_tip?'flex-start':'center'}">
                         <div>
                             <el-upload
                                 class="upload-demo"
@@ -17,10 +28,13 @@
                                 :file-list="ruleForm.fileList"
                                 :on-change="handleChange"
                                 :on-remove="handleRemove">
-                                <el-button size="small" type="primary" icon="el-icon-plus">{{$t('uploadFile.upload')}}</el-button>
+                                <el-button size="small" type="primary">
+                                    <img src="@/assets/images/my_file/icon_Upload@2x.png" alt="">
+                                    {{$t('uploadFile.upload')}}
+                                </el-button>
                             </el-upload>
                             <p v-if="ruleForm.fileList.length>0" style="display: flex;align-items: center;">
-                                <svg t="1637031488880" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3310" style="width: 0.13rem;height: 0.13rem;margin: 0 7px 0 5px;"><path d="M512 1024a512 512 0 1 1 512-512 32 32 0 0 1-32 32h-448v448a32 32 0 0 1-32 32zM512 64a448 448 0 0 0-32 896V512a32 32 0 0 1 32-32h448A448 448 0 0 0 512 64z" fill="#999999" p-id="3311"></path><path d="M858.88 976a32 32 0 0 1-32-32V640a32 32 0 0 1 32-32 32 32 0 0 1 32 32v304a32 32 0 0 1-32 32z" fill="#999999" p-id="3312"></path><path d="M757.12 773.12a34.56 34.56 0 0 1-22.4-8.96 32 32 0 0 1 0-45.44l101.12-101.12a32 32 0 0 1 45.44 0 30.72 30.72 0 0 1 0 44.8l-101.12 101.76a34.56 34.56 0 0 1-23.04 8.96z" fill="#999999" p-id="3313"></path><path d="M960 773.12a32 32 0 0 1-22.4-8.96l-101.76-101.76a32 32 0 0 1 0-44.8 32 32 0 0 1 45.44 0l101.12 101.12a32 32 0 0 1-22.4 54.4z" fill="#999999" p-id="3314"></path></svg>
+                                <svg t="1637031488880" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3310" style="width: 14px;height: 14px;margin: 0 6px 0 5px;"><path d="M512 1024a512 512 0 1 1 512-512 32 32 0 0 1-32 32h-448v448a32 32 0 0 1-32 32zM512 64a448 448 0 0 0-32 896V512a32 32 0 0 1 32-32h448A448 448 0 0 0 512 64z" fill="#999999" p-id="3311"></path><path d="M858.88 976a32 32 0 0 1-32-32V640a32 32 0 0 1 32-32 32 32 0 0 1 32 32v304a32 32 0 0 1-32 32z" fill="#999999" p-id="3312"></path><path d="M757.12 773.12a34.56 34.56 0 0 1-22.4-8.96 32 32 0 0 1 0-45.44l101.12-101.12a32 32 0 0 1 45.44 0 30.72 30.72 0 0 1 0 44.8l-101.12 101.76a34.56 34.56 0 0 1-23.04 8.96z" fill="#999999" p-id="3313"></path><path d="M960 773.12a32 32 0 0 1-22.4-8.96l-101.76-101.76a32 32 0 0 1 0-44.8 32 32 0 0 1 45.44 0l101.12 101.12a32 32 0 0 1-22.4 54.4z" fill="#999999" p-id="3314"></path></svg>
                                 {{ruleForm.file_size}}
                             </p>
                             <p v-if="ruleForm.fileList_tip" style="color: #F56C6C;font-size: 12px;line-height: 1;">{{ruleForm.fileList_tip_text}}</p>
@@ -34,7 +48,7 @@
                                 <img src="@/assets/images/info.png"/>
                             </el-tooltip>
                         </template>
-                        <el-input v-model="ruleForm.duration" disabled type="number" style="max-width:130px"></el-input> &nbsp; {{$t('components.day')}}
+                        {{ruleForm.duration}} {{$t('components.day')}}
                     </el-form-item>
                     <el-form-item prop="storage_copy">
                         <template slot="label">
@@ -44,7 +58,7 @@
                                 <img src="@/assets/images/info.png"/>
                             </el-tooltip>
                         </template>
-                        <el-input v-model="ruleForm.storage_copy" disabled type="number" style="max-width:130px"></el-input>
+                        {{ruleForm.storage_copy}}
                     </el-form-item>
                     <el-form-item prop="storage_cost">
                         <template slot="label">
@@ -54,7 +68,7 @@
                                 <img src="@/assets/images/info.png"/>
                             </el-tooltip>
                         </template>
-                        <span  style="color:#4326ab">{{ruleForm.storage_cost | NumStorage}} FIL</span> 
+                        <span  style="color:#2C7FF8">{{ruleForm.storage_cost | NumStorage}} FIL</span> 
                     </el-form-item>
                 </el-form>
                 <div class="upload_plan">
@@ -70,45 +84,35 @@
                             <el-radio label="1" border>
                                 <div class="title">{{$t('uploadFile.Low')}}</div>
                                 <div class="cont">
-                                    {{storage_cost_low}} <br/> USDC
+                                    {{storage_cost_low}} USDC
                                 </div>
                             </el-radio>
                             <el-radio label="2" border>
                                 <div class="title">{{$t('uploadFile.Average')}}</div>
                                 <div class="cont">
-                                    {{storage_cost_average}} <br/> USDC
+                                    {{storage_cost_average}} USDC
                                 </div>
                             </el-radio>
                             <el-radio label="3" border>
                                 <div class="title">{{$t('uploadFile.High')}}</div>
                                 <div class="cont">
-                                    {{storage_cost_high}} <br/> USDC
+                                    {{storage_cost_high}} USDC
                                 </div>
                             </el-radio>
                         </el-radio-group>
                     </div>
                 </div>
                 <div class="upload_bot">
-                    <el-button type="primary" :class="{'no_login': !metaAddress || metaAddress == 'undefined'}"
-                         @click="!metaAddress || metaAddress == 'undefined' ? signFun() : submitForm('ruleForm')">
-                         {{ !metaAddress || metaAddress == 'undefined' ? $t('fs3.Connect_Wallet') : $t('deal.Submit')}}
-                    </el-button>
-                    <br />
                     <div class="found">
-                        <a :href="found_link" target="_blank">{{$t('uploadFile.upload_funds')}}</a>
+                        <el-button type="primary" style="background: #dadada" @click="closeDia">{{$t('deal.Cancel')}}</el-button>
+                        <el-button type="primary" @click="submitForm('ruleForm')">{{$t('deal.Submit')}}</el-button>
                     </div>
+                    <a :href="found_link" target="_blank">{{$t('uploadFile.upload_funds')}}</a>
                 </div>
             </div>
+        </el-dialog>
 
-            <div class="loadMetamaskPay" v-if="loadMetamaskPay">
-                <div>
-                    <div class="el-loading-spinner"><svg viewBox="25 25 50 50" class="circular"><circle cx="50" cy="50" r="20" fill="none" class="path"></circle></svg><!----></div>
-                    <p>{{$t('uploadFile.payment_tip')}}</p>
-                </div>
-            </div>
-        </div>
-
-        <el-dialog title="" :visible.sync="finishTransaction" :width="width"
+        <el-dialog title="" :visible.sync="finishTransaction" :close-on-click-modal="false" :width="width"
             custom-class="completeDia">
             <img src="@/assets/images/alert-icon.png" />
             <h1>{{$t('uploadFile.COMPLETED')}}!</h1>
@@ -212,8 +216,8 @@
                 loading: false,
                 bodyWidth: document.documentElement.clientWidth < 1024 ? true : false,
                 fileListTip: false,
-                storage: 0,
                 biling_price: 0,
+                storage: 0,
                 storage_cost_low: 0,
                 storage_cost_average: 0,
                 storage_cost_high: 0,
@@ -222,6 +226,7 @@
                 modelClose: true,
                 width: document.body.clientWidth>600?'400px':'95%',
                 widthUpload: document.body.clientWidth>600?'450px':'95%',
+                widthDia: document.body.clientWidth<=600?'95%':'6.6rem',
                 gatewayContractAddress: this.$root.SWAN_PAYMENT_CONTRACT_ADDRESS,
                 recipientAddress: this.$root.RECIPIENT,
                 usdcAddress: this.$root.USDC_ADDRESS,
@@ -246,6 +251,7 @@
                 found_link: process.env.NODE_ENV == "production"?"https://calibration-faucet.filswan.com/":"http://192.168.88.216:8080/faucet/#/dashboard"
             };
         },
+        props: ['uploadDigShow'],
         components: {},
         watch: {
             'ruleForm.fileList': function(){
@@ -294,6 +300,9 @@
                     })
                     return false
                 }
+            },
+            closeDia() {
+                this.$emit('getUploadDialog', false)
             },
             submitForm(formName) {
                 let _this = this;
@@ -464,7 +473,6 @@
                 .on('transactionHash', function(hash){
                     // console.log('hash console:', hash);
                     _this.loadMetamaskPay = true
-                    _this.loading = false
                     _this.txHash = hash
                 })
                 .on('confirmation', function(confirmationNumber, receipt){
@@ -518,7 +526,7 @@
             },
             finishClose(){
                 this.finishTransaction = false
-                this.$router.push({name: 'my_files'})
+                this.$emit('getUploadDialog', false, true)
             },
             // 文件上传
             uploadFile(params) {
@@ -573,47 +581,34 @@
                 this.ruleForm.file_size = ''
                 this.ruleForm.file_size_byte = ''
             },
-            stats(){
+            async stats(){
                 let _this = this
                 _this.loading = true
                 if(_this.$root.SWAN_PAYMENT_CONTRACT_ADDRESS){
                     _this.gatewayContractAddress = _this.$root.SWAN_PAYMENT_CONTRACT_ADDRESS
                     _this.usdcAddress = _this.$root.USDC_ADDRESS
                     _this.recipientAddress = _this.$root.RECIPIENT
-                    let stats_api = `${process.env.BASE_API}stats/storage?wallet_address=${_this.metaAddress}`
-                    axios.get(stats_api, {
-                        headers: {
-                            // 'Authorization': "Bearer "+ _this.$store.getters.accessToken
-                        },
-                    }).then(res => {
-                        if(res.data.data){
-                            let cost = res.data.data.average_price_per_GB_per_year.split(" ")
-                            if(cost[0]) _this.storage = cost[0]
-                        }
-                        setTimeout(function(){
-                            _this.loading = false
-                        }, 2000)
-                    }).catch(error => {
-                        console.log(error)
-                        _this.loading = false
-                    })
-                    
-                    let billing_api = `${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/billing/price/filecoin?wallet_address=${_this.metaAddress}`
-                    axios.get(billing_api, {
-                        headers: {
-                            // 'Authorization': "Bearer "+ _this.$store.getters.accessToken
-                        },
-                    }).then(res => {
-                        if(res.data.data){
-                            _this.biling_price = res.data.data
-                        }
-                    }).catch(error => {
-                        console.log(error)
-                    })
+            
+                    const storageRes = await _this.sendRequest(`${process.env.BASE_API}stats/storage?wallet_address=${_this.metaAddress}`)
+                    let cost = storageRes.data.average_price_per_GB_per_year.split(" ")
+                    if(cost[0]) _this.storage = cost[0]
+
+                    const bilingRes = await _this.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/billing/price/filecoin?wallet_address=${_this.metaAddress}`)
+                    _this.biling_price = bilingRes.data
+
+                    _this.loading = false
                 }else {
                     setTimeout(function(){
                         _this.stats()
                     }, 1000)
+                }
+            },
+            async sendRequest(apilink) {
+                try {
+                    const response = await axios.get(apilink)
+                    return response.data
+                } catch (err) {
+                    console.error(err)
                 }
             }
         },
@@ -621,12 +616,12 @@
             let _this = this
             that = _this
             _this.stats()
-            _this.$store.dispatch("setRouterMenu", 0);
-            _this.$store.dispatch('setHeadertitle', _this.$t('navbar.Upload_files'))
-            document.onkeydown = function(e) {
-                if (e.keyCode === 13) {
-                }
-            }
+            // _this.$store.dispatch("setRouterMenu", 0);
+            // _this.$store.dispatch('setHeadertitle', _this.$t('navbar.Upload_files'))
+            // document.onkeydown = function(e) {
+            //     if (e.keyCode === 13) {
+            //     }
+            // }
         },
         filters: {
             NumStorage(value) {
@@ -655,6 +650,7 @@
         display: flex;
         align-items: center;
         .metaM{
+            margin: auto !important;
             .el-dialog__body{
                 padding: 0.25rem 0.25rem 0.2rem;
                 .el-row{
@@ -706,17 +702,20 @@
             }
         }
         .completeDia{
+            margin: auto !important;
             text-align: center;
+            box-shadow: 0 0 13px rgba(128,128,128,0.8);
+            border-radius: 0.2rem;
             .el-dialog__header{
             display: none;
             }
             img{
                 display: block;
                 max-width: 100px;
-                margin: auto;
+                margin: 0 auto 0.3rem;
             }
             h1{
-                margin: 0.32rem auto 0.1rem;
+                margin: 0.22rem auto 0.1rem;
                 font-size: 0.32rem;
                 font-weight: 500;
                 line-height: 1.2;
@@ -724,26 +723,26 @@
                 word-break: break-word;
             }
             h2{
-                margin: 0.1rem auto 0.1rem;
-                font-size: 19px;
+                margin: 0 auto 0.1rem;
+                font-size: 0.22rem;
                 font-weight: 600;
-                line-height: 1.2;
-                color: #191919;
+                line-height: 1.4;
+                color: #555;
                 word-break: break-word;
                 text-align: center;
             }
             h4{
-                font-size: 14px;
+                font-size: 0.2rem;
                 font-weight: 500;
-                line-height: 1.2;
-                color: #191919;
+                line-height: 1.4;
+                color: #555;
                 word-break: break-word;
                 text-align: center;
             }
             h3, a{
-                font-size: 0.16rem;
+                font-size: 0.22rem;
                 font-weight: 500;
-                line-height: 1.2;
+                line-height: 1.4;
                 color: #191919;
                 word-break: break-word;
             }
@@ -752,30 +751,40 @@
                 color: #007bff;
             }
             a.a-close{
-                padding: 5px 45px;
-                background: #5c3cd3;
+                height: 0.6rem;
+                line-height: 0.6rem;
+                padding: 0 45px;
+                background: linear-gradient(45deg,#4f8aff, #4b5eff);
+                font-size: 0.22rem;
                 color: #fff;
-                border-radius: 10px;
+                border-radius: 0.14rem;
                 cursor: pointer;
-                margin: 0.2rem auto 0;
+                margin: 0.4rem auto 0;
                 display: block;
                 width: max-content;
                 text-decoration: unset;
             }
         }
         .fileUpload{
+            margin: auto !important;
+            box-shadow: 0 0 13px rgba(128,128,128,0.8);
+            border-radius: 0.2rem;
             .el-dialog__header{
-                font-size: 0.16rem;
-                font-weight: 600;
+                padding: 0.3rem 0.4rem;
+                color: #000;
+                font-size: 0.22rem;
+                font-weight: 500;
+                line-height: 1;
+                text-transform: capitalize;
             }
             .el-dialog__body{
-                padding: 0.1rem 0.2rem 0.2rem;
+                padding: 0 0.4rem;
                 h3{   
                     margin: 0 0 0.1rem;
-                    font-size: 0.18rem;
+                    font-size: 0.2rem;
                     font-weight: normal;
-                    line-height: 1.2;
-                    color: #666;
+                    line-height: 1.4;
+                    color: #555;
                     word-break: break-word;
                 }
                 .gif_img{
@@ -786,7 +795,401 @@
                 }
             }
         }
+        .uploadDig{
+            background: #fff;
+            margin: auto !important;
+            box-shadow: 0 0 13px rgba(128,128,128,0.8);
+            border-radius: 0.2rem;
+            .el-dialog__header{
+                padding: 0.3rem 0.4rem;
+                display: flex;
+                align-items: center;
+                border-bottom: 1px solid #dfdfdf;
+                color: #000;
+                font-size: 0.22rem;
+                font-weight: 500;
+                line-height: 1;
+                text-transform: capitalize;
+                img{
+                    width: 20px;
+                    height: 20px;
+                    margin: 0 0 0 5px;
+                    cursor: pointer;
+                    @media screen and (max-width: 1280px){
+                        width: 16px;
+                        height: 16px;
+                    }
+                }
+                .el-dialog__title{
+                    color: #000;
+                    font-size: 0.22rem;
+                    font-weight: 500;
+                    line-height: 1;
+                    text-transform: capitalize;
+                }
+                .el-dialog__headerbtn{
+                    display: none;
+                }
+            }
+            .el-dialog__body{
+                padding: 0 0.4rem;
+                .upload_form{
+                    // display: flex;
+                    // align-items: baseline;
+                    width: 100%; 
+                    margin: auto; 
+                    justify-content: flex-start;
+                    .el-form{
+                        width: 100%;
+                        margin: 0;
+                        .el-form-item::after, .el-form-item::before{
+                            display: none;
+                        }
+                        .el-form-item{
+                            display: flex;
+                            align-items: center;
+                            justify-content: space-between;
+                            width: 100%;
+                            margin: 0.2rem auto;
+                            .el-form-item__label{
+                                display: flex;
+                                justify-content: flex-start;
+                                align-items: center;
+                                width: 47%;
+                                padding: 0 3% 0 0;
+                                // max-width: 2rem;
+                                line-height: 1.5;
+                                text-align: left;
+                                font-size: 0.2rem;
+                                white-space: normal;
+                                color: #000;
+                                font-weight: 500;
+                                text-shadow: 0 0 black;
+                                text-align: right;
+                                img{
+                                    width: 20px;
+                                    height: 20px;
+                                    margin: 0 0 0 5px;
+                                    cursor: pointer;
+                                    @media screen and (max-width: 1280px){
+                                        width: 16px;
+                                        height: 16px;
+                                    }
+                                }
+                                &::before{
+                                    display: none;
+                                }
+                            }
+                            .el-form-item__content{
+                                width: 50%;
+                                display: flex;
+                                align-items: center;
+                                justify-content: flex-end;
+                                font-size: 0.2rem;
+                                white-space: normal;
+                                word-break: break-word;
+                                line-height: 1.5;
+                                color: #555;
+                                h4{
+                                    width: 100%;
+                                    font-size: 0.1372rem;
+                                    font-weight: 500;
+                                    line-height: 1.7;
+                                }
+                                h5{
+                                    width: 90%;
+                                    margin-top: 5px;
+                                    font-size: 0.11rem;
+                                    font-weight: 500;
+                                    line-height: 1.2;
+                                    color: #737373;
+                                }
+                                .el-tag, .el-button--small{
+                                    margin: 0 5px 5px 0;
+                                }
+                                .el-input{
+                                    width: auto;
+                                    .el-input__inner{
+                                        height: 0.32rem;
+                                        font-size: 0.1372rem;
+                                        line-height: 0.32rem;
+                                    }
+                                    .el-input__suffix{
+                                        display: none;
+                                    }
+                                }
+                                .el-form-item__error {
+                                    padding-top: 0;
+                                    margin: 0 0.1rem;
+                                    position: relative;
+                                    float: right;
+                                }
+                                .el-textarea{
+                                    width: 90% !important;
+                                }
+                                .upload-demo{
+                                    display:flex;
+                                    align-items: center;
+                                    flex-wrap: wrap;
+                                    .el-upload-list__item:first-child{
+                                        margin-top: 0;
+                                    }
+                                    .el-upload--text{
+                                        float: left;
+                                        width: auto;
+                                        height: auto;
+                                        text-align: left;
+                                        border: 0;
+                                        .el-button--primary{
+                                            // height: 0.32rem;
+                                            // padding: 0 0.2rem;
+                                            // margin: 0 5px 0 0;
+                                            // line-height: 0.32rem;
+                                            // background-color:transparent;
+                                            // border: 1px solid #2c4c9e;
+                                            // border-radius: 0.08rem;
+                                            // color: #2c4c9e;
+                                            // font-size: 0.1372rem;
+                                            display: flex;
+                                            align-items: center;
+                                            justify-content: center;
+                                            height: 0.5rem;
+                                            padding: 0 0.2rem;
+                                            margin: 0;
+                                            background: linear-gradient(45deg,#4e88ff, #4b5fff);
+                                            border-radius: 0.14rem;
+                                            line-height: 0.5rem;
+                                            text-align: center;
+                                            color: #fff;
+                                            font-size: 0.18rem;
+                                            font-family: inherit;
+                                            border: 0;
+                                            outline: none;
+                                            transition: background-color .3s, border-color .3s, color .3s, box-shadow .3s;
+                                            cursor: pointer;
+                                            span{
+                                                display: flex;
+                                                align-items: center;
+                                            }
+                                            img{
+                                                display: inline-block;
+                                                height: 20px;
+                                                margin: 0 0.1rem 0 0;
+                                                @media screen and (max-width: 1280px){
+                                                    height: 16px;
+                                                }
+                                            }
+                                            &:hover{
+                                                opacity: .9;
+                                                box-shadow: 0 12px 12px -12px rgba(12, 22, 44, 0.32);
+                                            }
+                                        }
+                                    }
+                                    .el-upload-list{
+                                        width: 100%;
+                                        float: none;
+                                        clear: both;
+                                    }
+                                }
+                                .el-upload__tip{
+                                    // float: left;
+                                    height: 100%;
+                                    align-items: center;
+                                    display: flex;
+                                    margin: 0 0 0 0.1rem;
+                                    color: #737373;
+                                    line-height: 1;
+                                    font-size: 0.12rem;
+                                }
+                                .el-radio{
+                                    .el-radio__inner{
+                                        border-color: #d9d9d9;
+                                        background-color: #d9d9d9;
+                                    }
+                                }
+                                .el-radio.is-checked{
+                                    .el-radio__inner{
+                                        border-color: #0b318f;
+                                        background-color: #0b318f;
+                                    }
+                                    .el-radio__inner::after{
+                                        width: 6px;
+                                        height: 6px;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                .upload_plan{
+                    width: 100%;
+                    margin: auto; 
+                    justify-content: flex-start;
+                    .title{
+                        display: flex;
+                        align-items: center;
+                        justify-content: flex-start;
+                        margin: 0;
+                        line-height: 1.5;
+                        text-align: center;
+                        font-size: 0.22rem;
+                        white-space: normal;
+                        color: #000;
+                        font-weight: 500;
+                        // text-shadow: 0 0 black;
+                        text-indent: 0;
+                        img{
+                            width: 20px;
+                            height: 20px;
+                            margin: 0 0 0 5px;
+                            cursor: pointer;
+                            @media screen and (max-width: 1280px){
+                                width: 16px;
+                                height: 16px;
+                            }
+                        }
+                    }
+                    .desc{
+                        margin: 0 0 0.1rem;
+                        line-height: 1.5;
+                        font-size: 0.16rem;
+                        white-space: normal;
+                        color: #999;
+                        font-weight: normal;
+                    }
+                    .upload_plan_radio{
+                        .el-radio-group{
+                            width: 100%;
+                            background: #f7f7f7;
+                            border-radius: 0.2rem;
+                            .el-radio{
+                                display: flex;
+                                align-items: center;
+                                justify-content: space-between;
+                                width: 100%;
+                                height: auto;
+                                padding: 0.2rem 0.3rem;
+                                margin: auto;
+                                border: 0;
+                                // line-height:30px;
+                                .el-radio__input{    
+                                    width: 20px;
+                                    display: flex;
+                                    align-items: center;
+                                    .el-radio__inner{
+                                        border-color: #555;
+                                    }
+                                }
+                                .el-radio__input.is-checked{
+                                    .el-radio__inner{
+                                        position: relative;
+                                        width: 16px;
+                                        height: 16px;
+                                        border-color: transparent;
+                                        background: transparent;
+                                        &:after {
+                                            content: "";
+                                            display: block;
+                                            height: 16px;
+                                            width: 16px;
+                                            background-image: url(../assets/images/icon_xuanzhong@2x.png);
+                                            background-size: 100%;
+                                            position: absolute;
+                                            left:0;
+                                            top:0;
+                                            transform: translate(0, 0) scale(1);
+                                            transition: all 0.15s;
+                                        }
+                                    }
+                                }
+                                .el-radio__label{
+                                    display: flex;
+                                    justify-content: space-between;
+                                    width: calc(100% - 30px);
+                                    .title{
+                                        font-size: 0.2rem;
+                                        line-height: 1;
+                                    }
+                                    .cont{
+                                        font-size: 0.2rem;
+                                        font-weight: 500;
+                                        line-height: 1;
+                                        text-align: center;
+                                    }
+                                }
+                            }
+                            .el-radio:nth-child(3n+1){
+                                .el-radio__label{
+                                    .cont{
+                                        color: #35AD92;
+                                    }
+                                }
+                            }
+                            .el-radio:nth-child(3n+2){
+                                border-top: 1px solid #dfdfdf;
+                                border-bottom: 1px solid #dfdfdf;
+                                .el-radio__label{
+                                    .cont{
+                                        color: #2C7FF8;
+                                    }
+                                }
+                            }
+                            .el-radio:nth-child(3n+3){
+                                .el-radio__label{
+                                    .cont{
+                                        color: #F63D3D;
+                                    }
+                                }
+                            }
+                            .el-radio:hover{
+                                background-color: rgba(64,158,255,0.1);
+                            }
+
+                        }
+
+                    }
+                }
+                .upload_bot{
+                    width: 100%;
+                    margin: 0.25rem auto 0.2rem;
+                    text-align: center;
+                    .found{
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        width: 100%;
+                        text-align: center;
+                        .el-button{
+                            height: 0.6rem;
+                            padding: 0;
+                            margin-left: 0;
+                            line-height: 0.6rem;
+                            font-size: 0.22rem;
+                            font-family: inherit;
+                            color: #fff;
+                            border: 0;
+                            background: linear-gradient(45deg,#4f8aff, #4b5eff);
+                            border-radius: 14px;
+                            width: calc(50% - 0.15rem);
+                        }
+                    }
+                    a{
+                        margin: auto;
+                        text-decoration: underline;
+                        font-size: 0.18rem;
+                        color: rgb(11, 49, 143);
+                        cursor: pointer;
+                    }
+                }
+            }
+            .dialog-footer{
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+            }
+        }
     }
+
     #Create {
         position: relative;
         height: calc(100% - 0.6rem);
@@ -810,8 +1213,7 @@
             }
             p{
                 font-size: 14px;
-                font-weight: 600;
-                color: #666;
+                color: #555;
             }
         }
         .el-alert /deep/{

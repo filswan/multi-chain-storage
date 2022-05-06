@@ -20,7 +20,7 @@
                             <h5>{{priceAccound}} {{ metaNetworkInfo.unit}}</h5>
                             <h4 @click="wrongVisible=true">{{addrChild | hiddAddress}}</h4>
                         </div>
-                        <el-button v-if="!bodyWidth" class="text textTrue" @click="signOutFun">{{$t('fs3.Disconnect')}}</el-button>
+                        <el-button class="text textTrue" @click="signOutFun">{{$t('fs3.Disconnect')}}</el-button>
                     </div>
                 </div>
                 <!-- mobile显示 -->
@@ -382,9 +382,9 @@ export default {
                             // 防止登录后需要跳转到指定页面
                             _this.$router.push({ path: _this.$route.query.redirect })
                         }else{
-                            _this.$router.push({ path: '/upload_file' })
+                            _this.$router.push({ path: '/my_files' })
                         }
-                        if(_this.$route.path != '/upload_file') window.location.reload()
+                        window.location.reload()
                         _this.$emit("getMetamaskLogin", false)
                     }
                     return;
@@ -435,7 +435,7 @@ export default {
             this.network.unit = '';
             this.network.center_fail = false
             this.$store.dispatch('setMetaNetworkInfo', JSON.stringify(this.network))
-            if(this.$route.path == '/upload_file') return false
+            // if(this.$route.path == '/my_files') return false
             this.$router.push("/supplierAllBack");
         },
         commonParam(){
@@ -449,16 +449,6 @@ export default {
             })
             .then((json) => {
                 if(json.data.status == 'success'){
-                    // _this.$root.LOCK_TIME = json.data.data.LOCK_TIME
-                    // _this.$root.PAY_GAS_LIMIT = json.data.data.PAY_GAS_LIMIT
-                    // _this.$root.PAY_WITH_MULTIPLY_FACTOR = json.data.data.PAY_WITH_MULTIPLY_FACTOR
-                    // _this.$root.RECIPIENT = json.data.data.RECIPIENT
-                    // _this.$root.SWAN_PAYMENT_CONTRACT_ADDRESS = json.data.data.SWAN_PAYMENT_CONTRACT_ADDRESS
-                    // _this.$root.USDC_ADDRESS = json.data.data.USDC_ADDRESS
-                    // _this.$root.MINT_CONTRACT = json.data.data.MINT_CONTRACT
-
-
-                    
                     _this.$root.LOCK_TIME = json.data.data.LOCK_TIME
                     _this.$root.PAY_GAS_LIMIT = json.data.data.GAS_LIMIT
                     _this.$root.PAY_WITH_MULTIPLY_FACTOR = json.data.data.PAY_MULTIPLY_FACTOR
@@ -888,11 +878,14 @@ export default {
                 display: flex;
                 align-items: center;
                 flex-wrap: wrap;
-                width: 0.22rem;
-                height: 0.22rem;
-                margin: 0 0 0 0.06rem;
+                width: 22px;
+                height: 22px;
+                margin: 0 0 0 20px;
                 transition: all 0.4s ease;
                 outline: none;
+                @media screen and (max-width:479px) {
+                    margin: 0 0 0 10px;
+                }
             }
             .header_btn span{
                 position: relative;
@@ -953,11 +946,14 @@ export default {
         }
         @media screen and (max-width:999px) {
             font-size: 13px;
-        }
-        @media screen and (max-width:441px) {
+            color: #fff;
             width: 25px;
-            margin: 0;
+            height: 25px;
+            margin: 0 20px 0 0;
             line-height: 25px;
+        }
+        @media screen and (max-width:479px) {
+            margin: 0 10px 0 0;
         }
         span{
             cursor: pointer;
@@ -1034,6 +1030,10 @@ export default {
                 font-family: inherit;
                 background: linear-gradient(45deg,#4f8aff, #4b5eff);
                 border-radius: 0.14rem;
+                @media screen and (max-width:600px) {
+                    padding: 0.08rem 0.15rem;
+                    margin: 0 0 0 10px;
+                }
                 &:hover{
                     opacity: .9;
                 }
@@ -1065,8 +1065,6 @@ export default {
                 }
                 @media screen and (max-width:600px) {
                     font-size: 12px;
-                    padding: 2px 2px 2px 5px;
-                    margin: 0 2px 0 5px;
                 }
             }
         }
@@ -1196,11 +1194,11 @@ export default {
 @media screen and (max-width:999px){
     .header{
         left: 0 !important;
-        height: 0.6rem;
+        height: 0.9rem;
         background: #0b318f;
     }
     .header_arera{
-        margin: 0.09rem 0.1rem;
+        margin: 0 0.1rem;
         // height: auto;
         padding: 0;
         border: 0;

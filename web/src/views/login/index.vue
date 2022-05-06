@@ -218,7 +218,7 @@ import bus from '@/components/bus';
                 _this.$router.push({ path: _this.fromEnter })
               }else{
                 // this.$router.go(-1)
-                _this.$router.push({ path: '/upload_file' })
+                _this.$router.push({ path: '/my_files' })
               }
               _this.loginLoad = false
             } else {
@@ -235,7 +235,7 @@ import bus from '@/components/bus';
       isLogin() {
         var _this = this
         if (localStorage.getItem("mcsLoginAccessToken")) {
-          _this.$router.push({ path: '/upload_file' })
+          _this.$router.push({ path: '/my_files' })
         }
       },
       menuIndexFun(to,index) {

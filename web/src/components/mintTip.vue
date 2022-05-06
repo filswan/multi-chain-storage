@@ -1,6 +1,6 @@
 <template>
 <div>
-    <el-dialog :title="$t('uploadFile.nft_title')+'NFT'" :width="widthDia" :visible.sync="mineVisible"
+    <el-dialog :title="$t('uploadFile.nft_title')+'NFT'" :close-on-click-modal="false" :width="widthDia" :visible.sync="mineVisible"
         :before-close="closeDia">
         <div v-loading="hashload" :element-loading-text="isload?isloadText:''">
             <el-form :model="ruleForm" :rules="rules" ref="ruleForm">
@@ -21,7 +21,7 @@
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
-                <el-button 
+                <el-button style="background: #dadada"
                     type="info" @click="closeDia">{{$t('uploadFile.Back')}}</el-button>
                 <el-button 
                     type="primary" @click="submitForm('ruleForm')">{{isload ? $t('uploadFile.Minting') : $t('uploadFile.Mint_NFT')}}</el-button>
@@ -199,21 +199,35 @@
 
 <style scoped lang="scss">
 .el-dialog__wrapper /deep/{
+    display: flex;
+    align-items: center;
+    justify-content: center;
     .el-dialog{
+        background: #fff;
+        margin: auto !important;
         box-shadow: 0 0 13px rgba(128,128,128,0.8);
+        border-radius: 0.2rem;
         .el-dialog__header{
-            padding: 0.2rem 0.2rem 0.15rem;
+            padding: 0.3rem 0.4rem;
             display: flex;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid #dfdfdf;
             .el-dialog__title{
-                color: #222222;
-                font-size: 0.18rem;
-                font-weight: 600;
+                color: #000;
+                font-size: 0.22rem;
+                font-weight: 500;
+                line-height: 1;
+                text-transform: capitalize;
+            }
+            .el-dialog__headerbtn{
+                display: none;
             }
         }
         .el-dialog__body{
-            padding: 0.1rem 0.2rem 0.2rem;
+            padding: 0.2rem 0.4rem;
             .el-form{
+                width: 100%; 
+                margin: auto; 
+                justify-content: flex-start;
                 .err{
                     .el-form-item__label{
                     color: red;
@@ -235,17 +249,22 @@
                         line-height: 2.5;
                         word-break: break-word;
                         text-align: left;
+                        font-size: 0.2rem;
                     }
                     .el-form-item__content{
                         width: 100%;
                         display: flex;
                         flex-wrap: wrap;
                         overflow: hidden;
-                        font-size: 0.14rem;
-                        .el-input{
+                        font-size: 0.2rem;
+                        color: #555;
+                        .el-input, .el-textarea{
                             margin: 0 5px 0 0;
-                            .el-input__inner{
+                            .el-input__inner, .el-textarea__inner{
                                 width: 100%;
+                                font-size: 0.2rem;
+                                font-family: inherit;
+                                color: #555;
                             }
                             .el-input__inner[readOnly]{
                                 background: #f9f9f9;
@@ -267,9 +286,23 @@
         }
         .dialog-footer{
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            justify-content: flex-end;
-            margin: 0.15rem 0 0;
+            width: 100%;
+            margin: 0.25rem auto 0;
+            .el-button{
+                height: 0.6rem;
+                padding: 0;
+                margin-left: 0;
+                line-height: 0.6rem;
+                font-size: 0.22rem;
+                font-family: inherit;
+                color: #fff;
+                border: 0;
+                background: linear-gradient(45deg,#4f8aff, #4b5eff);
+                border-radius: 14px;
+                width: calc(50% - 0.15rem);
+            }
         }
     }
 }

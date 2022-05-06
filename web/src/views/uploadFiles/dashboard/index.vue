@@ -11,11 +11,11 @@
             >
             </el-input>
           </div>
-          <div class="createTask">
-            <router-link :to="{name: 'upload_file'}">
+          <div class="createTask" @click="uploadDigShow = true">
+            <a>
                 <img src="@/assets/images/my_file/icon_Upload@2x.png" alt="">
                 <span>{{$t('uploadFile.Upload_More_Files')}}</span>
-            </router-link>
+            </a>
           </div>
         </div>
       </div>
@@ -361,6 +361,12 @@
       </div>
     </div>
  <!-- @getPay="getPay" -->
+    <!-- <upload-files v-if="uploadDigShow" :uploadDigShow="uploadDigShow" 
+        :bilingPrice="biling_price"
+        @getUploadDialog="getUploadDialog"></upload-files> -->
+    <pay-tips v-if="uploadDigShow" :uploadDigShow="uploadDigShow" 
+        @getUploadDialog="getUploadDialog"></pay-tips>
+
     <pay-tip v-if="payVisible" :payVisible="payVisible" 
         :payRow="payRow" :cost="cost" :bilingPrice="biling_price"
         @getDialog="getDialog"></pay-tip>
@@ -425,6 +431,7 @@ import QS from 'qs';
 import * as myAjax from "@/api/uploadFile";
 import moment from "moment";
 import payTip from "@/components/payTip"
+import payTips from "@/components/uploadFiles"
 import mintTip from "@/components/mintTip"
 import NCWeb3 from "@/utils/web3";
 import first_contract_json from "@/utils/swanPayment.json";
@@ -466,6 +473,7 @@ export default {
       },
       exChangeList: [],
       payVisible: false,
+      uploadDigShow: false,
       mineVisible: false,
       mintRow: {},
       mintContractAddress: this.$root.MINT_CONTRACT,
@@ -525,7 +533,8 @@ export default {
   },
   components: {
       payTip,
-      mintTip
+      mintTip,
+      payTips
   },
   watch: {
     'searchValue': function(){
@@ -813,6 +822,10 @@ export default {
     getDialog(dialog, rows){
         this.payVisible = dialog
         if(rows) this.payStartClick(rows)
+    },
+    getUploadDialog(dialog, rows){
+        this.uploadDigShow = dialog
+        if(rows) this.getData()
     },
     getMintDialog(dialog, tokenId, nftHash){
         let _this = this
@@ -1574,6 +1587,7 @@ export default {
         .createTask {
           background-color: #fff;
           border-radius: 0.1rem;
+          cursor: pointer;
           a {
             display: flex;
             align-items: center;
@@ -1590,6 +1604,7 @@ export default {
             border: 0;
             outline: none;
             transition: background-color .3s, border-color .3s, color .3s, box-shadow .3s;
+            cursor: pointer;
             img{
               display: inline-block;
               height: 0.3rem;
@@ -2410,7 +2425,7 @@ export default {
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 0.35rem;
+      // height: 0.35rem;
       text-align: center;
       margin: 0.5rem 0 0.06rem;
       padding: 0;
@@ -2420,6 +2435,7 @@ export default {
       .pagination {
         display: flex;
         align-items: center;
+        margin: auto;
         font-size: 0.18rem;
         color: #000;
         .el-pagination /deep/{
@@ -2593,6 +2609,7 @@ export default {
     }
     .completeDia{
         text-align: center;
+        box-shadow: 0 0 13px rgba(128,128,128,0.8);
         border-radius: 0.2rem;
         .el-dialog__header{
         display: none;
@@ -2600,10 +2617,10 @@ export default {
         img{
             display: block;
             max-width: 100px;
-            margin: auto;
+            margin: 0 auto 0.3rem;
         }
         h1{
-            margin: 0.32rem auto 0.1rem;
+            margin: 0.22rem auto 0.1rem;
             font-size: 0.32rem;
             font-weight: 500;
             line-height: 1.2;
@@ -2611,19 +2628,19 @@ export default {
             word-break: break-word;
         }
         h2{
-            margin: 0.1rem auto 0.1rem;
-            font-size: 19px;
+            margin: 0 auto 0.1rem;
+            font-size: 0.22rem;
             font-weight: 600;
-            line-height: 1.2;
-            color: #191919;
+            line-height: 1.4;
+            color: #555;
             word-break: break-word;
             text-align: center;
         }
         h4{
-            font-size: 14px;
+            font-size: 0.2rem;
             font-weight: 500;
-            line-height: 1.2;
-            color: #191919;
+            line-height: 1.4;
+            color: #555;
             word-break: break-word;
             text-align: center;
         }
@@ -2639,12 +2656,15 @@ export default {
             color: #007bff;
         }
         a.a-close{
-            padding: 5px 45px;
-            background: #5c3cd3;
+            height: 0.6rem;
+            line-height: 0.6rem;
+            padding: 0 45px;
+            background: linear-gradient(45deg,#4f8aff, #4b5eff);
+            font-size: 0.22rem;
             color: #fff;
-            border-radius: 10px;
+            border-radius: 0.14rem;
             cursor: pointer;
-            margin: 0.2rem auto 0;
+            margin: 0.4rem auto 0;
             display: block;
             width: max-content;
             text-decoration: unset;

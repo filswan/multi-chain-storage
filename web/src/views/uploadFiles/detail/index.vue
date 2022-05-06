@@ -432,24 +432,40 @@ export default {
 }
 .el-dialog__wrapper /deep/{
     display: flex;
+    align-items: center;
+    justify-content: center;
     .dealLogs{
         height: 80%;
-        margin-top: 0 !important;
-        top: 10%;
+        background: #fff;
+        margin: auto !important;
+        box-shadow: 0 0 13px rgba(128,128,128,0.8);
+        border-radius: 0.2rem;
+        overflow: hidden;
         .el-dialog__header{
             display: flex;
             align-items: center;
             justify-content: space-between;
+            padding: 0.3rem 0.4rem;
+            display: flex;
+            border-bottom: 1px solid #dfdfdf;
             color: #000;
             font-size: 20px;
-            padding: 0.15rem;
             .dialog-title{
                 display: flex;
                 align-items: center;
+                color: #000;
+                font-size: 0.22rem;
+                font-weight: 500;
+                line-height: 1;
+                text-transform: capitalize;
                 .el-tooltip{
                     width: 20px;
                     height: 20px;
                     margin: 0 0 0 5px;
+                    @media screen and (max-width: 1280px){
+                        width: 16px;
+                        height: 16px;
+                    }
                 }
             }
             .el-dialog__headerbtn{
@@ -469,8 +485,8 @@ export default {
             }
         }
         .el-dialog__body {
-            height: calc(100% - 24px - 0.55rem);
-            padding: 0.15rem 0.2rem 0;
+            height: calc(100% - 1.35rem);
+            padding: 0.2rem 0.4rem;
             font-size: 14px;
             overflow-y: scroll;
             .block{
@@ -479,9 +495,19 @@ export default {
                 .el-timeline{
                     .el-timeline-item{
                         .el-card__body{
+                            h4{
+                                font-size: 0.2rem;
+                                color: #000;
+                            }
                             p{
                                 word-break: break-word;
+                                font-size: 0.18rem;
+                                color: #555;
                             }
+                        }
+                        .el-timeline-item__timestamp{
+                            font-size: 0.18rem;
+                            color: #555;
                         }
                     }
                 }  
@@ -557,7 +583,7 @@ export default {
                         border-top: 1px solid #eee;
                         border-right: 1px solid #eee;
                         text-align: right;
-                        color: #4326ab;
+                        color: #2D43E7;
                         font-weight: 600;
                         outline: none;
                         @media screen and (max-width: 1024px) {
@@ -587,7 +613,7 @@ export default {
                     .is-active{
                         position: relative;
                         border-right: 0;
-                        background: #4326ab;
+                        background: #2D43E7;
                         color: #fff;
                         &::before{
                             content: " ";
@@ -598,7 +624,7 @@ export default {
                             right: -10px;
                             top: calc(50% - 6px);
                             border-top: 6px solid transparent;
-                            border-left: 10px solid #4326ab;
+                            border-left: 10px solid #2D43E7;
                             border-bottom: 6px solid transparent;
                         }
                         i, img{
@@ -675,11 +701,18 @@ export default {
                 }
             }
         }
-        .el-button {
-            padding: 0.06rem 0.1rem;
+        .el-button {    
+            padding: 0.1rem 0.2rem;
             font-size: 0.2rem;
             font-family: inherit;
             border-radius: 0.07rem;
+            background: #4e82ff;
+            background: linear-gradient(45deg,#4f8aff, #4b5eff);
+            border-radius: 0.08rem;
+            border: 0;
+            &:hover{
+                opacity: .9;
+            }
             @media screen and (max-width:600px){
                 margin: 0 0 5px;
             }
@@ -697,17 +730,17 @@ export default {
             padding: 0 0 0.15rem;
             .el-col{
                 padding: 0.1rem 0;
-                font-size: 0.18rem;
-                font-weight: 600;
+                font-size: 0.2rem;
+                font-weight: normal;
                 line-height: 1.3;
-                color: #333;
+                color: #555;
                 word-break: break-word;
                 @media screen and (max-width:600px){
                     width: 100%;
                     font-size: 14px;
                 }
                 .linkTo{
-                    color: #4326ab;
+                    color: #2d43e7;
                     text-decoration: underline;
                 }
                         .lotupTitle{
@@ -718,13 +751,13 @@ export default {
                             color: inherit;
                             
                             img { 
-                                width: 0.2rem;
-                                height: 0.2rem;
+                                width: 18px;
+                                height: 18px;
                                 margin: 0 0 0 3px;
                                 cursor: pointer;
-                                @media screen and (max-width:600px){
-                                    width: 14px;
-                                    height: 14px;
+                                @media screen and (max-width:1280px){
+                                    width: 16px;
+                                    height: 16px;
                                 }
                             }
                             span{
@@ -748,16 +781,15 @@ export default {
                             }
                         }
                         .color{
-                            color: red;
+                            color: #F63D3D;
                             cursor: text;
                             &:hover{
-                                color: red;
+                                color: #F63D3D;
                             }
                         }
             }
             .el-col:nth-child(2n+1){
-                color: #4b4b4b;
-                font-weight: normal;
+                color: #000;
             }
         }
         .title{
@@ -778,13 +810,13 @@ export default {
                 font-size: 16px;
             }
             img{
-                width: 0.2rem;
-                height: 0.2rem;
-                margin: 0 0 0 5px;
+                width: 18px;
+                height: 18px;
+                margin: 0 0 0 3px;
                 cursor: pointer;
-                @media screen and (max-width:600px){
-                    width: 15px;
-                    height: 15px;
+                @media screen and (max-width:1280px){
+                    width: 16px;
+                    height: 16px;
                 }
             }
         }
@@ -796,6 +828,8 @@ export default {
                     align-items: center;
                     word-break: break-word;
                     text-align: center;
+                    font-size: 0.18rem;
+                    color: #555;
                     .hot-cold-box{
                         .el-button{
                             width: 100%;
@@ -803,7 +837,7 @@ export default {
                             padding: 0;
                             margin: 0;
                             background-color: transparent;
-                            font-size: 0.1372rem;
+                            font-size: 0.18rem;
                             word-break: break-word;
                             color: #000;
                             text-align: left;
@@ -852,6 +886,16 @@ export default {
                     img{
                         width: 30px;
                     }
+                }
+            }
+            td{
+                padding: 0.15rem 0;
+            }
+            .el-table__header-wrapper{
+                border-radius: 0.2rem;
+                th{
+                    height: 0.7rem;
+                    background-color: #e5eeff !important;
                 }
             }
         }

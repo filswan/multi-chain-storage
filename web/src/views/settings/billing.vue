@@ -6,7 +6,7 @@
                     <div class="form">
                         <div class="form_top">
                             <div class="search">
-                                {{$t('billing.search_placeholder')}} &nbsp;
+                                <div style="white-space: nowrap;">{{$t('billing.search_placeholder')}} &nbsp;</div>
                                 <el-input placeholder="" v-model="searchValue" class="input-with-select" @input="searchValueChange">
                                     <el-select v-model="selectInput" slot="prepend">
                                         <el-option :label="$t('billing.search_option_filename')" value="1"></el-option>
@@ -18,7 +18,7 @@
                                     :disabled="!searchValue">{{$t('billing.search_btn')}}</el-button>
                                     <el-button
                                     type="primary"
-                                    style="background-color: #0b318f"
+                                    style="background-color: #2D43E7"
                                     @click="clearAll"
                                     >
                                     {{$t('billing.clear_btn')}}
@@ -598,7 +598,7 @@
                         }
                         .el-input /deep/ {
                             float: left;
-                            width: 35%;
+                            // width: 35%;
                             margin-right: 0.1rem;
                             padding: 0 0.3rem 0 0;
                             background: #f7f7f7;
@@ -610,7 +610,7 @@
                                 font-weight: 500;
                                 height: 0.6rem;
                                 line-height: 0.3rem;
-                                padding: 0;
+                                padding: 0 0.2rem;
                                 background: transparent;
                                 border: 0;
                                 border-radius: 0.2rem;
@@ -966,41 +966,6 @@
         .upload{
             #billing{
                 .form{
-                    .form_top {
-                        .search {
-                        flex-wrap: wrap;
-                        height: auto;
-
-                        .el-input /deep/ {
-                            width: 100%;
-                            margin: 0.1rem 0;
-
-                            .el-input__inner {
-                            width: 100%;
-                            font-size: 0.1372rem;
-                            }
-                        }
-
-                        span {
-                            margin-left: 0;
-                        }
-
-                        .search_right {
-
-                            .el-select /deep/ {
-                            .el-input__inner {
-                                font-size: 0.1372rem;
-                            }
-                            }
-
-                            .el-button /deep/ {
-                                padding: 0 0.2rem;
-                                font-size: 0.1372rem;
-                                font-family: inherit;
-                            }
-                        }
-                        }
-                    }
                     .form_table{
                         overflow-x: scroll;
                         .el-table /deep/ {
@@ -1064,9 +1029,14 @@
         .upload{
             #billing{
                 .form{
-                    .form_top{
-                        .search{
-                            .search_right{
+                    .form_top {
+                        .search {
+                            flex-wrap: wrap;
+                            span {
+                                margin-left: 0;
+                            }
+                            .el-input{
+                                margin: 0.1rem 0;
                             }
                         }
                     }

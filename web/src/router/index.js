@@ -34,7 +34,7 @@ export default new Router({
 	routes: [
         {
             path: '/',
-            redirect: '/upload_file'
+            redirect: '/my_files'
         },
         {
             path: '/',

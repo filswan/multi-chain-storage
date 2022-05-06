@@ -1,15 +1,18 @@
 <template>
 
-    <el-dialog title="Pay the file" :modal="true" :width="widthDia" :visible.sync="payVisible"
+    <el-dialog title="Pay the file" :modal="true" :close-on-click-modal="false" :width="widthDia" :visible.sync="payVisible"
         :before-close="closeDia">
         <div class="load" v-if="hashload" v-loading="hashload"></div>
         <div class="upload_form">
             <el-form :model="payRow" status-icon ref="ruleForm" class="demo-ruleForm">
                 <el-form-item prop="fileList" :label="$t('uploadFile.upload')">
                     <div>
-                        <p>{{payRow.file_name}}</p>
+                        <p>
+                            <i class="el-icon-document" style="font-size:14px;margin: 0px 4px 0px 5px;"></i>
+                            {{payRow.file_name}}
+                        </p>
                         <p style="display: flex;align-items: center;line-height: 1;">
-                            <svg t="1637031488880" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3310" style="width: 0.2rem;height: 0.2rem;margin: 0 7px 0 5px;"><path d="M512 1024a512 512 0 1 1 512-512 32 32 0 0 1-32 32h-448v448a32 32 0 0 1-32 32zM512 64a448 448 0 0 0-32 896V512a32 32 0 0 1 32-32h448A448 448 0 0 0 512 64z" fill="#999999" p-id="3311"></path><path d="M858.88 976a32 32 0 0 1-32-32V640a32 32 0 0 1 32-32 32 32 0 0 1 32 32v304a32 32 0 0 1-32 32z" fill="#999999" p-id="3312"></path><path d="M757.12 773.12a34.56 34.56 0 0 1-22.4-8.96 32 32 0 0 1 0-45.44l101.12-101.12a32 32 0 0 1 45.44 0 30.72 30.72 0 0 1 0 44.8l-101.12 101.76a34.56 34.56 0 0 1-23.04 8.96z" fill="#999999" p-id="3313"></path><path d="M960 773.12a32 32 0 0 1-22.4-8.96l-101.76-101.76a32 32 0 0 1 0-44.8 32 32 0 0 1 45.44 0l101.12 101.12a32 32 0 0 1-22.4 54.4z" fill="#999999" p-id="3314"></path></svg>
+                            <svg t="1637031488880" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3310" style="width: 14px;height: 14px;margin: 0 6px 0 5px;"><path d="M512 1024a512 512 0 1 1 512-512 32 32 0 0 1-32 32h-448v448a32 32 0 0 1-32 32zM512 64a448 448 0 0 0-32 896V512a32 32 0 0 1 32-32h448A448 448 0 0 0 512 64z" fill="#999999" p-id="3311"></path><path d="M858.88 976a32 32 0 0 1-32-32V640a32 32 0 0 1 32-32 32 32 0 0 1 32 32v304a32 32 0 0 1-32 32z" fill="#999999" p-id="3312"></path><path d="M757.12 773.12a34.56 34.56 0 0 1-22.4-8.96 32 32 0 0 1 0-45.44l101.12-101.12a32 32 0 0 1 45.44 0 30.72 30.72 0 0 1 0 44.8l-101.12 101.76a34.56 34.56 0 0 1-23.04 8.96z" fill="#999999" p-id="3313"></path><path d="M960 773.12a32 32 0 0 1-22.4-8.96l-101.76-101.76a32 32 0 0 1 0-44.8 32 32 0 0 1 45.44 0l101.12 101.12a32 32 0 0 1-22.4 54.4z" fill="#999999" p-id="3314"></path></svg>
                             {{payRow.file_size | sizeChange}}
                         </p>
                     </div>
@@ -46,7 +49,7 @@
                 </el-form-item>
             </el-form>
             <div class="upload_plan">
-                <div class="title" :style="{'color': pay.lock_plan_tip? '#f67e7e' : '#555'}">
+                <div class="title" :style="{'color': pay.lock_plan_tip? '#f67e7e' : '#000'}">
                     {{$t('uploadFile.Select_Lock_Funds_Plan')}}
                     <el-tooltip effect="dark" :content="$t('uploadFile.Select_Lock_Funds_Plan_tooltip')" placement="top">
                         <img src="@/assets/images/info.png"/>
@@ -90,7 +93,7 @@
         name: "pay_tip",
         data() {
             return {
-                widthDia: document.body.clientWidth<=600?'95%':'660px',
+                widthDia: document.body.clientWidth<=600?'95%':'6.6rem',
                 inputAmount: /^\d+(?:\.\d{0,8})?[\s]{0,5}/,
                 inputG: /^[1-9]\d*$/,
                 hashload: false,
@@ -139,7 +142,7 @@
             }
         },
         mounted() {
-            
+        
         },
         watch: {
             
@@ -170,6 +173,9 @@
 
 <style scoped lang="scss">
 .el-dialog__wrapper /deep/{
+    display: flex;
+    align-items: center;
+    justify-content: center;
     .load{
         position: absolute;
         top: 0;
@@ -189,7 +195,7 @@
     }
     .el-dialog{
         background: #fff;
-        margin: auto;
+        margin: auto !important;
         box-shadow: 0 0 13px rgba(128,128,128,0.8);
         border-radius: 0.2rem;
         .el-dialog__header{
@@ -201,13 +207,14 @@
                 font-size: 0.22rem;
                 font-weight: 500;
                 line-height: 1;
+                text-transform: capitalize;
             }
             .el-dialog__headerbtn{
                 display: none;
             }
         }
         .el-dialog__body{
-            padding: 0.1rem 0.4rem 0;
+            padding: 0 0.4rem;
             .upload_form{
                 // display: flex;
                 // align-items: baseline;
@@ -237,15 +244,19 @@
                             text-align: left;
                             font-size: 0.2rem;
                             white-space: normal;
-                            color: #555;
+                            color: #000;
                             font-weight: 500;
-                            text-shadow: 0 0 black;
+                            // text-shadow: 0 0 black;
                             text-align: right;
                             img{
-                                width: 0.2rem;
-                                height: 0.2rem;
+                                width: 20px;
+                                height: 20px;
                                 margin: 0 0 0 5px;
                                 cursor: pointer;
+                                @media screen and (max-width: 1280px){
+                                    width: 16px;
+                                    height: 16px;
+                                }
                             }
                             &::before{
                                 display: none;
@@ -372,15 +383,19 @@
                     text-align: center;
                     font-size: 0.22rem;
                     white-space: normal;
-                    color: #555;
+                    color: #000;
                     font-weight: 500;
-                    text-shadow: 0 0 black;
+                    // text-shadow: 0 0 black;
                     text-indent: 0;
                     img{
-                        width: 0.2rem;
-                        height: 0.2rem;
+                        width: 20px;
+                        height: 20px;
                         margin: 0 0 0 5px;
                         cursor: pointer;
+                        @media screen and (max-width: 1280px){
+                            width: 16px;
+                            height: 16px;
+                        }
                     }
                 }
                 .desc{
@@ -397,25 +412,56 @@
                         background: #f7f7f7;
                         border-radius: 0.2rem;
                         .el-radio{
+                            display: flex;
+                            align-items: center;
+                            justify-content: space-between;
                             width: 100%;
                             height: auto;
-                            padding: 0.2rem 0.4rem;
+                            padding: 0.2rem 0.3rem;
                             margin: auto;
                             border: 0;
                             // line-height:30px;
-                            .el-radio__input{
-                                display: none;
+                            .el-radio__input{    
+                                width: 20px;
+                                display: flex;
+                                align-items: center;
+                                .el-radio__inner{
+                                    border-color: #555;
+                                }
+                            }
+                            .el-radio__input.is-checked{
+                                .el-radio__inner{
+                                    position: relative;
+                                    width: 16px;
+                                    height: 16px;
+                                    border-color: transparent;
+                                    background: transparent;
+                                    &:after {
+                                        content: "";
+                                        display: block;
+                                        height: 16px;
+                                        width: 16px;
+                                        background-image: url(../assets/images/icon_xuanzhong@2x.png);
+                                        background-size: 100%;
+                                        position: absolute;
+                                        left:0;
+                                        top:0;
+                                        transform: translate(0, 0) scale(1);
+                                        transition: all 0.15s;
+                                    }
+                                }
                             }
                             .el-radio__label{
                                 display: flex;
                                 justify-content: space-between;
+                                width: calc(100% - 30px);
                                 .title{
                                     font-size: 0.2rem;
                                     line-height: 1;
                                 }
                                 .cont{
                                     font-size: 0.2rem;
-                                    font-weight: bold;
+                                    font-weight: 500;
                                     line-height: 1;
                                     text-align: center;
                                 }
@@ -424,7 +470,7 @@
                         .el-radio:nth-child(3n+1){
                             .el-radio__label{
                                 .cont{
-                                    color: #56c4a6;
+                                    color: #35AD92;
                                 }
                             }
                         }
@@ -433,29 +479,15 @@
                             border-bottom: 1px solid #dfdfdf;
                             .el-radio__label{
                                 .cont{
-                                    color: #4a92d3;
+                                    color: #2C7FF8;
                                 }
                             }
                         }
                         .el-radio:nth-child(3n+3){
                             .el-radio__label{
                                 .cont{
-                                    color: #922b26;
+                                    color: #F63D3D;
                                 }
-                            }
-                        }
-                        .is-checked{
-                            position: relative;
-                            &:after {
-                                content: "";
-                                display: block;
-                                height: 25px;
-                                width: 25px;
-                                background-image: url(../assets/images/plan.png);
-                                background-size: 100%;
-                                position: absolute;
-                                right:0;
-                                top:0;
                             }
                         }
                         .el-radio:hover{
@@ -471,7 +503,7 @@
                 justify-content: space-between;
                 align-items: center;
                 width: 100%;
-                margin: 0.25rem auto 0.15rem;
+                margin: 0.25rem auto 0.2rem;
                 .el-button{
                     height: 0.6rem;
                     padding: 0;
@@ -494,13 +526,7 @@
         }
     }
 }
-    @media screen and (max-width: 1024px) {
-        
-    }
-    @media screen and (max-width: 999px) {
-        
-    }
-    @media screen and (max-width: 599px){
+@media screen and (max-width: 599px){
     .el-dialog__wrapper /deep/{
         .el-dialog{
             .el-dialog__header{
@@ -528,7 +554,6 @@
                 }
             }
         }
-    }
-        
-    }
+    }  
+}
 </style>

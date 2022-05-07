@@ -185,18 +185,7 @@
 }
 @media screen and (max-width: 800px) {
     .statsCont{
-        padding: 0.3rem 4%;
         .stats {
-            /*width: 100%;*/
-            padding: 10px;
-            background: white;
-            border-radius: 10px;
-            .title {
-                font-size: 20px;
-                border-bottom: 1px solid #ededed;
-                padding-left: 20px;
-            }
-
             .main {
                 font-size: 18px;
                 width: calc(100% - 40px);
@@ -211,13 +200,10 @@
             }
             .info {
                 width: calc(100%);
-                padding: 10px;
-                height: 100px;
                 display: flex;
                 justify-content: center;
                 /*align-items: center;*/
                 flex-direction: column;
-                background: #f2f3f8;
                 margin: 5px;
             }
 

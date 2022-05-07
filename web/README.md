@@ -51,6 +51,10 @@ $ npm run build:prod
 
 The build artifacts will be stored in the `dist/` directory.
 
+## install vue-drag-verify
+
+Run `npm install vue-drag-verify --save` to generate component.
+
 ## Reference documents
 
 - [vue](https://vuejs.bootcss.com/v2/guide/)：Vue is a progressive framework for building user interfaces.

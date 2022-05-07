@@ -350,6 +350,10 @@
               @size-change="handleSizeChange"
             />
           </div>
+
+          <div class="down" @click="downVisible=true">
+              [ Download <span>xxxx</span> Export ]
+          </div>
         </div>
       </div>
 
@@ -361,9 +365,6 @@
       </div>
     </div>
  <!-- @getPay="getPay" -->
-    <!-- <upload-files v-if="uploadDigShow" :uploadDigShow="uploadDigShow" 
-        :bilingPrice="biling_price"
-        @getUploadDialog="getUploadDialog"></upload-files> -->
     <pay-tips v-if="uploadDigShow" :uploadDigShow="uploadDigShow" 
         @getUploadDialog="getUploadDialog"></pay-tips>
 
@@ -419,6 +420,7 @@
 
         <mint-tip v-if="mineVisible" :mineVisible="mineVisible" :mintRow="mintRow" @getMintDialog="getMintDialog"></mint-tip>
       
+        <download :downVisible="downVisible" @getDownload="getDownload"></download>
     <!-- 回到顶部 -->
     <el-backtop target=".content-box" :bottom="40" :right="20"></el-backtop>
   </div>
@@ -433,6 +435,7 @@ import moment from "moment";
 import payTip from "@/components/payTip"
 import payTips from "@/components/uploadFiles"
 import mintTip from "@/components/mintTip"
+import download from "@/components/download"
 import NCWeb3 from "@/utils/web3";
 import first_contract_json from "@/utils/swanPayment.json";
 import erc20_contract_json from "@/utils/ERC20.json";
@@ -517,7 +520,8 @@ export default {
         storage_cost_high: 0,
       },
       metamaskLoginTip: false,
-      searchNowCurrent: ''
+      searchNowCurrent: '',
+      downVisible: false
     };
   },
   computed: {
@@ -534,7 +538,8 @@ export default {
   components: {
       payTip,
       mintTip,
-      payTips
+      payTips,
+      download
   },
   watch: {
     'searchValue': function(){
@@ -826,6 +831,9 @@ export default {
     getUploadDialog(dialog, rows){
         this.uploadDigShow = dialog
         if(rows) this.getData()
+    },
+    getDownload(dialog, rows){
+        this.downVisible = dialog
     },
     getMintDialog(dialog, tokenId, nftHash){
         let _this = this
@@ -1302,14 +1310,6 @@ export default {
           display: flex;
           align-items: center;
       }
-  }
-  .tabTaskStyle {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    flex-wrap: wrap;
-    margin-bottom: 0.2rem;
-    overflow: hidden;
   }
   .upload {
     padding: 0 0.17rem;
@@ -2422,79 +2422,99 @@ export default {
     }
 
     .form_pagination {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      // height: 0.35rem;
-      text-align: center;
-      margin: 0.5rem 0 0.06rem;
-      padding: 0;
-      @media screen and (max-width: 1024px){
-        padding: 0;
-      }
-      .pagination {
+        position: relative;
         display: flex;
+        justify-content: center;
         align-items: center;
-        margin: auto;
-        font-size: 0.18rem;
-        color: #000;
-        .el-pagination /deep/{
-          .el-icon{
-              font-size: 0.18rem;
-          }
-          .el-pager{
-            li{
-              min-width: 30px;
-              height: 30px;
-              font-size: 0.18rem;
-              font-weight: normal;
-              line-height: 30px;
+        text-align: center;
+        margin: 0.5rem 0 0.06rem;
+        padding: 0;
+        @media screen and (max-width: 1024px){
+            padding: 0;
+        }
+        @media screen and (max-width: 600px){
+            flex-wrap: wrap;
+        }
+        .pagination {
+            display: flex;
+            align-items: center;
+            font-size: 0.18rem;
+            color: #000;
+            .el-pagination /deep/{
+            .el-icon{
+                font-size: 0.18rem;
             }
-            .active{
-              border: 1px solid #6798f5;
-              border-radius: 5px;
-              color: #000;
+            .el-pager{
+                li{
+                min-width: 30px;
+                height: 30px;
+                font-size: 0.18rem;
+                font-weight: normal;
+                line-height: 30px;
+                }
+                .active{
+                border: 1px solid #6798f5;
+                border-radius: 5px;
+                color: #000;
+                }
             }
-          }
-        }
-        .el-select /deep/{
-          max-width: 100px;
-          margin-right: 0.15rem;
-          .el-input__inner, .el-input__icon{
-            height: 30px;
-            line-height: 30px;
-          }
-        }
-        .span{
-          margin: 0 0 0 10px;
-          font-size: 13px;
-          font-weight: 400;
-          color: #606266;
-          white-space: nowrap;
-        }
-        .paginaInput /deep/{
-          max-width: 50px;
-          .el-input__inner, .el-input__icon{
-            padding: 0 3px;
-            height: 30px;
-            line-height: 30px;
-            text-align: center;
-          }
-        }
+            }
+            .el-select /deep/{
+            max-width: 100px;
+            margin-right: 0.15rem;
+            .el-input__inner, .el-input__icon{
+                height: 30px;
+                line-height: 30px;
+            }
+            }
+            .span{
+            margin: 0 0 0 10px;
+            font-size: 13px;
+            font-weight: 400;
+            color: #606266;
+            white-space: nowrap;
+            }
+            .paginaInput /deep/{
+            max-width: 50px;
+            .el-input__inner, .el-input__icon{
+                padding: 0 3px;
+                height: 30px;
+                line-height: 30px;
+                text-align: center;
+            }
+            }
 
-        .pagination_left {
-          width: 0.24rem;
-          height: 0.24rem;
-          margin: 0 0.2rem;
-          border: 1px solid #f8f8f8;
-          border-radius: 0.04rem;
-          text-align: center;
-          line-height: 0.24rem;
-          font-size: 0.16rem;
-          color: #959494;
-          cursor: pointer;
+            .pagination_left {
+            width: 0.24rem;
+            height: 0.24rem;
+            margin: 0 0.2rem;
+            border: 1px solid #f8f8f8;
+            border-radius: 0.04rem;
+            text-align: center;
+            line-height: 0.24rem;
+            font-size: 0.16rem;
+            color: #959494;
+            cursor: pointer;
+            }
         }
-      }
+        .down{
+            position: absolute;
+            right: 0;
+            font-size: 0.2rem;
+            color: #888;
+            cursor: pointer;
+            @media screen and (max-width: 600px){
+                position: relative;
+                width: 100%;
+                text-align: center;
+            }
+            span{
+                color: #2C7FF8;
+            }
+            &:hover{
+                text-decoration: underline;
+            }
+        }
     }
   }
 
@@ -2761,14 +2781,6 @@ export default {
 @media screen and (max-width: 999px) {
   #dealManagement {
     padding: 0.15rem 0.1rem 0.2rem;
-
-    .tabTaskStyle {
-      .createTask {
-        a {
-          font-size: 0.17rem;
-        }
-      }
-    }
     .upload {
       padding: 0.1rem;
 
@@ -2784,13 +2796,6 @@ export default {
 }
 @media screen and (max-width: 470px) {
   #dealManagement{
-    .tabTaskStyle {
-      .createTask {
-        a {
-          font-size: 0.15rem;
-        }
-      }
-    }
     .form{
       .form_top{
         .search_file{
@@ -2798,7 +2803,7 @@ export default {
           height: auto;
           .search_right{
             width: 100%;
-            margin: 0.05rem 0 0;
+            margin: 0.05rem 0 0.1rem;
           }
         }
       }

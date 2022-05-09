@@ -82,11 +82,10 @@ func refund(ethClient *ethclient.Client, carFileId int64, swanPaymentTransactor 
 		return err
 	}
 
-	refundStatus := constants.CAR_FILE_STATUS_UNLOCK_REFUNDED
 	tx, err := swanPaymentTransactor.Refund(tansactOpts, srcFileUploadWCids)
 	if err != nil {
-		refundStatus = constants.CAR_FILE_STATUS_UNLOCK_REFUNDFAILED
 		logs.GetLogger().Error(err.Error())
+		return err
 	}
 	txHash := ""
 	if tx != nil {
@@ -105,25 +104,26 @@ func refund(ethClient *ethclient.Client, carFileId int64, swanPaymentTransactor 
 		return err
 	}
 
-	logs.GetLogger().Info("refund stats:", refundStatus, " tx hash:", txHash)
-
 	for _, sourceFileUpload := range sourceFileUploads {
 		wCid := sourceFileUpload.Uuid + sourceFileUpload.PayloadCid
-		lockedPayment, err := client.GetLockedPaymentInfo(wCid)
+		isPaymentAvailable, err := client.IsLockedPaymentExists(wCid)
 		if err != nil {
 			logs.GetLogger().Error(err.Error())
 			continue
 		}
 
-		refundAmount := sourceFileUpload.LockedFeeBeforeRefund.Sub(lockedPayment.LockedFee)
-		err = models.UpdateTransactionRefundAfterUnlock(sourceFileUpload.Id, txHash, refundAmount)
+		if *isPaymentAvailable {
+			logs.GetLogger().Error("lock payment should be unavailable for w_cid:%s, but it is still available after refund success with tx hash:%s", wCid, txHash)
+		}
+
+		err = models.UpdateTransactionRefundAfterUnlock(sourceFileUpload.Id, txHash, sourceFileUpload.LockedFeeBeforeRefund)
 		if err != nil {
 			logs.GetLogger().Error(err.Error())
 			continue
 		}
 	}
 
-	err = models.UpdateCarFileStatus(carFileId, refundStatus)
+	err = models.UpdateCarFileStatus(carFileId, constants.CAR_FILE_STATUS_UNLOCKED)
 	if err != nil {
 		logs.GetLogger().Error(err.Error())
 		return err

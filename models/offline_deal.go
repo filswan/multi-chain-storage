@@ -75,7 +75,7 @@ func GetOfflineDeals2BeUnlocked() ([]*OfflineDeal, error) {
 
 func GetOfflineDealsNotUnlockedByCarFileId(carFileId int64) ([]*OfflineDeal, error) {
 	var offlineDeals []*OfflineDeal
-	err := database.GetDB().Where("car_file_id=? and a.unlock_status in (?,?)", carFileId, constants.OFFLINE_DEAL_STATUS_CREATED, constants.OFFLINE_DEAL_STATUS_UNLOCK_FAILED).Find(&offlineDeals).Error
+	err := database.GetDB().Where("car_file_id=? and status in (?,?)", carFileId, constants.OFFLINE_DEAL_STATUS_CREATED, constants.OFFLINE_DEAL_STATUS_UNLOCK_FAILED).Find(&offlineDeals).Error
 
 	if err != nil {
 		logs.GetLogger().Error(err)

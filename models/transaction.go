@@ -227,7 +227,7 @@ func UpdateTransactionRefundAfterUnlock(sourceFileUploadId int64, refundTxHash s
 		return err
 	}
 
-	if transaction != nil {
+	if transaction == nil {
 		err := fmt.Errorf("transaction not exists for source file upload:%d", sourceFileUploadId)
 		logs.GetLogger().Error(err)
 		return nil

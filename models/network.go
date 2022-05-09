@@ -9,7 +9,6 @@ import (
 type Network struct {
 	ID          int64  `json:"id"`
 	Name        string `json:"name"`
-	RpcUrl      string `json:"rpc_url"`
 	Description string `json:"description"`
 	CreateAt    int64  `json:"create_at"`
 	UpdateAt    int64  `json:"update_at"`

@@ -17,27 +17,27 @@ import (
 )
 
 type Transaction struct {
-	ID                       int64  `json:"id"`
-	SourceFileUploadId       int64  `json:"source_file_upload_id"`
-	NetworkId                int64  `json:"network_id"`
-	TokenId                  int64  `json:"token_id"`
-	WalletIdPay              int64  `json:"wallet_id_pay"`
-	WalletIdRecipient        int64  `json:"wallet_id_recipient"`
-	WalletIdContract         int64  `json:"wallet_id_contract"`
-	PayTxHash                string `json:"pay_tx_hash"`
-	PayAmount                string `json:"pay_amount"`
-	PayAt                    int64  `json:"pay_at"`
-	Deadline                 int64  `json:"deadline"`
-	UnlockAmount             string `json:"unlock_amount"`
-	LastUnlockAt             int64  `json:"last_unlock_at"`
-	RefundAfterUnlockTxHash  string `json:"refund_after_unlock_tx_hash"`
-	RefundAfterUnlockAmount  string `json:"refund_after_unlock_amount"`
-	RefundAfterUnlockAt      int64  `json:"refund_after_unlock_at"`
-	RefundAfterExpiredTxHash string `json:"refund_after_expired_tx_hash"`
-	RefundAfterExpiredAmount string `json:"refund_after_expired_amount"`
-	RefundAfterExpiredAt     int64  `json:"refund_after_expired_at"`
-	CreateAt                 int64  `json:"create_at"`
-	UpdateAt                 int64  `json:"update_at"`
+	ID                       int64   `json:"id"`
+	SourceFileUploadId       int64   `json:"source_file_upload_id"`
+	NetworkId                int64   `json:"network_id"`
+	TokenId                  int64   `json:"token_id"`
+	WalletIdPay              int64   `json:"wallet_id_pay"`
+	WalletIdRecipient        int64   `json:"wallet_id_recipient"`
+	WalletIdContract         int64   `json:"wallet_id_contract"`
+	PayTxHash                string  `json:"pay_tx_hash"`
+	PayAmount                string  `json:"pay_amount"`
+	PayAt                    int64   `json:"pay_at"`
+	Deadline                 int64   `json:"deadline"`
+	UnlockAmount             *string `json:"unlock_amount"`
+	LastUnlockAt             *int64  `json:"last_unlock_at"`
+	RefundAfterUnlockTxHash  *string `json:"refund_after_unlock_tx_hash"`
+	RefundAfterUnlockAmount  *string `json:"refund_after_unlock_amount"`
+	RefundAfterUnlockAt      *int64  `json:"refund_after_unlock_at"`
+	RefundAfterExpiredTxHash *string `json:"refund_after_expired_tx_hash"`
+	RefundAfterExpiredAmount *string `json:"refund_after_expired_amount"`
+	RefundAfterExpiredAt     *int64  `json:"refund_after_expired_at"`
+	CreateAt                 int64   `json:"create_at"`
+	UpdateAt                 int64   `json:"update_at"`
 }
 
 func GetTransactionBySourceFileUploadId(sourceFileUploadId int64) (*Transaction, error) {
@@ -183,23 +183,25 @@ func UpdateTransactionUnlockInfo(sourceFileUploadId int64, unlockAmount decimal.
 		return err
 	}
 
-	if transaction != nil {
+	if transaction == nil {
 		err := fmt.Errorf("transaction not exists for source file upload:%d", sourceFileUploadId)
 		logs.GetLogger().Error(err)
 		return nil
 	}
 
-	unlockAmountBefore, err := decimal.NewFromString(transaction.UnlockAmount)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		unlockAmountBefore = decimal.NewFromInt(0)
-	}
+	if transaction.UnlockAmount != nil {
+		unlockAmountBefore, err := decimal.NewFromString(*transaction.UnlockAmount)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			unlockAmountBefore = decimal.NewFromInt(0)
+		}
 
-	unlockAmountNew := unlockAmountBefore.Add(unlockAmount)
+		unlockAmount = unlockAmountBefore.Add(unlockAmount)
+	}
 
 	currentUtcSecond := libutils.GetCurrentUtcSecond()
 	fields2BeUpdated := make(map[string]interface{})
-	fields2BeUpdated["unlock_amount"] = unlockAmountNew.String()
+	fields2BeUpdated["unlock_amount"] = unlockAmount.String()
 	fields2BeUpdated["last_unlock_at"] = currentUtcSecond
 	fields2BeUpdated["update_at"] = currentUtcSecond
 
@@ -225,7 +227,7 @@ func UpdateTransactionRefundAfterUnlock(sourceFileUploadId int64, refundTxHash s
 		return err
 	}
 
-	if transaction != nil {
+	if transaction == nil {
 		err := fmt.Errorf("transaction not exists for source file upload:%d", sourceFileUploadId)
 		logs.GetLogger().Error(err)
 		return nil

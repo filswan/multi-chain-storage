@@ -5,7 +5,6 @@ use mcs_v2;
 create table network (
     id            bigint        not null auto_increment,
     name          varchar(100)  not null,
-    rpc_url       varchar(1000) not null,
     description   text,
     create_at     bigint        not null,
     update_at     bigint        not null,

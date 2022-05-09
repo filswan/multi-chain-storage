@@ -92,8 +92,8 @@ func UnlockPayment() error {
 }
 
 func checkUnlockable(ethClient *ethclient.Client, offlineDeal *models.OfflineDeal, filswanOracleSession *goBind.FilswanOracleSession, mcsPaymentReceiverAddress common.Address) (bool, error) {
-	if offlineDeal.DealId == nil {
-		err := fmt.Errorf("deal id is null")
+	if offlineDeal.DealId == nil || *offlineDeal.DealId <= 0 {
+		err := fmt.Errorf("valid deal id should be greater than 0")
 		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 		return false, err
 	}
@@ -107,7 +107,7 @@ func checkUnlockable(ethClient *ethclient.Client, offlineDeal *models.OfflineDea
 	}
 
 	if !isPaymentAvailable {
-		logs.GetLogger().Info(getLog(offlineDeal, "payment is not available for recipient "+mcsPaymentReceiverAddress.String()))
+		logs.GetLogger().Info(getLog(offlineDeal, "payment is not available for recipient "+mcsPaymentReceiverAddress.String(), "network:"+filecoinNetwork))
 		return false, nil
 	}
 
@@ -183,7 +183,7 @@ func updateUnlockPayment(offlineDeal *models.OfflineDeal, srcFileUploads []*mode
 }
 
 func getLog(offlineDeal *models.OfflineDeal, messages ...string) string {
-	text := fmt.Sprintf("id:%d,deal id:%d, deal file id:%d", offlineDeal.Id, offlineDeal.DealId, offlineDeal.CarFileId)
+	text := fmt.Sprintf("id:%d,deal id:%d, car file id:%d", offlineDeal.Id, *offlineDeal.DealId, offlineDeal.CarFileId)
 	if messages == nil {
 		return text
 	}

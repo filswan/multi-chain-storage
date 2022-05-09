@@ -93,7 +93,7 @@ func UnlockPayment() error {
 
 func checkUnlockable(ethClient *ethclient.Client, offlineDeal *models.OfflineDeal, filswanOracleSession *goBind.FilswanOracleSession, mcsPaymentReceiverAddress common.Address) (bool, error) {
 	if offlineDeal.DealId == nil || *offlineDeal.DealId <= 0 {
-		err := fmt.Errorf("deal id is null")
+		err := fmt.Errorf("valid deal id should be greater than 0")
 		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 		return false, err
 	}

@@ -220,7 +220,7 @@ type FlinkDealResult struct {
 func GetSourceFileUploadDeal(sourceFileUploadId int64, dealId int64) (*SourceFileUploadDeal, []*models.DaoSignatureOut, error) {
 	flinkDealResult := FlinkDealResult{}
 	if dealId > 0 {
-		flinkUrl := libutils.UrlJoin(config.GetConfig().FLinkUrl, strconv.FormatInt(dealId, 10))
+		flinkUrl := libutils.UrlJoin(config.GetConfig().FlinkUrl, strconv.FormatInt(dealId, 10))
 		flinkUrl = flinkUrl + "?network=" + config.GetConfig().FilecoinNetwork
 		params := url.Values{}
 		response, err := web.HttpGetNoToken(flinkUrl, strings.NewReader(params.Encode()))

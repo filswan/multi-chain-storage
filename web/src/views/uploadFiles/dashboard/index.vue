@@ -420,7 +420,7 @@
 
         <mint-tip v-if="mineVisible" :mineVisible="mineVisible" :mintRow="mintRow" @getMintDialog="getMintDialog"></mint-tip>
       
-        <download :downVisible="downVisible" @getDownload="getDownload"></download>
+        <download v-if="downVisible" :downVisible="downVisible" @getDownload="getDownload"></download>
     <!-- 回到顶部 -->
     <el-backtop target=".content-box" :bottom="40" :right="20"></el-backtop>
   </div>
@@ -1151,7 +1151,8 @@ export default {
     async sortChange(column) {
       // console.log(column);
       await this.filterChange({})
-      this.parma.order_by = await this.sortOrderBy(column.prop)
+      // this.parma.order_by = await this.sortOrderBy(column.prop)
+      this.parma.order_by = column.prop
       this.parma.is_ascending = column.order == "ascending" ? 'y' : column.order == "descending" ? 'n' : ''
       this.loading = true
       this.getData()

@@ -158,7 +158,7 @@ func WriteDaoSignature(txHash string, recipientWalletAddress string, dealId int6
 	if transactionReceipt.Status == 1 {
 		daoSignature.Status = constants.DAO_SIGNATURE_STATUS_SUCCESS
 	} else {
-		daoSignature.Status = constants.DAO_SIGNATURE_STATUS_FAIL
+		daoSignature.Status = constants.DAO_SIGNATURE_STATUS_FAILED
 	}
 	daoSignature.TxHash = txHash
 	daoSignature.WalletIdSigner = walletSigner.ID

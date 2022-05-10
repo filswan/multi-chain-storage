@@ -235,7 +235,7 @@ func createTask4SrcFiles(srcDir, carDir string, maxPrice decimal.Decimal) (*libm
 		Dataset:                    config.GetConfig().SwanTask.CuratedDataset,
 		Description:                config.GetConfig().SwanTask.Description,
 		StartEpochHours:            config.GetConfig().SwanTask.StartEpochHours,
-		SourceId:                   constants.SOURCE_ID_OF_PAYMENT,
+		SourceId:                   constants.SOURCE_ID_MCS,
 		Duration:                   constants.DURATION_DAYS_DEFAULT * 24 * 60 * 2,
 		MaxAutoBidCopyNumber:       5,
 	}

@@ -587,6 +587,14 @@ export default {
         NETWORK: 'Network',
         PAYMENTDATE: 'Payment Date',
         UNLOCKDATE: 'Unlock Date',
-        Deadline: 'Deadline'
+        Deadline: 'Deadline',
+        download_module_title: 'Download Data (Billing History)',
+        download_module_btn: 'Download',
+        verify: 'Verify:',
+        verify_result: 'Verification successful',
+        verify_tip: 'Drag the slider to the far right',
+        start_date: 'Start date',
+        end_date: 'End date',
+        time_to: 'To'
     }
 }

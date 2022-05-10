@@ -592,6 +592,13 @@ export default {
         NETWORK: '网络',
         PAYMENTDATE: '付款日期',
         UNLOCKDATE: '解锁日期',
-        Deadline: '截止日期'
+        Deadline: '截止日期',
+        download_module_title: '下载数据（账单详情）',
+        download_module_btn: '下载',
+        verify: '验证:',
+        verify_result: '验证成功',
+        verify_tip: '将滑块拖动到最右侧',
+        end_date: '结束日期',
+        time_to: '至'
     }
 }

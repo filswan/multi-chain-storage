@@ -810,6 +810,9 @@
                 font-weight: 500;
                 line-height: 1;
                 text-transform: capitalize;
+                @media screen and (max-width: 479px){
+                    padding: 0.3rem 0.2rem;
+                }
                 img{
                     width: 20px;
                     height: 20px;
@@ -833,6 +836,9 @@
             }
             .el-dialog__body{
                 padding: 0 0.4rem;
+                @media screen and (max-width: 479px){
+                    padding: 0 0.2rem;
+                }
                 .upload_form{
                     // display: flex;
                     // align-items: baseline;
@@ -866,6 +872,9 @@
                                 font-weight: 500;
                                 text-shadow: 0 0 black;
                                 text-align: right;
+                                @media screen and (max-width: 479px){
+                                    padding: 0;
+                                }
                                 img{
                                     width: 20px;
                                     height: 20px;
@@ -1206,6 +1215,7 @@
             align-items: center;
             justify-content: center;
             background-color: rgba(255,255,255,.9);
+            border-radius: 0.2rem;
             .el-loading-spinner{
                 top: 0;
                 position: relative;

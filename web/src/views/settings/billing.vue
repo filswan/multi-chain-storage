@@ -111,6 +111,10 @@
                                     @size-change="handleSizeChange"
                                 />
                             </div>
+
+                            <div class="down" @click="downVisible=true">
+                                [ Download <span>xxxx</span> Export ]
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -126,6 +130,7 @@
             </div>
         </div>
 
+        <download v-if="downVisible" :downVisible="downVisible" @getDownload="getDownload"></download>
         <!-- 回到顶部 -->
         <el-backtop target=".content-box" :bottom="40" :right="20"></el-backtop>
     </div>
@@ -137,7 +142,7 @@
     import QS from 'qs';
     import moment from "moment"
     import NCWeb3 from "@/utils/web3";
-
+    import download from "@/components/download"
     export default {
         name: 'Billing',
         data() {
@@ -164,7 +169,11 @@
                 },
                 modelClose: false,
                 centerDialogVisible: false,
+                downVisible: false,
             };
+        },
+        components: {
+            download
         },
         computed: {
             languageMcs() {
@@ -188,12 +197,9 @@
                 this.getData()
             }
         },
-        components: {},
         methods: {
-            networkLink(hash, network) {
-                if(network && network.toLowerCase() == 'polygon'){
-                    window.open('https://mumbai.polygonscan.com/tx/'+hash)
-                }
+            getDownload(dialog, rows){
+                this.downVisible = dialog
             },
             handleCurrentChange(val) {
                 this.parma.offset = Number(val);
@@ -250,7 +256,8 @@
             },
             async sortChange(column) {
                 // console.log(column);
-                this.parma.order_by = await this.sortOrderBy(column.prop)
+                // this.parma.order_by = await this.sortOrderBy(column.prop)
+                this.parma.order_by = column.prop
                 this.parma.is_ascending = column.order == "ascending" ? 'y' : column.order == "descending" ? 'n' : ''
                 this.loading = true
                 this.getData()
@@ -457,63 +464,107 @@
 .el-dialog__wrapper /deep/ {  
     display: flex;
     align-items: center;
-    .metaM{
+    justify-content: center;
+    .el-dialog{
+        background: #fff;
+        margin: auto !important;
+        box-shadow: 0 0 13px rgba(128,128,128,0.8);
+        border-radius: 0.2rem;
         .el-dialog__header{
+            padding: 0.3rem 0.4rem;
             display: flex;
-            justify-content: center;
+            border-bottom: 1px solid #dfdfdf;
+            .el-dialog__title{
+                color: #333;
+                font-size: 0.22rem;
+                font-weight: 500;
+                line-height: 1;
+                text-transform: capitalize;
+            }
+            .el-dialog__headerbtn{
+                display: none;
+            }
         }
         .el-dialog__body{
-            padding: 0.25rem 0.25rem 0.2rem;
-            .el-row{
-            border-radius: 0.08rem;
-            padding: 0.16rem;
-            margin: 0.12rem 0px;
-            border: 1px solid rgb(240, 185, 11);
-            text-align: center;
-            display: flex;
-            -webkit-box-pack: justify;
-            justify-content: space-between;
-            -webkit-box-align: center;
-            align-items: center;
-            transition: all 0.3s ease 0s;
-            background: rgba(240, 185, 11, 0.1);
-            position: static;
-            .el-col{
-                text-align: left;
-                font-size: 0.14rem;
-                img{
-                float: right;
-                height: 0.24rem;
+            padding: 0.3rem 0.4rem 0.1rem;
+            .el-range-editor.el-input__inner{
+                width: 100%;
+                height: 0.6rem;
+                line-height: 0.6rem;
+                border-color: #888;
+                font-size: 0.22rem;
+                color: #333;
+                .el-range-input{
+                    font-size: inherit;
+                    font-family: inherit;
+                }
+                .el-range__icon, .el-range-separator{
+                    line-height: inherit;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: inherit;
+                    color: #000;
                 }
             }
-            }
-        }
-        .el-dialog__footer{
-            padding: 0 0.25rem 0.3rem;
-            .dialog-footer{
+            .drag_container{
                 display: flex;
-                flex-wrap: wrap;
-                justify-content: center;
-                .el-button{
-                    width: 100%;
-                    font-size: 0.14rem;
-                    font-family: inherit;
-                    height: 0.4rem;
-                    padding: 0;
-                    background: #5c3cd3;
-                    color: #fff;
-                    border-radius: 0.08rem;
-                    &:hover{
-                    background: #4326ab;
+                align-items: center;
+                justify-content: space-between;
+                margin: 0.2rem 0 0;
+                font-size: 0.22rem;
+                color: #888;
+                .drag_verify{
+                    border-radius: 0.12rem !important;
+                    .dv_progress_bar{
+                        width: 100% !important;
+                        border-radius: 0.12rem !important;
+                    }
+                    .dv_text{
+                        color: #888;
+                    }
+                    .dv_handler{
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        top: 4px;
+                        bottom: 4px;
+                        height: auto !important;
+                        margin-left: 4px;
+                        border-radius: 0.12rem !important;
+                        border: 0;
+                        i{
+                            color: #DADADA;
+                            font-size: 0.23rem;
+                        }
                     }
                 }
-                p{
-                    font-size: 0.13rem;
-                    line-height: 1.5;
-                    color: red;
-                    margin: 0.1rem 0 0;
+            }
+            .upload_bot{
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                width: 100%;
+                margin: 0.25rem auto 0.2rem;
+                .el-button{
+                    width: 100%;
+                    height: 0.6rem;
+                    padding: 0;
+                    margin-left: 0;
+                    line-height: 0.6rem;
+                    font-size: 0.22rem;
+                    font-family: inherit;
+                    color: #fff;
+                    border: 0;
+                    background: linear-gradient(45deg,#4f8aff, #4b5eff);
+                    border-radius: 14px;
                 }
             }
+        }
+        .dialog-footer{
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
         }
     }
 }
@@ -876,15 +927,18 @@
                     }
                 }
                 .form_pagination {
+                    position: relative;
                     display: flex;
                     justify-content: center;
                     align-items: center;
-                    height: 0.35rem;
                     text-align: center;
                     margin: 0.5rem 0 0.06rem;
                     padding: 0;
                     @media screen and (max-width: 1024px){
                         padding: 0;
+                    }
+                    @media screen and (max-width: 600px){
+                        flex-wrap: wrap;
                     }
                     .pagination {
                         display: flex;
@@ -946,6 +1000,24 @@
                         font-size: 0.16rem;
                         color: #959494;
                         cursor: pointer;
+                        }
+                    }
+                    .down{
+                        position: absolute;
+                        right: 0;
+                        font-size: 0.2rem;
+                        color: #888;
+                        cursor: pointer;
+                        @media screen and (max-width: 600px){
+                            position: relative;
+                            width: 100%;
+                            text-align: center;
+                        }
+                        span{
+                            color: #2C7FF8;
+                        }
+                        &:hover{
+                            text-decoration: underline;
                         }
                     }
                 }

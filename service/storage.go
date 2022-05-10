@@ -172,7 +172,7 @@ func GetSourceFileUploads(walletAddress string, fileName, orderBy string, isAsce
 		if srcFileUpload.Status != constants.SOURCE_FILE_UPLOAD_STATUS_PENDING &&
 			srcFileUpload.Status != constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDABLE &&
 			srcFileUpload.Status != constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDED &&
-			srcFileUpload.Status != constants.SOURCE_FILE_UPLOAD_STATUS_ACTIVE {
+			srcFileUpload.Status != constants.SOURCE_FILE_UPLOAD_STATUS_UNLOCKED {
 			srcFileUpload.Status = constants.SOURCE_FILE_UPLOAD_STATUS_PROCESSING
 		}
 	}
@@ -269,9 +269,7 @@ func GetSourceFileUploadDeal(sourceFileUploadId int64, dealId int64) (*SourceFil
 		sourceFileUploadDeal.LockedFee = transactionPay.PayAmount
 	}
 
-	if sourceFileUpload.Status == constants.SOURCE_FILE_UPLOAD_STATUS_UNLOCKED || sourceFileUpload.Status == constants.SOURCE_FILE_UPLOAD_STATUS_ACTIVE {
-		sourceFileUploadDeal.Unlocked = true
-	}
+	sourceFileUploadDeal.Unlocked = sourceFileUpload.Status == constants.SOURCE_FILE_UPLOAD_STATUS_UNLOCKED
 
 	daoSignatures, err := models.GetDaoSignaturesByDealId(dealId)
 	if err != nil {

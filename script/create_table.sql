@@ -129,7 +129,6 @@ create table offline_deal (
     sender_wallet_id bigint        not null,
     deal_id          bigint,
     status           varchar(100)  not null,
-    note             text,
     on_chain_status  varchar(100),
     tx_hash_unlock   varchar(100),
     unlock_at        bigint        not null,

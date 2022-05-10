@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"multi-chain-storage/common/constants"
 	"multi-chain-storage/database"
-	"strings"
 
 	libutils "github.com/filswan/go-swan-lib/utils"
 
@@ -21,7 +20,6 @@ type OfflineDeal struct {
 	SenderWalletId int64   `json:"sender_wallet_id"`
 	DealId         *int64  `json:"deal_id"`
 	Status         string  `json:"status"`
-	Note           *string `json:"note"`
 	OnChainStatus  *string `json:"on_chain_status"`
 	TxHashUnlock   *string `json:"tx_hash_unlock"`
 	UnlockAt       int64   `json:"unlock_at"`
@@ -73,9 +71,9 @@ func GetOfflineDeals2BeUnlocked() ([]*OfflineDeal, error) {
 	return offlineDeals, nil
 }
 
-func GetOfflineDealsNotUnlockedByCarFileId(carFileId int64) ([]*OfflineDeal, error) {
+func GetOfflineDeals2BeUnlockedByCarFileId(carFileId int64) ([]*OfflineDeal, error) {
 	var offlineDeals []*OfflineDeal
-	err := database.GetDB().Where("car_file_id=? and status in (?,?)", carFileId, constants.OFFLINE_DEAL_STATUS_CREATED, constants.OFFLINE_DEAL_STATUS_UNLOCK_FAILED).Find(&offlineDeals).Error
+	err := database.GetDB().Where("car_file_id=? and status=?", carFileId, constants.OFFLINE_DEAL_STATUS_CREATED).Find(&offlineDeals).Error
 
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -120,11 +118,10 @@ func GetOfflineDealByDealId(dealId int64) (*OfflineDeal, error) {
 	return nil, nil
 }
 
-func UpdateOfflineDealUnlockInfo(id int64, status string, txHashUnlock string, messages ...string) error {
+func UpdateOfflineDealUnlockInfo(id int64, status string, txHashUnlock string) error {
 	currentUtcSecond := libutils.GetCurrentUtcSecond()
 	fields2BeUpdated := make(map[string]interface{})
 	fields2BeUpdated["status"] = status
-	fields2BeUpdated["note"] = strings.Join(messages, ",")
 	fields2BeUpdated["tx_hash_unlock"] = txHashUnlock
 	fields2BeUpdated["unlock_at"] = currentUtcSecond
 	fields2BeUpdated["update_at"] = currentUtcSecond

@@ -217,7 +217,7 @@ type FlinkDealResult struct {
 	} `json:"data"`
 }
 
-func GetSourceFileUploadDeal(sourceFileUploadId int64, dealId int64) (*SourceFileUploadDeal, error) {
+func GetSourceFileUploadDeal(sourceFileUploadId int64, dealId int64) (*SourceFileUploadDeal, []*models.DaoSignatureOut, error) {
 	flinkDealResult := FlinkDealResult{}
 	if dealId > 0 {
 		flinkUrl := libutils.UrlJoin(config.GetConfig().FLinkUrl, strconv.FormatInt(dealId, 10))
@@ -237,25 +237,25 @@ func GetSourceFileUploadDeal(sourceFileUploadId int64, dealId int64) (*SourceFil
 	sourceFileUpload, err := models.GetSourceFileUploadById(sourceFileUploadId)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return nil, err
+		return nil, nil, err
 	}
 
 	if sourceFileUpload == nil {
 		err := fmt.Errorf("source file upload:%d not exists", sourceFileUploadId)
 		logs.GetLogger().Error(err)
-		return nil, err
+		return nil, nil, err
 	}
 
 	sourceFile, err := models.GetSourceFileById(sourceFileUpload.SourceFileId)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return nil, err
+		return nil, nil, err
 	}
 
 	transactionPay, err := models.GetTransactionBySourceFileUploadId(sourceFileUploadId)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return nil, err
+		return nil, nil, err
 	}
 
 	sourceFileUploadDeal := &flinkDealResult.Data.Deal
@@ -273,7 +273,13 @@ func GetSourceFileUploadDeal(sourceFileUploadId int64, dealId int64) (*SourceFil
 		sourceFileUploadDeal.Unlocked = true
 	}
 
-	return sourceFileUploadDeal, nil
+	daoSignatures, err := models.GetDaoSignaturesByDealId(dealId)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, nil, err
+	}
+
+	return sourceFileUploadDeal, daoSignatures, nil
 }
 
 func RecordMintInfo(sourceFileIploadId int64, txHash string, tokenId string, mintAddress string) (*models.SourceFileMint, error) {

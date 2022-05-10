@@ -187,7 +187,7 @@ func GetDealFromFlink(c *gin.Context) {
 		return
 	}
 
-	sourceFileUploadDeal, err := service.GetSourceFileUploadDeal(sourceFileUploadId, dealId)
+	sourceFileUploadDeal, daoSignatures, err := service.GetSourceFileUploadDeal(sourceFileUploadId, dealId)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_INTERNAL, err.Error()))
@@ -197,6 +197,7 @@ func GetDealFromFlink(c *gin.Context) {
 	c.JSON(http.StatusOK, common.CreateSuccessResponse(gin.H{
 		"source_file_upload_deal": sourceFileUploadDeal,
 		"dao_threshold":           threshold,
+		"dao_signature":           daoSignatures,
 	}))
 }
 

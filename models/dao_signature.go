@@ -19,9 +19,20 @@ type DaoSignature struct {
 	UpdateAt          int64  `json:"update_at"`
 }
 
-func GetDaoSignaturesByOfflineDealId(offlineDealId int64) ([]*DaoSignature, error) {
-	var daoSignatures []*DaoSignature
-	err := database.GetDB().Where("offline_deal_id=?", offlineDealId).Order("create_at desc").Find(&daoSignatures).Error
+type DaoSignatureOut struct {
+	WalletSigner string `json:"wallet_signer"`
+	TxHash       string `json:"tx_hash"`
+	Status       string `json:"status"`
+	CreateAt     int64  `json:"create_at"`
+}
+
+func GetDaoSignaturesByDealId(dealId int64) ([]*DaoSignatureOut, error) {
+	sql := "select c.address wallet_signer,a.tx_hash,a.status,a.create_at from dao_signature a\n" +
+		"left join offline_deal b on a.offline_deal_id=b.id\n" +
+		"left join wallet c on a.wallet_id_signer=c.id\n" +
+		"where b.deal_id=?"
+	var daoSignatures []*DaoSignatureOut
+	err := database.GetDB().Raw(sql, dealId).Scan(&daoSignatures).Error
 
 	if err != nil {
 		logs.GetLogger().Error(err)

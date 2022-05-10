@@ -130,7 +130,7 @@ create table offline_deal (
     status           varchar(100)  not null,
     deal_id          bigint,
     on_chain_status  varchar(100),
-    tx_hash_unlock   varchar(100),
+    unlock_tx_hash   varchar(100),
     unlock_at        bigint        not null,
     create_at        bigint        not null,
     update_at        bigint        not null,

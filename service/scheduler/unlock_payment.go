@@ -18,7 +18,6 @@ import (
 
 func UnlockPayment() error {
 	offlineDeals, err := models.GetOfflineDeals2BeUnlocked()
-	//offlineDeals, err := models.GetOfflineDealByDealId(87843)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err

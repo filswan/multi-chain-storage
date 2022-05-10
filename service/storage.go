@@ -19,7 +19,6 @@ import (
 	"github.com/filswan/go-swan-lib/client/ipfs"
 	"github.com/filswan/go-swan-lib/client/web"
 	"github.com/filswan/go-swan-lib/logs"
-	"github.com/filswan/go-swan-lib/utils"
 	libutils "github.com/filswan/go-swan-lib/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -221,7 +220,7 @@ type FlinkDealResult struct {
 func GetSourceFileUploadDeal(sourceFileUploadId int64, dealId int64) (*SourceFileUploadDeal, error) {
 	flinkDealResult := FlinkDealResult{}
 	if dealId > 0 {
-		flinkUrl := utils.UrlJoin(config.GetConfig().FLinkUrl, strconv.FormatInt(dealId, 10))
+		flinkUrl := libutils.UrlJoin(config.GetConfig().FLinkUrl, strconv.FormatInt(dealId, 10))
 		flinkUrl = flinkUrl + "?network=" + config.GetConfig().FilecoinNetwork
 		params := url.Values{}
 		response, err := web.HttpGetNoToken(flinkUrl, strings.NewReader(params.Encode()))

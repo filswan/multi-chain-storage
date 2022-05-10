@@ -18,7 +18,6 @@ import (
 
 func UnlockPayment() error {
 	offlineDeals, err := models.GetOfflineDeals2BeUnlocked()
-	//offlineDeals, err := models.GetOfflineDealByDealId(87843)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
@@ -77,7 +76,13 @@ func UnlockPayment() error {
 		}
 
 		unlockCnt = unlockCnt + 1
-		_, err = unlockDeal(offlineDeal, ethClient, swanPaymentTransactor, paymentRecipientAddress)
+		txHash, err := unlockDeal(offlineDeal, ethClient, swanPaymentTransactor, paymentRecipientAddress)
+		if err != nil {
+			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
+			continue
+		}
+
+		err = models.UpdateOfflineDealUnlockInfo(offlineDeal.Id, constants.OFFLINE_DEAL_STATUS_UNLOCKED, *txHash)
 		if err != nil {
 			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 			continue
@@ -93,7 +98,7 @@ func UnlockPayment() error {
 
 func checkUnlockable(ethClient *ethclient.Client, offlineDeal *models.OfflineDeal, filswanOracleSession *goBind.FilswanOracleSession, mcsPaymentReceiverAddress common.Address) (bool, error) {
 	if offlineDeal.DealId == nil || *offlineDeal.DealId <= 0 {
-		err := fmt.Errorf("valid deal id should be greater than 0")
+		err := fmt.Errorf("valid deal id must be greater than 0")
 		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 		return false, err
 	}
@@ -196,21 +201,19 @@ func getLog(offlineDeal *models.OfflineDeal, messages ...string) string {
 }
 
 func unlockDeal(offlineDeal *models.OfflineDeal, ethClient *ethclient.Client, swanPaymentTransactor *goBind.SwanPaymentTransactor, mcsPaymentReceiverAddress common.Address) (*string, error) {
+	if offlineDeal.DealId == nil || *offlineDeal.DealId <= 0 {
+		err := fmt.Errorf("valid deal id must be greater than 0")
+		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
+		return nil, err
+	}
+
 	tansactOpts, err := client.GetTransactOpts(ethClient, adminWalletPrivateKey, *adminWalletPublicKey)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
 	}
 
-	if offlineDeal.DealId == nil {
-		err := fmt.Errorf("deal id is null")
-		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
-		return nil, err
-	}
-
 	dealIdStr := strconv.FormatInt(*offlineDeal.DealId, 10)
-	unlockStatusFailed := constants.OFFLINE_DEAL_STATUS_UNLOCK_FAILED
-
 	filecoinNetwork := config.GetConfig().FilecoinNetwork
 	tx, err := swanPaymentTransactor.UnlockCarPayment(tansactOpts, dealIdStr, filecoinNetwork, mcsPaymentReceiverAddress)
 	txHash := ""
@@ -220,52 +223,23 @@ func unlockDeal(offlineDeal *models.OfflineDeal, ethClient *ethclient.Client, sw
 
 	logs.GetLogger().Info(getLog(offlineDeal, txHash))
 	if err != nil {
-		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
-
-		err = models.UpdateOfflineDealUnlockInfo(offlineDeal.Id, unlockStatusFailed, txHash, err.Error())
-		if err != nil {
-			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
-			return nil, err
-		}
-
+		logs.GetLogger().Error(getLog(offlineDeal, "unlock failed, tx hash:"+txHash, err.Error()))
 		return nil, err
 	}
 
 	txReceipt, err := client.CheckTx(ethClient, tx)
 	if err != nil {
-		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
-
-		err = models.UpdateOfflineDealUnlockInfo(offlineDeal.Id, unlockStatusFailed, txHash, err.Error())
-		if err != nil {
-			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
-			return nil, err
-		}
-
+		logs.GetLogger().Error(getLog(offlineDeal, "unlock failed, tx hash:"+txHash, err.Error()))
 		return nil, err
 	}
 
 	if txReceipt.Status != uint64(1) {
-		err := fmt.Errorf("unlock failed! txHash=%s, status:%d", tx.Hash().Hex(), txReceipt.Status)
-		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
-
-		err = models.UpdateOfflineDealUnlockInfo(offlineDeal.Id, unlockStatusFailed, txHash, err.Error())
-		if err != nil {
-			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
-			return nil, err
-		}
-
-		return nil, err
-	}
-
-	logs.GetLogger().Info(getLog(offlineDeal, "unlock success", "txHash="+tx.Hash().Hex()))
-
-	unlockStatusUnlocked := constants.OFFLINE_DEAL_STATUS_UNLOCKED
-	err = models.UpdateOfflineDealUnlockInfo(offlineDeal.Id, unlockStatusUnlocked, txHash)
-	if err != nil {
+		err := fmt.Errorf("unlock failed, tx hash:%s, status:%d", txHash, txReceipt.Status)
 		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 		return nil, err
 	}
 
-	logs.GetLogger().Info(getLog(offlineDeal, "unlock successfully"))
+	logs.GetLogger().Info(getLog(offlineDeal, "unlock succeeded, tx hash:"+txHash))
+
 	return &txHash, nil
 }

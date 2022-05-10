@@ -26,7 +26,7 @@ func main() {
 	scheduler.InitScheduler()
 
 	//scheduler.UnlockPayment()
-	scheduler.Refund()
+	//scheduler.Refund()
 
 	createGinServer()
 }

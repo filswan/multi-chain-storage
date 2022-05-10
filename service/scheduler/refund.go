@@ -24,8 +24,6 @@ func Refund() error {
 		return err
 	}
 
-	//refund(int64(903), swanPaymentTransactor, tansactOpts)
-
 	carFiles, err := models.GetCarFilesByStatus(constants.CAR_FILE_STATUS_DEAL_SENT)
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -44,14 +42,14 @@ func Refund() error {
 }
 
 func refund(ethClient *ethclient.Client, carFileId int64, swanPaymentTransactor *goBind.SwanPaymentTransactor) error {
-	offlineDealsNotUnlocked, err := models.GetOfflineDealsNotUnlockedByCarFileId(carFileId)
+	offlineDealsNotUnlocked, err := models.GetOfflineDeals2BeUnlockedByCarFileId(carFileId)
 	if err != nil {
 		logs.GetLogger().Error(err.Error())
 		return err
 	}
 
 	if len(offlineDealsNotUnlocked) > 0 {
-		msg := fmt.Sprintf("%d deals not unlocked or unlock failed, cannot refund for the car file", len(offlineDealsNotUnlocked))
+		msg := fmt.Sprintf("%d deals to be unlocked, cannot refund for car file:%d", len(offlineDealsNotUnlocked), carFileId)
 		logs.GetLogger().Info(msg)
 		return nil
 	}
@@ -113,7 +111,9 @@ func refund(ethClient *ethclient.Client, carFileId int64, swanPaymentTransactor 
 		}
 
 		if *isPaymentAvailable {
-			logs.GetLogger().Error("lock payment should be unavailable for w_cid:%s, but it is still available after refund success with tx hash:%s", wCid, txHash)
+			err := fmt.Errorf("source file upload id:%d,lock payment is still available for w_cid:%s after refund success with tx hash:%s", sourceFileUpload.Id, wCid, txHash)
+			logs.GetLogger().Error(err)
+			continue
 		}
 
 		err = models.UpdateTransactionRefundAfterUnlock(sourceFileUpload.Id, txHash, sourceFileUpload.LockedFeeBeforeRefund)

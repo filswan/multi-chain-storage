@@ -53,6 +53,13 @@ func updateOfflineDealStatusAndLog() error {
 			if dealInfo.DealId != 0 {
 				offlineDeal.DealId = &dealInfo.DealId
 			}
+
+			if dealInfo.Status == constants.ON_CHAIN_DEAL_STATUS_ERROR {
+				offlineDeal.Status = constants.OFFLINE_DEAL_STATUS_FAILED
+			} else if dealInfo.Status == constants.ON_CHAIN_DEAL_STATUS_ACTIVE {
+				offlineDeal.Status = constants.OFFLINE_DEAL_STATUS_ACTIVE
+			}
+
 			offlineDeal.UpdateAt = libutils.GetCurrentUtcSecond()
 			err = database.SaveOne(offlineDeal)
 			if err != nil {

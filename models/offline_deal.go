@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"multi-chain-storage/common/constants"
 	"multi-chain-storage/database"
-	"strings"
 
 	libutils "github.com/filswan/go-swan-lib/utils"
 
@@ -19,12 +18,11 @@ type OfflineDeal struct {
 	Verified       bool    `json:"verified"`
 	StartEpoch     int     `json:"start_epoch"`
 	SenderWalletId int64   `json:"sender_wallet_id"`
-	DealId         *int64  `json:"deal_id"`
 	Status         string  `json:"status"`
-	Note           *string `json:"note"`
+	DealId         *int64  `json:"deal_id"`
 	OnChainStatus  *string `json:"on_chain_status"`
-	TxHashUnlock   *string `json:"tx_hash_unlock"`
-	UnlockAt       int64   `json:"unlock_at"`
+	UnlockTxHash   *string `json:"unlock_tx_hash"`
+	UnlockAt       *int64  `json:"unlock_at"`
 	CreateAt       int64   `json:"create_at"`
 	UpdateAt       int64   `json:"update_at"`
 }
@@ -36,7 +34,7 @@ type OfflineDealOut struct {
 
 func GetOfflineDeals2BeScanned() ([]*OfflineDeal, error) {
 	var offlineDeals []*OfflineDeal
-	err := database.GetDB().Where("on_chain_status is null ||(on_chain_status!=? and on_chain_status!=?)", constants.DEAL_STATUS_ACTIVE, constants.DEAL_STATUS_ERROR).Find(&offlineDeals).Error
+	err := database.GetDB().Where("status not in (?,?)", constants.OFFLINE_DEAL_STATUS_ACTIVE, constants.OFFLINE_DEAL_STATUS_FAILED).Find(&offlineDeals).Error
 
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -50,8 +48,8 @@ func GetOfflineDeals2BeSigned(signerWalletId int64) ([]*OfflineDeal, error) {
 	var offlineDeals []*OfflineDeal
 	sql := "select * from offline_deal a\n" +
 		"left outer join dao_signature b on a.id=b.offline_deal_id and b.status=? and b.wallet_id_signer=?\n" +
-		"where a.deal_id is not null and a.deal_id>0 and a.status=? and b.id is null \n"
-	err := database.GetDB().Raw(sql, constants.DAO_SIGNATURE_STATUS_SUCCESS, signerWalletId, constants.OFFLINE_DEAL_STATUS_CREATED).Scan(&offlineDeals).Error
+		"where a.status=? and b.id is null \n"
+	err := database.GetDB().Raw(sql, constants.DAO_SIGNATURE_STATUS_SUCCESS, signerWalletId, constants.OFFLINE_DEAL_STATUS_ACTIVE).Scan(&offlineDeals).Error
 
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -63,7 +61,7 @@ func GetOfflineDeals2BeSigned(signerWalletId int64) ([]*OfflineDeal, error) {
 
 func GetOfflineDeals2BeUnlocked() ([]*OfflineDeal, error) {
 	var offlineDeals []*OfflineDeal
-	err := database.GetDB().Where("deal_id>0 and status=?", constants.OFFLINE_DEAL_STATUS_CREATED).Find(&offlineDeals).Error
+	err := database.GetDB().Where("deal_id>0 and status=?", constants.OFFLINE_DEAL_STATUS_ACTIVE).Find(&offlineDeals).Error
 
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -73,9 +71,9 @@ func GetOfflineDeals2BeUnlocked() ([]*OfflineDeal, error) {
 	return offlineDeals, nil
 }
 
-func GetOfflineDealsNotUnlockedByCarFileId(carFileId int64) ([]*OfflineDeal, error) {
+func GetOfflineDeals2BeUnlockedByCarFileId(carFileId int64) ([]*OfflineDeal, error) {
 	var offlineDeals []*OfflineDeal
-	err := database.GetDB().Where("car_file_id=? and status in (?,?)", carFileId, constants.OFFLINE_DEAL_STATUS_CREATED, constants.OFFLINE_DEAL_STATUS_UNLOCK_FAILED).Find(&offlineDeals).Error
+	err := database.GetDB().Where("car_file_id=? and status in (?,?)", carFileId, constants.OFFLINE_DEAL_STATUS_CREATED, constants.OFFLINE_DEAL_STATUS_ACTIVE).Find(&offlineDeals).Error
 
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -120,12 +118,11 @@ func GetOfflineDealByDealId(dealId int64) (*OfflineDeal, error) {
 	return nil, nil
 }
 
-func UpdateOfflineDealUnlockInfo(id int64, status string, txHashUnlock string, messages ...string) error {
+func UpdateOfflineDealUnlockInfo(id int64, status string, txHashUnlock string) error {
 	currentUtcSecond := libutils.GetCurrentUtcSecond()
 	fields2BeUpdated := make(map[string]interface{})
 	fields2BeUpdated["status"] = status
-	fields2BeUpdated["note"] = strings.Join(messages, ",")
-	fields2BeUpdated["tx_hash_unlock"] = txHashUnlock
+	fields2BeUpdated["unlock_tx_hash"] = txHashUnlock
 	fields2BeUpdated["unlock_at"] = currentUtcSecond
 	fields2BeUpdated["update_at"] = currentUtcSecond
 

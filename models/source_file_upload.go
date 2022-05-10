@@ -53,7 +53,7 @@ func GetSourceFileUploadsExpired() ([]*SourceFileUploadOut, error) {
 
 	currentUtcSecond := libutils.GetCurrentUtcSecond()
 	var models []*SourceFileUploadOut
-	err := database.GetDB().Raw(sql, constants.SOURCE_FILE_TYPE_NORMAL, currentUtcSecond, constants.SOURCE_FILE_UPLOAD_STATUS_ACTIVE).Scan(&models).Error
+	err := database.GetDB().Raw(sql, constants.SOURCE_FILE_TYPE_NORMAL, currentUtcSecond, constants.SOURCE_FILE_UPLOAD_STATUS_UNLOCKED).Scan(&models).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err

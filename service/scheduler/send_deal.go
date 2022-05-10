@@ -43,7 +43,7 @@ func SendDeal() error {
 
 	for _, carFile := range carFiles {
 		if currentUtcSec-carFile.CreateAt > 3*24*60*60 {
-			carFile.Status = constants.CAR_FILE_STATUS_DEAL_SEND_CANCELLED
+			carFile.Status = constants.CAR_FILE_STATUS_DEAL_SEND_EXPIRED
 			err = database.SaveOne(carFile)
 			if err != nil {
 				logs.GetLogger().Error(err)

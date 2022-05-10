@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"mime/multipart"
 	"multi-chain-storage/common/constants"
+	"net/url"
+	"strings"
 
 	"multi-chain-storage/config"
 	"multi-chain-storage/models"
@@ -170,7 +172,7 @@ func GetSourceFileUploads(walletAddress string, fileName, orderBy string, isAsce
 		if srcFileUpload.Status != constants.SOURCE_FILE_UPLOAD_STATUS_PENDING &&
 			srcFileUpload.Status != constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDABLE &&
 			srcFileUpload.Status != constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDED &&
-			srcFileUpload.Status != constants.SOURCE_FILE_UPLOAD_STATUS_ACTIVE {
+			srcFileUpload.Status != constants.SOURCE_FILE_UPLOAD_STATUS_UNLOCKED {
 			srcFileUpload.Status = constants.SOURCE_FILE_UPLOAD_STATUS_PROCESSING
 		}
 	}
@@ -209,37 +211,19 @@ type SourceFileUploadDeal struct {
 	Unlocked                 bool   `json:"unlocked"`
 }
 type FlinkDealResult struct {
-	JobRunID int `json:"jobRunID"`
-	Data     struct {
-		Status string `json:"status"`
-		Data   struct {
-			Deal SourceFileUploadDeal `json:"deal"`
-		} `json:"data"`
-		Result struct {
-		} `json:"result"`
-	} `json:"data"`
-	Result struct {
-	} `json:"result"`
-	StatusCode int `json:"statusCode"`
-}
-
-type flinkParams struct {
-	ID   int `json:"id"`
-	Data struct {
-		Deal    int    `json:"deal"`
-		Network string `json:"network"`
+	Status string `json:"status"`
+	Data   struct {
+		Deal SourceFileUploadDeal `json:"deal"`
 	} `json:"data"`
 }
 
-func GetSourceFileUploadDeal(sourceFileUploadId int64, dealId int) (*SourceFileUploadDeal, error) {
+func GetSourceFileUploadDeal(sourceFileUploadId int64, dealId int64) (*SourceFileUploadDeal, []*models.DaoSignatureOut, error) {
 	flinkDealResult := FlinkDealResult{}
 	if dealId > 0 {
-		url := config.GetConfig().FLinkUrl
-		parameter := new(flinkParams)
-		parameter.Data.Deal = dealId
-		parameter.Data.Network = config.GetConfig().FilecoinNetwork
-
-		response, err := web.HttpGetNoToken(url, parameter)
+		flinkUrl := libutils.UrlJoin(config.GetConfig().FLinkUrl, strconv.FormatInt(dealId, 10))
+		flinkUrl = flinkUrl + "?network=" + config.GetConfig().FilecoinNetwork
+		params := url.Values{}
+		response, err := web.HttpGetNoToken(flinkUrl, strings.NewReader(params.Encode()))
 		if err != nil {
 			logs.GetLogger().Error(err)
 		} else {
@@ -253,28 +237,28 @@ func GetSourceFileUploadDeal(sourceFileUploadId int64, dealId int) (*SourceFileU
 	sourceFileUpload, err := models.GetSourceFileUploadById(sourceFileUploadId)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return nil, err
+		return nil, nil, err
 	}
 
 	if sourceFileUpload == nil {
 		err := fmt.Errorf("source file upload:%d not exists", sourceFileUploadId)
 		logs.GetLogger().Error(err)
-		return nil, err
+		return nil, nil, err
 	}
 
 	sourceFile, err := models.GetSourceFileById(sourceFileUpload.SourceFileId)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return nil, err
+		return nil, nil, err
 	}
 
 	transactionPay, err := models.GetTransactionBySourceFileUploadId(sourceFileUploadId)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return nil, err
+		return nil, nil, err
 	}
 
-	sourceFileUploadDeal := &flinkDealResult.Data.Data.Deal
+	sourceFileUploadDeal := &flinkDealResult.Data.Deal
 	sourceFileUploadDeal.IpfsUrl = sourceFile.IpfsUrl
 	sourceFileUploadDeal.FileName = sourceFileUpload.FileName
 	sourceFileUploadDeal.WCid = sourceFileUpload.Uuid + sourceFile.PayloadCid
@@ -285,11 +269,15 @@ func GetSourceFileUploadDeal(sourceFileUploadId int64, dealId int) (*SourceFileU
 		sourceFileUploadDeal.LockedFee = transactionPay.PayAmount
 	}
 
-	if sourceFileUpload.Status == constants.SOURCE_FILE_UPLOAD_STATUS_UNLOCKED || sourceFileUpload.Status == constants.SOURCE_FILE_UPLOAD_STATUS_ACTIVE {
-		sourceFileUploadDeal.Unlocked = true
+	sourceFileUploadDeal.Unlocked = sourceFileUpload.Status == constants.SOURCE_FILE_UPLOAD_STATUS_UNLOCKED
+
+	daoSignatures, err := models.GetDaoSignaturesByDealId(dealId)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, nil, err
 	}
 
-	return sourceFileUploadDeal, nil
+	return sourceFileUploadDeal, daoSignatures, nil
 }
 
 func RecordMintInfo(sourceFileIploadId int64, txHash string, tokenId string, mintAddress string) (*models.SourceFileMint, error) {

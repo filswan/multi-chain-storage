@@ -76,7 +76,13 @@ func UnlockPayment() error {
 		}
 
 		unlockCnt = unlockCnt + 1
-		_, err = unlockDeal(offlineDeal, ethClient, swanPaymentTransactor, paymentRecipientAddress)
+		txHash, err := unlockDeal(offlineDeal, ethClient, swanPaymentTransactor, paymentRecipientAddress)
+		if err != nil {
+			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
+			continue
+		}
+
+		err = models.UpdateOfflineDealUnlockInfo(offlineDeal.Id, constants.OFFLINE_DEAL_STATUS_UNLOCKED, *txHash)
 		if err != nil {
 			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 			continue
@@ -234,12 +240,6 @@ func unlockDeal(offlineDeal *models.OfflineDeal, ethClient *ethclient.Client, sw
 	}
 
 	logs.GetLogger().Info(getLog(offlineDeal, "unlock succeeded, tx hash:"+txHash))
-
-	err = models.UpdateOfflineDealUnlockInfo(offlineDeal.Id, constants.OFFLINE_DEAL_STATUS_UNLOCKED, txHash)
-	if err != nil {
-		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
-		return nil, err
-	}
 
 	return &txHash, nil
 }

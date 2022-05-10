@@ -48,8 +48,8 @@ func GetOfflineDeals2BeSigned(signerWalletId int64) ([]*OfflineDeal, error) {
 	var offlineDeals []*OfflineDeal
 	sql := "select * from offline_deal a\n" +
 		"left outer join dao_signature b on a.id=b.offline_deal_id and b.status=? and b.wallet_id_signer=?\n" +
-		"where a.deal_id is not null and a.deal_id>0 and a.status=? and b.id is null \n"
-	err := database.GetDB().Raw(sql, constants.DAO_SIGNATURE_STATUS_SUCCESS, signerWalletId, constants.OFFLINE_DEAL_STATUS_CREATED).Scan(&offlineDeals).Error
+		"where a.status=? and b.id is null \n"
+	err := database.GetDB().Raw(sql, constants.DAO_SIGNATURE_STATUS_SUCCESS, signerWalletId, constants.OFFLINE_DEAL_STATUS_ACTIVE).Scan(&offlineDeals).Error
 
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -61,7 +61,7 @@ func GetOfflineDeals2BeSigned(signerWalletId int64) ([]*OfflineDeal, error) {
 
 func GetOfflineDeals2BeUnlocked() ([]*OfflineDeal, error) {
 	var offlineDeals []*OfflineDeal
-	err := database.GetDB().Where("deal_id>0 and status=?", constants.OFFLINE_DEAL_STATUS_CREATED).Find(&offlineDeals).Error
+	err := database.GetDB().Where("deal_id>0 and status=?", constants.OFFLINE_DEAL_STATUS_ACTIVE).Find(&offlineDeals).Error
 
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -73,7 +73,7 @@ func GetOfflineDeals2BeUnlocked() ([]*OfflineDeal, error) {
 
 func GetOfflineDeals2BeUnlockedByCarFileId(carFileId int64) ([]*OfflineDeal, error) {
 	var offlineDeals []*OfflineDeal
-	err := database.GetDB().Where("car_file_id=? and status=?", carFileId, constants.OFFLINE_DEAL_STATUS_CREATED).Find(&offlineDeals).Error
+	err := database.GetDB().Where("car_file_id=? and status in (?,?)", carFileId, constants.OFFLINE_DEAL_STATUS_CREATED, constants.OFFLINE_DEAL_STATUS_ACTIVE).Find(&offlineDeals).Error
 
 	if err != nil {
 		logs.GetLogger().Error(err)

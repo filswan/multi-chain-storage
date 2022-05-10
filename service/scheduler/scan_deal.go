@@ -56,7 +56,7 @@ func updateOfflineDealStatusAndLog() error {
 
 			if dealInfo.Status == constants.ON_CHAIN_DEAL_STATUS_ERROR {
 				offlineDeal.Status = constants.OFFLINE_DEAL_STATUS_FAILED
-			} else if offlineDeal.Status == constants.OFFLINE_DEAL_STATUS_UNLOCKED && dealInfo.Status == constants.ON_CHAIN_DEAL_STATUS_ACTIVE {
+			} else if dealInfo.Status == constants.ON_CHAIN_DEAL_STATUS_ACTIVE {
 				offlineDeal.Status = constants.OFFLINE_DEAL_STATUS_ACTIVE
 			}
 

@@ -20,8 +20,6 @@ for CONF_FILE_NAME in ${CONF_FILE_NAMES[@]}; do
     fi
 done
 
-echo $CONF_FILE_PATH
-
 git submodule update --init --recursive
 make ffi
 make

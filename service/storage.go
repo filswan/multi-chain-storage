@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"mime/multipart"
 	"multi-chain-storage/common/constants"
+	"net/url"
+	"strings"
 
 	"multi-chain-storage/config"
 	"multi-chain-storage/models"
@@ -17,6 +19,7 @@ import (
 	"github.com/filswan/go-swan-lib/client/ipfs"
 	"github.com/filswan/go-swan-lib/client/web"
 	"github.com/filswan/go-swan-lib/logs"
+	"github.com/filswan/go-swan-lib/utils"
 	libutils "github.com/filswan/go-swan-lib/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -209,37 +212,19 @@ type SourceFileUploadDeal struct {
 	Unlocked                 bool   `json:"unlocked"`
 }
 type FlinkDealResult struct {
-	JobRunID int `json:"jobRunID"`
-	Data     struct {
-		Status string `json:"status"`
-		Data   struct {
-			Deal SourceFileUploadDeal `json:"deal"`
-		} `json:"data"`
-		Result struct {
-		} `json:"result"`
-	} `json:"data"`
-	Result struct {
-	} `json:"result"`
-	StatusCode int `json:"statusCode"`
-}
-
-type flinkParams struct {
-	ID   int `json:"id"`
-	Data struct {
-		Deal    int    `json:"deal"`
-		Network string `json:"network"`
+	Status string `json:"status"`
+	Data   struct {
+		Deal SourceFileUploadDeal `json:"deal"`
 	} `json:"data"`
 }
 
-func GetSourceFileUploadDeal(sourceFileUploadId int64, dealId int) (*SourceFileUploadDeal, error) {
+func GetSourceFileUploadDeal(sourceFileUploadId int64, dealId int64) (*SourceFileUploadDeal, error) {
 	flinkDealResult := FlinkDealResult{}
 	if dealId > 0 {
-		url := config.GetConfig().FLinkUrl
-		parameter := new(flinkParams)
-		parameter.Data.Deal = dealId
-		parameter.Data.Network = config.GetConfig().FilecoinNetwork
-
-		response, err := web.HttpGetNoToken(url, parameter)
+		flinkUrl := utils.UrlJoin(config.GetConfig().FLinkUrl, strconv.FormatInt(dealId, 10))
+		flinkUrl = flinkUrl + "?network=" + config.GetConfig().FilecoinNetwork
+		params := url.Values{}
+		response, err := web.HttpGetNoToken(flinkUrl, strings.NewReader(params.Encode()))
 		if err != nil {
 			logs.GetLogger().Error(err)
 		} else {
@@ -274,7 +259,7 @@ func GetSourceFileUploadDeal(sourceFileUploadId int64, dealId int) (*SourceFileU
 		return nil, err
 	}
 
-	sourceFileUploadDeal := &flinkDealResult.Data.Data.Deal
+	sourceFileUploadDeal := &flinkDealResult.Data.Deal
 	sourceFileUploadDeal.IpfsUrl = sourceFile.IpfsUrl
 	sourceFileUploadDeal.FileName = sourceFileUpload.FileName
 	sourceFileUploadDeal.WCid = sourceFileUpload.Uuid + sourceFile.PayloadCid

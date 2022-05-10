@@ -49,7 +49,7 @@ func refund(ethClient *ethclient.Client, carFileId int64, swanPaymentTransactor 
 	}
 
 	if len(offlineDealsNotUnlocked) > 0 {
-		msg := fmt.Sprintf("%d deals to be unlocked, cannot refund for the car file", len(offlineDealsNotUnlocked))
+		msg := fmt.Sprintf("%d deals to be unlocked, cannot refund for car file:%d", len(offlineDealsNotUnlocked), carFileId)
 		logs.GetLogger().Info(msg)
 		return nil
 	}

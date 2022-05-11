@@ -169,7 +169,7 @@ func (a SourceFileUploadResultByUploadAt) Len() int           { return len(a) }
 func (a SourceFileUploadResultByUploadAt) Less(i, j int) bool { return a[i].UploadAt < a[j].UploadAt }
 func (a SourceFileUploadResultByUploadAt) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 
-func GetSourceFileUploads(walletId int64, fileName, orderBy string, isAscend bool, limit, offset int) ([]*SourceFileUploadResult, *int, error) {
+func GetSourceFileUploads(walletId int64, status, fileName, orderBy string, isAscend bool, limit, offset int) ([]*SourceFileUploadResult, *int, error) {
 	sql := "select\n" +
 		"a.id source_file_upload_id,d.id car_file_id,a.file_name,b.file_size,a.create_at upload_at,a.duration,\n" +
 		"b.ipfs_url,b.pin_status,d.payload_cid,concat(a.uuid,b.payload_cid) w_cid,a.status,\n" +
@@ -185,9 +185,31 @@ func GetSourceFileUploads(walletId int64, fileName, orderBy string, isAscend boo
 		sql = sql + " and a.file_name like '%" + fileName + "%' "
 	}
 
+	params := []interface{}{}
+	params = append(params, walletId)
+
+	if !libutils.IsStrEmpty(&status) {
+		switch strings.Trim(status, " ") {
+		case constants.SOURCE_FILE_UPLOAD_STATUS_PENDING,
+			constants.SOURCE_FILE_UPLOAD_STATUS_PAID,
+			constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDABLE,
+			constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDED,
+			constants.SOURCE_FILE_UPLOAD_STATUS_UNLOCKED:
+			sql = sql + " and a.status=?"
+			params = append(params, status)
+		default:
+			sql = sql + " and a.status not in (?,?,?,?,?)"
+			params = append(params, constants.SOURCE_FILE_UPLOAD_STATUS_PENDING)
+			params = append(params, constants.SOURCE_FILE_UPLOAD_STATUS_PAID)
+			params = append(params, constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDABLE)
+			params = append(params, constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDED)
+			params = append(params, constants.SOURCE_FILE_UPLOAD_STATUS_UNLOCKED)
+		}
+	}
+
 	var sourceFileUploadResult []*SourceFileUploadResult
 
-	err := database.GetDB().Raw(sql, walletId).Scan(&sourceFileUploadResult).Error
+	err := database.GetDB().Raw(sql, params...).Scan(&sourceFileUploadResult).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, nil, err

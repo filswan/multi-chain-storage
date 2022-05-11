@@ -191,19 +191,19 @@ func GetSourceFileUploads(walletId int64, status, fileName, orderBy string, isAs
 	if !libutils.IsStrEmpty(&status) {
 		switch strings.Trim(status, " ") {
 		case constants.SOURCE_FILE_UPLOAD_STATUS_PENDING,
-			constants.SOURCE_FILE_UPLOAD_STATUS_PAID,
 			constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDABLE,
 			constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDED,
 			constants.SOURCE_FILE_UPLOAD_STATUS_UNLOCKED:
 			sql = sql + " and a.status=?"
 			params = append(params, status)
-		default:
-			sql = sql + " and a.status not in (?,?,?,?,?)"
+		case constants.SOURCE_FILE_UPLOAD_STATUS_PROCESSING:
+			sql = sql + " and a.status not in (?,?,?,?)"
 			params = append(params, constants.SOURCE_FILE_UPLOAD_STATUS_PENDING)
-			params = append(params, constants.SOURCE_FILE_UPLOAD_STATUS_PAID)
 			params = append(params, constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDABLE)
 			params = append(params, constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDED)
 			params = append(params, constants.SOURCE_FILE_UPLOAD_STATUS_UNLOCKED)
+		default:
+			logs.GetLogger().Info("input status:", status, ", get records with all kinds of statuses")
 		}
 	}
 

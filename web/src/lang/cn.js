@@ -574,7 +574,9 @@ export default {
         filter_status_Unpaid: '未支付',
         filter_status_Paid: '已支付',
         filter_status_Refunding: '可退款',
+        filter_status_Refundable: '可退款',
         filter_status_Refunded: '已退款',
+        filter_status_Unlocked: '解锁'
     },
     billing: {
         search_placeholder: '搜索方式',

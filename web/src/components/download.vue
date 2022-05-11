@@ -39,7 +39,7 @@ export default {
   name: "download",
   data() {
     return {
-      widthDia: document.body.clientWidth <= 600 ? "95%" : "6.6rem",
+      widthDia: document.body.clientWidth <= 600 ? "95%" : document.body.clientWidth <= 1600 ? "520px" : "640px",
       downloadTime: "",
 
       handlerIcon: "el-icon-d-arrow-right",
@@ -50,7 +50,7 @@ export default {
       text: this.$t("billing.verify_tip"),
       successText: this.$t("billing.verify_result"),
       width:
-        document.body.clientWidth > 1700
+        document.body.clientWidth > 1600
           ? 480
           : document.body.clientWidth > 600 ? 400 : 290,
       height:

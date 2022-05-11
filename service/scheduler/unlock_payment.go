@@ -148,7 +148,7 @@ func checkUnlockable(ethClient *ethclient.Client, offlineDeal *models.OfflineDea
 }
 
 func setUnlockPayment(offlineDeal *models.OfflineDeal) ([]*models.SourceFileUploadOut, error) {
-	srcFileUploads, err := models.GetSourceFileUploadsByCarFileId(offlineDeal.CarFileId)
+	srcFileUploads, err := models.GetSourceFileUploadOutsByCarFileId(offlineDeal.CarFileId)
 	if err != nil {
 		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 		return nil, err

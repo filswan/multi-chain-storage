@@ -20,7 +20,7 @@ func ScanDeal() error {
 		logs.GetLogger().Error(err)
 	}
 
-	err = updateExpiredSourceFileUploadStatus()
+	err = updateSourceFile2RefundableAfterExpired()
 	if err != nil {
 		logs.GetLogger().Error(err)
 	}
@@ -56,6 +56,7 @@ func updateOfflineDealStatusAndLog() error {
 
 			if dealInfo.Status == constants.ON_CHAIN_DEAL_STATUS_ERROR {
 				offlineDeal.Status = constants.OFFLINE_DEAL_STATUS_FAILED
+				updateSourceFile2RefundableAfterDealFailed(offlineDeal.CarFileId)
 			} else if dealInfo.Status == constants.ON_CHAIN_DEAL_STATUS_ACTIVE {
 				offlineDeal.Status = constants.OFFLINE_DEAL_STATUS_ACTIVE
 			}
@@ -78,7 +79,37 @@ func updateOfflineDealStatusAndLog() error {
 	return nil
 }
 
-func updateExpiredSourceFileUploadStatus() error {
+func updateSourceFile2RefundableAfterDealFailed(carFileId int64) error {
+	offlineDeals, err := models.GetOfflineDealNotFailedByCarFileId(carFileId)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	if len(offlineDeals) > 0 {
+		return nil
+	}
+
+	sourceFileUploads, err := models.GetSourceFileUploadsByCarFileId(carFileId)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	for _, sourceFileUpload := range sourceFileUploads {
+		sourceFileUpload.Status = constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDABLE
+		sourceFileUpload.UpdateAt = libutils.GetCurrentUtcSecond()
+		err = database.SaveOne(sourceFileUpload)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			continue
+		}
+	}
+
+	return nil
+}
+
+func updateSourceFile2RefundableAfterExpired() error {
 	sourceFileUploads, err := models.GetSourceFileUploadsExpired()
 	if err != nil {
 		logs.GetLogger().Error(err)

@@ -41,7 +41,7 @@ func GetDeals2Sign(signerWalletAddress string) ([]*Deal2Sign, error) {
 			WCids:  []string{},
 		}
 
-		sourceFileUploads, err := models.GetSourceFileUploadsByCarFileId(offlineDeal.CarFileId)
+		sourceFileUploads, err := models.GetSourceFileUploadOutsByCarFileId(offlineDeal.CarFileId)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			return nil, err

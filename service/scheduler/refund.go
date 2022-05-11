@@ -54,7 +54,7 @@ func refund(ethClient *ethclient.Client, carFileId int64, swanPaymentTransactor 
 		return nil
 	}
 
-	sourceFileUploads, err := models.GetSourceFileUploadsByCarFileId(carFileId)
+	sourceFileUploads, err := models.GetSourceFileUploadOutsByCarFileId(carFileId)
 	if err != nil {
 		logs.GetLogger().Error(err.Error())
 		return err

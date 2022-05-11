@@ -31,7 +31,7 @@ type SourceFileUploadOut struct {
 	LockedFeeBeforeRefund decimal.Decimal
 }
 
-func GetSourceFileUploadsByCarFileId(carFileId int64) ([]*SourceFileUploadOut, error) {
+func GetSourceFileUploadOutsByCarFileId(carFileId int64) ([]*SourceFileUploadOut, error) {
 	var sourceFileUploadOut []*SourceFileUploadOut
 	sql := "select a.*,b.payload_cid from source_file_upload a\n" +
 		"left join source_file b on a.source_file_id=b.id\n" +
@@ -44,6 +44,20 @@ func GetSourceFileUploadsByCarFileId(carFileId int64) ([]*SourceFileUploadOut, e
 	}
 
 	return sourceFileUploadOut, nil
+}
+
+func GetSourceFileUploadsByCarFileId(carFileId int64) ([]*SourceFileUpload, error) {
+	var sourceFileUploads []*SourceFileUpload
+	sql := "select a.* from source_file_upload a\n" +
+		"where a.id in (select source_file_upload_id from car_file_source where car_file_id=?)"
+	err := database.GetDB().Raw(sql, carFileId).Scan(&sourceFileUploads).Error
+
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	return sourceFileUploads, nil
 }
 
 func GetSourceFileUploadsExpired() ([]*SourceFileUploadOut, error) {

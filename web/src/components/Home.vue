@@ -101,7 +101,7 @@ export default {
                 window.location.reload();
             }
         }
-        console.log('update time: 2022-05-10')
+        console.log('update time: 2022-05-11')
     }
 };
 </script>
@@ -118,12 +118,12 @@ export default {
     // @media screen and (max-width: 1800px) { 
     //     width: 16.9rem;
     // }
-    // @media screen and (max-width: 1600px) { 
-    //     width: 15rem;
-    // }
-    // @media screen and (max-width: 1440px) { 
-    //     width: 13.5rem;
-    // }
+    @media screen and (max-width: 1600px) { 
+        width: 20rem;
+    }
+    @media screen and (max-width: 1366px) { 
+        width: 19.24rem;
+    }
     .content{
         position: relative;
         height: 100%;

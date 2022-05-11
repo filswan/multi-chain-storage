@@ -531,7 +531,7 @@ export default {
         Duration_tip: 'Please enter the duration',
         Duration_tooltip: 'Duration refers to the terms in which you want the file to be stored on the Filecoin network.',
         Storage_copy: 'Storage Copy',
-        Storage_copy_tooltip: 'The number of copies of files stored in Filecoin network. Your file will be assigned to dbifferent storage providers. ',
+        Storage_copy_tooltip: 'The number of copies of files stored in Filecoin network. Your file will be assigned to different storage providers. ',
         Estimated_Storage_Cost: 'Estimated Storage Cost',
         Estimated_Storage_Cost_tooltip: 'The estimated storage cost is calculated according to your file size, the duration you set, and the average provider price.',
         Select_Lock_Funds_Plan: 'Select Lock Funds Plan',
@@ -569,7 +569,9 @@ export default {
         filter_status_Unpaid: 'Unpaid',
         filter_status_Paid: 'Paid',
         filter_status_Refunding: 'Refunding',
+        filter_status_Refundable: 'Refundable',
         filter_status_Refunded: 'Refunded',
+        filter_status_Unlocked: 'Unlocked'
     },
     billing: {
         search_placeholder: 'Search by ',

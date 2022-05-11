@@ -52,7 +52,7 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="status" :label="$t('uploadFile.file_status')" width="130">
+          <el-table-column prop="status" :label="$t('uploadFile.file_status')" width="140">
             <template slot-scope="scope">
               <el-button type="danger" class="statusStyle" v-if="scope.row.status&&scope.row.status.toLowerCase()=='failed'">
                   {{ languageMcs == "en" ? "Fail" : '失败'}}
@@ -66,11 +66,17 @@
               <el-button plain type="success" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='active'">
                   {{ languageMcs == "en" ? "Active" : '完成'}}
               </el-button>
+              <el-button plain type="success" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='unlocked'">
+                  {{ languageMcs == "en" ? "Unlocked" : '解锁'}}
+              </el-button>
               <el-button plain type="info" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='refunded'">
                   {{ languageMcs == "en" ? "Refunded" : '已退款'}}
               </el-button>
               <el-button plain type="refunding" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='refunding'">
                   {{ languageMcs == "en" ? "Refunding" : '可退款'}}
+              </el-button>
+              <el-button plain type="refunding" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='refundable'">
+                  {{ languageMcs == "en" ? "Refundable" : '可退款'}}
               </el-button>
               <el-button plain type="info" class="statusStyle" v-else>
                   {{scope.row.status}}
@@ -287,7 +293,8 @@
           </el-table-column>
           <el-table-column prop="active" width="130" :label="$t('uploadFile.payment')"
             :filters="[{text: $t('uploadFile.filter_status_Unpaid'), value: '0'}, {text: $t('uploadFile.filter_status_Paid'), value: '1'}, 
-                       {text: $t('uploadFile.filter_status_Refunding'), value: '2'}, {text: $t('uploadFile.filter_status_Refunded'), value: '3'}]"
+                       {text: $t('uploadFile.filter_status_Refundable'), value: '2'}, {text: $t('uploadFile.filter_status_Refunded'), value: '3'},
+                       {text: $t('uploadFile.filter_status_Unlocked'), value: '4'}]"
             :filter-multiple="false" :column-key="'payment'">
             <template slot-scope="scope">
               <div class="hot-cold-box">
@@ -297,7 +304,7 @@
                   {{$t('uploadFile.pay')}}
                 </el-button>
                 <el-button class="uploadBtn blue" type="primary"
-                  v-else-if="tableData[scope.$index].status.toLowerCase()=='refunding'"
+                  v-else-if="tableData[scope.$index].status.toLowerCase()=='refunding' || tableData[scope.$index].status.toLowerCase()=='refundable'"
                   @click.stop="refundClick(scope.row)">
                   {{$t('uploadFile.refund')}}
                 </el-button>
@@ -327,7 +334,7 @@
                   @click.stop="mintViewFunction(scope.row)">{{$t('uploadFile.mint_view')}}</el-button>
                 <el-button
                   class="uploadBtn grey opacity"
-                  v-else-if="tableData[scope.$index].status.toLowerCase()=='pending' || tableData[scope.$index].status.toLowerCase()=='failed' || tableData[scope.$index].status.toLowerCase()=='refunding' || tableData[scope.$index].status.toLowerCase()=='refunded'"
+                  v-else-if="tableData[scope.$index].status.toLowerCase()=='pending' || tableData[scope.$index].status.toLowerCase()=='failed' || tableData[scope.$index].status.toLowerCase()=='refunding' || tableData[scope.$index].status.toLowerCase()=='refundable' || tableData[scope.$index].status.toLowerCase()=='refunded'"
                   :disabled="true">
                   {{$t('uploadFile.MINT')}}
                 </el-button>
@@ -1734,6 +1741,7 @@ export default {
 
       .el-table /deep/ {
         overflow: visible;
+        font-size: 0.18rem;
         // overflow-x: scroll;
         .el-loading-mask{
           .el-loading-spinner{

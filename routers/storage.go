@@ -62,7 +62,7 @@ func UploadFile(c *gin.Context) {
 	if duration != 525 {
 		err := fmt.Errorf("duration must be 525")
 		logs.GetLogger().Error(err)
-		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.ERROR_PARAM_WRONG_TYPE, err.Error()))
+		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.ERROR_PARAM_INVALID_VALUE, err.Error()))
 		return
 
 	}
@@ -119,13 +119,14 @@ func GetDeals(c *gin.Context) {
 		return
 	}
 
+	status := strings.Trim(URL.Get("status"), " ")
 	fileName := URL.Get("file_name")
 
 	orderBy := strings.Trim(URL.Get("order_by"), " ")
 
-	isAscend := strings.Trim(URL.Get("is_ascend"), " ") == "y"
+	isAscend := strings.EqualFold(strings.Trim(URL.Get("is_ascend"), " "), "y")
 
-	sourceFileUploads, totalRecordCount, err := service.GetSourceFileUploads(walletAddress, fileName, orderBy, isAscend, limit, offset)
+	sourceFileUploads, totalRecordCount, err := service.GetSourceFileUploads(walletAddress, status, fileName, orderBy, isAscend, limit, offset)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.ERROR_INTERNAL, err.Error()))

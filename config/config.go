@@ -15,7 +15,7 @@ type Configuration struct {
 	Port                  int          `toml:"port"`
 	Release               bool         `toml:"release"`
 	SwanPlatformFilWallet string       `toml:"swan_platform_fil_wallet"`
-	FLinkUrl              string       `toml:"flink_url"`
+	FlinkUrl              string       `toml:"flink_url"`
 	FilecoinNetwork       string       `toml:"filecoin_network"`
 	Polygon               polygon      `toml:"polygon"`
 	Database              database     `toml:"database"`

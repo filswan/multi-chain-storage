@@ -1,5 +1,3 @@
-drop database mcs_v2;
-create database mcs_v2;
 use mcs_v2;
 
 create table network (

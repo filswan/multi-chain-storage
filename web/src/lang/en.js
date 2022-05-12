@@ -520,7 +520,7 @@ export default {
         detail_Retrieval_Filecoin_tooltip: "The deal will not be available for retrieval until it is Published on the blockchain. The ‘output-file’ in the end of this command is the name of the file that you'd like to save, you can also add a path to this variable.",
         detail_DAO_Signatures: 'DAO Signatures',
         detail_DAO_Signatures_tooltip: 'The signatures are used to unlock funds to provider.',
-        detail_DAO_RKH_Address: 'DAO RKH Address',
+        detail_DAO_RKH_Address: 'DAO Address',
         detail_Time: 'Time',
         view_deal_logs: 'View deal logs',
         deal_logs: 'Deal Logs',
@@ -571,7 +571,9 @@ export default {
         filter_status_Refunding: 'Refunding',
         filter_status_Refundable: 'Refundable',
         filter_status_Refunded: 'Refunded',
-        filter_status_Unlocked: 'Unlocked'
+        filter_status_Unlocked: 'Unlocked',
+        filter_status_Pending: 'Pending',
+        filter_status_Processing: 'Processing'
     },
     billing: {
         search_placeholder: 'Search by ',
@@ -590,7 +592,9 @@ export default {
         PAYMENTDATE: 'Payment Date',
         UNLOCKDATE: 'Unlock Date',
         Deadline: 'Deadline',
-        download_module_title: 'Download Data (Billing History)',
+        download_module_title: 'Download Data (',
+        download_module_title_file: 'File History)',
+        download_module_title_billing: 'Billing History)',
         download_module_btn: 'Download',
         verify: 'Verify:',
         verify_result: 'Verification successful',

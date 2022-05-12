@@ -1,5 +1,5 @@
 <template>
-        <el-dialog :title="$t('billing.download_module_title')" :modal="true" :width="widthDia" :visible.sync="downVisible" :before-close="closeDia">
+        <el-dialog :title="$t('billing.download_module_title')+titlePage" :modal="true" :width="widthDia" :visible.sync="downVisible" :before-close="closeDia">
             <div class="upload_form">
                 <el-date-picker
                     v-model="downloadTime"
@@ -65,7 +65,7 @@ export default {
       radius: "12px"
     };
   },
-  props: ["downVisible"],
+  props: ["downVisible", 'titlePage'],
   components: {
     dragVerify
   },

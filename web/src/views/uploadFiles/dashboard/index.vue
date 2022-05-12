@@ -52,7 +52,11 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="status" :label="$t('uploadFile.file_status')" width="140">
+          <el-table-column prop="status" :label="$t('uploadFile.file_status')" width="140"
+            :filters="[{text: $t('uploadFile.filter_status_Pending'), value: 'Pending'}, {text: $t('uploadFile.filter_status_Processing'), value: 'Processing'}, 
+                       {text: $t('uploadFile.filter_status_Refundable'), value: 'Refundable'}, {text: $t('uploadFile.filter_status_Refunded'), value: 'Refunded'},
+                       {text: $t('uploadFile.filter_status_Unlocked'), value: 'Unlocked'}]"
+            :filter-multiple="false" :column-key="'payment'">
             <template slot-scope="scope">
               <el-button type="danger" class="statusStyle" v-if="scope.row.status&&scope.row.status.toLowerCase()=='failed'">
                   {{ languageMcs == "en" ? "Fail" : '失败'}}
@@ -131,7 +135,7 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="miner_fid" width="220">
+          <el-table-column prop="miner_fid" min-width="120">
             <template slot="header" slot-scope="scope">
               <div class="tips">
                 {{$t('uploadFile.w3ss_ids')}}
@@ -291,11 +295,7 @@
               {{ scope.row.upload_at }}
             </template>
           </el-table-column>
-          <el-table-column prop="active" width="130" :label="$t('uploadFile.payment')"
-            :filters="[{text: $t('uploadFile.filter_status_Unpaid'), value: '0'}, {text: $t('uploadFile.filter_status_Paid'), value: '1'}, 
-                       {text: $t('uploadFile.filter_status_Refundable'), value: '2'}, {text: $t('uploadFile.filter_status_Refunded'), value: '3'},
-                       {text: $t('uploadFile.filter_status_Unlocked'), value: '4'}]"
-            :filter-multiple="false" :column-key="'payment'">
+          <el-table-column prop="active" width="120" :label="$t('uploadFile.payment')">
             <template slot-scope="scope">
               <div class="hot-cold-box">
                 <el-button class="uploadBtn blue" type="primary"
@@ -324,7 +324,7 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="MINT" width="125" :label="$t('uploadFile.MINT')"
+          <el-table-column prop="MINT" width="120" :label="$t('uploadFile.MINT')"
             :filters="[{text: $t('uploadFile.filter_no_minted'), value: '0'}, {text: $t('uploadFile.filter_minted'), value: '1'}]"
             :filter-multiple="false" :column-key="'minted'">
             <template slot-scope="scope">
@@ -427,7 +427,7 @@
 
         <mint-tip v-if="mineVisible" :mineVisible="mineVisible" :mintRow="mintRow" @getMintDialog="getMintDialog"></mint-tip>
       
-        <download v-if="downVisible" :downVisible="downVisible" @getDownload="getDownload"></download>
+        <download v-if="downVisible" :downVisible="downVisible" :titlePage="$t('billing.download_module_title_file')" @getDownload="getDownload"></download>
     <!-- 回到顶部 -->
     <el-backtop target=".content-box" :bottom="40" :right="20"></el-backtop>
   </div>
@@ -464,7 +464,7 @@ export default {
         jumperOffset: 1,
         order_by: '',
         is_ascending: '',
-        payment_status: '',
+        status: '',
         mint_status: ''
       },
       parmaChild: {
@@ -556,7 +556,7 @@ export default {
       _this.parma.jumperOffset = 1
       _this.parma.order_by = ''
       _this.parma.is_ascending = ''
-      _this.parma.payment_status = ""
+      _this.parma.status = ""
       _this.parma.mint_status = ""
       _this.parmaChild.limit = 10
       _this.parmaChild.offset = 1
@@ -1061,7 +1061,7 @@ export default {
       _this.parma.jumperOffset = 1;
       _this.parma.order_by = ''
       _this.parma.is_ascending = ''
-      _this.parma.payment_status = ""
+      _this.parma.status = ""
       _this.parma.mint_status = ""
       _this.$refs.singleTable.clearSort()
       _this.$refs.singleTable.clearFilter();
@@ -1075,7 +1075,7 @@ export default {
       _this.parma.jumperOffset = 1;
       _this.parma.order_by = ''
       _this.parma.is_ascending = ''
-      _this.parma.payment_status = ""
+      _this.parma.status = ""
       _this.parma.mint_status = ""
       _this.$refs.singleTable.clearSort()
       _this.$refs.singleTable.clearFilter();
@@ -1167,8 +1167,8 @@ export default {
     filterChange(filters){
       if(("payment" in filters)) {
         let data = filters.payment[0] || ""
-        if(data == this.parma.payment_status) return false
-        this.parma.payment_status = data
+        if(data == this.parma.status) return false
+        this.parma.status = data
         this.$refs.singleTable.clearFilter('minted');
         this.parma.mint_status = ""
       } else if(("minted" in filters)) {
@@ -1176,10 +1176,10 @@ export default {
         if(data == this.parma.mint_status) return false
         this.parma.mint_status = data
         this.$refs.singleTable.clearFilter('payment');
-        this.parma.payment_status = ""
+        this.parma.status = ""
       }else{
         this.$refs.singleTable.clearFilter();
-        this.parma.payment_status = ""
+        this.parma.status = ""
         this.parma.mint_status = ""
         return false
       }
@@ -1200,7 +1200,7 @@ export default {
         wallet_address: _this.metaAddress,
         order_by: _this.parma.is_ascending?_this.parma.order_by:'',
         is_ascending: _this.parma.is_ascending,
-        payment_status: _this.parma.payment_status,
+        status: _this.parma.status,
         mint_status: _this.parma.mint_status
       };
 

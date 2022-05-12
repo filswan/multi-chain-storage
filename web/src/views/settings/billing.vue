@@ -130,7 +130,7 @@
             </div>
         </div>
 
-        <download v-if="downVisible" :downVisible="downVisible" @getDownload="getDownload"></download>
+        <download v-if="downVisible" :downVisible="downVisible" :titlePage="$t('billing.download_module_title_billing')" @getDownload="getDownload"></download>
         <!-- 回到顶部 -->
         <el-backtop target=".content-box" :bottom="40" :right="20"></el-backtop>
     </div>
@@ -461,113 +461,6 @@
 
 
 <style scoped lang="scss">
-.el-dialog__wrapper /deep/ {  
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    .el-dialog{
-        background: #fff;
-        margin: auto !important;
-        box-shadow: 0 0 13px rgba(128,128,128,0.8);
-        border-radius: 0.2rem;
-        .el-dialog__header{
-            padding: 0.3rem 0.4rem;
-            display: flex;
-            border-bottom: 1px solid #dfdfdf;
-            .el-dialog__title{
-                color: #333;
-                font-size: 0.22rem;
-                font-weight: 500;
-                line-height: 1;
-                text-transform: capitalize;
-            }
-            .el-dialog__headerbtn{
-                display: none;
-            }
-        }
-        .el-dialog__body{
-            padding: 0.3rem 0.4rem 0.1rem;
-            .el-range-editor.el-input__inner{
-                width: 100%;
-                height: 0.6rem;
-                line-height: 0.6rem;
-                border-color: #888;
-                font-size: 0.22rem;
-                color: #333;
-                .el-range-input{
-                    font-size: inherit;
-                    font-family: inherit;
-                }
-                .el-range__icon, .el-range-separator{
-                    line-height: inherit;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-size: inherit;
-                    color: #000;
-                }
-            }
-            .drag_container{
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                margin: 0.2rem 0 0;
-                font-size: 0.22rem;
-                color: #888;
-                .drag_verify{
-                    border-radius: 0.12rem !important;
-                    .dv_progress_bar{
-                        width: 100% !important;
-                        border-radius: 0.12rem !important;
-                    }
-                    .dv_text{
-                        color: #888;
-                    }
-                    .dv_handler{
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        top: 4px;
-                        bottom: 4px;
-                        height: auto !important;
-                        margin-left: 4px;
-                        border-radius: 0.12rem !important;
-                        border: 0;
-                        i{
-                            color: #DADADA;
-                            font-size: 0.23rem;
-                        }
-                    }
-                }
-            }
-            .upload_bot{
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                width: 100%;
-                margin: 0.25rem auto 0.2rem;
-                .el-button{
-                    width: 100%;
-                    height: 0.6rem;
-                    padding: 0;
-                    margin-left: 0;
-                    line-height: 0.6rem;
-                    font-size: 0.22rem;
-                    font-family: inherit;
-                    color: #fff;
-                    border: 0;
-                    background: linear-gradient(45deg,#4f8aff, #4b5eff);
-                    border-radius: 14px;
-                }
-            }
-        }
-        .dialog-footer{
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-        }
-    }
-}
 #dealManagement{
     padding: 0.3rem;
     .metatips /deep/{

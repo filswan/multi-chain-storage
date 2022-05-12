@@ -9,7 +9,7 @@
                 <el-tab-pane v-for="(item, i) in offline_deals_data" :key="i" :name="''+i+''">
                     <span slot="label">
                         <!-- <i class="el-icon-success"></i>  -->
-                        <img v-if="!dealCont.found.locked_fee" src="@/assets/images/error.png" />
+                        <img v-if="!dealCont.source_file_upload_deal.locked_fee" src="@/assets/images/error.png" />
                         <img v-else-if="dealCont.signed_dao_count >= dealCont.dao_thresh_hold && dealCont.unlock_status" src="@/assets/images/dao_success.png" />
                         <img v-else-if="dealCont.signed_dao_count >= dealCont.dao_thresh_hold && !dealCont.unlock_status" src="@/assets/images/dao_waiting.png" />
                         <img v-else src="@/assets/images/dao_waiting.png" />
@@ -27,7 +27,7 @@
                                 <img src="@/assets/images/info.png"/>
                             </el-tooltip>
                         </span>
-                        <span v-if="!dealCont.found.locked_fee">
+                        <span v-if="!dealCont.source_file_upload_deal.locked_fee">
                             <img src="@/assets/images/error.png" />
                             <span>{{$t('uploadFile.no_fund_locked')}}</span>
                         </span>
@@ -58,7 +58,7 @@
                         <el-col :span="8">{{$t('uploadFile.detail_Network')}}:</el-col>
                         <el-col :span="16">{{dealCont.source_file_upload_deal.network_name | NumFormat}}</el-col>
                         <el-col :span="8">{{$t('uploadFile.detail_Locked_funds')}}:</el-col>
-                        <el-col :span="16">{{dealCont.found.locked_fee | NumFormatPrice}} USDC</el-col>
+                        <el-col :span="16">{{dealCont.source_file_upload_deal.locked_fee | NumFormatPrice}} USDC</el-col>
                         <el-col :span="8">{{$t('uploadFile.w3ss_id')}}:</el-col>
                         <el-col :span="16" v-if="dealId == 0">-</el-col>
                         <el-col :span="16" v-else>{{dealCont.source_file_upload_deal.provider | NumFormat}}</el-col>
@@ -66,7 +66,7 @@
                         <el-col :span="16" v-if="dealId == 0">-</el-col>
                         <el-col :span="16" v-else>{{dealCont.source_file_upload_deal.storage_price | NumFormatPrice}} FIL</el-col>
                         <el-col :span="8">{{$t('billing.PAYLOADCID')}}:</el-col>
-                        <el-col :span="16">{{dealCont.found.payload_cid | NumFormat}}</el-col>
+                        <el-col :span="16">{{dealCont.source_file_upload_deal.payload_cid | NumFormat}}</el-col>
                         <el-col :span="8">{{$t('uploadFile.detail_ProposalCID')}}:</el-col>
                         <el-col :span="16" v-if="dealId == 0">-</el-col>
                         <el-col :span="16" v-else>{{dealCont.source_file_upload_deal.deal_cid | NumFormat}}</el-col>
@@ -99,7 +99,7 @@
                                 
                                 <img class="img" src="@/assets/images/copy.png" @click="copyTextToClipboard(copy_filename)" alt="">
                             </div>
-                            <div class="lotupContent" :class="{'color': !dealCont.source_file_upload_deal.provider && !dealCont.found.payload_cid}" @click="copyTextToClipboard(copy_filename)">{{copy_filename}}</div>
+                            <div class="lotupContent" :class="{'color': !dealCont.source_file_upload_deal.provider && !dealCont.source_file_upload_deal.payload_cid}" @click="copyTextToClipboard(copy_filename)">{{copy_filename}}</div>
                         </el-col>
                     </el-row>
                         
@@ -116,7 +116,7 @@
                                 {{$t('my_profile.miner_add_Signature')}} {{scope.row.order_index?scope.row.order_index:scope.$index+1}}
                             </template>
                         </el-table-column>
-                        <el-table-column prop="dao_address" :label="$t('uploadFile.detail_DAO_RKH_Address')" min-width="220">
+                        <el-table-column prop="wallet_signer" :label="$t('uploadFile.detail_DAO_RKH_Address')" min-width="220">
                             <template slot-scope="scope">
                                 <div class="hot-cold-box">
                                     <el-popover
@@ -124,11 +124,11 @@
                                         trigger="hover"
                                         v-model="scope.row.daoAddressVis">
                                         <div class="upload_form_right">
-                                            <p>{{scope.row.dao_address}}</p>
+                                            <p>{{scope.row.wallet_signer}}</p>
                                         </div>
-                                        <el-button slot="reference" @click="copyTextToClipboard(scope.row.dao_address)">
+                                        <el-button slot="reference" @click="copyTextToClipboard(scope.row.wallet_signer)">
                                             <img src="@/assets/images/copy.png" alt="">
-                                            {{scope.row.dao_address}}
+                                            {{scope.row.wallet_signer}}
                                         </el-button>
                                     </el-popover>
                                 </div>
@@ -153,7 +153,7 @@
                                 </div>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="dao_pass_time" :label="$t('uploadFile.detail_Time')"></el-table-column>
+                        <el-table-column prop="create_at" :label="$t('uploadFile.detail_Time')"></el-table-column>
                         <el-table-column prop="status" :label="$t('uploadFile.file_status')">
                             <template slot-scope="scope">
                                 <img src="@/assets/images/dao_success.png" v-if="scope.row.status == 1" />
@@ -210,7 +210,6 @@ export default {
             bodyWidth: document.documentElement.clientWidth<1024?true:false,
             dealId: '',
             dealCont: {
-                found: {},
                 source_file_upload_deal: {}
             },
             daoCont: [],
@@ -304,14 +303,14 @@ export default {
                 _this.loading = false
                 if (json.status == 'success') {
                     if(!json.data) return false
-                    if(json.data.dao){
-                        _this.daoCont = json.data.dao
+                    if(json.data.dao_signature){
+                        _this.daoCont = json.data.dao_signature
                         _this.daoCont.map(item => {
                             item.daoAddressVis = false
                             item.txHashVis = false
-                            item.dao_pass_time =  
-                                item.dao_pass_time? 
-                                    moment(new Date(parseInt(item.dao_pass_time * 1000))).format(
+                            item.create_at =  
+                                item.create_at? 
+                                    moment(new Date(parseInt(item.create_at * 1000))).format(
                                         "YYYY-MM-DD HH:mm:ss"
                                     )
                                     : "-";
@@ -326,13 +325,11 @@ export default {
                             )
                             : "-";
 
-                    if(json.data.source_file_upload_deal.provider && json.data.found.payload_cid && json.data.source_file_upload_deal.deal_id != 0){
-                        _this.copy_filename = 'lotus client retrieve --miner '+json.data.source_file_upload_deal.provider+' '+json.data.found.payload_cid+' ~./output-file';
+                    if(json.data.source_file_upload_deal.provider && json.data.source_file_upload_deal.payload_cid && json.data.source_file_upload_deal.deal_id != 0){
+                        _this.copy_filename = 'lotus client retrieve --miner '+json.data.source_file_upload_deal.provider+' '+json.data.source_file_upload_deal.payload_cid+' ~./output-file';
                     }else{
                         _this.copy_filename = localStorage.getItem('languageMcs') == 'cn'?"还不可用。":"It's not available yet.";
                     }
-
-                    if(!json.data.found) _this.dealCont.found = {}
                 }else{
                     _this.$message.error(json.message);
                     return false
@@ -796,10 +793,10 @@ export default {
             display: flex;
             align-items: center;
             justify-content: flex-start;
-            padding: 0.1rem 0;
+            padding: 0.2rem 0;
             line-height: 1.5;
             text-align: center;
-            font-size: 0.18rem;
+            font-size: 0.22rem;
             font-weight: 600;
             white-space: normal;
             color: #333;
@@ -828,7 +825,7 @@ export default {
                     align-items: center;
                     word-break: break-word;
                     text-align: center;
-                    font-size: 0.18rem;
+                    font-size: 0.2rem;
                     color: #555;
                     .hot-cold-box{
                         .el-button{
@@ -837,7 +834,7 @@ export default {
                             padding: 0;
                             margin: 0;
                             background-color: transparent;
-                            font-size: 0.18rem;
+                            font-size: 0.2rem;
                             word-break: break-word;
                             color: #000;
                             text-align: left;

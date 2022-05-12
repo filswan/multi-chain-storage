@@ -282,13 +282,26 @@ export default {
         signFun(redirect){
             let _this = this
             if(!_this.addrChild){
-                NCWeb3.Init(addr=>{
-                    //Get the corresponding wallet address
-                    // console.log('Wallet address:', addr)
-                    _this.$nextTick(() => {
-                        _this.addrChild = addr
-                        _this.walletInfo()
-                    })
+                ethereum
+                .request(
+                    {
+                        "jsonrpc":"2.0",
+                        "method":"eth_accounts",
+                        "params":[_this.metaAddress, "latest"],
+                        "id":19998
+                    }
+                )
+                .then((accounts) => {
+                    if(accounts.length<= 0) {
+                        _this.signOutFun()
+                        return false
+                    }
+                    _this.addrChild = _this.metaAddress
+                    _this.walletInfo()
+                })
+                .catch((error) => {
+                    console.log(error)
+                    _this.signOutFun()
                 })
                 return false
             }
@@ -480,7 +493,9 @@ export default {
 
         _this.commonParam()
         if(_this.metaAddress){
-            _this.signFun()
+            _this.addrChild = _this.metaAddress
+            _this.walletInfo()
+            // _this.signFun()
         }
         _this.fn()
     },

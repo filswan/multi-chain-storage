@@ -525,7 +525,7 @@ export default {
         detail_Retrieval_Filecoin_tooltip: "在该交易在发布在区块链上之前不能取回。本命令末尾的‘output-file’是您想要保存的文件名，您也可以为这个变量添加一个路径。",
         detail_DAO_Signatures: 'DAO签名',
         detail_DAO_Signatures_tooltip: '签名是用来解锁资金给存储提供者。',
-        detail_DAO_RKH_Address: 'DAO RKH地址',
+        detail_DAO_RKH_Address: 'DAO地址',
         detail_Time: '日期',
         view_deal_logs: '查看交易日志',
         deal_logs: '交易日志',
@@ -576,7 +576,9 @@ export default {
         filter_status_Refunding: '可退款',
         filter_status_Refundable: '可退款',
         filter_status_Refunded: '已退款',
-        filter_status_Unlocked: '解锁'
+        filter_status_Unlocked: '解锁',
+        filter_status_Pending: '待支付',
+        filter_status_Processing: '处理中'
     },
     billing: {
         search_placeholder: '搜索方式',
@@ -595,7 +597,9 @@ export default {
         PAYMENTDATE: '付款日期',
         UNLOCKDATE: '解锁日期',
         Deadline: '截止日期',
-        download_module_title: '下载数据（账单详情）',
+        download_module_title: '下载数据（',
+        download_module_title_file: '文件详情）',
+        download_module_title_billing: '账单详情）',
         download_module_btn: '下载',
         verify: '验证:',
         verify_result: '验证成功',

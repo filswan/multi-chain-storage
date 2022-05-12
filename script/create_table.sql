@@ -10,7 +10,7 @@ create table network (
     constraint un_network_name unique(name)
 );
 
-insert into network(name,rpc_url,create_at,update_at) values('polygon','',unix_timestamp(),unix_timestamp());
+insert into network(name,create_at,update_at) values('polygon',unix_timestamp(),unix_timestamp());
 set @network_id_polygon:=@@identity;
 
 create table token (

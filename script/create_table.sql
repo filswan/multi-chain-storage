@@ -129,7 +129,7 @@ create table offline_deal (
     deal_id          bigint,
     on_chain_status  varchar(100),
     unlock_tx_hash   varchar(100),
-    unlock_at        bigint        not null,
+    unlock_at        bigint,
     create_at        bigint        not null,
     update_at        bigint        not null,
     primary key pk_offline_deal(id),

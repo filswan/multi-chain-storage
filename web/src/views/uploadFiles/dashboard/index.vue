@@ -29,7 +29,7 @@
            v-loading="loading" @sort-change="sortChange"
            :default-sort = "{prop: 'date', order: 'descending'}" @filter-change="filterChange" 
         >
-          <el-table-column prop="file_name" min-width="100" sortable="custom">
+          <el-table-column prop="file_name" min-width="120" sortable="custom">
             <template slot="header" slot-scope="scope">
               <div class="tips">
                 {{$t('uploadFile.file_name')}}
@@ -45,7 +45,7 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="file_size" :label="$t('uploadFile.file_size')" min-width="90" sortable="custom">
+          <el-table-column prop="file_size" :label="$t('uploadFile.file_size')" min-width="110" sortable="custom">
             <template slot-scope="scope">
               <div class="hot-cold-box">
                 {{ scope.row.file_size | formatbytes }}

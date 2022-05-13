@@ -199,7 +199,7 @@
                     file_size: '',
                     file_size_byte: '',
                     storage_cost: '',
-                    lock_plan: '',
+                    lock_plan: '2',
                     lock_plan_tip: false,
                     amount: '',
                     amount_minprice: 0,
@@ -255,7 +255,7 @@
         components: {},
         watch: {
             'ruleForm.fileList': function(){
-                this.ruleForm.lock_plan = ''
+                this.ruleForm.lock_plan = '2'
                 this.$refs['ruleForm'].validate((valid) => {});
                 if(this.ruleForm.file_size_byte > 0){
                     this.calculation()
@@ -271,6 +271,7 @@
                 this.storage_cost_low = number_price > 0 ? Number(_price * 2).toFixed(9) : '0.000000001'
                 this.storage_cost_average = number_price > 0 ? Number(_price * 3).toFixed(9) : '0.000000002'
                 this.storage_cost_high = number_price > 0 ? Number(_price * 5).toFixed(9) : '0.000000003'
+                this.ruleForm.amount = this.storage_cost_average
             },
             agreeChange(val){
                 this.ruleForm.lock_plan_tip = false

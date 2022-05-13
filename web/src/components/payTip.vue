@@ -100,7 +100,7 @@
                 pay: {
                     amount: '',
                     lock_plan_tip: false,
-                    lock_plan: ''
+                    lock_plan: '2'
                 }
             };
         },
@@ -142,7 +142,7 @@
             }
         },
         mounted() {
-        
+            this.pay.amount = this.cost.storage_cost_average
         },
         watch: {
             

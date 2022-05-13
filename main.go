@@ -27,7 +27,7 @@ func main() {
 
 	//scheduler.UnlockPayment()
 	//scheduler.Refund()
-	scheduler.SendDeal()
+	//scheduler.SendDeal()
 
 	createGinServer()
 }

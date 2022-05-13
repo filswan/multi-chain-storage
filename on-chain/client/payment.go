@@ -37,21 +37,21 @@ func IsLockedPaymentExists(srcFilePayloadCid string) (*bool, error) {
 	return &paymentInfo.IsExisted, nil
 }
 
-func GetLockedPaymentInfo(srcFilePayloadCid string) (*LockedPayment, error) {
+func GetLockedPaymentInfo(wCid string) (*LockedPayment, error) {
 	swanPaymentSession, err := GetSwanPaymentSession()
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
 	}
 
-	paymentInfo, err := swanPaymentSession.GetLockedPaymentInfo(srcFilePayloadCid)
+	paymentInfo, err := swanPaymentSession.GetLockedPaymentInfo(wCid)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
 	}
 
 	if !paymentInfo.IsExisted {
-		err := fmt.Errorf("payment for source file with payload_cid:%s not exists", srcFilePayloadCid)
+		err := fmt.Errorf("payment for source file upload with w_cid:%s not exists", wCid)
 		logs.GetLogger().Error(err)
 		return nil, err
 	}

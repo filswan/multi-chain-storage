@@ -121,13 +121,13 @@ func GetDeals(c *gin.Context) {
 
 	status := strings.Trim(URL.Get("status"), " ")
 	fileName := URL.Get("file_name")
-	mint_status := strings.Trim(URL.Get("mint_status"), " ")
+	is_minted := strings.Trim(URL.Get("is_minted"), " ")
 
 	orderBy := strings.Trim(URL.Get("order_by"), " ")
 
 	isAscend := strings.EqualFold(strings.Trim(URL.Get("is_ascend"), " "), "y")
 
-	sourceFileUploads, totalRecordCount, err := service.GetSourceFileUploads(walletAddress, status, fileName, orderBy, mint_status, isAscend, limit, offset)
+	sourceFileUploads, totalRecordCount, err := service.GetSourceFileUploads(walletAddress, status, fileName, orderBy, is_minted, isAscend, limit, offset)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.ERROR_INTERNAL, err.Error()))

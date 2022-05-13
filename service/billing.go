@@ -17,7 +17,7 @@ func WriteLockPayment(sourceFileUploadId int64, txHash string) error {
 	}
 
 	if transaction == nil {
-		err := fmt.Errorf("failed to create transaction for file upload id:%d", sourceFileUploadId)
+		err := fmt.Errorf("failed to create transaction for file upload id:%d, tx hash:%s", sourceFileUploadId, txHash)
 		logs.GetLogger().Error(err)
 		return err
 	}

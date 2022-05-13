@@ -89,7 +89,7 @@ func CreateTransaction4Pay(sourceFileUploadId int64, txHash string) (*Transactio
 	}
 
 	if lockedPayment == nil {
-		logs.GetLogger().Info("payment not exists for w_cid:", wCid)
+		logs.GetLogger().Info("payment not exists for w_cid:", wCid, ",tx hash:", txHash)
 		return nil, err
 	}
 

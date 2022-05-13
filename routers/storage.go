@@ -152,10 +152,7 @@ func GetDealFromFlink(c *gin.Context) {
 
 	dealId, err := strconv.ParseInt(dealIdStr, 10, 64)
 	if err != nil {
-		err := fmt.Errorf("deal_id must be a valid number")
-		logs.GetLogger().Error(err)
-		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_WRONG_TYPE, err.Error()))
-		return
+		dealId = 0
 	}
 
 	URL := c.Request.URL.Query()

@@ -1,7 +1,6 @@
 package client
 
 import (
-	"fmt"
 	"multi-chain-storage/config"
 	"multi-chain-storage/on-chain/goBind"
 
@@ -51,9 +50,8 @@ func GetLockedPaymentInfo(wCid string) (*LockedPayment, error) {
 	}
 
 	if !paymentInfo.IsExisted {
-		err := fmt.Errorf("payment for source file upload with w_cid:%s not exists", wCid)
-		logs.GetLogger().Error(err)
-		return nil, err
+		logs.GetLogger().Info("payment not exists for w_cid:", wCid)
+		return nil, nil
 	}
 
 	lockedFee, err := decimal.NewFromString(paymentInfo.LockedFee.String())

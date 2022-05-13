@@ -66,7 +66,12 @@ func refund(ethClient *ethclient.Client, carFileId int64, swanPaymentTransactor 
 		lockedPayment, err := client.GetLockedPaymentInfo(wCid)
 		if err != nil {
 			logs.GetLogger().Error(err.Error())
-			return err
+			continue
+		}
+
+		if lockedPayment == nil {
+			logs.GetLogger().Error("payment not exists for w_cid:", wCid)
+			continue
 		}
 
 		sourceFileUpload.LockedFeeBeforeRefund = lockedPayment.LockedFee

@@ -156,12 +156,18 @@ func setUnlockPayment(offlineDeal *models.OfflineDeal) ([]*models.SourceFileUplo
 
 	for _, srcFileUpload := range srcFileUploads {
 		wCid := srcFileUpload.Uuid + srcFileUpload.PayloadCid
-		lockPayment, err := client.GetLockedPaymentInfo(wCid)
+		lockedPayment, err := client.GetLockedPaymentInfo(wCid)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			return nil, err
 		}
-		srcFileUpload.LockedFeeBeforeUnlock = lockPayment.LockedFee
+
+		if lockedPayment == nil {
+			err := fmt.Errorf("payment not exists for w_cid:%s", wCid)
+			logs.GetLogger().Info(err)
+			return nil, err
+		}
+		srcFileUpload.LockedFeeBeforeUnlock = lockedPayment.LockedFee
 	}
 
 	return srcFileUploads, nil
@@ -170,13 +176,18 @@ func setUnlockPayment(offlineDeal *models.OfflineDeal) ([]*models.SourceFileUplo
 func updateUnlockPayment(offlineDeal *models.OfflineDeal, srcFileUploads []*models.SourceFileUploadOut) error {
 	for _, srcFileUpload := range srcFileUploads {
 		wCid := srcFileUpload.Uuid + srcFileUpload.PayloadCid
-		lockPayment, err := client.GetLockedPaymentInfo(wCid)
+		lockedPayment, err := client.GetLockedPaymentInfo(wCid)
 		if err != nil {
 			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 			continue
 		}
 
-		unlockAmount := srcFileUpload.LockedFeeBeforeUnlock.Sub(lockPayment.LockedFee)
+		if lockedPayment == nil {
+			logs.GetLogger().Error("payment not exists for w_cid:", wCid)
+			continue
+		}
+
+		unlockAmount := srcFileUpload.LockedFeeBeforeUnlock.Sub(lockedPayment.LockedFee)
 		err = models.UpdateTransactionUnlockInfo(srcFileUpload.Id, unlockAmount)
 		if err != nil {
 			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))

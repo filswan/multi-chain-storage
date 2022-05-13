@@ -75,19 +75,23 @@ func GetCarFilesByStatus(status string) ([]*CarFile, error) {
 	return carFiles, nil
 }
 
-func GetCarFileBySourceFilePayloadCid(srcFilePayloadCid string) ([]*CarFile, error) {
-	sql := "select a.* from deal_file a, source_file_deal_file_map b, source_file c where c.payload_cid=? and c.id=b.source_file_id and b.deal_file_id=a.id"
+func GetCarFileBySourceFileUploadId(srcFileUploadId int64) (*CarFile, error) {
+	sql := "select a.* from car_file a, car_file_source b, source_file_upload c where c.id=? and c.id=b.source_file_upload_id and b.car_file_id=a.id"
 
 	var carFiles []*CarFile
 
-	err := database.GetDB().Raw(sql, srcFilePayloadCid).Scan(&carFiles).Error
+	err := database.GetDB().Raw(sql, srcFileUploadId).Scan(&carFiles).Error
 
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
 	}
 
-	return carFiles, nil
+	if len(carFiles) > 0 {
+		return carFiles[0], nil
+	}
+
+	return nil, nil
 }
 
 func UpdateCarFileStatus(id int64, status string) error {

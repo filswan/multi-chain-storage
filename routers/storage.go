@@ -121,12 +121,13 @@ func GetDeals(c *gin.Context) {
 
 	status := strings.Trim(URL.Get("status"), " ")
 	fileName := URL.Get("file_name")
+	is_minted := strings.Trim(URL.Get("is_minted"), " ")
 
 	orderBy := strings.Trim(URL.Get("order_by"), " ")
 
 	isAscend := strings.EqualFold(strings.Trim(URL.Get("is_ascend"), " "), "y")
 
-	sourceFileUploads, totalRecordCount, err := service.GetSourceFileUploads(walletAddress, status, fileName, orderBy, isAscend, limit, offset)
+	sourceFileUploads, totalRecordCount, err := service.GetSourceFileUploads(walletAddress, status, fileName, orderBy, is_minted, isAscend, limit, offset)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.ERROR_INTERNAL, err.Error()))
@@ -151,10 +152,7 @@ func GetDealFromFlink(c *gin.Context) {
 
 	dealId, err := strconv.ParseInt(dealIdStr, 10, 64)
 	if err != nil {
-		err := fmt.Errorf("deal_id must be a valid number")
-		logs.GetLogger().Error(err)
-		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_WRONG_TYPE, err.Error()))
-		return
+		dealId = 0
 	}
 
 	URL := c.Request.URL.Query()

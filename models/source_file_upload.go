@@ -183,7 +183,7 @@ func (a SourceFileUploadResultByUploadAt) Len() int           { return len(a) }
 func (a SourceFileUploadResultByUploadAt) Less(i, j int) bool { return a[i].UploadAt < a[j].UploadAt }
 func (a SourceFileUploadResultByUploadAt) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 
-func GetSourceFileUploads(walletId int64, status, fileName, orderBy string, isAscend bool, limit, offset int) ([]*SourceFileUploadResult, *int, error) {
+func GetSourceFileUploads(walletId int64, status, fileName, orderBy, is_minted string, isAscend bool, limit, offset int) ([]*SourceFileUploadResult, *int, error) {
 	sql := "select\n" +
 		"a.id source_file_upload_id,d.id car_file_id,a.file_name,b.file_size,a.create_at upload_at,a.duration,\n" +
 		"b.ipfs_url,b.pin_status,d.payload_cid,concat(a.uuid,b.payload_cid) w_cid,a.status,\n" +
@@ -196,7 +196,7 @@ func GetSourceFileUploads(walletId int64, status, fileName, orderBy string, isAs
 		"where a.wallet_id=? and a.file_type=0"
 
 	if !libutils.IsStrEmpty(&fileName) {
-		sql = sql + " and a.file_name like '%" + fileName + "%' "
+		sql = sql + " and a.file_name like '%" + fileName + "%'\n"
 	}
 
 	params := []interface{}{}
@@ -219,6 +219,12 @@ func GetSourceFileUploads(walletId int64, status, fileName, orderBy string, isAs
 		default:
 			logs.GetLogger().Info("input status:", status, ", get records with all kinds of statuses")
 		}
+	}
+
+	if strings.EqualFold(is_minted, "yes") {
+		sql = sql + " and e.id is not null"
+	} else if strings.EqualFold(is_minted, "no") {
+		sql = sql + " and e.id is null"
 	}
 
 	var sourceFileUploadResult []*SourceFileUploadResult

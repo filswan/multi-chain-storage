@@ -148,14 +148,14 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType 
 	return uploadResult, nil
 }
 
-func GetSourceFileUploads(walletAddress, status, fileName, orderBy string, isAscend bool, limit, offset int) ([]*models.SourceFileUploadResult, *int, error) {
+func GetSourceFileUploads(walletAddress, status, fileName, orderBy, is_minted string, isAscend bool, limit, offset int) ([]*models.SourceFileUploadResult, *int, error) {
 	wallet, err := models.GetWalletByAddress(walletAddress, constants.WALLET_TYPE_META_MASK)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, nil, err
 	}
 
-	srcFileUploads, totalRecordCount, err := models.GetSourceFileUploads(wallet.ID, status, fileName, orderBy, isAscend, limit, offset)
+	srcFileUploads, totalRecordCount, err := models.GetSourceFileUploads(wallet.ID, status, fileName, orderBy, is_minted, isAscend, limit, offset)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, nil, err
@@ -206,6 +206,7 @@ type SourceFileUploadDeal struct {
 	IpfsUrl                  string `json:"ipfs_url"`
 	FileName                 string `json:"file_name"`
 	WCid                     string `json:"w_cid"`
+	CarFilePayloadCid        string `json:"car_file_payload_cid"`
 	LockedAt                 int64  `json:"locked_at"`
 	LockedFee                string `json:"locked_fee"`
 	Unlocked                 bool   `json:"unlocked"`
@@ -270,6 +271,16 @@ func GetSourceFileUploadDeal(sourceFileUploadId int64, dealId int64) (*SourceFil
 	}
 
 	sourceFileUploadDeal.Unlocked = sourceFileUpload.Status == constants.SOURCE_FILE_UPLOAD_STATUS_UNLOCKED
+
+	carFile, err := models.GetCarFileBySourceFileUploadId(sourceFileUploadId)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, nil, err
+	}
+
+	if carFile != nil {
+		sourceFileUploadDeal.CarFilePayloadCid = carFile.PayloadCid
+	}
 
 	daoSignatures, err := models.GetDaoSignaturesByDealId(dealId)
 	if err != nil {

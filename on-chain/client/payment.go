@@ -82,6 +82,7 @@ func GetSwanPaymentSession() (*goBind.SwanPaymentSession, error) {
 	}
 
 	paymentContractAddress := common.HexToAddress(config.GetConfig().Polygon.PaymentContractAddress)
+	logs.GetLogger().Info("payment contract address:", paymentContractAddress.String())
 
 	swanPayment, err := goBind.NewSwanPayment(paymentContractAddress, ethClient)
 	if err != nil {

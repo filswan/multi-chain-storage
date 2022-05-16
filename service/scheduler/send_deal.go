@@ -58,11 +58,14 @@ func SendDeal() error {
 		_, fileDescs, err := cmdAutoBidDeal.SendAutoBidDealsByTaskUuid(carFile.TaskUuid)
 		if err != nil {
 			logs.GetLogger().Error(err)
+
 			carFile.Status = constants.CAR_FILE_STATUS_DEAL_SENT_FAILED
+			carFile.UpdateAt = currentUtcSec
 			err = database.SaveOne(carFile)
 			if err != nil {
 				logs.GetLogger().Error(err)
 			}
+
 			continue
 		}
 
@@ -74,46 +77,38 @@ func SendDeal() error {
 		carFile.Status = constants.CAR_FILE_STATUS_DEAL_SENT
 		carFile.UpdateAt = currentUtcSec
 
-		db := database.GetDBTransaction()
-		err = database.SaveOneInTransaction(db, carFile)
-		if err != nil {
-			logs.GetLogger().Error(err)
-			db.Rollback()
-			continue
-		}
-
-		for _, deal := range fileDescs[0].Deals {
-			miner, err := models.GeMinerByFid(deal.MinerFid)
-			if err != nil {
-				logs.GetLogger().Error(err)
-				db.Rollback()
-				continue
-			}
-
-			offlineDeal := models.OfflineDeal{
-				CarFileId:      carFile.ID,
-				DealCid:        deal.DealCid,
-				MinerId:        miner.ID,
-				StartEpoch:     deal.StartEpoch,
-				SenderWalletId: wallet.ID,
-				Status:         constants.OFFLINE_DEAL_STATUS_CREATED,
-				DealId:         nil,
-				CreateAt:       currentUtcSec,
-				UpdateAt:       currentUtcSec,
-			}
-
-			err = database.SaveOneInTransaction(db, &offlineDeal)
-			if err != nil {
-				logs.GetLogger().Error(err)
-				db.Rollback()
-				continue
-			}
-		}
-
-		err = db.Commit().Error
+		err = database.SaveOne(carFile)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			continue
+		}
+
+		for _, fileDesc := range fileDescs {
+			for _, deal := range fileDesc.Deals {
+				miner, err := models.GeMinerByFid(deal.MinerFid)
+				if err != nil {
+					logs.GetLogger().Error(err)
+					continue
+				}
+
+				offlineDeal := models.OfflineDeal{
+					CarFileId:      carFile.ID,
+					DealCid:        deal.DealCid,
+					MinerId:        miner.ID,
+					StartEpoch:     deal.StartEpoch,
+					SenderWalletId: wallet.ID,
+					Status:         constants.OFFLINE_DEAL_STATUS_CREATED,
+					DealId:         nil,
+					CreateAt:       currentUtcSec,
+					UpdateAt:       currentUtcSec,
+				}
+
+				err = database.SaveOne(&offlineDeal)
+				if err != nil {
+					logs.GetLogger().Error(err)
+					continue
+				}
+			}
 		}
 	}
 

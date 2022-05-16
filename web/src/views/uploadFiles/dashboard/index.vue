@@ -325,7 +325,7 @@
             </template>
           </el-table-column>
           <el-table-column prop="MINT" width="120" :label="$t('uploadFile.MINT')"
-            :filters="[{text: $t('uploadFile.filter_no_minted'), value: '0'}, {text: $t('uploadFile.filter_minted'), value: '1'}]"
+            :filters="[{text: $t('uploadFile.filter_no_minted'), value: 'no'}, {text: $t('uploadFile.filter_minted'), value: 'yes'}]"
             :filter-multiple="false" :column-key="'minted'">
             <template slot-scope="scope">
               <div class="hot-cold-box">
@@ -465,7 +465,7 @@ export default {
         order_by: '',
         is_ascending: '',
         status: '',
-        mint_status: ''
+        is_minted: ''
       },
       parmaChild: {
         limit: 10,
@@ -557,7 +557,7 @@ export default {
       _this.parma.order_by = ''
       _this.parma.is_ascending = ''
       _this.parma.status = ""
-      _this.parma.mint_status = ""
+      _this.parma.is_minted = ""
       _this.parmaChild.limit = 10
       _this.parmaChild.offset = 1
       
@@ -1062,7 +1062,7 @@ export default {
       _this.parma.order_by = ''
       _this.parma.is_ascending = ''
       _this.parma.status = ""
-      _this.parma.mint_status = ""
+      _this.parma.is_minted = ""
       _this.$refs.singleTable.clearSort()
       _this.$refs.singleTable.clearFilter();
       _this.getData();
@@ -1076,7 +1076,7 @@ export default {
       _this.parma.order_by = ''
       _this.parma.is_ascending = ''
       _this.parma.status = ""
-      _this.parma.mint_status = ""
+      _this.parma.is_minted = ""
       _this.$refs.singleTable.clearSort()
       _this.$refs.singleTable.clearFilter();
       _this.getData();
@@ -1170,17 +1170,17 @@ export default {
         if(data == this.parma.status) return false
         this.parma.status = data
         this.$refs.singleTable.clearFilter('minted');
-        this.parma.mint_status = ""
+        this.parma.is_minted = ""
       } else if(("minted" in filters)) {
         let data = filters.minted[0] || ""
-        if(data == this.parma.mint_status) return false
-        this.parma.mint_status = data
+        if(data == this.parma.is_minted) return false
+        this.parma.is_minted = data
         this.$refs.singleTable.clearFilter('payment');
         this.parma.status = ""
       }else{
         this.$refs.singleTable.clearFilter();
         this.parma.status = ""
-        this.parma.mint_status = ""
+        this.parma.is_minted = ""
         return false
       }
       this.$refs.singleTable.clearSort()
@@ -1201,7 +1201,7 @@ export default {
         order_by: _this.parma.is_ascending?_this.parma.order_by:'',
         is_ascending: _this.parma.is_ascending,
         status: _this.parma.status,
-        mint_status: _this.parma.mint_status
+        is_minted: _this.parma.is_minted
       };
 
       _this.tableData = []

@@ -626,6 +626,7 @@
         },
         filters: {
             NumStorage(value) {
+                if (String(value) === '0') return 0;
                 if (!value) return "-";
                 return value.toFixed(10);
             },

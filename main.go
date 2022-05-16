@@ -25,6 +25,7 @@ func main() {
 
 	scheduler.InitScheduler()
 
+	//scheduler.CreateTask()
 	//scheduler.UnlockPayment()
 	//scheduler.Refund()
 	//scheduler.SendDeal()

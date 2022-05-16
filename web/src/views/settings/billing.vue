@@ -198,6 +198,11 @@
             }
         },
         methods: {
+            networkLink(hash, network) {
+                if(network && network.toLowerCase() == 'polygon'){
+                    window.open('https://mumbai.polygonscan.com/tx/'+hash)
+                }
+            },
             getDownload(dialog, rows){
                 this.downVisible = dialog
             },

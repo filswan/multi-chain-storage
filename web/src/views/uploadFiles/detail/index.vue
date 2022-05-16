@@ -66,7 +66,7 @@
                         <el-col :span="16" v-if="dealId == 0">-</el-col>
                         <el-col :span="16" v-else>{{dealCont.source_file_upload_deal.storage_price | NumFormatPrice}} FIL</el-col>
                         <el-col :span="8">{{$t('billing.PAYLOADCID')}}:</el-col>
-                        <el-col :span="16">{{dealCont.source_file_upload_deal.payload_cid | NumFormat}}</el-col>
+                        <el-col :span="16">{{dealCont.source_file_upload_deal.car_file_payload_cid | NumFormat}}</el-col>
                         <el-col :span="8">{{$t('uploadFile.detail_ProposalCID')}}:</el-col>
                         <el-col :span="16" v-if="dealId == 0">-</el-col>
                         <el-col :span="16" v-else>{{dealCont.source_file_upload_deal.deal_cid | NumFormat}}</el-col>
@@ -99,7 +99,7 @@
                                 
                                 <img class="img" src="@/assets/images/copy.png" @click="copyTextToClipboard(copy_filename)" alt="">
                             </div>
-                            <div class="lotupContent" :class="{'color': !dealCont.source_file_upload_deal.provider && !dealCont.source_file_upload_deal.payload_cid}" @click="copyTextToClipboard(copy_filename)">{{copy_filename}}</div>
+                            <div class="lotupContent" :class="{'color': !dealCont.source_file_upload_deal.provider && !dealCont.source_file_upload_deal.car_file_payload_cid}" @click="copyTextToClipboard(copy_filename)">{{copy_filename}}</div>
                         </el-col>
                     </el-row>
                         
@@ -292,7 +292,7 @@ export default {
 
             let dataCid = {
                 source_file_upload_id: _this.$route.params.source_file_upload_id,
-                payload_cid: _this.$route.params.cid,
+                // payload_cid: _this.$route.params.cid,
                 wallet_address: _this.$store.getters.metaAddress
             }
             axios.get(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/storage/deal/detail/${_this.dealId}?${QS.stringify(dataCid)}`, {headers: {
@@ -325,8 +325,8 @@ export default {
                             )
                             : "-";
 
-                    if(json.data.source_file_upload_deal.provider && json.data.source_file_upload_deal.payload_cid && json.data.source_file_upload_deal.deal_id != 0){
-                        _this.copy_filename = 'lotus client retrieve --miner '+json.data.source_file_upload_deal.provider+' '+json.data.source_file_upload_deal.payload_cid+' ~./output-file';
+                    if(json.data.source_file_upload_deal.provider && json.data.source_file_upload_deal.car_file_payload_cid && json.data.source_file_upload_deal.deal_id != 0){
+                        _this.copy_filename = 'lotus client retrieve --miner '+json.data.source_file_upload_deal.provider+' '+json.data.source_file_upload_deal.car_file_payload_cid+' ~./output-file';
                     }else{
                         _this.copy_filename = localStorage.getItem('languageMcs') == 'cn'?"还不可用。":"It's not available yet.";
                     }

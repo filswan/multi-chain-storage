@@ -101,7 +101,7 @@ export default {
                 window.location.reload();
             }
         }
-        console.log('update time: 2022-05-13')
+        console.log('update time: 2022-05-16')
     }
 };
 </script>

@@ -159,7 +159,7 @@ func GetPaymentTxHashByBlockNumberWCid(blockNumber int64, wCid string) (*string,
 		}
 
 		wCidOnChain := params[0]
-		if len(wCidOnChain) <= 0 {
+		if len(wCidOnChain) <= 1 {
 			continue
 		}
 

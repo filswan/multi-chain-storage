@@ -20,7 +20,7 @@ func ScanDeal() error {
 		logs.GetLogger().Error(err)
 	}
 
-	err = updateSourceFile2RefundableAfterExpired()
+	err = setSourceFile2RefundableAfterExpired()
 	if err != nil {
 		logs.GetLogger().Error(err)
 	}
@@ -109,13 +109,19 @@ func updateSourceFile2RefundableAfterDealFailed(carFileId int64) error {
 	return nil
 }
 
-func updateSourceFile2RefundableAfterExpired() error {
+func setSourceFile2RefundableAfterExpired() error {
 	sourceFileUploads, err := models.GetSourceFileUploadsExpired()
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
 	}
 
+	setSourceFile2Refundable(sourceFileUploads)
+
+	return nil
+}
+
+func setSourceFile2Refundable(sourceFileUploads []*models.SourceFileUploadOut) {
 	for _, sourceFileUpload := range sourceFileUploads {
 		wCid := sourceFileUpload.Uuid + sourceFileUpload.PayloadCid
 		isLockedPaymentExists, err := client.IsLockedPaymentExists(wCid)
@@ -127,6 +133,8 @@ func updateSourceFile2RefundableAfterExpired() error {
 		sourceFileUploadStatus := constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDED
 		if *isLockedPaymentExists {
 			sourceFileUploadStatus = constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDABLE
+		} else {
+			logs.GetLogger().Info("payment not exists for ", wCid)
 		}
 
 		err = models.UpdateSourceFileUploadStatus(sourceFileUpload.Id, sourceFileUploadStatus)
@@ -134,6 +142,4 @@ func updateSourceFile2RefundableAfterExpired() error {
 			logs.GetLogger().Error(err)
 		}
 	}
-
-	return nil
 }

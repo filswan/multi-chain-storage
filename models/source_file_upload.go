@@ -74,6 +74,7 @@ func GetSourceFileUploadsExpired() ([]*SourceFileUploadOut, error) {
 	}
 	return models, nil
 }
+
 func GetSourceFileUploadBySourceFileIdWallet(sourceFileId int64, walletId int64) ([]*SourceFileUpload, error) {
 	var sourceFileUpload []*SourceFileUpload
 	err := database.GetDB().Where("source_file_id=? and wallet_id=?", sourceFileId, walletId).Find(&sourceFileUpload).Error

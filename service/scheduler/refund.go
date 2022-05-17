@@ -71,7 +71,13 @@ func refundCarFile(ethClient *ethclient.Client, carFileId int64, swanPaymentTran
 		}
 	}
 
-	if offlineDealsCnt2BeUnlocked > 0 || offlineDealsCntUnlocked == 0 {
+	if offlineDealsCntUnlocked == 0 {
+		msg := fmt.Sprintf("no offline deals unlocked or unlock failed, cannot refund for car file:%d", carFileId)
+		logs.GetLogger().Info(msg)
+		return nil
+	}
+
+	if offlineDealsCnt2BeUnlocked > 0 {
 		msg := fmt.Sprintf("%d deals to be unlocked, cannot refund for car file:%d", offlineDealsCnt2BeUnlocked, carFileId)
 		logs.GetLogger().Info(msg)
 		return nil

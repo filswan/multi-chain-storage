@@ -61,19 +61,19 @@
                         <el-radio label="1" border>
                             <div class="title">{{$t('uploadFile.Low')}}</div>
                             <div class="cont">
-                                {{cost.storage_cost_low}} USDC
+                                {{cost.storage_cost_low || 0}} USDC
                             </div>
                         </el-radio>
                         <el-radio label="2" border>
                             <div class="title">{{$t('uploadFile.Average')}}</div>
                             <div class="cont">
-                                {{cost.storage_cost_average}} USDC
+                                {{cost.storage_cost_average || 0}} USDC
                             </div>
                         </el-radio>
                         <el-radio label="3" border>
                             <div class="title">{{$t('uploadFile.High')}}</div>
                             <div class="cont">
-                                {{cost.storage_cost_high}} USDC
+                                {{cost.storage_cost_high || 0}} USDC
                             </div>
                         </el-radio>
                     </el-radio-group>
@@ -89,6 +89,8 @@
 </template>
 
 <script>
+    import axios from 'axios'
+    import QS from 'qs';
     export default {
         name: "pay_tip",
         data() {
@@ -96,15 +98,22 @@
                 widthDia: document.body.clientWidth<=600?'95%':'6.6rem',
                 inputAmount: /^\d+(?:\.\d{0,8})?[\s]{0,5}/,
                 inputG: /^[1-9]\d*$/,
-                hashload: false,
+                hashload: true,
                 pay: {
                     amount: '',
                     lock_plan_tip: false,
                     lock_plan: '2'
+                },
+                storage: 0,
+                biling_price: 0,
+                cost: {
+                    storage_cost_low: 0,
+                    storage_cost_average: 0,
+                    storage_cost_high: 0,
                 }
             };
         },
-        props: ['payVisible', 'payRow', 'cost', 'bilingPrice'],
+        props: ['payVisible', 'payRow', 'bilingPrice'],
         components: {},
         computed: {
             metaAddress() {
@@ -139,10 +148,43 @@
                 }else{
                     this.$emit('getDialog', false, this.pay.amount)
                 }
+            },
+            async stats(){
+                let _this = this
+                _this.hashload = true
+                const storageRes = await _this.sendRequest(`${process.env.BASE_API}stats/storage?wallet_address=${_this.metaAddress}`)
+                let cost = storageRes.data.average_price_per_GB_per_year.split(" ")
+                if(cost[0]) _this.storage = cost[0]
+
+                const bilingRes = await _this.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/billing/price/filecoin?wallet_address=${_this.metaAddress}`)
+                _this.biling_price = bilingRes.data
+
+                _this.getData()
+            },
+            async sendRequest(apilink) {
+                try {
+                    const response = await axios.get(apilink)
+                    return response.data
+                } catch (err) {
+                    console.error(err)
+                }
+            },
+            getData() {
+                let _this = this
+                _this.payRow.storage_cost = _this.payRow.file_size_byte * _this.payRow.duration * _this.storage * 5 / 365 //5是Storage Copy
+                let _price = _this.payRow.storage_cost * _this.biling_price
+                let number_price = Number(_price).toFixed(9)
+                _this.payRow.amount_minprice = number_price > 0.000000001 ? number_price : '0.0000000005'
+                _this.cost.storage_cost_low = number_price > 0 ? Number(_price * 2).toFixed(9) : '0.000000001'
+                _this.cost.storage_cost_average = number_price > 0 ? Number(_price * 3).toFixed(9) : '0.000000002'
+                _this.cost.storage_cost_high = number_price > 0 ? Number(_price * 5).toFixed(9) : '0.000000003'
+                _this.pay.amount = _this.cost.storage_cost_average
+
+                _this.hashload = false
             }
         },
         mounted() {
-            this.pay.amount = this.cost.storage_cost_average
+            this.stats()
         },
         watch: {
             

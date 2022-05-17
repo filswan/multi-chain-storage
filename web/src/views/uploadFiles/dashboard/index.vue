@@ -21,7 +21,6 @@
       </div>
 
       <div class="form_table">
-        <!-- @row-click="tableTrClick" highlight-current-row  -->
         <el-table
           :data="tableData" ref="singleTable"  stripe
           style="width: 100%" max-height="580"
@@ -376,7 +375,7 @@
         @getUploadDialog="getUploadDialog"></pay-tips>
 
     <pay-tip v-if="payVisible" :payVisible="payVisible" 
-        :payRow="payRow" :cost="cost" :bilingPrice="biling_price"
+        :payRow="payRow" :bilingPrice="biling_price"
         @getDialog="getDialog"></pay-tip>
 
         <el-dialog title="" :visible.sync="finishTransaction" :width="width"
@@ -481,7 +480,6 @@ export default {
       getRowKeys: (row) => {
         return row.uuid
       },
-      exChangeList: [],
       payVisible: false,
       uploadDigShow: false,
       mineVisible: false,
@@ -521,11 +519,6 @@ export default {
       resData: {},
       storage: 0,
       biling_price: 0,
-      cost: {
-        storage_cost_low: 0,
-        storage_cost_average: 0,
-        storage_cost_high: 0,
-      },
       metamaskLoginTip: false,
       searchNowCurrent: '',
       downVisible: false
@@ -591,18 +584,6 @@ export default {
       localStorage.setItem('offlineDeals', row.offline_deal?JSON.stringify(row.offline_deal):[])
       localStorage.setItem('offlineDealsIndex', '0')
     },
-    clickRowHandle(row, column, event) {
-      if (this.expands.includes(row.uuid)) {
-        // this.expands = this.expands.filter(val => val !== row.uuid);
-        this.expands = []
-      } else {
-        this.expands = []
-        if (row) {
-          this.expands.push(row.uuid)
-        }
-        this.tableTrClick(row)
-      }
-    },
     payClick(row){
       let _this = this
       if(_this.metaAddress&&_this.networkID!=80001) {
@@ -612,14 +593,6 @@ export default {
       // console.log(row)
       _this.payRow = row
       _this.payRow.file_size = row.file_size
-      _this.payRow.storage_cost = row.file_size_byte * row.duration * _this.storage * 5 / 365 //5是Storage Copy
-      let _price = _this.payRow.storage_cost * _this.biling_price
-      let number_price = Number(_price).toFixed(9)
-      _this.payRow.amount_minprice = number_price > 0.000000001 ? number_price : '0.0000000005'
-      _this.cost.storage_cost_low = number_price > 0 ? Number(_price * 2).toFixed(9) : '0.000000001'
-      _this.cost.storage_cost_average = number_price > 0 ? Number(_price * 3).toFixed(9) : '0.000000002'
-      _this.cost.storage_cost_high = number_price > 0 ? Number(_price * 5).toFixed(9) : '0.000000003'
-
       _this.payVisible = true
       return false
     },
@@ -704,7 +677,7 @@ export default {
                   contract_erc20.methods.balanceOf(_this.metaAddress).call()
                   .then(balance => {
                       let usdcAvailable = web3.utils.fromWei(balance, 'ether');
-                      console.log('Available:', usdcAvailable, rowAmount)
+                      // console.log('Available:', usdcAvailable, rowAmount)
                       // 判断支付金额是否大于代币余额
                       if(Number(rowAmount) > Number(usdcAvailable)){
                           _this.$message.error('Insufficient balance')
@@ -712,7 +685,7 @@ export default {
                       }else{
                         contract_erc20.methods.allowance(_this.gatewayContractAddress, _this.metaAddress).call()
                         .then(resultUSDC => {
-                            console.log('allowance：'+ resultUSDC);
+                            // console.log('allowance：'+ resultUSDC);
                             if(resultUSDC < web3.utils.toWei(rowAmount, 'ether')){
                                 contract_erc20.methods.approve(_this.gatewayContractAddress, web3.utils.toWei(rowAmount, 'ether')).send({from:  _this.metaAddress})
                                 .then(receipt => {
@@ -754,14 +727,14 @@ export default {
         
         let lockObj = {
             id: cid,
-            minPayment: web3.utils.toWei(String(_this.payRow.amount_minprice), 'ether'),
+            minPayment: String(payAmount/2),
             amount: payAmount,
             lockTime: 86400 * Number(_this.$root.LOCK_TIME), // one day
             recipient: _this.recipientAddress, //todo:
             size: _this.payRow.file_size,
             copyLimit: 5
         }
-        
+        console.log(lockObj)
         contract_instance.methods.lockTokenPayment(lockObj)
         .send(payObject)
         .on('transactionHash', function(hash){
@@ -853,20 +826,6 @@ export default {
           _this.mintTransaction = true
         }
     },
-    exChange(row, rowList) {
-      var that = this
-      if (rowList.length) {
-        that.expands = []
-        if (row) {
-          that.expands.push(row.uuid)
-          //open
-        }
-        that.tableTrClick(row)
-      } else {
-        that.expands = []
-        //retract
-      }
-    },
     copyTextToClipboard(text) {
         let _this = this
         let saveLang = localStorage.getItem('languageMcs') == 'cn'?"复制成功":"success";
@@ -897,102 +856,6 @@ export default {
             document.body.removeChild(txtArea);
         }
         return false;
-    },
-    tableTrClick(row, type) {
-      let _this = this
-      _this.loadingChild = true
-      _this.tableDataChild = []
-      myAjax
-        .getTasksListDetails(row.uuid)
-        .then((response) => {
-          if (response.status == "success" || response.status == 'Success') {
-            const data = response.data;
-            _this.tableDataChild = response.data.deal;
-            _this.tableDataChild.map((item, index) => {
-              item.file_size_gb = _this.byteChange(item.file_size)
-              item.storage_cost = item.file_size_gb * _this.storage
-              item.dealVisible = false
-              item.act = false
-              item.contVisible = false
-              item.updated_at = item.updated_at
-                ? item.updated_at.length < 13
-                  ? moment(new Date(parseInt(item.updated_at * 1000))).format(
-                      "YYYY-MM-DD HH:mm:ss"
-                    )
-                  : moment(new Date(parseInt(item.updated_at))).format(
-                      "YYYY-MM-DD HH:mm:ss"
-                    )
-                : "-";
-
-              if(index == 0){
-                _this.payFun(item.payload_cid)
-                _this.toAddress = item.contract_id
-                _this.payment.cid = item.payload_cid
-                if(item.storage_cost && _this.payment.biling_price) _this.payment.amount = String(item.storage_cost * _this.payment.biling_price * _this.$root.PAY_WITH_MULTIPLY_FACTOR)
-                if(type) _this.walletInfo()
-              } 
-            });
-            // console.log(_this.tableDataChild)
-          } else {
-            // _this.$message.error(response.message);
-          }
-          _this.loadingChild = false;
-        })
-        .catch((error) => {
-          console.log(error);
-          _this.loadingChild = false;
-        });
-    
-    },
-    cancelClick(uuid){
-      let _this = this;
-      const h = _this.$createElement;
-      _this
-        .$msgbox({
-          title: 'Tips',
-          message: h("p", null, [
-            h("span", null, 'Are you sure you want to modify the status to '),
-            h("i", { style: "color: teal;font-style: normal" }, 'Cancel'),
-          ]),
-          showCancelButton: true,
-          beforeClose: (action, instance, done) => {
-            if (action === "confirm") {
-              instance.confirmButtonLoading = true;
-              instance.confirmButtonText = 'Executing...';
-
-              let cancelDeal_api = `${process.env.BASE_API}tasks/${uuid}/paymentgateway/cancel`
-              axios.put(cancelDeal_api, {'wallet_address': _this.metaAddress}, {
-                  headers: {
-                      // 'Authorization': "Bearer "+ _this.$store.getters.accessToken
-                  },
-              }).then(res => {
-                  if(res.data.status == 'success'){
-                      _this.$message({
-                          message: 'Cancel Success',
-                          type: 'success'
-                      });
-                      done();
-                      setTimeout(() => {
-                        instance.confirmButtonLoading = false;
-                      }, 300);
-                      _this.getData()
-                  }else{
-                      _this.$message.error(res.data.message);
-                  }
-              }).catch(error => {
-                  console.log(error)
-                  done();
-                  instance.confirmButtonLoading = false;
-              })
-
-            } else {
-              done();
-              instance.confirmButtonLoading = false;
-            }
-          },
-        })
-        .then((action) => {})
-        .catch((action) => {});
     },
     payFun(cid, type){
       let _this = this
@@ -1114,27 +977,12 @@ export default {
             _this.usdcAddress = _this.$root.USDC_ADDRESS
             _this.recipientAddress = _this.$root.RECIPIENT
             _this.mintContractAddress = _this.$root.MINT_CONTRACT
-            
-            const storageRes = await _this.sendRequest(`${process.env.BASE_API}stats/storage?wallet_address=${_this.metaAddress}`)
-            let cost = storageRes.data.average_price_per_GB_per_year.split(" ")
-            if(cost[0]) _this.storage = cost[0]
-
-            const bilingRes = await _this.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/billing/price/filecoin?wallet_address=${_this.metaAddress}`)
-            _this.biling_price = bilingRes.data
 
             _this.getData()
         }else {
             setTimeout(function(){
                 _this.stats()
             }, 1000)
-        }
-    },
-    async sendRequest(apilink) {
-        try {
-            const response = await axios.get(apilink)
-            return response.data
-        } catch (err) {
-            console.error(err)
         }
     },
     async sortOrderBy(sort) {

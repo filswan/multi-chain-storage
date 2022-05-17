@@ -24,14 +24,24 @@ func Refund() error {
 		return err
 	}
 
-	carFiles, err := models.GetCarFilesByStatus(constants.CAR_FILE_STATUS_DEAL_SENT)
+	err = refundCarFilesByStatus(ethClient, constants.CAR_FILE_STATUS_DEAL_SENT, swanPaymentTransactor)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	return nil
+}
+
+func refundCarFilesByStatus(ethClient *ethclient.Client, carFileStatus string, swanPaymentTransactor *goBind.SwanPaymentTransactor) error {
+	carFiles, err := models.GetCarFilesByStatus(carFileStatus)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
 	}
 
 	for _, carFile := range carFiles {
-		err = refund(ethClient, carFile.ID, swanPaymentTransactor)
+		err = refundCarFile(ethClient, carFile.ID, swanPaymentTransactor)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			continue
@@ -41,15 +51,34 @@ func Refund() error {
 	return nil
 }
 
-func refund(ethClient *ethclient.Client, carFileId int64, swanPaymentTransactor *goBind.SwanPaymentTransactor) error {
-	offlineDealsNotUnlocked, err := models.GetOfflineDeals2BeUnlockedByCarFileId(carFileId)
+func refundCarFile(ethClient *ethclient.Client, carFileId int64, swanPaymentTransactor *goBind.SwanPaymentTransactor) error {
+	offlineDeals, err := models.GetOfflineDealsByCarFileId(carFileId)
 	if err != nil {
 		logs.GetLogger().Error(err.Error())
 		return err
 	}
 
-	if len(offlineDealsNotUnlocked) > 0 {
-		msg := fmt.Sprintf("%d deals to be unlocked, cannot refund for car file:%d", len(offlineDealsNotUnlocked), carFileId)
+	var offlineDealsCnt2BeUnlocked int = 0
+	var offlineDealsCntUnlocked int = 0
+
+	for _, offlineDeal := range offlineDeals {
+		switch offlineDeal.Status {
+		case constants.OFFLINE_DEAL_STATUS_CREATED, constants.OFFLINE_DEAL_STATUS_ACTIVE:
+			offlineDealsCnt2BeUnlocked = offlineDealsCnt2BeUnlocked + 1
+		case constants.OFFLINE_DEAL_STATUS_FAILED, constants.OFFLINE_DEAL_STATUS_UNLOCKED:
+			offlineDealsCntUnlocked = offlineDealsCntUnlocked + 1
+		default:
+		}
+	}
+
+	if offlineDealsCntUnlocked == 0 {
+		msg := fmt.Sprintf("no offline deals unlocked or unlock failed, cannot refund for car file:%d", carFileId)
+		logs.GetLogger().Info(msg)
+		return nil
+	}
+
+	if offlineDealsCnt2BeUnlocked > 0 {
+		msg := fmt.Sprintf("%d deals to be unlocked, cannot refund for car file:%d", offlineDealsCnt2BeUnlocked, carFileId)
 		logs.GetLogger().Info(msg)
 		return nil
 	}

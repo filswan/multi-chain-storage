@@ -1,11 +1,18 @@
 package client
 
 import (
+	"context"
+	"encoding/hex"
+	"fmt"
+	"io/ioutil"
+	"math/big"
 	"multi-chain-storage/config"
 	"multi-chain-storage/on-chain/goBind"
+	"strings"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/filswan/go-swan-lib/logs"
+	decoder "github.com/mingjingc/abi-decoder"
 	"github.com/shopspring/decimal"
 )
 
@@ -95,4 +102,61 @@ func GetSwanPaymentSession() (*goBind.SwanPaymentSession, error) {
 	}
 
 	return swanPaymentSession, nil
+}
+
+func GetPaymentByBlockNumberWCid(blockNumber int64, wCid string) (*string, error) {
+	ethClient, _, err := GetEthClient()
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	block, err := ethClient.BlockByNumber(context.Background(), big.NewInt(blockNumber))
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	contractRead, er := ioutil.ReadFile("./contracts/abi/FilswanOracle.json")
+	if er != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	myContractAbi := string(contractRead)
+
+	txDataDecoder := decoder.NewABIDecoder()
+	txDataDecoder.SetABI(myContractAbi)
+
+	for _, transaction := range block.Transactions() {
+		txHash := transaction.Hash()
+		transaction, _, err := ethClient.TransactionByHash(context.Background(), txHash)
+		if er != nil {
+			logs.GetLogger().Error(err)
+			return nil, err
+		}
+
+		inputHex := hex.EncodeToString(transaction.Data())
+		if !strings.HasPrefix(inputHex, "4d043ef6") {
+			continue
+		}
+		method, err1 := txDataDecoder.DecodeMethod(inputHex)
+		if err1 != nil {
+			continue
+		}
+
+		for _, param := range method.Params {
+			if param.Name == "w_cid" {
+				if strings.EqualFold(wCid, param.Value) {
+					txHashStr := txHash.String()
+					return &txHashStr, nil
+				}
+			}
+		}
+	}
+
+	err = fmt.Errorf("cannot find tx hash in block%d, for w_cid:%s", blockNumber, wCid)
+	logs.GetLogger().Error(err)
+
+	return nil, err
 }

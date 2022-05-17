@@ -106,7 +106,7 @@ func GetSwanPaymentSession() (*goBind.SwanPaymentSession, error) {
 	return swanPaymentSession, nil
 }
 
-func GetPaymentByBlockNumberWCid(blockNumber int64, wCid string) (*string, error) {
+func GetPaymentTxHashByBlockNumberWCid(blockNumber int64, wCid string) (*string, error) {
 	ethClient, _, err := GetEthClient()
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -139,10 +139,14 @@ func GetPaymentByBlockNumberWCid(blockNumber int64, wCid string) (*string, error
 
 	for _, transaction := range block.Transactions() {
 		txHash := transaction.Hash()
-		transaction, _, err := ethClient.TransactionByHash(context.Background(), txHash)
+		transaction, isPending, err := ethClient.TransactionByHash(context.Background(), txHash)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			return nil, err
+		}
+
+		if isPending {
+			continue
 		}
 
 		inputHex := hex.EncodeToString(transaction.Data())

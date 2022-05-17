@@ -99,7 +99,7 @@ func CreateTransaction4Pay(sourceFileUploadId int64, txHash string) error {
 	}
 
 	if libutils.IsStrEmpty(&txHash) {
-		txHashStr, err := client.GetPaymentByBlockNumberWCid(lockedPayment.BlockNumber, wCid)
+		txHashStr, err := client.GetPaymentTxHashByBlockNumberWCid(lockedPayment.BlockNumber, wCid)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			return err

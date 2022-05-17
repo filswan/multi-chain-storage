@@ -138,17 +138,6 @@ func GetPaymentTxHashByBlockNumberWCid(blockNumber int64, wCid string) (*string,
 	txDataDecoder.SetABI(myContractAbi)
 
 	for _, transaction := range block.Transactions() {
-		txHash := transaction.Hash()
-		transaction, isPending, err := ethClient.TransactionByHash(context.Background(), txHash)
-		if err != nil {
-			logs.GetLogger().Error(err)
-			return nil, err
-		}
-
-		if isPending {
-			continue
-		}
-
 		inputHex := hex.EncodeToString(transaction.Data())
 		//logs.GetLogger().Info(inputHex)
 		if !strings.HasPrefix(inputHex, "f4d98717") {
@@ -182,7 +171,7 @@ func GetPaymentTxHashByBlockNumberWCid(blockNumber int64, wCid string) (*string,
 				continue
 			}
 			if txReceipt.Status == uint64(1) {
-				txHashStr := txHash.String()
+				txHashStr := transaction.Hash().String()
 				return &txHashStr, nil
 			}
 		}

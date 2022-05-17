@@ -55,29 +55,29 @@ func GetTransactionBySourceFileUploadId(sourceFileUploadId int64) (*Transaction,
 	return nil, nil
 }
 
-func CreateTransaction4Pay(sourceFileUploadId int64, txHash string) (*Transaction, error) {
-	transactionOld, err := GetTransactionBySourceFileUploadId(sourceFileUploadId)
+func CreateTransaction4Pay(sourceFileUploadId int64, txHash string) error {
+	transaction, err := GetTransactionBySourceFileUploadId(sourceFileUploadId)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return nil, err
+		return err
 	}
 
 	sourceFileUpload, err := GetSourceFileUploadById(sourceFileUploadId)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return nil, err
+		return err
 	}
 
 	if sourceFileUpload == nil {
 		err := fmt.Errorf("source file upload:%d not exists", sourceFileUploadId)
 		logs.GetLogger().Error(err)
-		return nil, err
+		return err
 	}
 
 	sourceFile, err := GetSourceFileById(sourceFileUpload.SourceFileId)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return nil, err
+		return err
 	}
 
 	wCid := sourceFileUpload.Uuid + sourceFile.PayloadCid
@@ -85,85 +85,95 @@ func CreateTransaction4Pay(sourceFileUploadId int64, txHash string) (*Transactio
 	lockedPayment, err := client.GetLockedPaymentInfo(wCid)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return nil, err
+		return err
 	}
 
 	if lockedPayment == nil {
-		logs.GetLogger().Info("payment not exists for w_cid:", wCid, ",tx hash:", txHash)
-		return nil, err
+		err := fmt.Errorf("payment not exists for w_cid:%s ,tx hash:%s", wCid, txHash)
+		if libutils.IsStrEmpty(&txHash) {
+			logs.GetLogger().Info(err)
+		} else {
+			logs.GetLogger().Error(err)
+		}
+		return err
+	}
+
+	if libutils.IsStrEmpty(&txHash) {
+		txHashStr, err := client.GetPaymentByBlockNumberWCid(lockedPayment.BlockNumber, wCid)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return err
+		}
+		logs.GetLogger().Info("tx hash got from polygon:", *txHashStr)
+		txHash = *txHashStr
 	}
 
 	walletIdPay, err := GetWalletByAddress(lockedPayment.AddressFrom, constants.WALLET_TYPE_META_MASK)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return nil, err
+		return err
 	}
 	walletIdRecipient, err := GetWalletByAddress(lockedPayment.AddressTo, constants.WALLET_TYPE_META_MASK)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return nil, err
+		return err
 	}
 	walletIdContract, err := GetWalletByAddress(config.GetConfig().Polygon.PaymentContractAddress, constants.WALLET_TYPE_META_MASK)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return nil, err
+		return err
 	}
 
 	token, err := GetTokenByName(constants.TOKEN_USDC_NAME)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return nil, err
+		return err
 	}
 
 	if token == nil {
 		err := fmt.Errorf("token:%s not exists", constants.TOKEN_USDC_NAME)
 		logs.GetLogger().Error(err)
-		return nil, err
+		return err
 	}
 
 	network, err := GetNetworkByName(constants.NETWORK_NAME_POLYGON)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return nil, err
+		return err
 	}
 
 	if network == nil {
 		err := fmt.Errorf("network:%s not exists", constants.NETWORK_NAME_POLYGON)
 		logs.GetLogger().Error(err)
-		return nil, err
+		return err
 	}
 
 	currentUtcSecond := libutils.GetCurrentUtcSecond()
-	transaction := Transaction{
-		SourceFileUploadId: sourceFileUploadId,
-		NetworkId:          network.ID,
-		TokenId:            token.ID,
-		WalletIdPay:        walletIdPay.ID,
-		WalletIdRecipient:  walletIdRecipient.ID,
-		WalletIdContract:   walletIdContract.ID,
-		PayTxHash:          txHash,
-		PayAmount:          lockedPayment.LockedFee.String(),
-		PayAt:              currentUtcSecond,
-		Deadline:           lockedPayment.Deadline,
-		CreateAt:           currentUtcSecond,
-		UpdateAt:           currentUtcSecond,
-	}
 
-	if transactionOld != nil {
-		transaction.ID = transactionOld.ID
+	if transaction == nil {
+		transaction = &Transaction{}
+		transaction.CreateAt = currentUtcSecond
 	}
+	transaction.SourceFileUploadId = sourceFileUploadId
+	transaction.NetworkId = network.ID
+	transaction.TokenId = token.ID
+	transaction.WalletIdPay = walletIdPay.ID
+	transaction.WalletIdRecipient = walletIdRecipient.ID
+	transaction.WalletIdContract = walletIdContract.ID
+	transaction.PayTxHash = txHash
+	transaction.PayAmount = lockedPayment.LockedFee.String()
+	transaction.PayAt = currentUtcSecond
+	transaction.Deadline = lockedPayment.Deadline
+	transaction.UpdateAt = currentUtcSecond
 
 	db := database.GetDBTransaction()
 
-	transactionResult := db.Create(&transaction)
-	err = transactionResult.Error
+	err = db.Save(&transaction).Error
 	if err != nil {
 		db.Rollback()
 		logs.GetLogger().Error(err)
-		return nil, err
+		return err
 	}
-
-	transactionCreated := transactionResult.Value.(*Transaction)
 
 	fields2BeUpdated := make(map[string]interface{})
 	fields2BeUpdated["status"] = constants.SOURCE_FILE_UPLOAD_STATUS_PAID
@@ -173,16 +183,22 @@ func CreateTransaction4Pay(sourceFileUploadId int64, txHash string) (*Transactio
 	if err != nil {
 		db.Rollback()
 		logs.GetLogger().Error(err)
-		return nil, err
+		return err
 	}
 
 	err = db.Commit().Error
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return nil, err
+		return err
 	}
 
-	return transactionCreated, nil
+	transaction, err = GetTransactionBySourceFileUploadId(sourceFileUploadId)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	return nil
 }
 
 func UpdateTransactionUnlockInfo(sourceFileUploadId int64, unlockAmount decimal.Decimal) error {

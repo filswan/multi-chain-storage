@@ -8,6 +8,8 @@ import (
 	"math/big"
 	"multi-chain-storage/config"
 	"multi-chain-storage/on-chain/goBind"
+	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -117,8 +119,15 @@ func GetPaymentByBlockNumberWCid(blockNumber int64, wCid string) (*string, error
 		return nil, err
 	}
 
-	contractRead, er := ioutil.ReadFile("./contracts/abi/FilswanOracle.json")
-	if er != nil {
+	homedir, err := os.UserHomeDir()
+	if err != nil {
+		logs.GetLogger().Error("Cannot get home directory.", err)
+		return nil, err
+	}
+
+	contractPath := filepath.Join(homedir, ".swan/mcs/SwanPayment.json")
+	contractRead, err := ioutil.ReadFile(contractPath)
+	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
 	}
@@ -131,26 +140,46 @@ func GetPaymentByBlockNumberWCid(blockNumber int64, wCid string) (*string, error
 	for _, transaction := range block.Transactions() {
 		txHash := transaction.Hash()
 		transaction, _, err := ethClient.TransactionByHash(context.Background(), txHash)
-		if er != nil {
+		if err != nil {
 			logs.GetLogger().Error(err)
 			return nil, err
 		}
 
 		inputHex := hex.EncodeToString(transaction.Data())
-		if !strings.HasPrefix(inputHex, "4d043ef6") {
+		//logs.GetLogger().Info(inputHex)
+		if !strings.HasPrefix(inputHex, "f4d98717") {
 			continue
 		}
-		method, err1 := txDataDecoder.DecodeMethod(inputHex)
-		if err1 != nil {
+		method, err := txDataDecoder.DecodeMethod(inputHex)
+		if err != nil {
+			logs.GetLogger().Error(err)
 			continue
 		}
 
-		for _, param := range method.Params {
-			if param.Name == "w_cid" {
-				if strings.EqualFold(wCid, param.Value) {
-					txHashStr := txHash.String()
-					return &txHashStr, nil
-				}
+		if len(method.Params) <= 0 {
+			continue
+		}
+
+		params := strings.Split(method.Params[0].Value, " ")
+		if len(params) <= 0 {
+			continue
+		}
+
+		wCidOnChain := params[0]
+		if len(wCidOnChain) <= 0 {
+			continue
+		}
+
+		wCidOnChain = wCidOnChain[1:]
+		if strings.EqualFold(wCid, wCidOnChain) {
+			txReceipt, err := CheckTx(ethClient, transaction)
+			if err != nil {
+				logs.GetLogger().Error(err)
+				continue
+			}
+			if txReceipt.Status == uint64(1) {
+				txHashStr := txHash.String()
+				return &txHashStr, nil
 			}
 		}
 	}

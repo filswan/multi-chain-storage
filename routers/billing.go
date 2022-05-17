@@ -177,5 +177,5 @@ func WriteRefundAfterExpired(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, common.CreateSuccessResponse(""))
+	c.JSON(http.StatusOK, common.CreateSuccessResponse(nil))
 }

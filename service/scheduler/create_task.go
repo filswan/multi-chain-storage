@@ -10,6 +10,7 @@ import (
 	"multi-chain-storage/on-chain/client"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/filswan/go-swan-client/command"
@@ -320,9 +321,14 @@ func CheckSourceFilesPaid() error {
 	}
 
 	for _, srcFileUpload := range srcFileUploads {
-		_, err := models.CreateTransaction4Pay(srcFileUpload.Id, "")
+		err := models.CreateTransaction4Pay(srcFileUpload.Id, "")
 		if err != nil {
-			logs.GetLogger().Error(err)
+			if strings.Contains(err.Error(), "payment not exists") {
+				logs.GetLogger().Info(err)
+			} else {
+				logs.GetLogger().Error(err)
+			}
+
 			continue
 		}
 	}

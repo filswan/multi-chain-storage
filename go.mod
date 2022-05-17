@@ -25,6 +25,7 @@ require (
 	github.com/mattn/go-colorable v0.1.6 // indirect
 	github.com/mattn/go-isatty v0.0.13 // indirect
 	github.com/mattn/go-runewidth v0.0.10 // indirect
+	github.com/mingjingc/abi-decoder v0.0.0-20210129060435-9eee5ae3cb69
 	github.com/onsi/ginkgo v1.16.4 // indirect
 	github.com/onsi/gomega v1.13.0 // indirect
 	github.com/shopspring/decimal v1.3.1

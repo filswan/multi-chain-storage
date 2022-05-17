@@ -24,14 +24,33 @@ func Refund() error {
 		return err
 	}
 
-	carFiles, err := models.GetCarFilesByStatus(constants.CAR_FILE_STATUS_DEAL_SENT)
+	err = refundCarFilesByStatus(ethClient, constants.CAR_FILE_STATUS_DEAL_SENT, swanPaymentTransactor)
+	if err != nil {
+		logs.GetLogger().Error(err)
+	}
+
+	err = refundCarFilesByStatus(ethClient, constants.CAR_FILE_STATUS_DEAL_SENT_FAILED, swanPaymentTransactor)
+	if err != nil {
+		logs.GetLogger().Error(err)
+	}
+
+	err = refundCarFilesByStatus(ethClient, constants.CAR_FILE_STATUS_DEAL_SEND_EXPIRED, swanPaymentTransactor)
+	if err != nil {
+		logs.GetLogger().Error(err)
+	}
+
+	return nil
+}
+
+func refundCarFilesByStatus(ethClient *ethclient.Client, carFileStatus string, swanPaymentTransactor *goBind.SwanPaymentTransactor) error {
+	carFiles, err := models.GetCarFilesByStatus(carFileStatus)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
 	}
 
 	for _, carFile := range carFiles {
-		err = refund(ethClient, carFile.ID, swanPaymentTransactor)
+		err = refundCarFile(ethClient, carFile.ID, swanPaymentTransactor)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			continue
@@ -41,7 +60,7 @@ func Refund() error {
 	return nil
 }
 
-func refund(ethClient *ethclient.Client, carFileId int64, swanPaymentTransactor *goBind.SwanPaymentTransactor) error {
+func refundCarFile(ethClient *ethclient.Client, carFileId int64, swanPaymentTransactor *goBind.SwanPaymentTransactor) error {
 	offlineDealsNotUnlocked, err := models.GetOfflineDeals2BeUnlockedByCarFileId(carFileId)
 	if err != nil {
 		logs.GetLogger().Error(err.Error())

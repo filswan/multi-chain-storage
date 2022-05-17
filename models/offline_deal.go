@@ -71,7 +71,7 @@ func GetOfflineDeals2BeUnlocked() ([]*OfflineDeal, error) {
 	return offlineDeals, nil
 }
 
-func GetOfflineDealsByCarFileId1(carFileId int64) ([]*OfflineDeal, error) {
+func GetOfflineDealsByCarFileId(carFileId int64) ([]*OfflineDeal, error) {
 	var offlineDeals []*OfflineDeal
 	err := database.GetDB().Where("car_file_id=?", carFileId).Find(&offlineDeals).Error
 	if err != nil {
@@ -82,7 +82,7 @@ func GetOfflineDealsByCarFileId1(carFileId int64) ([]*OfflineDeal, error) {
 	return offlineDeals, nil
 }
 
-func GetOfflineDealsByCarFileId(carFileId int64) ([]*OfflineDealOut, error) {
+func GetOfflineDealOutsByCarFileId(carFileId int64) ([]*OfflineDealOut, error) {
 	var offlineDeals []*OfflineDealOut
 	sql := "select a.*,b.fid miner_fid from offline_deal a,miner b where a.car_file_id=? and a.miner_id=b.id"
 	err := database.GetDB().Raw(sql, carFileId).Scan(&offlineDeals).Error

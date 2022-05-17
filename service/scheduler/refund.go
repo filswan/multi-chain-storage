@@ -52,7 +52,7 @@ func refundCarFilesByStatus(ethClient *ethclient.Client, carFileStatus string, s
 }
 
 func refundCarFile(ethClient *ethclient.Client, carFileId int64, swanPaymentTransactor *goBind.SwanPaymentTransactor) error {
-	offlineDeals, err := models.GetOfflineDealsByCarFileId1(carFileId)
+	offlineDeals, err := models.GetOfflineDealsByCarFileId(carFileId)
 	if err != nil {
 		logs.GetLogger().Error(err.Error())
 		return err

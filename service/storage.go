@@ -162,7 +162,7 @@ func GetSourceFileUploads(walletAddress, status, fileName, orderBy, is_minted st
 	}
 
 	for _, srcFileUpload := range srcFileUploads {
-		offlineDeals, err := models.GetOfflineDealsByCarFileId(srcFileUpload.CarFileId)
+		offlineDeals, err := models.GetOfflineDealOutsByCarFileId(srcFileUpload.CarFileId)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			return nil, nil, err

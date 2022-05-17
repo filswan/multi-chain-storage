@@ -164,7 +164,7 @@ func GetPaymentTxHashByBlockNumberWCid(blockNumber int64, wCid string) (*string,
 		}
 
 		wCidOnChain = wCidOnChain[1:]
-		if strings.EqualFold(wCid, wCidOnChain) {
+		if wCid == wCidOnChain {
 			txReceipt, err := CheckTx(ethClient, transaction)
 			if err != nil {
 				logs.GetLogger().Error(err)

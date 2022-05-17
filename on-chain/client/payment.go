@@ -106,7 +106,7 @@ func GetSwanPaymentSession() (*goBind.SwanPaymentSession, error) {
 	return swanPaymentSession, nil
 }
 
-func GetPaymentByBlockNumberWCid(blockNumber int64, wCid string) (*string, error) {
+func GetPaymentTxHashByBlockNumberWCid(blockNumber int64, wCid string) (*string, error) {
 	ethClient, _, err := GetEthClient()
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -138,13 +138,6 @@ func GetPaymentByBlockNumberWCid(blockNumber int64, wCid string) (*string, error
 	txDataDecoder.SetABI(myContractAbi)
 
 	for _, transaction := range block.Transactions() {
-		txHash := transaction.Hash()
-		transaction, _, err := ethClient.TransactionByHash(context.Background(), txHash)
-		if err != nil {
-			logs.GetLogger().Error(err)
-			return nil, err
-		}
-
 		inputHex := hex.EncodeToString(transaction.Data())
 		//logs.GetLogger().Info(inputHex)
 		if !strings.HasPrefix(inputHex, "f4d98717") {
@@ -166,19 +159,19 @@ func GetPaymentByBlockNumberWCid(blockNumber int64, wCid string) (*string, error
 		}
 
 		wCidOnChain := params[0]
-		if len(wCidOnChain) <= 0 {
+		if len(wCidOnChain) <= 1 {
 			continue
 		}
 
 		wCidOnChain = wCidOnChain[1:]
-		if strings.EqualFold(wCid, wCidOnChain) {
+		if wCid == wCidOnChain {
 			txReceipt, err := CheckTx(ethClient, transaction)
 			if err != nil {
 				logs.GetLogger().Error(err)
 				continue
 			}
 			if txReceipt.Status == uint64(1) {
-				txHashStr := txHash.String()
+				txHashStr := transaction.Hash().String()
 				return &txHashStr, nil
 			}
 		}

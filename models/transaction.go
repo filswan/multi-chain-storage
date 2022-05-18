@@ -188,12 +188,6 @@ func CreateTransaction4PayByWCid(wCid string, txHash string) error {
 		return err
 	}
 
-	transaction, err = GetTransactionBySourceFileUploadId(sourceFileUpload.Id)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
-
 	return nil
 }
 

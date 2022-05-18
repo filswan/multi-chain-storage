@@ -86,7 +86,7 @@ type ScheduleRule struct {
 	SendDealIntervalSecond       time.Duration `toml:"send_deal_interval_second"`
 	ScanDealStatusIntervalSecond time.Duration `toml:"scan_deal_status_interval_second"`
 	RefundIntervalSecond         time.Duration `toml:"refund_interval_second"`
-	CheckPaymentIntervalSecond   time.Duration `toml:"check_payment_interval_second"`
+	ScanPolygonIntervalSecond    time.Duration `toml:"scan_polygon_interval_second"`
 }
 
 var config *Configuration
@@ -157,7 +157,7 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 		{"schedule_rule", "send_deal_interval_second"},
 		{"schedule_rule", "scan_deal_status_interval_second"},
 		{"schedule_rule", "refund_interval_second"},
-		{"schedule_rule", "check_payment_interval_second"},
+		{"schedule_rule", "scan_polygon_interval_second"},
 
 		{"polygon", "polygon_rpc_url"},
 		{"polygon", "payment_contract_address"},

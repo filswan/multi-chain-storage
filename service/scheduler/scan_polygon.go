@@ -15,6 +15,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/filswan/go-swan-lib/logs"
@@ -41,7 +42,7 @@ func initTxDataDecoder() {
 	txDataDecoder.SetABI(myContractAbi)
 }
 
-func GetPayments() error {
+func ScanPolygon() error {
 	network, err := models.GetNetworkByName(constants.NETWORK_NAME_POLYGON)
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -66,42 +67,50 @@ func GetPayments() error {
 	}
 
 	for i := startBlockNumber; i <= int64(endBlockNumber); i++ {
-		err = GetPaymentsByBlockNumber(ethClient, i)
+		query := ethereum.FilterQuery{
+			FromBlock: big.NewInt(i),
+			ToBlock:   big.NewInt(i),
+			Addresses: []common.Address{
+				common.HexToAddress(config.GetConfig().Polygon.PaymentContractAddress),
+			},
+		}
+
+		vlogs, err := ethClient.FilterLogs(context.Background(), query)
 		if err != nil {
 			logs.GetLogger().Error(err)
-			break
+			return err
+		}
+
+		for _, vLog := range vlogs {
+			transaction, isPending, err := ethClient.TransactionByHash(context.Background(), vLog.TxHash)
+			if err != nil {
+				logs.GetLogger().Error(err)
+				return err
+			}
+
+			if isPending {
+				return nil
+			}
+
+			inputDataHex := hex.EncodeToString(transaction.Data())
+			if strings.HasPrefix(inputDataHex, "f4d98717") {
+				err = getPayment4Transaction(ethClient, inputDataHex, transaction.Hash())
+				if err != nil {
+					logs.GetLogger().Error(err)
+					return err
+				}
+			}
 		}
 
 		network.LastScanBlockNumber = &i
 		err = database.GetDB().Save(network).Error
 		if err != nil {
 			logs.GetLogger().Error(err)
-			break
+			return err
 		}
 	}
 
 	return nil
-}
-
-func GetPaymentsByBlockNumber(ethClient *ethclient.Client, blockNumber int64) error {
-	block, err := ethClient.BlockByNumber(context.Background(), big.NewInt(blockNumber))
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
-
-	for _, transaction := range block.Transactions() {
-		inputDataHex := hex.EncodeToString(transaction.Data())
-		if strings.HasPrefix(inputDataHex, "f4d98717") {
-			err = getPayment4Transaction(ethClient, inputDataHex, transaction.Hash())
-			if err != nil {
-				logs.GetLogger().Error(err)
-				return err
-			}
-		}
-	}
-
-	return err
 }
 
 func getPayment4Transaction(ethClient *ethclient.Client, inputDataHex string, txHash common.Hash) error {
@@ -112,10 +121,6 @@ func getPayment4Transaction(ethClient *ethclient.Client, inputDataHex string, tx
 	}
 
 	if txReceipt.Status != uint64(1) {
-		return nil
-	}
-
-	if txReceipt.ContractAddress.String() != config.GetConfig().Polygon.PaymentContractAddress {
 		return nil
 	}
 

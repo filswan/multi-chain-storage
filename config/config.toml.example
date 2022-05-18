@@ -44,7 +44,7 @@ create_task_interval_second = 120
 send_deal_interval_second = 180
 scan_deal_status_interval_second = 300
 refund_interval_second = 300
-check_payment_interval_second = 30
+scan_polygon_interval_second = 30
 
 [polygon]
 polygon_rpc_url = ""

@@ -516,6 +516,7 @@ export default {
       failTransaction: false,
       loadMetamaskPay: false,
       payRow: {},
+      refundPow: {},
       resData: {},
       storage: 0,
       biling_price: 0,
@@ -618,16 +619,9 @@ export default {
         };
         
         let cidArray = []
-        // if(row.offline_deal) {
-        //   row.offline_deal.forEach(deal => {
-        //     cidArray.push(deal.deal_cid)
-        //   }); 
-        // }else{
-        //   return false
-        // }
         cidArray.push(row.w_cid)
-        console.log('cid:', cidArray)
         try{
+          _this.refundPow = row
           contract_instance.methods.refund(cidArray)
           .send(payObject)
           .on('transactionHash', function(hash){
@@ -776,7 +770,8 @@ export default {
                       _this.sendPostRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/billing/deal/lockpayment`, lockParam)
                     }else{
                       const lockParam = {
-                        tx_hash: txHash
+                        "source_file_upload_id": _this.refundPow.source_file_upload_id,
+                        "refund_tx_hash": txHash
                       }
                       _this.sendPostRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/storage/deal/expire`, lockParam)
                     }

@@ -10,8 +10,8 @@
                     <span slot="label">
                         <!-- <i class="el-icon-success"></i>  -->
                         <img v-if="!dealCont.source_file_upload_deal.locked_fee" src="@/assets/images/error.png" />
-                        <img v-else-if="dealCont.signed_dao_count >= dealCont.dao_thresh_hold && dealCont.unlock_status" src="@/assets/images/dao_success.png" />
-                        <img v-else-if="dealCont.signed_dao_count >= dealCont.dao_thresh_hold && !dealCont.unlock_status" src="@/assets/images/dao_waiting.png" />
+                        <img v-else-if="dealCont.source_file_upload_deal.unlocked" src="@/assets/images/dao_success.png" />
+                        <img v-else-if="dealCont.dao_signature.length >= dealCont.dao_threshold" src="@/assets/images/dao_waiting.png" />
                         <img v-else src="@/assets/images/dao_waiting.png" />
 
                         {{item.miner_fid}}
@@ -31,17 +31,17 @@
                             <img src="@/assets/images/error.png" />
                             <span>{{$t('uploadFile.no_fund_locked')}}</span>
                         </span>
-                        <span v-else-if="dealCont.signed_dao_count >= dealCont.dao_thresh_hold && dealCont.unlock_status">
+                        <span v-else-if="dealCont.source_file_upload_deal.unlocked">
                             <img src="@/assets/images/dao_success.png" />
                             <span style="color: #3db39e;">{{$t('uploadFile.Successfully_unlocked_funds')}}</span>
                         </span>
-                        <span v-else-if="dealCont.signed_dao_count >= dealCont.dao_thresh_hold && !dealCont.unlock_status">
+                        <span v-else-if="dealCont.dao_signature.length >= dealCont.dao_threshold">
                             <img src="@/assets/images/dao_waiting.png" />
-                            <span>{{$t('uploadFile.Successfully_signed')}} {{dealCont.signed_dao_count}}/{{dealCont.dao_total_count}} </span>
+                            <span>{{$t('uploadFile.Successfully_signed')}} {{dealCont.dao_signature.length}}/{{dealCont.dao_threshold}} </span>
                         </span>
                         <span v-else>
                             <img src="@/assets/images/dao_waiting.png" />
-                            <span>{{$t('uploadFile.Waiting_for_signature')}} {{dealCont.signed_dao_count}}/{{dealCont.dao_total_count}} </span>
+                            <span>{{$t('uploadFile.Waiting_for_signature')}} {{dealCont.dao_signature.length}}/{{dealCont.dao_threshold}} </span>
                         </span>
                     </div>
                     <el-button type="primary" size="small" @click="getDealLogsData">{{$t('uploadFile.view_deal_logs')}}</el-button>
@@ -220,9 +220,7 @@ export default {
             width: document.body.clientWidth>600?'550px':'95%',
             loadlogs: true,
             dealLogsData: [],
-            webLink: localStorage.getItem('languageMcs') == 'cn'?
-                'https://filecoin-docs.froghub.io/get-started/store-and-retrieve/store-data/#%E6%9F%A5%E7%9C%8B%E4%BA%A4%E6%98%93%E7%8A%B6%E6%80%81':
-                'https://docs.filecoin.io/get-started/store-and-retrieve/store-data/#check-the-deal-status'
+            webLink: 'https://docs.filecoin.io/get-started/store-and-retrieve/store-data/#deal-states'
       };
     },
     computed: {},
@@ -238,9 +236,9 @@ export default {
             this.$router.push({
                 name: 'my_files_detail', 
                 params: {
-                    id: this.offline_deals_data[tab.index].id, 
+                    id: this.offline_deals_data[tab.index].id,
                     deal_id: this.offline_deals_data[tab.index].deal_id,
-                    cid: this.$route.params.cid,
+                    // cid: this.$route.params.cid,
                     source_file_upload_id: this.$route.params.source_file_upload_id
                 }
             })

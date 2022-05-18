@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"math/big"
 	"multi-chain-storage/common/constants"
+	"multi-chain-storage/config"
 	"multi-chain-storage/database"
 	"multi-chain-storage/models"
 	"multi-chain-storage/on-chain/client"
@@ -114,6 +115,10 @@ func getPayment4Transaction(ethClient *ethclient.Client, inputDataHex string, tx
 		return nil
 	}
 
+	if txReceipt.ContractAddress.String() != config.GetConfig().Polygon.PaymentContractAddress {
+		return nil
+	}
+
 	method, err := txDataDecoder.DecodeMethod(inputDataHex)
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -138,7 +143,6 @@ func getPayment4Transaction(ethClient *ethclient.Client, inputDataHex string, tx
 	}
 
 	wCid = wCid[1:]
-
 	err = models.CreateTransaction4PayByWCid(wCid, txHash.String())
 	if err != nil {
 		logs.GetLogger().Error(err)

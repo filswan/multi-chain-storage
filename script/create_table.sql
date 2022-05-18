@@ -201,3 +201,7 @@ create table dao_signature (
     constraint fk_dao_signature_wallet_id_recipient foreign key (wallet_id_recipient) references wallet(id),
     constraint fk_dao_signature_wallet_id_contract foreign key (wallet_id_contract) references wallet(id)
 );
+
+
+#--alter table network add last_scan_block_number bigint;
+#--update network set last_scan_block_number=26354230 where name='polygon';

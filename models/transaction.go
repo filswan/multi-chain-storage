@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"multi-chain-storage/common/constants"
 	"multi-chain-storage/config"
+	"multi-chain-storage/on-chain/client"
 
 	"multi-chain-storage/database"
-	"multi-chain-storage/on-chain/client"
 	"sort"
 	"strings"
 
@@ -56,6 +56,18 @@ func GetTransactionBySourceFileUploadId(sourceFileUploadId int64) (*Transaction,
 }
 
 func CreateTransaction4PayByWCid(wCid string, txHash string) error {
+	lockedPayment, err := client.GetLockedPaymentInfo(wCid)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	if lockedPayment == nil {
+		msg := fmt.Sprintf("payment not exists for w_cid:%s ,tx hash:%s", wCid, txHash)
+		logs.GetLogger().Info(msg)
+		return nil
+	}
+
 	sourceFilePayloadCidIndex := strings.Index(wCid, "Qm")
 	sourceFileUploadUuid := wCid[0:sourceFilePayloadCidIndex]
 	sourceFilePayloadCid := wCid[sourceFilePayloadCidIndex:]
@@ -67,9 +79,9 @@ func CreateTransaction4PayByWCid(wCid string, txHash string) error {
 	}
 
 	if sourceFile == nil {
-		err := fmt.Errorf("source file not exists for source file payload cid:%s", sourceFilePayloadCid)
-		logs.GetLogger().Error(err)
-		return err
+		msg := fmt.Sprintf("source file not exists for source file payload cid:%s", sourceFilePayloadCid)
+		logs.GetLogger().Info(msg)
+		return nil
 	}
 
 	sourceFileUpload, err := GetSourceFileUploadBySourceFileIdUuid(sourceFile.ID, sourceFileUploadUuid)
@@ -79,86 +91,30 @@ func CreateTransaction4PayByWCid(wCid string, txHash string) error {
 	}
 
 	if sourceFileUpload == nil {
-		err := fmt.Errorf("source file upload not exists for source file id:%d, uuid:%s", sourceFile.ID, sourceFileUploadUuid)
-		logs.GetLogger().Error(err)
-		return err
+		msg := fmt.Sprintf("source file upload not exists for source file id:%d, uuid:%s", sourceFile.ID, sourceFileUploadUuid)
+		logs.GetLogger().Info(msg)
+		return nil
 	}
 
-	err = CreateTransaction4PayBySourceFileUploadIdWCid(sourceFileUpload.Id, wCid, txHash)
+	transaction, err := GetTransactionBySourceFileUploadId(sourceFileUpload.Id)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
 	}
 
-	return nil
-}
-
-func CreateTransaction4PayBySourceFileUploadId(sourceFileUploadId int64, txHash string) error {
-	sourceFileUpload, err := GetSourceFileUploadById(sourceFileUploadId)
+	walletPay, err := GetWalletByAddress(lockedPayment.AddressFrom, constants.WALLET_TYPE_META_MASK)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
 	}
 
-	if sourceFileUpload == nil {
-		err := fmt.Errorf("source file upload not exists for source file upload id:%d", sourceFileUploadId)
-		logs.GetLogger().Error(err)
-		return err
-	}
-
-	sourceFile, err := GetSourceFileById(sourceFileUpload.SourceFileId)
+	walletRecipient, err := GetWalletByAddress(lockedPayment.AddressTo, constants.WALLET_TYPE_META_MASK)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
 	}
 
-	if sourceFile == nil {
-		err := fmt.Errorf("source file not exists for source file id:%d", sourceFileUpload.SourceFileId)
-		logs.GetLogger().Error(err)
-		return err
-	}
-
-	wCid := sourceFileUpload.Uuid + sourceFile.PayloadCid
-	err = CreateTransaction4PayBySourceFileUploadIdWCid(sourceFileUpload.Id, wCid, txHash)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
-
-	return nil
-}
-
-func CreateTransaction4PayBySourceFileUploadIdWCid(sourceFileUploadId int64, wCid string, txHash string) error {
-	transaction, err := GetTransactionBySourceFileUploadId(sourceFileUploadId)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
-
-	lockedPayment, err := client.GetLockedPaymentInfo(wCid)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
-
-	if lockedPayment == nil {
-		err := fmt.Errorf("payment not exists for w_cid:%s ,tx hash:%s", wCid, txHash)
-		logs.GetLogger().Error(err)
-		return err
-	}
-
-	walletIdPay, err := GetWalletByAddress(lockedPayment.AddressFrom, constants.WALLET_TYPE_META_MASK)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
-	walletIdRecipient, err := GetWalletByAddress(lockedPayment.AddressTo, constants.WALLET_TYPE_META_MASK)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
-
-	walletIdContract, err := GetWalletByAddress(config.GetConfig().Polygon.PaymentContractAddress, constants.WALLET_TYPE_META_MASK)
+	walletContract, err := GetWalletByAddress(config.GetConfig().Polygon.PaymentContractAddress, constants.WALLET_TYPE_META_MASK)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
@@ -194,15 +150,15 @@ func CreateTransaction4PayBySourceFileUploadIdWCid(sourceFileUploadId int64, wCi
 		transaction = &Transaction{}
 		transaction.CreateAt = currentUtcSecond
 	}
-	transaction.SourceFileUploadId = sourceFileUploadId
+	transaction.SourceFileUploadId = sourceFileUpload.Id
 	transaction.NetworkId = network.ID
 	transaction.TokenId = token.ID
-	transaction.WalletIdPay = walletIdPay.ID
-	transaction.WalletIdRecipient = walletIdRecipient.ID
-	transaction.WalletIdContract = walletIdContract.ID
+	transaction.WalletIdPay = walletPay.ID
+	transaction.WalletIdRecipient = walletRecipient.ID
+	transaction.WalletIdContract = walletContract.ID
 	transaction.PayTxHash = txHash
 	transaction.PayAmount = lockedPayment.LockedFee.String()
-	transaction.PayAt = currentUtcSecond
+	transaction.PayAt = lockedPayment.Deadline - 6*24*60*60
 	transaction.Deadline = lockedPayment.Deadline
 	transaction.UpdateAt = currentUtcSecond
 
@@ -219,7 +175,7 @@ func CreateTransaction4PayBySourceFileUploadIdWCid(sourceFileUploadId int64, wCi
 	fields2BeUpdated["status"] = constants.SOURCE_FILE_UPLOAD_STATUS_PAID
 	fields2BeUpdated["update_at"] = currentUtcSecond
 
-	err = db.Model(SourceFileUpload{}).Where("id=?", sourceFileUploadId).Update(fields2BeUpdated).Error
+	err = db.Model(SourceFileUpload{}).Where("id=?", sourceFileUpload.Id).Update(fields2BeUpdated).Error
 	if err != nil {
 		db.Rollback()
 		logs.GetLogger().Error(err)
@@ -232,7 +188,7 @@ func CreateTransaction4PayBySourceFileUploadIdWCid(sourceFileUploadId int64, wCi
 		return err
 	}
 
-	transaction, err = GetTransactionBySourceFileUploadId(sourceFileUploadId)
+	transaction, err = GetTransactionBySourceFileUploadId(sourceFileUpload.Id)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err

@@ -238,7 +238,7 @@ func unlockDeal(offlineDeal *models.OfflineDeal, ethClient *ethclient.Client, sw
 		return nil, err
 	}
 
-	txReceipt, err := client.CheckTx(ethClient, tx)
+	txReceipt, err := client.CheckTx(ethClient, tx.Hash())
 	if err != nil {
 		logs.GetLogger().Error(getLog(offlineDeal, "unlock failed, tx hash:"+txHash, err.Error()))
 		return nil, err

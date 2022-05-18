@@ -8,6 +8,8 @@ import (
 	"multi-chain-storage/on-chain/client"
 	"os"
 	"path/filepath"
+	"reflect"
+	"runtime"
 	"sync"
 	"time"
 
@@ -36,22 +38,25 @@ func GetSrcDir() string {
 func InitScheduler() {
 	createDir()
 	setAdminWallet()
+	initTxDataDecoder()
 
-	go runJob("CreateTask", CreateTask, config.GetConfig().ScheduleRule.CreateTaskIntervalSecond)
-	go runJob("SendDeal", SendDeal, config.GetConfig().ScheduleRule.SendDealIntervalSecond)
-	go runJob("ScanDeal", ScanDeal, config.GetConfig().ScheduleRule.ScanDealStatusIntervalSecond)
-	go runJob("UnlockPayment", UnlockPayment, config.GetConfig().ScheduleRule.UnlockIntervalSecond)
-	go runJob("Refund", Refund, config.GetConfig().ScheduleRule.RefundIntervalSecond)
+	go runJob(CreateTask, config.GetConfig().ScheduleRule.CreateTaskIntervalSecond)
+	go runJob(SendDeal, config.GetConfig().ScheduleRule.SendDealIntervalSecond)
+	go runJob(ScanDeal, config.GetConfig().ScheduleRule.ScanDealStatusIntervalSecond)
+	go runJob(UnlockPayment, config.GetConfig().ScheduleRule.UnlockIntervalSecond)
+	go runJob(Refund, config.GetConfig().ScheduleRule.RefundIntervalSecond)
+	go runJob(ScanPolygon, config.GetConfig().ScheduleRule.ScanPolygonIntervalSecond)
 }
 
-func runJob(jobName string, func2Run func() error, intervalSecond time.Duration) {
+func runJob(func2Run func() error, intervalSecond time.Duration) {
 	for {
-		logs.GetLogger().Info(jobName, " start")
+		funcName := runtime.FuncForPC(reflect.ValueOf(func2Run).Pointer()).Name()
+		logs.GetLogger().Info(funcName, " start")
 		err := func2Run()
 		if err != nil {
 			logs.GetLogger().Error(err)
 		}
-		logs.GetLogger().Info(jobName, " end")
+		logs.GetLogger().Info(funcName, " end")
 
 		time.Sleep(intervalSecond * time.Second)
 	}

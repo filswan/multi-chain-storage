@@ -10,7 +10,6 @@ import (
 	"multi-chain-storage/on-chain/client"
 	"os"
 	"path/filepath"
-	"strings"
 	"time"
 
 	"github.com/filswan/go-swan-client/command"
@@ -22,11 +21,6 @@ import (
 )
 
 func CreateTask() error {
-	err := CheckSourceFilesPaid()
-	if err != nil {
-		logs.GetLogger().Error(err)
-	}
-
 	for {
 		numSrcFiles, err := createTask()
 		if err != nil {
@@ -41,7 +35,6 @@ func CreateTask() error {
 
 		logs.GetLogger().Info(*numSrcFiles, " source file(s) created to car file")
 	}
-
 }
 
 func createTask() (*int, error) {
@@ -308,29 +301,6 @@ func saveCarInfo2DB(fileDesc *libmodel.FileDesc, srcFiles []*models.SourceFileUp
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
-	}
-
-	return nil
-}
-
-func CheckSourceFilesPaid() error {
-	srcFileUploads, err := models.GetSourceFileUploadsByFileTypeStatus(constants.SOURCE_FILE_TYPE_NORMAL, constants.SOURCE_FILE_UPLOAD_STATUS_PENDING)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
-
-	for _, srcFileUpload := range srcFileUploads {
-		err := models.CreateTransaction4Pay(srcFileUpload.Id, "")
-		if err != nil {
-			if strings.Contains(err.Error(), "payment not exists") {
-				logs.GetLogger().Info(err)
-			} else {
-				logs.GetLogger().Error(err)
-			}
-
-			continue
-		}
 	}
 
 	return nil

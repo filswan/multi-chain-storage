@@ -1,11 +1,12 @@
 use mcs_v2;
 
 create table network (
-    id            bigint        not null auto_increment,
-    name          varchar(100)  not null,
-    description   text,
-    create_at     bigint        not null,
-    update_at     bigint        not null,
+    id                     bigint        not null auto_increment,
+    name                   varchar(100)  not null,
+    last_scan_block_number bigint,
+    description            text,
+    create_at              bigint        not null,
+    update_at              bigint        not null,
     primary key pk_network(id),
     constraint un_network_name unique(name)
 );

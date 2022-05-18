@@ -38,13 +38,14 @@ func GetSrcDir() string {
 func InitScheduler() {
 	createDir()
 	setAdminWallet()
+	initTxDataDecoder()
 
 	go runJob(CreateTask, config.GetConfig().ScheduleRule.CreateTaskIntervalSecond)
 	go runJob(SendDeal, config.GetConfig().ScheduleRule.SendDealIntervalSecond)
 	go runJob(ScanDeal, config.GetConfig().ScheduleRule.ScanDealStatusIntervalSecond)
 	go runJob(UnlockPayment, config.GetConfig().ScheduleRule.UnlockIntervalSecond)
 	go runJob(Refund, config.GetConfig().ScheduleRule.RefundIntervalSecond)
-	go runJob(CheckPayment, config.GetConfig().ScheduleRule.CheckPaymentIntervalSecond)
+	go runJob(GetPayments, config.GetConfig().ScheduleRule.CheckPaymentIntervalSecond)
 }
 
 func runJob(func2Run func() error, intervalSecond time.Duration) {

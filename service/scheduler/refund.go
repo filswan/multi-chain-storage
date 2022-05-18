@@ -124,7 +124,7 @@ func refundCarFile(ethClient *ethclient.Client, carFileId int64, swanPaymentTran
 		txHash = tx.Hash().Hex()
 	}
 
-	txReceipt, err := client.CheckTx(ethClient, tx)
+	txReceipt, err := client.CheckTx(ethClient, tx.Hash())
 	if err != nil {
 		logs.GetLogger().Error(err.Error())
 		return err

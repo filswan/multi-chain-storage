@@ -93,16 +93,20 @@ func GetSourceFileUploads2BeRefundedByCarFileStatus(carFileStatus string) ([]*So
 	return models, nil
 }
 
-func GetSourceFileUploadBySourceFileIdWallet(sourceFileId int64, walletId int64) ([]*SourceFileUpload, error) {
-	var sourceFileUpload []*SourceFileUpload
-	err := database.GetDB().Where("source_file_id=? and wallet_id=?", sourceFileId, walletId).Find(&sourceFileUpload).Error
+func GetSourceFileUploadBySourceFileIdUuid(sourceFileId int64, uuid string) (*SourceFileUpload, error) {
+	var sourceFileUploads []*SourceFileUpload
+	err := database.GetDB().Where("source_file_id=? and uuid=?", sourceFileId, uuid).Find(&sourceFileUploads).Error
 
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
 	}
 
-	return sourceFileUpload, nil
+	if len(sourceFileUploads) > 0 {
+		return sourceFileUploads[0], nil
+	}
+
+	return nil, nil
 }
 
 func GetSourceFileUploadById(id int64) (*SourceFileUpload, error) {

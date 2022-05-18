@@ -10,7 +10,7 @@ import (
 )
 
 func WriteLockPayment(sourceFileUploadId int64, txHash string) error {
-	err := models.CreateTransaction4Pay(sourceFileUploadId, txHash)
+	err := models.CreateTransaction4PayBySourceFileUploadId(sourceFileUploadId, txHash)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err

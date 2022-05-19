@@ -73,17 +73,17 @@
 #### Option:two: [install a lotus lite node](https://lotus.filecoin.io/docs/set-up/lotus-lite/#amd-and-intel-based-computers)
 
 ## Installation
-### Option:one:  **Prebuilt package**: See [release assets](https://github.com/filswan/multi-chain-payment/releases)
+### Option:one:  **Prebuilt package**: See [release assets](https://github.com/filswan/multi-chain-storage/releases)
 ```shell
-wget https://github.com/filswan/multi-chain-payment/releases/tag/v1.0.1/install.sh
+wget https://github.com/filswan/multi-chain-storage/releases/tag/v1.0.1/install.sh
 ./install.sh
 ```
 
 ### Option:two:  Source Code
 :bell:**go 1.16+** is required
 ```shell
-git clone https://github.com/filswan/multi-chain-payment.git
-cd multi-chain-payment
+git clone https://github.com/filswan/multi-chain-storage.git
+cd multi-chain-storage
 git checkout <release_branch>
 ./build_from_source.sh
 ```
@@ -190,17 +190,6 @@ nohup ./build/multi-chain-storage >> ./build/mcs.log &    #After installation fr
 |ORDER_INDEX            |dao display order      |
 |DESCRIPTION            |description            |
 |CREATE_AT              |create time            |
-
-### Run Payment Bridge as system service
-Before running the playbook to start payment bridge as a system service, please first change the following line in `$GOPATH/src/multi-chain-storage/script/run_services/payment_bridge.service` to the actual path of payment bridge executable:
-```
-ExecStart=/home/filswan/multi-chain-storage/build/multi-chain-storage
-```
-Now we can run Payment Bridge as a system service by executing the following command in shell and entering sudo password when prompt:
-```bash
-cd $GOPATH/src/multi-chain-storage/script/run_services
-ansible-playbook run_payment_bridge_service.yaml --ask-become-pass -vvv
-```
 
 ## License
 

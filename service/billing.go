@@ -9,10 +9,6 @@ import (
 	"github.com/shopspring/decimal"
 )
 
-func WriteLockPayment(sourceFileUploadId int64, txHash string) error {
-	return nil
-}
-
 func GetTransactions(walletAddress, txHash, fileName, orderBy string, isAscend bool, limit, offset int) ([]*models.Billing, *int, error) {
 	wallet, err := models.GetWalletByAddress(walletAddress, constants.WALLET_TYPE_META_MASK)
 	if err != nil {

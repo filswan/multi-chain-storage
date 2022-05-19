@@ -19,7 +19,6 @@ import (
 
 func BillingManager(router *gin.RouterGroup) {
 	router.GET("", GetUserBillingHistory)
-	router.POST("/deal/lockpayment", WriteLockPayment)
 	router.GET("/deal/lockpayment/info", GetLockPaymentInfo)
 	router.GET("/price/filecoin", GetFileCoinLastestPrice)
 	router.POST("/deal/expire", WriteRefundAfterExpired)
@@ -86,26 +85,6 @@ func GetUserBillingHistory(c *gin.Context) {
 type LockPayment struct {
 	SourceFileUploadId int64  `json:"source_file_upload_id"`
 	TxHash             string `json:"tx_hash"`
-}
-
-func WriteLockPayment(c *gin.Context) {
-	logs.GetLogger().Info("ip:", c.ClientIP(), ",port:", c.Request.URL.Port())
-	var lockPayment LockPayment
-	err := c.BindJSON(&lockPayment)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		c.JSON(http.StatusOK, common.CreateErrorResponse(errorinfo.ERROR_PARAM_PARSE_TO_STRUCT, err.Error()))
-		return
-	}
-
-	err = service.WriteLockPayment(lockPayment.SourceFileUploadId, lockPayment.TxHash)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		c.JSON(http.StatusOK, common.CreateErrorResponse(errorinfo.ERROR_INTERNAL, err.Error()))
-		return
-	}
-
-	c.JSON(http.StatusOK, common.CreateSuccessResponse(nil))
 }
 
 func GetLockPaymentInfo(c *gin.Context) {

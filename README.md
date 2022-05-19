@@ -14,7 +14,7 @@
 - [Installation](#Installation)
 - [After Installation](#After-Installation)
 - [Configuration](#Configuration)
-- [Payment Process](#Payment-Process)
+- [Work Process](#Work-Process)
 - [Database Table Introduction](#Database-Table-Introduction)
 - [Pay for Filecoin by Polygon](https://www.youtube.com/watch?v=c4Dvidz3plU)
 - [License](https://github.com/filswan/multi-chain-storage/blob/main/LICENSE)
@@ -148,7 +148,7 @@ nohup ./build/multi-chain-storage >> ./build/mcs.log &    #After installation fr
 ### .env
 - **privateKeyOnPolygon**: private key of the wallet used to execute contract methods on the polygon network and pay for gas
 
-## Payment Process
+## Work Process
 
 1. Users upload a file they want to backup to filecoin network
 2. User pay currencies we support to send tokens to our payment contract address, see [Configuration](#Configuration)

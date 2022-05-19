@@ -17,7 +17,7 @@
 - [Payment Process](#Payment-Process)
 - [Database Table Introduction](#Database-Table-Introduction)
 - [Pay for Filecoin by Polygon](https://www.youtube.com/watch?v=c4Dvidz3plU)
-- [License](#License)
+- [License](https://github.com/filswan/multi-chain-storage/blob/main/LICENSE)
 
 ## Functions
 - Make payment from multi chain for filecoin storage
@@ -191,6 +191,3 @@ nohup ./build/multi-chain-storage >> ./build/mcs.log &    #After installation fr
 |DESCRIPTION            |description            |
 |CREATE_AT              |create time            |
 
-## License
-
-[MIT](https://github.com/filswan/multi-chain-payment/blob/main/LICENSE)

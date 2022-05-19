@@ -39,6 +39,7 @@ type polygon struct {
 	PayMultiplyFactor       float32       `toml:"pay_multiply_factor"`
 	UnlockIntervalMinute    time.Duration `toml:"unlock_interval_minute"`
 	DaoUnlockIntervalBlock  int64         `toml:"dao_unlock_interval_block"`
+	ScanPolygonBlockStep    int64         `toml:"scan_polygon_block_step"`
 }
 
 type database struct {
@@ -171,6 +172,7 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 		{"polygon", "pay_multiply_factor"},
 		{"polygon", "unlock_interval_minute"},
 		{"polygon", "dao_unlock_interval_block"},
+		{"polygon", "scan_polygon_block_step"},
 	}
 
 	for _, v := range requiredFields {

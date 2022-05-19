@@ -66,10 +66,12 @@ func ScanPolygon() error {
 		return err
 	}
 
-	for i := startBlockNumber; i <= int64(endBlockNumber); i++ {
+	scanBlockStep := config.GetConfig().Polygon.ScanPolygonBlockStep
+	for i := startBlockNumber; i <= int64(endBlockNumber); {
+		endBlock := i + scanBlockStep - 1
 		query := ethereum.FilterQuery{
 			FromBlock: big.NewInt(i),
-			ToBlock:   big.NewInt(i),
+			ToBlock:   big.NewInt(endBlock),
 			Addresses: []common.Address{
 				common.HexToAddress(config.GetConfig().Polygon.PaymentContractAddress),
 			},
@@ -108,6 +110,8 @@ func ScanPolygon() error {
 			logs.GetLogger().Error(err)
 			return err
 		}
+
+		i = endBlock + 1
 	}
 
 	return nil

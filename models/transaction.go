@@ -55,7 +55,7 @@ func GetTransactionBySourceFileUploadId(sourceFileUploadId int64) (*Transaction,
 	return nil, nil
 }
 
-func CreateTransaction4PayByWCid(wCid string, txHash string) error {
+func CreateTransaction4PayByWCid(wCid, txHash string, lockTime int64) error {
 	lockedPayment, err := client.GetLockedPaymentInfo(wCid)
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -158,7 +158,7 @@ func CreateTransaction4PayByWCid(wCid string, txHash string) error {
 	transaction.WalletIdContract = walletContract.ID
 	transaction.PayTxHash = txHash
 	transaction.PayAmount = lockedPayment.LockedFee.String()
-	transaction.PayAt = lockedPayment.Deadline - 6*24*60*60
+	transaction.PayAt = lockedPayment.Deadline - lockTime
 	transaction.Deadline = lockedPayment.Deadline
 	transaction.UpdateAt = currentUtcSecond
 

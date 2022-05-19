@@ -13,6 +13,7 @@ import (
 	"multi-chain-storage/on-chain/client"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/ethereum/go-ethereum"
@@ -143,8 +144,8 @@ func getPayment4Transaction(ethClient *ethclient.Client, inputDataHex string, tx
 	}
 
 	params := strings.Split(method.Params[0].Value, " ")
-	if len(params) <= 0 {
-		err = fmt.Errorf("params is empty")
+	if len(params) < 6 {
+		err = fmt.Errorf("not enough params")
 		return err
 	}
 
@@ -155,7 +156,14 @@ func getPayment4Transaction(ethClient *ethclient.Client, inputDataHex string, tx
 	}
 
 	wCid = wCid[1:]
-	err = models.CreateTransaction4PayByWCid(wCid, txHash.String())
+	lockTimeStr := params[3]
+	lockTime, err := strconv.ParseInt(lockTimeStr, 10, 32)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	err = models.CreateTransaction4PayByWCid(wCid, txHash.String(), lockTime)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err

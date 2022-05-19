@@ -6,7 +6,7 @@
           <div class="search_right">
             <el-input
               :placeholder="$t('uploadFile.search_title')"
-              prefix-icon="el-icon-search"
+              prefix-icon="el-icon-search" :disabled="loading && firstIndex === 0"
               v-model="searchValue" clearable
             >
             </el-input>
@@ -30,7 +30,7 @@
         >
           <el-table-column prop="file_name" min-width="120" sortable="custom">
             <template slot="header" slot-scope="scope">
-              <div class="tips">
+              <div class="tips" style="white-space: nowrap;">
                 {{$t('uploadFile.file_name')}}
                     
                 <el-tooltip effect="dark" :content="$t('uploadFile.file_name_tooltip')" placement="top">
@@ -51,7 +51,7 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="status" :label="$t('uploadFile.file_status')" width="140"
+          <el-table-column prop="status" :label="$t('uploadFile.file_status')" min-width="110"
             :filters="[{text: $t('uploadFile.filter_status_Pending'), value: 'Pending'}, {text: $t('uploadFile.filter_status_Processing'), value: 'Processing'}, 
                        {text: $t('uploadFile.filter_status_Refundable'), value: 'Refundable'}, {text: $t('uploadFile.filter_status_Refunded'), value: 'Refunded'},
                        {text: $t('uploadFile.filter_status_Unlocked'), value: 'Unlocked'}]"
@@ -86,7 +86,7 @@
               </el-button>
             </template>
           </el-table-column>
-          <el-table-column prop="pin_status" width="120">
+          <el-table-column prop="pin_status" min-width="100">
             <template slot="header" slot-scope="scope">
               <div class="tips">
                 {{$t('uploadFile.status')}}
@@ -294,7 +294,7 @@
               {{ scope.row.upload_at }}
             </template>
           </el-table-column>
-          <el-table-column prop="active" width="120" :label="$t('uploadFile.payment')">
+          <el-table-column prop="active" min-width="100" :label="$t('uploadFile.payment')">
             <template slot-scope="scope">
               <div class="hot-cold-box">
                 <el-button class="uploadBtn blue" type="primary"
@@ -323,7 +323,7 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="MINT" width="120" :label="$t('uploadFile.MINT')"
+          <el-table-column prop="MINT" min-width="100" :label="$t('uploadFile.MINT')"
             :filters="[{text: $t('uploadFile.filter_no_minted'), value: 'no'}, {text: $t('uploadFile.filter_minted'), value: 'yes'}]"
             :filter-multiple="false" :column-key="'minted'">
             <template slot-scope="scope">
@@ -522,7 +522,8 @@ export default {
       biling_price: 0,
       metamaskLoginTip: false,
       searchNowCurrent: '',
-      downVisible: false
+      downVisible: false,
+      firstIndex: 0
     };
   },
   computed: {
@@ -1074,16 +1075,19 @@ export default {
               });
               setTimeout(function(){
                 _this.loading = false
+                _this.firstIndex = 1
                 // resolve('')
               }, 2000)
             } else {
               _this.$message.error(response.data.message);
               _this.loading = false
+              _this.firstIndex = 1
               reject(response.data.message)
             }
         }).catch(error => {
             console.log(error)
             _this.loading = false;
+            _this.firstIndex = 1
             reject(error)
         })
       })
@@ -1513,6 +1517,12 @@ export default {
           .el-input__icon {
             line-height: 0.3rem;
           }
+          .el-input__clear{
+            display: flex;
+            align-items: center;
+            font-size: 0.3rem;
+            color: #666;
+          }
           ::-webkit-input-placeholder{
             color: #555;
           }    /* 使用webkit内核的浏览器 */
@@ -1525,6 +1535,9 @@ export default {
           :-ms-input-placeholder{
             color: #555;
           }           /* IE浏览器 */
+        }
+        .is-disabled{
+          opacity: 0.2;
         }
       }
     }
@@ -1553,9 +1566,10 @@ export default {
         border-radius: 0.14rem;
         line-height: 1.5;
         font-size: inherit;
+        white-space: nowrap;
         // color: inherit !important;
         span{
-          white-space: normal;
+          white-space: nowrap;
         }
       }
       .el-button--primary:hover{
@@ -1614,6 +1628,7 @@ export default {
               font-weight: 500;
               color: #555;
               text-transform: capitalize;
+              line-height: 1.3;
               .caret-wrapper{
                 // display: none;
                 width: 10px;
@@ -1846,7 +1861,9 @@ export default {
                 }
                 .uploadBtn{
                   width: auto;
-                  padding: 0.07rem 0.23rem;
+                  min-width: 0.75rem;
+                  box-sizing: content-box;
+                  padding: 0.07rem 0.1rem;
                   margin: auto;
                   color: #555555;
                   // box-shadow: 0 0 0.06rem rgba(191, 191, 191, 0.32);

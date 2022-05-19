@@ -64,10 +64,10 @@
     </div>
 </template>
 <script>
+const ethereum = window.ethereum;
 // import bus from './bus';
 import * as myAjax from "@/api/login";
 import axios from 'axios'
-import NCWeb3 from "@/utils/web3";
 export default {
     data() {
         return {
@@ -312,6 +312,22 @@ export default {
                 return false
             }
 
+            const ethereum = window.ethereum;
+            if (window.ethereum) {
+                web3 = new Web3(ethereum);
+                web3.setProvider(ethereum);
+            }
+            else if (window.web3) {
+                web3 = window.web3;
+                console.log("Injected web3 detected.");
+            }
+            else {
+                var currentProvider = web3.currentProvider;
+                // var Web3 = web3js.getWeb3();
+                web3 = new Web3(currentProvider);
+                web3.setProvider(currentProvider);
+                console.log("No web3 instance injected, using Local web3.");
+            }
             ethereum
             .request(
                 {

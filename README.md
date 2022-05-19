@@ -15,7 +15,7 @@
 - [After Installation](#After-Installation)
 - [Configuration](#Configuration)
 - [Work Process](#Work-Process)
-- [Database Table Introduction](#Database-Table-Introduction)
+- [Table Design](https://github.com/DoraNebula/multi-chain-storage/blob/main/script/create_table.sql)
 - [Pay for Filecoin by Polygon](https://www.youtube.com/watch?v=c4Dvidz3plU)
 - [License](https://github.com/filswan/multi-chain-storage/blob/main/LICENSE)
 
@@ -165,29 +165,4 @@ nohup ./build/multi-chain-storage >> ./build/mcs.log &    #After installation fr
 8. When DAO organization find the deal succeeds, and then they will sign to agree to unlock the user's payment.
 9. After more than half of the dao agree and after 1 minute later of the last DAO signature, MCS will unlock the user's payment, release the moeny spent on send deal to mcs payment receiver address, see [Swan Client](https://github.com/filswan/go-swan-client)
 10. After all deals of a car file are unlocked, MCS refund the remaining money to user wallet address used when pay in step 2.
-
-## Database Table Introduction
-- You can get db table ddl sql script in `[mcs-source-file-path]/script/dbschema.sql`
-- Two tables should be initialized before it can be used
-
-### system_config_param
-|column                 |description       |
-|param_key              |param_value       |
-|-----------------------|------------------|
-|SWAN_PAYMENT_CONTRACT_ADDRESS     |swan payment gateway contract address                     |
-|LOCK_TIME                         |time that user's token will be locked time                |
-|RECIPIENT                         |admin wallet address, used to receive tokens paid by users|
-|PAY_GAS_LIMIT                     |max gas limit                                             |
-|USDC_ADDRESS                      |usdc address                                              |
-
-### dao_info
-### system_config_param
-|column                 |description       |
-|-----------------------|------------------|
-|ID                     |primary key of table   |
-|DAO_NAME               |dao's name,required    |
-|DAO_ADDRESS            |dao's address,required |
-|ORDER_INDEX            |dao display order      |
-|DESCRIPTION            |description            |
-|CREATE_AT              |create time            |
 

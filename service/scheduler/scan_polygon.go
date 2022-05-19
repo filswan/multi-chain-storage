@@ -18,6 +18,7 @@ import (
 
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/filswan/go-swan-lib/logs"
 	decoder "github.com/mingjingc/abi-decoder"
@@ -100,7 +101,7 @@ func ScanPolygon() error {
 
 			inputDataHex := hex.EncodeToString(transaction.Data())
 			if strings.HasPrefix(inputDataHex, "f4d98717") {
-				err = getPayment4Transaction(ethClient, inputDataHex, transaction.Hash())
+				err = getPayment4Transaction(ethClient, inputDataHex, *transaction)
 				if err != nil {
 					logs.GetLogger().Error(err)
 					return err
@@ -121,8 +122,8 @@ func ScanPolygon() error {
 	return nil
 }
 
-func getPayment4Transaction(ethClient *ethclient.Client, inputDataHex string, txHash common.Hash) error {
-	txReceipt, err := client.CheckTx(ethClient, txHash)
+func getPayment4Transaction(ethClient *ethclient.Client, inputDataHex string, transaction types.Transaction) error {
+	txReceipt, err := client.CheckTx(ethClient, transaction.Hash())
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
@@ -163,7 +164,7 @@ func getPayment4Transaction(ethClient *ethclient.Client, inputDataHex string, tx
 		return err
 	}
 
-	err = models.CreateTransaction4PayByWCid(wCid, txHash.String(), lockTime)
+	err = models.CreateTransaction4PayByWCid(wCid, transaction.Hash().String(), lockTime)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err

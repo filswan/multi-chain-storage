@@ -66,7 +66,7 @@ func ScanPolygon() error {
 		return err
 	}
 	endBlockNumber := int64(endBlockNumberUint64)
-	scanBlockStep := config.GetConfig().Polygon.ScanPolygonBlockStep
+	scanBlockStep := int64(config.GetConfig().Polygon.ScanPolygonBlockStep)
 	for i := startBlockNumber; i <= endBlockNumber; {
 		toBlockNumber := i + scanBlockStep - 1
 		if toBlockNumber > endBlockNumber {
@@ -107,7 +107,7 @@ func ScanPolygon() error {
 			}
 		}
 
-		network.LastScanBlockNumber = &i
+		network.LastScanBlockNumber = &toBlockNumber
 		err = database.GetDB().Save(network).Error
 		if err != nil {
 			logs.GetLogger().Error(err)

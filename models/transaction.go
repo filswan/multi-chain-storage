@@ -120,26 +120,14 @@ func CreateTransaction4PayByWCid(wCid, txHash string, lockTime int64) error {
 		return err
 	}
 
-	token, err := GetTokenByName(constants.TOKEN_USDC_NAME)
+	token, err := GetTokenByAddress(lockedPayment.TokenAddress)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
 	}
 
 	if token == nil {
-		err := fmt.Errorf("token:%s not exists", constants.TOKEN_USDC_NAME)
-		logs.GetLogger().Error(err)
-		return err
-	}
-
-	network, err := GetNetworkByName(constants.NETWORK_NAME_POLYGON)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
-
-	if network == nil {
-		err := fmt.Errorf("network:%s not exists", constants.NETWORK_NAME_POLYGON)
+		err := fmt.Errorf("token address:%s not exists", lockedPayment.TokenAddress)
 		logs.GetLogger().Error(err)
 		return err
 	}
@@ -151,7 +139,7 @@ func CreateTransaction4PayByWCid(wCid, txHash string, lockTime int64) error {
 		transaction.CreateAt = currentUtcSecond
 	}
 	transaction.SourceFileUploadId = sourceFileUpload.Id
-	transaction.NetworkId = network.ID
+	transaction.NetworkId = token.NetworkId
 	transaction.TokenId = token.ID
 	transaction.WalletIdPay = walletPay.ID
 	transaction.WalletIdRecipient = walletRecipient.ID

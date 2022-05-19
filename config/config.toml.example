@@ -59,4 +59,5 @@ lock_time = 6
 pay_multiply_factor = 1.5
 unlock_interval_minute = 1
 dao_unlock_interval_block = 5 
+scan_polygon_block_step = 1000
 

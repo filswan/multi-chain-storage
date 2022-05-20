@@ -15,6 +15,7 @@ import (
 func Dao(router *gin.RouterGroup) {
 	router.GET("/signature/deals_to_sign/:signer_wallet_address", GetDeals2Sign)
 	router.POST("/signature", WriteDaoSignature)
+	router.POST("/register", RegisterDao)
 }
 
 func GetDeals2Sign(c *gin.Context) {
@@ -74,6 +75,36 @@ func WriteDaoSignature(c *gin.Context) {
 	}
 
 	err = service.WriteDaoSignature(daoSignature.TxHash, daoSignature.RecipientWalletAddress, daoSignature.DealId)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.ERROR_INTERNAL, err.Error()))
+		return
+	}
+
+	c.JSON(http.StatusOK, common.CreateSuccessResponse(nil))
+}
+
+type DaoInfo struct {
+	WalletAddress string `json:"wallet_address"`
+}
+
+func RegisterDao(c *gin.Context) {
+	var daoInfo DaoInfo
+	err := c.BindJSON(&daoInfo)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		c.AbortWithStatusJSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_PARSE_TO_STRUCT))
+		return
+	}
+
+	if daoInfo.WalletAddress == "" || !strings.HasPrefix(daoInfo.WalletAddress, "0x") {
+		err := fmt.Errorf("wallet_address is invalid")
+		logs.GetLogger().Error(err)
+		c.AbortWithStatusJSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_INVALID_VALUE))
+		return
+	}
+
+	err = service.RegisterDao(daoInfo.WalletAddress)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.ERROR_INTERNAL, err.Error()))

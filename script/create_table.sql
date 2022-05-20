@@ -34,10 +34,13 @@ create table wallet (
     id            bigint       not null auto_increment,
     type          int          not null, #--0:metamask, 1:filecoin
     address       varchar(100) not null,
+    is_dao        boolean,
     create_at     bigint       not null,
     primary key pk_wallet(id),
     constraint un_wallet_address_type unique(address,type)
 );
+
+create index ind_wallet_is_dao on wallet(is_dao);
 
 create table miner (
     id            bigint       not null auto_increment,
@@ -205,3 +208,6 @@ create table dao_signature (
 
 #--alter table network add last_scan_block_number bigint;
 #--update network set last_scan_block_number=26354230 where name='polygon';
+
+#--alter table wallet add is_dao        boolean;
+#--create index ind_wallet_is_dao on wallet(is_dao);

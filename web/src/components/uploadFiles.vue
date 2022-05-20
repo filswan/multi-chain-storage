@@ -481,16 +481,16 @@
                 })
                 .on('receipt', function(receipt){
                     // receipt example
-                    // console.log('receipt console:', receipt);
+                    console.log('receipt console:', receipt);
                     _this.checkTransaction(receipt.transactionHash, resData, lockObj)
                     _this.txHash = receipt.transactionHash
                 })
                 .on('error', function(error){
-                    // console.log('error console:', error)
+                    console.log('lockTokenPayment error console:', error)
                     // console.error
                     _this.loading = false
                     _this.loadMetamaskPay = false
-                    _this.failTransaction = true
+                    if(!_this.finishTransaction) _this.failTransaction = true
                 }); 
             },
             checkTransaction(txHash, resData, lockObj) {
@@ -500,8 +500,6 @@
                         console.log('checking ... ');
                         if (!res) { return _this.timer = setTimeout(() => { _this.checkTransaction(txHash, resData, lockObj); }, 2000); }
                         else {
-                            const lockPaymentTime = await new Date().getTime();
-                            _this.sendPayment(txHash, resData, lockObj, lockPaymentTime)
                             setTimeout(function(){
                                 _this.loading = false
                                 _this.loadMetamaskPay = false
@@ -512,18 +510,6 @@
                     },
                     err => { console.error(err); }
                 );
-            },
-            sendPayment(txHash, resData, lockObj, lockPaymentTime) {
-                let lockParam = {
-                    "tx_hash": txHash,
-                    "source_file_upload_id":resData.source_file_upload_id
-                }
-
-                axios.post(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/billing/deal/lockpayment`, lockParam)
-                .then((res) => {
-                }).catch(error => {
-                    console.log(error)
-                })
             },
             finishClose(){
                 this.finishTransaction = false
@@ -536,10 +522,10 @@
                 this.ruleForm.file_size = this.sizeChange(this._file.size)
                 this.ruleForm.file_size_byte = this.byteChange(this._file.size)
                 console.log('bytes', this._file.size)
-                if (!isLt2M || this._file.size < 1048576) {
+                if (!isLt2M) {
                     // this.$message.error(this.$t('deal.upload_form_file_tip'))
                     this.ruleForm.fileList_tip = true
-                    this.ruleForm.fileList_tip_text = this._file.size < 1048576 ? this.$t('deal.upload_form_file_tip01'):this.$t('deal.upload_form_file_tip')
+                    this.ruleForm.fileList_tip_text = this.$t('deal.upload_form_file_tip')
                     return false
                 }else{
                     this.ruleForm.fileList_tip = false

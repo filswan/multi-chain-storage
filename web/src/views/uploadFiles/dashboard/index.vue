@@ -638,9 +638,9 @@ export default {
               _this.txHash = receipt.transactionHash
           })
           .on('error', function(error){
-              // console.log('error console:', error)
+              console.log('refund error console:', error)
               _this.loading = false
-              _this.failTransaction = true
+              if(!_this.finishTransaction) _this.failTransaction = true
           }); 
         }catch (err){
           console.log(err)
@@ -748,11 +748,11 @@ export default {
             _this.txHash = receipt.transactionHash
         })
         .on('error', function(error){
-            // console.log('error console:', error)
+            console.log('lockTokenPayment error console:', error)
             // console.error
             _this.loading = false
             _this.loadMetamaskPay = false
-            _this.failTransaction = true
+            if(!_this.finishTransaction) _this.failTransaction = true
         }); 
     },
     checkTransaction(txHash, cid, resData, lockObj) {
@@ -762,19 +762,12 @@ export default {
                 console.log('checking ... ');
                 if (!res) { return _this.timer = setTimeout(() => { _this.checkTransaction(txHash, cid, resData, lockObj); }, 2000); }
                 else {
-                    if(resData){
-                      const lockPaymentTime = await new Date().getTime();
-                      const lockParam = {
-                          "tx_hash": txHash,
-                          "source_file_upload_id":resData.source_file_upload_id
-                      }
-                      _this.sendPostRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/billing/deal/lockpayment`, lockParam)
-                    }else{
+                    if(!resData){
                       const lockParam = {
                         "source_file_upload_id": _this.refundPow.source_file_upload_id,
                         "refund_tx_hash": txHash
                       }
-                      _this.sendPostRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/storage/deal/expire`, lockParam)
+                      _this.sendPostRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/billing/deal/expire`, lockParam)
                     }
                     clearTimeout(_this.timer)
                     setTimeout(function(){

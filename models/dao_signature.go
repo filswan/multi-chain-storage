@@ -20,10 +20,10 @@ type DaoSignature struct {
 }
 
 type DaoSignatureOut struct {
-	WalletSigner string `json:"wallet_signer"`
-	TxHash       string `json:"tx_hash"`
-	Status       string `json:"status"`
-	CreateAt     int64  `json:"create_at"`
+	WalletSigner string  `json:"wallet_signer"`
+	TxHash       *string `json:"tx_hash"`
+	Status       *string `json:"status"`
+	CreateAt     *int64  `json:"create_at"`
 }
 
 func GetDaoSignaturesByDealId(dealId int64) ([]*DaoSignatureOut, error) {

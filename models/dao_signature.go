@@ -27,10 +27,13 @@ type DaoSignatureOut struct {
 }
 
 func GetDaoSignaturesByDealId(dealId int64) ([]*DaoSignatureOut, error) {
-	sql := "select c.address wallet_signer,a.tx_hash,a.status,a.create_at from dao_signature a\n" +
-		"left join offline_deal b on a.offline_deal_id=b.id\n" +
-		"left join wallet c on a.wallet_id_signer=c.id\n" +
-		"where b.deal_id=?"
+	sql := "select a.address wallet_signer,b.tx_hash,b.status,b.create_at from wallet a\n" +
+		"left outer join (\n" +
+		"  select b.wallet_id_signer,b.tx_hash,b.status,b.create_at from offline_deal a,dao_signature b\n" +
+		"  where a.deal_id=? and a.id=b.offline_deal_id\n" +
+		") b on a.id=b.wallet_id_signer\n" +
+		"where a.is_dao=true"
+
 	var daoSignatures []*DaoSignatureOut
 	err := database.GetDB().Raw(sql, dealId).Scan(&daoSignatures).Error
 

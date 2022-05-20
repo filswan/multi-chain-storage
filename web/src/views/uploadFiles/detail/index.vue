@@ -156,7 +156,7 @@
                         <el-table-column prop="create_at" :label="$t('uploadFile.detail_Time')"></el-table-column>
                         <el-table-column prop="status" :label="$t('uploadFile.file_status')">
                             <template slot-scope="scope">
-                                <img src="@/assets/images/dao_success.png" v-if="scope.row.status == 1" />
+                                <img src="@/assets/images/dao_success.png" v-if="scope.row.status&&scope.row.status.toLowerCase() == 'success'" />
                                 <img src="@/assets/images/dao_waiting.png" v-else />
                             </template>
                         </el-table-column>
@@ -716,7 +716,7 @@ export default {
     .upload{
         padding: 0.1rem 0.3rem 0.2rem;
         background-color: #fff;
-        border-radius: 5px;
+        border-radius: 0.1rem;
         overflow: hidden;
         border-top: 3px solid #0b318f;
         .el-row /deep/{

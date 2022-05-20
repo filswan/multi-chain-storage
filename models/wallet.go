@@ -12,7 +12,9 @@ type Wallet struct {
 	ID       int64  `json:"id"`
 	Type     int    `json:"type"`
 	Address  string `json:"address"`
+	IsDao    *bool  `json:"is_dao"`
 	CreateAt int64  `json:"create_at"`
+	UpdateAt int64  `json:"update_at"`
 }
 
 func GetWalletByAddress(address string, walletType int) (*Wallet, error) {
@@ -37,10 +39,12 @@ func GetWalletByAddress(address string, walletType int) (*Wallet, error) {
 }
 
 func SaveWallet(address string, walletType int) (*Wallet, error) {
+	currentUtcSecond := libutils.GetCurrentUtcSecond()
 	wallet := Wallet{
 		Type:     walletType,
 		Address:  address,
-		CreateAt: libutils.GetCurrentUtcSecond(),
+		CreateAt: currentUtcSecond,
+		UpdateAt: currentUtcSecond,
 	}
 
 	walletResult := database.GetDB().Create(&wallet)
@@ -53,4 +57,19 @@ func SaveWallet(address string, walletType int) (*Wallet, error) {
 	walletCreated := walletResult.Value.(*Wallet)
 
 	return walletCreated, nil
+}
+
+func SetWalletAsDao(walletId int64) error {
+	currentUtcSecond := libutils.GetCurrentUtcSecond()
+	fields2BeUpdated := make(map[string]interface{})
+	fields2BeUpdated["is_dao"] = true
+	fields2BeUpdated["update_at"] = currentUtcSecond
+
+	err := database.GetDB().Model(Wallet{}).Where("id=?", walletId).Update(fields2BeUpdated).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	return nil
 }

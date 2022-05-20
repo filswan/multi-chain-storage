@@ -36,6 +36,7 @@ create table wallet (
     address       varchar(100) not null,
     is_dao        boolean,
     create_at     bigint       not null,
+    update_at     bigint       not null,
     primary key pk_wallet(id),
     constraint un_wallet_address_type unique(address,type)
 );
@@ -211,3 +212,5 @@ create table dao_signature (
 
 #--alter table wallet add is_dao        boolean;
 #--create index ind_wallet_is_dao on wallet(is_dao);
+#--alter table wallet add update_at     bigint       not null;
+

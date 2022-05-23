@@ -54,7 +54,7 @@
           <el-table-column prop="status" :label="$t('uploadFile.file_status')" min-width="110"
             :filters="[{text: $t('uploadFile.filter_status_Pending'), value: 'Pending'}, {text: $t('uploadFile.filter_status_Processing'), value: 'Processing'}, 
                        {text: $t('uploadFile.filter_status_Refundable'), value: 'Refundable'}, {text: $t('uploadFile.filter_status_Refunded'), value: 'Refunded'},
-                       {text: $t('uploadFile.filter_status_Unlocked'), value: 'Unlocked'}]"
+                       {text: $t('uploadFile.filter_status_Success'), value: 'Unlocked'}]"
             :filter-multiple="false" :column-key="'payment'">
             <template slot-scope="scope">
               <el-button type="danger" class="statusStyle" v-if="scope.row.status&&scope.row.status.toLowerCase()=='failed'">

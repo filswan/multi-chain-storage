@@ -210,11 +210,12 @@ create table dao_signature (
 #--alter table network add last_scan_block_number bigint;
 #--update network set last_scan_block_number=26354230 where name='polygon';
 
+#--2022-05-20
 #--alter table wallet add is_dao        boolean;
 #--create index ind_wallet_is_dao on wallet(is_dao);
 #--alter table wallet add update_at     bigint       not null;
 
-
+#--2022-05-24
 #--SET SQL_SAFE_UPDATES=0;
 #--update source_file_upload set status='Success' where status='Unlocked';
 #--update car_file set status='Success' where status='Unlocked';

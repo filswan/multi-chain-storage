@@ -72,7 +72,6 @@ func ScanPolygon() error {
 	scanBlockStep := int64(config.GetConfig().Polygon.ScanPolygonBlockStep)
 	paymentContractAddress := common.HexToAddress(config.GetConfig().Polygon.PaymentContractAddress)
 
-	startBlockNumber = 26437527
 	for i := startBlockNumber; i <= endBlockNumber; {
 		toBlockNumber := i + scanBlockStep - 1
 		if toBlockNumber > endBlockNumber {

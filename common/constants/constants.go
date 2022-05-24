@@ -12,7 +12,7 @@ const (
 	CAR_FILE_STATUS_DEAL_SENT         = "DealSent"
 	CAR_FILE_STATUS_DEAL_SENT_FAILED  = "DealSentFailed"
 	CAR_FILE_STATUS_DEAL_SEND_EXPIRED = "DealSentExpired"
-	CAR_FILE_STATUS_UNLOCKED          = "Unlocked"
+	CAR_FILE_STATUS_SUCCESS           = "Success"
 
 	SOURCE_FILE_UPLOAD_STATUS_PENDING      = "Pending"
 	SOURCE_FILE_UPLOAD_STATUS_PROCESSING   = "Processing"

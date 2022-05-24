@@ -110,6 +110,14 @@ func WriteDaoSignature(txHash string, recipientWalletAddress string, dealId int6
 		return err
 	}
 
+	if walletSigner.IsDao == nil || !*walletSigner.IsDao {
+		err = models.SetWalletAsDao(walletSigner.ID)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return err
+		}
+	}
+
 	walletContract, err := models.GetWalletByAddress(daoContractAddress, constants.WALLET_TYPE_META_MASK)
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -170,6 +178,24 @@ func WriteDaoSignature(txHash string, recipientWalletAddress string, dealId int6
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
+	}
+
+	return nil
+}
+
+func RegisterDao(daoWalletAddress string) error {
+	daoWallet, err := models.GetWalletByAddress(daoWalletAddress, constants.WALLET_TYPE_META_MASK)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	if daoWallet.IsDao == nil || !*daoWallet.IsDao {
+		err = models.SetWalletAsDao(daoWallet.ID)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return err
+		}
 	}
 
 	return nil

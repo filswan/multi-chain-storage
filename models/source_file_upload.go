@@ -218,7 +218,7 @@ func GetSourceFileUploads(walletId int64, status, fileName, orderBy, is_minted s
 		"left outer join source_file_mint e on a.id=e.source_file_upload_id\n" +
 		"where a.wallet_id=? and a.file_type=0"
 
-	if !libutils.IsStrEmpty(&fileName) {
+	if fileName != "" {
 		sql = sql + " and a.file_name like '%" + fileName + "%'\n"
 	}
 

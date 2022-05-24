@@ -108,12 +108,11 @@ func ScanPolygon() error {
 					return err
 				}
 			} else if strings.HasPrefix(inputDataHex, "7d29985b") {
-				/*
-					err = getRefund4Transaction(ethClient, inputDataHex, *transaction)
-					if err != nil {
-						logs.GetLogger().Error(err)
-						return err
-					}*/
+				err = getRefund4Transaction(ethClient, inputDataHex, *transaction)
+				if err != nil {
+					logs.GetLogger().Error(err)
+					return err
+				}
 				logs.GetLogger().Info("refund")
 			}
 		}
@@ -204,30 +203,16 @@ func getRefund4Transaction(ethClient *ethclient.Client, inputDataHex string, tra
 		return err
 	}
 
-	params := strings.Split(method.Params[0].Value, " ")
-	if len(params) < 6 {
-		err = fmt.Errorf("not enough params")
-		return err
+	wCidsStr := strings.TrimRight(strings.TrimLeft(method.Params[0].Value, "["), "]")
+	wCids := strings.Split(wCidsStr, " ")
+
+	for _, wCid := range wCids {
+		err = models.UpdateTransactionRefundAfterExpired(wCid, transaction.Hash().String())
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return err
+		}
 	}
 
-	wCid := params[0]
-	if len(wCid) <= 1 {
-		err = fmt.Errorf("wCid is empty")
-		return err
-	}
-
-	wCid = wCid[1:]
-	lockTimeStr := params[3]
-	lockTime, err := strconv.ParseInt(lockTimeStr, 10, 32)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
-
-	err = models.CreateTransaction4PayByWCid(wCid, transaction.Hash().String(), lockTime)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
 	return nil
 }

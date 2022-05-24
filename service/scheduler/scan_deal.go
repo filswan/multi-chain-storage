@@ -140,14 +140,14 @@ func UpdateSourceFile2Refundable() error {
 func setSourceFiles2Refundable(sourceFileUploads []*models.SourceFileUploadOut) {
 	for _, sourceFileUpload := range sourceFileUploads {
 		wCid := sourceFileUpload.Uuid + sourceFileUpload.PayloadCid
-		isLockedPaymentExists, err := client.IsLockedPaymentExists(wCid)
+		lockedPayment, err := client.GetLockedPaymentInfo(wCid)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			continue
 		}
 
 		sourceFileUploadStatus := constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDED
-		if *isLockedPaymentExists {
+		if lockedPayment != nil {
 			sourceFileUploadStatus = constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDABLE
 		} else {
 			logs.GetLogger().Info("payment not exists for ", wCid, ", source file upload id:", sourceFileUpload.Id)

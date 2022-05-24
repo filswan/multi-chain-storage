@@ -258,23 +258,62 @@ func UpdateTransactionRefundAfterUnlock(sourceFileUploadId int64, refundTxHash s
 	return nil
 }
 
-func UpdateTransactionRefundAfterExpired(sourceFileUploadId int64, refundTxHash string, refundAmount decimal.Decimal) error {
-	transaction, err := GetTransactionBySourceFileUploadId(sourceFileUploadId)
+func UpdateTransactionRefundAfterExpired(wCid, refundTxHash string) error {
+	lockedPayment, err := client.GetLockedPaymentInfo(wCid)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
 	}
 
-	if transaction != nil {
-		err := fmt.Errorf("transaction not exists for source file upload:%d", sourceFileUploadId)
+	if lockedPayment != nil {
+		msg := fmt.Sprintf("payment still exists for w_cid:%s ,tx hash:%s", wCid, refundTxHash)
+		logs.GetLogger().Info(msg)
+		return nil
+	}
+
+	sourceFilePayloadCidIndex := strings.Index(wCid, "Qm")
+	sourceFileUploadUuid := wCid[0:sourceFilePayloadCidIndex]
+	sourceFilePayloadCid := wCid[sourceFilePayloadCidIndex:]
+
+	sourceFile, err := GetSourceFileByPayloadCid(sourceFilePayloadCid)
+	if err != nil {
 		logs.GetLogger().Error(err)
+		return err
+	}
+
+	if sourceFile == nil {
+		msg := fmt.Sprintf("source file not exists for source file payload cid:%s", sourceFilePayloadCid)
+		logs.GetLogger().Info(msg)
+		return nil
+	}
+
+	sourceFileUpload, err := GetSourceFileUploadBySourceFileIdUuid(sourceFile.ID, sourceFileUploadUuid)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	if sourceFileUpload == nil {
+		msg := fmt.Sprintf("source file upload not exists for source file id:%d, uuid:%s", sourceFile.ID, sourceFileUploadUuid)
+		logs.GetLogger().Info(msg)
+		return nil
+	}
+
+	transaction, err := GetTransactionBySourceFileUploadId(sourceFileUpload.Id)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	if transaction == nil {
+		msg := fmt.Sprintf("transaction not exists for source file upload:%d", sourceFileUpload.Id)
+		logs.GetLogger().Info(msg)
 		return nil
 	}
 
 	currentUtcSecond := libutils.GetCurrentUtcSecond()
 	fields2BeUpdated := make(map[string]interface{})
 	fields2BeUpdated["refund_after_expired_tx_hash"] = refundTxHash
-	fields2BeUpdated["refund_after_expired_amount"] = refundAmount.String()
 	fields2BeUpdated["refund_after_expired_at"] = currentUtcSecond
 	fields2BeUpdated["update_at"] = currentUtcSecond
 
@@ -284,7 +323,7 @@ func UpdateTransactionRefundAfterExpired(sourceFileUploadId int64, refundTxHash 
 		return err
 	}
 
-	err = UpdateSourceFileUploadStatus(sourceFileUploadId, constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDED)
+	err = UpdateSourceFileUploadStatus(sourceFileUpload.Id, constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDED)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err

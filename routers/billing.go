@@ -12,7 +12,6 @@ import (
 	"strings"
 
 	"github.com/filswan/go-swan-lib/logs"
-	"github.com/shopspring/decimal"
 
 	"github.com/gin-gonic/gin"
 )
@@ -21,7 +20,6 @@ func BillingManager(router *gin.RouterGroup) {
 	router.GET("", GetUserBillingHistory)
 	router.GET("/deal/lockpayment/info", GetLockPaymentInfo)
 	router.GET("/price/filecoin", GetFileCoinLastestPrice)
-	router.POST("/deal/expire", WriteRefundAfterExpired)
 }
 
 func GetUserBillingHistory(c *gin.Context) {
@@ -124,37 +122,4 @@ func GetFileCoinLastestPrice(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, common.CreateSuccessResponse(*latestPrice))
-}
-
-type RefundAfterExpired struct {
-	SourceFileUploadId int64           `json:"source_file_upload_id"`
-	RefundTxHash       string          `json:"refund_tx_hash"`
-	RefundAmount       decimal.Decimal `json:"refund_amount"`
-}
-
-func WriteRefundAfterExpired(c *gin.Context) {
-	logs.GetLogger().Info("ip:", c.ClientIP(), ",port:", c.Request.URL.Port())
-	var refundAfterExpired RefundAfterExpired
-	err := c.BindJSON(&refundAfterExpired)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		c.JSON(http.StatusOK, common.CreateErrorResponse(errorinfo.ERROR_PARAM_PARSE_TO_STRUCT, err.Error()))
-		return
-	}
-
-	if !strings.HasPrefix(refundAfterExpired.RefundTxHash, "0x") {
-		err := fmt.Errorf("refund_tx_hash must start with 0x")
-		logs.GetLogger().Error(err)
-		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_INVALID_VALUE, err.Error()))
-		return
-	}
-
-	err = service.WriteRefundAfterExpired(refundAfterExpired.SourceFileUploadId, refundAfterExpired.RefundTxHash, refundAfterExpired.RefundAmount)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_INTERNAL, err.Error()))
-		return
-	}
-
-	c.JSON(http.StatusOK, common.CreateSuccessResponse(nil))
 }

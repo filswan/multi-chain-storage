@@ -214,3 +214,9 @@ create table dao_signature (
 #--create index ind_wallet_is_dao on wallet(is_dao);
 #--alter table wallet add update_at     bigint       not null;
 
+
+#--SET SQL_SAFE_UPDATES=0;
+#--update source_file_upload set status='Success' where status='Unlocked';
+#--update car_file set status='Success' where status='Unlocked';
+#--SET SQL_SAFE_UPDATES=1;
+

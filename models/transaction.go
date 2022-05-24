@@ -249,7 +249,7 @@ func UpdateTransactionRefundAfterUnlock(sourceFileUploadId int64, refundTxHash s
 		return err
 	}
 
-	err = UpdateSourceFileUploadStatus(sourceFileUploadId, constants.SOURCE_FILE_UPLOAD_STATUS_UNLOCKED)
+	err = UpdateSourceFileUploadStatus(sourceFileUploadId, constants.SOURCE_FILE_UPLOAD_STATUS_SUCCESS)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err

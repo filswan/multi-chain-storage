@@ -67,7 +67,7 @@ func GetSourceFileUploadsExpired() ([]*SourceFileUploadOut, error) {
 
 	currentUtcSecond := libutils.GetCurrentUtcSecond()
 	var models []*SourceFileUploadOut
-	err := database.GetDB().Raw(sql, constants.SOURCE_FILE_TYPE_NORMAL, currentUtcSecond, constants.SOURCE_FILE_UPLOAD_STATUS_UNLOCKED).Scan(&models).Error
+	err := database.GetDB().Raw(sql, constants.SOURCE_FILE_TYPE_NORMAL, currentUtcSecond, constants.SOURCE_FILE_UPLOAD_STATUS_SUCCESS).Scan(&models).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
@@ -231,7 +231,7 @@ func GetSourceFileUploads(walletId int64, status, fileName, orderBy, is_minted s
 		case constants.SOURCE_FILE_UPLOAD_STATUS_PENDING,
 			constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDABLE,
 			constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDED,
-			constants.SOURCE_FILE_UPLOAD_STATUS_UNLOCKED:
+			constants.SOURCE_FILE_UPLOAD_STATUS_SUCCESS:
 			sql = sql + " and a.status=?"
 			params = append(params, status)
 		case constants.SOURCE_FILE_UPLOAD_STATUS_PROCESSING:
@@ -239,7 +239,7 @@ func GetSourceFileUploads(walletId int64, status, fileName, orderBy, is_minted s
 			params = append(params, constants.SOURCE_FILE_UPLOAD_STATUS_PENDING)
 			params = append(params, constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDABLE)
 			params = append(params, constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDED)
-			params = append(params, constants.SOURCE_FILE_UPLOAD_STATUS_UNLOCKED)
+			params = append(params, constants.SOURCE_FILE_UPLOAD_STATUS_SUCCESS)
 		default:
 			logs.GetLogger().Info("input status:", status, ", get records with all kinds of statuses")
 		}

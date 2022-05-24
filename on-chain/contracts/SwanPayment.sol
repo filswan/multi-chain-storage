@@ -105,6 +105,8 @@ contract SwanPayment is IPaymentMinimal, Initializable {
         address owner
     );
 
+    event Refund(string cid, address owner, uint256 amount);
+
     /// @notice Deposits the amount of token for specific transaction
     /// @param param The transaction information for which to deposit balance
     /// @return Returns true for a successful deposit, false for an unsuccessful deposit
@@ -114,9 +116,10 @@ contract SwanPayment is IPaymentMinimal, Initializable {
         returns (bool)
     {
         require(
-            !txMap[param.id]._isExisted,
+            !txMap[param.id]._isExisted && !txCarMap[param.id]._isExisted,
             "Payment of transaction is already locked"
         );
+       
         require(
             param.minPayment > 0 && param.amount > param.minPayment,
             "payment should greater than min payment"
@@ -253,6 +256,7 @@ contract SwanPayment is IPaymentMinimal, Initializable {
                 if (t.lockedFee < 0) {
                     t.lockedFee = 0;
                 }
+                t._isExisted = (t.lockedFee > 0);
             }
 
             IERC20(_ERC20_TOKEN).transfer(recipient, tokenAmount);
@@ -262,13 +266,13 @@ contract SwanPayment is IPaymentMinimal, Initializable {
     }
 
     function refund(string[] memory cidList) public {
-        // todo add access control later
         for (uint8 i = 0; i < cidList.length; i++) {
             TxInfo storage t = txCarMap[cidList[i]];
             if (t._isExisted) {
                 t._isExisted = false;
                 if (t.lockedFee > 0) {
                     IERC20(_ERC20_TOKEN).transfer(t.owner, t.lockedFee);
+                    emit Refund(cidList[i], t.owner, t.lockedFee);
                 }
             }
         }

@@ -17,11 +17,15 @@ async function main() {
   const contract = await hre.ethers.getContractFactory("FilswanOracle");
   const daoOracleInstance = await contract.attach(oracleDAOContractAddress);
 
-  const result = await daoOracleInstance.getCarPaymentVotes('103154', 'filecoin_calibration', '0xc4fcaAdCb0b00a9501e56215c37B10fAF9e79c0a');
+  const result = await daoOracleInstance.getCarPaymentVotes('169017', 'filecoin_calibration', '0xc4fcaAdCb0b00a9501e56215c37B10fAF9e79c0a');
   console.log(result);
 
-  const result1 = await daoOracleInstance.getCidList('103154', 'filecoin_calibration');
+  const result1 = await daoOracleInstance.getCidList('169017', 'filecoin_calibration');
   console.log(result1);
+
+  
+  const result2 = await daoOracleInstance.isCarPaymentAvailable('169017', 'filecoin_calibration', '0xc4fcaAdCb0b00a9501e56215c37B10fAF9e79c0a');
+  console.log(result2);
 
   // const hasRole = await daoOracleInstance.connect(signer).hasRole(
   //   role,

@@ -250,7 +250,7 @@ func createTask4SrcFiles(srcDir, carDir string, maxPrice decimal.Decimal) (*libm
 func saveCarInfo2DB(fileDesc *libmodel.FileDesc, srcFiles []*models.SourceFileUploadNeed2Car, maxPrice decimal.Decimal) error {
 	db := database.GetDBTransaction()
 	currentUtcSecond := libutils.GetCurrentUtcSecond()
-	dealFile := models.CarFile{
+	carFile := models.CarFile{
 		CarFileName: fileDesc.CarFileName,
 		CarFilePath: fileDesc.CarFilePath,
 		CarFileSize: fileDesc.CarFileSize,
@@ -264,7 +264,7 @@ func saveCarInfo2DB(fileDesc *libmodel.FileDesc, srcFiles []*models.SourceFileUp
 		TaskUuid:    fileDesc.Uuid,
 	}
 
-	err := database.SaveOneInTransaction(db, &dealFile)
+	err := database.SaveOneInTransaction(db, &carFile)
 	if err != nil {
 		db.Rollback()
 		logs.GetLogger().Error(err)
@@ -272,12 +272,12 @@ func saveCarInfo2DB(fileDesc *libmodel.FileDesc, srcFiles []*models.SourceFileUp
 	}
 
 	for _, srcFile := range srcFiles {
-		filepMap := models.CarFileSource{
-			CarFileId:          dealFile.ID,
+		carFileSource := models.CarFileSource{
+			CarFileId:          carFile.ID,
 			SourceFileUploadId: srcFile.SourceFileUploadId,
 			CreateAt:           currentUtcSecond,
 		}
-		err = database.SaveOneInTransaction(db, &filepMap)
+		err = database.SaveOneInTransaction(db, &carFileSource)
 		if err != nil {
 			db.Rollback()
 			logs.GetLogger().Error(err)

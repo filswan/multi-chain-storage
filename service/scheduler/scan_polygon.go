@@ -3,6 +3,7 @@ package scheduler
 import (
 	"context"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"math/big"
@@ -108,12 +109,11 @@ func ScanPolygon() error {
 					return err
 				}
 			} else if strings.HasPrefix(inputDataHex, "7d29985b") {
-				/*
-					err = getRefund4Transaction(ethClient, inputDataHex, *transaction)
-					if err != nil {
-						logs.GetLogger().Error(err)
-						return err
-					}*/
+				err = getRefund4Transaction(ethClient, inputDataHex, *transaction)
+				if err != nil {
+					logs.GetLogger().Error(err)
+					return err
+				}
 				logs.GetLogger().Info("refund")
 			}
 		}
@@ -204,30 +204,16 @@ func getRefund4Transaction(ethClient *ethclient.Client, inputDataHex string, tra
 		return err
 	}
 
-	params := strings.Split(method.Params[0].Value, " ")
-	if len(params) < 6 {
-		err = fmt.Errorf("not enough params")
-		return err
-	}
-
-	wCid := params[0]
-	if len(wCid) <= 1 {
-		err = fmt.Errorf("wCid is empty")
-		return err
-	}
-
-	wCid = wCid[1:]
-	lockTimeStr := params[3]
-	lockTime, err := strconv.ParseInt(lockTimeStr, 10, 32)
+	var wCids []string
+	err = json.Unmarshal([]byte(method.Params[0].Value), &wCids)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
 	}
 
-	err = models.CreateTransaction4PayByWCid(wCid, transaction.Hash().String(), lockTime)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
+	for _, wCid := range wCids {
+		logs.GetLogger().Info(wCid)
 	}
+
 	return nil
 }

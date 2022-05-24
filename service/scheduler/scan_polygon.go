@@ -3,7 +3,6 @@ package scheduler
 import (
 	"context"
 	"encoding/hex"
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"math/big"
@@ -73,6 +72,7 @@ func ScanPolygon() error {
 	scanBlockStep := int64(config.GetConfig().Polygon.ScanPolygonBlockStep)
 	paymentContractAddress := common.HexToAddress(config.GetConfig().Polygon.PaymentContractAddress)
 
+	startBlockNumber = 26437527
 	for i := startBlockNumber; i <= endBlockNumber; {
 		toBlockNumber := i + scanBlockStep - 1
 		if toBlockNumber > endBlockNumber {
@@ -204,15 +204,15 @@ func getRefund4Transaction(ethClient *ethclient.Client, inputDataHex string, tra
 		return err
 	}
 
-	var wCids []string
-	err = json.Unmarshal([]byte(method.Params[0].Value), &wCids)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
+	wCidsStr := strings.TrimRight(strings.TrimLeft(method.Params[0].Value, "["), "]")
+	wCids := strings.Split(wCidsStr, " ")
 
 	for _, wCid := range wCids {
-		logs.GetLogger().Info(wCid)
+		err = models.UpdateTransactionRefundAfterExpired(wCid, transaction.Hash().String())
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return err
+		}
 	}
 
 	return nil

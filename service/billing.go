@@ -6,7 +6,6 @@ import (
 	"multi-chain-storage/models"
 
 	"github.com/filswan/go-swan-lib/logs"
-	"github.com/shopspring/decimal"
 )
 
 func GetTransactions(walletAddress, txHash, fileName, orderBy string, isAscend bool, limit, offset int) ([]*models.Billing, *int, error) {
@@ -76,14 +75,4 @@ func GetLockPaymentInfo(sourceFileUploadId int64) (*LockPaymentInfo, error) {
 	}
 
 	return lockPaymentInfo, nil
-}
-
-func WriteRefundAfterExpired(sourceFileUploadId int64, refundTxHash string, refundAmount decimal.Decimal) error {
-	err := models.UpdateTransactionRefundAfterExpired(sourceFileUploadId, refundTxHash, refundAmount)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
-
-	return nil
 }

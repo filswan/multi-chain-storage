@@ -21,7 +21,7 @@
             <div v-loading="loading">
                 <div class="files_title">
                     <div class="flex_left">
-                        {{$t('uploadFile.Deal_Detail')}} #{{dealId}}
+                        {{$t('uploadFile.Deal_Detail')}} <b @click="networkLink('https://filscan.io/tipset/dsn-detail?dealid='+dealId)" style="margin: 0 0 0 5px;cursor: pointer;">#{{dealId}}</b>
                         <span class="title" v-if="dealId == 0">
                             <el-tooltip effect="dark" :content="$t('uploadFile.detail_tip01')" placement="top">
                                 <img src="@/assets/images/info.png"/>
@@ -37,11 +37,11 @@
                         </span>
                         <span v-else-if="dealCont.dao_signature.length >= dealCont.dao_threshold">
                             <img src="@/assets/images/dao_waiting.png" />
-                            <span>{{$t('uploadFile.Successfully_signed')}} {{dealCont.dao_signature.length}}/{{dealCont.dao_threshold}} </span>
+                            <span>{{$t('uploadFile.Successfully_signed')}} {{dealCont.dao_signatureAll}}/{{dealCont.dao_signature.length}} </span>
                         </span>
                         <span v-else>
                             <img src="@/assets/images/dao_waiting.png" />
-                            <span>{{$t('uploadFile.Waiting_for_signature')}} {{dealCont.dao_signature.length}}/{{dealCont.dao_threshold}} </span>
+                            <span>{{$t('uploadFile.Waiting_for_signature')}} {{dealCont.dao_signatureAll}}/{{dealCont.dao_signature.length}} </span>
                         </span>
                     </div>
                     <el-button type="primary" size="small" @click="getDealLogsData">{{$t('uploadFile.view_deal_logs')}}</el-button>
@@ -145,7 +145,7 @@
                                             <p>{{scope.row.tx_hash}}</p>
                                         </div>
                                         <!-- :class="{'color': dealCont.network&&dealCont.network.toLowerCase() == 'polygon'}" -->
-                                        <el-button slot="reference" @click="networkLink(scope.row.tx_hash)" class="color">
+                                        <el-button slot="reference" @click="networkLink('https://mumbai.polygonscan.com/tx/'+scope.row.tx_hash)" class="color">
                                             <!-- <img src="@/assets/images/copy.png" alt=""> -->
                                             {{scope.row.tx_hash}}
                                         </el-button>
@@ -210,6 +210,7 @@ export default {
             bodyWidth: document.documentElement.clientWidth<1024?true:false,
             dealId: '',
             dealCont: {
+                dao_signatureAll: 0,
                 source_file_upload_deal: {}
             },
             daoCont: [],
@@ -243,11 +244,8 @@ export default {
                 }
             })
         },
-        networkLink(hash, network) {
-            window.open('https://mumbai.polygonscan.com/tx/'+hash)
-            // if(network && network.toLowerCase() == 'polygon'){
-            //     window.open('https://mumbai.polygonscan.com/tx/'+hash)
-            // }
+        networkLink(link) {
+            window.open(link)
         },
         copyTextToClipboard(text) {
             let _this = this
@@ -298,12 +296,14 @@ export default {
                     // 'Authorization':"Bearer "
             }}).then((response) => {
                 let json = response.data
+                let dao_signatureAll = 0
                 _this.loading = false
                 if (json.status == 'success') {
                     if(!json.data) return false
                     if(json.data.dao_signature){
                         _this.daoCont = json.data.dao_signature
                         _this.daoCont.map(item => {
+                            if(item.tx_hash) dao_signatureAll += 1
                             item.daoAddressVis = false
                             item.txHashVis = false
                             item.create_at =  
@@ -316,6 +316,7 @@ export default {
                     }
                     
                     _this.dealCont = json.data
+                    _this.dealCont.dao_signatureAll = dao_signatureAll
                     _this.dealCont.source_file_upload_deal.created_at = 
                         _this.dealCont.source_file_upload_deal.created_at && _this.dealCont.source_file_upload_deal.created_at != 0? 
                             moment(new Date(parseInt(String(_this.dealCont.source_file_upload_deal.created_at).length<13?_this.dealCont.source_file_upload_deal.created_at*1000:_this.dealCont.source_file_upload_deal.created_at))).format(

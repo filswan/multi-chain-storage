@@ -572,6 +572,7 @@ export default {
         filter_status_Refundable: 'Refundable',
         filter_status_Refunded: 'Refunded',
         filter_status_Unlocked: 'Unlocked',
+        filter_status_Success: 'Success',
         filter_status_Pending: 'Pending',
         filter_status_Processing: 'Processing'
     },

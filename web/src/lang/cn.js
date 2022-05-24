@@ -577,6 +577,7 @@ export default {
         filter_status_Refundable: '可退款',
         filter_status_Refunded: '已退款',
         filter_status_Unlocked: '解锁',
+        filter_status_Success: '完成',
         filter_status_Pending: '待支付',
         filter_status_Processing: '处理中'
     },

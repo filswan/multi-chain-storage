@@ -219,5 +219,6 @@ create table dao_signature (
 #--SET SQL_SAFE_UPDATES=0;
 #--update source_file_upload set status='Success' where status='Unlocked';
 #--update car_file set status='Success' where status='Unlocked';
+#--update offline_deal set status='Success' where status='Unlocked';
 #--SET SQL_SAFE_UPDATES=1;
 

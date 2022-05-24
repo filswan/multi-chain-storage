@@ -67,7 +67,7 @@ func GetSourceFileUploadsExpired() ([]*SourceFileUploadOut, error) {
 
 	currentUtcSecond := libutils.GetCurrentUtcSecond()
 	var models []*SourceFileUploadOut
-	err := database.GetDB().Raw(sql, constants.SOURCE_FILE_TYPE_NORMAL, currentUtcSecond, constants.SOURCE_FILE_UPLOAD_STATUS_UNLOCKED).Scan(&models).Error
+	err := database.GetDB().Raw(sql, constants.SOURCE_FILE_TYPE_NORMAL, currentUtcSecond, constants.SOURCE_FILE_UPLOAD_STATUS_SUCCESS).Scan(&models).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
@@ -183,9 +183,10 @@ type SourceFileUploadResult struct {
 	PayloadCid         string            `json:"payload_cid"`
 	WCid               string            `json:"w_cid"`
 	Status             string            `json:"status"`
-	TokenId            string            `json:"token_id"`
-	MintAddress        string            `json:"mint_address"`
-	NftTxHash          string            `json:"nft_tx_hash"`
+	IsMinted           bool              `json:"is_minted"`
+	TokenId            *string           `json:"token_id"`
+	MintAddress        *string           `json:"mint_address"`
+	NftTxHash          *string           `json:"nft_tx_hash"`
 	OfflineDeals       []*OfflineDealOut `json:"offline_deal"`
 }
 type SourceFileUploadResultByFileName []*SourceFileUploadResult
@@ -210,7 +211,7 @@ func GetSourceFileUploads(walletId int64, status, fileName, orderBy, is_minted s
 	sql := "select\n" +
 		"a.id source_file_upload_id,d.id car_file_id,a.file_name,b.file_size,a.create_at upload_at,a.duration,\n" +
 		"b.ipfs_url,b.pin_status,d.payload_cid,concat(a.uuid,b.payload_cid) w_cid,a.status,\n" +
-		"e.token_id,e.mint_address,e.nft_tx_hash\n" +
+		"e.id is not null is_minted,e.token_id,e.mint_address,e.nft_tx_hash\n" +
 		"from source_file_upload a\n" +
 		"left join source_file b on a.source_file_id=b.id\n" +
 		"left outer join car_file_source c on a.id=c.source_file_upload_id\n" +
@@ -218,7 +219,7 @@ func GetSourceFileUploads(walletId int64, status, fileName, orderBy, is_minted s
 		"left outer join source_file_mint e on a.id=e.source_file_upload_id\n" +
 		"where a.wallet_id=? and a.file_type=0"
 
-	if !libutils.IsStrEmpty(&fileName) {
+	if fileName != "" {
 		sql = sql + " and a.file_name like '%" + fileName + "%'\n"
 	}
 
@@ -230,7 +231,7 @@ func GetSourceFileUploads(walletId int64, status, fileName, orderBy, is_minted s
 		case constants.SOURCE_FILE_UPLOAD_STATUS_PENDING,
 			constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDABLE,
 			constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDED,
-			constants.SOURCE_FILE_UPLOAD_STATUS_UNLOCKED:
+			constants.SOURCE_FILE_UPLOAD_STATUS_SUCCESS:
 			sql = sql + " and a.status=?"
 			params = append(params, status)
 		case constants.SOURCE_FILE_UPLOAD_STATUS_PROCESSING:
@@ -238,15 +239,15 @@ func GetSourceFileUploads(walletId int64, status, fileName, orderBy, is_minted s
 			params = append(params, constants.SOURCE_FILE_UPLOAD_STATUS_PENDING)
 			params = append(params, constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDABLE)
 			params = append(params, constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDED)
-			params = append(params, constants.SOURCE_FILE_UPLOAD_STATUS_UNLOCKED)
+			params = append(params, constants.SOURCE_FILE_UPLOAD_STATUS_SUCCESS)
 		default:
 			logs.GetLogger().Info("input status:", status, ", get records with all kinds of statuses")
 		}
 	}
 
-	if strings.EqualFold(is_minted, "yes") {
+	if strings.EqualFold(is_minted, "y") {
 		sql = sql + " and e.id is not null"
-	} else if strings.EqualFold(is_minted, "no") {
+	} else if strings.EqualFold(is_minted, "n") {
 		sql = sql + " and e.id is null"
 	}
 

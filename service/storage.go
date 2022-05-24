@@ -172,7 +172,7 @@ func GetSourceFileUploads(walletAddress, status, fileName, orderBy, is_minted st
 		if srcFileUpload.Status != constants.SOURCE_FILE_UPLOAD_STATUS_PENDING &&
 			srcFileUpload.Status != constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDABLE &&
 			srcFileUpload.Status != constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDED &&
-			srcFileUpload.Status != constants.SOURCE_FILE_UPLOAD_STATUS_UNLOCKED {
+			srcFileUpload.Status != constants.SOURCE_FILE_UPLOAD_STATUS_SUCCESS {
 			srcFileUpload.Status = constants.SOURCE_FILE_UPLOAD_STATUS_PROCESSING
 		}
 	}
@@ -270,7 +270,7 @@ func GetSourceFileUploadDeal(sourceFileUploadId int64, dealId int64) (*SourceFil
 		sourceFileUploadDeal.LockedFee = transactionPay.PayAmount
 	}
 
-	sourceFileUploadDeal.Unlocked = sourceFileUpload.Status == constants.SOURCE_FILE_UPLOAD_STATUS_UNLOCKED
+	sourceFileUploadDeal.Unlocked = sourceFileUpload.Status == constants.SOURCE_FILE_UPLOAD_STATUS_SUCCESS
 
 	carFile, err := models.GetCarFileBySourceFileUploadId(sourceFileUploadId)
 	if err != nil {

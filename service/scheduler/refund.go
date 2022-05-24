@@ -65,7 +65,7 @@ func refundCarFile(ethClient *ethclient.Client, carFileId int64, swanPaymentTran
 		switch offlineDeal.Status {
 		case constants.OFFLINE_DEAL_STATUS_CREATED, constants.OFFLINE_DEAL_STATUS_ACTIVE:
 			offlineDealsCnt2BeUnlocked = offlineDealsCnt2BeUnlocked + 1
-		case constants.OFFLINE_DEAL_STATUS_FAILED, constants.OFFLINE_DEAL_STATUS_UNLOCKED:
+		case constants.OFFLINE_DEAL_STATUS_FAILED, constants.OFFLINE_DEAL_STATUS_SUCCESS:
 			offlineDealsCntUnlocked = offlineDealsCntUnlocked + 1
 		default:
 		}
@@ -157,7 +157,7 @@ func refundCarFile(ethClient *ethclient.Client, carFileId int64, swanPaymentTran
 		}
 	}
 
-	err = models.UpdateCarFileStatus(carFileId, constants.CAR_FILE_STATUS_UNLOCKED)
+	err = models.UpdateCarFileStatus(carFileId, constants.CAR_FILE_STATUS_SUCCESS)
 	if err != nil {
 		logs.GetLogger().Error(err.Error())
 		return err

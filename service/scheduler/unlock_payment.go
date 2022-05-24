@@ -82,7 +82,7 @@ func UnlockPayment() error {
 			continue
 		}
 
-		err = models.UpdateOfflineDealUnlockInfo(offlineDeal.Id, constants.OFFLINE_DEAL_STATUS_UNLOCKED, *txHash)
+		err = models.UpdateOfflineDealUnlockInfo(offlineDeal.Id, constants.OFFLINE_DEAL_STATUS_SUCCESS, *txHash)
 		if err != nil {
 			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 			continue

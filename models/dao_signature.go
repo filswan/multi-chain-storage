@@ -32,7 +32,7 @@ func GetDaoSignaturesByDealId(dealId int64) ([]*DaoSignatureOut, error) {
 		"  select b.wallet_id_signer,b.tx_hash,b.status,b.create_at from offline_deal a,dao_signature b\n" +
 		"  where a.deal_id=? and a.id=b.offline_deal_id\n" +
 		") b on a.id=b.wallet_id_signer\n" +
-		"where a.is_dao=true"
+		"where a.is_dao=true order by a.id"
 
 	var daoSignatures []*DaoSignatureOut
 	err := database.GetDB().Raw(sql, dealId).Scan(&daoSignatures).Error

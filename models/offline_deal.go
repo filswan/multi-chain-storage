@@ -117,23 +117,6 @@ func GetOfflineDealByDealId(dealId int64) (*OfflineDeal, error) {
 	return nil, nil
 }
 
-func GetOfflineDealNotFailedByCarFileId(carFileId int64) ([]*OfflineDeal, error) {
-	if carFileId <= 0 {
-		err := fmt.Errorf("car file id must be greater than 0")
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-
-	var offlineDeals []*OfflineDeal
-	err := database.GetDB().Where("car_file_id=? and status!=?", carFileId, constants.OFFLINE_DEAL_STATUS_FAILED).Find(&offlineDeals).Error
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-
-	return offlineDeals, nil
-}
-
 func UpdateOfflineDealUnlockInfo(id int64, status string, txHashUnlock string) error {
 	currentUtcSecond := libutils.GetCurrentUtcSecond()
 	fields2BeUpdated := make(map[string]interface{})

@@ -60,14 +60,21 @@ func GetSourceFileUploadsByCarFileId(carFileId int64) ([]*SourceFileUpload, erro
 	return sourceFileUploads, nil
 }
 
-func GetSourceFileUploadsExpired() ([]*SourceFileUploadOut, error) {
+func GetSourceFileUploads2BeRefundedAfterExpired() ([]*SourceFileUploadOut, error) {
 	sql := "select a.*,b.payload_cid \n" +
 		"from source_file_upload a, source_file b, transaction c\n" +
-		"where a.file_type=? and a.source_file_id=b.id and a.id=c.source_file_upload_id and c.deadline<? and a.status!=?"
+		"where a.file_type=? and a.source_file_id=b.id and a.id=c.source_file_upload_id and c.deadline<? and a.status not in (?,?,?,?)"
 
 	currentUtcSecond := libutils.GetCurrentUtcSecond()
 	var models []*SourceFileUploadOut
-	err := database.GetDB().Raw(sql, constants.SOURCE_FILE_TYPE_NORMAL, currentUtcSecond, constants.SOURCE_FILE_UPLOAD_STATUS_SUCCESS).Scan(&models).Error
+	params := []interface{}{}
+	params = append(params, constants.SOURCE_FILE_TYPE_NORMAL)
+	params = append(params, currentUtcSecond)
+	params = append(params, constants.SOURCE_FILE_UPLOAD_STATUS_SUCCESS)
+	params = append(params, constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDABLE)
+	params = append(params, constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDED)
+	params = append(params, constants.SOURCE_FILE_UPLOAD_STATUS_PENDING)
+	err := database.GetDB().Raw(sql, params...).Scan(&models).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err

@@ -270,7 +270,15 @@ func GetSourceFileUploadDeal(sourceFileUploadId int64, dealId int64) (*SourceFil
 		sourceFileUploadDeal.LockedFee = transactionPay.PayAmount
 	}
 
-	sourceFileUploadDeal.Unlocked = sourceFileUpload.Status == constants.SOURCE_FILE_UPLOAD_STATUS_SUCCESS
+	offlineDeal, err := models.GetOfflineDealByDealId(dealId)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, nil, err
+	}
+
+	if offlineDeal != nil {
+		sourceFileUploadDeal.Unlocked = offlineDeal.Status == constants.OFFLINE_DEAL_STATUS_SUCCESS
+	}
 
 	carFile, err := models.GetCarFileBySourceFileUploadId(sourceFileUploadId)
 	if err != nil {

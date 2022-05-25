@@ -274,7 +274,7 @@ func refundCarFile(ethClient *ethclient.Client, carFileId int64, swanPaymentTran
 		}
 	}
 
-	err = models.UpdateCarFileStatus(carFileId, constants.CAR_FILE_STATUS_SUCCESS)
+	err = models.UpdateCarFileStatus(carFileId, constants.CAR_FILE_STATUS_COMPLETED)
 	if err != nil {
 		logs.GetLogger().Error(err.Error())
 		return err

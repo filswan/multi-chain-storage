@@ -175,27 +175,23 @@ func refundCarFile(ethClient *ethclient.Client, carFileId int64, swanPaymentTran
 		return err
 	}
 
-	var offlineDealsCnt2BeUnlocked int = 0
-	var offlineDealsCntUnlocked int = 0
+	var offlineDealsCntFailed int = 0
+	var offlineDealsCntSuccess int = 0
+	var offlineDealsCntOther int = 0
 
 	for _, offlineDeal := range offlineDeals {
 		switch offlineDeal.Status {
-		case constants.OFFLINE_DEAL_STATUS_CREATED, constants.OFFLINE_DEAL_STATUS_ACTIVE:
-			offlineDealsCnt2BeUnlocked = offlineDealsCnt2BeUnlocked + 1
-		case constants.OFFLINE_DEAL_STATUS_FAILED, constants.OFFLINE_DEAL_STATUS_SUCCESS:
-			offlineDealsCntUnlocked = offlineDealsCntUnlocked + 1
+		case constants.OFFLINE_DEAL_STATUS_FAILED:
+			offlineDealsCntFailed = offlineDealsCntFailed + 1
+		case constants.OFFLINE_DEAL_STATUS_SUCCESS:
+			offlineDealsCntSuccess = offlineDealsCntSuccess + 1
 		default:
+			offlineDealsCntOther = offlineDealsCntOther + 1
 		}
 	}
 
-	if offlineDealsCntUnlocked == 0 {
-		msg := fmt.Sprintf("no offline deals unlocked or unlock failed, cannot refund for car file:%d", carFileId)
-		logs.GetLogger().Info(msg)
-		return nil
-	}
-
-	if offlineDealsCnt2BeUnlocked > 0 {
-		msg := fmt.Sprintf("%d deals to be unlocked, cannot refund for car file:%d", offlineDealsCnt2BeUnlocked, carFileId)
+	if offlineDealsCntOther > 0 {
+		msg := fmt.Sprintf("%d deals to be unlocked, cannot refund for car file:%d", offlineDealsCntOther, carFileId)
 		logs.GetLogger().Info(msg)
 		return nil
 	}
@@ -204,6 +200,24 @@ func refundCarFile(ethClient *ethclient.Client, carFileId int64, swanPaymentTran
 	if err != nil {
 		logs.GetLogger().Error(err.Error())
 		return err
+	}
+
+	if offlineDealsCntFailed > 0 {
+		for _, sourceFileUpload := range sourceFileUploads {
+			err = models.UpdateSourceFileUploadStatus(sourceFileUpload.Id, constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDABLE)
+			if err != nil {
+				logs.GetLogger().Error(err.Error())
+				return err
+			}
+		}
+
+		err = models.UpdateCarFileStatus(carFileId, constants.CAR_FILE_STATUS_COMPLETED)
+		if err != nil {
+			logs.GetLogger().Error(err.Error())
+			return err
+		}
+
+		return nil
 	}
 
 	var srcFileUploadWCids []string

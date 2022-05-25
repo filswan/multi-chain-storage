@@ -44,7 +44,7 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="file_size" :label="$t('uploadFile.file_size')" min-width="110" sortable="custom">
+          <el-table-column prop="file_size" :label="$t('uploadFile.file_size')" min-width="90" sortable="custom">
             <template slot-scope="scope">
               <div class="hot-cold-box">
                 {{ scope.row.file_size | formatbytes }}
@@ -54,32 +54,35 @@
           <el-table-column prop="status" :label="$t('uploadFile.file_status')" min-width="110"
             :filters="[{text: $t('uploadFile.filter_status_Pending'), value: 'Pending'}, {text: $t('uploadFile.filter_status_Processing'), value: 'Processing'}, 
                        {text: $t('uploadFile.filter_status_Refundable'), value: 'Refundable'}, {text: $t('uploadFile.filter_status_Refunded'), value: 'Refunded'},
-                       {text: $t('uploadFile.filter_status_Success'), value: 'Unlocked'}]"
+                       {text: $t('uploadFile.filter_status_Success'), value: 'Success'}]"
             :filter-multiple="false" :column-key="'payment'">
             <template slot-scope="scope">
               <el-button type="danger" class="statusStyle" v-if="scope.row.status&&scope.row.status.toLowerCase()=='failed'">
                   {{ languageMcs == "en" ? "Fail" : '失败'}}
               </el-button>
-              <el-button plain type="pending" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='pending'">
+              <el-button plain type="pending" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='pending'&&!scope.row.status_file">
                   {{ languageMcs == "en" ? "Pending" : '待支付'}}
               </el-button>
-              <el-button plain type="primary" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='processing'">
+              <el-button plain type="primary" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='processing'&&!scope.row.status_file">
                   {{ languageMcs == "en" ? "Processing" : '处理中'}}
               </el-button>
-              <el-button plain type="success" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='active'">
+              <el-button plain type="success" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='active'&&!scope.row.status_file">
                   {{ languageMcs == "en" ? "Active" : '完成'}}
               </el-button>
-              <el-button plain type="success" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='unlocked'">
-                  {{ languageMcs == "en" ? "Unlocked" : '解锁'}}
+              <el-button plain type="success" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='unlocked'&&!scope.row.status_file || scope.row.status&&scope.row.status.toLowerCase()=='success'">
+                  {{ languageMcs == "en" ? "Success" : '完成'}}
               </el-button>
-              <el-button plain type="info" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='refunded'">
+              <el-button plain type="info" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='refunded'&&!scope.row.status_file">
                   {{ languageMcs == "en" ? "Refunded" : '已退款'}}
               </el-button>
-              <el-button plain type="refunding" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='refunding'">
+              <el-button plain type="refunding" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='refunding'&&!scope.row.status_file">
                   {{ languageMcs == "en" ? "Refunding" : '可退款'}}
               </el-button>
-              <el-button plain type="refunding" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='refundable'">
+              <el-button plain type="refunding" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='refundable'&&!scope.row.status_file">
                   {{ languageMcs == "en" ? "Refundable" : '可退款'}}
+              </el-button>
+              <el-button type="refunding" class="statusStyle" v-else-if="scope.row.status_file">
+                  {{ languageMcs == "en" ? "Success" : '完成'}}
               </el-button>
               <el-button plain type="info" class="statusStyle" v-else>
                   {{scope.row.status}}
@@ -289,7 +292,7 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="upload_at" :label="$t('uploadFile.upload_time')" width="140" sortable="custom">
+          <el-table-column prop="upload_at" :label="$t('uploadFile.upload_time')" width="100" sortable="custom">
             <template slot-scope="scope">
               {{ scope.row.upload_at }}
             </template>
@@ -324,22 +327,22 @@
             </template>
           </el-table-column>
           <el-table-column prop="MINT" min-width="100" :label="$t('uploadFile.MINT')"
-            :filters="[{text: $t('uploadFile.filter_no_minted'), value: 'no'}, {text: $t('uploadFile.filter_minted'), value: 'yes'}]"
+            :filters="[{text: $t('uploadFile.filter_no_minted'), value: 'n'}, {text: $t('uploadFile.filter_minted'), value: 'y'}]"
             :filter-multiple="false" :column-key="'minted'">
             <template slot-scope="scope">
               <div class="hot-cold-box">
                 <el-button class="uploadBtn blue" type="primary"
                   v-if="tableData[scope.$index].token_id"
                   @click.stop="mintViewFunction(scope.row)">{{$t('uploadFile.mint_view')}}</el-button>
+                <el-button  class="uploadBtn blue" type="primary"
+                  v-else-if="(scope.row.status.toLowerCase()=='success'&&scope.row.is_minted==false) || (scope.row.status_file&&scope.row.is_minted==false)"
+                  @click.stop="mintFunction(scope.row)">{{$t('uploadFile.MINT')}}</el-button>
                 <el-button
                   class="uploadBtn grey opacity"
-                  v-else-if="tableData[scope.$index].status.toLowerCase()=='pending' || tableData[scope.$index].status.toLowerCase()=='failed' || tableData[scope.$index].status.toLowerCase()=='refunding' || tableData[scope.$index].status.toLowerCase()=='refundable' || tableData[scope.$index].status.toLowerCase()=='refunded'"
+                  v-else
                   :disabled="true">
                   {{$t('uploadFile.MINT')}}
                 </el-button>
-                <el-button  class="uploadBtn blue" type="primary"
-                  v-else
-                  @click.stop="mintFunction(scope.row)">{{$t('uploadFile.MINT')}}</el-button>
               </div>
             </template>
           </el-table-column>
@@ -357,9 +360,9 @@
             />
           </div>
 
-          <div class="down" @click="downVisible=true">
+          <!-- <div class="down" @click="downVisible=true">
               [ Download <span>xxxx</span> Export ]
-          </div>
+          </div> -->
         </div>
       </div>
 
@@ -462,7 +465,7 @@ export default {
         total: 0,
         jumperOffset: 1,
         order_by: '',
-        is_ascending: '',
+        is_ascend: '',
         status: '',
         is_minted: ''
       },
@@ -550,7 +553,7 @@ export default {
       _this.parma.offset = 1
       _this.parma.jumperOffset = 1
       _this.parma.order_by = ''
-      _this.parma.is_ascending = ''
+      _this.parma.is_ascend = ''
       _this.parma.status = ""
       _this.parma.is_minted = ""
       _this.parmaChild.limit = 10
@@ -662,6 +665,7 @@ export default {
                 if(res.data.data.pay_tx_hash){
                     _this.$message.error(_this.$t('deal.file_error'))
                     _this.loading = false
+                    _this.firstIndex = 0
                     _this.getData()
                     return false
                 }else{
@@ -762,13 +766,6 @@ export default {
                 console.log('checking ... ');
                 if (!res) { return _this.timer = setTimeout(() => { _this.checkTransaction(txHash, cid, resData, lockObj); }, 2000); }
                 else {
-                    if(!resData){
-                      const lockParam = {
-                        "source_file_upload_id": _this.refundPow.source_file_upload_id,
-                        "refund_tx_hash": txHash
-                      }
-                      _this.sendPostRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/billing/deal/expire`, lockParam)
-                    }
                     clearTimeout(_this.timer)
                     setTimeout(function(){
                       _this.loading = false
@@ -791,6 +788,7 @@ export default {
     finishClose(){
         this.finishTransaction = false
         this.mintTransaction = false
+        this.firstIndex = 0
         this.getData()
     },
     getDialog(dialog, rows){
@@ -799,7 +797,10 @@ export default {
     },
     getUploadDialog(dialog, rows){
         this.uploadDigShow = dialog
-        if(rows) this.getData()
+        if(rows) {
+          this.firstIndex = 0
+          this.getData()
+        }
     },
     getDownload(dialog, rows){
         this.downVisible = dialog
@@ -808,6 +809,7 @@ export default {
         let _this = this
         _this.mineVisible = dialog
         if(nftHash) {
+          _this.firstIndex = 0
           _this.getData()
           _this.tokenId = tokenId
           _this.txHash = nftHash
@@ -912,7 +914,7 @@ export default {
       _this.parma.offset = 1;
       _this.parma.jumperOffset = 1;
       _this.parma.order_by = ''
-      _this.parma.is_ascending = ''
+      _this.parma.is_ascend = ''
       _this.parma.status = ""
       _this.parma.is_minted = ""
       _this.$refs.singleTable.clearSort()
@@ -926,7 +928,7 @@ export default {
       _this.parma.offset = 1;
       _this.parma.jumperOffset = 1;
       _this.parma.order_by = ''
-      _this.parma.is_ascending = ''
+      _this.parma.is_ascend = ''
       _this.parma.status = ""
       _this.parma.is_minted = ""
       _this.$refs.singleTable.clearSort()
@@ -997,7 +999,7 @@ export default {
       await this.filterChange({})
       // this.parma.order_by = await this.sortOrderBy(column.prop)
       this.parma.order_by = column.prop
-      this.parma.is_ascending = column.order == "ascending" ? 'y' : column.order == "descending" ? 'n' : ''
+      this.parma.is_ascend = column.order == "ascending" ? 'y' : column.order == "descending" ? 'n' : ''
       this.loading = true
       this.getData()
     },
@@ -1009,7 +1011,7 @@ export default {
         this.$refs.singleTable.clearFilter('minted');
         this.parma.is_minted = ""
       } else if(("minted" in filters)) {
-        let data = filters.minted[0] || ""
+        let data = filters.minted[0] || "all"
         if(data == this.parma.is_minted) return false
         this.parma.is_minted = data
         this.$refs.singleTable.clearFilter('payment');
@@ -1021,7 +1023,7 @@ export default {
         return false
       }
       this.$refs.singleTable.clearSort()
-      this.parma.is_ascending = ""
+      this.parma.is_ascend = ""
       this.getData()
     },
     getData(currentData) {
@@ -1033,10 +1035,9 @@ export default {
         page_size: _this.parma.limit,
         page_number: _this.parma.offset,
         file_name: _this.searchValue,
-        source_id: 4,
         wallet_address: _this.metaAddress,
-        order_by: _this.parma.is_ascending?_this.parma.order_by:'',
-        is_ascending: _this.parma.is_ascending,
+        order_by: _this.parma.is_ascend?_this.parma.order_by:'',
+        is_ascend: _this.parma.is_ascend,
         status: _this.parma.status,
         is_minted: _this.parma.is_minted
       };
@@ -1060,11 +1061,19 @@ export default {
               _this.tableData = response.data.data.source_file_upload;
               _this.tableData.map((item,s) => {
                 item.payloadAct = false
-                item.duration = item.duration
+                item.status_file = false
                 item.file_size_byte = _this.byteChange(item.file_size)
                 item.upload_at = item.upload_at
                   ? moment(new Date(parseInt(item.upload_at * 1000))).format("YYYY-MM-DD HH:mm:ss")
                   : "-";
+                if(item.offline_deal){
+                  item.offline_deal.map(child => {
+                    if(child.status == 'Success'){
+                      item.status_file = true
+                      return false
+                    }
+                  })
+                }
               });
               setTimeout(function(){
                 _this.loading = false
@@ -1565,19 +1574,19 @@ export default {
           white-space: nowrap;
         }
       }
-      .el-button--primary:hover{
+      .el-button--primary, .el-button--primary:hover{
         color: #409EFF;
       }
-      .el-button--success:hover{
+      .el-button--success, .el-button--success:hover{
         color: #67c23a;
       }
-      .el-button--info:hover{
+      .el-button--info, .el-button--info:hover{
         color: #909399;
       }
-      .el-button--warning:hover{
+      .el-button--warning, .el-button--warning:hover{
         color: #e6a23c;
       }
-      .el-button--danger:hover{
+      .el-button--danger, .el-button--danger:hover{
         color: #f78989;
       }
       .el-button--refunding{

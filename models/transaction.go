@@ -299,6 +299,12 @@ func UpdateTransactionRefundAfterExpired(wCid, refundTxHash string) error {
 		return nil
 	}
 
+	if sourceFileUpload.Status == constants.SOURCE_FILE_UPLOAD_STATUS_SUCCESS {
+		msg := fmt.Sprintf("source file upload:%d refunded by background", sourceFileUpload.Id)
+		logs.GetLogger().Info(msg)
+		return nil
+	}
+
 	transaction, err := GetTransactionBySourceFileUploadId(sourceFileUpload.Id)
 	if err != nil {
 		logs.GetLogger().Error(err)

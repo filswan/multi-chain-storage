@@ -220,6 +220,7 @@ type FlinkDealResult struct {
 
 func GetSourceFileUploadDeal(sourceFileUploadId int64, dealId int64) (*SourceFileUploadDeal, []*models.DaoSignatureOut, error) {
 	flinkDealResult := FlinkDealResult{}
+	sourceFileUploadDeal := &flinkDealResult.Data.Deal
 	if dealId > 0 {
 		flinkUrl := libutils.UrlJoin(config.GetConfig().FlinkUrl, strconv.FormatInt(dealId, 10))
 		flinkUrl = flinkUrl + "?network=" + config.GetConfig().FilecoinNetwork
@@ -232,6 +233,16 @@ func GetSourceFileUploadDeal(sourceFileUploadId int64, dealId int64) (*SourceFil
 			if err != nil {
 				logs.GetLogger().Error(err)
 			}
+		}
+
+		offlineDeal, err := models.GetOfflineDealByDealId(dealId)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return nil, nil, err
+		}
+
+		if offlineDeal != nil {
+			sourceFileUploadDeal.Unlocked = offlineDeal.Status == constants.OFFLINE_DEAL_STATUS_SUCCESS
 		}
 	}
 
@@ -259,25 +270,13 @@ func GetSourceFileUploadDeal(sourceFileUploadId int64, dealId int64) (*SourceFil
 		return nil, nil, err
 	}
 
-	sourceFileUploadDeal := &flinkDealResult.Data.Deal
 	sourceFileUploadDeal.IpfsUrl = sourceFile.IpfsUrl
 	sourceFileUploadDeal.FileName = sourceFileUpload.FileName
 	sourceFileUploadDeal.WCid = sourceFileUpload.Uuid + sourceFile.PayloadCid
-	sourceFileUploadDeal.Unlocked = false
 
 	if transactionPay != nil {
 		sourceFileUploadDeal.LockedAt = transactionPay.CreateAt
 		sourceFileUploadDeal.LockedFee = transactionPay.PayAmount
-	}
-
-	offlineDeal, err := models.GetOfflineDealByDealId(dealId)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, nil, err
-	}
-
-	if offlineDeal != nil {
-		sourceFileUploadDeal.Unlocked = offlineDeal.Status == constants.OFFLINE_DEAL_STATUS_SUCCESS
 	}
 
 	carFile, err := models.GetCarFileBySourceFileUploadId(sourceFileUploadId)

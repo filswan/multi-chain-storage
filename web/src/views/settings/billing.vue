@@ -112,9 +112,9 @@
                                 />
                             </div>
 
-                            <div class="down" @click="downVisible=true">
+                            <!-- <div class="down" @click="downVisible=true">
                                 [ Download <span>xxxx</span> Export ]
-                            </div>
+                            </div> -->
                         </div>
                     </div>
                 </div>
@@ -156,7 +156,7 @@
                     total: 0,
                     jumperOffset: 1,
                     order_by: '',
-                    is_ascending: ''
+                    is_ascend: ''
                 },
                 loading: false,
                 downCsv: localStorage.getItem("addressYM")?localStorage.getItem("addressYM"):'',
@@ -263,7 +263,7 @@
                 // console.log(column);
                 // this.parma.order_by = await this.sortOrderBy(column.prop)
                 this.parma.order_by = column.prop
-                this.parma.is_ascending = column.order == "ascending" ? 'y' : column.order == "descending" ? 'n' : ''
+                this.parma.is_ascend = column.order == "ascending" ? 'y' : column.order == "descending" ? 'n' : ''
                 this.loading = true
                 this.getData()
             },
@@ -276,8 +276,8 @@
                     "wallet_address": _this.metaAddress,    
                     "page_number": _this.parma.offset,    
                     "page_size": _this.parma.limit,
-                    "order_by": _this.parma.is_ascending?_this.parma.order_by:'',
-                    "is_ascending": _this.parma.is_ascending
+                    "order_by": _this.parma.is_ascend?_this.parma.order_by:'',
+                    "is_ascend": _this.parma.is_ascend
                 }
                 let upload_api = `${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/billing?${QS.stringify(obj)}`
                 // let upload_api = `./static/response-billing.json?${QS.stringify(obj)}`;
@@ -397,7 +397,7 @@
                 this.parma.offset = 1
                 this.parma.jumperOffset = 1
                 this.parma.order_by = ''
-                this.parma.is_ascending = ''
+                this.parma.is_ascend = ''
                 this.getData();
             },
             clearAll() {

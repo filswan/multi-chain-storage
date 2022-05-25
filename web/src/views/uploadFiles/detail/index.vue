@@ -21,7 +21,7 @@
             <div v-loading="loading">
                 <div class="files_title">
                     <div class="flex_left">
-                        {{$t('uploadFile.Deal_Detail')}} <b @click="networkLink('https://filscan.io/tipset/dsn-detail?dealid='+dealId)" style="margin: 0 0 0 5px;cursor: pointer;">#{{dealId}}</b>
+                        {{$t('uploadFile.Deal_Detail')}} <b @click="networkLink('https://filscan.io/tipset/dsn-detail?dealid='+dealId)" class="golink">#{{dealId}}</b>
                         <span class="title" v-if="dealId == 0">
                             <el-tooltip effect="dark" :content="$t('uploadFile.detail_tip01')" placement="top">
                                 <img src="@/assets/images/info.png"/>
@@ -650,6 +650,14 @@ export default {
                 width: 100%;
                 font-size: 16px;
                 flex-wrap: wrap;
+            }
+            .golink{
+                margin: 0 0 0 5px;
+                cursor: pointer;
+                &:hover{
+                    color: #2d43e7;
+                    text-decoration: underline;
+                }
             }
             img{
                 width: 20px;

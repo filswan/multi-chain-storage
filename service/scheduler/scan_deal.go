@@ -28,6 +28,11 @@ func ScanDeal() error {
 		logs.GetLogger().Error(err)
 	}
 
+	err = refundCarFiles()
+	if err != nil {
+		logs.GetLogger().Error(err)
+	}
+
 	return nil
 }
 
@@ -133,7 +138,7 @@ func setSourceFiles2Refundable(sourceFileUploads []*models.SourceFileUploadOut) 
 	}
 }
 
-func Refund() error {
+func refundCarFiles() error {
 	ethClient, _, err := client.GetEthClient()
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -146,17 +151,7 @@ func Refund() error {
 		return err
 	}
 
-	err = refundCarFilesByStatus(ethClient, constants.CAR_FILE_STATUS_DEAL_SENT, swanPaymentTransactor)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
-
-	return nil
-}
-
-func refundCarFilesByStatus(ethClient *ethclient.Client, carFileStatus string, swanPaymentTransactor *goBind.SwanPaymentTransactor) error {
-	carFiles, err := models.GetCarFilesByStatus(carFileStatus)
+	carFiles, err := models.GetCarFilesByStatus(constants.CAR_FILE_STATUS_DEAL_SENT)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err

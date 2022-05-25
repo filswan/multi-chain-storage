@@ -44,7 +44,6 @@ func InitScheduler() {
 	go runJob(SendDeal, config.GetConfig().ScheduleRule.SendDealIntervalSecond)
 	go runJob(ScanDeal, config.GetConfig().ScheduleRule.ScanDealStatusIntervalSecond)
 	go runJob(UnlockPayment, config.GetConfig().ScheduleRule.UnlockIntervalSecond)
-	go runJob(Refund, config.GetConfig().ScheduleRule.RefundIntervalSecond)
 	go runJob(ScanPolygon, config.GetConfig().ScheduleRule.ScanPolygonIntervalSecond)
 }
 

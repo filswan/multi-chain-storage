@@ -35,6 +35,7 @@ create table wallet (
     type          int          not null, #--0:metamask, 1:filecoin
     address       varchar(100) not null,
     is_dao        boolean,
+    nonce         varchar(64),
     create_at     bigint       not null,
     update_at     bigint       not null,
     primary key pk_wallet(id),

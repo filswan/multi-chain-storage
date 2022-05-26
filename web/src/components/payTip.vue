@@ -95,7 +95,7 @@
         name: "pay_tip",
         data() {
             return {
-                widthDia: document.body.clientWidth<=600?'95%':'6.6rem',
+                widthDia: document.body.clientWidth<=600?'95%':document.body.clientWidth<=1440?'7rem':'6.6rem',
                 inputAmount: /^\d+(?:\.\d{0,8})?[\s]{0,5}/,
                 inputG: /^[1-9]\d*$/,
                 hashload: true,

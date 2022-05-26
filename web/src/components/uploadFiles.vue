@@ -226,7 +226,7 @@
                 modelClose: true,
                 width: document.body.clientWidth>600?'400px':'95%',
                 widthUpload: document.body.clientWidth>600?'450px':'95%',
-                widthDia: document.body.clientWidth<=600?'95%':'6.6rem',
+                widthDia: document.body.clientWidth<=600?'95%':document.body.clientWidth<=1440?'7rem':'6.6rem',
                 gatewayContractAddress: this.$root.SWAN_PAYMENT_CONTRACT_ADDRESS,
                 recipientAddress: this.$root.RECIPIENT,
                 usdcAddress: this.$root.USDC_ADDRESS,

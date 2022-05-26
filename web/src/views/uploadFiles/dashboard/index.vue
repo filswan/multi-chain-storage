@@ -558,6 +558,7 @@ export default {
       _this.parma.is_minted = ""
       _this.parmaChild.limit = 10
       _this.parmaChild.offset = 1
+      _this.$refs.singleTable.clearFilter();
       
       _this.searchNowCurrent = (new Date()).getTime()
       _this.getData(_this.searchNowCurrent)

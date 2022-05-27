@@ -292,7 +292,7 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="upload_at" :label="$t('uploadFile.upload_time')" width="100" sortable="custom">
+          <el-table-column prop="upload_at" :label="$t('uploadFile.upload_time')" width="120" sortable="custom">
             <template slot-scope="scope">
               {{ scope.row.upload_at }}
             </template>
@@ -335,7 +335,7 @@
                   v-if="tableData[scope.$index].token_id"
                   @click.stop="mintViewFunction(scope.row)">{{$t('uploadFile.mint_view')}}</el-button>
                 <el-button  class="uploadBtn blue" type="primary"
-                  v-else-if="(scope.row.status.toLowerCase()=='success'&&scope.row.is_minted==false) || (scope.row.status_file&&scope.row.is_minted==false)"
+                  v-else-if="(scope.row.status.toLowerCase()=='success'&&scope.row.is_minted==false) || (scope.row.status.toLowerCase()=='processing'&&scope.row.is_minted==false) || (scope.row.status_file&&scope.row.is_minted==false)"
                   @click.stop="mintFunction(scope.row)">{{$t('uploadFile.MINT')}}</el-button>
                 <el-button
                   class="uploadBtn grey opacity"

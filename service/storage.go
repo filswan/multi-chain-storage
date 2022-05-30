@@ -59,6 +59,7 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType 
 	err = c.SaveUploadedFile(srcFile, srcFilepath)
 	if err != nil {
 		logs.GetLogger().Error(err)
+		uploadMutext.Unlock()
 		return nil, err
 	}
 	logs.GetLogger().Info("source file saved to ", srcFilepath)

@@ -9,12 +9,13 @@ import (
 )
 
 type Wallet struct {
-	ID       int64  `json:"id"`
-	Type     int    `json:"type"`
-	Address  string `json:"address"`
-	IsDao    *bool  `json:"is_dao"`
-	CreateAt int64  `json:"create_at"`
-	UpdateAt int64  `json:"update_at"`
+	ID       int64   `json:"id"`
+	Type     int     `json:"type"`
+	Address  string  `json:"address"`
+	IsDao    *bool   `json:"is_dao"`
+	Nonce    *string `json:"nonce"`
+	CreateAt int64   `json:"create_at"`
+	UpdateAt int64   `json:"update_at"`
 }
 
 func GetWalletByAddress(address string, walletType int) (*Wallet, error) {

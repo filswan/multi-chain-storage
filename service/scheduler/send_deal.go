@@ -56,20 +56,19 @@ func SendDeal() error {
 		cmdAutoBidDeal.OutputDir = filepath.Dir(carFile.CarFilePath)
 
 		_, fileDescs, err := cmdAutoBidDeal.SendAutoBidDealsByTaskUuid(carFile.TaskUuid)
-		if err != nil || len(fileDescs) == 0 {
-			if err != nil {
-				logs.GetLogger().Error(err)
-			} else {
-				logs.GetLogger().Info("no deals sent")
-			}
-
+		if err != nil {
+			logs.GetLogger().Error(err)
 			carFile.Status = constants.CAR_FILE_STATUS_DEAL_SENT_FAILED
 			carFile.UpdateAt = currentUtcSec
 			err = database.SaveOne(carFile)
 			if err != nil {
 				logs.GetLogger().Error(err)
 			}
+			continue
+		}
 
+		if len(fileDescs) == 0 {
+			logs.GetLogger().Info("no deals sent")
 			continue
 		}
 

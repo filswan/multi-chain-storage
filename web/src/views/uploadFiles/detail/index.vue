@@ -37,7 +37,7 @@
                         </span>
                         <span v-else-if="dealCont.dao_signature.length >= dealCont.dao_threshold">
                             <img src="@/assets/images/dao_waiting.png" />
-                            <span>{{$t('uploadFile.Successfully_signed')}} {{dealCont.dao_signatureAll}}/{{dealCont.dao_signature.length}} </span>
+                            <span>{{dealCont.dao_signatureAll == dealCont.dao_signature.length?$t('uploadFile.Successfully_signed_all')+$t('uploadFile.Successfully_signed'):$t('uploadFile.Successfully_signed')}} {{dealCont.dao_signatureAll}}/{{dealCont.dao_signature.length}} </span>
                         </span>
                         <span v-else>
                             <img src="@/assets/images/dao_waiting.png" />
@@ -303,7 +303,7 @@ export default {
                     if(json.data.dao_signature){
                         _this.daoCont = json.data.dao_signature
                         _this.daoCont.map(item => {
-                            if(item.tx_hash) dao_signatureAll += 1
+                            if(item.create_at) dao_signatureAll += 1
                             item.daoAddressVis = false
                             item.txHashVis = false
                             item.create_at =  

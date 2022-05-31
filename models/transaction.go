@@ -69,6 +69,11 @@ func CreateTransaction4PayByWCid(wCid, txHash string, lockTime int64) error {
 	}
 
 	sourceFilePayloadCidIndex := strings.Index(wCid, "Qm")
+	if sourceFilePayloadCidIndex < 0 {
+		logs.GetLogger().Info("w cid: ", wCid, " not recognizable")
+		return nil
+	}
+
 	sourceFileUploadUuid := wCid[0:sourceFilePayloadCidIndex]
 	sourceFilePayloadCid := wCid[sourceFilePayloadCidIndex:]
 

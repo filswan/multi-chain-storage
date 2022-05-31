@@ -97,18 +97,19 @@ create table source_file_mint (
 );
 
 create table car_file (
-    id             bigint        not null auto_increment,
-    car_file_name  varchar(200)  not null,
-    payload_cid    varchar(200)  not null,
-    piece_cid      varchar(200)  not null,
-    car_file_size  bigint        not null,
-    car_file_path  varchar(1000) not null,
-    duration       int           not null,
-    task_uuid      varchar(100)  not null,
-    max_price      varchar(100)  not null,
-    status         varchar(100)  not null,
-    create_at      bigint        not null,
-    update_at      bigint        not null,
+    id                 bigint        not null auto_increment,
+    car_file_name      varchar(200)  not null,
+    payload_cid        varchar(200)  not null,
+    piece_cid          varchar(200)  not null,
+    car_file_size      bigint        not null,
+    car_file_path      varchar(1000) not null,
+    duration           int           not null,
+    task_uuid          varchar(100)  not null,
+    max_price          varchar(100)  not null,
+    status             varchar(100)  not null,
+    deal_success       boolean       not null,
+    create_at          bigint        not null,
+    update_at          bigint        not null,
     primary key pk_car_file(id)
 );
 
@@ -222,4 +223,8 @@ create table dao_signature (
 #--update car_file set status='Success' where status='Unlocked';
 #--update offline_deal set status='Success' where status='Unlocked';
 #--SET SQL_SAFE_UPDATES=1;
+
+
+#--2022-05-31
+#--alter table car_file add has_deal_success   boolean       not null;
 

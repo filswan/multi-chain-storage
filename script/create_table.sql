@@ -226,5 +226,5 @@ create table dao_signature (
 
 
 #--2022-05-31
-#--alter table car_file add has_deal_success   boolean       not null;
+#--alter table car_file add deal_success       boolean       not null;
 

@@ -213,15 +213,18 @@ type SourceFileUploadDeal struct {
 	Unlocked                 bool   `json:"unlocked"`
 }
 type FlinkDealResult struct {
-	Status string `json:"status"`
-	Data   struct {
-		Deal SourceFileUploadDeal `json:"deal"`
+	JobRunID string `json:"jobRunID"`
+	Data     struct {
+		Status string `json:"status"`
+		Data   struct {
+			Deal SourceFileUploadDeal `json:"deal"`
+		} `json:"data"`
 	} `json:"data"`
 }
 
 func GetSourceFileUploadDeal(sourceFileUploadId int64, dealId int64) (*SourceFileUploadDeal, []*models.DaoSignatureOut, error) {
 	flinkDealResult := FlinkDealResult{}
-	sourceFileUploadDeal := &flinkDealResult.Data.Deal
+	sourceFileUploadDeal := &flinkDealResult.Data.Data.Deal
 	if dealId > 0 {
 		flinkUrl := libutils.UrlJoin(config.GetConfig().FlinkUrl, strconv.FormatInt(dealId, 10))
 		flinkUrl = flinkUrl + "?network=" + config.GetConfig().FilecoinNetwork

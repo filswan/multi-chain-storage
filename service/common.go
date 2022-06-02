@@ -7,6 +7,7 @@ import (
 	"multi-chain-storage/config"
 	"multi-chain-storage/models"
 	"runtime"
+	"time"
 
 	"github.com/filswan/go-swan-lib/logs"
 )
@@ -17,6 +18,7 @@ func GetHostInfo() *common.HostInfo {
 		OperatingSystem: runtime.GOOS,
 		Architecture:    runtime.GOARCH,
 		CpuNumber:       runtime.NumCPU(),
+		CurrentUnixNano: time.Now().UnixNano(),
 	}
 
 	return &hostInfo

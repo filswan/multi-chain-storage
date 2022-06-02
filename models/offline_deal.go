@@ -117,10 +117,10 @@ func GetOfflineDealByDealId(dealId int64) (*OfflineDeal, error) {
 	return nil, nil
 }
 
-func UpdateOfflineDealUnlockInfo(id int64, status string, txHashUnlock string) error {
+func UpdateOfflineDealUnlockInfo(id int64, txHashUnlock string) error {
 	currentUtcSecond := libutils.GetCurrentUtcSecond()
 	fields2BeUpdated := make(map[string]interface{})
-	fields2BeUpdated["status"] = status
+	fields2BeUpdated["status"] = constants.OFFLINE_DEAL_STATUS_SUCCESS
 	fields2BeUpdated["unlock_tx_hash"] = txHashUnlock
 	fields2BeUpdated["unlock_at"] = currentUtcSecond
 	fields2BeUpdated["update_at"] = currentUtcSecond

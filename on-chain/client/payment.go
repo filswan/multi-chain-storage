@@ -1,7 +1,6 @@
 package client
 
 import (
-	"fmt"
 	"multi-chain-storage/config"
 	"multi-chain-storage/on-chain/goBind"
 
@@ -16,8 +15,9 @@ type LockedPayment struct {
 	LockedFee    decimal.Decimal
 	AddressFrom  string
 	AddressTo    string
-	Deadline     string
+	Deadline     int64
 	Size         int64
+	BlockNumber  int64
 }
 
 func IsLockedPaymentExists(srcFilePayloadCid string) (*bool, error) {
@@ -36,23 +36,22 @@ func IsLockedPaymentExists(srcFilePayloadCid string) (*bool, error) {
 	return &paymentInfo.IsExisted, nil
 }
 
-func GetLockedPaymentInfo(srcFilePayloadCid string) (*LockedPayment, error) {
+func GetLockedPaymentInfo(wCid string) (*LockedPayment, error) {
 	swanPaymentSession, err := GetSwanPaymentSession()
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
 	}
 
-	paymentInfo, err := swanPaymentSession.GetLockedPaymentInfo(srcFilePayloadCid)
+	paymentInfo, err := swanPaymentSession.GetLockedPaymentInfo(wCid)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
 	}
 
 	if !paymentInfo.IsExisted {
-		err := fmt.Errorf("payment for source file with payload_cid:%s not exists", srcFilePayloadCid)
-		logs.GetLogger().Error(err)
-		return nil, err
+		logs.GetLogger().Info("payment not exists for w_cid:", wCid)
+		return nil, nil
 	}
 
 	lockedFee, err := decimal.NewFromString(paymentInfo.LockedFee.String())
@@ -67,8 +66,9 @@ func GetLockedPaymentInfo(srcFilePayloadCid string) (*LockedPayment, error) {
 		LockedFee:    lockedFee,
 		AddressFrom:  paymentInfo.Owner.String(),
 		AddressTo:    paymentInfo.Recipient.String(),
-		Deadline:     paymentInfo.Deadline.String(),
+		Deadline:     paymentInfo.Deadline.Int64(),
 		Size:         paymentInfo.Size.Int64(),
+		BlockNumber:  paymentInfo.BlockNumber.Int64(),
 	}
 
 	return &lockedPayment, nil
@@ -82,6 +82,7 @@ func GetSwanPaymentSession() (*goBind.SwanPaymentSession, error) {
 	}
 
 	paymentContractAddress := common.HexToAddress(config.GetConfig().Polygon.PaymentContractAddress)
+	logs.GetLogger().Info("payment contract address:", paymentContractAddress.String())
 
 	swanPayment, err := goBind.NewSwanPayment(paymentContractAddress, ethClient)
 	if err != nil {

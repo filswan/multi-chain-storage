@@ -7,9 +7,9 @@ const overrides = {
 
 
 async function main() {
-  const oracleDAOContractAddress = "0x9208C2B417Ec2699454843A06A5E49fA6dd88422";
+  const oracleDAOContractAddress = "0x6f83DA2C5f1C5AAC259aD8d817Bb92c2D863F74c";
 
-  const filinkAddress = "0xB6312D719F6B496647703c81F6965EF38bF58B8D";
+  const filinkAddress = "0xef4828525f78991a2b7b1f108751948F16f25a3F";
 
   const [signer] = await ethers.getSigners();
 
@@ -19,7 +19,7 @@ async function main() {
   const tx = await daoOracleInstance.connect(signer).setFilinkOracle(filinkAddress);
   await tx.wait();
 
-  const swanPaymentAddress  = "0x24B9c56BB6419f4c5AE6a63Fd64dE0dCFA1841F1";
+  const swanPaymentAddress  = "0x80a186DCD922175019913b274568ab172F6E20b1";
   const paymentContract = await hre.ethers.getContractFactory("SwanPayment");
   const paymentInstance = await paymentContract.attach(swanPaymentAddress);
 

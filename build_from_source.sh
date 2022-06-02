@@ -20,9 +20,9 @@ for CONF_FILE_NAME in ${CONF_FILE_NAMES[@]}; do
     fi
 done
 
-echo $CONF_FILE_PATH
+
+cp ./on-chain/contracts/abi/SwanPayment.json $CONF_FILE_DIR_DEST/SwanPayment.json
 
 git submodule update --init --recursive
 make ffi
 make
-

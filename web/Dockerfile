@@ -26,7 +26,7 @@ RUN npm install
 COPY . .
 
 # build app for production with minification
-RUN npm run build
+RUN npm run build:test
 
 EXPOSE 8080
 CMD [ "http-server", "dist" ]

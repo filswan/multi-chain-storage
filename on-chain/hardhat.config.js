@@ -59,9 +59,9 @@ module.exports = {
     },
     matictest: {
       url: "https://matic-mumbai.chainstacklabs.com/", // https://forum.openzeppelin.com/t/hardhat-upgrade-failing-with-hh110-on-matic-testnet/12911
-      accounts: [process.env.ownerPK],
+      accounts: [process.env.ownerPK, process.env.key2, process.env.key3],
       gasPrice: 10000000000,
-      gasLimit: 9000000
+      gasLimit: 9999999
     },
     bsctest: {
       url: "https://data-seed-prebsc-1-s1.binance.org:8545",

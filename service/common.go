@@ -14,7 +14,7 @@ import (
 
 func GetHostInfo() *common.HostInfo {
 	hostInfo := common.HostInfo{
-		Version:         common.GetVersion(),
+		Version:         constants.VERSION,
 		OperatingSystem: runtime.GOOS,
 		Architecture:    runtime.GOARCH,
 		CpuNumber:       runtime.NumCPU(),

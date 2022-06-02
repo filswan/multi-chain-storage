@@ -1,9 +1,5 @@
 package common
 
-func GetVersion() string {
-	return "MCS-2.0.0"
-}
-
 type HostInfo struct {
 	Version         string `json:"version"`
 	OperatingSystem string `json:"operating_system"`

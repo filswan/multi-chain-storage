@@ -21,7 +21,7 @@
             <div v-loading="loading">
                 <div class="files_title">
                     <div class="flex_left">
-                        {{$t('uploadFile.Deal_Detail')}} <b @click="networkLink('https://filscan.io/tipset/dsn-detail?dealid='+dealId)" class="golink">#{{dealId}}</b>
+                        {{$t('uploadFile.Deal_Detail')}} <b @click="mainnetLink(dealId)" class="golink">#{{dealId}}</b>
                         <span class="title" v-if="dealId == 0">
                             <el-tooltip effect="dark" :content="$t('uploadFile.detail_tip01')" placement="top">
                                 <img src="@/assets/images/info.png"/>
@@ -246,6 +246,21 @@ export default {
         },
         networkLink(link) {
             window.open(link)
+        },
+        mainnetLink(dealId) {
+            const network_name = this.dealCont.source_file_upload_deal.network_name
+            switch(network_name) {
+                case 'filecoin_calibration':
+                    window.open(`${process.env.BASE_CALIBRATION_ADDRESS}?dealid=${dealId}`)
+                    break;
+                case 'filecoin_mainnet':
+                    window.open(`${process.env.BASE_MAINNET_ADDRESS}?dealid=${dealId}`)
+                    break;
+                default:
+                    if(network_name && network_name.indexOf('calibration') > -1) window.open(`${process.env.BASE_CALIBRATION_ADDRESS}?dealid=${dealId}`)
+                    else window.open(`${process.env.BASE_MAINNET_ADDRESS}?dealid=${dealId}`)
+                    break;
+            }
         },
         copyTextToClipboard(text) {
             let _this = this

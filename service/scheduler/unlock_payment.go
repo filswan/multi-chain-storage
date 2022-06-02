@@ -3,7 +3,6 @@ package scheduler
 import (
 	"context"
 	"fmt"
-	"multi-chain-storage/common/constants"
 	"multi-chain-storage/config"
 	"multi-chain-storage/models"
 	"multi-chain-storage/on-chain/client"
@@ -82,9 +81,15 @@ func UnlockPayment() error {
 			continue
 		}
 
-		err = models.UpdateOfflineDealUnlockInfo(offlineDeal.Id, constants.OFFLINE_DEAL_STATUS_SUCCESS, *txHash)
+		err = models.UpdateOfflineDealUnlockInfo(offlineDeal.Id, *txHash)
 		if err != nil {
 			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
+			continue
+		}
+
+		err = models.UpdateCarFileDealSuccess(offlineDeal.CarFileId)
+		if err != nil {
+			logs.GetLogger().Error(err)
 			continue
 		}
 

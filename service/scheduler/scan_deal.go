@@ -67,11 +67,6 @@ func updateOfflineDealStatusAndLog() error {
 				offlineDeal.Status = constants.OFFLINE_DEAL_STATUS_FAILED
 			case constants.ON_CHAIN_DEAL_STATUS_ACTIVE:
 				offlineDeal.Status = constants.OFFLINE_DEAL_STATUS_ACTIVE
-				err = models.UpdateCarFileDealSuccess(offlineDeal.CarFileId)
-				if err != nil {
-					logs.GetLogger().Error(err)
-					continue
-				}
 			}
 
 			offlineDeal.UpdateAt = libutils.GetCurrentUtcSecond()

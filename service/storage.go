@@ -215,16 +215,13 @@ type SourceFileUploadDeal struct {
 type FlinkDealResult struct {
 	JobRunID string `json:"jobRunID"`
 	Data     struct {
-		Status string `json:"status"`
-		Data   struct {
-			Deal SourceFileUploadDeal `json:"deal"`
-		} `json:"data"`
+		Deal SourceFileUploadDeal `json:"deal"`
 	} `json:"data"`
 }
 
 func GetSourceFileUploadDeal(sourceFileUploadId int64, dealId int64) (*SourceFileUploadDeal, []*models.DaoSignatureOut, error) {
 	flinkDealResult := FlinkDealResult{}
-	sourceFileUploadDeal := &flinkDealResult.Data.Data.Deal
+	sourceFileUploadDeal := &flinkDealResult.Data.Deal
 	if dealId > 0 {
 		flinkUrl := libutils.UrlJoin(config.GetConfig().FlinkUrl, strconv.FormatInt(dealId, 10))
 		flinkUrl = flinkUrl + "?network=" + config.GetConfig().FilecoinNetwork

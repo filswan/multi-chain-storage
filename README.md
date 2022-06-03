@@ -146,7 +146,7 @@ nohup ./build/multi-chain-storage >> ./build/mcs.log &       #After installation
 - **upload_url_prefix**: Ipfs server url for uploading files, such as `http://[ip]:[port]`
 
 #### [swan_task]
-- **dir_deal**: Output directory for saving generated Car files and CSVs
+- **dir_deal**: Directory to store source files, car files, and JSON files created by [Swan Client API](https://github.com/filswan/go-swan-client)
 - **description**: Task description
 - **curated_dataset**: Task dataset
 - **max_price**: Max price willing to pay per GiB/epoch for offline deal
@@ -165,12 +165,12 @@ nohup ./build/multi-chain-storage >> ./build/mcs.log &       #After installation
 
 #### [polygon]
 - **polygon_rpc_url**: Your polygon network rpc url
-- **payment_contract_address**:  Swan payment gateway address on polygon to lock money
+- **payment_contract_address**:  Swan payment contract address on polygon to lock money
 - **payment_recipient_address**:  MCS wallet address to receive money from unlock operation
-- **dao_contract_address**:  Swan dao address on polygon, to receive dao signatures
+- **dao_contract_address**:  Swan DAO address on polygon, to receive DAO signatures
 - **mint_contract_address**:  Swan mint address on polygon
 - **sushi_dex_address**:  Sushi address on polygon
-- **usdc_wFil_pool_contract**:  Address to get exchange rate between uscs and wFil from sushi on polygon
+- **usdc_wFil_pool_contract**:  Address to get exchange rate between USDC and wFil from sushi on polygon
 - **gas_limit**: Gas limit for transaction
 - **lock_time**: Lock days defined in smart contract, it is 6 now
 - **pay_multiply_factor**:

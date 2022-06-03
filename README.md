@@ -73,8 +73,8 @@
 #### Option:two: [install a lotus lite node](https://lotus.filecoin.io/docs/set-up/lotus-lite/#amd-and-intel-based-computers)
 
 ## Database
-Please see schema create script in `../script/create_table.sql`
-Before installation, please create database and related tables using above script file
+- Please see schema create script in `../script/create_table.sql`
+- Before installation, please create database and related tables using above script file
 
 ## Installation
 ### Option:one:  **Prebuilt package**: See [release assets](https://github.com/filswan/multi-chain-storage/releases)

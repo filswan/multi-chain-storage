@@ -11,11 +11,11 @@
 - [System Design](#System-Design)
 - [Modules](#Modules)
 - [Prerequisites](#Prerequisites)
+- [Database](#Database)
 - [Installation](#Installation)
 - [After Installation](#After-Installation)
 - [Configuration](#Configuration)
 - [Work Process](#Work-Process)
-- [Database](#Database)
 - [Pay for Filecoin by Polygon](https://www.youtube.com/watch?v=c4Dvidz3plU)
 - [License](https://github.com/filswan/multi-chain-storage/blob/main/LICENSE)
 

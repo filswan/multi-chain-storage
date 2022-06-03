@@ -126,12 +126,12 @@ nohup ./build/multi-chain-storage >> ./build/mcs.log &    #After installation fr
 - **filecoin_network**: filecoin_calibration or filecoin_mainnet
 
 #### [database]
-- **db_host**: host to connect mcs database
-- **db_port**: port to connect mcs database
-- **db_schema_name**: mcs database name, see [Database](#Database)
-- **db_username**: username to connect mcs database
-- **db_password**: password to connect mcs database
-- **db_args**: use default value `charset=utf8mb4&parseTime=True&loc=Local`
+- **db_host**: Host to connect mcs database
+- **db_port**: Port to connect mcs database
+- **db_schema_name**: MCS database name, see [Database](#Database)
+- **db_username**: Username to connect mcs database
+- **db_password**: Password to connect mcs database
+- **db_args**: Use default value `charset=utf8mb4&parseTime=True&loc=Local`
 
 #### [swan_api]
 - **api_url**: Swan API address: `https://go-swan-server.filswan.com`.
@@ -151,11 +151,11 @@ nohup ./build/multi-chain-storage >> ./build/mcs.log &    #After installation fr
 - **description**: Task description
 - **curated_dataset**: Task dataset
 - **max_price**: Max price willing to pay per GiB/epoch for offline deal
-- **expired_days**: expected completion days for storage provider sealing data
+- **expired_days**: Expected completion days for storage provider sealing data
 - **verified_deal**: [true/false] Whether deals in this task are going to be sent as verified
 - **fast_retrieval**: [true/false] Indicates that data should be available for fast retrieval
 - **start_epoch_hours**: start_epoch for deals in hours from current time
-- **min_file_size**: source files size lower limit when merge them to a car file
+- **min_file_size**: Source files size lower limit when merge them to a car file
 
 [schedule_rule]
 - **unlock_interval_second**: Job running interval, unit: second, default: 300
@@ -165,22 +165,22 @@ nohup ./build/multi-chain-storage >> ./build/mcs.log &    #After installation fr
 - **scan_polygon_interval_second**: Job running interval, unit: second, default: 1
 
 #### [polygon]
-- **polygon_rpc_url**: your polygon network rpc url
-- **payment_contract_address**:  swan payment gateway address on polygon to lock money
-- **payment_recipient_address**:  mcs wallet address to receive money from unlock operation
-- **dao_contract_address**:  swan dao address on polygon, to receive dao signatures
-- **mint_contract_address**:  swan mint address on polygon
-- **sushi_dex_address**:  sushi address on polygon
-- **usdc_wFil_pool_contract**:  address to get exchange rate between uscs and wFil from sushi on polygon
-- **gas_limit**: gas limit for transaction
-- **lock_time**: lock days defined in smart contract, it is 6 now
+- **polygon_rpc_url**: Your polygon network rpc url
+- **payment_contract_address**:  Swan payment gateway address on polygon to lock money
+- **payment_recipient_address**:  MCS wallet address to receive money from unlock operation
+- **dao_contract_address**:  Swan dao address on polygon, to receive dao signatures
+- **mint_contract_address**:  Swan mint address on polygon
+- **sushi_dex_address**:  Sushi address on polygon
+- **usdc_wFil_pool_contract**:  Address to get exchange rate between uscs and wFil from sushi on polygon
+- **gas_limit**: Gas limit for transaction
+- **lock_time**: Lock days defined in smart contract, it is 6 now
 - **pay_multiply_factor**:
-- **unlock_interval_minute**: unlock interval in minutes between 2 unlock operations, in cannot be less than 1
-- **dao_unlock_interval_block**: interval block between unlock & last dao signature after reaching dao threshold
+- **unlock_interval_minute**: Unlock interval in minutes between 2 unlock operations, in cannot be less than 1
+- **dao_unlock_interval_block**: Interval block between unlock & last dao signature after reaching dao threshold
 - **scan_polygon_block_step**: How many blocks to scan each time, default 1000
 
 ### .env
-- **privateKeyOnPolygon**: private key of the wallet used to execute contract methods on the polygon network and pay for gas
+- **privateKeyOnPolygon**: Private key of the wallet used to execute contract methods on the polygon network and pay for gas
 
 ## Work Process
 

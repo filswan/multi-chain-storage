@@ -57,17 +57,15 @@ type lotus struct {
 }
 
 type swanTask struct {
-	DirDeal              string          `toml:"dir_deal"`
-	Description          string          `toml:"description"`
-	CuratedDataset       string          `toml:"curated_dataset"`
-	Tags                 string          `toml:"tags"`
-	MaxPrice             decimal.Decimal `toml:"max_price"`
-	ExpireDays           int             `toml:"expire_days"`
-	VerifiedDeal         bool            `toml:"verified_deal"`
-	FastRetrieval        bool            `toml:"fast_retrieval"`
-	StartEpochHours      int             `toml:"start_epoch_hours"`
-	MaxAutoBidCopyNumber int             `toml:"max_auto_bid_copy_number"`
-	MinFileSize          int64           `toml:"min_file_size"`
+	DirDeal         string          `toml:"dir_deal"`
+	Description     string          `toml:"description"`
+	CuratedDataset  string          `toml:"curated_dataset"`
+	MaxPrice        decimal.Decimal `toml:"max_price"`
+	ExpireDays      int             `toml:"expire_days"`
+	VerifiedDeal    bool            `toml:"verified_deal"`
+	FastRetrieval   bool            `toml:"fast_retrieval"`
+	StartEpochHours int             `toml:"start_epoch_hours"`
+	MinFileSize     int64           `toml:"min_file_size"`
 }
 
 type swanApi struct {
@@ -143,13 +141,11 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 		{"swan_task", "dir_deal"},
 		{"swan_task", "description"},
 		{"swan_task", "curated_dataset"},
-		{"swan_task", "tags"},
 		{"swan_task", "max_price"},
 		{"swan_task", "expire_days"},
 		{"swan_task", "verified_deal"},
 		{"swan_task", "fast_retrieval"},
 		{"swan_task", "start_epoch_hours"},
-		{"swan_task", "max_auto_bid_copy_number"},
 		{"swan_task", "min_file_size"},
 
 		{"schedule_rule", "unlock_interval_second"},

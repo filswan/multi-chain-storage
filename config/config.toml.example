@@ -7,7 +7,7 @@ filecoin_network = "http://35.168.51.2:7886/deal/"
 [database]
 db_host="localhost"
 db_port="3306"
-db_schema_name="mcs"
+db_schema_name="mcs_v2"
 db_username="root"
 db_password=""
 db_args="charset=utf8mb4&parseTime=True&loc=Local"
@@ -29,13 +29,11 @@ upload_url_prefix = "http://[ip]:[port]"
 dir_deal="~/.swan/mcs/temp/deal"
 description = ""
 curated_dataset = ""
-tags = ""
 max_price = 0.00005
 expire_days = 4
 verified_deal = false
 fast_retrieval = true
 start_epoch_hours = 96
-max_auto_bid_copy_number = 5 # max copy number you want to send
 min_file_size = 1024   # unit: byte
 
 [schedule_rule]

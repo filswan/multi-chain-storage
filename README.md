@@ -15,7 +15,7 @@
 - [After Installation](#After-Installation)
 - [Configuration](#Configuration)
 - [Work Process](#Work-Process)
-- [Database](https://github.com/DoraNebula/multi-chain-storage/blob/main/script/create_table.sql)
+- [Database](../script/create_table.sql)
 - [Pay for Filecoin by Polygon](https://www.youtube.com/watch?v=c4Dvidz3plU)
 - [License](https://github.com/filswan/multi-chain-storage/blob/main/LICENSE)
 

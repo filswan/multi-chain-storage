@@ -197,6 +197,6 @@ nohup ./build/multi-chain-storage >> ./build/mcs.log &    #After installation fr
 6. MCS send deals by calling [Swan Client](https://github.com/filswan/go-swan-client) API 
 7. MCS Scan Scheduler module scan the deal info from lotus
 8. When DAO organization find the deal active on lotus, they will sign to agree to unlock the user's payment for this deal.
-9. After success DAO signatures number equal or greater than DAO threshold defined in smart contract, and after 1 minute later of the last DAO signature, MCS will unlock the user's payment, release the money spent on send deal by [Swan Client](https://github.com/filswan/go-swan-client) to `[polygon].payment_recipient_address` defined in [Configuration](#Configuration)
+9. After success DAO signatures number equal or greater than DAO threshold defined in smart contract, and after 1 minute later of the last DAO signature, MCS will unlock the user's payment, release the money spent on send deal by [Swan Client](https://github.com/filswan/go-swan-client) API to `[polygon].payment_recipient_address` defined in [Configuration](#Configuration)
 10. After all deals of a car file are unlocked, MCS refund the remaining money to user wallet address used when pay in step 2.
 

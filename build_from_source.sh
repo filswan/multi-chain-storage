@@ -4,7 +4,7 @@ CONF_FILE_DIR_DEST=${HOME}/.swan/mcs
 mkdir -p ${CONF_FILE_DIR_DEST}
 
 CONF_FILE_NAMES=(
-    .env
+    env
     config.toml
     )
 
@@ -20,7 +20,7 @@ for CONF_FILE_NAME in ${CONF_FILE_NAMES[@]}; do
     fi
 done
 
-
+mv ${CONF_FILE_DIR_DEST}/env ${CONF_FILE_DIR_DEST}/.env
 cp ./on-chain/contracts/abi/SwanPayment.json $CONF_FILE_DIR_DEST/SwanPayment.json
 
 git submodule update --init --recursive

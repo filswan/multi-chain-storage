@@ -173,7 +173,7 @@ nohup ./build/multi-chain-storage >> ./build/mcs.log &    #After installation fr
 - **sushi_dex_address**:  sushi address on polygon
 - **usdc_wFil_pool_contract**:  address to get exchange rate between uscs and wFil from sushi on polygon
 - **gas_limit**: gas limit for transaction
-- **lock_time**: lock days
+- **lock_time**: lock days defined in smart contract, it is 6 now
 - **pay_multiply_factor**:
 - **unlock_interval_minute**: unlock interval in minutes between 2 unlock operations, in cannot be less than 1
 - **dao_unlock_interval_block**: interval block between unlock & last dao signature after reaching dao threshold

@@ -1,7 +1,7 @@
 package constants
 
 const (
-	VERSION = "MCS-2.0.0"
+	VERSION = "release-2.0.0"
 
 	PAGE_SIZE_DEFAULT_VALUE = 10
 

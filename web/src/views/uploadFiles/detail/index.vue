@@ -340,7 +340,7 @@ export default {
                             : "-";
 
                     if(json.data.source_file_upload_deal.provider && json.data.source_file_upload_deal.car_file_payload_cid && json.data.source_file_upload_deal.deal_id != 0){
-                        _this.copy_filename = 'lotus client retrieve --miner '+json.data.source_file_upload_deal.provider+' '+json.data.source_file_upload_deal.car_file_payload_cid+' ~./output-file';
+                        _this.copy_filename = 'lotus client retrieve --miner '+json.data.source_file_upload_deal.provider+' '+json.data.source_file_upload_deal.car_file_payload_cid+' ~/output-file';
                     }else{
                         _this.copy_filename = localStorage.getItem('languageMcs') == 'cn'?"还不可用。":"It's not available yet.";
                     }

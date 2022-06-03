@@ -6,6 +6,8 @@ TAG_NAME=v2.0.0
 
 wget --no-check-certificate ${URL_PREFIX}/${TAG_NAME}/${BINARY_NAME}
 wget --no-check-certificate ${URL_PREFIX}/${TAG_NAME}/config.toml.example
+wget --no-check-certificate ${URL_PREFIX}/${TAG_NAME}/.env.example
+wget --no-check-certificate ${URL_PREFIX}/${TAG_NAME}/SwanPayment.json
 
 CONF_FILE_DIR=${HOME}/.swan/mcs
 mkdir -p ${CONF_FILE_DIR}

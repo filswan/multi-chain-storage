@@ -189,7 +189,7 @@ nohup ./build/multi-chain-storage >> ./build/mcs.log &    #After installation fr
 3. MCS writes the transaction info to our system
 4. MCS scan those source files uploaded and paid but not yet created to car files, and then do the following steps:
    1. compute the max price for each source file, based on the source file size, token paid, and exchange rate betwee USDC and wFil
-   2. if the scanned source file size sum is not less than `[swan_task].min_file_size` defined in [Configuration](#Configuration), or the earliest source file to be merged to car file is more 1 day ago, then MCS will do the following steps by calling Swan Client API, see [Swan Client](https://github.com/filswan/go-swan-client)
+   2. if the scanned source file size sum is equal or greater than `[swan_task].min_file_size` defined in [Configuration](#Configuration), or the earliest source file to be merged to car file is more 1 day ago, then MCS will do the following steps by calling Swan Client API, see [Swan Client](https://github.com/filswan/go-swan-client)
       1. create car files, use the minimum max price among the source files to be merged as the max price for the whole car file
       2. upload car files
       3. create task on swan platform

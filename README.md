@@ -15,7 +15,7 @@
 - [After Installation](#After-Installation)
 - [Configuration](#Configuration)
 - [Work Process](#Work-Process)
-- [Table Design](https://github.com/DoraNebula/multi-chain-storage/blob/main/script/create_table.sql)
+- [Database](https://github.com/DoraNebula/multi-chain-storage/blob/main/script/create_table.sql)
 - [Pay for Filecoin by Polygon](https://www.youtube.com/watch?v=c4Dvidz3plU)
 - [License](https://github.com/filswan/multi-chain-storage/blob/main/LICENSE)
 
@@ -118,32 +118,62 @@ nohup ./build/multi-chain-storage >> ./build/mcs.log &    #After installation fr
 - **port**: Web api port
 - **release**: When work in release mode: set this to true, otherwise to false and enviornment variable GIN_MODE not to release
 - **swan_platform_fil_wallet**: The wallet address used to pay on the filecoin network
-- **filink_url**: Deals data can be searched from here
+- **flink_url**: Deals data can be searched from here
 - **filecoin_network**: filecoin_calibration or filecoin_mainnet
 
+#### [database]
+- **db_host**: host to connect mcs database
+- **db_port**: port to connect mcs database
+- **db_schema_name**: mcs database name, see [Database](#Database)
+- **db_username**: username to connect mcs database
+- **db_password**: password to connect mcs database
+- **db_args**: use default value `charset=utf8mb4&parseTime=True&loc=Local`
+
+#### [swan_api]
+- **api_url**: Swan API address: `https://go-swan-server.filswan.com`.
+- :bangbang:**api_key**: Your Swan API key. Acquire from [Swan Platform](https://console.filswan.com/#/dashboard) -> "My Profile"->"Developer Settings".
+- :bangbang:**access_token**: Your Swan API access token. Acquire from [Swan Platform](https://console.filswan.com/#/dashboard) -> "My Profile"->"Developer Settings".
+
 #### [lotus]
-- **client_api_url**:  Url of lotus client web api, such as: `http://[ip]:[port]/rpc/v0`, generally the `[port]` is `1234`. See [Lotus API](https://docs.filecoin.io/reference/lotus-api/#features)
-- **client_access_token**:  Access token of lotus client web api. It should have admin access right. You can get it from your lotus node machine using command `lotus auth create-token --perm admin`. See [Obtaining Tokens](https://docs.filecoin.io/build/lotus/api-tokens/#obtaining-tokens)
+- **client_api_url**:  Url of lotus client web api, such as: `http://[ip]:[port]/rpc/v0`, generally the `[port]` is `1234`.
+- **client_access_token**:  Access token of lotus client web api with admin access right. Get it from lotus node by command `lotus auth create-token --perm admin`.
+
 #### [ipfs_server]
 - **download_url_prefix**: Ipfs server url prefix, such as: `http://[ip]:[port]`. Store car files for downloading by storage provider. Car file url will be `[download_url_prefix]/ipfs/[file_hash]`
 - **upload_url_prefix**: Ipfs server url for uploading files, such as `http://[ip]:[port]`
+
 #### [swan_task]
 - **dir_deal**: Output directory for saving generated Car files and CSVs
+- **description**: Task description
+- **curated_dataset**: Task dataset
+- **max_price**: Max price willing to pay per GiB/epoch for offline deal
+- **expired_days**: expected completion days for storage provider sealing data
 - **verified_deal**: [true/false] Whether deals in this task are going to be sent as verified
 - **fast_retrieval**: [true/false] Indicates that data should be available for fast retrieval
 - **start_epoch_hours**: start_epoch for deals in hours from current time
-- **expired_days**: expected completion days for storage provider sealing data
-- **max_price**: Max price willing to pay per GiB/epoch for offline deal
-- **generate_md5**: [true/false] Whether to generate md5 for each car file, note: this is a resource consuming action
+- **min_file_size**: source files size lower limit when merge them to a car file
+
+[schedule_rule]
+- **unlock_interval_second**: Job running interval, unit: second, default: 300
+- **create_task_interval_second**: Job running interval, unit: second, default: 120
+- **send_deal_interval_second**: Job running interval, unit: second, default: 180
+- **scan_deal_status_interval_second**: Job running interval, unit: second, default: 300
+- **scan_polygon_interval_second**: Job running interval, unit: second, default: 1
+
 #### [polygon]
-- **rpc_url**: your polygon network rpc url
+- **polygon_rpc_url**: your polygon network rpc url
 - **payment_contract_address**:  swan payment gateway address on polygon to lock money
+- **payment_recipient_address**:  mcs wallet address to receive money from unlock operation
+- **dao_contract_address**:  swan dao address on polygon, to receive dao signatures
+- **mint_contract_address**:  swan mint address on polygon
 - **sushi_dex_address**:  sushi address on polygon
 - **usdc_wFil_pool_contract**:  address to get exchange rate between uscs and wFil from sushi on polygon
-- **dao_contract_address**:  swan dao address on polygon, to receive dao signatures
-- **mcs_payment_receiver_address**:  mcs wallet address to receive money from unlock operation
 - **gas_limit**: gas limit for transaction
+- **lock_time**: lock days
+- **pay_multiply_factor**:
 - **unlock_interval_minute**: unlock interval in minutes between 2 unlock operations, in cannot be less than 1
+- **dao_unlock_interval_block**: interval block between unlock & last dao signature after reaching dao threshold
+- **scan_polygon_block_step**: How many blocks to scan each time, default 1000
 
 ### .env
 - **privateKeyOnPolygon**: private key of the wallet used to execute contract methods on the polygon network and pay for gas

@@ -1,3 +1,6 @@
+#-- default database name is mcs_v2
+#-- you can change to another one, in that case please modify database name below and in config file accordingly
+create database mcs_v2;
 use mcs_v2;
 
 create table network (
@@ -207,24 +210,4 @@ create table dao_signature (
     constraint fk_dao_signature_wallet_id_recipient foreign key (wallet_id_recipient) references wallet(id),
     constraint fk_dao_signature_wallet_id_contract foreign key (wallet_id_contract) references wallet(id)
 );
-
-
-#--alter table network add last_scan_block_number bigint;
-#--update network set last_scan_block_number=26354230 where name='polygon';
-
-#--2022-05-20
-#--alter table wallet add is_dao        boolean;
-#--create index ind_wallet_is_dao on wallet(is_dao);
-#--alter table wallet add update_at     bigint       not null;
-
-#--2022-05-24
-#--SET SQL_SAFE_UPDATES=0;
-#--update source_file_upload set status='Success' where status='Unlocked';
-#--update car_file set status='Success' where status='Unlocked';
-#--update offline_deal set status='Success' where status='Unlocked';
-#--SET SQL_SAFE_UPDATES=1;
-
-
-#--2022-05-31
-#--alter table car_file add deal_success       boolean       not null;
 

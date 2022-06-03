@@ -243,7 +243,7 @@ func GetSourceFileUploadDeal(sourceFileUploadId int64, dealId int64) (*SourceFil
 		}
 
 		if offlineDeal != nil {
-			if sourceFileUploadDeal.DealCid == nil {
+			if libutils.IsStrEmpty(sourceFileUploadDeal.DealCid) {
 				sourceFileUploadDeal.DealCid = &offlineDeal.DealCid
 			}
 

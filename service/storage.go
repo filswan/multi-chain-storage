@@ -243,6 +243,10 @@ func GetSourceFileUploadDeal(sourceFileUploadId int64, dealId int64) (*SourceFil
 		}
 
 		if offlineDeal != nil {
+			if sourceFileUploadDeal.DealCid == nil {
+				sourceFileUploadDeal.DealCid = &offlineDeal.DealCid
+			}
+
 			sourceFileUploadDeal.Unlocked = offlineDeal.Status == constants.OFFLINE_DEAL_STATUS_SUCCESS
 		}
 	}

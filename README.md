@@ -79,7 +79,7 @@
 ## Installation
 ### Option:one:  **Prebuilt package**: See [release assets](https://github.com/filswan/multi-chain-storage/releases)
 ```shell
-wget https://github.com/filswan/multi-chain-storage/releases/tag/v2.0.0/install.sh
+wget --no-check-certificate https://github.com/filswan/multi-chain-storage/releases/tag/v2.0.0/install.sh
 chmod +x ./install.sh
 ./install.sh
 ```

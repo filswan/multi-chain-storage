@@ -154,7 +154,7 @@ nohup ./build/multi-chain-storage >> ./build/mcs.log &    #After installation fr
 - **expired_days**: Expected completion days for storage provider sealing data
 - **verified_deal**: [true/false] Whether deals in this task are going to be sent as verified
 - **fast_retrieval**: [true/false] Indicates that data should be available for fast retrieval
-- **start_epoch_hours**: start_epoch for deals in hours from current time
+- **start_epoch_hours**: Start epoch for deals in hours from current time
 - **min_file_size**: Source files size lower limit when merge them to a car file
 
 [schedule_rule]

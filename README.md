@@ -40,7 +40,7 @@
 * [Filecoin Storage](https://lotus.filecoin.io/docs/set-up/install/)
 
 ### Token Swap
-1. Users pay USDC or other tokens, which are called user tokens, when uploading a file.
+1. Users pay USDC or other tokens, which are called user tokens, when pay for a uploaded file.
 2. MCS uses FIL, which is called wrapped token, to pay when store data to filecoin network.
 3. User tokens should be changed to wrapped tokens by this module and this step is called token exchange(swap).
 4. Token exchange(swap) is done through Sushi Swap which is a DEX.
@@ -51,8 +51,8 @@
    2. file size
    3. storage copy number
    4. duration
-2. Then the estimated amount of money will be locked to the payment contract address, see [Configuration](#Configuration)
-3. In unlock step, the amount pay to filcoin network by swan platform fil wallet, will be transfered to mcs payment receiver address, see [Configuration](#Configuration)
+2. Then the estimated amount of money will be locked to the payment contract address defined in [Configuration](#Configuration)
+3. In unlock step, the amount pay to filcoin network by swan platform fil wallet, will be transfered to mcs payment recipient address defined in [Configuration](#Configuration)
 4. In refund step, the overpayment part that is locked will be returned to user wallet
 
 ### DAO Signature

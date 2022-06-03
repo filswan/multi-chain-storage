@@ -117,7 +117,7 @@ nohup ./build/multi-chain-storage >> ./build/mcs.log &       #After installation
 
 ## Configuration
 
-### config.toml
+### ~/.swan/mcs/config.toml
 - **port**: Web api port
 - **release**: When work in release mode: set this to true, otherwise to false and enviornment variable GIN_MODE not to release
 - **swan_platform_fil_wallet**: The wallet address used to pay on the filecoin network
@@ -178,7 +178,7 @@ nohup ./build/multi-chain-storage >> ./build/mcs.log &       #After installation
 - **dao_unlock_interval_block**: Interval block between unlock & last dao signature after reaching dao threshold
 - **scan_polygon_block_step**: How many blocks to scan each time, default 1000
 
-### .env
+### ~/.swan/mcs/.env
 - **privateKeyOnPolygon**: Private key of the wallet used to execute contract methods on the polygon network and pay for gas
 
 ## Work Process

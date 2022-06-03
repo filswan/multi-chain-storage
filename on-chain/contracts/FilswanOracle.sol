@@ -35,6 +35,13 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
 
     event SignTransaction(string cid, string dealId, address recipient);
 
+    event SignCarTransaction(
+        string[] cidList,
+        string dealId,
+        string network,
+        address recipient
+    );
+
     function initialize(address admin, uint8 threshold) public initializer {
         __Ownable_init();
         __AccessControl_init();
@@ -117,6 +124,8 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
             cidListMap[key] = cidList;
             FilinkConsumer(_filinkAddress).requestDealInfo(dealId, network);
         }
+
+        emit SignCarTransaction(cidList, dealId, network, recipient);
     }
 
     function isCarPaymentAvailable(
@@ -124,10 +133,11 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
         string memory network,
         address recipient
     ) public view returns (bool) {
-        string[] memory cidList = cidListMap[dealId];
+        string memory key = concatenate(dealId, network);
+        string[] memory cidList = cidListMap[key];
         bytes32 voteKey = keccak256(
             abi.encodeWithSignature(
-                "f(string,string,address,string[])",
+                "f(string, string,address,string[])",
                 dealId,
                 network,
                 recipient,
@@ -142,10 +152,11 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
         string memory network,
         address recipient
     ) public view returns (uint8) {
-        string[] memory cidList = cidListMap[dealId];
+        string memory key = concatenate(dealId, network);
+        string[] memory cidList = cidListMap[key];
         bytes32 voteKey = keccak256(
             abi.encodeWithSignature(
-                "f(string,string,address,string[])",
+                "f(string, string,address,string[])",
                 dealId,
                 network,
                 recipient,

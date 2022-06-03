@@ -23,10 +23,23 @@ func GetWfilPriceFromSushiPrice(wfilPrice string) (*big.Int, error) {
 	//pairAddress sushiswap mumbai address
 	usdcWFilPoolContract := common.HexToAddress(config.GetConfig().Polygon.UsdcWFilPoolContract)
 
-	contractRouter, _ := goBind.NewRouter(sushiDexAddress, ethClient)
-	contractPair, _ := goBind.NewPair(usdcWFilPoolContract, ethClient)
+	contractRouter, err := goBind.NewRouter(sushiDexAddress, ethClient)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
 
-	reserves, _ := contractPair.GetReserves(nil)
+	contractPair, err := goBind.NewPair(usdcWFilPoolContract, ethClient)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	reserves, err := contractPair.GetReserves(nil)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
 
 	//amt,_:=  new(big.Int).SetString("1000000000000000000", 10)
 	amt, flag := new(big.Int).SetString(wfilPrice, 10)

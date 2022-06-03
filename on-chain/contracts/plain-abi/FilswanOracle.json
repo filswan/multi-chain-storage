@@ -3,6 +3,7 @@
   "event RoleAdminChanged(bytes32 indexed,bytes32 indexed,bytes32 indexed)",
   "event RoleGranted(bytes32 indexed,address indexed,address indexed)",
   "event RoleRevoked(bytes32 indexed,address indexed,address indexed)",
+  "event SignCarTransaction(string[],string,string,address)",
   "event SignTransaction(string,string,address)",
   "function DAO_ROLE() view returns (bytes32)",
   "function DEFAULT_ADMIN_ROLE() view returns (bytes32)",

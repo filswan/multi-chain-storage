@@ -54,12 +54,12 @@ contract SwanPayment is IPaymentMinimal, Initializable {
         return true;
     }
 
-    function setChainlinkOracle(address _chainlinkOracle)
+    function setChainlinkOracle(address chainlinkOracle)
         public
         onlyOwner
         returns (bool)
     {
-        _chainlinkOracle = _chainlinkOracle;
+        _chainlinkOracle = chainlinkOracle;
         return true;
     }
 
@@ -84,7 +84,9 @@ contract SwanPayment is IPaymentMinimal, Initializable {
         uint256 lockedFee,
         uint256 minPayment,
         address recipient,
-        uint256 deadline
+        uint256 deadline,
+        uint256 size,
+        uint8 copyLimit
     );
 
     event UnlockPayment(
@@ -142,7 +144,18 @@ contract SwanPayment is IPaymentMinimal, Initializable {
             t._isExisted = true;
             t.size = param.size;
             t.copyLimit = param.copyLimit;
-
+            t.blockNumber = block.number;
+            
+            emit LockPayment(
+                param.id,
+                t.token,
+                t.lockedFee,
+                param.minPayment,
+                param.recipient,
+                t.deadline,
+                t.size,
+                t.copyLimit
+            );
         } else {
             TxInfo storage t = txMap[param.id];
             t.owner = msg.sender;
@@ -153,15 +166,16 @@ contract SwanPayment is IPaymentMinimal, Initializable {
             t.token = _ERC20_TOKEN;
             t._isExisted = true;
             t.copyLimit = param.copyLimit;
+            t.blockNumber = block.number;
 
-            emit LockPayment(
-                param.id,
-                t.token,
-                t.lockedFee,
-                param.minPayment,
-                param.recipient,
-                t.deadline
-            );
+            // emit LockPayment(
+            //     param.id,
+            //     t.token,
+            //     t.lockedFee,
+            //     param.minPayment,
+            //     param.recipient,
+            //     t.deadline
+            // );
         }
 
         return true;

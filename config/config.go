@@ -15,7 +15,7 @@ type Configuration struct {
 	Port                  int          `toml:"port"`
 	Release               bool         `toml:"release"`
 	SwanPlatformFilWallet string       `toml:"swan_platform_fil_wallet"`
-	FLinkUrl              string       `toml:"flink_url"`
+	FlinkUrl              string       `toml:"flink_url"`
 	FilecoinNetwork       string       `toml:"filecoin_network"`
 	Polygon               polygon      `toml:"polygon"`
 	Database              database     `toml:"database"`
@@ -27,15 +27,19 @@ type Configuration struct {
 }
 
 type polygon struct {
-	PolygonRpcUrl             string        `toml:"polygon_rpc_url"`
-	PaymentContractAddress    string        `toml:"payment_contract_address"`
-	SushiDexAddress           string        `toml:"sushi_dex_address"`
-	UsdcWFilPoolContract      string        `toml:"usdc_wFil_pool_contract"`
-	DaoContractAddress        string        `toml:"dao_contract_address"`
-	McsPaymentReceiverAddress string        `toml:"mcs_payment_receiver_address"`
-	GasLimit                  uint64        `toml:"gas_limit"`
-	UnlockIntervalMinute      time.Duration `toml:"unlock_interval_minute"`
-	IntervalDaoUnlockBlock    int64         `toml:"interval_dao_unlock_block"`
+	PolygonRpcUrl           string        `toml:"polygon_rpc_url"`
+	PaymentContractAddress  string        `toml:"payment_contract_address"`
+	PaymentRecipientAddress string        `toml:"payment_recipient_address"`
+	DaoContractAddress      string        `toml:"dao_contract_address"`
+	MintContractAddress     string        `toml:"mint_contract_address"`
+	SushiDexAddress         string        `toml:"sushi_dex_address"`
+	UsdcWFilPoolContract    string        `toml:"usdc_wFil_pool_contract"`
+	GasLimit                uint64        `toml:"gas_limit"`
+	LockTime                int           `toml:"lock_time"`
+	PayMultiplyFactor       float32       `toml:"pay_multiply_factor"`
+	UnlockIntervalMinute    time.Duration `toml:"unlock_interval_minute"`
+	DaoUnlockIntervalBlock  int64         `toml:"dao_unlock_interval_block"`
+	ScanPolygonBlockStep    uint64        `toml:"scan_polygon_block_step"`
 }
 
 type database struct {
@@ -78,11 +82,11 @@ type ipfsServer struct {
 }
 
 type ScheduleRule struct {
-	UnlockPaymentRule  string `toml:"unlock_payment_rule"`
-	CreateTaskRule     string `toml:"create_task_rule"`
-	SendDealRule       string `toml:"send_deal_rule"`
-	ScanDealStatusRule string `toml:"scan_deal_status_rule"`
-	RefundRule         string `toml:"refund_rule"`
+	UnlockIntervalSecond         time.Duration `toml:"unlock_interval_second"`
+	CreateTaskIntervalSecond     time.Duration `toml:"create_task_interval_second"`
+	SendDealIntervalSecond       time.Duration `toml:"send_deal_interval_second"`
+	ScanDealStatusIntervalSecond time.Duration `toml:"scan_deal_status_interval_second"`
+	ScanPolygonIntervalSecond    time.Duration `toml:"scan_polygon_interval_second"`
 }
 
 var config *Configuration
@@ -148,21 +152,25 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 		{"swan_task", "max_auto_bid_copy_number"},
 		{"swan_task", "min_file_size"},
 
-		{"schedule_rule", "unlock_payment_rule"},
-		{"schedule_rule", "create_task_rule"},
-		{"schedule_rule", "send_deal_rule"},
-		{"schedule_rule", "scan_deal_status_rule"},
-		{"schedule_rule", "refund_rule"},
+		{"schedule_rule", "unlock_interval_second"},
+		{"schedule_rule", "create_task_interval_second"},
+		{"schedule_rule", "send_deal_interval_second"},
+		{"schedule_rule", "scan_deal_status_interval_second"},
+		{"schedule_rule", "scan_polygon_interval_second"},
 
 		{"polygon", "polygon_rpc_url"},
 		{"polygon", "payment_contract_address"},
+		{"polygon", "payment_recipient_address"},
+		{"polygon", "dao_contract_address"},
+		{"polygon", "mint_contract_address"},
 		{"polygon", "sushi_dex_address"},
 		{"polygon", "usdc_wFil_pool_contract"},
-		{"polygon", "dao_contract_address"},
-		{"polygon", "mcs_payment_receiver_address"},
 		{"polygon", "gas_limit"},
+		{"polygon", "lock_time"},
+		{"polygon", "pay_multiply_factor"},
 		{"polygon", "unlock_interval_minute"},
-		{"polygon", "interval_dao_unlock_block"},
+		{"polygon", "dao_unlock_interval_block"},
+		{"polygon", "scan_polygon_block_step"},
 	}
 
 	for _, v := range requiredFields {

@@ -1,13 +1,10 @@
 package main
 
 import (
-	"multi-chain-storage/common/constants"
 	"multi-chain-storage/config"
 	"multi-chain-storage/database"
-	"multi-chain-storage/routers/billing"
-	"multi-chain-storage/routers/common"
-	"multi-chain-storage/routers/storage"
-	"multi-chain-storage/scheduler"
+	"multi-chain-storage/routers"
+	"multi-chain-storage/service/scheduler"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -27,11 +24,12 @@ func main() {
 	defer database.CloseDB(db)
 
 	scheduler.InitScheduler()
+	//scheduler.GetPayments()
 	//scheduler.CreateTask()
-	//scheduler.SendDeal()
-	//scheduler.ScanDeal()
 	//scheduler.UnlockPayment()
 	//scheduler.Refund()
+	//scheduler.SendDeal()
+	//scheduler.UpdateSourceFile2Refundable()
 
 	createGinServer()
 }
@@ -49,9 +47,10 @@ func createGinServer() {
 	}))
 
 	v1 := r.Group("/api/v1")
-	common.HostManager(v1.Group(constants.URL_HOST_GET_COMMON))
-	billing.BillingManager(v1.Group(constants.URL_BILLING_PREFIX))
-	storage.SendDealManager(v1.Group(constants.URL_STORAGE_PREFIX))
+	routers.HostManager(v1.Group("common"))
+	routers.BillingManager(v1.Group("billing"))
+	routers.Storage(v1.Group("storage"))
+	routers.Dao(v1.Group("dao"))
 
 	err := r.Run(":" + strconv.Itoa(config.GetConfig().Port))
 	if err != nil {

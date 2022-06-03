@@ -79,7 +79,8 @@
 ## Installation
 ### Option:one:  **Prebuilt package**: See [release assets](https://github.com/filswan/multi-chain-storage/releases)
 ```shell
-wget https://github.com/filswan/multi-chain-storage/releases/tag/v1.0.1/install.sh
+wget https://github.com/filswan/multi-chain-storage/releases/tag/v2.0.0/install.sh
+chmod +x ./install.sh
 ./install.sh
 ```
 
@@ -101,19 +102,17 @@ vi ~/.swan/mcs/config.toml
 ```shell
 vi ~/.swan/mcs/.env
 ```
-- After set your config and env variable in the related files, you can run `multi-chain-storage` in `./build` directory
+- After set your config and env variable in the related files, you can run MCS using one of the following methods
 ```shell
-./build/multi-chain-storage
+./multi-chain-storage-2.0.0-linux-amd64     #After installation from Option 2
+./build/multi-chain-storage                 #After installation from Option 2
 ```
 ### Note
 - Logs are in directory `./logs`
-- You can add `nohup` before `./multi-chain-storage` to ignore the HUP (hangup) signal and therefore avoid stop when you log out.
-- You can add `>> mcs.log` in the command to let all the logs output to `mcs.log`.
-- You can add `&` at the end of the command to let the program run in background.
-- Such as:
+- You can use the following methods to avoid it be stopped when you exit your OS session:
 ```shell
-nohup ./multi-chain-storage-0.2.1-rc1-unix >> mcs.log &   #After installation from Option 1
-nohup ./build/multi-chain-storage >> ./build/mcs.log &    #After installation from Option 2
+nohup ./multi-chain-storage-2.0.0-linux-amd64 >> mcs.log &   #After installation from Option 1
+nohup ./build/multi-chain-storage >> ./build/mcs.log &       #After installation from Option 2
 ```
 
 ## Configuration
@@ -126,11 +125,11 @@ nohup ./build/multi-chain-storage >> ./build/mcs.log &    #After installation fr
 - **filecoin_network**: filecoin_calibration or filecoin_mainnet
 
 #### [database]
-- **db_host**: Host to connect mcs database
-- **db_port**: Port to connect mcs database
+- **db_host**: Host to connect to MCS database
+- **db_port**: Port to connect to MCS database
 - **db_schema_name**: MCS database name, see [Database](#Database)
-- **db_username**: Username to connect mcs database
-- **db_password**: Password to connect mcs database
+- **db_username**: Username to connect to MCS database
+- **db_password**: Password to connect to MCS database
 - **db_args**: Use default value `charset=utf8mb4&parseTime=True&loc=Local`
 
 #### [swan_api]

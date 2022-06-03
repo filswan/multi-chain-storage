@@ -6,28 +6,27 @@ TAG_NAME=v2.0.0
 
 wget --no-check-certificate ${URL_PREFIX}/${TAG_NAME}/${BINARY_NAME}
 wget --no-check-certificate ${URL_PREFIX}/${TAG_NAME}/config.toml.example
-wget --no-check-certificate ${URL_PREFIX}/${TAG_NAME}/.env.example
+wget --no-check-certificate ${URL_PREFIX}/${TAG_NAME}/env.example
 wget --no-check-certificate ${URL_PREFIX}/${TAG_NAME}/SwanPayment.json
 
 CONF_FILE_DIR=${HOME}/.swan/mcs
 mkdir -p ${CONF_FILE_DIR}
 
-CONF_FILE_NAMES=(
-    .env
-    config.toml
-    )
+CONF_FILE_PATH=${CONF_FILE_DIR}/config.toml
+if [ -f "${CONF_FILE_PATH}" ]; then
+    echo "${CONF_FILE_PATH} exists"
+else
+    cp ./config.toml.example $CONF_FILE_PATH
+    echo "${CONF_FILE_PATH} created"
+fi
 
-for CONF_FILE_NAME in ${CONF_FILE_NAMES[@]}; do
-    CONF_FILE_PATH_SRC=./config/${CONF_FILE_NAME}.example
-    CONF_FILE_PATH_DEST=${CONF_FILE_DIR_DEST}/${CONF_FILE_NAME}
-
-    if [ -f "$CONF_FILE_PATH_DEST" ]; then
-        echo "$CONF_FILE_PATH_DEST exists"
-    else
-        cp $CONF_FILE_PATH_SRC $CONF_FILE_PATH_DEST
-        echo "copied $CONF_FILE_PATH_SRC to $CONF_FILE_PATH_DEST"
-    fi
-done
+ENV_FILE_PATH=${CONF_FILE_DIR}/.env
+if [ -f "${ENV_FILE_PATH}" ]; then
+    echo "${ENV_FILE_PATH} exists"
+else
+    cp ./env.example $ENV_FILE_PATH
+    echo "${ENV_FILE_PATH} created"
+fi
 
 cp ./SwanPayment.json $CONF_FILE_DIR_DEST/SwanPayment.json
 

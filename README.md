@@ -15,7 +15,7 @@
 - [After Installation](#After-Installation)
 - [Configuration](#Configuration)
 - [Work Process](#Work-Process)
-- [Database](../script/create_table.sql)
+- [Database](#Database)
 - [Pay for Filecoin by Polygon](https://www.youtube.com/watch?v=c4Dvidz3plU)
 - [License](https://github.com/filswan/multi-chain-storage/blob/main/LICENSE)
 
@@ -71,6 +71,10 @@
 - Lotus lite node depends on a lotus node, so ensure that a lotus node exists somewhere when using lotus lite node
 #### Option:one: [install a lotus full node](https://lotus.filecoin.io/docs/set-up/install/)
 #### Option:two: [install a lotus lite node](https://lotus.filecoin.io/docs/set-up/lotus-lite/#amd-and-intel-based-computers)
+
+## Database
+Please see schema create script in `../script/create_table.sql`
+Before installation, please create database and related tables using above script file
 
 ## Installation
 ### Option:one:  **Prebuilt package**: See [release assets](https://github.com/filswan/multi-chain-storage/releases)

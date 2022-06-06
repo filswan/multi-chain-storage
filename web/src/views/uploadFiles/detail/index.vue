@@ -5,23 +5,13 @@
             <span style="font-size:0.22rem;margin-left:0.05rem">{{$t('deal.backto')}}</span>
         </div>
         <div class="detailStyle">
-            <el-tabs v-model="activeName" :tab-position="tabPosition" type="card" @tab-click="handleClick">
-                <el-tab-pane v-for="(item, i) in offline_deals_data" :key="i" :name="''+i+''">
-                    <span slot="label">
-                        <!-- <i class="el-icon-success"></i>  -->
-                        <img v-if="!dealCont.source_file_upload_deal.locked_fee" src="@/assets/images/error.png" />
-                        <img v-else-if="dealCont.source_file_upload_deal.unlocked" src="@/assets/images/dao_success.png" />
-                        <img v-else-if="dealCont.dao_signature.length >= dealCont.dao_threshold" src="@/assets/images/dao_waiting.png" />
-                        <img v-else src="@/assets/images/dao_waiting.png" />
-
-                        {{item.miner_fid}}
-                    </span>
-                </el-tab-pane>
-            </el-tabs>
             <div v-loading="loading">
                 <div class="files_title">
                     <div class="flex_left">
-                        {{$t('uploadFile.Deal_Detail')}} <b @click="mainnetLink(dealId)" class="golink">#{{dealId}}</b>
+                        {{$t('uploadFile.Deal_Detail')}} 
+                        <b v-if="dealCont.source_file_upload_deal.deal_id || dealCont.source_file_upload_deal.deal_id==0" @click="mainnetLink(dealId)" class="golink">#{{dealId}}</b>
+                        <b v-else style="margin: 0 0 0 5px;">#</b>
+
                         <span class="title" v-if="dealId == 0">
                             <el-tooltip effect="dark" :content="$t('uploadFile.detail_tip01')" placement="top">
                                 <img src="@/assets/images/info.png"/>
@@ -46,6 +36,20 @@
                     </div>
                     <el-button type="primary" size="small" @click="getDealLogsData">{{$t('uploadFile.view_deal_logs')}}</el-button>
                 </div>
+
+                <el-tabs v-model="activeName" :tab-position="tabPosition" type="card" @tab-click="handleClick">
+                    <el-tab-pane v-for="(item, i) in offline_deals_data" :key="i" :name="''+i+''">
+                        <span slot="label">
+                            <img v-if="!dealCont.source_file_upload_deal.locked_fee" src="@/assets/images/error.png" />
+                            <img v-else-if="dealCont.source_file_upload_deal.unlocked" src="@/assets/images/dao_success.png" />
+                            <img v-else-if="dealCont.dao_signature.length >= dealCont.dao_threshold" src="@/assets/images/dao_waiting.png" />
+                            <img v-else src="@/assets/images/dao_waiting.png" />
+
+                            {{item.miner_fid}}
+                        </span>
+                    </el-tab-pane>
+                </el-tabs>
+
                 <div class="upload">
                     <el-row>
                         <el-col :span="8">{{$t('uploadFile.file_name')}}:</el-col>
@@ -82,14 +86,11 @@
                         <el-col :span="16" v-if="dealId == 0">-</el-col>
                         <el-col :span="16" v-else>{{dealCont.source_file_upload_deal.client | NumFormat}}</el-col>
                         <el-col :span="8">{{$t('uploadFile.detail_Verified_Deal')}}:</el-col>
-                        <el-col :span="16">{{dealCont.source_file_upload_deal.verified_deal?'True':'False'}}</el-col>
+                        <el-col :span="16" v-if="dealCont.source_file_upload_deal.verified_deal==null">{{dealCont.source_file_upload_deal.verified_deal | NumFormat}}</el-col>
+                        <el-col :span="16" v-else>{{dealCont.source_file_upload_deal.verified_deal?'True':'False'}}</el-col>
                         <el-col :span="8">{{$t('uploadFile.detail_Storage_Price_Per_Epoch')}}:</el-col>
                         <el-col :span="16" v-if="dealId == 0">-</el-col>
                         <el-col :span="16" v-else>{{dealCont.source_file_upload_deal.storage_price_per_epoch | NumFormatPrice}} FIL</el-col>
-                        <el-col :span="8">{{$t('uploadFile.detail_Signature_Type')}}:</el-col>
-                        <el-col :span="16">{{dealCont.source_file_upload_deal.signature_type | NumFormat}}</el-col>
-                        <el-col :span="8">{{$t('my_profile.miner_add_Signature')}}:</el-col>
-                        <el-col :span="16">{{dealCont.source_file_upload_deal.signature | NumFormat}}</el-col>
                         <el-col :span="24">
                             <div class="lotupTitle">
                                 {{$t('uploadFile.detail_Retrieval_Filecoin')}}
@@ -206,7 +207,7 @@ export default {
     data() {
       return {
             loading: false,
-            tabPosition: document.documentElement.clientWidth<1024?'top':'left',
+            tabPosition: 'top',
             bodyWidth: document.documentElement.clientWidth<1024?true:false,
             dealId: '',
             dealCont: {
@@ -560,32 +561,20 @@ export default {
     }
     .detailStyle{
         .el-tabs /deep/{
-            float: left;
-            height: auto;
-            @media screen and (min-width: 1024px) {
-                overflow: inherit;
-            }
-            @media screen and (max-width: 1024px) {
-                float: none;
-            }
             .el-tabs__header{
-                margin: 0.44rem 1px 0 0;
+                margin: 0;
                 background: transparent;
-                @media screen and (max-width: 1024px) {
-                    margin: 0;
-                }
                 .el-tabs__nav-wrap, .el-tabs__nav-scroll{
-                    @media screen and (min-width: 1024px) {
-                        overflow: inherit;
-                    }
+                    
                 }
                 .el-tabs__nav{
+                    display: flex;
                     border: 0;
                     @media screen and (max-width: 1024px) {
                         display: flex;
                     }
                     .el-tabs__item{
-                        min-width: 150px;
+                        // min-width: 150px;
                         height: auto;
                         padding: 0.03rem 0.15rem;
                         background: #fff;
@@ -602,6 +591,13 @@ export default {
                         }
                         &:first-child{
                             border-top: 0;
+                            border-top-left-radius: 0.1rem;
+                            border-bottom-left-radius: 0.1rem;
+                        }
+                        &:last-child{
+                            border-top: 0;
+                            border-top-right-radius: 0.1rem;
+                            border-bottom-right-radius: 0.1rem;
                         }
                         span{
                             width: 100%;
@@ -612,7 +608,7 @@ export default {
                         i, img{
                             width: 20px;
                             height: 20px;
-                            margin: 0 5px 0 0;
+                            margin: 0 15px 0 0;
                             opacity: 0;
                             font-size: 16px;
                             color: #67c23a;
@@ -629,7 +625,7 @@ export default {
                         &::before{
                             content: " ";
                             position: absolute;
-                            display: block;
+                            display: none;
                             width: 0;
                             height: 0;
                             right: -10px;
@@ -650,6 +646,7 @@ export default {
         display: flex;
         align-items: center;
         justify-content: space-between;
+        margin: 0.4rem 0 0.1rem;
         font-size: 0.22rem;
         font-weight: bold;
         line-height: 2;
@@ -661,7 +658,7 @@ export default {
         .flex_left{
             display: flex;
             align-items: center;
-            @media screen and (max-width:600px){
+            @media screen and (max-width:410px){
                 width: 100%;
                 font-size: 16px;
                 flex-wrap: wrap;
@@ -680,8 +677,6 @@ export default {
                 margin: 0 0 0 15px;
                 cursor: pointer;
                 @media screen and (max-width:600px){
-                    width: 15px;
-                    height: 15px;
                     margin: 0;
                 }
             }

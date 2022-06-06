@@ -39,7 +39,7 @@
               </div>
             </template>
             <template slot-scope="scope">
-              <div class="hot-cold-box" style="text-decoration: underline;" @click="toDetail(scope.row)">
+              <div class="hot-cold-box" style="text-decoration: underline;font-size:0.17rem;" @click="toDetail(scope.row)">
                 <span target="_blank" style="color: inherit;">{{ scope.row.file_name }}</span>
               </div>
             </template>
@@ -81,7 +81,7 @@
               <el-button plain type="refunding" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='refundable'&&!scope.row.status_file">
                   {{ languageMcs == "en" ? "Refundable" : '可退款'}}
               </el-button>
-              <el-button type="refunding" class="statusStyle" v-else-if="scope.row.status_file">
+              <el-button type="successPart" class="statusStyle" v-else-if="scope.row.status_file">
                   {{ languageMcs == "en" ? "Success" : '完成'}}
               </el-button>
               <el-button plain type="info" class="statusStyle" v-else>
@@ -1592,6 +1592,10 @@ export default {
       }
       .el-button--refunding{
         color: #f9d54b;
+        border-color: #f9d54b;
+      }
+      .el-button--successPart{
+        color: #67c23a;
         border-color: #f9d54b;
       }
       .el-button--pending{

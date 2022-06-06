@@ -136,7 +136,6 @@ func GetDeals(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, common.CreateSuccessResponse(gin.H{
-		"filecoin_network":   config.GetConfig().FilecoinNetwork,
 		"source_file_upload": sourceFileUploads,
 		"total_record_count": *totalRecordCount,
 	}))

@@ -27,7 +27,7 @@
 
 ## System Design
 
-![MCS Desgin](https://github.com/DoraNebula/multi-chain-storage/blob/main/script/Architecture.png)
+![MCS Desgin](https://drive.google.com/file/d/1oyzd5qMw8jn5XkbIZJ7MkOdW_GFC64H2/view?usp=sharing)
 
 
 ## Modules

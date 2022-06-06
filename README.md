@@ -27,7 +27,7 @@
 
 ## System Design
 
-![MCS Desgin](https://ibb.co/g4pm0mp)
+![MCS Desgin](https://nebulaai-my.sharepoint.com/:i:/g/personal/hlee_nbai_io/EQ884faVOC1IqeuNU0KpU3ABgsjy7yghhNqvwfyRkGghaw)
 
 
 ## Modules

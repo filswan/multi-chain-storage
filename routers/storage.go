@@ -6,6 +6,7 @@ import (
 	"multi-chain-storage/common"
 	"multi-chain-storage/common/constants"
 	"multi-chain-storage/common/errorinfo"
+	"multi-chain-storage/config"
 	"multi-chain-storage/models"
 	"multi-chain-storage/on-chain/client"
 	"multi-chain-storage/service"
@@ -135,6 +136,7 @@ func GetDeals(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, common.CreateSuccessResponse(gin.H{
+		"filecoin_network":   config.GetConfig().FilecoinNetwork,
 		"source_file_upload": sourceFileUploads,
 		"total_record_count": *totalRecordCount,
 	}))

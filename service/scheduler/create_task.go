@@ -122,10 +122,10 @@ func createTask() (*int, error) {
 	}
 
 	if !createAnyway && totalSize < fileSizeMin {
-		err := fmt.Errorf("source file size:%d is less than min file size:%d", totalSize, fileSizeMin)
-		logs.GetLogger().Error(err)
+		msg := fmt.Sprintf("source file size:%d is less than min file size:%d", totalSize, fileSizeMin)
+		logs.GetLogger().Info(msg)
 		os.RemoveAll(carSrcDir)
-		return nil, err
+		return nil, nil
 	}
 
 	err = libutils.CreateDir(carDestDir)

@@ -73,7 +73,7 @@
 #### Option:two: [install a lotus lite node](https://lotus.filecoin.io/docs/set-up/lotus-lite/#amd-and-intel-based-computers)
 
 ## Database
-- Please see schema create script in `../script/create_table.sql`
+- Please see schema create script in `./script/create_table.sql`
 - Before installation, please create database and related tables using above script file
 
 ## Installation
@@ -125,11 +125,11 @@ nohup ./build/multi-chain-storage >> ./build/mcs.log &       #After installation
 - **filecoin_network**: filecoin_calibration or filecoin_mainnet
 
 #### [database]
-- **db_host**: Host to connect to MCS database
-- **db_port**: Port to connect to MCS database
+- **db_host**: Host MCS database resides in
+- **db_port**: Port of MCS database
 - **db_schema_name**: MCS database name, see [Database](#Database)
-- **db_username**: Username to connect to MCS database
-- **db_password**: Password to connect to MCS database
+- **db_username**: Username of MCS database
+- **db_password**: Password of MCS database
 - **db_args**: Use default value `charset=utf8mb4&parseTime=True&loc=Local`
 
 #### [swan_api]
@@ -156,7 +156,7 @@ nohup ./build/multi-chain-storage >> ./build/mcs.log &       #After installation
 - **start_epoch_hours**: Start epoch for deals in hours from current time
 - **min_file_size**: Source files size lower limit when merge them to a car file
 
-[schedule_rule]
+#### [schedule_rule]
 - **unlock_interval_second**: Job running interval, unit: second, default: 300
 - **create_task_interval_second**: Job running interval, unit: second, default: 120
 - **send_deal_interval_second**: Job running interval, unit: second, default: 180

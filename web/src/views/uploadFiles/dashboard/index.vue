@@ -572,6 +572,7 @@ export default {
   },
   methods: {
     minerIdLink(id){
+      if(!id && id != 0) return false
       let link = id.slice(0, 1)
       switch(link){
         case 'f':

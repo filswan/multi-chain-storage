@@ -101,7 +101,7 @@ export default {
                 window.location.reload();
             }
         }
-        console.log('update time: 2022-06-06')
+        console.log('update time: 2022-06-07')
     }
 };
 </script>
@@ -112,17 +112,23 @@ export default {
     position: relative;
     display: flex;
     flex-wrap: wrap;
-    width: 19.2rem;
+    width: 21.4rem;
     max-width: 100%;
     margin: auto;
-    // @media screen and (max-width: 1800px) { 
-    //     width: 16.9rem;
-    // }
-    @media screen and (max-width: 1600px) { 
-        width: 20rem;
+    @media screen and (max-width: 1440px) { 
+        width: 20.6rem;
     }
     @media screen and (max-width: 1366px) { 
-        width: 19.24rem;
+        width: 21.1rem;
+    }
+    @media screen and (max-width: 1280px) { 
+        width: 21.4rem;
+    }
+    @media screen and (max-width:1152px){
+        width: 21rem;
+    }
+    @media screen and (max-width:1024px){
+        width: 20.48rem;
     }
     .content{
         position: relative;

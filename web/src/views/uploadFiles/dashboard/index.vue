@@ -572,8 +572,9 @@ export default {
   },
   methods: {
     minerIdLink(id){
-      switch(process.env.NODE_ENV){
-        case 'production':
+      let link = id.slice(0, 1)
+      switch(link){
+        case 'f':
           window.open(`https://filfox.info/en/address/${id}`)
           return false;
         default:
@@ -1493,7 +1494,7 @@ export default {
         }
         .el-input /deep/ {
           float: left;
-          padding: 0 0.3rem 0 0.8rem;
+          padding: 0 0.5rem 0 0.7rem;
           background: #f7f7f7;
           border-radius: 0.2rem;
           .el-input__inner {
@@ -1513,18 +1514,21 @@ export default {
             i{
               display: flex;
               align-items: center;
-              font-size: 0.3rem;
+              font-size: 0.25rem;
               color: #000;
             }
           }
           .el-input__icon {
             line-height: 0.3rem;
           }
-          .el-input__clear{
-            display: flex;
-            align-items: center;
-            font-size: 0.3rem;
-            color: #666;
+          .el-input__suffix{
+            right: 0.2rem;
+            .el-input__clear{
+              display: flex;
+              align-items: center;
+              font-size: 0.25rem;
+              color: #666;
+            }
           }
           ::-webkit-input-placeholder{
             color: #555;
@@ -1649,10 +1653,14 @@ export default {
                 align-items: center;    
                 justify-content: center;
                 img{
-                    width: 0.2rem;
-                    height: 0.2rem;
+                    width: 20px;
+                    height: 20px;
                     margin: 0 0 0 5px;
                     cursor: pointer;
+                    @media screen and (max-width:1440px){
+                        width: 17px;
+                        height: 17px;
+                    }
                     @media screen and (max-width:600px){
                         width: 15px;
                         height: 15px;
@@ -1754,10 +1762,14 @@ export default {
                     font-weight: normal;
                     text-decoration: underline;
                     img{
-                        width: 0.16rem;
-                        height: 0.16rem;
+                        width: 20px;
+                        height: 20px;
                         margin: 0 0 0 5px;
                         cursor: pointer;
+                        @media screen and (max-width:1440px){
+                            width: 17px;
+                            height: 17px;
+                        }
                         @media screen and (max-width:600px){
                             width: 15px;
                             height: 15px;

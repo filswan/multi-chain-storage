@@ -296,6 +296,10 @@
                                 height: 20px;
                                 margin: 0 0 0 5px;
                                 cursor: pointer;
+                                @media screen and (max-width:1440px){
+                                    width: 17px;
+                                    height: 17px;
+                                }
                                 @media screen and (max-width: 1280px){
                                     width: 16px;
                                     height: 16px;
@@ -435,6 +439,10 @@
                         height: 20px;
                         margin: 0 0 0 5px;
                         cursor: pointer;
+                        @media screen and (max-width:1440px){
+                            width: 17px;
+                            height: 17px;
+                        }
                         @media screen and (max-width: 1280px){
                             width: 16px;
                             height: 16px;

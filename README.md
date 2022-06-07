@@ -16,7 +16,7 @@
 - [After Installation](#After-Installation)
 - [Configuration](#Configuration)
 - [Work Process](#Work-Process)
-- [Pay for Filecoin by Polygon](https://www.youtube.com/watch?v=c4Dvidz3plU)
+- [Pay for Filecoin by Polygon](https://www.youtube.com/watch?v=JkRHcxVdcMo)
 - [License](https://github.com/filswan/multi-chain-storage/blob/main/LICENSE)
 
 ## Functions

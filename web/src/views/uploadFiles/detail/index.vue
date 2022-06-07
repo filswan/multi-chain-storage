@@ -474,6 +474,10 @@ export default {
                     width: 20px;
                     height: 20px;
                     margin: 0 0 0 5px;
+                    @media screen and (max-width:1440px){
+                        width: 17px;
+                        height: 17px;
+                    }
                     @media screen and (max-width: 1280px){
                         width: 16px;
                         height: 16px;
@@ -604,6 +608,7 @@ export default {
                             display: flex;
                             justify-content: space-between;
                             align-items: center;
+                            font-size: 0.18rem;
                         }
                         i, img{
                             width: 20px;
@@ -676,6 +681,10 @@ export default {
                 height: 20px;
                 margin: 0 0 0 15px;
                 cursor: pointer;
+                @media screen and (max-width:1440px){
+                    width: 17px;
+                    height: 17px;
+                }
                 @media screen and (max-width:600px){
                     margin: 0;
                 }
@@ -704,10 +713,14 @@ export default {
                 font-size: 13px;
                 font-weight: normal;
                 img{
-                    width: 0.2rem;
-                    height: 0.2rem;
+                    width: 20px;
+                    height: 20px;
                     margin: 0 0 0 5px;
                     cursor: pointer;
+                    @media screen and (max-width:1440px){
+                        width: 17px;
+                        height: 17px;
+                    }
                     @media screen and (max-width:600px){
                         width: 15px;
                         height: 15px;

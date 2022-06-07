@@ -542,14 +542,22 @@ export default {
     align-items: center;
     .wrongNet{
         margin: auto !important;
-        border-radius: 4px;
+        box-shadow: 0 0 13px rgba(128,128,128,0.8);
+        border-radius: 0.2rem;
         .el-dialog__header{
+            padding: 0.3rem 0.4rem;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            border-bottom: 1px solid #dfdfdf;
             color: #000;
-            font-size: 20px;
-            padding: 0.15rem 0.15rem 0.1rem;
+            font-size: 0.22rem;
+            font-weight: 500;
+            line-height: 1;
+            text-transform: capitalize;
+            @media screen and (max-width: 479px){
+                padding: 0.3rem 0.2rem;
+            }
             .el-dialog__headerbtn{
                 position: relative;
                 top: auto;
@@ -567,8 +575,11 @@ export default {
             }
         }
         .el-dialog__body {
-            padding: 0.1rem 0.15rem 0.3rem;
-            font-size: 14px;
+            padding: 0.3rem 0.4rem 0.4rem;
+            font-size: 0.2rem;
+            @media screen and (max-width: 479px){
+                padding: 0.2rem;
+            }
             label{
                 word-break: break-word;
                 line-height: 1;    
@@ -578,7 +589,7 @@ export default {
             .address{
                 background: rgba(233, 233, 233, 1);
                 padding: 8px;
-                margin: 10px 0 12px;
+                margin: 10px 0 22px;
                 border-radius: 8px;
                 font-size: inherit;
             }

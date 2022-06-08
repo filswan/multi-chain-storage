@@ -568,8 +568,12 @@ export default {
             .el-tabs__header{
                 margin: 0;
                 background: transparent;
-                .el-tabs__nav-wrap, .el-tabs__nav-scroll{
-                    
+                .el-tabs__nav-next, .el-tabs__nav-prev{
+                    font-size: 18px;
+                    i{
+                        margin-top: 0.3rem;
+                        font-weight: 600;
+                    }
                 }
                 .el-tabs__nav{
                     display: flex;
@@ -578,10 +582,11 @@ export default {
                         display: flex;
                     }
                     .el-tabs__item{
-                        // min-width: 150px;
+                        position: relative;
+                        min-width: 120px;
                         height: auto;
-                        padding: 0.03rem 0.15rem;
-                        background: #fff;
+                        padding: 0.1rem 0.5rem 0.03rem 0.3rem;
+                        background: transparent;
                         border-radius: 0;
                         border: 0;
                         border-top: 1px solid #eee;
@@ -593,16 +598,16 @@ export default {
                         @media screen and (max-width: 1024px) {
                             min-width: auto;
                         }
-                        &:first-child{
-                            border-top: 0;
-                            border-top-left-radius: 0.1rem;
-                            border-bottom-left-radius: 0.1rem;
-                        }
-                        &:last-child{
-                            border-top: 0;
-                            border-top-right-radius: 0.1rem;
-                            border-bottom-right-radius: 0.1rem;
-                        }
+                        // &:first-child{
+                        //     border-top: 0;
+                        //     border-top-left-radius: 0.1rem;
+                        //     border-bottom-left-radius: 0.1rem;
+                        // }
+                        // &:last-child{
+                        //     border-top: 0;
+                        //     border-top-right-radius: 0.1rem;
+                        //     border-bottom-right-radius: 0.1rem;
+                        // }
                         span{
                             width: 100%;
                             display: flex;
@@ -618,6 +623,20 @@ export default {
                             font-size: 16px;
                             color: #67c23a;
                         }
+                        &:before{    
+                            content: '';
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+                            right: 0;
+                            bottom: 0;
+                            z-index: -1;
+                            transform: perspective(0.5em) rotateX(1.6deg);
+                            transform-origin: bottom left;
+                            background: #fff;
+                            border-top-left-radius: 0.1rem;
+                            border-top-right-radius: 0.1rem;
+                        }
                     }
                     .el-tabs__item:hover {
                         text-decoration: underline;
@@ -625,19 +644,9 @@ export default {
                     .is-active{
                         position: relative;
                         border-right: 0;
-                        background: #2D43E7;
                         color: #fff;
-                        &::before{
-                            content: " ";
-                            position: absolute;
-                            display: none;
-                            width: 0;
-                            height: 0;
-                            right: -10px;
-                            top: calc(50% - 6px);
-                            border-top: 6px solid transparent;
-                            border-left: 10px solid #2D43E7;
-                            border-bottom: 6px solid transparent;
+                        &:before{   
+                            background: #2D43E7;
                         }
                         i, img{
                             opacity: 1;
@@ -748,12 +757,12 @@ export default {
     .upload{
         padding: 0.1rem 0.3rem 0.2rem;
         background-color: #fff;
-        border-radius: 0.1rem;
+        border-bottom-left-radius: 0.1rem;
+        border-bottom-right-radius: 0.1rem;
         overflow: hidden;
         border-top: 3px solid #0b318f;
         .el-row /deep/{
             width: 100%;
-            max-width: 800px;
             padding: 0 0 0.15rem;
             .el-col{
                 padding: 0.1rem 0;

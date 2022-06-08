@@ -44,7 +44,8 @@
                     image: '',
                     description: '',
                     tx_hash: '',
-                    attributes: [{ trait_type: 'Size', value: parseInt(this.mintRow.file_size) }]
+                    attributes: [{ trait_type: 'Size', value: parseInt(this.mintRow.file_size) }],
+                    external_url: ''
                 },
                 rules: {
                     name: [
@@ -164,6 +165,7 @@
                 
                 that.ruleForm.name = that.mintRow.file_name
                 that.ruleForm.image = that.mintRow.ipfs_url
+                that.ruleForm.external_url = that.mintRow.ipfs_url
 
                 const hashRes = await that.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/billing/deal/lockpayment/info?payload_cid=${that.mintRow.payload_cid}&wallet_address=${that.metaAddress}&source_file_upload_id=${that.mintRow.source_file_upload_id}`)
                 that.ruleForm.tx_hash = hashRes.data.pay_tx_hash

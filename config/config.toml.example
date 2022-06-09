@@ -57,4 +57,5 @@ pay_multiply_factor = 1.5
 unlock_interval_minute = 1
 dao_unlock_interval_block = 5 
 scan_polygon_block_step = 1000
-
+tx_hash_check_interval_second=5
+tx_hash_max_check_count=300

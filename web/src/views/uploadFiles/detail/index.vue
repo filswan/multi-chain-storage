@@ -51,7 +51,7 @@
                 </el-tabs>
 
                 <div class="upload">
-                    <el-row>
+                    <el-row :class="{'elColLeftEn': languageMcs === 'en', 'elColLeftZh': languageMcs === 'cn'}">
                         <el-col :span="8">{{$t('uploadFile.file_name')}}:</el-col>
                         <el-col :span="16">{{dealCont.source_file_upload_deal.file_name | NumFormat}}</el-col>
                         <el-col :span="8">{{$t('uploadFile.detail_IPFSDownload')}}:</el-col>
@@ -91,16 +91,19 @@
                         <el-col :span="8">{{$t('uploadFile.detail_Storage_Price_Per_Epoch')}}:</el-col>
                         <el-col :span="16" v-if="dealId == 0">-</el-col>
                         <el-col :span="16" v-else>{{dealCont.source_file_upload_deal.storage_price_per_epoch | NumFormatPrice}} FIL</el-col>
-                        <el-col :span="24">
-                            <div class="lotupTitle">
+                        <el-col :span="24" class="lotupTitle">
+                            <el-col :span="8">
                                 {{$t('uploadFile.detail_Retrieval_Filecoin')}}
                                 <el-tooltip effect="dark" :content="$t('uploadFile.detail_Retrieval_Filecoin_tooltip')" placement="top">
                                     <img src="@/assets/images/info.png"/>
                                 </el-tooltip>：
-                                
+                            </el-col>
+                            <el-col :span="16">
                                 <img class="img" src="@/assets/images/copy.png" @click="copyTextToClipboard(copy_filename)" alt="">
-                            </div>
-                            <div class="lotupContent" :class="{'color': !dealCont.source_file_upload_deal.provider && !dealCont.source_file_upload_deal.car_file_payload_cid}" @click="copyTextToClipboard(copy_filename)">{{copy_filename}}</div>
+                            </el-col>
+                        </el-col>
+                        <el-col :span="24" class="lotupContent" :class="{'color': !dealCont.source_file_upload_deal.provider && !dealCont.source_file_upload_deal.car_file_payload_cid}" @click="copyTextToClipboard(copy_filename)">
+                            {{copy_filename}}
                         </el-col>
                     </el-row>
                         
@@ -225,7 +228,11 @@ export default {
             webLink: 'https://docs.filecoin.io/get-started/store-and-retrieve/store-data/#deal-states'
       };
     },
-    computed: {},
+    computed: {
+        languageMcs() {
+            return this.$store.getters.languageMcs
+        }
+    },
     watch: {
         $route: function (to, from) {
             this.dealId = to.params.deal_id
@@ -474,6 +481,10 @@ export default {
                     width: 20px;
                     height: 20px;
                     margin: 0 0 0 5px;
+                    @media screen and (min-width:1800px){
+                        width: 22px;
+                        height: 22px;
+                    }
                     @media screen and (max-width:1440px){
                         width: 17px;
                         height: 17px;
@@ -690,6 +701,10 @@ export default {
                 height: 20px;
                 margin: 0 0 0 15px;
                 cursor: pointer;
+                @media screen and (min-width:1800px){
+                    width: 22px;
+                    height: 22px;
+                }
                 @media screen and (max-width:1440px){
                     width: 17px;
                     height: 17px;
@@ -726,6 +741,10 @@ export default {
                     height: 20px;
                     margin: 0 0 0 5px;
                     cursor: pointer;
+                    @media screen and (min-width:1800px){
+                        width: 22px;
+                        height: 22px;
+                    }
                     @media screen and (max-width:1440px){
                         width: 17px;
                         height: 17px;
@@ -779,53 +798,100 @@ export default {
                     color: #2d43e7;
                     text-decoration: underline;
                 }
-                        .lotupTitle{
-                            display: flex;
-                            align-items: center;
-                            margin: 0 0 0.1rem;
-                            font-size: inherit;
-                            color: inherit;
-                            
-                            img { 
-                                width: 18px;
-                                height: 18px;
-                                margin: 0 0 0 3px;
-                                cursor: pointer;
-                                @media screen and (max-width:1280px){
-                                    width: 16px;
-                                    height: 16px;
-                                }
-                            }
-                            span{
-                                display: block;
-                                margin: 0 0 0 0.1rem;
-                                color: #696262;
-                            }
-                        }
-                        .lotupContent {
-                            margin: 0;
-                            border-radius: 5px;
-                            background-color: rgba(0, 0, 0, 0.04);
-                            color: #696262;
-                            line-height: 1.3;
-                            padding: 0.128rem 0.16rem;
-                            font-size: inherit;
-                            word-break: break-all;
-                            cursor: pointer;
-                            &:hover{
-                                color: #333;
-                            }
-                        }
-                        .color{
-                            color: #F63D3D;
-                            cursor: text;
-                            &:hover{
-                                color: #F63D3D;
-                            }
-                        }
+            }
+            .lotupTitle{
+                display: flex;
+                align-items: center;
+                width: 100%;
+                margin: 0;
+                font-size: inherit;
+                color: inherit;
+                @media screen and (max-width:600px){
+                    flex-wrap: wrap;
+                }
+                .el-col{
+                    display: flex;
+                    align-items: center;
+                    @media screen and (max-width:600px){
+                        width: auto;
+                    }
+                }
+                img { 
+                    width: 18px;
+                    height: 18px;
+                    margin: 0;
+                    cursor: pointer;
+                    @media screen and (min-width:1800px){
+                        width: 22px;
+                        height: 22px;
+                    }
+                    @media screen and (max-width:1280px){
+                        width: 16px;
+                        height: 16px;
+                    }
+                }
+                span{
+                    display: block;
+                    margin: 0 0 0 0.1rem;
+                    color: #696262;
+                }
+            }
+            .lotupContent {
+                margin: 0 0 0.1rem;
+                border-radius: 5px;
+                background-color: rgba(0, 0, 0, 0.04);
+                color: #696262;
+                line-height: 1.3;
+                padding: 0.128rem 0.16rem;
+                word-break: break-all;
+                cursor: pointer;
+                &:hover{
+                    color: #333;
+                }
+            }
+            .color{
+                color: #F63D3D;
+                cursor: text;
+                &:hover{
+                    color: #F63D3D;
+                }
             }
             .el-col:nth-child(2n+1){
                 color: #000;
+            }
+        }
+        .elColLeftZh{
+            .el-col-8{
+                width: 2.5rem;
+                min-width: 160px;
+                @media screen and (max-width:600px){
+                    width: 100%;
+                }
+            }
+            .el-col-16{
+                width: calc(100% - 3rem);
+                max-width: calc(100% - 160px);
+                @media screen and (max-width:600px){
+                    width: 100%;
+                    max-width: 100%;
+                }
+            }
+        }
+        .elColLeftEn{
+            .el-col-8{
+                width: 3.8rem;
+                min-width: 240px;
+                @media screen and (max-width:600px){
+                    width: 100%;
+                }
+            }
+            .el-col-16{
+                width: calc(100% - 4.3rem);
+                max-width: calc(100% - 240px);
+                @media screen and (max-width:600px){
+                    width: 100%;
+                    max-width: 100%;
+                }
             }
         }
         .title{
@@ -850,6 +916,10 @@ export default {
                 height: 18px;
                 margin: 0 0 0 3px;
                 cursor: pointer;
+                @media screen and (min-width:1800px){
+                    width: 22px;
+                    height: 22px;
+                }
                 @media screen and (max-width:1280px){
                     width: 16px;
                     height: 16px;

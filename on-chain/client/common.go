@@ -155,12 +155,21 @@ func GetSwanPaymentFilterer() (*goBind.SwanPaymentFilterer, error) {
 }
 
 func CheckTx(client *ethclient.Client, txHash common.Hash) (*types.Receipt, error) {
+	retryNum := 0
+	checkIntervalSecond := config.GetConfig().Polygon.TxHashCheckIntervalSecond
+	txHashMaxCheckCount := config.GetConfig().Polygon.TxHashMaxCheckCount
 retry:
 	rp, err := client.TransactionReceipt(context.Background(), txHash)
 	if err != nil {
 		if err == ethereum.NotFound {
-			logs.GetLogger().Info("tx %v not found, check it later", txHash.String())
-			time.Sleep(1 * time.Second)
+			if retryNum > txHashMaxCheckCount {
+				return nil, err
+			}
+
+			err := fmt.Errorf("tx hash: %s not found, check it later", txHash.String())
+			logs.GetLogger().Error(err)
+			retryNum = retryNum + 1
+			time.Sleep(checkIntervalSecond * time.Second)
 			goto retry
 		} else {
 			logs.GetLogger().Error("TransactionReceipt fail: %s", err)

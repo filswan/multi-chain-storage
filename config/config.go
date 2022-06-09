@@ -27,19 +27,21 @@ type Configuration struct {
 }
 
 type polygon struct {
-	PolygonRpcUrl           string        `toml:"polygon_rpc_url"`
-	PaymentContractAddress  string        `toml:"payment_contract_address"`
-	PaymentRecipientAddress string        `toml:"payment_recipient_address"`
-	DaoContractAddress      string        `toml:"dao_contract_address"`
-	MintContractAddress     string        `toml:"mint_contract_address"`
-	SushiDexAddress         string        `toml:"sushi_dex_address"`
-	UsdcWFilPoolContract    string        `toml:"usdc_wFil_pool_contract"`
-	GasLimit                uint64        `toml:"gas_limit"`
-	LockTime                int           `toml:"lock_time"`
-	PayMultiplyFactor       float32       `toml:"pay_multiply_factor"`
-	UnlockIntervalMinute    time.Duration `toml:"unlock_interval_minute"`
-	DaoUnlockIntervalBlock  int64         `toml:"dao_unlock_interval_block"`
-	ScanPolygonBlockStep    uint64        `toml:"scan_polygon_block_step"`
+	PolygonRpcUrl             string        `toml:"polygon_rpc_url"`
+	PaymentContractAddress    string        `toml:"payment_contract_address"`
+	PaymentRecipientAddress   string        `toml:"payment_recipient_address"`
+	DaoContractAddress        string        `toml:"dao_contract_address"`
+	MintContractAddress       string        `toml:"mint_contract_address"`
+	SushiDexAddress           string        `toml:"sushi_dex_address"`
+	UsdcWFilPoolContract      string        `toml:"usdc_wFil_pool_contract"`
+	GasLimit                  uint64        `toml:"gas_limit"`
+	LockTime                  int           `toml:"lock_time"`
+	PayMultiplyFactor         float32       `toml:"pay_multiply_factor"`
+	UnlockIntervalMinute      time.Duration `toml:"unlock_interval_minute"`
+	DaoUnlockIntervalBlock    int64         `toml:"dao_unlock_interval_block"`
+	ScanPolygonBlockStep      uint64        `toml:"scan_polygon_block_step"`
+	TxHashCheckIntervalSecond time.Duration `toml:"tx_hash_check_interval_second"`
+	TxHashMaxCheckCount       int           `toml:"tx_hash_max_check_count"`
 }
 
 type database struct {
@@ -167,6 +169,8 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 		{"polygon", "unlock_interval_minute"},
 		{"polygon", "dao_unlock_interval_block"},
 		{"polygon", "scan_polygon_block_step"},
+		{"polygon", "tx_hash_check_interval_second"},
+		{"polygon", "tx_hash_max_check_count"},
 	}
 
 	for _, v := range requiredFields {

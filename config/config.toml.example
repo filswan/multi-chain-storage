@@ -35,6 +35,7 @@ verified_deal = false
 fast_retrieval = true
 start_epoch_hours = 96
 min_file_size = 1024   # unit: byte
+max_file_num_per_car = 50
 
 [schedule_rule]
 unlock_interval_second = 300

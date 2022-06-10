@@ -162,13 +162,13 @@ retry:
 	rp, err := client.TransactionReceipt(context.Background(), txHash)
 	if err != nil {
 		if err == ethereum.NotFound {
+			err := fmt.Errorf("tx hash: %s not found, check it later", txHash.String())
+			logs.GetLogger().Error(err)
+			retryNum = retryNum + 1
 			if retryNum > txHashMaxCheckCount {
 				return nil, err
 			}
 
-			err := fmt.Errorf("tx hash: %s not found, check it later", txHash.String())
-			logs.GetLogger().Error(err)
-			retryNum = retryNum + 1
 			time.Sleep(checkIntervalSecond * time.Second)
 			goto retry
 		} else {

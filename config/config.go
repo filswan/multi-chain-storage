@@ -59,15 +59,16 @@ type lotus struct {
 }
 
 type swanTask struct {
-	DirDeal         string          `toml:"dir_deal"`
-	Description     string          `toml:"description"`
-	CuratedDataset  string          `toml:"curated_dataset"`
-	MaxPrice        decimal.Decimal `toml:"max_price"`
-	ExpireDays      int             `toml:"expire_days"`
-	VerifiedDeal    bool            `toml:"verified_deal"`
-	FastRetrieval   bool            `toml:"fast_retrieval"`
-	StartEpochHours int             `toml:"start_epoch_hours"`
-	MinFileSize     int64           `toml:"min_file_size"`
+	DirDeal          string          `toml:"dir_deal"`
+	Description      string          `toml:"description"`
+	CuratedDataset   string          `toml:"curated_dataset"`
+	MaxPrice         decimal.Decimal `toml:"max_price"`
+	ExpireDays       int             `toml:"expire_days"`
+	VerifiedDeal     bool            `toml:"verified_deal"`
+	FastRetrieval    bool            `toml:"fast_retrieval"`
+	StartEpochHours  int             `toml:"start_epoch_hours"`
+	MinFileSize      int64           `toml:"min_file_size"`
+	MaxFileNumPerCar int             `toml:"max_file_num_per_car"`
 }
 
 type swanApi struct {
@@ -149,6 +150,7 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 		{"swan_task", "fast_retrieval"},
 		{"swan_task", "start_epoch_hours"},
 		{"swan_task", "min_file_size"},
+		{"swan_task", "max_file_num_per_car"},
 
 		{"schedule_rule", "unlock_interval_second"},
 		{"schedule_rule", "create_task_interval_second"},

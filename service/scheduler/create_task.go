@@ -103,7 +103,7 @@ func createTask() (*int, error) {
 
 		srcFiles2Merged = append(srcFiles2Merged, srcFileUpload)
 
-		if totalSize >= fileSizeMin {
+		if totalSize >= fileSizeMin || len(srcFiles2Merged) >= config.GetConfig().SwanTask.MaxFileNumPerCar {
 			logs.GetLogger().Info("total size is:", totalSize, ", ", len(srcFiles2Merged), " files to be created to car file")
 			break
 		}
@@ -117,12 +117,12 @@ func createTask() (*int, error) {
 
 	passedMilliSec := currentUtcMilliSec - createdTimeMin
 	createAnyway := false
-	if passedMilliSec >= 24*60*60*1000 {
+	if passedMilliSec >= 24*60*60*1000 || len(srcFiles2Merged) >= config.GetConfig().SwanTask.MaxFileNumPerCar {
 		createAnyway = true
 	}
 
 	if !createAnyway && totalSize < fileSizeMin {
-		msg := fmt.Sprintf("source file size:%d is less than min file size:%d", totalSize, fileSizeMin)
+		msg := fmt.Sprintf("%d files, source file size:%d is less than min file size:%d", len(srcFiles2Merged), totalSize, fileSizeMin)
 		logs.GetLogger().Info(msg)
 		os.RemoveAll(carSrcDir)
 		return nil, nil

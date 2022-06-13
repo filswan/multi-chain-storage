@@ -35,6 +35,10 @@ func main() {
 }
 
 func createGinServer() {
+	if config.GetConfig().Release {
+		gin.SetMode(gin.ReleaseMode)
+	}
+
 	r := gin.Default()
 	r.Use(cors.Middleware(cors.Config{
 		Origins:         "*",

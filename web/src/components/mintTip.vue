@@ -97,7 +97,7 @@
 
                             const mintResult = await that.mintContract(nftContract, nftUrl)
 
-                            that.tokenId = await nftContract.methods.totalSupply().call()                            
+                            // that.tokenId = await nftContract.methods.totalSupply().call()                            
                             console.log('totalSupply success', that.tokenId)
                             let mintInfoJson = {
                                 source_file_upload_id: that.mintRow.source_file_upload_id,
@@ -138,6 +138,9 @@
                         that.isload = false
                         return false
                     });
+                    // console.log(transaction)
+                    console.log('transaction.events:', transaction.events)
+                    that.tokenId = transaction.events.Mint.returnValues.tokenId_
                     console.log('mintData success')
                 } catch (err) {
                     console.log('err.response', err, err.response);

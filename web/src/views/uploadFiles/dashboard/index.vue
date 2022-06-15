@@ -1061,7 +1061,7 @@ export default {
               if(currentData && _this.searchNowCurrent !== currentData) return false
               const data = response.data.data;
               _this.parma.total = Number(response.data.data.total_record_count);
-              _this.tableData = response.data.data.source_file_upload;
+              _this.tableData = response.data.data.source_file_upload?response.data.data.source_file_upload:[];
               _this.tableData.map((item,s) => {
                 item.payloadAct = false
                 item.status_file = false

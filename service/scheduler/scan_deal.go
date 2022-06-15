@@ -8,6 +8,7 @@ import (
 	"multi-chain-storage/models"
 	"multi-chain-storage/on-chain/client"
 	"multi-chain-storage/on-chain/goBind"
+	"strings"
 
 	"github.com/ethereum/go-ethereum/ethclient"
 	libutils "github.com/filswan/go-swan-lib/utils"
@@ -64,7 +65,9 @@ func updateOfflineDealStatusAndLog() error {
 
 			switch dealInfo.Status {
 			case constants.ON_CHAIN_DEAL_STATUS_ERROR:
-				offlineDeal.Status = constants.OFFLINE_DEAL_STATUS_FAILED
+				if !strings.Contains(dealInfo.Message, constants.ON_CHAIN_MESSAGE_NOT_COMPLETED) {
+					offlineDeal.Status = constants.OFFLINE_DEAL_STATUS_FAILED
+				}
 			case constants.ON_CHAIN_DEAL_STATUS_ACTIVE:
 				offlineDeal.Status = constants.OFFLINE_DEAL_STATUS_ACTIVE
 			}

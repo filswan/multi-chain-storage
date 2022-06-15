@@ -33,6 +33,8 @@ const (
 	ON_CHAIN_DEAL_STATUS_ACTIVE = "StorageDealActive"
 	ON_CHAIN_DEAL_STATUS_ERROR  = "StorageDealError"
 
+	ON_CHAIN_MESSAGE_NOT_COMPLETED = "deal may not have completed sealing before deal proposal start epoch, or deal may have been slashed"
+
 	IPFS_URL_PREFIX_BEFORE_HASH = "/ipfs/"
 	IPFS_File_PINNED_STATUS     = "Pinned"
 

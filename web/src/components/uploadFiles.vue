@@ -992,8 +992,12 @@
                                     }
                                     .el-upload-list{
                                         width: 100%;
+                                        max-width: 300px;
                                         float: none;
                                         clear: both;
+                                        @media screen and (max-width: 1440px){
+                                            max-width: 250px;
+                                        }
                                     }
                                 }
                                 .el-upload__tip{

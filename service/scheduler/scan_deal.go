@@ -99,6 +99,7 @@ func UpdateSourceFiles2Refundable() error {
 
 	setSourceFiles2Refundable(sourceFileUploads)
 
+	// no offline deals, and only set source file upload status to refundable
 	sourceFileUploads, err = models.GetSourceFileUploads2BeRefundedByCarFileStatus(constants.CAR_FILE_STATUS_DEAL_SEND_EXPIRED)
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -107,6 +108,7 @@ func UpdateSourceFiles2Refundable() error {
 
 	setSourceFiles2Refundable(sourceFileUploads)
 
+	// no offline deals, and only set source file upload status to refundable
 	sourceFileUploads, err = models.GetSourceFileUploads2BeRefundedByCarFileStatus(constants.CAR_FILE_STATUS_DEAL_SENT_FAILED)
 	if err != nil {
 		logs.GetLogger().Error(err)

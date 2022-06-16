@@ -37,7 +37,7 @@ type polygon struct {
 	GasLimit                  uint64        `toml:"gas_limit"`
 	LockTime                  int           `toml:"lock_time"`
 	PayMultiplyFactor         float32       `toml:"pay_multiply_factor"`
-	UnlockIntervalMinute      time.Duration `toml:"unlock_interval_minute"`
+	UnlockIntervalSecond      time.Duration `toml:"unlock_interval_second"`
 	DaoUnlockIntervalBlock    int64         `toml:"dao_unlock_interval_block"`
 	ScanPolygonBlockStep      uint64        `toml:"scan_polygon_block_step"`
 	TxHashCheckIntervalSecond time.Duration `toml:"tx_hash_check_interval_second"`
@@ -168,7 +168,7 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 		{"polygon", "gas_limit"},
 		{"polygon", "lock_time"},
 		{"polygon", "pay_multiply_factor"},
-		{"polygon", "unlock_interval_minute"},
+		{"polygon", "unlock_interval_second"},
 		{"polygon", "dao_unlock_interval_block"},
 		{"polygon", "scan_polygon_block_step"},
 		{"polygon", "tx_hash_check_interval_second"},

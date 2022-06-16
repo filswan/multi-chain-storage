@@ -10,16 +10,19 @@ const (
 
 	SOURCE_ID_MCS = 4
 
-	CAR_FILE_STATUS_TASK_CREATED      = "TaskCreated"
+	CAR_FILE_STATUS_TASK_CREATED = "TaskCreated"
+	//if all deals in a car file success, set its source file upload to success, set its car file status to Completed
+	//if all deals in a car file success or failed,  set its source file upload to refundable, set its car file status to Completed
+	//if a deal whose status is not succes or failed, wait
 	CAR_FILE_STATUS_DEAL_SENT         = "DealSent"
-	CAR_FILE_STATUS_DEAL_SENT_FAILED  = "DealSentFailed"
-	CAR_FILE_STATUS_DEAL_SEND_EXPIRED = "DealSentExpired"
+	CAR_FILE_STATUS_DEAL_SENT_FAILED  = "DealSentFailed"  //no offline deals, in scan deal set source file upload to Refundable
+	CAR_FILE_STATUS_DEAL_SEND_EXPIRED = "DealSentExpired" //no offline deals, in scan deal set source file upload to Refundable
 	CAR_FILE_STATUS_COMPLETED         = "Completed"
 
 	SOURCE_FILE_UPLOAD_STATUS_PENDING      = "Pending"
 	SOURCE_FILE_UPLOAD_STATUS_PROCESSING   = "Processing"
-	SOURCE_FILE_UPLOAD_STATUS_PAID         = "Paid"
-	SOURCE_FILE_UPLOAD_STATUS_TASK_CREATED = "TaskCreated"
+	SOURCE_FILE_UPLOAD_STATUS_PAID         = "Paid"        // create to a car file, then TaskCreated
+	SOURCE_FILE_UPLOAD_STATUS_TASK_CREATED = "TaskCreated" // all deals sent & unlocked, then Success, otherwisse Refundable
 	SOURCE_FILE_UPLOAD_STATUS_UNLOCKING    = "Unlocking"
 	SOURCE_FILE_UPLOAD_STATUS_SUCCESS      = "Success"
 	SOURCE_FILE_UPLOAD_STATUS_REFUNDABLE   = "Refundable"

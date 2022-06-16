@@ -47,8 +47,8 @@ func UnlockPayment() error {
 		return err
 	}
 
-	unlockInterval := config.GetConfig().Polygon.UnlockIntervalMinute * time.Minute
-	logs.GetLogger().Info("unlock interval is ", unlockInterval)
+	unlockIntervalSecond := config.GetConfig().Polygon.UnlockIntervalSecond * time.Second
+	logs.GetLogger().Info("unlock interval is ", unlockIntervalSecond)
 
 	unlockCnt := 0
 	for _, offlineDeal := range offlineDeals {
@@ -64,8 +64,8 @@ func UnlockPayment() error {
 		}
 
 		if unlockCnt > 0 {
-			logs.GetLogger().Info(getLog(offlineDeal, "sleeping "+unlockInterval.String()+" before unlock"))
-			time.Sleep(unlockInterval)
+			logs.GetLogger().Info(getLog(offlineDeal, "sleeping "+unlockIntervalSecond.String()+" before unlock"))
+			time.Sleep(unlockIntervalSecond)
 		}
 
 		srcFileUploads, err := setUnlockPayment(offlineDeal)

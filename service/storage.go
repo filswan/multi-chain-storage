@@ -304,6 +304,13 @@ func GetSourceFileUploadDeal(sourceFileUploadId int64, dealId int64) (*SourceFil
 }
 
 func RecordMintInfo(sourceFileIploadId int64, txHash string, tokenId string, mintAddress string) (*models.SourceFileMint, error) {
+	/*
+		ethClient, _, err := client.GetEthClient()
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return nil, err
+		}*/
+
 	currentUtcSecond := libutils.GetCurrentUtcSecond()
 	sourceFileMint := &models.SourceFileMint{
 		SourceFileUploadId: sourceFileIploadId,

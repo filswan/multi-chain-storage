@@ -108,7 +108,7 @@
                             }
                             const mintInfoResponse = await that.sendPostRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/storage/mint/info`, mintInfoJson)
                             
-                            that.$emit('getMintDialog', false, that.tokenId, that.nftHash)
+                            if(mintInfoResponse) that.$emit('getMintDialog', false, that.tokenId, that.nftHash)
                         }
                     } else {
                         console.log('error submit!!');
@@ -138,12 +138,11 @@
                         that.isload = false
                         return false
                     });
-                    // console.log(transaction)
-                    console.log('transaction.events:', transaction.events)
+                    // console.log('transaction.events:', transaction.events)
                     that.tokenId = transaction.events.Mint.returnValues.tokenId_
                     console.log('mintData success')
                 } catch (err) {
-                    console.log('err.response', err, err.response);
+                    console.log('err.response', err);
                     if (err.includes('not mined within 50 blocks')) {
                         const handle = setInterval(() => {
                             web3.eth.getTransactionReceipt(err.response.transactionHash).then((resp) => {

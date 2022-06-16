@@ -392,12 +392,13 @@
         </el-dialog>
 
         <el-dialog title="" :visible.sync="failTransaction" :width="width"
+            :before-close="failClose"
             custom-class="completeDia">
             <img src="@/assets/images/error.png" />
             <h1>{{$t('uploadFile.Fail')}}!</h1>
             <h3>{{$t('uploadFile.FailTIP')}}</h3>
             <a :href="'https://mumbai.polygonscan.com/tx/'+txHash" target="_blank">{{txHash}}</a>
-            <a class="a-close" @click="failTransaction=false">{{$t('uploadFile.CLOSE')}}</a>
+            <a class="a-close" @click="failClose">{{$t('uploadFile.CLOSE')}}</a>
         </el-dialog>
 
         <el-dialog
@@ -792,7 +793,12 @@ export default {
         this.finishTransaction = false
         this.mintTransaction = false
         this.firstIndex = 0
+        this.txHash = ''
         this.getData()
+    },
+    failClose(){
+        this.failTransaction = false
+        this.txHash = ''
     },
     getDialog(dialog, rows){
         this.payVisible = dialog

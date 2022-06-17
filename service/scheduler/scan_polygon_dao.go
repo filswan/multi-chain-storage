@@ -3,10 +3,10 @@ package scheduler
 import (
 	"context"
 	"encoding/hex"
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"math/big"
+	"multi-chain-storage/common/constants"
 	"multi-chain-storage/config"
 	"multi-chain-storage/models"
 	"multi-chain-storage/on-chain/client"
@@ -14,7 +14,6 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
@@ -30,76 +29,13 @@ type RunParam struct {
 	LastScannedBlockNo int64
 }
 
-func ReadRunParam() (*RunParam, error) {
-	homedir, err := os.UserHomeDir()
-	if err != nil {
-		logs.GetLogger().Error("cannot get home directory.", err)
-		return nil, err
-	}
-
-	runParamFile := filepath.Join(homedir, ".swan/dao-runner/.run_param")
-	contents, err := ioutil.ReadFile(runParamFile)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		runParam := RunParam{}
-		runParam.LastScannedBlockNo = 0
-		err = WriteRunParam(runParam.LastScannedBlockNo)
-		if err != nil {
-			logs.GetLogger().Error(err)
-			return nil, err
-		}
-
-		return &runParam, nil
-	}
-
-	runParam := RunParam{}
-	err = json.Unmarshal(contents, &runParam)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		runParam.LastScannedBlockNo = 0
-		err = WriteRunParam(runParam.LastScannedBlockNo)
-		if err != nil {
-			logs.GetLogger().Error(err)
-			return nil, err
-		}
-	}
-
-	return &runParam, nil
-}
-
-func WriteRunParam(lastScannedBlockNo int64) error {
-	homedir, err := os.UserHomeDir()
-	if err != nil {
-		logs.GetLogger().Error("cannot get home directory.", err)
-		return err
-	}
-
-	runParamFile := filepath.Join(homedir, ".swan/dao-runner/.run_param")
-
-	runParam := RunParam{LastScannedBlockNo: lastScannedBlockNo}
-
-	content, err := json.MarshalIndent(runParam, "", " ")
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
-
-	err = ioutil.WriteFile(runParamFile, content, 0644)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
-
-	return nil
-}
-
 func initTxDataDecoderDao() {
 	homedir, err := os.UserHomeDir()
 	if err != nil {
 		logs.GetLogger().Fatal("cannot get home directory.", err)
 	}
 
-	contractPath := filepath.Join(homedir, ".swan/dao-runner/FilswanOracle.json")
+	contractPath := filepath.Join(homedir, ".swan/mcs/FilswanOracle.json")
 	contractRead, err := ioutil.ReadFile(contractPath)
 	if err != nil {
 		logs.GetLogger().Fatal(err)
@@ -107,37 +43,30 @@ func initTxDataDecoderDao() {
 
 	myContractAbi := string(contractRead)
 
-	txDataDecoder = decoder.NewABIDecoder()
-	txDataDecoder.SetABI(myContractAbi)
+	txDataDecoderDao = decoder.NewABIDecoder()
+	txDataDecoderDao.SetABI(myContractAbi)
 }
 
-func ScanPolygon4Dao() {
-	for {
-		runParam, err := ReadRunParam()
-		if err != nil {
-			logs.GetLogger().Error(err)
-			continue
-		}
-
-		startBlockNumber := runParam.LastScannedBlockNo + 1
-		err = scanPolygon(startBlockNumber)
-		if err != nil {
-			logs.GetLogger().Error(err)
-		}
-
-		time.Sleep(config.GetConfig().ScheduleRule.ScanPolygonIntervalSecond * time.Second)
-	}
-}
-
-func scanPolygon(startBlockNumber int64) error {
-	if txDataDecoder == nil {
-		initTxDataDecoder()
-	}
-
-	ethClient, err := ethclient.Dial(config.GetConfig().Polygon.PolygonRpcUrl)
+func ScanPolygon4Dao() error {
+	network, err := models.GetNetworkByName(constants.NETWORK_NAME_POLYGON)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
+	}
+
+	ethClient, _, err := client.GetEthClient()
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	startBlockNumber := int64(0)
+	if network.LastScanBlockNumber != nil {
+		startBlockNumber = *network.LastScanBlockNumber + 1
+	}
+
+	if txDataDecoderDao == nil {
+		initTxDataDecoderDao()
 	}
 
 	endBlockNumberUint64, err := ethClient.BlockNumber(context.Background())
@@ -192,7 +121,7 @@ func scanPolygon(startBlockNumber int64) error {
 			}
 		}
 
-		err = WriteRunParam(toBlockNumber)
+		err = models.UpdateNetworkLastScanBlockNumberDao(network.ID, toBlockNumber)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			return err
@@ -215,7 +144,7 @@ func getDaoSignature(ethClient *ethclient.Client, inputDataHex string, transacti
 		return nil
 	}
 
-	method, err := txDataDecoder.DecodeMethod(inputDataHex)
+	method, err := txDataDecoderDao.DecodeMethod(inputDataHex)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err

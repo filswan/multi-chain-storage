@@ -24,9 +24,9 @@ import (
 	decoder "github.com/mingjingc/abi-decoder"
 )
 
-var txDataDecoder *decoder.ABIDecoder
+var txDataDecoderPayment *decoder.ABIDecoder
 
-func initTxDataDecoder() {
+func initTxDataDecoderPayment() {
 	homedir, err := os.UserHomeDir()
 	if err != nil {
 		logs.GetLogger().Fatal("Cannot get home directory.", err)
@@ -40,11 +40,11 @@ func initTxDataDecoder() {
 
 	myContractAbi := string(contractRead)
 
-	txDataDecoder = decoder.NewABIDecoder()
-	txDataDecoder.SetABI(myContractAbi)
+	txDataDecoderPayment = decoder.NewABIDecoder()
+	txDataDecoderPayment.SetABI(myContractAbi)
 }
 
-func ScanPolygon() error {
+func ScanPolygon4Payment() error {
 	network, err := models.GetNetworkByName(constants.NETWORK_NAME_POLYGON)
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -144,7 +144,7 @@ func getPayment4Transaction(ethClient *ethclient.Client, inputDataHex string, tr
 		return nil
 	}
 
-	method, err := txDataDecoder.DecodeMethod(inputDataHex)
+	method, err := txDataDecoderPayment.DecodeMethod(inputDataHex)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
@@ -195,7 +195,7 @@ func getRefund4Transaction(ethClient *ethclient.Client, inputDataHex string, tra
 		return nil
 	}
 
-	method, err := txDataDecoder.DecodeMethod(inputDataHex)
+	method, err := txDataDecoderPayment.DecodeMethod(inputDataHex)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err

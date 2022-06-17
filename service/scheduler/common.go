@@ -39,6 +39,7 @@ func InitScheduler() {
 	createDir()
 	setAdminWallet()
 	initTxDataDecoderPayment()
+	initTxDataDecoderDao()
 
 	go runJob(CreateTask, config.GetConfig().ScheduleRule.CreateTaskIntervalSecond)
 	go runJob(SendDeal, config.GetConfig().ScheduleRule.SendDealIntervalSecond)

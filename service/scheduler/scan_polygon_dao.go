@@ -65,10 +65,6 @@ func ScanPolygon4Dao() error {
 		startBlockNumber = *network.LastScanBlockNumber + 1
 	}
 
-	if txDataDecoderDao == nil {
-		initTxDataDecoderDao()
-	}
-
 	endBlockNumberUint64, err := ethClient.BlockNumber(context.Background())
 	if err != nil {
 		logs.GetLogger().Error(err)

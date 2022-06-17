@@ -8,7 +8,6 @@ import (
 	"math/big"
 	"multi-chain-storage/common/constants"
 	"multi-chain-storage/config"
-	"multi-chain-storage/database"
 	"multi-chain-storage/models"
 	"multi-chain-storage/on-chain/client"
 	"os"
@@ -58,8 +57,8 @@ func ScanPolygon4Payment() error {
 	}
 
 	startBlockNumber := int64(0)
-	if network.LastScanBlockNumber != nil {
-		startBlockNumber = *network.LastScanBlockNumber + 1
+	if network.LastScanBlockNumberPayment != nil {
+		startBlockNumber = *network.LastScanBlockNumberPayment + 1
 	}
 
 	endBlockNumberUint64, err := ethClient.BlockNumber(context.Background())
@@ -72,11 +71,17 @@ func ScanPolygon4Payment() error {
 	scanBlockStep := int64(config.GetConfig().Polygon.ScanPolygonBlockStep)
 	paymentContractAddress := common.HexToAddress(config.GetConfig().Polygon.PaymentContractAddress)
 
+	logs.GetLogger().Info("scan block [", startBlockNumber, ",", endBlockNumber, "] start, scan block step:", scanBlockStep)
+	logs.GetLogger().Info("payment contract address:", paymentContractAddress.String())
+
 	for i := startBlockNumber; i <= endBlockNumber; {
 		toBlockNumber := i + scanBlockStep - 1
 		if toBlockNumber > endBlockNumber {
 			toBlockNumber = endBlockNumber
 		}
+
+		logs.GetLogger().Info("scan block [", i, ",", toBlockNumber, "] start")
+
 		query := ethereum.FilterQuery{
 			FromBlock: big.NewInt(i),
 			ToBlock:   big.NewInt(toBlockNumber),
@@ -120,15 +125,18 @@ func ScanPolygon4Payment() error {
 			}
 		}
 
-		network.LastScanBlockNumber = &toBlockNumber
-		err = database.GetDB().Save(network).Error
+		err = models.UpdateNetworkLastScanBlockNumberPayment(network.ID, toBlockNumber)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			return err
 		}
 
+		logs.GetLogger().Info("scan block [", i, ",", toBlockNumber, "] end")
+
 		i = toBlockNumber + 1
 	}
+
+	logs.GetLogger().Info("scan block [", startBlockNumber, ",", endBlockNumber, "] end, scan block step:", scanBlockStep)
 
 	return nil
 }

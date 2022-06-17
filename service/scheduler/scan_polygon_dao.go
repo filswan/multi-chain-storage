@@ -61,8 +61,8 @@ func ScanPolygon4Dao() error {
 	}
 
 	startBlockNumber := int64(0)
-	if network.LastScanBlockNumber != nil {
-		startBlockNumber = *network.LastScanBlockNumber + 1
+	if network.LastScanBlockNumberDao != nil {
+		startBlockNumber = *network.LastScanBlockNumberDao + 1
 	}
 
 	endBlockNumberUint64, err := ethClient.BlockNumber(context.Background())
@@ -73,9 +73,8 @@ func ScanPolygon4Dao() error {
 
 	endBlockNumber := int64(endBlockNumberUint64)
 	scanBlockStep := config.GetConfig().Polygon.ScanPolygonBlockStep
-	logs.GetLogger().Info("scan from block:", startBlockNumber, ", to block:", endBlockNumber, ", scan block step:", scanBlockStep)
-
 	daoContractAddress := common.HexToAddress(config.GetConfig().Polygon.DaoContractAddress)
+	logs.GetLogger().Info("scan block [", startBlockNumber, ",", endBlockNumber, "] start, scan block step:", scanBlockStep)
 	logs.GetLogger().Info("dao contract address:", daoContractAddress.String())
 
 	for i := startBlockNumber; i <= endBlockNumber; {
@@ -83,7 +82,9 @@ func ScanPolygon4Dao() error {
 		if toBlockNumber > endBlockNumber {
 			toBlockNumber = endBlockNumber
 		}
+
 		logs.GetLogger().Info("scan block [", i, ",", toBlockNumber, "] start")
+
 		query := ethereum.FilterQuery{
 			FromBlock: big.NewInt(i),
 			ToBlock:   big.NewInt(toBlockNumber),
@@ -122,9 +123,13 @@ func ScanPolygon4Dao() error {
 			logs.GetLogger().Error(err)
 			return err
 		}
+
 		logs.GetLogger().Info("scan block [", i, ",", toBlockNumber, "] end")
+
 		i = toBlockNumber + 1
 	}
+
+	logs.GetLogger().Info("scan block [", startBlockNumber, ",", endBlockNumber, "] end, scan block step:", scanBlockStep)
 
 	return nil
 }

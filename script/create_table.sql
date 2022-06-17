@@ -4,13 +4,13 @@ create database mcs_v2;
 use mcs_v2;
 
 create table network (
-    id                         bigint        not null auto_increment,
-    name                       varchar(100)  not null,
-    last_scan_block_number     bigint,
-    last_scan_block_number_dao bigint,
-    description                text,
-    create_at                  bigint        not null,
-    update_at                  bigint        not null,
+    id                             bigint        not null auto_increment,
+    name                           varchar(100)  not null,
+    last_scan_block_number_payment bigint,
+    last_scan_block_number_dao     bigint,
+    description                    text,
+    create_at                      bigint        not null,
+    update_at                      bigint        not null,
     primary key pk_network(id),
     constraint un_network_name unique(name)
 );
@@ -212,5 +212,6 @@ create table dao_signature (
     constraint fk_dao_signature_wallet_id_contract foreign key (wallet_id_contract) references wallet(id)
 );
 
+2022.06.17
 #--alter table network add last_scan_block_number_dao bigint;
-
+#--alter table network change last_scan_block_number last_scan_block_number_payment bigint;

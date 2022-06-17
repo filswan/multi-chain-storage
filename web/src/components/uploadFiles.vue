@@ -385,13 +385,15 @@
                                                         if(resultUSDC < web3.utils.toWei(_this.ruleForm.amount, 'ether')){
                                                             contract_erc20.methods.approve(_this.gatewayContractAddress, web3.utils.toWei(_this.ruleForm.amount, 'ether')).send({from:  _this.metaAddress})
                                                             .then(receipt => {
-                                                                // console.log(receipt)
+                                                                // console.log('approve receipt:', receipt)
+                                                                _this.contractSend(res.data)
                                                             })
                                                             .catch(error => {
                                                                 // console.log('errorerrorerror', error)
                                                             })
+                                                        }else{
+                                                            _this.contractSend(res.data)
                                                         }
-                                                        _this.contractSend(res.data)
                                                     })
                                                 }else{
                                                     _this.$message.error(_this.$t('uploadFile.xhr_tip'))

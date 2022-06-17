@@ -101,6 +101,7 @@ func ScanPolygon() error {
 			}
 
 			inputDataHex := hex.EncodeToString(transaction.Data())
+			logs.GetLogger().Info(inputDataHex)
 			if strings.HasPrefix(inputDataHex, "f4d98717") {
 				err = getPayment4Transaction(ethClient, inputDataHex, *transaction)
 				if err != nil {
@@ -114,6 +115,8 @@ func ScanPolygon() error {
 					return err
 				}
 				logs.GetLogger().Info("refund")
+			} else if strings.HasPrefix(inputDataHex, "ee4128f6") {
+				logs.GetLogger().Info("unlock", inputDataHex)
 			}
 		}
 

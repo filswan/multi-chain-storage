@@ -14,7 +14,6 @@ import (
 
 func Dao(router *gin.RouterGroup) {
 	router.GET("/signature/deals_to_sign/:signer_wallet_address", GetDeals2Sign)
-	router.POST("/signature", WriteDaoSignature)
 	router.POST("/register", RegisterDao)
 }
 
@@ -42,46 +41,6 @@ type DaoSignature struct {
 	DealId                 int64  `json:"deal_id"`
 	RecipientWalletAddress string `json:"recipient_wallet_address"`
 	TxHash                 string `json:"tx_hash"`
-}
-
-func WriteDaoSignature(c *gin.Context) {
-	var daoSignature DaoSignature
-	err := c.BindJSON(&daoSignature)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		c.AbortWithStatusJSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_PARSE_TO_STRUCT))
-		return
-	}
-
-	if daoSignature.DealId <= 0 {
-		err := fmt.Errorf("deal_id should be greater than 0")
-		logs.GetLogger().Error(err)
-		c.AbortWithStatusJSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_INVALID_VALUE))
-		return
-	}
-
-	if daoSignature.TxHash == "" || !strings.HasPrefix(daoSignature.TxHash, "0x") {
-		err := fmt.Errorf("tx_hash is invalid")
-		logs.GetLogger().Error(err)
-		c.AbortWithStatusJSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_INVALID_VALUE))
-		return
-	}
-
-	if daoSignature.RecipientWalletAddress == "" {
-		err := fmt.Errorf("recipient_wallet_address is required")
-		logs.GetLogger().Error(err)
-		c.AbortWithStatusJSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_NULL))
-		return
-	}
-
-	err = service.WriteDaoSignature(daoSignature.TxHash, daoSignature.RecipientWalletAddress, daoSignature.DealId)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.ERROR_INTERNAL, err.Error()))
-		return
-	}
-
-	c.JSON(http.StatusOK, common.CreateSuccessResponse(nil))
 }
 
 type DaoInfo struct {

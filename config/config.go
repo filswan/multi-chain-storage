@@ -39,7 +39,7 @@ type polygon struct {
 	PayMultiplyFactor         float32       `toml:"pay_multiply_factor"`
 	UnlockIntervalSecond      time.Duration `toml:"unlock_interval_second"`
 	DaoUnlockIntervalBlock    int64         `toml:"dao_unlock_interval_block"`
-	ScanPolygonBlockStep      uint64        `toml:"scan_polygon_block_step"`
+	ScanPolygonBlockStep      int64         `toml:"scan_polygon_block_step"`
 	TxHashCheckIntervalSecond time.Duration `toml:"tx_hash_check_interval_second"`
 	TxHashMaxCheckCount       int           `toml:"tx_hash_max_check_count"`
 }

@@ -692,13 +692,15 @@ export default {
                             if(resultUSDC < web3.utils.toWei(rowAmount, 'ether')){
                                 contract_erc20.methods.approve(_this.gatewayContractAddress, web3.utils.toWei(rowAmount, 'ether')).send({from:  _this.metaAddress})
                                 .then(receipt => {
-                                    // console.log(receipt)
+                                  // console.log('approve receipt:', receipt)
+                                  _this.contractSend(res.data.data.w_cid, web3.utils.toWei(rowAmount, 'ether'))
                                 })
                                 .catch(error => {
                                   // console.log('errorerrorerror', error)
                                 })
+                            }else{
+                              _this.contractSend(res.data.data.w_cid, web3.utils.toWei(rowAmount, 'ether'))
                             }
-                            _this.contractSend(res.data.data.w_cid, web3.utils.toWei(rowAmount, 'ether'))
                         })
                       }
                   })

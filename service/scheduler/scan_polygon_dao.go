@@ -157,6 +157,7 @@ func getDaoSignature(ethClient *ethclient.Client, inputDataHex string, transacti
 		return err
 	}
 
+	wCidsStr := method.Params[0].Value
 	dealIdStr := method.Params[1].Value
 	networkName := method.Params[2].Value
 	recipient := method.Params[3].Value
@@ -166,6 +167,11 @@ func getDaoSignature(ethClient *ethclient.Client, inputDataHex string, transacti
 		return nil
 	}
 
+	wCidsStr = strings.TrimLeft(wCidsStr, "[")
+	wCidsStr = strings.TrimRight(wCidsStr, "]")
+
+	wCids := strings.Split(wCidsStr, " ")
+
 	dealId, err := strconv.ParseInt(dealIdStr, 10, 32)
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -173,7 +179,7 @@ func getDaoSignature(ethClient *ethclient.Client, inputDataHex string, transacti
 	}
 
 	txHash := transaction.Hash().String()
-	err = models.WriteDaoSignature(txHash, recipient, dealId)
+	err = models.WriteDaoSignature(txHash, recipient, dealId, wCids)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err

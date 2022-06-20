@@ -70,7 +70,7 @@ func GetDaoSignaturesByOfflineDealIdTxHash(offlineDealId int64, txHash string) (
 	return nil, nil
 }
 
-func WriteDaoSignature(txHash string, recipientWalletAddress string, dealId int64) error {
+func WriteDaoSignature(txHash string, recipientWalletAddress string, dealId int64, wCids []string) error {
 	ethClient, _, err := client.GetEthClient()
 	if err != nil {
 		logs.GetLogger().Error(err)

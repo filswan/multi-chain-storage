@@ -68,36 +68,13 @@ func CreateTransaction4PayByWCid(wCid, txHash string, lockTime int64) error {
 		return nil
 	}
 
-	sourceFilePayloadCidIndex := strings.Index(wCid, "Qm")
-	if sourceFilePayloadCidIndex < 0 {
-		logs.GetLogger().Info("w cid: ", wCid, " not recognizable")
-		return nil
-	}
-
-	sourceFileUploadUuid := wCid[0:sourceFilePayloadCidIndex]
-	sourceFilePayloadCid := wCid[sourceFilePayloadCidIndex:]
-
-	sourceFile, err := GetSourceFileByPayloadCid(sourceFilePayloadCid)
+	sourceFile, sourceFileUpload, err := GetSourceFileUploadByWCid(wCid)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
 	}
 
-	if sourceFile == nil {
-		msg := fmt.Sprintf("source file not exists for source file payload cid:%s", sourceFilePayloadCid)
-		logs.GetLogger().Info(msg)
-		return nil
-	}
-
-	sourceFileUpload, err := GetSourceFileUploadBySourceFileIdUuid(sourceFile.ID, sourceFileUploadUuid)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
-
-	if sourceFileUpload == nil {
-		msg := fmt.Sprintf("source file upload not exists for source file id:%d, uuid:%s", sourceFile.ID, sourceFileUploadUuid)
-		logs.GetLogger().Info(msg)
+	if sourceFile == nil || sourceFileUpload == nil {
 		return nil
 	}
 

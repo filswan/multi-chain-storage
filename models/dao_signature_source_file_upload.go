@@ -10,7 +10,7 @@ import (
 type DaoSignatureSourceFileUpload struct {
 	Id                 *int64 `json:"id"`
 	DaoSignatureId     int64  `json:"dao_signature_id"`
-	SourceFileuploadId int64  `json:"source_file_upload_id"`
+	SourceFileUploadId int64  `json:"source_file_upload_id"`
 	CreateAt           int64  `json:"create_at"`
 	UpdateAt           int64  `json:"update_at"`
 }
@@ -45,7 +45,7 @@ func SaveDaoSignatureSourceFileUpload(daoSignatureId int64, sourceFileUploadId i
 	currentUtcSecond := libutils.GetCurrentUtcSecond()
 	daoSignatureSourceFileUpload = &DaoSignatureSourceFileUpload{
 		DaoSignatureId:     daoSignatureId,
-		SourceFileuploadId: sourceFileUploadId,
+		SourceFileUploadId: sourceFileUploadId,
 		CreateAt:           currentUtcSecond,
 		UpdateAt:           currentUtcSecond,
 	}

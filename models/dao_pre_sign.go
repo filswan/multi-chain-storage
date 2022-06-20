@@ -40,6 +40,24 @@ func GetDaoPreSignSourceFileUploadCntSign(offlineDealId int64) (*int, error) {
 	return &sourceFileUploadCntSign, nil
 }
 
+func GetDaoPreSignSourceFileUploadCntTotal(offlineDealId int64) (*int, error) {
+	var daoPreSigns []*DaoPreSign
+	sql := "select count(*) source_file_upload_cnt_total from offline_deal a, car_file_source b where a.car_file_id=b.car_file_id and a.id=?"
+	err := database.GetDB().Raw(sql, offlineDealId).Scan(&daoPreSigns).Error
+
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	var sourceFileUploadCntTotal int = 0
+	if len(daoPreSigns) > 0 {
+		sourceFileUploadCntTotal = daoPreSigns[0].SourceFileUploadCntTotal
+	}
+
+	return &sourceFileUploadCntTotal, nil
+}
+
 func UpdateDaoPreSignSourceFileUploadCntSign(offlineDealId int64) error {
 	sourceFileUploadCntSign, err := GetDaoPreSignSourceFileUploadCntSign(offlineDealId)
 	if err != nil {
@@ -52,6 +70,34 @@ func UpdateDaoPreSignSourceFileUploadCntSign(offlineDealId int64) error {
 	fields2BeUpdated["update_at"] = libutils.GetCurrentUtcSecond
 
 	err = database.GetDB().Model(DaoPreSign{}).Where("offline_deal_id=?", offlineDealId).Update(fields2BeUpdated).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	return nil
+}
+
+func CreateDaoPreSign(offlineDealId int64, txHash string, batchNumber int) error {
+	SourceFileUploadCntTotal, err := GetDaoPreSignSourceFileUploadCntTotal(offlineDealId)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	currentUtcSecond := libutils.GetCurrentUtcSecond()
+	daoPreSign := DaoPreSign{
+		OfflineDealId:            offlineDealId,
+		TxHash:                   txHash,
+		BatchNumber:              batchNumber,
+		BatchSizeMax:             0,
+		SourceFileUploadCntTotal: *SourceFileUploadCntTotal,
+		SourceFileUploadCntSign:  0,
+		CreateAt:                 currentUtcSecond,
+		UpdateAt:                 currentUtcSecond,
+	}
+
+	err = database.SaveOne(daoPreSign)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err

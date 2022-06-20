@@ -212,6 +212,12 @@ func WriteDaoSignature(txHash string, recipientWalletAddress string, dealId int6
 		}
 	}
 
+	err = UpdateDaoPreSignSourceFileUploadCntSign(offlineDeal.Id)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
 	return nil
 }
 

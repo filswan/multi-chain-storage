@@ -212,6 +212,17 @@ create table dao_signature (
     constraint fk_dao_signature_wallet_id_contract foreign key (wallet_id_contract) references wallet(id)
 );
 
+create table dao_signature_source_file_upload (
+    id                           bigint        not null auto_increment,
+    dao_signature_id             bigint        not null,
+    source_file_upload_id        bigint        not null,
+    create_at                    bigint        not null,
+    update_at                    bigint        not null,
+    primary key pk_dao_signature_source_file_upload(id),
+    constraint fk_dao_signature_source_file_upload_dao_signature_id foreign key (dao_signature_id) references dao_signature(id),
+    constraint fk_dao_signature_source_file_upload_source_file_upload_id foreign key (source_file_upload_id) references source_file_upload(id)
+);
+
 2022.06.17
 #--alter table network add last_scan_block_number_dao bigint;
 #--alter table network change last_scan_block_number last_scan_block_number_payment bigint;

@@ -16,7 +16,7 @@ import (
 )
 
 type DaoSignature struct {
-	ID                int64  `json:"id"`
+	Id                *int64 `json:"id"`
 	OfflineDealId     int64  `json:"offline_deal_id"`
 	NetworkId         int64  `json:"network_id"`
 	WalletIdSigner    int64  `json:"wallet_id_signer"`
@@ -187,11 +187,53 @@ func WriteDaoSignature(txHash string, recipientWalletAddress string, dealId int6
 	daoSignature.WalletIdContract = walletContract.ID
 	daoSignature.UpdateAt = currentUtcSecond
 
-	err = database.SaveOne(daoSignature)
+	daoSignature, err = SaveDaoSignature(daoSignature)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
 	}
 
+	for _, wCid := range wCids {
+		sourceFile, sourceFileUpload, err := GetSourceFileUploadByWCid(wCid)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return err
+		}
+
+		if sourceFile == nil || sourceFileUpload == nil {
+			logs.GetLogger().Info("wCid:", wCid, " not exists")
+			continue
+		}
+
+		err = SaveDaoSignatureSourceFileUpload(*daoSignature.Id, sourceFileUpload.Id)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return err
+		}
+	}
+
 	return nil
+}
+
+func SaveDaoSignature(daoSignature *DaoSignature) (*DaoSignature, error) {
+	if daoSignature.Id != nil {
+		err := database.SaveOne(daoSignature)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return nil, err
+		}
+
+		return daoSignature, nil
+	}
+
+	daoSignatureResult := database.GetDB().Create(&daoSignature)
+	err := daoSignatureResult.Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	daoSignatureCreated := daoSignatureResult.Value.(*DaoSignature)
+
+	return daoSignatureCreated, nil
 }

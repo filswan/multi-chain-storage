@@ -192,6 +192,21 @@ create table transaction (
     constraint fk_transaction_wallet_id_contract foreign key (wallet_id_contract) references wallet(id)
 );
 
+create table dao_pre_sign (
+    id                           bigint        not null auto_increment,
+    offline_deal_id              bigint        not null,
+    tx_hash                      varchar(100)  not null,
+    batch_number                 int           not null,
+    batch_size_max               int           not null,
+    source_file_upload_cnt_total int           not null,
+    source_file_upload_cnt_sign  int           not null,
+    create_at                    bigint        not null,
+    update_at                    bigint        not null,
+    primary key pk_dao_pre_sign(id),
+    constraint un_dao_pre_sign unique(offline_deal_id),
+    constraint fk_dao_pre_sign_offline_deal_id foreign key (offline_deal_id) references offline_deal(id)
+);
+
 create table dao_signature (
     id                           bigint        not null auto_increment,
     offline_deal_id              bigint        not null,

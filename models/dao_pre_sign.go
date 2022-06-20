@@ -4,6 +4,7 @@ import (
 	"multi-chain-storage/database"
 
 	"github.com/filswan/go-swan-lib/logs"
+	libutils "github.com/filswan/go-swan-lib/utils"
 )
 
 type DaoPreSign struct {
@@ -37,4 +38,24 @@ func GetDaoPreSignSourceFileUploadCntSign(offlineDealId int64) (*int, error) {
 	}
 
 	return &sourceFileUploadCntSign, nil
+}
+
+func UpdateDaoPreSignSourceFileUploadCntSign(offlineDealId int64) error {
+	sourceFileUploadCntSign, err := GetDaoPreSignSourceFileUploadCntSign(offlineDealId)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	fields2BeUpdated := make(map[string]interface{})
+	fields2BeUpdated["source_file_upload_cnt_sign"] = *sourceFileUploadCntSign
+	fields2BeUpdated["update_at"] = libutils.GetCurrentUtcSecond
+
+	err = database.GetDB().Model(DaoPreSign{}).Where("offline_deal_id=?", offlineDealId).Update(fields2BeUpdated).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	return nil
 }

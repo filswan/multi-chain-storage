@@ -226,7 +226,7 @@ func getUnlock(ethClient *ethclient.Client, inputDataHex string, transaction typ
 		return nil
 	}
 
-	dealId, err := strconv.ParseInt(dealIdStr, 10, 32)
+	dealId, err := strconv.ParseInt(dealIdStr, 10, 64)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err

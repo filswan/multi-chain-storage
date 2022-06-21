@@ -1,6 +1,7 @@
 package models
 
 import (
+	"math"
 	"multi-chain-storage/database"
 
 	"github.com/filswan/go-swan-lib/logs"
@@ -79,19 +80,21 @@ func UpdateDaoPreSignSourceFileUploadCntSign(offlineDealId int64) error {
 }
 
 func CreateDaoPreSign(offlineDealId int64, txHash string, batchNumber int) error {
-	SourceFileUploadCntTotal, err := GetDaoPreSignSourceFileUploadCntTotal(offlineDealId)
+	sourceFileUploadCntTotal, err := GetDaoPreSignSourceFileUploadCntTotal(offlineDealId)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
 	}
+
+	batchSizeMax := float64(*sourceFileUploadCntTotal) / float64(batchNumber)
 
 	currentUtcSecond := libutils.GetCurrentUtcSecond()
 	daoPreSign := DaoPreSign{
 		OfflineDealId:            offlineDealId,
 		TxHash:                   txHash,
 		BatchNumber:              batchNumber,
-		BatchSizeMax:             0,
-		SourceFileUploadCntTotal: *SourceFileUploadCntTotal,
+		BatchSizeMax:             int(math.Ceil(batchSizeMax)),
+		SourceFileUploadCntTotal: *sourceFileUploadCntTotal,
 		SourceFileUploadCntSign:  0,
 		CreateAt:                 currentUtcSecond,
 		UpdateAt:                 currentUtcSecond,

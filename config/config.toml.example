@@ -60,3 +60,4 @@ dao_unlock_interval_block = 5
 scan_polygon_block_step = 1000
 tx_hash_check_interval_second=5
 tx_hash_max_check_count=300
+tx_hash_max_check_second=300

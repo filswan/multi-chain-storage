@@ -42,6 +42,7 @@ type polygon struct {
 	ScanPolygonBlockStep      int64         `toml:"scan_polygon_block_step"`
 	TxHashCheckIntervalSecond time.Duration `toml:"tx_hash_check_interval_second"`
 	TxHashMaxCheckCount       int           `toml:"tx_hash_max_check_count"`
+	TxHashMaxCheckSecond      time.Duration `toml:"tx_hash_max_check_second"`
 }
 
 type database struct {
@@ -173,6 +174,7 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 		{"polygon", "scan_polygon_block_step"},
 		{"polygon", "tx_hash_check_interval_second"},
 		{"polygon", "tx_hash_max_check_count"},
+		{"polygon", "tx_hash_max_check_second"},
 	}
 
 	for _, v := range requiredFields {

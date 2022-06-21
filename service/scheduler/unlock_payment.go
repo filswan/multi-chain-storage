@@ -50,8 +50,7 @@ func UnlockPayment() error {
 	unlockIntervalSecond := config.GetConfig().Polygon.UnlockIntervalSecond * time.Second
 	logs.GetLogger().Info("unlock interval is ", unlockIntervalSecond)
 
-	unlockCnt := 0
-	for _, offlineDeal := range offlineDeals {
+	for i, offlineDeal := range offlineDeals {
 		isUnlockable, err := checkUnlockable(ethClient, offlineDeal, filswanOracleSession, paymentRecipientAddress)
 		if err != nil {
 			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
@@ -63,12 +62,11 @@ func UnlockPayment() error {
 			continue
 		}
 
-		if unlockCnt > 0 {
+		if i > 0 {
 			logs.GetLogger().Info(getLog(offlineDeal, "sleeping "+unlockIntervalSecond.String()+" before unlock"))
 			time.Sleep(unlockIntervalSecond)
 		}
 
-		unlockCnt = unlockCnt + 1
 		_, err = unlockDeal(offlineDeal, ethClient, swanPaymentTransactor, paymentRecipientAddress)
 		if err != nil {
 			logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
@@ -119,8 +117,9 @@ func checkUnlockable(ethClient *ethclient.Client, offlineDeal *models.OfflineDea
 		daoBlockNo := filswanOracleTransaction.BlockNumber.Uint64()
 		blockInterval := int64(currentBlockNo - daoBlockNo)
 
+		daoUnlockIntervalBlock := config.GetConfig().Polygon.DaoUnlockIntervalBlock
 		if blockInterval < config.GetConfig().Polygon.DaoUnlockIntervalBlock {
-			msg := fmt.Sprintf("current block number:%d - dao block number:%d is less than block interval:%d", currentBlockNo, daoBlockNo, blockInterval)
+			msg := fmt.Sprintf("current block number:%d - dao block number:%d is less than configed dao-unlock block interval:%d", currentBlockNo, daoBlockNo, daoUnlockIntervalBlock)
 			logs.GetLogger().Info(offlineDeal, msg)
 			return false, nil
 		}
@@ -142,9 +141,9 @@ func getLog(offlineDeal *models.OfflineDeal, messages ...string) string {
 	return text
 }
 
-func unlockDeal(offlineDeal *models.OfflineDeal, ethClient *ethclient.Client, swanPaymentTransactor *goBind.SwanPaymentTransactor, mcsPaymentReceiverAddress common.Address) (*string, error) {
+func unlockDeal(offlineDeal *models.OfflineDeal, ethClient *ethclient.Client, swanPaymentTransactor *goBind.SwanPaymentTransactor, recipient common.Address) (*string, error) {
 	if offlineDeal.DealId == nil || *offlineDeal.DealId <= 0 {
-		err := fmt.Errorf("valid deal id must be greater than 0")
+		err := fmt.Errorf("deal id must be greater than 0")
 		logs.GetLogger().Error(getLog(offlineDeal, err.Error()))
 		return nil, err
 	}
@@ -155,9 +154,9 @@ func unlockDeal(offlineDeal *models.OfflineDeal, ethClient *ethclient.Client, sw
 		return nil, err
 	}
 
-	dealIdStr := strconv.FormatInt(*offlineDeal.DealId, 10)
+	dealId := strconv.FormatInt(*offlineDeal.DealId, 10)
 	filecoinNetwork := config.GetConfig().FilecoinNetwork
-	tx, err := swanPaymentTransactor.UnlockCarPayment(tansactOpts, dealIdStr, filecoinNetwork, mcsPaymentReceiverAddress)
+	tx, err := swanPaymentTransactor.UnlockCarPayment(tansactOpts, dealId, filecoinNetwork, recipient)
 	txHash := ""
 	if tx != nil {
 		txHash = tx.Hash().Hex()

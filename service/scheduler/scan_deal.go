@@ -12,6 +12,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/ethclient"
 	libutils "github.com/filswan/go-swan-lib/utils"
+	"github.com/shopspring/decimal"
 
 	"github.com/filswan/go-swan-lib/logs"
 
@@ -156,14 +157,14 @@ func refundCarFiles() error {
 		return err
 	}
 
-	carFiles, err := models.GetCarFilesByStatus(constants.CAR_FILE_STATUS_DEAL_SENT)
+	carFiles, err := models.GetCarFiles2Refund()
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
 	}
 
 	for _, carFile := range carFiles {
-		err = refundCarFile(ethClient, carFile.ID, swanPaymentTransactor)
+		err = refundCarFile(ethClient, carFile, swanPaymentTransactor)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			continue
@@ -173,75 +174,40 @@ func refundCarFiles() error {
 	return nil
 }
 
-func refundCarFile(ethClient *ethclient.Client, carFileId int64, swanPaymentTransactor *goBind.SwanPaymentTransactor) error {
-	offlineDeals, err := models.GetOfflineDealsByCarFileId(carFileId)
+func refundCarFile(ethClient *ethclient.Client, carFile2Refund *models.CarFile2Refund, swanPaymentTransactor *goBind.SwanPaymentTransactor) error {
+	sourceFileUploads, err := models.GetSourceFileUploadOutsByCarFileId(carFile2Refund.CarFileId)
 	if err != nil {
 		logs.GetLogger().Error(err.Error())
 		return err
 	}
 
-	var offlineDealsCntFailed int = 0
-	var offlineDealsCntSuccess int = 0
-	var offlineDealsCntOther int = 0
-
-	for _, offlineDeal := range offlineDeals {
-		switch offlineDeal.Status {
-		case constants.OFFLINE_DEAL_STATUS_FAILED:
-			offlineDealsCntFailed = offlineDealsCntFailed + 1
-		case constants.OFFLINE_DEAL_STATUS_SUCCESS:
-			offlineDealsCntSuccess = offlineDealsCntSuccess + 1
-		default:
-			offlineDealsCntOther = offlineDealsCntOther + 1
-		}
-	}
-
-	if offlineDealsCntOther > 0 {
-		msg := fmt.Sprintf("%d deals to be unlocked, cannot refund for car file:%d", offlineDealsCntOther, carFileId)
-		logs.GetLogger().Info(msg)
-		return nil
-	}
-
-	sourceFileUploads, err := models.GetSourceFileUploadOutsByCarFileId(carFileId)
-	if err != nil {
-		logs.GetLogger().Error(err.Error())
-		return err
-	}
-
-	if offlineDealsCntFailed > 0 {
-		for _, sourceFileUpload := range sourceFileUploads {
-			err = models.UpdateSourceFileUploadStatus(sourceFileUpload.Id, constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDABLE)
-			if err != nil {
-				logs.GetLogger().Error(err.Error())
-				return err
-			}
+	var srcFileUploadWCids []string
+	for _, sourceFileUpload := range sourceFileUploads {
+		if sourceFileUpload.Status == constants.SOURCE_FILE_UPLOAD_STATUS_UNLOCKED {
+			continue
 		}
 
-		err = models.UpdateCarFileStatus(carFileId, constants.CAR_FILE_STATUS_COMPLETED)
+		wCid := sourceFileUpload.Uuid + sourceFileUpload.PayloadCid
+		lockedPayment, err := client.GetLockedPaymentInfo(wCid)
 		if err != nil {
 			logs.GetLogger().Error(err.Error())
 			return err
 		}
 
-		return nil
-	}
-
-	var srcFileUploadWCids []string
-	for _, sourceFileUpload := range sourceFileUploads {
-		wCid := sourceFileUpload.Uuid + sourceFileUpload.PayloadCid
-		lockedPayment, err := client.GetLockedPaymentInfo(wCid)
-		if err != nil {
-			logs.GetLogger().Error(err.Error())
-			continue
-		}
-
 		if lockedPayment == nil {
 			logs.GetLogger().Error("payment not exists for w_cid:", wCid)
-			continue
+			sourceFileUpload.LockedFeeBeforeRefund = decimal.NewFromInt(0)
+		} else {
+			sourceFileUpload.LockedFeeBeforeRefund = lockedPayment.LockedFee
 		}
 
-		sourceFileUpload.LockedFeeBeforeRefund = lockedPayment.LockedFee
-
 		srcFileUploadWCids = append(srcFileUploadWCids, wCid)
+
+		err = models.UpdateTransactionUnlockInfo(sourceFileUpload.Id, sourceFileUpload.LockedFeeBeforeRefund, carFile2Refund.LastUnlockAt)
+		if err != nil {
+			logs.GetLogger().Error(err.Error())
+			return err
+		}
 	}
 
 	tansactOpts, err := client.GetTransactOpts(ethClient, adminWalletPrivateKey, *adminWalletPublicKey)
@@ -255,6 +221,7 @@ func refundCarFile(ethClient *ethclient.Client, carFileId int64, swanPaymentTran
 		logs.GetLogger().Error(err.Error())
 		return err
 	}
+
 	txHash := ""
 	if tx != nil {
 		txHash = tx.Hash().Hex()
@@ -293,7 +260,7 @@ func refundCarFile(ethClient *ethclient.Client, carFileId int64, swanPaymentTran
 		}
 	}
 
-	err = models.UpdateCarFileStatus(carFileId, constants.CAR_FILE_STATUS_COMPLETED)
+	err = models.UpdateCarFileStatus(carFile2Refund.CarFileId, constants.CAR_FILE_STATUS_COMPLETED)
 	if err != nil {
 		logs.GetLogger().Error(err.Error())
 		return err

@@ -162,7 +162,7 @@ func CreateTransaction4PayByWCid(wCid, txHash string, lockTime int64) error {
 	return nil
 }
 
-func UpdateTransactionUnlockInfo(sourceFileUploadId int64, unlockAmount decimal.Decimal) error {
+func UpdateTransactionUnlockInfo(sourceFileUploadId int64, lockedAmount decimal.Decimal, lastUnlockAt int64) error {
 	transaction, err := GetTransactionBySourceFileUploadId(sourceFileUploadId)
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -175,20 +175,18 @@ func UpdateTransactionUnlockInfo(sourceFileUploadId int64, unlockAmount decimal.
 		return nil
 	}
 
-	if transaction.UnlockAmount != nil {
-		unlockAmountBefore, err := decimal.NewFromString(*transaction.UnlockAmount)
-		if err != nil {
-			logs.GetLogger().Error(err)
-			unlockAmountBefore = decimal.NewFromInt(0)
-		}
-
-		unlockAmount = unlockAmountBefore.Add(unlockAmount)
+	payAmount, err := decimal.NewFromString(transaction.PayAmount)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
 	}
+
+	unlockAmount := payAmount.Sub(lockedAmount)
 
 	currentUtcSecond := libutils.GetCurrentUtcSecond()
 	fields2BeUpdated := make(map[string]interface{})
 	fields2BeUpdated["unlock_amount"] = unlockAmount.String()
-	fields2BeUpdated["last_unlock_at"] = currentUtcSecond
+	fields2BeUpdated["last_unlock_at"] = lastUnlockAt
 	fields2BeUpdated["update_at"] = currentUtcSecond
 
 	err = database.GetDB().Model(Transaction{}).Where("id=?", transaction.ID).Update(fields2BeUpdated).Error
@@ -197,7 +195,7 @@ func UpdateTransactionUnlockInfo(sourceFileUploadId int64, unlockAmount decimal.
 		return err
 	}
 
-	err = UpdateSourceFileUploadStatus(sourceFileUploadId, constants.SOURCE_FILE_UPLOAD_STATUS_UNLOCKING)
+	err = UpdateSourceFileUploadStatus(sourceFileUploadId, constants.SOURCE_FILE_UPLOAD_STATUS_UNLOCKED)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err

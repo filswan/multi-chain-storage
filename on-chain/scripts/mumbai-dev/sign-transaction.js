@@ -11,9 +11,12 @@ async function main() {
   const daoOracleInstance = await contract.attach(oracleDAOContractAddress);
 
 
-  const cidList = ["baga6ea4seaqmw53htgtnx53c45sg33btibgoz7oseyqcm7kdc2tiosbdnq72sjy","123a6ea4seaqmw53htgtnx53c45sg33btibgoz7oseyqcm7kdc2tiosbdnq72abc"];
+  const cidList = ["0aac3d53-d293-4f90-9fb3-1f057df261a5QmUKn5wLZWPzbsy4ihnoDMaTSSNhrZY7c34kSWeqLv9C9z","519fac5e-069c-492f-bb7b-9e22ce0b0cd3QmUKn5wLZWPzbsy4ihnoDMaTSSNhrZY7c34kSWeqLv9C9z",
+  "10b77004-e283-4779-ab0f-b866ed246822QmRXm5G4s4gFJMhXq2Wzu4N1QVLX5ygUbR48s25ffz5oVd"];
   const network = "filecoin_calibration";
-  const dealId = "2763";
+  // const network = "filecoin_mainnet";
+
+  const dealId = "172330";
 
 
   const paid = "10000000000000000"; // paid filcoins

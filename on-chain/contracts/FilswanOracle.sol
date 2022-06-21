@@ -193,4 +193,18 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
         }
         return result;
     }
+
+    event PreSign(string dealId, string network, address recipient, uint8 batchCount);
+    event Sign(string dealId, string network, string[] cidList, uint8 batchNo);
+
+
+    function preSign(string memory dealId, string memory network, address recipient, uint8 batchCount) public onlyRole(DAO_ROLE) {
+
+        emit PreSign(dealId, network, recipient, batchCount);
+    }
+
+    function sign(string memory dealId, string memory network, string[] memory cidList, uint8 batchNo) public onlyRole(DAO_ROLE) {
+
+        emit Sign(dealId, network, cidList, batchNo);
+    }
 }

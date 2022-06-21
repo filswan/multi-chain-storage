@@ -216,15 +216,15 @@ func CreateDaoPreSign(txHash string, recipientWalletAddress string, dealId int64
 		}
 	}
 
-	daoPreSign.NetworkId = network.ID
 	daoPreSign.OfflineDealId = offlineDeal.Id
 	daoPreSign.BatchNumber = batchNumber
 	daoPreSign.BatchSizeMax = int(math.Ceil(batchSizeMax))
 	daoPreSign.SourceFileUploadCntTotal = *sourceFileUploadCntTotal
-	daoPreSign.TxHash = txHash
+	daoPreSign.NetworkId = network.ID
 	daoPreSign.WalletIdSigner = walletSigner.ID
 	daoPreSign.WalletIdRecipient = walletRecipient.ID
 	daoPreSign.WalletIdContract = walletContract.ID
+	daoPreSign.TxHash = txHash
 	daoPreSign.UpdateAt = currentUtcSecond
 
 	err = database.SaveOne(daoPreSign)

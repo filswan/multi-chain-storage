@@ -119,9 +119,12 @@ func ScanPolygon4Payment() error {
 					logs.GetLogger().Error(err)
 					return err
 				}
-				logs.GetLogger().Info("refund")
 			} else if strings.HasPrefix(inputDataHex, "ee4128f6") {
-				logs.GetLogger().Info("unlock", inputDataHex)
+				err = getUnlock(ethClient, inputDataHex, *transaction)
+				if err != nil {
+					logs.GetLogger().Error(err)
+					return err
+				}
 			}
 		}
 
@@ -189,6 +192,73 @@ func getPayment4Transaction(ethClient *ethclient.Client, inputDataHex string, tr
 		return err
 	}
 
+	return nil
+}
+
+func getUnlock(ethClient *ethclient.Client, inputDataHex string, transaction types.Transaction) error {
+	txReceipt, err := client.CheckTx(ethClient, transaction.Hash())
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	if txReceipt.Status != uint64(1) {
+		return nil
+	}
+
+	method, err := txDataDecoderPayment.DecodeMethod(inputDataHex)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	if len(method.Params) <= 0 {
+		err = fmt.Errorf("method.Params is empty")
+		return err
+	}
+
+	dealIdStr := method.Params[0].Value
+	networkName := method.Params[1].Value
+	//recipient := method.Params[2].Value
+
+	filecoinNetwork := config.GetConfig().FilecoinNetwork
+	if networkName != filecoinNetwork {
+		return nil
+	}
+
+	dealId, err := strconv.ParseInt(dealIdStr, 10, 32)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	block, err := ethClient.BlockByNumber(context.Background(), txReceipt.BlockNumber)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	unlockAt := block.ReceivedAt.UTC().Unix()
+
+	txHash := transaction.Hash().String()
+
+	offlineDeal, err := models.GetOfflineDealByDealId(dealId)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	err = models.UpdateOfflineDealUnlockInfo(offlineDeal.Id, txHash, unlockAt)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	err = models.UpdateCarFileDealSuccess(offlineDeal.CarFileId)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
 	return nil
 }
 

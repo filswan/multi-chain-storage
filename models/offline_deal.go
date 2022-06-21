@@ -88,7 +88,7 @@ func GetDeals2Sign(signerWalletId int64) ([]*Deal2Sign, error) {
 	return deals2Sign, nil
 }
 
-func GetOfflineDeals2BeUnlocked() ([]*OfflineDeal, error) {
+func GetOfflineDeals2Unlock() ([]*OfflineDeal, error) {
 	var offlineDeals []*OfflineDeal
 	err := database.GetDB().Where("deal_id>0 and status=?", constants.OFFLINE_DEAL_STATUS_ACTIVE).Find(&offlineDeals).Error
 
@@ -146,12 +146,12 @@ func GetOfflineDealByDealId(dealId int64) (*OfflineDeal, error) {
 	return nil, nil
 }
 
-func UpdateOfflineDealUnlockInfo(id int64, txHashUnlock string) error {
+func UpdateOfflineDealUnlockInfo(id int64, unlockTxHash string, unlockAt int64) error {
 	currentUtcSecond := libutils.GetCurrentUtcSecond()
 	fields2BeUpdated := make(map[string]interface{})
 	fields2BeUpdated["status"] = constants.OFFLINE_DEAL_STATUS_SUCCESS
-	fields2BeUpdated["unlock_tx_hash"] = txHashUnlock
-	fields2BeUpdated["unlock_at"] = currentUtcSecond
+	fields2BeUpdated["unlock_tx_hash"] = unlockTxHash
+	fields2BeUpdated["unlock_at"] = unlockAt
 	fields2BeUpdated["update_at"] = currentUtcSecond
 
 	err := database.GetDB().Model(OfflineDeal{}).Where("id=?", id).Update(fields2BeUpdated).Error

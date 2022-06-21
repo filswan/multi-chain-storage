@@ -4,12 +4,13 @@ create database mcs_v2;
 use mcs_v2;
 
 create table network (
-    id                     bigint        not null auto_increment,
-    name                   varchar(100)  not null,
-    last_scan_block_number bigint,
-    description            text,
-    create_at              bigint        not null,
-    update_at              bigint        not null,
+    id                             bigint        not null auto_increment,
+    name                           varchar(100)  not null,
+    last_scan_block_number_payment bigint,
+    last_scan_block_number_dao     bigint,
+    description                    text,
+    create_at                      bigint        not null,
+    update_at                      bigint        not null,
     primary key pk_network(id),
     constraint un_network_name unique(name)
 );
@@ -110,7 +111,6 @@ create table car_file (
     task_uuid          varchar(100)  not null,
     max_price          varchar(100)  not null,
     status             varchar(100)  not null,
-    deal_success       boolean       not null,
     create_at          bigint        not null,
     update_at          bigint        not null,
     primary key pk_car_file(id)
@@ -191,12 +191,32 @@ create table transaction (
     constraint fk_transaction_wallet_id_contract foreign key (wallet_id_contract) references wallet(id)
 );
 
-create table dao_signature (
+create table dao_pre_sign (
     id                           bigint        not null auto_increment,
     offline_deal_id              bigint        not null,
+    batch_count                  int           not null,
+    batch_size_max               int           not null,
+    source_file_upload_cnt_total int           not null,
+    source_file_upload_cnt_sign  int           not null,
     network_id                   bigint        not null,
     wallet_id_signer             bigint        not null,
     wallet_id_recipient          bigint        not null,
+    wallet_id_contract           bigint        not null,
+    tx_hash                      varchar(100)  not null,
+    status                       varchar(100)  not null,
+    create_at                    bigint        not null,
+    update_at                    bigint        not null,
+    primary key pk_dao_pre_sign(id),
+    constraint un_dao_pre_sign unique(offline_deal_id),
+    constraint fk_dao_pre_sign_offline_deal_id foreign key (offline_deal_id) references offline_deal(id)
+);
+
+create table dao_signature (
+    id                           bigint        not null auto_increment,
+    offline_deal_id              bigint        not null,
+    batch_no                     int           not null,
+    network_id                   bigint        not null,
+    wallet_id_signer             bigint        not null,
     wallet_id_contract           bigint        not null,
     tx_hash                      varchar(100)  not null,
     status                       varchar(100)  not null,
@@ -207,7 +227,24 @@ create table dao_signature (
     constraint fk_dao_signature_network_id foreign key (network_id) references network(id),
     constraint fk_dao_signature_offline_deal_id foreign key (offline_deal_id) references offline_deal(id),
     constraint fk_dao_signature_wallet_id_signer foreign key (wallet_id_signer) references wallet(id),
-    constraint fk_dao_signature_wallet_id_recipient foreign key (wallet_id_recipient) references wallet(id),
     constraint fk_dao_signature_wallet_id_contract foreign key (wallet_id_contract) references wallet(id)
 );
 
+create table dao_signature_source_file_upload (
+    id                           bigint        not null auto_increment,
+    dao_signature_id             bigint        not null,
+    source_file_upload_id        bigint        not null,
+    create_at                    bigint        not null,
+    update_at                    bigint        not null,
+    primary key pk_dao_signature_source_file_upload(id),
+    constraint fk_dao_signature_source_file_upload_dao_signature_id foreign key (dao_signature_id) references dao_signature(id),
+    constraint fk_dao_signature_source_file_upload_source_file_upload_id foreign key (source_file_upload_id) references source_file_upload(id)
+);
+
+2022.06.17
+#--alter table network add last_scan_block_number_dao bigint;
+#--alter table network change last_scan_block_number last_scan_block_number_payment bigint;
+#--alter table dao_signature add batch_no int not null;
+#--alter table dao_signature DROP FOREIGN KEY fk_dao_signature_wallet_id_recipient;
+#--alter table dao_signature drop column wallet_id_recipient;
+#--alter table car_file drop column deal_success;

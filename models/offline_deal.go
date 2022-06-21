@@ -44,24 +44,56 @@ func GetOfflineDeals2BeScanned() ([]*OfflineDeal, error) {
 	return offlineDeals, nil
 }
 
-func GetOfflineDeals2BeSigned(signerWalletId int64) ([]*OfflineDeal, error) {
-	var offlineDeals []*OfflineDeal
-	sql := "select * from offline_deal a\n" +
-		"left outer join dao_signature b on a.id=b.offline_deal_id and b.status=? and b.wallet_id_signer=?\n" +
-		"where a.status=? and b.id is null \n"
-	err := database.GetDB().Raw(sql, constants.DAO_SIGNATURE_STATUS_SUCCESS, signerWalletId, constants.OFFLINE_DEAL_STATUS_ACTIVE).Scan(&offlineDeals).Error
+type Deal2PreSign struct {
+	DealId              int64 `json:"deal_id"`
+	SourceFileUploadCnt int   `json:"source_file_upload_cnt"`
+}
+
+func GetDeals2PreSign(signerWalletId int64) ([]*Deal2PreSign, error) {
+	var deal2PreSign []*Deal2PreSign
+	sql := "select a.deal_id,count(*) source_file_upload_cnt from (select a.* from offline_deal a\n" +
+		"left outer join dao_pre_sign b on a.id=b.offline_deal_id and b.status=? and b.wallet_id_signer=?\n" +
+		"where a.status=? and b.id is null ) a\n" +
+		"left join car_file_source on a.car_file_id=b.car_file_id\n" +
+		"group by a.deal_id"
+	err := database.GetDB().Raw(sql, constants.DAO_PRE_SIGN_STATUS_SUCCESS, signerWalletId, constants.OFFLINE_DEAL_STATUS_ACTIVE).Scan(&deal2PreSign).Error
 
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
 	}
 
-	return offlineDeals, nil
+	return deal2PreSign, nil
 }
 
-func GetOfflineDeals2BeUnlocked() ([]*OfflineDeal, error) {
+type Deal2Sign struct {
+	OfflineDealId int64 `json:"offline_deal_id"`
+	DealId        int64 `json:"deal_id"`
+	BatchCount    int   `json:"batch_count"`
+	BatchNo       []int `json:"batch_no"`
+}
+
+func GetDeals2Sign(signerWalletId int64) ([]*Deal2Sign, error) {
+	var deals2Sign []*Deal2Sign
+	sql := "select a.offline_deal_id,b.deal_id,a.batch_count from dao_pre_sign a\n" +
+		"left join offline_deal b on a.offline_deal_id=b.id\n" +
+		"where a.source_file_upload_cnt_sign<a.source_file_upload_cnt_total and a.status=? and a.wallet_id_signer=?\n"
+	err := database.GetDB().Raw(sql, constants.DAO_PRE_SIGN_STATUS_SUCCESS, signerWalletId).Scan(&deals2Sign).Error
+
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	return deals2Sign, nil
+}
+
+func GetOfflineDeals2Unlock() ([]*OfflineDeal, error) {
 	var offlineDeals []*OfflineDeal
-	err := database.GetDB().Where("deal_id>0 and status=?", constants.OFFLINE_DEAL_STATUS_ACTIVE).Find(&offlineDeals).Error
+	sql := "select a.* from offline_deal a\n" +
+		"left join dao_pre_sign b on a.id=b.offline_deal_id\n" +
+		"where b.source_file_upload_cnt_sign=b.source_file_upload_cnt_total and b.status=? and a.status=?\n"
+	err := database.GetDB().Raw(sql, constants.DAO_PRE_SIGN_STATUS_SUCCESS, constants.OFFLINE_DEAL_STATUS_ACTIVE).Scan(&offlineDeals).Error
 
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -117,12 +149,12 @@ func GetOfflineDealByDealId(dealId int64) (*OfflineDeal, error) {
 	return nil, nil
 }
 
-func UpdateOfflineDealUnlockInfo(id int64, txHashUnlock string) error {
+func UpdateOfflineDealUnlockInfo(id int64, unlockTxHash string, unlockAt int64) error {
 	currentUtcSecond := libutils.GetCurrentUtcSecond()
 	fields2BeUpdated := make(map[string]interface{})
 	fields2BeUpdated["status"] = constants.OFFLINE_DEAL_STATUS_SUCCESS
-	fields2BeUpdated["unlock_tx_hash"] = txHashUnlock
-	fields2BeUpdated["unlock_at"] = currentUtcSecond
+	fields2BeUpdated["unlock_tx_hash"] = unlockTxHash
+	fields2BeUpdated["unlock_at"] = unlockAt
 	fields2BeUpdated["update_at"] = currentUtcSecond
 
 	err := database.GetDB().Model(OfflineDeal{}).Where("id=?", id).Update(fields2BeUpdated).Error

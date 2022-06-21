@@ -39,9 +39,9 @@ type polygon struct {
 	PayMultiplyFactor         float32       `toml:"pay_multiply_factor"`
 	UnlockIntervalSecond      time.Duration `toml:"unlock_interval_second"`
 	DaoUnlockIntervalBlock    int64         `toml:"dao_unlock_interval_block"`
-	ScanPolygonBlockStep      uint64        `toml:"scan_polygon_block_step"`
+	ScanPolygonBlockStep      int64         `toml:"scan_polygon_block_step"`
 	TxHashCheckIntervalSecond time.Duration `toml:"tx_hash_check_interval_second"`
-	TxHashMaxCheckCount       int           `toml:"tx_hash_max_check_count"`
+	TxHashMaxCheckSecond      time.Duration `toml:"tx_hash_max_check_second"`
 }
 
 type database struct {
@@ -172,7 +172,7 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 		{"polygon", "dao_unlock_interval_block"},
 		{"polygon", "scan_polygon_block_step"},
 		{"polygon", "tx_hash_check_interval_second"},
-		{"polygon", "tx_hash_max_check_count"},
+		{"polygon", "tx_hash_max_check_second"},
 	}
 
 	for _, v := range requiredFields {

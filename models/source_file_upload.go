@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"multi-chain-storage/common/constants"
 	"multi-chain-storage/database"
 	"sort"
@@ -324,4 +325,41 @@ func UpdateSourceFileUploadStatus(id int64, status string) error {
 	}
 
 	return nil
+}
+
+func GetSourceFileUploadByWCid(wCid string) (*SourceFile, *SourceFileUpload, error) {
+	sourceFilePayloadCidIndex := strings.Index(wCid, "Qm")
+	if sourceFilePayloadCidIndex < 0 {
+		logs.GetLogger().Info("invalid wCid: ", wCid)
+		return nil, nil, nil
+	}
+
+	sourceFileUploadUuid := wCid[0:sourceFilePayloadCidIndex]
+	sourceFilePayloadCid := wCid[sourceFilePayloadCidIndex:]
+
+	sourceFile, err := GetSourceFileByPayloadCid(sourceFilePayloadCid)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, nil, err
+	}
+
+	if sourceFile == nil {
+		msg := fmt.Sprintf("no source file with payload cid:%s", sourceFilePayloadCid)
+		logs.GetLogger().Info(msg)
+		return nil, nil, nil
+	}
+
+	sourceFileUpload, err := GetSourceFileUploadBySourceFileIdUuid(sourceFile.ID, sourceFileUploadUuid)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, nil, err
+	}
+
+	if sourceFileUpload == nil {
+		msg := fmt.Sprintf("no source file upload with source file id:%d, uuid:%s", sourceFile.ID, sourceFileUploadUuid)
+		logs.GetLogger().Info(msg)
+		return nil, nil, nil
+	}
+
+	return sourceFile, sourceFileUpload, nil
 }

@@ -38,13 +38,15 @@ func GetSrcDir() string {
 func InitScheduler() {
 	createDir()
 	setAdminWallet()
-	initTxDataDecoder()
+	initTxDataDecoderPayment()
+	initTxDataDecoderDao()
 
 	go runJob(CreateTask, config.GetConfig().ScheduleRule.CreateTaskIntervalSecond)
 	go runJob(SendDeal, config.GetConfig().ScheduleRule.SendDealIntervalSecond)
 	go runJob(ScanDeal, config.GetConfig().ScheduleRule.ScanDealStatusIntervalSecond)
 	go runJob(UnlockPayment, config.GetConfig().ScheduleRule.UnlockIntervalSecond)
-	go runJob(ScanPolygon, config.GetConfig().ScheduleRule.ScanPolygonIntervalSecond)
+	go runJob(ScanPolygon4Payment, config.GetConfig().ScheduleRule.ScanPolygonIntervalSecond)
+	go runJob(ScanPolygon4Dao, config.GetConfig().ScheduleRule.ScanPolygonIntervalSecond)
 }
 
 func runJob(func2Run func() error, intervalSecond time.Duration) {

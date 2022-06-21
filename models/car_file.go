@@ -20,7 +20,6 @@ type CarFile struct {
 	TaskUuid    string          `json:"task_uuid"`
 	MaxPrice    decimal.Decimal `json:"max_price"`
 	Status      string          `json:"status"`
-	DealSuccess bool            `json:"deal_success"`
 	CreateAt    int64           `json:"create_at"`
 	UpdateAt    int64           `json:"update_at"`
 }
@@ -99,21 +98,6 @@ func UpdateCarFileStatus(id int64, status string) error {
 	currentUtcSecond := libutils.GetCurrentUtcSecond()
 	fields2BeUpdated := make(map[string]interface{})
 	fields2BeUpdated["status"] = status
-	fields2BeUpdated["update_at"] = currentUtcSecond
-
-	err := database.GetDB().Model(CarFile{}).Where("id=?", id).Update(fields2BeUpdated).Error
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
-
-	return nil
-}
-
-func UpdateCarFileDealSuccess(id int64) error {
-	currentUtcSecond := libutils.GetCurrentUtcSecond()
-	fields2BeUpdated := make(map[string]interface{})
-	fields2BeUpdated["deal_success"] = true
 	fields2BeUpdated["update_at"] = currentUtcSecond
 
 	err := database.GetDB().Model(CarFile{}).Where("id=?", id).Update(fields2BeUpdated).Error

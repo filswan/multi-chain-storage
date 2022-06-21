@@ -18,6 +18,7 @@ import (
 type DaoSignature struct {
 	Id                *int64 `json:"id"`
 	OfflineDealId     int64  `json:"offline_deal_id"`
+	BatchNo           int    `json:"batch_no"`
 	NetworkId         int64  `json:"network_id"`
 	WalletIdSigner    int64  `json:"wallet_id_signer"`
 	WalletIdRecipient int64  `json:"wallet_id_recipient"`

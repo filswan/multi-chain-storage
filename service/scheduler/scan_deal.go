@@ -222,6 +222,7 @@ func refundCarFile(ethClient *ethclient.Client, carFile2Refund *models.CarFile2R
 		return err
 	}
 
+	wCids := strings.Join(srcFileUploadWCids, ",")
 	txHash := ""
 	if tx != nil {
 		txHash = tx.Hash().Hex()
@@ -229,39 +230,13 @@ func refundCarFile(ethClient *ethclient.Client, carFile2Refund *models.CarFile2R
 
 	txReceipt, err := client.CheckTx(ethClient, tx.Hash())
 	if err != nil {
-		logs.GetLogger().Error(err.Error())
+		err := fmt.Errorf("unlock failed, wCids:%s, tx hash:%s, error:%s", wCids, txHash, err.Error())
+		logs.GetLogger().Error()
 		return err
 	}
 
 	if txReceipt.Status != uint64(1) {
-		err := fmt.Errorf("unlock failed! txHash=%s, status:%d", tx.Hash().Hex(), txReceipt.Status)
-		logs.GetLogger().Error(err.Error())
-		return err
-	}
-
-	for _, sourceFileUpload := range sourceFileUploads {
-		wCid := sourceFileUpload.Uuid + sourceFileUpload.PayloadCid
-		isPaymentAvailable, err := client.IsLockedPaymentExists(wCid)
-		if err != nil {
-			logs.GetLogger().Error(err.Error())
-			continue
-		}
-
-		if *isPaymentAvailable {
-			err := fmt.Errorf("source file upload id:%d,lock payment is still available for w_cid:%s after refund success with tx hash:%s", sourceFileUpload.Id, wCid, txHash)
-			logs.GetLogger().Error(err)
-			continue
-		}
-
-		err = models.UpdateTransactionRefundAfterUnlock(sourceFileUpload.Id, txHash, sourceFileUpload.LockedFeeBeforeRefund)
-		if err != nil {
-			logs.GetLogger().Error(err.Error())
-			continue
-		}
-	}
-
-	err = models.UpdateCarFileStatus(carFile2Refund.CarFileId, constants.CAR_FILE_STATUS_COMPLETED)
-	if err != nil {
+		err := fmt.Errorf("unlock failed, wCids:%s, tx hash:%s, tx receipt status:%d", wCids, txHash, txReceipt.Status)
 		logs.GetLogger().Error(err.Error())
 		return err
 	}

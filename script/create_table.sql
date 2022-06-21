@@ -210,6 +210,7 @@ create table dao_pre_sign (
 create table dao_signature (
     id                           bigint        not null auto_increment,
     offline_deal_id              bigint        not null,
+    batch_no                     int           not null,
     network_id                   bigint        not null,
     wallet_id_signer             bigint        not null,
     wallet_id_recipient          bigint        not null,
@@ -241,3 +242,4 @@ create table dao_signature_source_file_upload (
 2022.06.17
 #--alter table network add last_scan_block_number_dao bigint;
 #--alter table network change last_scan_block_number last_scan_block_number_payment bigint;
+#--alter table dao_signature add batch_no int not null;

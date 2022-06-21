@@ -2585,6 +2585,9 @@ export default {
             display: block;
             width: max-content;
             text-decoration: unset;
+            &:hover{
+              opacity: .9;
+            }
         }
     }
 

@@ -13,8 +13,29 @@ import (
 )
 
 func Dao(router *gin.RouterGroup) {
-	router.GET("/signature/deals_to_sign/:signer_wallet_address", GetDeals2Sign)
+	router.GET("/deals_to_pre_sign/:signer_wallet_address", GetDeals2PreSign)
+	router.GET("/deals_to_sign/:signer_wallet_address", GetDeals2Sign)
 	router.POST("/register", RegisterDao)
+}
+
+func GetDeals2PreSign(c *gin.Context) {
+	logs.GetLogger().Info("ip:", c.ClientIP(), ",port:", c.Request.URL.Port())
+	signerWalletAddress := strings.Trim(c.Params.ByName("signer_wallet_address"), " ")
+	if signerWalletAddress == "" || !strings.HasPrefix(signerWalletAddress, "0x") {
+		errMsg := "signer_wallet_address is required and should be valid address"
+		logs.GetLogger().Error(errMsg)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_INVALID_VALUE, errMsg))
+		return
+	}
+
+	dealList, err := service.GetDeals2Sign(signerWalletAddress)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.ERROR_INTERNAL, err.Error()))
+		return
+	}
+
+	c.JSON(http.StatusOK, common.CreateSuccessResponse(dealList))
 }
 
 func GetDeals2Sign(c *gin.Context) {

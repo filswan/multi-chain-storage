@@ -1,9 +1,16 @@
 package models
 
 import (
+	"context"
+	"fmt"
 	"math"
+	"multi-chain-storage/common/constants"
+	"multi-chain-storage/config"
 	"multi-chain-storage/database"
+	"multi-chain-storage/on-chain/client"
+	"strings"
 
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/filswan/go-swan-lib/logs"
 	libutils "github.com/filswan/go-swan-lib/utils"
 )
@@ -11,13 +18,33 @@ import (
 type DaoPreSign struct {
 	Id                       int64  `json:"id"`
 	OfflineDealId            int64  `json:"offline_deal_id"`
-	TxHash                   string `json:"tx_hash"`
 	BatchNumber              int    `json:"batch_number"`
 	BatchSizeMax             int    `json:"batch_size_max"`
 	SourceFileUploadCntTotal int    `json:"source_file_upload_cnt_total"`
 	SourceFileUploadCntSign  int    `json:"source_file_upload_cnt_sign"`
+	NetworkId                int64  `json:"network_id"`
+	WalletIdSigner           int64  `json:"wallet_id_signer"`
+	WalletIdRecipient        int64  `json:"wallet_id_recipient"`
+	WalletIdContract         int64  `json:"wallet_id_contract"`
+	TxHash                   string `json:"tx_hash"`
 	CreateAt                 int64  `json:"create_at"`
 	UpdateAt                 int64  `json:"update_at"`
+}
+
+func GetDaoPreSignByOfflineDealId(offlineDealId int64) (*DaoPreSign, error) {
+	var daoPreSigns []*DaoPreSign
+	err := database.GetDB().Where("offline_deal_id=?", offlineDealId).Find(&daoPreSigns).Error
+
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	if len(daoPreSigns) >= 1 {
+		return daoPreSigns[0], nil
+	}
+
+	return nil, nil
 }
 
 func GetDaoPreSignSourceFileUploadCntSign(offlineDealId int64) (*int, error) {
@@ -79,8 +106,95 @@ func UpdateDaoPreSignSourceFileUploadCntSign(offlineDealId int64) error {
 	return nil
 }
 
-func CreateDaoPreSign(offlineDealId int64, txHash string, batchNumber int) error {
-	sourceFileUploadCntTotal, err := GetDaoPreSignSourceFileUploadCntTotal(offlineDealId)
+func CreateDaoPreSign(txHash string, recipientWalletAddress string, dealId int64, batchNumber int) error {
+	ethClient, _, err := client.GetEthClient()
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	if txHash == "" || !strings.HasPrefix(txHash, "0x") {
+		err := fmt.Errorf("invalid tx hash:%s", txHash)
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	transaction, _, err := ethClient.TransactionByHash(context.Background(), common.HexToHash(txHash))
+	if err != nil {
+		err := fmt.Errorf("failed to get transaction by tx hash: %s, %s", txHash, err.Error())
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	addrInfo, err := client.GetFromAndToAddressByTxHash(ethClient, transaction.ChainId(), common.HexToHash(txHash))
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	logs.GetLogger().Info("addrInfo.AddrFrom:", addrInfo.AddrFrom) //this is signer wallet address
+	logs.GetLogger().Info("addrInfo.AddrTo:", addrInfo.AddrTo)     //this is dao contract address
+
+	signerWalletAddress := addrInfo.AddrFrom
+	daoContractAddress := addrInfo.AddrTo
+	daoContractAddressConfig := config.GetConfig().Polygon.DaoContractAddress
+	if !strings.EqualFold(daoContractAddress, daoContractAddressConfig) {
+		err := fmt.Errorf("dao contract address:%s not match config:%s for tx hash:%s", daoContractAddress, daoContractAddressConfig, txHash)
+		logs.GetLogger().Error(err)
+		//return err
+	}
+
+	network, err := GetNetworkByName(constants.NETWORK_NAME_POLYGON)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	if network == nil {
+		err := fmt.Errorf("network:%s not exists", constants.NETWORK_NAME_POLYGON)
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	walletSigner, err := GetWalletByAddress(signerWalletAddress, constants.WALLET_TYPE_META_MASK)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	if walletSigner.IsDao == nil || !*walletSigner.IsDao {
+		err = SetWalletAsDao(walletSigner.ID)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return err
+		}
+	}
+
+	walletContract, err := GetWalletByAddress(daoContractAddress, constants.WALLET_TYPE_META_MASK)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	walletRecipient, err := GetWalletByAddress(recipientWalletAddress, constants.WALLET_TYPE_META_MASK)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	offlineDeal, err := GetOfflineDealByDealId(dealId)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	if offlineDeal == nil {
+		err := fmt.Errorf("offline deal with deal id: %d not exists", dealId)
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	sourceFileUploadCntTotal, err := GetDaoPreSignSourceFileUploadCntTotal(offlineDeal.Id)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
@@ -88,17 +202,30 @@ func CreateDaoPreSign(offlineDealId int64, txHash string, batchNumber int) error
 
 	batchSizeMax := float64(*sourceFileUploadCntTotal) / float64(batchNumber)
 
-	currentUtcSecond := libutils.GetCurrentUtcSecond()
-	daoPreSign := DaoPreSign{
-		OfflineDealId:            offlineDealId,
-		TxHash:                   txHash,
-		BatchNumber:              batchNumber,
-		BatchSizeMax:             int(math.Ceil(batchSizeMax)),
-		SourceFileUploadCntTotal: *sourceFileUploadCntTotal,
-		SourceFileUploadCntSign:  0,
-		CreateAt:                 currentUtcSecond,
-		UpdateAt:                 currentUtcSecond,
+	daoPreSign, err := GetDaoPreSignByOfflineDealId(offlineDeal.Id)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
 	}
+
+	currentUtcSecond := libutils.GetCurrentUtcSecond()
+	if daoPreSign == nil {
+		daoPreSign = &DaoPreSign{
+			CreateAt:                currentUtcSecond,
+			SourceFileUploadCntSign: 0,
+		}
+	}
+
+	daoPreSign.NetworkId = network.ID
+	daoPreSign.OfflineDealId = offlineDeal.Id
+	daoPreSign.BatchNumber = batchNumber
+	daoPreSign.BatchSizeMax = int(math.Ceil(batchSizeMax))
+	daoPreSign.SourceFileUploadCntTotal = *sourceFileUploadCntTotal
+	daoPreSign.TxHash = txHash
+	daoPreSign.WalletIdSigner = walletSigner.ID
+	daoPreSign.WalletIdRecipient = walletRecipient.ID
+	daoPreSign.WalletIdContract = walletContract.ID
+	daoPreSign.UpdateAt = currentUtcSecond
 
 	err = database.SaveOne(daoPreSign)
 	if err != nil {

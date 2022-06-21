@@ -44,6 +44,21 @@ func GetOfflineDeals2BeScanned() ([]*OfflineDeal, error) {
 	return offlineDeals, nil
 }
 
+func GetOfflineDeals2BePreSigned(signerWalletId int64) ([]*OfflineDeal, error) {
+	var offlineDeals []*OfflineDeal
+	sql := "select * from offline_deal a\n" +
+		"left outer join dao_pre_sign b on a.id=b.offline_deal_id and b.status=? and b.wallet_id_signer=?\n" +
+		"where a.status=? and b.id is null \n"
+	err := database.GetDB().Raw(sql, constants.DAO_SIGNATURE_STATUS_SUCCESS, signerWalletId, constants.OFFLINE_DEAL_STATUS_ACTIVE).Scan(&offlineDeals).Error
+
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	return offlineDeals, nil
+}
+
 func GetOfflineDeals2BeSigned(signerWalletId int64) ([]*OfflineDeal, error) {
 	var offlineDeals []*OfflineDeal
 	sql := "select * from offline_deal a\n" +

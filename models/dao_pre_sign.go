@@ -107,7 +107,7 @@ func UpdateDaoPreSignSourceFileUploadCntSign(offlineDealId int64) error {
 	return nil
 }
 
-func CreateDaoPreSign(txHash string, recipientWalletAddress string, dealId int64, batchCount int) error {
+func WriteDaoPreSign(txHash string, recipientWalletAddress string, dealId int64, batchCount int) error {
 	ethClient, _, err := client.GetEthClient()
 	if err != nil {
 		logs.GetLogger().Error(err)

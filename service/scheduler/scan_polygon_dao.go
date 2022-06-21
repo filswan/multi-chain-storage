@@ -115,6 +115,12 @@ func ScanPolygon4Dao() error {
 					logs.GetLogger().Error(err)
 					return err
 				}
+			} else if strings.HasPrefix(inputDataHex, "4d043ef6") {
+				err = getDaoPreSign(ethClient, inputDataHex, transaction)
+				if err != nil {
+					logs.GetLogger().Error(err)
+					return err
+				}
 			}
 		}
 
@@ -130,6 +136,61 @@ func ScanPolygon4Dao() error {
 	}
 
 	logs.GetLogger().Info("scan block [", startBlockNumber, ",", endBlockNumber, "] end, scan block step:", scanBlockStep)
+
+	return nil
+}
+
+func getDaoPreSign(ethClient *ethclient.Client, inputDataHex string, transaction *types.Transaction) error {
+	txReceipt, err := client.CheckTx(ethClient, transaction.Hash())
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	if txReceipt.Status != uint64(1) {
+		return nil
+	}
+
+	method, err := txDataDecoderDao.DecodeMethod(inputDataHex)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	if len(method.Params) < 4 {
+		err = fmt.Errorf("method.Params has not enough parameters,len(method.Params)=%d", len(method.Params))
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	dealIdStr := method.Params[0].Value
+	networkName := method.Params[1].Value
+	recipient := method.Params[2].Value
+	batchCountStr := method.Params[3].Value // new params
+
+	filecoinNetwork := config.GetConfig().FilecoinNetwork
+	if networkName != filecoinNetwork {
+		return nil
+	}
+
+	dealId, err := strconv.ParseInt(dealIdStr, 10, 32)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	batchCount, err := strconv.Atoi(batchCountStr)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	txHash := transaction.Hash().String()
+	err = models.WriteDaoPreSign(txHash, recipient, dealId, batchCount)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
 
 	return nil
 }

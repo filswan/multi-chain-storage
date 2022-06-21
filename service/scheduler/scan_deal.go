@@ -183,7 +183,7 @@ func refundCarFile(ethClient *ethclient.Client, carFile2Refund *models.CarFile2R
 
 	var srcFileUploadWCids []string
 	for _, sourceFileUpload := range sourceFileUploads {
-		if sourceFileUpload.Status == constants.SOURCE_FILE_UPLOAD_STATUS_UNLOCKED {
+		if sourceFileUpload.Status == constants.SOURCE_FILE_UPLOAD_STATUS_DEAL_COMPLETED {
 			continue
 		}
 

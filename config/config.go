@@ -83,11 +83,12 @@ type ipfsServer struct {
 }
 
 type ScheduleRule struct {
-	UnlockIntervalSecond         time.Duration `toml:"unlock_interval_second"`
 	CreateTaskIntervalSecond     time.Duration `toml:"create_task_interval_second"`
 	SendDealIntervalSecond       time.Duration `toml:"send_deal_interval_second"`
 	ScanDealStatusIntervalSecond time.Duration `toml:"scan_deal_status_interval_second"`
 	ScanPolygonIntervalSecond    time.Duration `toml:"scan_polygon_interval_second"`
+	UnlockIntervalSecond         time.Duration `toml:"unlock_interval_second"`
+	RefundIntervalSecond         time.Duration `toml:"refund_interval_second"`
 }
 
 var config *Configuration
@@ -152,11 +153,12 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 		{"swan_task", "min_file_size"},
 		{"swan_task", "max_file_num_per_car"},
 
-		{"schedule_rule", "unlock_interval_second"},
 		{"schedule_rule", "create_task_interval_second"},
 		{"schedule_rule", "send_deal_interval_second"},
 		{"schedule_rule", "scan_deal_status_interval_second"},
 		{"schedule_rule", "scan_polygon_interval_second"},
+		{"schedule_rule", "unlock_interval_second"},
+		{"schedule_rule", "refund_interval_second"},
 
 		{"polygon", "polygon_rpc_url"},
 		{"polygon", "payment_contract_address"},

@@ -41,7 +41,6 @@ type polygon struct {
 	DaoUnlockIntervalBlock    int64         `toml:"dao_unlock_interval_block"`
 	ScanPolygonBlockStep      int64         `toml:"scan_polygon_block_step"`
 	TxHashCheckIntervalSecond time.Duration `toml:"tx_hash_check_interval_second"`
-	TxHashMaxCheckCount       int           `toml:"tx_hash_max_check_count"`
 	TxHashMaxCheckSecond      time.Duration `toml:"tx_hash_max_check_second"`
 }
 
@@ -173,7 +172,6 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 		{"polygon", "dao_unlock_interval_block"},
 		{"polygon", "scan_polygon_block_step"},
 		{"polygon", "tx_hash_check_interval_second"},
-		{"polygon", "tx_hash_max_check_count"},
 		{"polygon", "tx_hash_max_check_second"},
 	}
 

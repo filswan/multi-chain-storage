@@ -161,6 +161,7 @@ func getDaoSignature(ethClient *ethclient.Client, inputDataHex string, transacti
 	dealIdStr := method.Params[1].Value
 	networkName := method.Params[2].Value
 	recipient := method.Params[3].Value
+	batchNoStr := method.Params[4].Value // new params
 
 	filecoinNetwork := config.GetConfig().FilecoinNetwork
 	if networkName != filecoinNetwork {
@@ -178,8 +179,14 @@ func getDaoSignature(ethClient *ethclient.Client, inputDataHex string, transacti
 		return err
 	}
 
+	batchNo, err := strconv.Atoi(batchNoStr)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
 	txHash := transaction.Hash().String()
-	err = models.WriteDaoSignature(txHash, recipient, dealId, wCids)
+	err = models.WriteDaoSignature(txHash, recipient, dealId, wCids, batchNo)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err

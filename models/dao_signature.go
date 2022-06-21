@@ -71,7 +71,7 @@ func GetDaoSignaturesByOfflineDealIdTxHash(offlineDealId int64, txHash string) (
 	return nil, nil
 }
 
-func WriteDaoSignature(txHash string, recipientWalletAddress string, dealId int64, wCids []string) error {
+func WriteDaoSignature(txHash string, recipientWalletAddress string, dealId int64, wCids []string, batchNo int) error {
 	ethClient, _, err := client.GetEthClient()
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -177,6 +177,7 @@ func WriteDaoSignature(txHash string, recipientWalletAddress string, dealId int6
 
 	daoSignature.NetworkId = network.ID
 	daoSignature.OfflineDealId = offlineDeal.Id
+	daoSignature.BatchNo = batchNo
 	if transactionReceipt.Status == 1 {
 		daoSignature.Status = constants.DAO_SIGNATURE_STATUS_SUCCESS
 	} else {

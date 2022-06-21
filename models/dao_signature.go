@@ -55,20 +55,32 @@ func GetDaoSignaturesByDealId(dealId int64) ([]*DaoSignatureOut, error) {
 	return daoSignatures, nil
 }
 
-func GetDaoSignaturesByOfflineDealIdTxHash(offlineDealId int64, txHash string) (*DaoSignature, error) {
-	var eventDaoSignatures []*DaoSignature
-	err := database.GetDB().Where("offline_deal_id=? and tx_hash=?", offlineDealId, txHash).Find(&eventDaoSignatures).Error
+func GetDaoSignatureByOfflineDealIdTxHash(offlineDealId int64, txHash string) (*DaoSignature, error) {
+	var daoSignatures []*DaoSignature
+	err := database.GetDB().Where("offline_deal_id=? and tx_hash=?", offlineDealId, txHash).Find(&daoSignatures).Error
 
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
 	}
 
-	if len(eventDaoSignatures) >= 1 {
-		return eventDaoSignatures[0], nil
+	if len(daoSignatures) >= 1 {
+		return daoSignatures[0], nil
 	}
 
 	return nil, nil
+}
+
+func GetDaoSignaturesByOfflineDealId(offlineDealId int64) ([]*DaoSignature, error) {
+	var daoSignatures []*DaoSignature
+	err := database.GetDB().Where("offline_deal_id=?", offlineDealId).Find(&daoSignatures).Error
+
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	return daoSignatures, nil
 }
 
 func WriteDaoSignature(txHash string, recipientWalletAddress string, dealId int64, wCids []string, batchNo int) error {
@@ -162,7 +174,7 @@ func WriteDaoSignature(txHash string, recipientWalletAddress string, dealId int6
 		return err
 	}
 
-	daoSignature, err := GetDaoSignaturesByOfflineDealIdTxHash(offlineDeal.Id, txHash)
+	daoSignature, err := GetDaoSignatureByOfflineDealIdTxHash(offlineDeal.Id, txHash)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
@@ -178,15 +190,17 @@ func WriteDaoSignature(txHash string, recipientWalletAddress string, dealId int6
 	daoSignature.NetworkId = network.ID
 	daoSignature.OfflineDealId = offlineDeal.Id
 	daoSignature.BatchNo = batchNo
+	daoSignature.WalletIdSigner = walletSigner.ID
+	daoSignature.WalletIdRecipient = walletRecipient.ID
+	daoSignature.WalletIdContract = walletContract.ID
+	daoSignature.TxHash = txHash
+
 	if transactionReceipt.Status == 1 {
 		daoSignature.Status = constants.DAO_SIGNATURE_STATUS_SUCCESS
 	} else {
 		daoSignature.Status = constants.DAO_SIGNATURE_STATUS_FAILED
 	}
-	daoSignature.TxHash = txHash
-	daoSignature.WalletIdSigner = walletSigner.ID
-	daoSignature.WalletIdRecipient = walletRecipient.ID
-	daoSignature.WalletIdContract = walletContract.ID
+
 	daoSignature.UpdateAt = currentUtcSecond
 
 	daoSignature, err = SaveDaoSignature(daoSignature)

@@ -7,80 +7,54 @@ import (
 	"github.com/filswan/go-swan-lib/logs"
 )
 
-type Deal2Sign struct {
-	DealId int64    `json:"deal_id"`
-	WCids  []string `json:"w_cid"`
-}
-
-func GetDeals2PreSign(signerWalletAddress string) ([]*Deal2Sign, error) {
+func GetDeals2PreSign(signerWalletAddress string) ([]*models.Deal2PreSign, error) {
 	signerWallet, err := models.GetWalletByAddress(signerWalletAddress, constants.WALLET_TYPE_META_MASK)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
 	}
 
-	offlineDeals, err := models.GetOfflineDeals2BeSigned(signerWallet.ID)
+	deals2PreSign, err := models.GetDeals2PreSign(signerWallet.ID)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
 	}
 
-	deals2Sign := []*Deal2Sign{}
-
-	for _, offlineDeal := range offlineDeals {
-		deal2BeSigned := &Deal2Sign{
-			DealId: *offlineDeal.DealId,
-			WCids:  []string{},
-		}
-
-		sourceFileUploads, err := models.GetSourceFileUploadOutsByCarFileId(offlineDeal.CarFileId)
-		if err != nil {
-			logs.GetLogger().Error(err)
-			return nil, err
-		}
-
-		for _, sourceFileUpload := range sourceFileUploads {
-			deal2BeSigned.WCids = append(deal2BeSigned.WCids, sourceFileUpload.Uuid+sourceFileUpload.PayloadCid)
-		}
-
-		deals2Sign = append(deals2Sign, deal2BeSigned)
-	}
-
-	return deals2Sign, nil
+	return deals2PreSign, nil
 }
 
-func GetDeals2Sign(signerWalletAddress string) ([]*Deal2Sign, error) {
+func GetDeals2Sign(signerWalletAddress string) ([]*models.Deal2Sign, error) {
 	signerWallet, err := models.GetWalletByAddress(signerWalletAddress, constants.WALLET_TYPE_META_MASK)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
 	}
 
-	offlineDeals, err := models.GetOfflineDeals2BeSigned(signerWallet.ID)
+	deals2Sign, err := models.GetDeals2Sign(signerWallet.ID)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
 	}
 
-	deals2Sign := []*Deal2Sign{}
-
-	for _, offlineDeal := range offlineDeals {
-		deal2BeSigned := &Deal2Sign{
-			DealId: *offlineDeal.DealId,
-			WCids:  []string{},
-		}
-
-		sourceFileUploads, err := models.GetSourceFileUploadOutsByCarFileId(offlineDeal.CarFileId)
+	for _, deal2Sign := range deals2Sign {
+		daoSignatures, err := models.GetDaoSignaturesByOfflineDealId(deal2Sign.OfflineDealId)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			return nil, err
 		}
 
-		for _, sourceFileUpload := range sourceFileUploads {
-			deal2BeSigned.WCids = append(deal2BeSigned.WCids, sourceFileUpload.Uuid+sourceFileUpload.PayloadCid)
-		}
+		for i := 0; i < deal2Sign.BatchCount; i++ {
+			signed := false
+			for _, daodaoSignature := range daoSignatures {
+				if daodaoSignature.BatchNo == i {
+					signed = true
+				}
+			}
 
-		deals2Sign = append(deals2Sign, deal2BeSigned)
+			if !signed {
+				deal2Sign.BatchNo = append(deal2Sign.BatchNo, i)
+			}
+		}
 	}
 
 	return deals2Sign, nil

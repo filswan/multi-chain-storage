@@ -18,7 +18,7 @@ import (
 type DaoPreSign struct {
 	Id                       int64  `json:"id"`
 	OfflineDealId            int64  `json:"offline_deal_id"`
-	BatchNumber              int    `json:"batch_number"`
+	BatchCount               int    `json:"batch_count"`
 	BatchSizeMax             int    `json:"batch_size_max"`
 	SourceFileUploadCntTotal int    `json:"source_file_upload_cnt_total"`
 	SourceFileUploadCntSign  int    `json:"source_file_upload_cnt_sign"`
@@ -27,6 +27,7 @@ type DaoPreSign struct {
 	WalletIdRecipient        int64  `json:"wallet_id_recipient"`
 	WalletIdContract         int64  `json:"wallet_id_contract"`
 	TxHash                   string `json:"tx_hash"`
+	Status                   string `json:"status"`
 	CreateAt                 int64  `json:"create_at"`
 	UpdateAt                 int64  `json:"update_at"`
 }
@@ -106,7 +107,7 @@ func UpdateDaoPreSignSourceFileUploadCntSign(offlineDealId int64) error {
 	return nil
 }
 
-func CreateDaoPreSign(txHash string, recipientWalletAddress string, dealId int64, batchNumber int) error {
+func CreateDaoPreSign(txHash string, recipientWalletAddress string, dealId int64, batchCount int) error {
 	ethClient, _, err := client.GetEthClient()
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -200,7 +201,13 @@ func CreateDaoPreSign(txHash string, recipientWalletAddress string, dealId int64
 		return err
 	}
 
-	batchSizeMax := float64(*sourceFileUploadCntTotal) / float64(batchNumber)
+	transactionReceipt, err := ethClient.TransactionReceipt(context.Background(), common.HexToHash(txHash))
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	batchSizeMax := float64(*sourceFileUploadCntTotal) / float64(batchCount)
 
 	daoPreSign, err := GetDaoPreSignByOfflineDealId(offlineDeal.Id)
 	if err != nil {
@@ -217,7 +224,7 @@ func CreateDaoPreSign(txHash string, recipientWalletAddress string, dealId int64
 	}
 
 	daoPreSign.OfflineDealId = offlineDeal.Id
-	daoPreSign.BatchNumber = batchNumber
+	daoPreSign.BatchCount = batchCount
 	daoPreSign.BatchSizeMax = int(math.Ceil(batchSizeMax))
 	daoPreSign.SourceFileUploadCntTotal = *sourceFileUploadCntTotal
 	daoPreSign.NetworkId = network.ID
@@ -225,6 +232,13 @@ func CreateDaoPreSign(txHash string, recipientWalletAddress string, dealId int64
 	daoPreSign.WalletIdRecipient = walletRecipient.ID
 	daoPreSign.WalletIdContract = walletContract.ID
 	daoPreSign.TxHash = txHash
+
+	if transactionReceipt.Status == 1 {
+		daoPreSign.Status = constants.DAO_PRE_SIGN_STATUS_SUCCESS
+	} else {
+		daoPreSign.Status = constants.DAO_PRE_SIGN_STATUS_FAILED
+	}
+
 	daoPreSign.UpdateAt = currentUtcSecond
 
 	err = database.SaveOne(daoPreSign)

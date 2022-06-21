@@ -111,7 +111,6 @@ create table car_file (
     task_uuid          varchar(100)  not null,
     max_price          varchar(100)  not null,
     status             varchar(100)  not null,
-    deal_success       boolean       not null,
     create_at          bigint        not null,
     update_at          bigint        not null,
     primary key pk_car_file(id)
@@ -248,3 +247,4 @@ create table dao_signature_source_file_upload (
 #--alter table dao_signature add batch_no int not null;
 #--alter table dao_signature DROP FOREIGN KEY fk_dao_signature_wallet_id_recipient;
 #--alter table dao_signature drop column wallet_id_recipient;
+#--alter table car_file drop column deal_success;

@@ -254,11 +254,6 @@ func getUnlock(ethClient *ethclient.Client, inputDataHex string, transaction typ
 		return err
 	}
 
-	err = models.UpdateCarFileDealSuccess(offlineDeal.CarFileId)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
 	return nil
 }
 

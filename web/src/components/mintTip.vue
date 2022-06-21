@@ -21,7 +21,7 @@
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
-                <el-button style="background: #dadada"
+                <el-button class="cancel"
                     type="info" @click="closeDia">{{$t('uploadFile.Back')}}</el-button>
                 <el-button 
                     type="primary" @click="submitForm('ruleForm')">{{isload ? $t('uploadFile.Minting') : $t('uploadFile.Mint_NFT')}}</el-button>
@@ -306,6 +306,16 @@
                 background: linear-gradient(45deg,#4f8aff, #4b5eff);
                 border-radius: 14px;
                 width: calc(50% - 0.15rem);
+                &:hover{
+                    opacity: .9;
+                }
+            }
+            .cancel{
+                background: #dadada;
+                transition: background-color .3s;
+                &:hover{
+                    background: linear-gradient(45deg,#4f8aff, #4b5eff);
+                }
             }
         }
     }

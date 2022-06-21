@@ -80,7 +80,7 @@
                 </div>
             </div>
             <div class="upload_bot">
-                <el-button type="primary" style="background: #dadada" @click="closeDia">{{$t('deal.Cancel')}}</el-button>
+                <el-button type="primary" class="cancel" @click="closeDia">{{$t('deal.Cancel')}}</el-button>
                 <el-button type="primary" @click="payCom">{{$t('deal.Submit')}}</el-button>
             </div>
         </div>
@@ -571,6 +571,16 @@
                     background: linear-gradient(45deg,#4f8aff, #4b5eff);
                     border-radius: 14px;
                     width: calc(50% - 0.15rem);
+                    &:hover{
+                        opacity: .9;
+                    }
+                }
+                .cancel{
+                    background: #dadada;
+                    transition: background-color .3s;
+                    &:hover{
+                        background: linear-gradient(45deg,#4f8aff, #4b5eff);
+                    }
                 }
             }
         }

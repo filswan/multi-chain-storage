@@ -104,7 +104,7 @@
                 </div>
                 <div class="upload_bot">
                     <div class="found">
-                        <el-button type="primary" style="background: #dadada" @click="closeDia">{{$t('deal.Cancel')}}</el-button>
+                        <el-button type="primary" class="cancel" @click="closeDia">{{$t('deal.Cancel')}}</el-button>
                         <el-button type="primary" @click="submitForm('ruleForm')">{{$t('deal.Submit')}}</el-button>
                     </div>
                     <a :href="found_link" target="_blank">{{$t('uploadFile.upload_funds')}}</a>
@@ -1186,6 +1186,16 @@
                             background: linear-gradient(45deg,#4f8aff, #4b5eff);
                             border-radius: 14px;
                             width: calc(50% - 0.15rem);
+                            &:hover{
+                                opacity: .9;
+                            }
+                        }
+                        .cancel{
+                            background: #dadada;
+                            transition: background-color .3s;
+                            &:hover{
+                                background: linear-gradient(45deg,#4f8aff, #4b5eff);
+                            }
                         }
                     }
                     a{

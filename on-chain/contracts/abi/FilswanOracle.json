@@ -22,6 +22,37 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": false,
+        "internalType": "string",
+        "name": "dealId",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "network",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "recipient",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint8",
+        "name": "batchCount",
+        "type": "uint8"
+      }
+    ],
+    "name": "PreSign",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": true,
         "internalType": "bytes32",
         "name": "role",
@@ -91,6 +122,37 @@
       }
     ],
     "name": "RoleRevoked",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "dealId",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "network",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "string[]",
+        "name": "cidList",
+        "type": "string[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint8",
+        "name": "batchNo",
+        "type": "uint8"
+      }
+    ],
+    "name": "Sign",
     "type": "event"
   },
   {
@@ -434,6 +496,34 @@
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "dealId",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "network",
+        "type": "string"
+      },
+      {
+        "internalType": "address",
+        "name": "recipient",
+        "type": "address"
+      },
+      {
+        "internalType": "uint8",
+        "name": "batchCount",
+        "type": "uint8"
+      }
+    ],
+    "name": "preSign",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "renounceOwnership",
     "outputs": [],
@@ -511,6 +601,34 @@
         "type": "bool"
       }
     ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "dealId",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "network",
+        "type": "string"
+      },
+      {
+        "internalType": "string[]",
+        "name": "cidList",
+        "type": "string[]"
+      },
+      {
+        "internalType": "uint8",
+        "name": "batchNo",
+        "type": "uint8"
+      }
+    ],
+    "name": "sign",
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },

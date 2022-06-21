@@ -40,7 +40,7 @@ type FilswanOracleTxOracleInfo struct {
 }
 
 // FilswanOracleABI is the input ABI used to generate the binding from.
-const FilswanOracleABI = "[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"previousAdminRole\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"newAdminRole\",\"type\":\"bytes32\"}],\"name\":\"RoleAdminChanged\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"RoleGranted\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"RoleRevoked\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"string[]\",\"name\":\"cidList\",\"type\":\"string[]\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"dealId\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"network\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"}],\"name\":\"SignCarTransaction\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"string\",\"name\":\"cid\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"dealId\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"}],\"name\":\"SignTransaction\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"DAO_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"DEFAULT_ADMIN_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"dealId\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"network\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"}],\"name\":\"getCarPaymentVotes\",\"outputs\":[{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"dealId\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"network\",\"type\":\"string\"}],\"name\":\"getCidList\",\"outputs\":[{\"internalType\":\"string[]\",\"name\":\"\",\"type\":\"string[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"}],\"name\":\"getRoleAdmin\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"dealId\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"network\",\"type\":\"string\"}],\"name\":\"getSignatureList\",\"outputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"paid\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"terms\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"status\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"flag\",\"type\":\"bool\"},{\"internalType\":\"string[]\",\"name\":\"cidList\",\"type\":\"string[]\"},{\"internalType\":\"address\",\"name\":\"signer\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"timestamp\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"blockNumber\",\"type\":\"uint256\"}],\"internalType\":\"structFilswanOracle.TxOracleInfo[]\",\"name\":\"\",\"type\":\"tuple[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getThreshold\",\"outputs\":[{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"grantRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"hasRole\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"admin\",\"type\":\"address\"},{\"internalType\":\"uint8\",\"name\":\"threshold\",\"type\":\"uint8\"}],\"name\":\"initialize\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"dealId\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"network\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"}],\"name\":\"isCarPaymentAvailable\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"renounceRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"revokeRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address[]\",\"name\":\"daoUsers\",\"type\":\"address[]\"}],\"name\":\"setDAOUsers\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"filinkAddress\",\"type\":\"address\"}],\"name\":\"setFilinkOracle\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string[]\",\"name\":\"cidList\",\"type\":\"string[]\"},{\"internalType\":\"string\",\"name\":\"dealId\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"network\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"}],\"name\":\"signCarTransaction\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes4\",\"name\":\"interfaceId\",\"type\":\"bytes4\"}],\"name\":\"supportsInterface\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"threshold\",\"type\":\"uint8\"}],\"name\":\"updateThreshold\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
+const FilswanOracleABI = "[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"string\",\"name\":\"dealId\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"network\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint8\",\"name\":\"batchCount\",\"type\":\"uint8\"}],\"name\":\"PreSign\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"previousAdminRole\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"newAdminRole\",\"type\":\"bytes32\"}],\"name\":\"RoleAdminChanged\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"RoleGranted\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"RoleRevoked\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"string\",\"name\":\"dealId\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"network\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"string[]\",\"name\":\"cidList\",\"type\":\"string[]\"},{\"indexed\":false,\"internalType\":\"uint8\",\"name\":\"batchNo\",\"type\":\"uint8\"}],\"name\":\"Sign\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"string[]\",\"name\":\"cidList\",\"type\":\"string[]\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"dealId\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"network\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"}],\"name\":\"SignCarTransaction\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"string\",\"name\":\"cid\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"dealId\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"}],\"name\":\"SignTransaction\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"DAO_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"DEFAULT_ADMIN_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"dealId\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"network\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"}],\"name\":\"getCarPaymentVotes\",\"outputs\":[{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"dealId\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"network\",\"type\":\"string\"}],\"name\":\"getCidList\",\"outputs\":[{\"internalType\":\"string[]\",\"name\":\"\",\"type\":\"string[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"}],\"name\":\"getRoleAdmin\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"dealId\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"network\",\"type\":\"string\"}],\"name\":\"getSignatureList\",\"outputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"paid\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"terms\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"status\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"flag\",\"type\":\"bool\"},{\"internalType\":\"string[]\",\"name\":\"cidList\",\"type\":\"string[]\"},{\"internalType\":\"address\",\"name\":\"signer\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"timestamp\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"blockNumber\",\"type\":\"uint256\"}],\"internalType\":\"structFilswanOracle.TxOracleInfo[]\",\"name\":\"\",\"type\":\"tuple[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getThreshold\",\"outputs\":[{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"grantRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"hasRole\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"admin\",\"type\":\"address\"},{\"internalType\":\"uint8\",\"name\":\"threshold\",\"type\":\"uint8\"}],\"name\":\"initialize\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"dealId\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"network\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"}],\"name\":\"isCarPaymentAvailable\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"dealId\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"network\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"internalType\":\"uint8\",\"name\":\"batchCount\",\"type\":\"uint8\"}],\"name\":\"preSign\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"renounceRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"revokeRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address[]\",\"name\":\"daoUsers\",\"type\":\"address[]\"}],\"name\":\"setDAOUsers\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"filinkAddress\",\"type\":\"address\"}],\"name\":\"setFilinkOracle\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"dealId\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"network\",\"type\":\"string\"},{\"internalType\":\"string[]\",\"name\":\"cidList\",\"type\":\"string[]\"},{\"internalType\":\"uint8\",\"name\":\"batchNo\",\"type\":\"uint8\"}],\"name\":\"sign\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string[]\",\"name\":\"cidList\",\"type\":\"string[]\"},{\"internalType\":\"string\",\"name\":\"dealId\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"network\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"}],\"name\":\"signCarTransaction\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes4\",\"name\":\"interfaceId\",\"type\":\"bytes4\"}],\"name\":\"supportsInterface\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"threshold\",\"type\":\"uint8\"}],\"name\":\"updateThreshold\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
 
 // FilswanOracle is an auto generated Go binding around an Ethereum contract.
 type FilswanOracle struct {
@@ -567,6 +567,27 @@ func (_FilswanOracle *FilswanOracleTransactorSession) Initialize(admin common.Ad
 	return _FilswanOracle.Contract.Initialize(&_FilswanOracle.TransactOpts, admin, threshold)
 }
 
+// PreSign is a paid mutator transaction binding the contract method 0xcc8a4c11.
+//
+// Solidity: function preSign(string dealId, string network, address recipient, uint8 batchCount) returns()
+func (_FilswanOracle *FilswanOracleTransactor) PreSign(opts *bind.TransactOpts, dealId string, network string, recipient common.Address, batchCount uint8) (*types.Transaction, error) {
+	return _FilswanOracle.contract.Transact(opts, "preSign", dealId, network, recipient, batchCount)
+}
+
+// PreSign is a paid mutator transaction binding the contract method 0xcc8a4c11.
+//
+// Solidity: function preSign(string dealId, string network, address recipient, uint8 batchCount) returns()
+func (_FilswanOracle *FilswanOracleSession) PreSign(dealId string, network string, recipient common.Address, batchCount uint8) (*types.Transaction, error) {
+	return _FilswanOracle.Contract.PreSign(&_FilswanOracle.TransactOpts, dealId, network, recipient, batchCount)
+}
+
+// PreSign is a paid mutator transaction binding the contract method 0xcc8a4c11.
+//
+// Solidity: function preSign(string dealId, string network, address recipient, uint8 batchCount) returns()
+func (_FilswanOracle *FilswanOracleTransactorSession) PreSign(dealId string, network string, recipient common.Address, batchCount uint8) (*types.Transaction, error) {
+	return _FilswanOracle.Contract.PreSign(&_FilswanOracle.TransactOpts, dealId, network, recipient, batchCount)
+}
+
 // RenounceOwnership is a paid mutator transaction binding the contract method 0x715018a6.
 //
 // Solidity: function renounceOwnership() returns()
@@ -670,6 +691,27 @@ func (_FilswanOracle *FilswanOracleSession) SetFilinkOracle(filinkAddress common
 // Solidity: function setFilinkOracle(address filinkAddress) returns(bool)
 func (_FilswanOracle *FilswanOracleTransactorSession) SetFilinkOracle(filinkAddress common.Address) (*types.Transaction, error) {
 	return _FilswanOracle.Contract.SetFilinkOracle(&_FilswanOracle.TransactOpts, filinkAddress)
+}
+
+// Sign is a paid mutator transaction binding the contract method 0xe7c2999a.
+//
+// Solidity: function sign(string dealId, string network, string[] cidList, uint8 batchNo) returns()
+func (_FilswanOracle *FilswanOracleTransactor) Sign(opts *bind.TransactOpts, dealId string, network string, cidList []string, batchNo uint8) (*types.Transaction, error) {
+	return _FilswanOracle.contract.Transact(opts, "sign", dealId, network, cidList, batchNo)
+}
+
+// Sign is a paid mutator transaction binding the contract method 0xe7c2999a.
+//
+// Solidity: function sign(string dealId, string network, string[] cidList, uint8 batchNo) returns()
+func (_FilswanOracle *FilswanOracleSession) Sign(dealId string, network string, cidList []string, batchNo uint8) (*types.Transaction, error) {
+	return _FilswanOracle.Contract.Sign(&_FilswanOracle.TransactOpts, dealId, network, cidList, batchNo)
+}
+
+// Sign is a paid mutator transaction binding the contract method 0xe7c2999a.
+//
+// Solidity: function sign(string dealId, string network, string[] cidList, uint8 batchNo) returns()
+func (_FilswanOracle *FilswanOracleTransactorSession) Sign(dealId string, network string, cidList []string, batchNo uint8) (*types.Transaction, error) {
+	return _FilswanOracle.Contract.Sign(&_FilswanOracle.TransactOpts, dealId, network, cidList, batchNo)
 }
 
 // SignCarTransaction is a paid mutator transaction binding the contract method 0x4d043ef6.
@@ -882,6 +924,143 @@ func (_FilswanOracle *FilswanOracleFilterer) WatchOwnershipTransferred(opts *bin
 func (_FilswanOracle *FilswanOracleFilterer) ParseOwnershipTransferred(log types.Log) (*FilswanOracleOwnershipTransferred, error) {
 	event := new(FilswanOracleOwnershipTransferred)
 	if err := _FilswanOracle.contract.UnpackLog(event, "OwnershipTransferred", log); err != nil {
+		return nil, err
+	}
+	event.Raw = log
+	return event, nil
+}
+
+// FilswanOraclePreSignIterator is returned from FilterPreSign and is used to iterate over the raw logs and unpacked data for PreSign events raised by the FilswanOracle contract.
+type FilswanOraclePreSignIterator struct {
+	Event *FilswanOraclePreSign // Event containing the contract specifics and raw log
+
+	contract *bind.BoundContract // Generic contract to use for unpacking event data
+	event    string              // Event name to use for unpacking event data
+
+	logs chan types.Log        // Log channel receiving the found contract events
+	sub  ethereum.Subscription // Subscription for errors, completion and termination
+	done bool                  // Whether the subscription completed delivering logs
+	fail error                 // Occurred error to stop iteration
+}
+
+// Next advances the iterator to the subsequent event, returning whether there
+// are any more events found. In case of a retrieval or parsing error, false is
+// returned and Error() can be queried for the exact failure.
+func (it *FilswanOraclePreSignIterator) Next() bool {
+	// If the iterator failed, stop iterating
+	if it.fail != nil {
+		return false
+	}
+	// If the iterator completed, deliver directly whatever's available
+	if it.done {
+		select {
+		case log := <-it.logs:
+			it.Event = new(FilswanOraclePreSign)
+			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+				it.fail = err
+				return false
+			}
+			it.Event.Raw = log
+			return true
+
+		default:
+			return false
+		}
+	}
+	// Iterator still in progress, wait for either a data or an error event
+	select {
+	case log := <-it.logs:
+		it.Event = new(FilswanOraclePreSign)
+		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+			it.fail = err
+			return false
+		}
+		it.Event.Raw = log
+		return true
+
+	case err := <-it.sub.Err():
+		it.done = true
+		it.fail = err
+		return it.Next()
+	}
+}
+
+// Error returns any retrieval or parsing error occurred during filtering.
+func (it *FilswanOraclePreSignIterator) Error() error {
+	return it.fail
+}
+
+// Close terminates the iteration process, releasing any pending underlying
+// resources.
+func (it *FilswanOraclePreSignIterator) Close() error {
+	it.sub.Unsubscribe()
+	return nil
+}
+
+// FilswanOraclePreSign represents a PreSign event raised by the FilswanOracle contract.
+type FilswanOraclePreSign struct {
+	DealId     string
+	Network    string
+	Recipient  common.Address
+	BatchCount uint8
+	Raw        types.Log // Blockchain specific contextual infos
+}
+
+// FilterPreSign is a free log retrieval operation binding the contract event 0xc69d6239860503167422092fbe6d5ad3e6843763d8fc9c6b876b4117cd366960.
+//
+// Solidity: event PreSign(string dealId, string network, address recipient, uint8 batchCount)
+func (_FilswanOracle *FilswanOracleFilterer) FilterPreSign(opts *bind.FilterOpts) (*FilswanOraclePreSignIterator, error) {
+
+	logs, sub, err := _FilswanOracle.contract.FilterLogs(opts, "PreSign")
+	if err != nil {
+		return nil, err
+	}
+	return &FilswanOraclePreSignIterator{contract: _FilswanOracle.contract, event: "PreSign", logs: logs, sub: sub}, nil
+}
+
+// WatchPreSign is a free log subscription operation binding the contract event 0xc69d6239860503167422092fbe6d5ad3e6843763d8fc9c6b876b4117cd366960.
+//
+// Solidity: event PreSign(string dealId, string network, address recipient, uint8 batchCount)
+func (_FilswanOracle *FilswanOracleFilterer) WatchPreSign(opts *bind.WatchOpts, sink chan<- *FilswanOraclePreSign) (event.Subscription, error) {
+
+	logs, sub, err := _FilswanOracle.contract.WatchLogs(opts, "PreSign")
+	if err != nil {
+		return nil, err
+	}
+	return event.NewSubscription(func(quit <-chan struct{}) error {
+		defer sub.Unsubscribe()
+		for {
+			select {
+			case log := <-logs:
+				// New log arrived, parse the event and forward to the user
+				event := new(FilswanOraclePreSign)
+				if err := _FilswanOracle.contract.UnpackLog(event, "PreSign", log); err != nil {
+					return err
+				}
+				event.Raw = log
+
+				select {
+				case sink <- event:
+				case err := <-sub.Err():
+					return err
+				case <-quit:
+					return nil
+				}
+			case err := <-sub.Err():
+				return err
+			case <-quit:
+				return nil
+			}
+		}
+	}), nil
+}
+
+// ParsePreSign is a log parse operation binding the contract event 0xc69d6239860503167422092fbe6d5ad3e6843763d8fc9c6b876b4117cd366960.
+//
+// Solidity: event PreSign(string dealId, string network, address recipient, uint8 batchCount)
+func (_FilswanOracle *FilswanOracleFilterer) ParsePreSign(log types.Log) (*FilswanOraclePreSign, error) {
+	event := new(FilswanOraclePreSign)
+	if err := _FilswanOracle.contract.UnpackLog(event, "PreSign", log); err != nil {
 		return nil, err
 	}
 	event.Raw = log
@@ -1368,6 +1547,143 @@ func (_FilswanOracle *FilswanOracleFilterer) WatchRoleRevoked(opts *bind.WatchOp
 func (_FilswanOracle *FilswanOracleFilterer) ParseRoleRevoked(log types.Log) (*FilswanOracleRoleRevoked, error) {
 	event := new(FilswanOracleRoleRevoked)
 	if err := _FilswanOracle.contract.UnpackLog(event, "RoleRevoked", log); err != nil {
+		return nil, err
+	}
+	event.Raw = log
+	return event, nil
+}
+
+// FilswanOracleSignIterator is returned from FilterSign and is used to iterate over the raw logs and unpacked data for Sign events raised by the FilswanOracle contract.
+type FilswanOracleSignIterator struct {
+	Event *FilswanOracleSign // Event containing the contract specifics and raw log
+
+	contract *bind.BoundContract // Generic contract to use for unpacking event data
+	event    string              // Event name to use for unpacking event data
+
+	logs chan types.Log        // Log channel receiving the found contract events
+	sub  ethereum.Subscription // Subscription for errors, completion and termination
+	done bool                  // Whether the subscription completed delivering logs
+	fail error                 // Occurred error to stop iteration
+}
+
+// Next advances the iterator to the subsequent event, returning whether there
+// are any more events found. In case of a retrieval or parsing error, false is
+// returned and Error() can be queried for the exact failure.
+func (it *FilswanOracleSignIterator) Next() bool {
+	// If the iterator failed, stop iterating
+	if it.fail != nil {
+		return false
+	}
+	// If the iterator completed, deliver directly whatever's available
+	if it.done {
+		select {
+		case log := <-it.logs:
+			it.Event = new(FilswanOracleSign)
+			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+				it.fail = err
+				return false
+			}
+			it.Event.Raw = log
+			return true
+
+		default:
+			return false
+		}
+	}
+	// Iterator still in progress, wait for either a data or an error event
+	select {
+	case log := <-it.logs:
+		it.Event = new(FilswanOracleSign)
+		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+			it.fail = err
+			return false
+		}
+		it.Event.Raw = log
+		return true
+
+	case err := <-it.sub.Err():
+		it.done = true
+		it.fail = err
+		return it.Next()
+	}
+}
+
+// Error returns any retrieval or parsing error occurred during filtering.
+func (it *FilswanOracleSignIterator) Error() error {
+	return it.fail
+}
+
+// Close terminates the iteration process, releasing any pending underlying
+// resources.
+func (it *FilswanOracleSignIterator) Close() error {
+	it.sub.Unsubscribe()
+	return nil
+}
+
+// FilswanOracleSign represents a Sign event raised by the FilswanOracle contract.
+type FilswanOracleSign struct {
+	DealId  string
+	Network string
+	CidList []string
+	BatchNo uint8
+	Raw     types.Log // Blockchain specific contextual infos
+}
+
+// FilterSign is a free log retrieval operation binding the contract event 0xbe0b994713ae4ca03ec61948b3b53c07529d5ce656d04fb5559f70298351203b.
+//
+// Solidity: event Sign(string dealId, string network, string[] cidList, uint8 batchNo)
+func (_FilswanOracle *FilswanOracleFilterer) FilterSign(opts *bind.FilterOpts) (*FilswanOracleSignIterator, error) {
+
+	logs, sub, err := _FilswanOracle.contract.FilterLogs(opts, "Sign")
+	if err != nil {
+		return nil, err
+	}
+	return &FilswanOracleSignIterator{contract: _FilswanOracle.contract, event: "Sign", logs: logs, sub: sub}, nil
+}
+
+// WatchSign is a free log subscription operation binding the contract event 0xbe0b994713ae4ca03ec61948b3b53c07529d5ce656d04fb5559f70298351203b.
+//
+// Solidity: event Sign(string dealId, string network, string[] cidList, uint8 batchNo)
+func (_FilswanOracle *FilswanOracleFilterer) WatchSign(opts *bind.WatchOpts, sink chan<- *FilswanOracleSign) (event.Subscription, error) {
+
+	logs, sub, err := _FilswanOracle.contract.WatchLogs(opts, "Sign")
+	if err != nil {
+		return nil, err
+	}
+	return event.NewSubscription(func(quit <-chan struct{}) error {
+		defer sub.Unsubscribe()
+		for {
+			select {
+			case log := <-logs:
+				// New log arrived, parse the event and forward to the user
+				event := new(FilswanOracleSign)
+				if err := _FilswanOracle.contract.UnpackLog(event, "Sign", log); err != nil {
+					return err
+				}
+				event.Raw = log
+
+				select {
+				case sink <- event:
+				case err := <-sub.Err():
+					return err
+				case <-quit:
+					return nil
+				}
+			case err := <-sub.Err():
+				return err
+			case <-quit:
+				return nil
+			}
+		}
+	}), nil
+}
+
+// ParseSign is a log parse operation binding the contract event 0xbe0b994713ae4ca03ec61948b3b53c07529d5ce656d04fb5559f70298351203b.
+//
+// Solidity: event Sign(string dealId, string network, string[] cidList, uint8 batchNo)
+func (_FilswanOracle *FilswanOracleFilterer) ParseSign(log types.Log) (*FilswanOracleSign, error) {
+	event := new(FilswanOracleSign)
+	if err := _FilswanOracle.contract.UnpackLog(event, "Sign", log); err != nil {
 		return nil, err
 	}
 	event.Raw = log

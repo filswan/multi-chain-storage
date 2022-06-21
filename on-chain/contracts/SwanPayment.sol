@@ -98,6 +98,8 @@ contract SwanPayment is IPaymentMinimal, Initializable {
         address owner // who lock the token
     );
 
+    event UnlockCarPayment(string dealId, string network, address recipient);
+
     event ExpirePayment(
         string id,
         address token,
@@ -260,6 +262,8 @@ contract SwanPayment is IPaymentMinimal, Initializable {
             }
 
             IERC20(_ERC20_TOKEN).transfer(recipient, tokenAmount);
+            //todo: add unlock event here
+            emit UnlockCarPayment(dealId, network, recipient);
         }
 
         return true;

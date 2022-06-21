@@ -19,6 +19,7 @@ const oneThousand = "1000000000000000000000";
 const oneHundred = "1000000000000000000000";
 const tenThousand = "10000000000000000000000";
 const oneMillion = "1000000000000000000000000";
+const fiveMillion = "5000000000000000000000000";
 
 const deadline = "1000000000000000000";
 
@@ -43,7 +44,7 @@ async function main() {
   ];
 
   const USDCInstance = new ethers.Contract(usdcAddress, erc20ABI);
-  const wFilInstance = new ethers.Contract(wFilAddress, erc20ABI);
+  // const wFilInstance = new ethers.Contract(wFilAddress, erc20ABI);
 
   // addressList.forEach(async (address) => {
   //   console.log("address: ", address);
@@ -51,8 +52,8 @@ async function main() {
   //   await wFilInstance.connect(deployer).mint(address, oneHundred);
   // });
 
-  await USDCInstance.connect(deployer).mint(addressList[0], tenThousand);
-  await wFilInstance.connect(deployer).mint(addressList[0], oneHundred);
+  await USDCInstance.connect(deployer).mint(addressList[0], fiveMillion);
+  // await wFilInstance.connect(deployer).mint(addressList[0], oneHundred);
 
   // await USDCInstance.connect(deployer).mint(addressList[1], tenThousand);
   // await wFilInstance.connect(deployer).mint(addressList[1], oneHundred);

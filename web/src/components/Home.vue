@@ -82,16 +82,26 @@ export default {
         },
         metaNetworkInfo() {
             return this.$store.getters.metaNetworkInfo?JSON.parse(JSON.stringify(this.$store.getters.metaNetworkInfo)):{}
+        },
+        reverse() {
+            return this.$store.getters.reverse == '1' ? true : false
         }
     },
     watch: {
         'collapseL': function(){
             this.collapseP = this.$store.getters.collapseL == 'true'||this.$store.getters.collapseL==true?true: false
+        },
+        reverse: function() {
+            this.init()
         }
     },
     methods: {
         getMetamaskLogin(meta) {
             this.meta = meta
+        },
+        init() {
+            if(this.reverse) document.body.classList.add('reverse_phase');
+            else document.body.classList.remove('reverse_phase'); 
         }
     },
     mounted() {
@@ -101,7 +111,8 @@ export default {
                 window.location.reload();
             }
         }
-        console.log('update time: 2022-06-21')
+        this.init()
+        console.log('update time: 2022-06-22')
     }
 };
 </script>
@@ -209,3 +220,4 @@ export default {
     }
 }
 </style>
+

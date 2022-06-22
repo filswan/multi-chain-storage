@@ -26,5 +26,6 @@ const getters = {
   metaAddress: state => state.app.metaAddress,
   networkID: state => state.app.networkID,
   metaNetworkInfo: state => state.app.metaNetworkInfo,
+  reverse: state => state.app.reverse,
 }
 export default getters

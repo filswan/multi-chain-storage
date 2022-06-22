@@ -22,6 +22,10 @@
                             <i :class="item.icon" style="font-size:15px"></i>
                             <span slot="title">{{ item.title }}</span>
                         </el-menu-item>
+                        <el-menu-item class="mobileShow" v-if="metaAddress">
+                            <i class="el-icon-switch-button" style="font-size:15px; "></i>
+                            <span slot="title" @click="signOutFun">{{$t('fs3.Disconnect')}}</span>
+                        </el-menu-item>
                     </div>
                     <div class="fes-icon-logo">
                         <a href="https://filswan.medium.com/" target="_block"><img :src="share_img1" alt=""></a>
@@ -124,6 +128,9 @@ export default {
         },
         collapseL() {
             return this.$store.getters.collapseL
+        },
+        metaAddress() {
+            return this.$store.getters.metaAddress
         }
     },
     watch: {
@@ -241,6 +248,9 @@ export default {
     z-index: 9999;
     transition: all .3s;
     background: #080B29;
+    .mobileShow{
+        display: none;
+    }
     .sidebar_close{
         position: absolute;
         right: 0;
@@ -429,6 +439,11 @@ export default {
                 height: 100%;
                 content: '';
                 background-size: 0.2rem !important;
+            }
+        }
+        .el-icon-switch-button{
+            &::before{
+                content: "\E71B";
             }
         }
         .el-icon-s-home{
@@ -625,6 +640,9 @@ export default {
     -ms-transition: all 0.3s ease;
     -o-transition: all 0.3s ease;
     transition: all 0.3s ease;
+    .mobileShow{
+        display: block;
+    }
     .sidebar-el-menu {
         width: 4rem;
       .menu_list{

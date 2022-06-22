@@ -729,7 +729,7 @@
                                             }
                                         }
                                         .color{
-                                            color: blue;
+                                            color: #4e86ff;
                                             text-decoration: underline;
                                         }
                                         .el-button:hover{

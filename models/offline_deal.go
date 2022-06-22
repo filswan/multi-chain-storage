@@ -47,6 +47,7 @@ func GetOfflineDeals2BeScanned() ([]*OfflineDeal, error) {
 type Deal2PreSign struct {
 	DealId              int64 `json:"deal_id"`
 	SourceFileUploadCnt int   `json:"source_file_upload_cnt"`
+	BatchCount          int   `json:"batch_count"`
 }
 
 func GetDeals2PreSign(signerWalletId int64) ([]*Deal2PreSign, error) {
@@ -54,7 +55,7 @@ func GetDeals2PreSign(signerWalletId int64) ([]*Deal2PreSign, error) {
 	sql := "select a.deal_id,count(*) source_file_upload_cnt from (select a.* from offline_deal a\n" +
 		"left outer join dao_pre_sign b on a.id=b.offline_deal_id and b.status=? and b.wallet_id_signer=?\n" +
 		"where a.status=? and b.id is null ) a\n" +
-		"left join car_file_source on a.car_file_id=b.car_file_id\n" +
+		"left join car_file_source b on a.car_file_id=b.car_file_id\n" +
 		"group by a.deal_id"
 	err := database.GetDB().Raw(sql, constants.DAO_PRE_SIGN_STATUS_SUCCESS, signerWalletId, constants.OFFLINE_DEAL_STATUS_ACTIVE).Scan(&deal2PreSign).Error
 

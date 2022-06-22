@@ -13,8 +13,8 @@ var errorMap map[int]string
 func init() {
 	errorMap = map[int]string{
 		ERROR_PARAM_NULL:            "param cannot be null",
-		ERROR_PARAM_WRONG_TYPE:      "param data type is wrong",
-		ERROR_PARAM_INVALID_VALUE:   "param value is invalid",
+		ERROR_PARAM_WRONG_TYPE:      "wrong param data type",
+		ERROR_PARAM_INVALID_VALUE:   "invalid param value",
 		ERROR_PARAM_PARSE_TO_STRUCT: "params parse to structure fail",
 		ERROR_INTERNAL:              "Internal error",
 	}

@@ -106,7 +106,7 @@ func ScanPolygon4Payment() error {
 			}
 
 			inputDataHex := hex.EncodeToString(transaction.Data())
-			logs.GetLogger().Info(inputDataHex)
+			//logs.GetLogger().Info(inputDataHex)
 			if strings.HasPrefix(inputDataHex, "f4d98717") {
 				err = getPayment(ethClient, inputDataHex, *transaction)
 				if err != nil {

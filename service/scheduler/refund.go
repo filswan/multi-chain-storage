@@ -57,7 +57,7 @@ func refundCarFile(ethClient *ethclient.Client, carFile2Refund *models.CarFile2R
 		wCid := sourceFileUpload.Uuid + sourceFileUpload.PayloadCid
 		srcFileUploadWCids = append(srcFileUploadWCids, wCid)
 
-		if len(srcFileUploadWCids) >= constants.W_CID_MAX_COUNT_IN_TRANSACTION || i >= len(sourceFileUploads)-1 {
+		if len(srcFileUploadWCids) >= constants.MAX_WCID_COUNT_IN_TRANSACTION || i >= len(sourceFileUploads)-1 {
 			err = refundSourceFiles(ethClient, srcFileUploadWCids, swanPaymentTransactor)
 			if err != nil {
 				logs.GetLogger().Error(err.Error())

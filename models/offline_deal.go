@@ -103,6 +103,21 @@ func GetOfflineDeals2Unlock() ([]*OfflineDeal, error) {
 	return offlineDeals, nil
 }
 
+func GetOfflineDealsNotSuccessBySourceFileUploadId(sourceFileUploadId int64) ([]*OfflineDeal, error) {
+	var offlineDeals []*OfflineDeal
+	sql := "select c.* from source_file_upload a, car_file_source b, offline_deal c\n" +
+		"where a.id=b.source_file_upload_id and b.car_file_id=c.car_file_id\n" +
+		"  and c.status!=? and a.id=?"
+	err := database.GetDB().Raw(sql, constants.OFFLINE_DEAL_STATUS_SUCCESS, sourceFileUploadId).Scan(&offlineDeals).Error
+
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	return offlineDeals, nil
+}
+
 func GetOfflineDealsByCarFileId(carFileId int64) ([]*OfflineDeal, error) {
 	var offlineDeals []*OfflineDeal
 	err := database.GetDB().Where("car_file_id=?", carFileId).Find(&offlineDeals).Error

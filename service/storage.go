@@ -311,6 +311,18 @@ func RecordMintInfo(sourceFileIploadId int64, txHash string, tokenId string, min
 			return nil, err
 		}*/
 
+	mintInfo, err := models.GetSourceFileMintBySourceFileUploadId(sourceFileIploadId)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	if mintInfo != nil {
+		err := fmt.Errorf("mint info exists for source file upload id:%d", sourceFileIploadId)
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
 	currentUtcSecond := libutils.GetCurrentUtcSecond()
 	sourceFileMint := &models.SourceFileMint{
 		SourceFileUploadId: sourceFileIploadId,
@@ -321,7 +333,7 @@ func RecordMintInfo(sourceFileIploadId int64, txHash string, tokenId string, min
 		UpdateAt:           currentUtcSecond,
 	}
 
-	sourceFileMint, err := models.CreateSourceFileMint(sourceFileMint)
+	sourceFileMint, err = models.CreateSourceFileMint(sourceFileMint)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err

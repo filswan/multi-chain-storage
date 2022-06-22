@@ -173,12 +173,9 @@ create table transaction (
     deadline                     bigint        not null,
     unlock_amount                varchar(100),
     last_unlock_at               bigint,
-    refund_after_unlock_tx_hash  varchar(100),
-    refund_after_unlock_amount   varchar(100),
-    refund_after_unlock_at       bigint,
-    refund_after_expired_tx_hash varchar(100),
-    refund_after_expired_amount  varchar(100),
-    refund_after_expired_at      bigint,
+    refund_tx_hash               varchar(100),
+    refund_amount                varchar(100),
+    refund_at                    bigint,
     create_at                    bigint        not null,
     update_at                    bigint        not null,
     primary key pk_transaction(id),
@@ -248,3 +245,15 @@ create table dao_signature_source_file_upload (
 #--alter table dao_signature DROP FOREIGN KEY fk_dao_signature_wallet_id_recipient;
 #--alter table dao_signature drop column wallet_id_recipient;
 #--alter table car_file drop column deal_success;
+#--alter table transaction add refund_tx_hash varchar(100);
+#--alter table transaction add refund_amount varchar(100);
+#--alter table transaction add refund_at bigint;
+
+#--alter table transaction drop column refund_after_unlock_tx_hash;
+#--alter table transaction drop column refund_after_unlock_amount;
+#--alter table transaction drop column refund_after_unlock_at;
+#--alter table transaction drop column refund_after_expired_tx_hash;
+#--alter table transaction drop column refund_after_expired_amount;
+#--alter table transaction drop column refund_after_expired_at;
+
+

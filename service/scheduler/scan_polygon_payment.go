@@ -282,8 +282,16 @@ func getRefund(ethClient *ethclient.Client, inputDataHex string, transaction typ
 	wCidsStr := strings.TrimRight(strings.TrimLeft(method.Params[0].Value, "["), "]")
 	wCids := strings.Split(wCidsStr, " ")
 
+	block, err := ethClient.BlockByNumber(context.Background(), txReceipt.BlockNumber)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	refundAt := block.ReceivedAt.UTC().Unix()
+
 	for _, wCid := range wCids {
-		err = models.UpdateTransactionRefundAfterExpired(wCid, transaction.Hash().String())
+		err = models.UpdateTransactionRefundInfo(wCid, transaction.Hash().String(), refundAt)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			return err

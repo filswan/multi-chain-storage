@@ -1,7 +1,7 @@
-#-- default database name is mcs_v2
+#-- default database name is mcs_v2_1
 #-- you can change to another one, in that case please modify database name below and in config file accordingly
-create database mcs_v2;
-use mcs_v2;
+create database  mcs_v2_1;
+use  mcs_v2_1;
 
 create table network (
     id                             bigint        not null auto_increment,

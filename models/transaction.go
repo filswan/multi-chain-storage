@@ -284,6 +284,28 @@ func UpdateTransactionRefundInfo(wCid, refundTxHash string, refundAt int64) erro
 		return err
 	}
 
+	carFile, err := GetCarFileBySourceFileUploadId(sourceFileUpload.Id)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	if carFile != nil {
+		sourceFileUploads, err := GetSourceFileUploadsNotCompletedByCarFileId(carFile.ID)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return err
+		}
+
+		if len(sourceFileUploads) == 0 {
+			err = UpdateCarFileStatus(carFile.ID, constants.CAR_FILE_STATUS_COMPLETED)
+			if err != nil {
+				logs.GetLogger().Error(err)
+				return err
+			}
+		}
+	}
+
 	return nil
 }
 

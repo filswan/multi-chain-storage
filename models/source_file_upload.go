@@ -61,6 +61,21 @@ func GetSourceFileUploadsByCarFileId(carFileId int64) ([]*SourceFileUpload, erro
 	return sourceFileUploads, nil
 }
 
+func GetSourceFileUploadsNotCompletedByCarFileId(carFileId int64) ([]*SourceFileUpload, error) {
+	var sourceFileUploads []*SourceFileUpload
+	sql := "select c.* from car_file a, car_file_source b, source_file_upload c\n" +
+		"where a.id=b.car_file_id and b.source_file_upload_id=c.id\n" +
+		"  and c.status!=? and c.status!=? and a.id=1"
+	err := database.GetDB().Raw(sql, constants.SOURCE_FILE_UPLOAD_STATUS_SUCCESS, constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDED, carFileId).Scan(&sourceFileUploads).Error
+
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	return sourceFileUploads, nil
+}
+
 func GetSourceFileUploads2BeRefundedAfterExpired() ([]*SourceFileUploadOut, error) {
 	sql := "select a.*,b.payload_cid \n" +
 		"from source_file_upload a, source_file b, transaction c\n" +

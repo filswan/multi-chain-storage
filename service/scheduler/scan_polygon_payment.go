@@ -108,19 +108,19 @@ func ScanPolygon4Payment() error {
 			inputDataHex := hex.EncodeToString(transaction.Data())
 			//logs.GetLogger().Info(inputDataHex)
 			if strings.HasPrefix(inputDataHex, "f4d98717") {
-				err = getPayment(ethClient, inputDataHex, *transaction)
+				err = getPayment(ethClient, inputDataHex, transaction)
 				if err != nil {
 					logs.GetLogger().Error(err)
 					return err
 				}
 			} else if strings.HasPrefix(inputDataHex, "7d29985b") {
-				err = getRefund(ethClient, inputDataHex, *transaction)
+				err = getRefund(ethClient, inputDataHex, transaction)
 				if err != nil {
 					logs.GetLogger().Error(err)
 					return err
 				}
 			} else if strings.HasPrefix(inputDataHex, "ee4128f6") {
-				err = getUnlock(ethClient, inputDataHex, *transaction)
+				err = getUnlock(ethClient, inputDataHex, transaction)
 				if err != nil {
 					logs.GetLogger().Error(err)
 					return err
@@ -144,7 +144,7 @@ func ScanPolygon4Payment() error {
 	return nil
 }
 
-func getPayment(ethClient *ethclient.Client, inputDataHex string, transaction types.Transaction) error {
+func getPayment(ethClient *ethclient.Client, inputDataHex string, transaction *types.Transaction) error {
 	txReceipt, err := client.CheckTx(ethClient, transaction.Hash())
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -195,7 +195,7 @@ func getPayment(ethClient *ethclient.Client, inputDataHex string, transaction ty
 	return nil
 }
 
-func getUnlock(ethClient *ethclient.Client, inputDataHex string, transaction types.Transaction) error {
+func getUnlock(ethClient *ethclient.Client, inputDataHex string, transaction *types.Transaction) error {
 	txReceipt, err := client.CheckTx(ethClient, transaction.Hash())
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -257,7 +257,7 @@ func getUnlock(ethClient *ethclient.Client, inputDataHex string, transaction typ
 	return nil
 }
 
-func getRefund(ethClient *ethclient.Client, inputDataHex string, transaction types.Transaction) error {
+func getRefund(ethClient *ethclient.Client, inputDataHex string, transaction *types.Transaction) error {
 	txReceipt, err := client.CheckTx(ethClient, transaction.Hash())
 	if err != nil {
 		logs.GetLogger().Error(err)

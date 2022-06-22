@@ -130,7 +130,7 @@
                                         <div class="upload_form_right">
                                             <p>{{scope.row.wallet_signer}}</p>
                                         </div>
-                                        <el-button slot="reference" @click="copyTextToClipboard(scope.row.wallet_signer)">
+                                        <el-button slot="reference" class="resno" @click="copyTextToClipboard(scope.row.wallet_signer)">
                                             <img src="@/assets/images/copy.png" alt="">
                                             {{scope.row.wallet_signer}}
                                         </el-button>

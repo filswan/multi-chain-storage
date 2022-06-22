@@ -579,7 +579,7 @@
                     _this.recipientAddress = _this.$root.RECIPIENT
             
                     const storageRes = await _this.sendRequest(`${process.env.BASE_API}stats/storage?wallet_address=${_this.metaAddress}`)
-                    let cost = storageRes.data.average_price_per_GB_per_year.split(" ")
+                    let cost = storageRes.data.average_price_per_GB_per_year?storageRes.data.average_price_per_GB_per_year.split(" "):[]
                     if(cost[0]) _this.storage = cost[0]
 
                     const bilingRes = await _this.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/billing/price/filecoin?wallet_address=${_this.metaAddress}`)

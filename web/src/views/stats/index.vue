@@ -8,7 +8,7 @@
                     <div class="info-up">
                         {{ item.title }}
                     </div>
-                    <div class="info-num">{{ item.num }}</div>
+                    <div class="info-num">{{ item.num | NumFormat }}</div>
                 </div>
             </div>
         </div>
@@ -79,6 +79,7 @@
                                 case 'en' :
                                     this.list[item].title = 'Average Minimum Piece Size'
                             }
+                            this.list[item].num = res.data.data[item]?res.data.data[item]:'0 GiB'
                             break
                         case 'average_price_per_GB_per_year' :
                             switch (language) {
@@ -88,6 +89,7 @@
                                 case 'en' :
                                     this.list[item].title = 'Average Price'
                             }
+                            this.list[item].num = res.data.data[item]?res.data.data[item]:'0 FIL/GiB/year'
                             break
                         case 'average_verified_price_per_GB_per_year' :
                             switch (language) {
@@ -97,6 +99,7 @@
                                 case 'en' :
                                     this.list[item].title = 'Average Verified Price'
                             }
+                            this.list[item].num = res.data.data[item]?res.data.data[item]:'0 FIL/GiB/year'
                     }
                 }
                 this.loading = false
@@ -113,6 +116,12 @@
                 const _obj = JSON.stringify(obj)
                 return JSON.parse(_obj)
             }
+        },
+        filters: {
+            NumFormat(value) {
+                if (!value) return "0";
+                return value;
+            },
         }
     }
 </script>

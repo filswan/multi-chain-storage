@@ -17,7 +17,8 @@ const app = {
         collapseL:  false,
         metaAddress: sessionStorage.getItem('metaAddress') || '',
         networkID: sessionStorage.getItem('networkID') || 0,
-        metaNetworkInfo: sessionStorage.getItem('metaNetworkInfo') || {}
+        metaNetworkInfo: sessionStorage.getItem('metaNetworkInfo') || {},
+        reverse: localStorage.getItem('reverse') || 0
     },
     mutations: {
         TOGGLE_SIDEBAR: state => {
@@ -72,6 +73,10 @@ const app = {
             state.metaNetworkInfo = metaNetworkInfo
             sessionStorage.setItem('metaNetworkInfo', metaNetworkInfo)
         },
+        SET_REVERSE: (state, reverse) => {
+            state.reverse = reverse
+            localStorage.setItem('reverse', reverse)
+        }
     },
     actions: {
         toggleSideBar({commit}) {
@@ -109,6 +114,9 @@ const app = {
         },
         setMetaNetworkInfo({commit}, metaNetworkInfo) {
             commit('SET_METANETWORKINFO', metaNetworkInfo)
+        },
+        setReverse({commit}, reverse) {
+            commit('SET_REVERSE', reverse)
         }
     }
 }

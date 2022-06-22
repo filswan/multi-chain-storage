@@ -20,8 +20,21 @@
                             <h5>{{priceAccound}} {{ metaNetworkInfo.unit}}</h5>
                             <h4 @click="wrongVisible=true">{{addrChild | hiddAddress}}</h4>
                         </div>
-                        <el-button class="text textTrue" @click="signOutFun">{{$t('fs3.Disconnect')}}</el-button>
+                        <el-button class="text textTrue pcShow" @click="signOutFun">{{$t('fs3.Disconnect')}}</el-button>
                     </div>
+                </div>
+                <div class="switch">
+                    <el-switch
+                        style="display: block"
+                        v-model="reverseSwitch"
+                        active-color="#4f8aff"
+                        inactive-color="rgb(18, 18, 18)"
+                        :width="switchWidth"
+                        active-icon-class="el-icon-moon"
+                        inactive-icon-class="el-icon-sunny"
+                        @change="reverseChange"
+                    >
+                    </el-switch>
                 </div>
                 <!-- mobile显示 -->
                 <div class="mobileShow">
@@ -96,7 +109,9 @@ export default {
             addrChild: '',
             wrongVisible: false,
             width: document.body.clientWidth>600?'450px':'95%',
-            copyClick: true
+            copyClick: true,
+            switchWidth: 56,
+            reverseSwitch: false
         };
     },
     props: ["meta"],
@@ -124,6 +139,9 @@ export default {
         },
         metaNetworkInfo() {
             return this.$store.getters.metaNetworkInfo?JSON.parse(JSON.stringify(this.$store.getters.metaNetworkInfo)):{}
+        },
+        reverse() {
+            return this.$store.getters.reverse == '1' ? true : false
         }
     },
     watch: {
@@ -489,10 +507,15 @@ export default {
             }).catch(error => {
                 console.log(error)
             })
+        },
+        reverseChange(val) {
+            let reverse = val ? 1 : 0
+            this.$store.dispatch('setReverse', reverse)
         }
     },
     mounted() {
         let _this = this
+        _this.reverseSwitch = _this.reverse
         if(_this.bodyWidth){
             _this.collapseLocal = false
             _this.collapseChage();
@@ -601,7 +624,7 @@ export default {
                     padding: 0 20px 0 0;
                     background: transparent !important;
                     border: 0;
-                    color: #0b318f;
+                    color: #4f7bf5;
                     font-size: inherit;
                     font-weight: normal;
                     font-family: inherit;
@@ -1121,6 +1144,82 @@ export default {
             display: none;
         }
     }
+    .switch {
+        position: relative;
+        display: flex;
+        margin: 0 0 0 0.2rem;
+        .on {
+            position: absolute;
+            top: 0;
+            left: 5px;
+            z-index: 9;
+            font-size: 12px;
+            line-height: 2;
+            color: #fff;
+            svg{
+                width: 18px;
+                height: 18px;
+                margin: 2px 0 0;  
+            }
+        }
+        .off {
+            position: absolute;
+            top: 0;
+            right: 5px;
+            z-index: 9;
+            font-size: 12px;
+            line-height: 2;
+            color: #fff;
+            svg{
+                width: 14px;
+                height: 14px;
+                margin: 4px 0 0;  
+            }
+        }
+        .el-switch /deep/ {
+            // margin-left: 0.1rem;
+            height: 22px;
+            .el-switch__core {
+                height: 22px;
+            }
+            .el-switch__core:after {
+                background-color: #fff;
+                top: 0;
+                width: 20px;
+                height: 20px;
+                z-index: 10;
+            }
+            .el-switch__label--left{
+                position: absolute;
+                top: 0;
+                left: 5px;
+                margin: 0;
+                color: #fff;
+                font-size: 15px;
+                z-index: 9;
+                i{
+                    font-size: inherit;
+                }
+            }
+            .el-switch__label--right{
+                position: absolute;
+                top: 0;
+                right: 5px;
+                margin: 0;
+                color: #fff;
+                font-size: 15px;
+                z-index: 9;
+                i{
+                    font-size: inherit;
+                }
+            }
+        }
+        .el-switch.is-checked /deep/ {
+            .el-switch__core::after {
+                margin-left: -22px;
+            }
+        }
+    }
     b{
         max-width: 30vw;
         display: inline-block;
@@ -1265,9 +1364,9 @@ export default {
             margin-right: 0;
             color: #fff;
         }
-    }
-    .pcShow{
-        display: none;
+        .pcShow{
+            display: none;
+        }
     }
     .mobileShow{
         display: block;

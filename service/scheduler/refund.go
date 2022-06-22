@@ -6,11 +6,9 @@ import (
 	"multi-chain-storage/models"
 	"multi-chain-storage/on-chain/client"
 	"multi-chain-storage/on-chain/goBind"
-	"strings"
 
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/filswan/go-swan-lib/logs"
-	"github.com/shopspring/decimal"
 )
 
 func RefundCarFiles() error {
@@ -26,14 +24,14 @@ func RefundCarFiles() error {
 		return err
 	}
 
-	carFiles, err := models.GetCarFiles2Refund()
+	carFiles2Refund, err := models.GetCarFiles2Refund()
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
 	}
 
-	for _, carFile := range carFiles {
-		err = refundCarFile(ethClient, carFile, swanPaymentTransactor)
+	for _, carFile2Refund := range carFiles2Refund {
+		err = refundCarFile(ethClient, carFile2Refund, swanPaymentTransactor)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			continue
@@ -44,54 +42,48 @@ func RefundCarFiles() error {
 }
 
 func refundCarFile(ethClient *ethclient.Client, carFile2Refund *models.CarFile2Refund, swanPaymentTransactor *goBind.SwanPaymentTransactor) error {
-	sourceFileUploads, err := models.GetSourceFileUploadOutsByCarFileId(carFile2Refund.CarFileId)
+	sourceFileUploads, err := models.GetSourceFileUploads2RefundByCarFileId(carFile2Refund.CarFileId)
 	if err != nil {
 		logs.GetLogger().Error(err.Error())
 		return err
 	}
 
 	var srcFileUploadWCids []string
-	for _, sourceFileUpload := range sourceFileUploads {
+	for i, sourceFileUpload := range sourceFileUploads {
 		if sourceFileUpload.Status == constants.SOURCE_FILE_UPLOAD_STATUS_DEAL_COMPLETED {
 			continue
 		}
 
 		wCid := sourceFileUpload.Uuid + sourceFileUpload.PayloadCid
-		lockedPayment, err := client.GetLockedPaymentInfo(wCid)
-		if err != nil {
-			logs.GetLogger().Error(err.Error())
-			return err
-		}
-
-		if lockedPayment == nil {
-			logs.GetLogger().Error("payment not exists for w_cid:", wCid)
-			sourceFileUpload.LockedFeeBeforeRefund = decimal.NewFromInt(0)
-		} else {
-			sourceFileUpload.LockedFeeBeforeRefund = lockedPayment.LockedFee
-		}
-
 		srcFileUploadWCids = append(srcFileUploadWCids, wCid)
 
-		err = models.UpdateTransactionUnlockInfo(sourceFileUpload.Id, sourceFileUpload.LockedFeeBeforeRefund, carFile2Refund.LastUnlockAt)
-		if err != nil {
-			logs.GetLogger().Error(err.Error())
-			return err
+		if len(srcFileUploadWCids) >= constants.W_CID_MAX_COUNT_IN_TRANSACTION || i >= len(sourceFileUploads)-1 {
+			err = refundSourceFiles(ethClient, srcFileUploadWCids, swanPaymentTransactor)
+			if err != nil {
+				logs.GetLogger().Error(err.Error())
+				return err
+			}
+
+			srcFileUploadWCids = []string{}
 		}
 	}
 
+	return nil
+}
+
+func refundSourceFiles(ethClient *ethclient.Client, wCids []string, swanPaymentTransactor *goBind.SwanPaymentTransactor) error {
 	tansactOpts, err := client.GetTransactOpts(ethClient, adminWalletPrivateKey, *adminWalletPublicKey)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
 	}
 
-	tx, err := swanPaymentTransactor.Refund(tansactOpts, srcFileUploadWCids)
+	tx, err := swanPaymentTransactor.Refund(tansactOpts, wCids)
 	if err != nil {
 		logs.GetLogger().Error(err.Error())
 		return err
 	}
 
-	wCids := strings.Join(srcFileUploadWCids, ",")
 	txHash := ""
 	if tx != nil {
 		txHash = tx.Hash().Hex()

@@ -27,17 +27,16 @@ type SourceFileUpload struct {
 
 type SourceFileUploadOut struct {
 	SourceFileUpload
-	PayloadCid            string `json:"payload_cid"`
-	LockedFeeBeforeUnlock decimal.Decimal
-	LockedFeeBeforeRefund decimal.Decimal
+	PayloadCid string `json:"payload_cid"`
 }
 
-func GetSourceFileUploadOutsByCarFileId(carFileId int64) ([]*SourceFileUploadOut, error) {
+func GetSourceFileUploads2RefundByCarFileId(carFileId int64) ([]*SourceFileUploadOut, error) {
 	var sourceFileUploadOut []*SourceFileUploadOut
 	sql := "select a.*,b.payload_cid from source_file_upload a\n" +
 		"left join source_file b on a.source_file_id=b.id\n" +
-		"where a.id in (select source_file_upload_id from car_file_source where car_file_id=?)"
-	err := database.GetDB().Raw(sql, carFileId).Scan(&sourceFileUploadOut).Error
+		"where a.id in (select source_file_upload_id from car_file_source where car_file_id=?)\n" +
+		" and a.status!=? and a.status!=?"
+	err := database.GetDB().Raw(sql, carFileId, constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDED, constants.SOURCE_FILE_UPLOAD_STATUS_SUCCESS).Scan(&sourceFileUploadOut).Error
 
 	if err != nil {
 		logs.GetLogger().Error(err)

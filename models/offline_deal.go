@@ -67,16 +67,22 @@ func GetDeals2PreSign(signerWalletId int64) ([]*Deal2PreSign, error) {
 	return deal2PreSign, nil
 }
 
+type Deal2SignBatchInfo struct {
+	BatchNo int      `json:"batch_no"`
+	WCid    []string `json:"w_cid"`
+}
+
 type Deal2Sign struct {
-	OfflineDealId int64 `json:"offline_deal_id"`
-	DealId        int64 `json:"deal_id"`
-	BatchCount    int   `json:"batch_count"`
-	BatchNo       []int `json:"batch_no"`
+	OfflineDealId int64                 `json:"offline_deal_id"`
+	CarFileId     int64                 `json:"car_file_id"`
+	DealId        int64                 `json:"deal_id"`
+	BatchCount    int                   `json:"batch_count"`
+	BatchInfo     []*Deal2SignBatchInfo `json:"batch_info"`
 }
 
 func GetDeals2Sign(signerWalletId int64) ([]*Deal2Sign, error) {
 	var deals2Sign []*Deal2Sign
-	sql := "select a.offline_deal_id,b.deal_id,a.batch_count from dao_pre_sign a\n" +
+	sql := "select a.offline_deal_id,b.deal_id,b.car_file_id,a.batch_count from dao_pre_sign a\n" +
 		"left join offline_deal b on a.offline_deal_id=b.id\n" +
 		"where a.source_file_upload_cnt_sign<a.source_file_upload_cnt_total and a.status=? and a.wallet_id_signer=?\n"
 	err := database.GetDB().Raw(sql, constants.DAO_PRE_SIGN_STATUS_SUCCESS, signerWalletId).Scan(&deals2Sign).Error

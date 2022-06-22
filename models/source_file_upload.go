@@ -46,11 +46,12 @@ func GetSourceFileUploads2RefundByCarFileId(carFileId int64) ([]*SourceFileUploa
 	return sourceFileUploadOut, nil
 }
 
-func GetSourceFileUploadsByCarFileId(carFileId int64) ([]*SourceFileUpload, error) {
-	var sourceFileUploads []*SourceFileUpload
-	sql := "select a.* from source_file_upload a\n" +
-		"where a.id in (select source_file_upload_id from car_file_source where car_file_id=?)"
-	err := database.GetDB().Raw(sql, carFileId).Scan(&sourceFileUploads).Error
+func GetSourceFileUploadsByCarFileId(carFileId int64, batchNo int) ([]*SourceFileUploadOut, error) {
+	var sourceFileUploads []*SourceFileUploadOut
+	sql := "select b.*,c.payload_cid from car_file_source a, source_file_upload b, source_file c\n" +
+		"where a.car_file_id=? and a.source_file_upload_id=b.id and b.source_file_id=c.id\n" +
+		"order by b. id limit ? offset ?"
+	err := database.GetDB().Raw(sql, carFileId, constants.MAX_WCID_COUNT_IN_TRANSACTION, batchNo).Scan(&sourceFileUploads).Error
 
 	if err != nil {
 		logs.GetLogger().Error(err)

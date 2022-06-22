@@ -57,7 +57,23 @@ func GetDeals2Sign(signerWalletAddress string) ([]*models.Deal2Sign, error) {
 			}
 
 			if !signed {
-				deal2Sign.BatchNo = append(deal2Sign.BatchNo, i)
+				sourceFileUploads, err := models.GetSourceFileUploadsByCarFileId(deal2Sign.CarFileId, i)
+				if err != nil {
+					logs.GetLogger().Error(err)
+					return nil, err
+				}
+				wCids := []string{}
+				for _, sourceFileUpload := range sourceFileUploads {
+					wCid := sourceFileUpload.Uuid + sourceFileUpload.PayloadCid
+					wCids = append(wCids, wCid)
+				}
+
+				deal2SignBatchInfo := &models.Deal2SignBatchInfo{
+					BatchNo: i,
+					WCid:    wCids,
+				}
+
+				deal2Sign.BatchInfo = append(deal2Sign.BatchInfo, deal2SignBatchInfo)
 			}
 		}
 	}

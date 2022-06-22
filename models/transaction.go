@@ -53,18 +53,6 @@ func GetTransactionBySourceFileUploadId(sourceFileUploadId int64) (*Transaction,
 }
 
 func CreateTransaction4PayByWCid(wCid, txHash string, lockTime int64) error {
-	lockedPayment, err := client.GetLockedPaymentInfo(wCid)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
-
-	if lockedPayment == nil {
-		msg := fmt.Sprintf("payment not exists for w_cid:%s ,tx hash:%s", wCid, txHash)
-		logs.GetLogger().Info(msg)
-		return nil
-	}
-
 	sourceFile, sourceFileUpload, err := GetSourceFileUploadByWCid(wCid)
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -73,6 +61,18 @@ func CreateTransaction4PayByWCid(wCid, txHash string, lockTime int64) error {
 
 	if sourceFile == nil || sourceFileUpload == nil {
 		logs.GetLogger().Info("wCid:", wCid, " not exists")
+		return nil
+	}
+
+	lockedPayment, err := client.GetLockedPaymentInfo(wCid)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	if lockedPayment == nil {
+		msg := fmt.Sprintf("payment not exists for wCid:%s ,tx hash:%s", wCid, txHash)
+		logs.GetLogger().Info(msg)
 		return nil
 	}
 
@@ -130,11 +130,8 @@ func CreateTransaction4PayByWCid(wCid, txHash string, lockTime int64) error {
 	transaction.Deadline = lockedPayment.Deadline
 	transaction.UpdateAt = currentUtcSecond
 
-	db := database.GetDBTransaction()
-
-	err = db.Save(&transaction).Error
+	err = database.SaveOne(&transaction)
 	if err != nil {
-		db.Rollback()
 		logs.GetLogger().Error(err)
 		return err
 	}
@@ -143,14 +140,7 @@ func CreateTransaction4PayByWCid(wCid, txHash string, lockTime int64) error {
 	fields2BeUpdated["status"] = constants.SOURCE_FILE_UPLOAD_STATUS_PAID
 	fields2BeUpdated["update_at"] = currentUtcSecond
 
-	err = db.Model(SourceFileUpload{}).Where("id=?", sourceFileUpload.Id).Update(fields2BeUpdated).Error
-	if err != nil {
-		db.Rollback()
-		logs.GetLogger().Error(err)
-		return err
-	}
-
-	err = db.Commit().Error
+	err = database.GetDB().Model(SourceFileUpload{}).Where("id=?", sourceFileUpload.Id).Update(fields2BeUpdated).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err

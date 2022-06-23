@@ -238,7 +238,7 @@ func getUnlock(ethClient *ethclient.Client, inputDataHex string, transaction *ty
 		return err
 	}
 
-	unlockAt := block.ReceivedAt.Unix()
+	unlockAt := (int64)(block.Time())
 
 	txHash := transaction.Hash().String()
 
@@ -288,7 +288,7 @@ func getRefund(ethClient *ethclient.Client, inputDataHex string, transaction *ty
 		return err
 	}
 
-	refundAt := block.ReceivedAt.Unix()
+	refundAt := (int64)(block.Time())
 
 	for _, wCid := range wCids {
 		err = models.UpdateTransactionRefundInfo(wCid, transaction.Hash().String(), refundAt)

@@ -19,14 +19,13 @@ const (
 	CAR_FILE_STATUS_DEAL_SEND_EXPIRED = "DealSentExpired" //no offline deals, in scan deal set source file upload to Refundable
 	CAR_FILE_STATUS_COMPLETED         = "Completed"
 
-	SOURCE_FILE_UPLOAD_STATUS_PENDING        = "Pending"
-	SOURCE_FILE_UPLOAD_STATUS_PROCESSING     = "Processing"
-	SOURCE_FILE_UPLOAD_STATUS_PAID           = "Paid"        // create to a car file, then TaskCreated
-	SOURCE_FILE_UPLOAD_STATUS_TASK_CREATED   = "TaskCreated" // all deals sent & unlocked, then Success, otherwisse Refundable
-	SOURCE_FILE_UPLOAD_STATUS_DEAL_COMPLETED = "DealCompleted"
-	SOURCE_FILE_UPLOAD_STATUS_SUCCESS        = "Success"
-	SOURCE_FILE_UPLOAD_STATUS_REFUNDABLE     = "Refundable"
-	SOURCE_FILE_UPLOAD_STATUS_REFUNDED       = "Refunded"
+	SOURCE_FILE_UPLOAD_STATUS_PENDING      = "Pending"
+	SOURCE_FILE_UPLOAD_STATUS_PROCESSING   = "Processing"
+	SOURCE_FILE_UPLOAD_STATUS_PAID         = "Paid"        // create to a car file, then TaskCreated
+	SOURCE_FILE_UPLOAD_STATUS_TASK_CREATED = "TaskCreated" // all deals sent & unlocked, then Success, otherwisse Refundable
+	SOURCE_FILE_UPLOAD_STATUS_SUCCESS      = "Success"
+	SOURCE_FILE_UPLOAD_STATUS_REFUNDABLE   = "Refundable"
+	SOURCE_FILE_UPLOAD_STATUS_REFUNDED     = "Refunded"
 
 	OFFLINE_DEAL_STATUS_CREATED = "Created"
 	OFFLINE_DEAL_STATUS_SUCCESS = "Success"

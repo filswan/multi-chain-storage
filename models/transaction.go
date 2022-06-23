@@ -182,12 +182,6 @@ func UpdateTransactionUnlockInfo(sourceFileUploadId int64, lockedAmount decimal.
 		return err
 	}
 
-	err = UpdateSourceFileUploadStatus(sourceFileUploadId, constants.SOURCE_FILE_UPLOAD_STATUS_DEAL_COMPLETED)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
-
 	return nil
 }
 

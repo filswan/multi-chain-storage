@@ -50,11 +50,24 @@ func refundCarFile(ethClient *ethclient.Client, carFile2Refund *models.CarFile2R
 
 	var srcFileUploadWCids []string
 	for i, sourceFileUpload := range sourceFileUploads {
-		if sourceFileUpload.Status == constants.SOURCE_FILE_UPLOAD_STATUS_DEAL_COMPLETED {
+		wCid := sourceFileUpload.Uuid + sourceFileUpload.PayloadCid
+		lockedPayment, err := client.GetLockedPaymentInfo(wCid)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return err
+		}
+
+		if lockedPayment == nil {
+			logs.GetLogger().Info("payment not exists for wCid:", wCid)
 			continue
 		}
 
-		wCid := sourceFileUpload.Uuid + sourceFileUpload.PayloadCid
+		err = models.UpdateTransactionUnlockInfo(sourceFileUpload.Id, lockedPayment.LockedFee, carFile2Refund.LastUnlockAt)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return err
+		}
+
 		srcFileUploadWCids = append(srcFileUploadWCids, wCid)
 
 		if len(srcFileUploadWCids) >= constants.MAX_WCID_COUNT_IN_TRANSACTION || i >= len(sourceFileUploads)-1 {

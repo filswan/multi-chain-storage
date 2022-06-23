@@ -41,7 +41,7 @@
                                                 <div class="upload_form_right">
                                                     <p>{{scope.row.pay_tx_hash}}</p>
                                                 </div>
-                                                <el-button slot="reference" @click="networkLink(scope.row.pay_tx_hash, scope.row.network_name)" :class="{'color': scope.row.network_name&&scope.row.network_name.toLowerCase() == 'polygon'}">
+                                                <el-button slot="reference" class="resno" @click="networkLink(scope.row.pay_tx_hash, scope.row.network_name)" :class="{'color': scope.row.network_name&&scope.row.network_name.toLowerCase() == 'polygon'}">
                                                     <!-- <img src="@/assets/images/copy.png" alt=""> -->
                                                     {{scope.row.pay_tx_hash}}
                                                 </el-button>
@@ -67,7 +67,7 @@
                                                 <div class="upload_form_right">
                                                     <p>{{scope.row.payload_cid}}</p>
                                                 </div>
-                                                <el-button slot="reference" @click="copyTextToClipboard(scope.row.payload_cid)">
+                                                <el-button slot="reference" class="resno" @click="copyTextToClipboard(scope.row.payload_cid)">
                                                     <img src="@/assets/images/copy.png" alt="">
                                                     {{scope.row.payload_cid}}
                                                 </el-button>

@@ -128,7 +128,7 @@
                     <div class="upload_form_right">
                         <p>{{scope.row.payload_cid}}</p>
                     </div>
-                    <el-button slot="reference" @click="copyTextToClipboard(scope.row.payload_cid)">
+                    <el-button slot="reference" class="resno" @click="copyTextToClipboard(scope.row.payload_cid)">
                         <img src="@/assets/images/copy.png" alt="">
                         {{scope.row.payload_cid}}
                     </el-button>
@@ -274,7 +274,7 @@
                               {{ miner.on_chain_status }}
                           </div>
                       </div>
-                      <el-button slot="reference" @click="minerIdLink(miner.miner_fid)">
+                      <el-button slot="reference" class="resno" @click="minerIdLink(miner.miner_fid)">
                           {{miner.miner_fid}}<small v-if="i<scope.row.offline_deal.length-1">,&nbsp;</small>
                       </el-button>
                   </el-popover>

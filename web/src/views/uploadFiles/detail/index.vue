@@ -40,10 +40,10 @@
                 <el-tabs v-model="activeName" :tab-position="tabPosition" type="card" @tab-click="handleClick">
                     <el-tab-pane v-for="(item, i) in offline_deals_data" :key="i" :name="''+i+''">
                         <span slot="label">
-                            <img v-if="!dealCont.source_file_upload_deal.locked_fee" src="@/assets/images/error.png" />
-                            <img v-else-if="dealCont.source_file_upload_deal.unlocked" src="@/assets/images/dao_success.png" />
-                            <img v-else-if="dealCont.dao_signature.length >= dealCont.dao_threshold" src="@/assets/images/dao_waiting.png" />
-                            <img v-else src="@/assets/images/dao_waiting.png" />
+                            <img v-if="!dealCont.source_file_upload_deal.locked_fee" src="@/assets/images/error.png" class="resno" />
+                            <img v-else-if="dealCont.source_file_upload_deal.unlocked" src="@/assets/images/dao_success.png" class="resno" />
+                            <img v-else-if="dealCont.dao_signature.length >= dealCont.dao_threshold" src="@/assets/images/dao_waiting.png" class="resno" />
+                            <img v-else src="@/assets/images/dao_waiting.png" class="resno" />
 
                             {{item.miner_fid}}
                         </span>
@@ -160,8 +160,8 @@
                         <el-table-column prop="create_at" :label="$t('uploadFile.detail_Time')"></el-table-column>
                         <el-table-column prop="status" :label="$t('uploadFile.file_status')">
                             <template slot-scope="scope">
-                                <img src="@/assets/images/dao_success.png" v-if="scope.row.status&&scope.row.status.toLowerCase() == 'success'" />
-                                <img src="@/assets/images/dao_waiting.png" v-else />
+                                <img src="@/assets/images/dao_success.png" v-if="scope.row.status&&scope.row.status.toLowerCase() == 'success'" class="resno" />
+                                <img src="@/assets/images/dao_waiting.png" v-else class="resno" />
                             </template>
                         </el-table-column>
                     </el-table>
@@ -213,6 +213,7 @@ export default {
             tabPosition: 'top',
             bodyWidth: document.documentElement.clientWidth<1024?true:false,
             dealId: '',
+            logId: null,
             dealCont: {
                 dao_signatureAll: 0,
                 source_file_upload_deal: {}
@@ -242,6 +243,7 @@ export default {
     methods: {
         handleClick(tab, event) {
             localStorage.setItem('offlineDealsIndex', tab.index)
+            this.logId = this.offline_deals_data[tab.index].id
             this.$router.push({
                 name: 'my_files_detail', 
                 params: {
@@ -370,7 +372,7 @@ export default {
             let obj = {
                 wallet_address: _this.$store.getters.metaAddress
             }
-            axios.get(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/storage/deal/log/${_this.$route.params.id}?${QS.stringify(obj)}`, {headers: {
+            axios.get(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/storage/deal/log/${_this.logId}?${QS.stringify(obj)}`, {headers: {
             // axios.get(`./static/deal_logs.json`, {headers: {
                     // 'Authorization':"Bearer "
             }}).then((response) => {
@@ -402,6 +404,7 @@ export default {
     mounted() {
         let _this = this
         _this.dealId = _this.$route.params.deal_id
+        _this.logId = _this.$route.params.id
         if(localStorage.getItem('offlineDeals')) _this.offline_deals_data = JSON.parse(localStorage.getItem('offlineDeals'))
         _this.getData()
         document.getElementById("content-box").scrollTop = 0;

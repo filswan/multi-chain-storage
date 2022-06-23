@@ -68,12 +68,6 @@ func refundCarFile(ethClient *ethclient.Client, carFile2Refund *models.CarFile2R
 		}
 	}
 
-	err = models.UpdateCarFileStatus(carFile2Refund.CarFileId, constants.CAR_FILE_STATUS_COMPLETED)
-	if err != nil {
-		logs.GetLogger().Error(err.Error())
-		return err
-	}
-
 	return nil
 }
 

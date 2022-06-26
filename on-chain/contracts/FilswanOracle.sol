@@ -21,6 +21,9 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
 
     address[] private _daoLists;
 
+    mapping(string => uint256) signStatusMap;
+    // mapping(string => bool) hasPreSignMap;
+
     struct TxOracleInfo {
         uint256 paid;
         uint256 terms;
@@ -31,7 +34,13 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
         address signer;
         uint256 timestamp;
         uint256 blockNumber;
+        uint256 signStatus;
+
+        uint8 batch;
+        string[][256] batchCidList;
     }
+
+    mapping(string => mapping(address => mapping(string => bool))) cidMap;
 
     event SignTransaction(string cid, string dealId, address recipient);
 
@@ -137,7 +146,7 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
         string[] memory cidList = cidListMap[key];
         bytes32 voteKey = keccak256(
             abi.encodeWithSignature(
-                "f(string, string,address,string[])",
+                "f(string,string,address,string[])",
                 dealId,
                 network,
                 recipient,
@@ -156,7 +165,7 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
         string[] memory cidList = cidListMap[key];
         bytes32 voteKey = keccak256(
             abi.encodeWithSignature(
-                "f(string, string,address,string[])",
+                "f(string,string,address,string[])",
                 dealId,
                 network,
                 recipient,
@@ -194,16 +203,89 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
         return result;
     }
 
+    function getOracleInfo(string memory dealId, string memory network, address sender) public view returns (TxOracleInfo memory){
+        string memory key = concatenate(dealId, network);
+        return txInfoMap[key][sender];
+    }
+
     event PreSign(string dealId, string network, address recipient, uint8 batchCount);
     event Sign(string dealId, string network, string[] cidList, uint8 batchNo);
 
 
     function preSign(string memory dealId, string memory network, address recipient, uint8 batchCount) public onlyRole(DAO_ROLE) {
+        require(batchCount>0, "batch count must greater than 0");
+        string memory key = concatenate(dealId, network);
+
+        txInfoMap[key][msg.sender].recipient = recipient;
+        txInfoMap[key][msg.sender].flag = true;
+        // txInfoMap[key][msg.sender].cidList = [];
+        txInfoMap[key][msg.sender].signer = msg.sender;
+        txInfoMap[key][msg.sender].timestamp = block.timestamp;
+        txInfoMap[key][msg.sender].blockNumber = block.number;
+
+        txInfoMap[key][msg.sender].batch = batchCount;
+        txInfoMap[key][msg.sender].signStatus = (1 << batchCount) - 1;
+
+        // txInfoMap[key][msg.sender].batchCidList = string[][];
+
+        // signStatusMap = ;
+        // hasPreSignMap[key] = true;
 
         emit PreSign(dealId, network, recipient, batchCount);
     }
 
     function sign(string memory dealId, string memory network, string[] memory cidList, uint8 batchNo) public onlyRole(DAO_ROLE) {
+
+        string memory key = concatenate(dealId, network);
+
+        require(txInfoMap[key][msg.sender].flag, "no presign");
+        require(txInfoMap[key][msg.sender].batch > batchNo, "wrong batch No");
+
+        uint256 bitStatus = 1<<batchNo;
+
+        require((bitStatus & txInfoMap[key][msg.sender].signStatus) == bitStatus, "already signed the batch");
+
+        txInfoMap[key][msg.sender].signStatus = txInfoMap[key][msg.sender].signStatus ^ bitStatus;
+
+        txInfoMap[key][msg.sender].batchCidList[batchNo] = cidList;
+
+        if(txInfoMap[key][msg.sender].signStatus == 0){ // all signs are done.
+
+            // mapping(string=>bool) memory cidMap;
+            for(uint i = 0; i < txInfoMap[key][msg.sender].batch; i++){
+                for(uint j = 0; j < txInfoMap[key][msg.sender].batchCidList[i].length; j++){
+                    // todo: add existed check?
+                    if(!cidMap[key][msg.sender][txInfoMap[key][msg.sender].batchCidList[i][j]]){
+                        cidMap[key][msg.sender][txInfoMap[key][msg.sender].batchCidList[i][j]] = true;
+                        txInfoMap[key][msg.sender].cidList.push(txInfoMap[key][msg.sender].batchCidList[i][j]);
+                    }
+                    // txInfoMap[key][msg.sender].cidList.push(txInfoMap[key][msg.sender].batchCidList[i][j]);
+                }
+            }
+
+            // cidList = txInfoMap[key][msg.sender].cidList
+
+            bytes32 voteKey = keccak256(
+                        abi.encodeWithSignature(
+                            "f(string,string,address,string[])",
+                            dealId,
+                            network,
+                            txInfoMap[key][msg.sender].recipient,
+                            txInfoMap[key][msg.sender].cidList
+                        )
+                    );
+
+            txVoteMap[voteKey] = txVoteMap[voteKey] + 1;
+            
+
+            // todo: uncomment filink part
+            if (txVoteMap[voteKey] == _threshold 
+            // && _filinkAddress != address(0)
+            ) {
+                cidListMap[key] = txInfoMap[key][msg.sender].cidList;
+                // FilinkConsumer(_filinkAddress).requestDealInfo(dealId, network);
+            }
+        }
 
         emit Sign(dealId, network, cidList, batchNo);
     }

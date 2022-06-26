@@ -226,11 +226,6 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
         txInfoMap[key][msg.sender].batch = batchCount;
         txInfoMap[key][msg.sender].signStatus = (1 << batchCount) - 1;
 
-        // txInfoMap[key][msg.sender].batchCidList = string[][];
-
-        // signStatusMap = ;
-        // hasPreSignMap[key] = true;
-
         emit PreSign(dealId, network, recipient, batchCount);
     }
 
@@ -251,7 +246,6 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
 
         if(txInfoMap[key][msg.sender].signStatus == 0){ // all signs are done.
 
-            // mapping(string=>bool) memory cidMap;
             for(uint i = 0; i < txInfoMap[key][msg.sender].batch; i++){
                 for(uint j = 0; j < txInfoMap[key][msg.sender].batchCidList[i].length; j++){
                     // todo: add existed check?
@@ -262,8 +256,6 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
                     // txInfoMap[key][msg.sender].cidList.push(txInfoMap[key][msg.sender].batchCidList[i][j]);
                 }
             }
-
-            // cidList = txInfoMap[key][msg.sender].cidList
 
             bytes32 voteKey = keccak256(
                         abi.encodeWithSignature(
@@ -277,13 +269,11 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
 
             txVoteMap[voteKey] = txVoteMap[voteKey] + 1;
             
-
-            // todo: uncomment filink part
             if (txVoteMap[voteKey] == _threshold 
-            // && _filinkAddress != address(0)
+            && _filinkAddress != address(0)
             ) {
                 cidListMap[key] = txInfoMap[key][msg.sender].cidList;
-                // FilinkConsumer(_filinkAddress).requestDealInfo(dealId, network);
+                FilinkConsumer(_filinkAddress).requestDealInfo(dealId, network);
             }
         }
 

@@ -1,20 +1,15 @@
 const { expect } = require("chai");
 
+// Important, this test case only works on local test
+// please comments FilswanOracle.sol filink call before run this test case
 describe.only("DAO Signatures", function () {
-  // const chainlinkAddress = "0x514910771af9ca656af840dff83e8264ecf986ca";
-
 
   const overrides = {
     gasLimit: 9999999
   }
 
-
-  const wethAddress = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
-
   let accounts;
   let oracleAccounts;
-
-  let paymentInstance;
   let oracleInstance;
 
   const fee = {
@@ -96,11 +91,6 @@ describe.only("DAO Signatures", function () {
     const network = "filecoin_mainnet";
 
     const recipient = "0xc4fcaAdCb0b00a9501e56215c37B10fAF9e79c0a";
-
-    // it("Test presign for dao user 1", async function () {
-
-      
-    // });
 
     async function doPreSign(deal){
       for (let i = 0; i < oracleAccounts.length - 1; i++) {

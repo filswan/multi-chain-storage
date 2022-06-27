@@ -255,5 +255,7 @@ create table dao_signature_source_file_upload (
 #--alter table transaction drop column refund_after_expired_tx_hash;
 #--alter table transaction drop column refund_after_expired_amount;
 #--alter table transaction drop column refund_after_expired_at;
-
+#--alter table transaction add refund_tx_hash varchar(100);
+#--alter table transaction add refund_amount varchar(100);
+#--alter table transaction add  refund_at bigint;
 

@@ -204,7 +204,7 @@ create table dao_pre_sign (
     create_at                    bigint        not null,
     update_at                    bigint        not null,
     primary key pk_dao_pre_sign(id),
-    constraint un_dao_pre_sign unique(offline_deal_id),
+    constraint un_dao_pre_sign unique(offline_deal_id,wallet_id_signer),
     constraint fk_dao_pre_sign_offline_deal_id foreign key (offline_deal_id) references offline_deal(id)
 );
 

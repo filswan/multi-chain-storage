@@ -32,9 +32,9 @@ type DaoPreSign struct {
 	UpdateAt                 int64  `json:"update_at"`
 }
 
-func GetDaoPreSignByOfflineDealId(offlineDealId int64) (*DaoPreSign, error) {
+func GetDaoPreSignByOfflineDealIdWalletIdSigner(offlineDealId int64, walletIdSigner int64) (*DaoPreSign, error) {
 	var daoPreSigns []*DaoPreSign
-	err := database.GetDB().Where("offline_deal_id=?", offlineDealId).Find(&daoPreSigns).Error
+	err := database.GetDB().Where("offline_deal_id=? and wallet_id_signer=?", offlineDealId, walletIdSigner).Find(&daoPreSigns).Error
 
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -209,7 +209,7 @@ func WriteDaoPreSign(txHash string, recipientWalletAddress string, dealId int64,
 
 	batchSizeMax := float64(*sourceFileUploadCntTotal) / float64(batchCount)
 
-	daoPreSign, err := GetDaoPreSignByOfflineDealId(offlineDeal.Id)
+	daoPreSign, err := GetDaoPreSignByOfflineDealIdWalletIdSigner(offlineDeal.Id, walletSigner.ID)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err

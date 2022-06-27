@@ -110,7 +110,7 @@ func ScanPolygon4Dao() error {
 
 			inputDataHex := hex.EncodeToString(transaction.Data())
 			logs.GetLogger().Info(inputDataHex)
-			if strings.HasPrefix(inputDataHex, "4d043ef6") {
+			if strings.HasPrefix(inputDataHex, "e7c2999a") {
 				err = getDaoSignature(ethClient, inputDataHex, transaction)
 				if err != nil {
 					logs.GetLogger().Error(err)

@@ -32,9 +32,9 @@ type DaoPreSign struct {
 	UpdateAt                 int64  `json:"update_at"`
 }
 
-func GetDaoPreSignByOfflineDealId(offlineDealId int64) (*DaoPreSign, error) {
+func GetDaoPreSignByOfflineDealIdWalletIdSigner(offlineDealId int64, walletIdSigner int64) (*DaoPreSign, error) {
 	var daoPreSigns []*DaoPreSign
-	err := database.GetDB().Where("offline_deal_id=?", offlineDealId).Find(&daoPreSigns).Error
+	err := database.GetDB().Where("offline_deal_id=? and wallet_id_signer=?", offlineDealId, walletIdSigner).Find(&daoPreSigns).Error
 
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -87,7 +87,7 @@ func GetDaoPreSignSourceFileUploadCntTotal(offlineDealId int64) (*int, error) {
 	return &sourceFileUploadCntTotal, nil
 }
 
-func UpdateDaoPreSignSourceFileUploadCntSign(offlineDealId int64) error {
+func UpdateDaoPreSignSourceFileUploadCntSign(offlineDealId int64, walletIdSigner int64) error {
 	sourceFileUploadCntSign, err := GetDaoPreSignSourceFileUploadCntSign(offlineDealId)
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -96,9 +96,9 @@ func UpdateDaoPreSignSourceFileUploadCntSign(offlineDealId int64) error {
 
 	fields2BeUpdated := make(map[string]interface{})
 	fields2BeUpdated["source_file_upload_cnt_sign"] = *sourceFileUploadCntSign
-	fields2BeUpdated["update_at"] = libutils.GetCurrentUtcSecond
+	fields2BeUpdated["update_at"] = libutils.GetCurrentUtcSecond()
 
-	err = database.GetDB().Model(DaoPreSign{}).Where("offline_deal_id=?", offlineDealId).Update(fields2BeUpdated).Error
+	err = database.GetDB().Model(DaoPreSign{}).Where("offline_deal_id=? and wallet_id_signer=?", offlineDealId, walletIdSigner).Update(fields2BeUpdated).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
@@ -190,9 +190,9 @@ func WriteDaoPreSign(txHash string, recipientWalletAddress string, dealId int64,
 	}
 
 	if offlineDeal == nil {
-		err := fmt.Errorf("offline deal with deal id: %d not exists", dealId)
-		logs.GetLogger().Error(err)
-		return err
+		msg := fmt.Sprintf("offline deal with deal id: %d not exists", dealId)
+		logs.GetLogger().Info(msg)
+		return nil
 	}
 
 	sourceFileUploadCntTotal, err := GetDaoPreSignSourceFileUploadCntTotal(offlineDeal.Id)
@@ -209,7 +209,7 @@ func WriteDaoPreSign(txHash string, recipientWalletAddress string, dealId int64,
 
 	batchSizeMax := float64(*sourceFileUploadCntTotal) / float64(batchCount)
 
-	daoPreSign, err := GetDaoPreSignByOfflineDealId(offlineDeal.Id)
+	daoPreSign, err := GetDaoPreSignByOfflineDealIdWalletIdSigner(offlineDeal.Id, walletSigner.ID)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err

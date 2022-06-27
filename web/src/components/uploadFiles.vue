@@ -114,7 +114,7 @@
 
         <el-dialog title="" :visible.sync="finishTransaction" :close-on-click-modal="false" :width="width"
             custom-class="completeDia">
-            <img src="@/assets/images/alert-icon.png" />
+            <img src="@/assets/images/alert-icon.png" class="resno" />
             <h1>{{$t('uploadFile.COMPLETED')}}!</h1>
             <h3>{{$t('uploadFile.SUCCESS')}}</h3>
             <a :href="'https://mumbai.polygonscan.com/tx/'+txHash" target="_blank">{{txHash}}</a>
@@ -123,7 +123,7 @@
 
         <el-dialog title="" :visible.sync="failTransaction" :width="width"
             custom-class="completeDia">
-            <img src="@/assets/images/error.png" />
+            <img src="@/assets/images/error.png" class="resno" />
             <h1>{{$t('uploadFile.Fail')}}!</h1>
             <h3>{{$t('uploadFile.FailTIP')}}</h3>
             <a :href="'https://mumbai.polygonscan.com/tx/'+txHash" target="_blank">{{txHash}}</a>
@@ -140,7 +140,7 @@
 
         <el-dialog title="" :visible.sync="paymentPopup" :width="width"
             custom-class="completeDia">
-            <img src="@/assets/images/box-important.png" />
+            <img src="@/assets/images/box-important.png" class="resno" />
             <h2>{{$t('uploadFile.file_uploaded')}}</h2>
             <h4>{{$t('uploadFile.file_uploaded_tip')}}</h4>
             <h4>{{$t('uploadFile.file_uploaded_tip01')}}</h4>
@@ -149,7 +149,7 @@
 
         <el-dialog title="" :visible.sync="paymentPopup01" :width="width"
             custom-class="completeDia">
-            <img src="@/assets/images/box-important.png" />
+            <img src="@/assets/images/box-important.png" class="resno" />
             <h2>{{$t('uploadFile.file_uploaded')}}</h2>
             <h4>{{$t('uploadFile.file_uploaded_tip02')}}</h4>
             <h4>{{$t('uploadFile.file_uploaded_tip01')}}</h4>
@@ -158,7 +158,7 @@
 
         <el-dialog title="" :visible.sync="metamaskLoginTip" :width="width"
             custom-class="completeDia">
-            <img src="@/assets/images/box-important.png" />
+            <img src="@/assets/images/box-important.png" class="resno" />
             <h4>{{$t('fs3Login.toptip_01')}} {{network.name}} {{$t('fs3Login.toptip_02')}} <b>{{$t('fs3Login.toptip_Network')}}</b>.</h4>
             <a class="a-close" @click="metamaskLoginTip=false">{{$t('uploadFile.OK')}}</a>
         </el-dialog>

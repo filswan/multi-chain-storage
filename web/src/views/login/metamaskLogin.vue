@@ -7,7 +7,7 @@
       <div class="titleCont">{{$t('fs3Login.title')}}</div>
       <el-row>
           <el-col :span="24" @click.native="signFun">
-            <img src="@/assets/images/metamask.png" alt="">
+            <img src="@/assets/images/metamask.png" class="resno" alt="">
             <span>{{$t('fs3Login.MetaMask')}}</span>
           </el-col>
       </el-row>

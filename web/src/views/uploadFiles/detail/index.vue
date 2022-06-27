@@ -14,23 +14,23 @@
 
                         <span class="title" v-if="dealId == 0">
                             <el-tooltip effect="dark" :content="$t('uploadFile.detail_tip01')" placement="top">
-                                <img src="@/assets/images/info.png"/>
+                                <img src="@/assets/images/info.png" class="resno"/>
                             </el-tooltip>
                         </span>
                         <span v-if="!dealCont.source_file_upload_deal.locked_fee">
-                            <img src="@/assets/images/error.png" />
+                            <img src="@/assets/images/error.png" class="resno" />
                             <span>{{$t('uploadFile.no_fund_locked')}}</span>
                         </span>
                         <span v-else-if="dealCont.source_file_upload_deal.unlocked">
-                            <img src="@/assets/images/dao_success.png" />
+                            <img src="@/assets/images/dao_success.png" class="resno" />
                             <span style="color: #3db39e;">{{$t('uploadFile.Successfully_unlocked_funds')}}</span>
                         </span>
                         <span v-else-if="dealCont.dao_signature.length >= dealCont.dao_threshold">
-                            <img src="@/assets/images/dao_waiting.png" />
+                            <img src="@/assets/images/dao_waiting.png" class="resno" />
                             <span>{{dealCont.dao_signatureAll == dealCont.dao_signature.length?$t('uploadFile.Successfully_signed_all')+$t('uploadFile.Successfully_signed'):$t('uploadFile.Successfully_signed')}} {{dealCont.dao_signatureAll}}/{{dealCont.dao_signature.length}} </span>
                         </span>
                         <span v-else>
-                            <img src="@/assets/images/dao_waiting.png" />
+                            <img src="@/assets/images/dao_waiting.png" class="resno" />
                             <span>{{$t('uploadFile.Waiting_for_signature')}} {{dealCont.dao_signatureAll}}/{{dealCont.dao_signature.length}} </span>
                         </span>
                     </div>

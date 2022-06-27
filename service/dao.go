@@ -42,7 +42,7 @@ func GetDeals2Sign(signerWalletAddress string) ([]*models.Deal2Sign, error) {
 	}
 
 	for _, deal2Sign := range deals2Sign {
-		daoSignatures, err := models.GetDaoSignaturesByOfflineDealId(deal2Sign.OfflineDealId)
+		daoSignatures, err := models.GetDaoSignaturesByOfflineDealIdWalletIdSigner(deal2Sign.OfflineDealId, signerWallet.ID)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			return nil, err

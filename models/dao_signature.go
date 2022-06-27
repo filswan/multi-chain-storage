@@ -70,9 +70,9 @@ func GetDaoSignatureByOfflineDealIdTxHash(offlineDealId int64, txHash string) (*
 	return nil, nil
 }
 
-func GetDaoSignaturesByOfflineDealId(offlineDealId int64) ([]*DaoSignature, error) {
+func GetDaoSignaturesByOfflineDealIdWalletIdSigner(offlineDealId int64, walletIdSigner int64) ([]*DaoSignature, error) {
 	var daoSignatures []*DaoSignature
-	err := database.GetDB().Where("offline_deal_id=?", offlineDealId).Find(&daoSignatures).Error
+	err := database.GetDB().Where("offline_deal_id=? and wallet_id_signer=?", offlineDealId, walletIdSigner).Find(&daoSignatures).Error
 
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -240,7 +240,7 @@ func SaveDaoSignature(daoSignature *DaoSignature) (*DaoSignature, error) {
 		return daoSignature, nil
 	}
 
-	daoSignatureResult := database.GetDB().Create(&daoSignature)
+	daoSignatureResult := database.GetDB().Create(daoSignature)
 	err := daoSignatureResult.Error
 	if err != nil {
 		logs.GetLogger().Error(err)

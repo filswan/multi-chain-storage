@@ -3,6 +3,8 @@ require("@nomiclabs/hardhat-waffle");
 require('dotenv').config();
 
 require('hardhat-abi-exporter');
+require("hardhat-gas-reporter");
+
 
 // This is a sample Hardhat task. To learn how to create your own go to
 // https://hardhat.org/guides/create-task.html
@@ -59,7 +61,7 @@ module.exports = {
     },
     matictest: {
       url: "https://matic-mumbai.chainstacklabs.com/", // https://forum.openzeppelin.com/t/hardhat-upgrade-failing-with-hh110-on-matic-testnet/12911
-      accounts: [process.env.ownerPK, process.env.key2, process.env.key3],
+      accounts: [process.env.ownerPK, process.env.key2, process.env.key3,process.env.key4],
       gasPrice: 10000000000,
       gasLimit: 9999999
     },
@@ -90,6 +92,9 @@ module.exports = {
       }
     }
 
+  },
+  gasReporter: {
+    enabled: (process.env.REPORT_GAS) ? true : false
   },
   abiExporter: {
     path: './contracts/plain-abi',

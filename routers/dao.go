@@ -21,8 +21,15 @@ func Dao(router *gin.RouterGroup) {
 func GetDeals2PreSign(c *gin.Context) {
 	logs.GetLogger().Info("ip:", c.ClientIP(), ",port:", c.Request.URL.Port())
 	signerWalletAddress := strings.Trim(c.Params.ByName("signer_wallet_address"), " ")
-	if signerWalletAddress == "" || !strings.HasPrefix(signerWalletAddress, "0x") {
-		errMsg := "signer_wallet_address is required and should be valid address"
+	if signerWalletAddress == "" {
+		errMsg := "signer_wallet_address is required"
+		logs.GetLogger().Error(errMsg)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_INVALID_VALUE, errMsg))
+		return
+	}
+
+	if !strings.HasPrefix(signerWalletAddress, "0x") {
+		errMsg := "signer_wallet_address must be a valid address"
 		logs.GetLogger().Error(errMsg)
 		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_INVALID_VALUE, errMsg))
 		return
@@ -41,8 +48,16 @@ func GetDeals2PreSign(c *gin.Context) {
 func GetDeals2Sign(c *gin.Context) {
 	logs.GetLogger().Info("ip:", c.ClientIP(), ",port:", c.Request.URL.Port())
 	signerWalletAddress := strings.Trim(c.Params.ByName("signer_wallet_address"), " ")
-	if signerWalletAddress == "" || !strings.HasPrefix(signerWalletAddress, "0x") {
-		errMsg := "signer_wallet_address is required and should be valid address"
+
+	if signerWalletAddress == "" {
+		errMsg := "signer_wallet_address is required"
+		logs.GetLogger().Error(errMsg)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_INVALID_VALUE, errMsg))
+		return
+	}
+
+	if !strings.HasPrefix(signerWalletAddress, "0x") {
+		errMsg := "signer_wallet_address must be a valid address"
 		logs.GetLogger().Error(errMsg)
 		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_INVALID_VALUE, errMsg))
 		return

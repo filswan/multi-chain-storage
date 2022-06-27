@@ -17,27 +17,24 @@ import (
 )
 
 type Transaction struct {
-	ID                       int64   `json:"id"`
-	SourceFileUploadId       int64   `json:"source_file_upload_id"`
-	NetworkId                int64   `json:"network_id"`
-	TokenId                  int64   `json:"token_id"`
-	WalletIdPay              int64   `json:"wallet_id_pay"`
-	WalletIdRecipient        int64   `json:"wallet_id_recipient"`
-	WalletIdContract         int64   `json:"wallet_id_contract"`
-	PayTxHash                string  `json:"pay_tx_hash"`
-	PayAmount                string  `json:"pay_amount"`
-	PayAt                    int64   `json:"pay_at"`
-	Deadline                 int64   `json:"deadline"`
-	UnlockAmount             *string `json:"unlock_amount"`
-	LastUnlockAt             *int64  `json:"last_unlock_at"`
-	RefundAfterUnlockTxHash  *string `json:"refund_after_unlock_tx_hash"`
-	RefundAfterUnlockAmount  *string `json:"refund_after_unlock_amount"`
-	RefundAfterUnlockAt      *int64  `json:"refund_after_unlock_at"`
-	RefundAfterExpiredTxHash *string `json:"refund_after_expired_tx_hash"`
-	RefundAfterExpiredAmount *string `json:"refund_after_expired_amount"`
-	RefundAfterExpiredAt     *int64  `json:"refund_after_expired_at"`
-	CreateAt                 int64   `json:"create_at"`
-	UpdateAt                 int64   `json:"update_at"`
+	ID                 int64   `json:"id"`
+	SourceFileUploadId int64   `json:"source_file_upload_id"`
+	NetworkId          int64   `json:"network_id"`
+	TokenId            int64   `json:"token_id"`
+	WalletIdPay        int64   `json:"wallet_id_pay"`
+	WalletIdRecipient  int64   `json:"wallet_id_recipient"`
+	WalletIdContract   int64   `json:"wallet_id_contract"`
+	PayTxHash          string  `json:"pay_tx_hash"`
+	PayAmount          string  `json:"pay_amount"`
+	PayAt              int64   `json:"pay_at"`
+	Deadline           int64   `json:"deadline"`
+	UnlockAmount       *string `json:"unlock_amount"`
+	LastUnlockAt       *int64  `json:"last_unlock_at"`
+	RefundTxHash       *string `json:"refund_tx_hash"`
+	RefundAmount       *string `json:"refund_amount"`
+	RefundAt           *int64  `json:"refund_at"`
+	CreateAt           int64   `json:"create_at"`
+	UpdateAt           int64   `json:"update_at"`
 }
 
 func GetTransactionBySourceFileUploadId(sourceFileUploadId int64) (*Transaction, error) {
@@ -56,18 +53,6 @@ func GetTransactionBySourceFileUploadId(sourceFileUploadId int64) (*Transaction,
 }
 
 func CreateTransaction4PayByWCid(wCid, txHash string, lockTime int64) error {
-	lockedPayment, err := client.GetLockedPaymentInfo(wCid)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
-
-	if lockedPayment == nil {
-		msg := fmt.Sprintf("payment not exists for w_cid:%s ,tx hash:%s", wCid, txHash)
-		logs.GetLogger().Info(msg)
-		return nil
-	}
-
 	sourceFile, sourceFileUpload, err := GetSourceFileUploadByWCid(wCid)
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -76,6 +61,18 @@ func CreateTransaction4PayByWCid(wCid, txHash string, lockTime int64) error {
 
 	if sourceFile == nil || sourceFileUpload == nil {
 		logs.GetLogger().Info("wCid:", wCid, " not exists")
+		return nil
+	}
+
+	lockedPayment, err := client.GetLockedPaymentInfo(wCid)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	if lockedPayment == nil {
+		msg := fmt.Sprintf("payment not exists for wCid:%s ,tx hash:%s", wCid, txHash)
+		logs.GetLogger().Info(msg)
 		return nil
 	}
 
@@ -133,11 +130,8 @@ func CreateTransaction4PayByWCid(wCid, txHash string, lockTime int64) error {
 	transaction.Deadline = lockedPayment.Deadline
 	transaction.UpdateAt = currentUtcSecond
 
-	db := database.GetDBTransaction()
-
-	err = db.Save(&transaction).Error
+	err = database.SaveOne(&transaction)
 	if err != nil {
-		db.Rollback()
 		logs.GetLogger().Error(err)
 		return err
 	}
@@ -146,14 +140,7 @@ func CreateTransaction4PayByWCid(wCid, txHash string, lockTime int64) error {
 	fields2BeUpdated["status"] = constants.SOURCE_FILE_UPLOAD_STATUS_PAID
 	fields2BeUpdated["update_at"] = currentUtcSecond
 
-	err = db.Model(SourceFileUpload{}).Where("id=?", sourceFileUpload.Id).Update(fields2BeUpdated).Error
-	if err != nil {
-		db.Rollback()
-		logs.GetLogger().Error(err)
-		return err
-	}
-
-	err = db.Commit().Error
+	err = database.GetDB().Model(SourceFileUpload{}).Where("id=?", sourceFileUpload.Id).Update(fields2BeUpdated).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
@@ -195,51 +182,10 @@ func UpdateTransactionUnlockInfo(sourceFileUploadId int64, lockedAmount decimal.
 		return err
 	}
 
-	err = UpdateSourceFileUploadStatus(sourceFileUploadId, constants.SOURCE_FILE_UPLOAD_STATUS_UNLOCKED)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
-
 	return nil
 }
 
-func UpdateTransactionRefundAfterUnlock(sourceFileUploadId int64, refundTxHash string, refundAmount decimal.Decimal) error {
-	transaction, err := GetTransactionBySourceFileUploadId(sourceFileUploadId)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
-
-	if transaction == nil {
-		err := fmt.Errorf("transaction not exists for source file upload:%d", sourceFileUploadId)
-		logs.GetLogger().Error(err)
-		return nil
-	}
-
-	currentUtcSecond := libutils.GetCurrentUtcSecond()
-	fields2BeUpdated := make(map[string]interface{})
-	fields2BeUpdated["refund_after_unlock_tx_hash"] = refundTxHash
-	fields2BeUpdated["refund_after_unlock_amount"] = refundAmount.String()
-	fields2BeUpdated["refund_after_unlock_at"] = currentUtcSecond
-	fields2BeUpdated["update_at"] = currentUtcSecond
-
-	err = database.GetDB().Model(Transaction{}).Where("id=?", transaction.ID).Update(fields2BeUpdated).Error
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
-
-	err = UpdateSourceFileUploadStatus(sourceFileUploadId, constants.SOURCE_FILE_UPLOAD_STATUS_SUCCESS)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
-
-	return nil
-}
-
-func UpdateTransactionRefundAfterExpired(wCid, refundTxHash string) error {
+func UpdateTransactionRefundInfo(wCid, refundTxHash string, refundAt int64) error {
 	lockedPayment, err := client.GetLockedPaymentInfo(wCid)
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -263,12 +209,6 @@ func UpdateTransactionRefundAfterExpired(wCid, refundTxHash string) error {
 		return nil
 	}
 
-	if sourceFileUpload.Status == constants.SOURCE_FILE_UPLOAD_STATUS_SUCCESS {
-		msg := fmt.Sprintf("source file upload:%d refunded by background", sourceFileUpload.Id)
-		logs.GetLogger().Info(msg)
-		return nil
-	}
-
 	transaction, err := GetTransactionBySourceFileUploadId(sourceFileUpload.Id)
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -281,10 +221,28 @@ func UpdateTransactionRefundAfterExpired(wCid, refundTxHash string) error {
 		return nil
 	}
 
+	payAmount, err := decimal.NewFromString(transaction.PayAmount)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	unlockAmount := decimal.NewFromInt(0)
+	if transaction.UnlockAmount != nil {
+		unlockAmount, err = decimal.NewFromString(*transaction.UnlockAmount)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return err
+		}
+	}
+
+	refundAmount := payAmount.Sub(unlockAmount)
+
 	currentUtcSecond := libutils.GetCurrentUtcSecond()
 	fields2BeUpdated := make(map[string]interface{})
-	fields2BeUpdated["refund_after_expired_tx_hash"] = refundTxHash
-	fields2BeUpdated["refund_after_expired_at"] = currentUtcSecond
+	fields2BeUpdated["refund_tx_hash"] = refundTxHash
+	fields2BeUpdated["refund_amount"] = refundAmount
+	fields2BeUpdated["refund_at"] = refundAt
 	fields2BeUpdated["update_at"] = currentUtcSecond
 
 	err = database.GetDB().Model(Transaction{}).Where("id=?", transaction.ID).Update(fields2BeUpdated).Error
@@ -293,10 +251,43 @@ func UpdateTransactionRefundAfterExpired(wCid, refundTxHash string) error {
 		return err
 	}
 
-	err = UpdateSourceFileUploadStatus(sourceFileUpload.Id, constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDED)
+	offlineDealsNotSuccess, err := GetOfflineDealsNotSuccessBySourceFileUploadId(sourceFileUpload.Id)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
+	}
+
+	sourceFileStatus := constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDED
+	if len(offlineDealsNotSuccess) == 0 {
+		sourceFileStatus = constants.SOURCE_FILE_UPLOAD_STATUS_SUCCESS
+	}
+
+	err = UpdateSourceFileUploadStatus(sourceFileUpload.Id, sourceFileStatus)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	carFile, err := GetCarFileBySourceFileUploadId(sourceFileUpload.Id)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	if carFile != nil {
+		sourceFileUploads, err := GetSourceFileUploadsNotCompletedByCarFileId(carFile.ID)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return err
+		}
+
+		if len(sourceFileUploads) == 0 {
+			err = UpdateCarFileStatus(carFile.ID, constants.CAR_FILE_STATUS_COMPLETED)
+			if err != nil {
+				logs.GetLogger().Error(err)
+				return err
+			}
+		}
 	}
 
 	return nil

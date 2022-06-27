@@ -93,7 +93,7 @@ func GetCarFiles2Refund() ([]*CarFile2Refund, error) {
 		"from car_file a, offline_deal b \n" +
 		"where a.id=b.car_file_id and a.status=?\n" +
 		"group by b.car_file_id\n" +
-		"having deal_total_cnt>=deal_success_cnt+deal_fail_cnt;"
+		"having deal_total_cnt=deal_success_cnt+deal_fail_cnt;"
 
 	var carFiles2Refund []*CarFile2Refund
 

@@ -27,17 +27,16 @@ type SourceFileUpload struct {
 
 type SourceFileUploadOut struct {
 	SourceFileUpload
-	PayloadCid            string `json:"payload_cid"`
-	LockedFeeBeforeUnlock decimal.Decimal
-	LockedFeeBeforeRefund decimal.Decimal
+	PayloadCid string `json:"payload_cid"`
 }
 
-func GetSourceFileUploadOutsByCarFileId(carFileId int64) ([]*SourceFileUploadOut, error) {
+func GetSourceFileUploads2RefundByCarFileId(carFileId int64) ([]*SourceFileUploadOut, error) {
 	var sourceFileUploadOut []*SourceFileUploadOut
 	sql := "select a.*,b.payload_cid from source_file_upload a\n" +
 		"left join source_file b on a.source_file_id=b.id\n" +
-		"where a.id in (select source_file_upload_id from car_file_source where car_file_id=?)"
-	err := database.GetDB().Raw(sql, carFileId).Scan(&sourceFileUploadOut).Error
+		"where a.id in (select source_file_upload_id from car_file_source where car_file_id=?)\n" +
+		" and a.status!=? and a.status!=?"
+	err := database.GetDB().Raw(sql, carFileId, constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDED, constants.SOURCE_FILE_UPLOAD_STATUS_SUCCESS).Scan(&sourceFileUploadOut).Error
 
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -47,11 +46,27 @@ func GetSourceFileUploadOutsByCarFileId(carFileId int64) ([]*SourceFileUploadOut
 	return sourceFileUploadOut, nil
 }
 
-func GetSourceFileUploadsByCarFileId(carFileId int64) ([]*SourceFileUpload, error) {
+func GetSourceFileUploadsByCarFileId(carFileId int64, batchNo int) ([]*SourceFileUploadOut, error) {
+	var sourceFileUploads []*SourceFileUploadOut
+	sql := "select b.*,c.payload_cid from car_file_source a, source_file_upload b, source_file c\n" +
+		"where a.car_file_id=? and a.source_file_upload_id=b.id and b.source_file_id=c.id\n" +
+		"order by b. id limit ? offset ?"
+	err := database.GetDB().Raw(sql, carFileId, constants.MAX_WCID_COUNT_IN_TRANSACTION, batchNo).Scan(&sourceFileUploads).Error
+
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	return sourceFileUploads, nil
+}
+
+func GetSourceFileUploadsNotCompletedByCarFileId(carFileId int64) ([]*SourceFileUpload, error) {
 	var sourceFileUploads []*SourceFileUpload
-	sql := "select a.* from source_file_upload a\n" +
-		"where a.id in (select source_file_upload_id from car_file_source where car_file_id=?)"
-	err := database.GetDB().Raw(sql, carFileId).Scan(&sourceFileUploads).Error
+	sql := "select b.* from car_file_source a, source_file_upload b\n" +
+		"where a.car_file_id=? and a.source_file_upload_id=b.id\n" +
+		"  and b.status!=? and b.status!=?"
+	err := database.GetDB().Raw(sql, carFileId, constants.SOURCE_FILE_UPLOAD_STATUS_SUCCESS, constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDED).Scan(&sourceFileUploads).Error
 
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -191,7 +206,6 @@ type SourceFileUploadResult struct {
 	PayloadCid         string            `json:"payload_cid"`
 	WCid               string            `json:"w_cid"`
 	Status             string            `json:"status"`
-	DealSuccess        bool              `json:"deal_success"`
 	IsMinted           bool              `json:"is_minted"`
 	TokenId            *string           `json:"token_id"`
 	MintAddress        *string           `json:"mint_address"`
@@ -219,7 +233,7 @@ func (a SourceFileUploadResultByUploadAt) Swap(i, j int)      { a[i], a[j] = a[j
 func GetSourceFileUploads(walletId int64, status, fileName, orderBy, is_minted string, isAscend bool, limit, offset int) ([]*SourceFileUploadResult, *int, error) {
 	sql := "select\n" +
 		"a.id source_file_upload_id,d.id car_file_id,a.file_name,b.file_size,a.create_at upload_at,a.duration,\n" +
-		"b.ipfs_url,b.pin_status,d.payload_cid,concat(a.uuid,b.payload_cid) w_cid,a.status,deal_success,\n" +
+		"b.ipfs_url,b.pin_status,d.payload_cid,concat(a.uuid,b.payload_cid) w_cid,a.status,\n" +
 		"e.id is not null is_minted,e.token_id,e.mint_address,e.nft_tx_hash\n" +
 		"from source_file_upload a\n" +
 		"left join source_file b on a.source_file_id=b.id\n" +

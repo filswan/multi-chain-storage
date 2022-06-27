@@ -1,6 +1,7 @@
 package service
 
 import (
+	"math"
 	"multi-chain-storage/common/constants"
 	"multi-chain-storage/models"
 
@@ -18,6 +19,10 @@ func GetDeals2PreSign(signerWalletAddress string) ([]*models.Deal2PreSign, error
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
+	}
+
+	for _, deal2PreSign := range deals2PreSign {
+		deal2PreSign.BatchCount = int(math.Ceil(float64(deal2PreSign.SourceFileUploadCnt) / float64(constants.MAX_WCID_COUNT_IN_TRANSACTION)))
 	}
 
 	return deals2PreSign, nil
@@ -52,7 +57,23 @@ func GetDeals2Sign(signerWalletAddress string) ([]*models.Deal2Sign, error) {
 			}
 
 			if !signed {
-				deal2Sign.BatchNo = append(deal2Sign.BatchNo, i)
+				sourceFileUploads, err := models.GetSourceFileUploadsByCarFileId(deal2Sign.CarFileId, i)
+				if err != nil {
+					logs.GetLogger().Error(err)
+					return nil, err
+				}
+				wCids := []string{}
+				for _, sourceFileUpload := range sourceFileUploads {
+					wCid := sourceFileUpload.Uuid + sourceFileUpload.PayloadCid
+					wCids = append(wCids, wCid)
+				}
+
+				deal2SignBatchInfo := &models.Deal2SignBatchInfo{
+					BatchNo: i,
+					WCid:    wCids,
+				}
+
+				deal2Sign.BatchInfo = append(deal2Sign.BatchInfo, deal2SignBatchInfo)
 			}
 		}
 	}

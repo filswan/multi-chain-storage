@@ -23,7 +23,6 @@ const (
 	SOURCE_FILE_UPLOAD_STATUS_PROCESSING   = "Processing"
 	SOURCE_FILE_UPLOAD_STATUS_PAID         = "Paid"        // create to a car file, then TaskCreated
 	SOURCE_FILE_UPLOAD_STATUS_TASK_CREATED = "TaskCreated" // all deals sent & unlocked, then Success, otherwisse Refundable
-	SOURCE_FILE_UPLOAD_STATUS_UNLOCKED     = "Unlocked"
 	SOURCE_FILE_UPLOAD_STATUS_SUCCESS      = "Success"
 	SOURCE_FILE_UPLOAD_STATUS_REFUNDABLE   = "Refundable"
 	SOURCE_FILE_UPLOAD_STATUS_REFUNDED     = "Refunded"
@@ -72,4 +71,6 @@ const (
 	SYSTEM_PARAM_GAS_LIMIT                 = "GAS_LIMIT"
 	SYSTEM_PARAM_LOCK_TIME                 = "LOCK_TIME"
 	SYSTEM_PARAM_PAY_MULTIPLY_FACTOR       = "PAY_MULTIPLY_FACTOR"
+
+	MAX_WCID_COUNT_IN_TRANSACTION = 20
 )

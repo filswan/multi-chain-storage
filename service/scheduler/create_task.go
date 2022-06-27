@@ -1,7 +1,6 @@
 package scheduler
 
 import (
-	"fmt"
 	"math/big"
 	"multi-chain-storage/common/constants"
 	"multi-chain-storage/config"
@@ -116,14 +115,21 @@ func createTask() (*int, error) {
 	}
 
 	passedMilliSec := currentUtcMilliSec - createdTimeMin
+	maxFileNumPerCar := config.GetConfig().SwanTask.MaxFileNumPerCar
 	createAnyway := false
-	if passedMilliSec >= 24*60*60*1000 || len(srcFiles2Merged) >= config.GetConfig().SwanTask.MaxFileNumPerCar {
+	if passedMilliSec >= 24*60*60*1000 {
+		logs.GetLogger().Info("earliest uploaded file pass one day, create car file")
+		createAnyway = true
+	} else if len(srcFiles2Merged) >= maxFileNumPerCar {
+		logs.GetLogger().Info(len(srcFiles2Merged), " uploaded files >= max files number in a car:", maxFileNumPerCar, ", create car file")
+		createAnyway = true
+	} else if totalSize >= fileSizeMin {
+		logs.GetLogger().Info("total file size:", totalSize, " >= min car file size:", fileSizeMin, ", create car file")
 		createAnyway = true
 	}
 
-	if !createAnyway && totalSize < fileSizeMin {
-		msg := fmt.Sprintf("%d files, source file size:%d is less than min file size:%d", len(srcFiles2Merged), totalSize, fileSizeMin)
-		logs.GetLogger().Info(msg)
+	if !createAnyway {
+		logs.GetLogger().Info("cannot meet conditions to create car file, wait")
 		os.RemoveAll(carSrcDir)
 		return nil, nil
 	}
@@ -139,14 +145,14 @@ func createTask() (*int, error) {
 	if err != nil {
 		logs.GetLogger().Error(err)
 		os.RemoveAll(carSrcDir)
-		os.RemoveAll(carDestDir)
+		//os.RemoveAll(carDestDir)
 		return nil, err
 	}
 
 	err = saveCarInfo2DB(fileDesc, srcFiles2Merged, *maxPrice)
 	if err != nil {
 		os.RemoveAll(carSrcDir)
-		os.RemoveAll(carDestDir)
+		//os.RemoveAll(carDestDir)
 		logs.GetLogger().Error(err)
 		return nil, err
 	}

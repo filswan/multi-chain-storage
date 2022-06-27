@@ -115,7 +115,7 @@ func ScanPolygon4Dao() error {
 					logs.GetLogger().Error(err)
 					return err
 				}
-			} else if strings.HasPrefix(inputDataHex, "4d043ef6") {
+			} else if strings.HasPrefix(inputDataHex, "cc8a4c11") {
 				err = getDaoPreSign(ethClient, inputDataHex, transaction)
 				if err != nil {
 					logs.GetLogger().Error(err)

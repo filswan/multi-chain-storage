@@ -52,7 +52,8 @@ type Deal2PreSign struct {
 
 func GetDeals2PreSign(signerWalletId int64) ([]*Deal2PreSign, error) {
 	var deal2PreSign []*Deal2PreSign
-	sql := "select a.deal_id,ceil(count(*)/?) batch_count,count(*) source_file_upload_cnt from (select a.* from offline_deal a\n" +
+	sql := "select a.deal_id,ceil(count(*)/?) batch_count,count(*) source_file_upload_cnt\n" +
+		"from (select a.* from offline_deal a\n" +
 		"left outer join dao_pre_sign b on a.id=b.offline_deal_id and b.status=? and b.wallet_id_signer=?\n" +
 		"where a.status=? and b.id is null ) a\n" +
 		"left join car_file_source b on a.car_file_id=b.car_file_id\n" +

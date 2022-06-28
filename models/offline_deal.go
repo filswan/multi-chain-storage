@@ -95,19 +95,24 @@ func GetDeals2Sign(signerWalletId int64) ([]*Deal2Sign, error) {
 	return deals2Sign, nil
 }
 
-func GetOfflineDeals2Unlock() ([]*OfflineDeal, error) {
-	var offlineDeals []*OfflineDeal
-	sql := "select a.* from offline_deal a\n" +
+type Deal2Unlock struct {
+	DealId int64 `json:"deal_id"`
+}
+
+func GetDeals2Unlock() ([]*Deal2Unlock, error) {
+	var deals2Unlock []*Deal2Unlock
+	sql := "select a.deal_id from offline_deal a\n" +
 		"left join dao_pre_sign b on a.id=b.offline_deal_id\n" +
-		"where b.source_file_upload_cnt_sign=b.source_file_upload_cnt_total and b.status=? and a.status=?\n"
-	err := database.GetDB().Raw(sql, constants.DAO_PRE_SIGN_STATUS_SUCCESS, constants.OFFLINE_DEAL_STATUS_ACTIVE).Scan(&offlineDeals).Error
+		"where b.source_file_upload_cnt_sign=b.source_file_upload_cnt_total and b.status=? and a.status=?\n" +
+		"group by a.deal_id having count(*)>=?"
+	err := database.GetDB().Raw(sql, constants.DAO_PRE_SIGN_STATUS_SUCCESS, constants.OFFLINE_DEAL_STATUS_ACTIVE, constants.DAO_SIGNATURE_THRESHOLD).Scan(&deals2Unlock).Error
 
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
 	}
 
-	return offlineDeals, nil
+	return deals2Unlock, nil
 }
 
 func GetOfflineDealsNotSuccessBySourceFileUploadId(sourceFileUploadId int64) ([]*OfflineDeal, error) {

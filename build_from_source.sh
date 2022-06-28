@@ -19,8 +19,8 @@ else
     echo "${ENV_FILE_PATH} created"
 fi
 
-cp ./on-chain/contracts/abi/SwanPayment.json $CONF_FILE_DIR_DEST/SwanPayment.json
-cp ./on-chain/contracts/abi/FilswanOracle.json $CONF_FILE_DIR_DEST/FilswanOracle.json
+cp ./on-chain/contracts/abi/SwanPayment.json $CONF_FILE_DIR/SwanPayment.json
+cp ./on-chain/contracts/abi/FilswanOracle.json $CONF_FILE_DIR/FilswanOracle.json
 
 git submodule update --init --recursive
 make ffi

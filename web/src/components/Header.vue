@@ -7,9 +7,9 @@
                     <span v-else @click="handleSetLanguage('en')">中</span>
                 </div>
                 <div :class="{'online': addrChild, 'feh-metamask': 1==1}">
-                    <div v-if="!addrChild" class="logged_in">
+                    <div v-if="!addrChild" class="logged_in filter_status">
                         <el-tooltip class="item" effect="dark" :content="$t('fs3Login.toptip_03')" placement="bottom">
-                            <img src="@/assets/images/metamask.png" class="resno" @click="metamaskLogin" />
+                            <img src="@/assets/images/metamask.png" @click="metamaskLogin" />
                         </el-tooltip>
                         <span class="text" @click="metamaskLogin">{{$t('fs3.Connect_Wallet')}}</span>
                     </div>

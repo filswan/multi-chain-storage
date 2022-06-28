@@ -94,7 +94,8 @@ func ScanPolygon4Payment() error {
 			return err
 		}
 
-		for _, vLog := range vlogs {
+		for i, vLog := range vlogs {
+			logs.GetLogger().Info("i:", i, ", total length:", len(vlogs))
 			transaction, isPending, err := ethClient.TransactionByHash(context.Background(), vLog.TxHash)
 			if err != nil {
 				logs.GetLogger().Error(err)
@@ -174,8 +175,8 @@ func getPayment(ethClient *ethclient.Client, inputDataHex string, transaction *t
 
 	wCid := params[0]
 	if len(wCid) <= 1 {
-		err = fmt.Errorf("wCid is empty")
-		return err
+		logs.GetLogger().Info("wCid is empty, wCid:", wCid)
+		return nil
 	}
 
 	wCid = wCid[1:]
@@ -186,7 +187,8 @@ func getPayment(ethClient *ethclient.Client, inputDataHex string, transaction *t
 		return err
 	}
 
-	err = models.CreateTransaction4PayByWCid(wCid, transaction.Hash().String(), lockTime)
+	txHash := transaction.Hash().String()
+	err = models.CreateTransaction4PayByWCid(wCid, txHash, lockTime)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err

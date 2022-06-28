@@ -174,6 +174,12 @@ func unlockDeal(dealId int64, ethClient *ethclient.Client, swanPaymentTransactor
 		return nil, err
 	}
 
+	if txReceipt == nil {
+		err := fmt.Errorf("unlock failed, tx hash:%s", txHash)
+		logs.GetLogger().Error(getLog(dealId, err.Error()))
+		return nil, err
+	}
+
 	if txReceipt.Status != uint64(1) {
 		err := fmt.Errorf("unlock failed, tx hash:%s, status:%d", txHash, txReceipt.Status)
 		logs.GetLogger().Error(getLog(dealId, err.Error()))

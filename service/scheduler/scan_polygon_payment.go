@@ -94,9 +94,11 @@ func ScanPolygon4Payment() error {
 			return err
 		}
 
-		for i, vLog := range vlogs {
-			logs.GetLogger().Info("i:", i, ", total length:", len(vlogs))
-			transaction, isPending, err := ethClient.TransactionByHash(context.Background(), vLog.TxHash)
+		for j, vLog := range vlogs {
+			logs.GetLogger().Info("j:", j, ", total length:", len(vlogs))
+			txHash := vLog.TxHash
+			logs.GetLogger().Info("tx hash:", txHash)
+			transaction, isPending, err := ethClient.TransactionByHash(context.Background(), txHash)
 			if err != nil {
 				logs.GetLogger().Error(err)
 				return err

@@ -277,8 +277,8 @@ func getRefund(ethClient *ethclient.Client, inputDataHex string, transaction *ty
 	}
 
 	if len(method.Params) <= 0 {
-		err = fmt.Errorf("method.Params is empty")
-		return err
+		logs.GetLogger().Info("method.Params is empty")
+		return nil
 	}
 
 	wCidsStr := strings.TrimRight(strings.TrimLeft(method.Params[0].Value, "["), "]")

@@ -3,7 +3,6 @@ package scheduler
 import (
 	"context"
 	"encoding/hex"
-	"fmt"
 	"io/ioutil"
 	"math/big"
 	"multi-chain-storage/common/constants"
@@ -159,9 +158,8 @@ func getDaoPreSign(ethClient *ethclient.Client, inputDataHex string, transaction
 	}
 
 	if len(method.Params) < 4 {
-		err = fmt.Errorf("method.Params has not enough parameters,len(method.Params)=%d", len(method.Params))
-		logs.GetLogger().Error(err)
-		return err
+		logs.GetLogger().Info("method.Params has not enough parameters,len(method.Params)=", len(method.Params))
+		return nil
 	}
 
 	dealIdStr := method.Params[0].Value
@@ -176,14 +174,14 @@ func getDaoPreSign(ethClient *ethclient.Client, inputDataHex string, transaction
 
 	dealId, err := strconv.ParseInt(dealIdStr, 10, 32)
 	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
+		logs.GetLogger().Info(err)
+		return nil
 	}
 
 	batchCount, err := strconv.Atoi(batchCountStr)
 	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
+		logs.GetLogger().Info(err)
+		return nil
 	}
 
 	txHash := transaction.Hash().String()
@@ -214,9 +212,8 @@ func getDaoSignature(ethClient *ethclient.Client, inputDataHex string, transacti
 	}
 
 	if len(method.Params) < 4 {
-		err = fmt.Errorf("method.Params has not enough parameters,len(method.Params)=%d", len(method.Params))
-		logs.GetLogger().Error(err)
-		return err
+		logs.GetLogger().Info("method.Params has not enough parameters,len(method.Params)=", len(method.Params))
+		return nil
 	}
 
 	dealIdStr := method.Params[0].Value
@@ -236,14 +233,14 @@ func getDaoSignature(ethClient *ethclient.Client, inputDataHex string, transacti
 
 	dealId, err := strconv.ParseInt(dealIdStr, 10, 32)
 	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
+		logs.GetLogger().Info(err)
+		return nil
 	}
 
 	batchNo, err := strconv.Atoi(batchNoStr)
 	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
+		logs.GetLogger().Info(err)
+		return nil
 	}
 
 	txHash := transaction.Hash().String()

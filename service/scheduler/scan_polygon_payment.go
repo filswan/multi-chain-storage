@@ -163,14 +163,14 @@ func getPayment(ethClient *ethclient.Client, inputDataHex string, transaction *t
 	}
 
 	if len(method.Params) <= 0 {
-		err = fmt.Errorf("method.Params is empty")
-		return err
+		logs.GetLogger().Info("method.Params is empty")
+		return nil
 	}
 
 	params := strings.Split(method.Params[0].Value, " ")
 	if len(params) < 6 {
-		err = fmt.Errorf("not enough params")
-		return err
+		logs.GetLogger().Info("not enough params")
+		return nil
 	}
 
 	wCid := params[0]
@@ -183,8 +183,8 @@ func getPayment(ethClient *ethclient.Client, inputDataHex string, transaction *t
 	lockTimeStr := params[3]
 	lockTime, err := strconv.ParseInt(lockTimeStr, 10, 32)
 	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
+		logs.GetLogger().Info(err)
+		return nil
 	}
 
 	txHash := transaction.Hash().String()

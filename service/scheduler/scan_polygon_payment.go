@@ -94,9 +94,10 @@ func ScanPolygon4Payment() error {
 			return err
 		}
 
-		for i, vLog := range vlogs {
-			logs.GetLogger().Info("i:", i, ", total length:", len(vlogs))
-			transaction, isPending, err := ethClient.TransactionByHash(context.Background(), vLog.TxHash)
+		for j, vLog := range vlogs {
+			txHash := vLog.TxHash
+			logs.GetLogger().Info("j:", j, ", total length:", len(vlogs), ", tx hash:", txHash)
+			transaction, isPending, err := ethClient.TransactionByHash(context.Background(), txHash)
 			if err != nil {
 				logs.GetLogger().Error(err)
 				return err
@@ -277,8 +278,8 @@ func getRefund(ethClient *ethclient.Client, inputDataHex string, transaction *ty
 	}
 
 	if len(method.Params) <= 0 {
-		err = fmt.Errorf("method.Params is empty")
-		return err
+		logs.GetLogger().Info("method.Params is empty")
+		return nil
 	}
 
 	wCidsStr := strings.TrimRight(strings.TrimLeft(method.Params[0].Value, "["), "]")

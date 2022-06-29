@@ -51,7 +51,9 @@ func GetSourceFileUploadsByCarFileId(carFileId int64, batchNo int) ([]*SourceFil
 	sql := "select b.*,c.payload_cid from car_file_source a, source_file_upload b, source_file c\n" +
 		"where a.car_file_id=? and a.source_file_upload_id=b.id and b.source_file_id=c.id\n" +
 		"order by b. id limit ? offset ?"
-	err := database.GetDB().Raw(sql, carFileId, constants.MAX_WCID_COUNT_IN_TRANSACTION, batchNo).Scan(&sourceFileUploads).Error
+
+	offset := constants.MAX_WCID_COUNT_IN_TRANSACTION * batchNo
+	err := database.GetDB().Raw(sql, carFileId, constants.MAX_WCID_COUNT_IN_TRANSACTION, offset).Scan(&sourceFileUploads).Error
 
 	if err != nil {
 		logs.GetLogger().Error(err)

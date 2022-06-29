@@ -148,20 +148,20 @@ func getPayment4Transaction(ethClient *ethclient.Client, inputDataHex string, tr
 	}
 
 	if len(method.Params) <= 0 {
-		err = fmt.Errorf("method.Params is empty")
-		return err
+		logs.GetLogger().Info("method.Params is empty")
+		return nil
 	}
 
 	params := strings.Split(method.Params[0].Value, " ")
 	if len(params) < 6 {
-		err = fmt.Errorf("not enough params")
-		return err
+		logs.GetLogger().Info("not enough params")
+		return nil
 	}
 
 	wCid := params[0]
 	if len(wCid) <= 1 {
-		err = fmt.Errorf("wCid is empty")
-		return err
+		logs.GetLogger().Info("wCid is empty")
+		return nil
 	}
 
 	wCid = wCid[1:]
@@ -169,7 +169,7 @@ func getPayment4Transaction(ethClient *ethclient.Client, inputDataHex string, tr
 	lockTime, err := strconv.ParseInt(lockTimeStr, 10, 32)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return err
+		return nil
 	}
 
 	err = models.CreateTransaction4PayByWCid(wCid, transaction.Hash().String(), lockTime)

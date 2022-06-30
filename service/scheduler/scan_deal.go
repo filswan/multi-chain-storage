@@ -69,7 +69,7 @@ func updateOfflineDealStatusAndLog() error {
 				offlineDeal.Status = constants.OFFLINE_DEAL_STATUS_ACTIVE
 			}
 
-			if dealInfo.DealId != 0 {
+			if dealInfo.DealId > 0 {
 				offlineDeal.DealId = &dealInfo.DealId
 				offlineDeal.Status = constants.OFFLINE_DEAL_STATUS_ACTIVE
 			}

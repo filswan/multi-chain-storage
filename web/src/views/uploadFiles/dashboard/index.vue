@@ -294,7 +294,7 @@
           </el-table-column>
           <el-table-column prop="upload_at" :label="$t('uploadFile.upload_time')" width="120" sortable="custom">
             <template slot-scope="scope">
-              {{ scope.row.upload_at }}
+              {{ scope.row.upload_at }} <small style="display: block;">({{scope.row.dataUnit}})</small>
             </template>
           </el-table-column>
           <el-table-column prop="active" min-width="100" :label="$t('uploadFile.payment')">
@@ -1074,9 +1074,15 @@ export default {
                 item.payloadAct = false
                 item.status_file = false
                 item.file_size_byte = _this.byteChange(item.file_size)
+
+                let dataTime = new Date(item.upload_at * 1000)
+                let dataUnitArray = String(dataTime).split(" ")
+                item.dataUnit = dataUnitArray[5]?dataUnitArray[5]:'-'
+
                 item.upload_at = item.upload_at
                   ? moment(new Date(parseInt(item.upload_at * 1000))).format("YYYY-MM-DD HH:mm:ss")
                   : "-";
+
                 if(item.offline_deal){
                   item.offline_deal.map(child => {
                     if(child.status == 'Success'){

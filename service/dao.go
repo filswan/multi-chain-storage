@@ -145,7 +145,7 @@ func WriteDaoSignature(txHash string, recipientWalletAddress string, dealId int6
 	if offlineDeal == nil {
 		err := fmt.Errorf("offline deal with deal id: %d not exists", dealId)
 		logs.GetLogger().Error(err)
-		return err
+		return nil
 	}
 
 	daoSignature, err := models.GetDaoSignaturesByOfflineDealIdTxHash(offlineDeal.Id, txHash)

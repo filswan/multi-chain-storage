@@ -127,7 +127,17 @@
             <h1>{{$t('uploadFile.Fail')}}!</h1>
             <h3>{{$t('uploadFile.FailTIP')}}</h3>
             <a :href="'https://mumbai.polygonscan.com/tx/'+txHash" target="_blank">{{txHash}}</a>
-            <a class="a-close" @click="failTransaction=false">{{$t('uploadFile.CLOSE')}}</a>
+            <a class="a-close" @click="failClose">{{$t('uploadFile.CLOSE')}}</a>
+        </el-dialog>
+
+        <el-dialog title="" :visible.sync="waitTransaction" :width="width"
+            :before-close="failClose"
+            custom-class="completeDia">
+            <img src="@/assets/images/waiting.png" class="resno" />
+            <h1>{{$t('uploadFile.waiting')}}!</h1>
+            <h3>{{$t('uploadFile.waitingTIP')}}</h3>
+            <a :href="'https://mumbai.polygonscan.com/tx/'+txHash" target="_blank">{{txHash}}</a>
+            <a class="a-close" @click="failClose">{{$t('uploadFile.CLOSE')}}</a>
         </el-dialog>
 
         <el-dialog
@@ -240,6 +250,7 @@
                 },
                 finishTransaction: false,
                 failTransaction: false,
+                waitTransaction: false,
                 txHash: '',
                 fileUploadVisible: false,
                 paymentPopup: false,
@@ -492,8 +503,15 @@
                     // console.error
                     _this.loading = false
                     _this.loadMetamaskPay = false
-                    if(!_this.finishTransaction) _this.failTransaction = true
+                    if(_this.finishTransaction) return false
+                    if(_this.txHash) _this.waitTransaction = true
+                    else _this.failTransaction = true
                 }); 
+            },
+            failClose(){
+                this.failTransaction = false
+                this.waitTransaction = false
+                this.txHash = ''
             },
             checkTransaction(txHash, resData, lockObj) {
                 let _this = this
@@ -515,6 +533,7 @@
             },
             finishClose(){
                 this.finishTransaction = false
+                this.txHash = ''
                 this.$emit('getUploadDialog', false, true)
             },
             // 文件上传

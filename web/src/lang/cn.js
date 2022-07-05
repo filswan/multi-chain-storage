@@ -502,6 +502,8 @@ export default {
         CLOSE: "关闭",
         Fail: '转账失败',
         FailTIP: '您的交易失败了。有关更多细节，请查看交易历史记录。',
+        waiting: '等待',
+        waitingTIP: '请稍后在我的文件中确认文件和支付状态。有关更多细节，请查看交易历史纪录。',
         until: '请等待任务分配给存储提供者。',
         OK: '确定',
         Deal_Detail: '交易详情',

@@ -401,6 +401,16 @@
             <a class="a-close" @click="failClose">{{$t('uploadFile.CLOSE')}}</a>
         </el-dialog>
 
+        <el-dialog title="" :visible.sync="waitTransaction" :width="width"
+            :before-close="failClose"
+            custom-class="completeDia">
+            <img src="@/assets/images/waiting.png" class="resno" />
+            <h1>{{$t('uploadFile.waiting')}}!</h1>
+            <h3>{{$t('uploadFile.waitingTIP')}}</h3>
+            <a :href="'https://mumbai.polygonscan.com/tx/'+txHash" target="_blank">{{txHash}}</a>
+            <a class="a-close" @click="failClose">{{$t('uploadFile.CLOSE')}}</a>
+        </el-dialog>
+
         <el-dialog
           title="Tips"
           :visible.sync="wrongVisible" :show-close="false"
@@ -425,7 +435,7 @@
             <a :href="'https://mumbai.polygonscan.com/tx/'+txHash" target="_blank">{{txHash}}</a>
             <br />
             <h3>{{$t('uploadFile.View_Your_NFT_Note')}}</h3>
-            <a class="a-close" @click="mintTransaction=false">{{$t('uploadFile.CLOSE')}}</a>
+            <a class="a-close" @click="failClose">{{$t('uploadFile.CLOSE')}}</a>
         </el-dialog>
 
         <mint-tip v-if="mineVisible" :mineVisible="mineVisible" :mintRow="mintRow" @getMintDialog="getMintDialog"></mint-tip>
@@ -518,6 +528,7 @@ export default {
       finishTransaction: false,
       mintTransaction: false,
       failTransaction: false,
+      waitTransaction: false,
       loadMetamaskPay: false,
       payRow: {},
       refundPow: {},
@@ -647,7 +658,9 @@ export default {
           .on('error', function(error){
               console.log('refund error console:', error)
               _this.loading = false
-              if(!_this.finishTransaction) _this.failTransaction = true
+              if(_this.finishTransaction) return false
+              if(_this.txHash) _this.waitTransaction = true
+              else _this.failTransaction = true
           }); 
         }catch (err){
           console.log(err)
@@ -762,7 +775,9 @@ export default {
             // console.error
             _this.loading = false
             _this.loadMetamaskPay = false
-            if(!_this.finishTransaction) _this.failTransaction = true
+            if(_this.finishTransaction) return false
+            if(_this.txHash) _this.waitTransaction = true
+            else _this.failTransaction = true
         }); 
     },
     checkTransaction(txHash, cid, resData, lockObj) {
@@ -800,6 +815,8 @@ export default {
     },
     failClose(){
         this.failTransaction = false
+        this.waitTransaction = false
+        this.mintTransaction = false
         this.txHash = ''
     },
     getDialog(dialog, rows){
@@ -1077,7 +1094,7 @@ export default {
 
                 let dataTime = new Date(item.upload_at * 1000)
                 let dataUnitArray = String(dataTime).split(" ")
-                item.dataUnit = dataUnitArray[5]?dataUnitArray[5]:'-'
+                item.dataUnit = dataUnitArray[5]?dataUnitArray[5].replace(/0/g,""):'-'
 
                 item.upload_at = item.upload_at
                   ? moment(new Date(parseInt(item.upload_at * 1000))).format("YYYY-MM-DD HH:mm:ss")

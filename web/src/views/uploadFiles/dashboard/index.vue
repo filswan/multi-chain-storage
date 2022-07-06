@@ -1094,7 +1094,20 @@ export default {
 
                 let dataTime = new Date(item.upload_at * 1000)
                 let dataUnitArray = String(dataTime).split(" ")
-                item.dataUnit = dataUnitArray[5]?dataUnitArray[5].replace(/0/g,""):'-'
+                switch(dataUnitArray[5]) {
+                  case 'GMT+1000':
+                    item.dataUnit = 'GMT+10'
+                    break;
+                  case 'GMT-1000':
+                    item.dataUnit = 'GMT-10'
+                    break;
+                  case 'GMT+0000':
+                    item.dataUnit = 'GMT+0'
+                    break;
+                  default:
+                    item.dataUnit = dataUnitArray[5]?dataUnitArray[5].replace(/0/g,""):'-'
+                    break;
+                }
 
                 item.upload_at = item.upload_at
                   ? moment(new Date(parseInt(item.upload_at * 1000))).format("YYYY-MM-DD HH:mm:ss")

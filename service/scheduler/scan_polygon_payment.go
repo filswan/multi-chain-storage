@@ -250,6 +250,11 @@ func getUnlock(ethClient *ethclient.Client, inputDataHex string, transaction *ty
 		return err
 	}
 
+	if offlineDeal == nil {
+		logs.GetLogger().Info("deal with deal id:", dealId, " not exists")
+		return nil
+	}
+
 	err = models.UpdateOfflineDealUnlockInfo(offlineDeal.Id, txHash, unlockAt)
 	if err != nil {
 		logs.GetLogger().Error(err)

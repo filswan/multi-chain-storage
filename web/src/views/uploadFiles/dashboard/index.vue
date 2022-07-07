@@ -405,7 +405,7 @@
             :before-close="failClose"
             custom-class="completeDia">
             <img src="@/assets/images/waiting.png" class="resno" />
-            <h1>{{$t('uploadFile.waiting')}}!</h1>
+            <h1>{{$t('uploadFile.waiting')}}</h1>
             <h3>{{$t('uploadFile.waitingTIP')}}</h3>
             <a :href="'https://mumbai.polygonscan.com/tx/'+txHash" target="_blank">{{txHash}}</a>
             <a class="a-close" @click="failClose">{{$t('uploadFile.CLOSE')}}</a>

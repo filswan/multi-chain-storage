@@ -497,7 +497,7 @@ export default {
         CLOSE:"Close",
         Fail: 'Fail',
         FailTIP: 'Your transaction has failed. Check the transaction history for more details.',
-        waiting: 'Waiting',
+        waiting: 'Waiting...',
         waitingTIP: 'Please check the status and payment on My Files later. Check the transaction history for more details.',
         until: 'Please wait until the task is assigned to a storage provider.',
         OK: 'OK',

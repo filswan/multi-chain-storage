@@ -140,6 +140,7 @@ create table offline_deal (
     on_chain_status  varchar(100),
     unlock_tx_hash   varchar(100),
     unlock_at        bigint,
+    note             text,
     create_at        bigint        not null,
     update_at        bigint        not null,
     primary key pk_offline_deal(id),
@@ -259,3 +260,7 @@ create table dao_signature_source_file_upload (
 #--alter table transaction add refund_amount varchar(100);
 #--alter table transaction add  refund_at bigint;
 
+
+
+
+#--alter table offline_deal add note             text;

@@ -161,6 +161,7 @@ func unlockDeal(dealId int64, ethClient *ethclient.Client, swanPaymentTransactor
 	if tx != nil {
 		txHash = tx.Hash().Hex()
 	}
+	logs.GetLogger().Info("txHash:", txHash)
 
 	logs.GetLogger().Info(getLog(dealId, txHash))
 	if err != nil {

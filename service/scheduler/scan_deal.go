@@ -46,6 +46,16 @@ func updateOfflineDealStatusAndLog() error {
 		dealInfo, err := lotusClient.LotusClientGetDealInfo(offlineDeal.DealCid)
 		if err != nil {
 			logs.GetLogger().Error(err)
+
+			if strings.Contains(err.Error(), "datastore: key not found") {
+				offlineDeal.Status = constants.OFFLINE_DEAL_STATUS_FAILED
+				offlineDeal.UpdateAt = libutils.GetCurrentUtcSecond()
+				err = database.SaveOne(offlineDeal)
+				if err != nil {
+					logs.GetLogger().Error(err)
+					continue
+				}
+			}
 			continue
 		}
 

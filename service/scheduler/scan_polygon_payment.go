@@ -3,7 +3,6 @@ package scheduler
 import (
 	"context"
 	"encoding/hex"
-	"fmt"
 	"io/ioutil"
 	"math/big"
 	"multi-chain-storage/common/constants"
@@ -216,8 +215,8 @@ func getUnlock(ethClient *ethclient.Client, inputDataHex string, transaction *ty
 	}
 
 	if len(method.Params) <= 0 {
-		err = fmt.Errorf("method.Params is empty")
-		return err
+		logs.GetLogger().Info("method.Params is empty")
+		return nil
 	}
 
 	dealIdStr := method.Params[0].Value
@@ -231,8 +230,8 @@ func getUnlock(ethClient *ethclient.Client, inputDataHex string, transaction *ty
 
 	dealId, err := strconv.ParseInt(dealIdStr, 10, 64)
 	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
+		logs.GetLogger().Info(err)
+		return nil
 	}
 
 	block, err := ethClient.BlockByNumber(context.Background(), txReceipt.BlockNumber)

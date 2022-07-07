@@ -23,6 +23,7 @@ type OfflineDeal struct {
 	OnChainStatus  *string `json:"on_chain_status"`
 	UnlockTxHash   *string `json:"unlock_tx_hash"`
 	UnlockAt       *int64  `json:"unlock_at"`
+	Note           *string `json:"note"`
 	CreateAt       int64   `json:"create_at"`
 	UpdateAt       int64   `json:"update_at"`
 }

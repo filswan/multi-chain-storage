@@ -48,7 +48,9 @@ func updateOfflineDealStatusAndLog() error {
 			logs.GetLogger().Error(err)
 
 			if strings.Contains(err.Error(), "datastore: key not found") {
+				note := err.Error()
 				offlineDeal.Status = constants.OFFLINE_DEAL_STATUS_FAILED
+				offlineDeal.Note = &note
 				offlineDeal.UpdateAt = libutils.GetCurrentUtcSecond()
 				err = database.SaveOne(offlineDeal)
 				if err != nil {

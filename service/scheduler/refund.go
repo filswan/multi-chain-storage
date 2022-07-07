@@ -109,6 +109,12 @@ func refundSourceFiles(ethClient *ethclient.Client, wCids []string, swanPaymentT
 		return err
 	}
 
+	if txReceipt == nil {
+		err := fmt.Errorf("unlock failed, wCids:%s, tx hash:%s,", wCids, txHash)
+		logs.GetLogger().Error(err.Error())
+		return err
+	}
+
 	if txReceipt.Status != uint64(1) {
 		err := fmt.Errorf("unlock failed, wCids:%s, tx hash:%s, tx receipt status:%d", wCids, txHash, txReceipt.Status)
 		logs.GetLogger().Error(err.Error())

@@ -160,12 +160,13 @@ func CheckTx(client *ethclient.Client, txHash common.Hash) (*types.Receipt, erro
 	txHashMaxCheckCount := int(txHashMaxCheckSecond / checkIntervalSecond.Seconds())
 
 	var err error
+	var txReceipt *types.Receipt
 	for i := 0; i < txHashMaxCheckCount; i++ {
 		time.Sleep(checkIntervalSecond * time.Second)
 
-		receipt, err := client.TransactionReceipt(context.Background(), txHash)
+		txReceipt, err = client.TransactionReceipt(context.Background(), txHash)
 		if err == nil {
-			return receipt, nil
+			return txReceipt, nil
 		}
 
 		if err != ethereum.NotFound {

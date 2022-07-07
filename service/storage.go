@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"mime/multipart"
 	"multi-chain-storage/common/constants"
+	"multi-chain-storage/database"
 	"net/url"
 	"strings"
 
@@ -106,11 +107,21 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType 
 			return nil, err
 		}
 	} else {
-		// remove the current copy of file
-		err = os.Remove(srcFilepath)
-		if err != nil {
-			logs.GetLogger().Error(err)
-			return nil, err
+		if !libutils.IsFileExistsFullPath(sourceFile.ResourceUri) {
+			sourceFile.ResourceUri = srcFilepath
+			sourceFile.UpdateAt = currentUtcMilliSec
+			err := database.SaveOne(sourceFile)
+			if err != nil {
+				logs.GetLogger().Error(err)
+				return nil, err
+			}
+		} else {
+			// remove the current copy of file
+			err = os.Remove(srcFilepath)
+			if err != nil {
+				logs.GetLogger().Error(err)
+				return nil, err
+			}
 		}
 	}
 

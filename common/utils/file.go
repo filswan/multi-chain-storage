@@ -7,7 +7,7 @@ import (
 	"os"
 )
 
-func DownloadFile(destFilepath string, sourceUrl string) error {
+func DownloadFile(sourceUrl string, destFilepath string) error {
 	// Create the file
 	out, err := os.Create(destFilepath)
 	if err != nil {

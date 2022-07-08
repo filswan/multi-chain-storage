@@ -77,6 +77,7 @@ func createTask() (*int, error) {
 		bytesCopied, err := libutils.CopyFile(srcFileUpload.ResourceUri, srcFilepathTemp)
 		if err != nil {
 			logs.GetLogger().Info(err)
+			os.Remove(srcFilepathTemp)
 			logs.GetLogger().Info("downloading ", srcFileUpload.IpfsUrl, " to ", srcFilepathTemp)
 			err = utils.DownloadFile(srcFileUpload.IpfsUrl, srcFilepathTemp)
 			if err != nil {

@@ -264,3 +264,5 @@ create table dao_signature_source_file_upload (
 
 
 #--alter table offline_deal add note             text;
+#--alter table mcs_v2.dao_signature modify wallet_id_recipient bigint;
+

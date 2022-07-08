@@ -3,6 +3,7 @@ package scheduler
 import (
 	"math/big"
 	"multi-chain-storage/common/constants"
+	"multi-chain-storage/common/utils"
 	"multi-chain-storage/config"
 	"multi-chain-storage/database"
 	"multi-chain-storage/models"
@@ -73,12 +74,18 @@ func createTask() (*int, error) {
 	var srcFiles2Merged []*models.SourceFileUploadNeed2Car
 	for _, srcFileUpload := range srcFileUploads {
 		srcFilepathTemp := filepath.Join(carSrcDir, filepath.Base(srcFileUpload.ResourceUri))
-
 		bytesCopied, err := libutils.CopyFile(srcFileUpload.ResourceUri, srcFilepathTemp)
 		if err != nil {
-			logs.GetLogger().Error(err)
+			logs.GetLogger().Info(err)
 			os.Remove(srcFilepathTemp)
-			continue
+			logs.GetLogger().Info("downloading ", srcFileUpload.IpfsUrl, " to ", srcFilepathTemp)
+			err = utils.DownloadFile(srcFileUpload.IpfsUrl, srcFilepathTemp)
+			if err != nil {
+				logs.GetLogger().Error(err)
+				os.Remove(srcFilepathTemp)
+				continue
+			}
+			logs.GetLogger().Info("downloaded ", srcFileUpload.IpfsUrl, " to ", srcFilepathTemp)
 		}
 
 		maxPriceTemp, err := getMaxPrice(srcFileUpload.FileSize, srcFileUpload.PayAmount, fileCoinPriceInUsdc)

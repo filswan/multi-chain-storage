@@ -48,7 +48,7 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType 
 	filename := srcFile.Filename
 	if libutils.IsFileExists(srcDir, filename) {
 		for i := 0; ; i++ {
-			filename = srcFile.Filename + strconv.Itoa(i)
+			filename = srcFile.Filename + "_" + strconv.Itoa(i)
 			if !libutils.IsFileExists(srcDir, filename) {
 				break
 			}
@@ -116,11 +116,13 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType 
 				return nil, err
 			}
 		} else {
-			// remove the current copy of file
-			err = os.Remove(srcFilepath)
-			if err != nil {
-				logs.GetLogger().Error(err)
-				return nil, err
+			if !strings.EqualFold(sourceFile.ResourceUri, srcFilepath) {
+				// remove the current copy of file
+				err = os.Remove(srcFilepath)
+				if err != nil {
+					logs.GetLogger().Error(err)
+					return nil, err
+				}
 			}
 		}
 	}

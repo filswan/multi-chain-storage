@@ -1092,9 +1092,10 @@ export default {
                 item.status_file = false
                 item.file_size_byte = _this.byteChange(item.file_size)
 
-                let dataTime = new Date(item.upload_at * 1000)
-                let dataUnitArray = String(dataTime).split(" ")
-                switch(dataUnitArray[5]) {
+                let dataTime = new Date(item.upload_at * 1000) + "" //将时间格式转为字符串
+                let dataUnitIndex = dataTime.indexOf('GMT')
+                let dataUnitArray = dataTime.substring(dataUnitIndex, dataUnitIndex+8);
+                switch(dataUnitArray) {
                   case 'GMT+1000':
                     item.dataUnit = 'GMT+10'
                     break;
@@ -1105,7 +1106,7 @@ export default {
                     item.dataUnit = 'GMT+0'
                     break;
                   default:
-                    item.dataUnit = dataUnitArray[5]?dataUnitArray[5].replace(/0/g,""):'-'
+                    item.dataUnit = dataUnitArray?dataUnitArray.replace(/0/g,""):'-'
                     break;
                 }
 

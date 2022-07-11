@@ -79,6 +79,7 @@
 <script>
 const ethereum = window.ethereum;
 // import bus from './bus';
+import NCWeb3 from "@/utils/web3";
 import * as myAjax from "@/api/login";
 import axios from 'axios'
 export default {
@@ -294,7 +295,17 @@ export default {
             return null;
         },
         metamaskLogin() {
-            this.$router.push({ path: '/metamask_login' })
+            // this.$router.push({ path: '/metamask_login' })
+            let _this = this
+            if(!_this.metaAddress || _this.metaAddress == 'undefined'){
+                NCWeb3.Init(addr=>{
+                    _this.$nextTick(() => {
+                        _this.$store.dispatch('setMetaAddress', addr)
+                        _this.$emit("getMetamaskLogin", true)
+                    })
+                })
+                return false
+            }
         },
         // Wallet address
         signFun(redirect){

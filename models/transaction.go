@@ -251,6 +251,12 @@ func UpdateTransactionRefundInfo(wCid, refundTxHash string, refundAt int64) erro
 		return err
 	}
 
+	offlineDeals, err := GetOfflineDealsBySourceFileUploadId(sourceFileUpload.Id)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
 	offlineDealsNotSuccess, err := GetOfflineDealsNotSuccessBySourceFileUploadId(sourceFileUpload.Id)
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -258,7 +264,7 @@ func UpdateTransactionRefundInfo(wCid, refundTxHash string, refundAt int64) erro
 	}
 
 	sourceFileStatus := constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDED
-	if len(offlineDealsNotSuccess) == 0 {
+	if len(offlineDeals) > 0 && len(offlineDealsNotSuccess) == 0 {
 		sourceFileStatus = constants.SOURCE_FILE_UPLOAD_STATUS_SUCCESS
 	}
 

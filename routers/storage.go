@@ -20,6 +20,7 @@ import (
 func Storage(router *gin.RouterGroup) {
 	router.POST("/ipfs/upload", UploadFile)
 	router.GET("/tasks/deals", GetDeals)
+	router.GET("/source_file_upload/:source_file_upload_id", GetSourceFileUpload)
 	router.GET("/deal/detail/:deal_id", GetDealFromFlink)
 	router.GET("/deal/log/:offline_deal_id", GetDealLogs)
 	router.POST("/mint/info", RecordMintInfo)
@@ -137,6 +138,44 @@ func GetDeals(c *gin.Context) {
 	c.JSON(http.StatusOK, common.CreateSuccessResponse(gin.H{
 		"source_file_upload": sourceFileUploads,
 		"total_record_count": *totalRecordCount,
+	}))
+}
+
+func GetSourceFileUpload(c *gin.Context) {
+	logs.GetLogger().Info("ip:", c.ClientIP(), ",port:", c.Request.URL.Port())
+
+	var sourceFileUploadIdStr = strings.Trim(c.Params.ByName("source_file_upload_id"), " ")
+	if sourceFileUploadIdStr == "" {
+		err := fmt.Errorf("source_file_upload_id is required")
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_NULL, err.Error()))
+		return
+	}
+
+	sourceFileUploadId, err := strconv.ParseInt(sourceFileUploadIdStr, 10, 32)
+	if err != nil {
+		err := fmt.Errorf("source_file_upload_id must be a valid number")
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_WRONG_TYPE, err.Error()))
+		return
+	}
+
+	if sourceFileUploadId <= 0 {
+		err := fmt.Errorf("source_file_upload_id must be greater than 0")
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_INVALID_VALUE, err.Error()))
+		return
+	}
+
+	sourceFileUpload, err := service.GetSourceFileUpload(sourceFileUploadId)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_INTERNAL, err.Error()))
+		return
+	}
+
+	c.JSON(http.StatusOK, common.CreateSuccessResponse(gin.H{
+		"source_file_upload": sourceFileUpload,
 	}))
 }
 

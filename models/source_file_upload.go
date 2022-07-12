@@ -207,7 +207,6 @@ type SourceFileUploadResult struct {
 	IpfsUrl            string            `json:"ipfs_url"`
 	PinStatus          string            `json:"pin_status"`
 	PayAmount          string            `json:"pay_amount"`
-	WCid               string            `json:"w_cid"`
 	Status             string            `json:"status"`
 	IsMinted           bool              `json:"is_minted"`
 	TokenId            *string           `json:"token_id"`
@@ -235,13 +234,11 @@ func (a SourceFileUploadResultByUploadAt) Swap(i, j int)      { a[i], a[j] = a[j
 
 func GetSourceFileUploads(walletId int64, status, fileName, orderBy, is_minted string, isAscend bool, limit, offset int) ([]*SourceFileUploadResult, *int, error) {
 	sql := "select\n" +
-		"a.id source_file_upload_id,d.id car_file_id,a.file_name,b.file_size,a.create_at upload_at,a.duration,\n" +
-		"b.ipfs_url,b.pin_status,f.pay_amount,concat(a.uuid,b.payload_cid) w_cid,a.status,\n" +
+		"a.id source_file_upload_id,a.file_name,b.file_size,a.create_at upload_at,a.duration,\n" +
+		"b.ipfs_url,b.pin_status,f.pay_amount,a.status,\n" +
 		"e.id is not null is_minted,e.token_id,e.mint_address,e.nft_tx_hash\n" +
 		"from source_file_upload a\n" +
 		"left join source_file b on a.source_file_id=b.id\n" +
-		"left outer join car_file_source c on a.id=c.source_file_upload_id\n" +
-		"left outer join car_file d on c.car_file_id=d.id\n" +
 		"left outer join source_file_mint e on a.id=e.source_file_upload_id\n" +
 		"left outer join transaction f on a.id=f.source_file_upload_id\n" +
 		"where a.wallet_id=? and a.file_type=0"

@@ -194,6 +194,36 @@ func GetSourceFileUploads(walletAddress, status, fileName, orderBy, is_minted st
 	return srcFileUploads, totalRecordCount, nil
 }
 
+type SourceFileUpload struct {
+	WCid string `json:"w_cid"`
+}
+
+func GetSourceFileUpload(sourceFileUploadId int64) (*SourceFileUpload, error) {
+	sourceFileUpload, err := models.GetSourceFileUploadById(sourceFileUploadId)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	if sourceFileUpload == nil {
+		err := fmt.Errorf("source file upload:%d not exists", sourceFileUploadId)
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	sourceFile, err := models.GetSourceFileById(sourceFileUpload.SourceFileId)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	sourceFileUploadOut := &SourceFileUpload{
+		WCid: sourceFileUpload.Uuid + sourceFile.PayloadCid,
+	}
+
+	return sourceFileUploadOut, nil
+}
+
 type SourceFileUploadDeal struct {
 	DealID                   *int    `json:"deal_id"`
 	DealCid                  *string `json:"deal_cid"`

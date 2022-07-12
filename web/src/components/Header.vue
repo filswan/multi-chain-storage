@@ -82,6 +82,8 @@ const ethereum = window.ethereum;
 import NCWeb3 from "@/utils/web3";
 import * as myAjax from "@/api/login";
 import axios from 'axios'
+import erc20_contract_json from "@/utils/ERC20.json";
+let contract_erc20
 export default {
     data() {
         return {
@@ -357,30 +359,17 @@ export default {
                 web3.setProvider(currentProvider);
                 console.log("No web3 instance injected, using Local web3.");
             }
-            ethereum
-            .request(
-                {
-                    "jsonrpc":"2.0",
-                    "method":"eth_getBalance",
-                    "params":[_this.addrChild, "latest"],
-                    "id":19999
-                }
-            )
-            .then((balance) => {
-                let balanceAll = web3.utils.fromWei(balance, 'ether')
-                _this.priceAccound = Number(balanceAll).toFixed(4)
-            })
-            .catch((error) => {
-                console.error(`Error fetching getBalance: ${error.code}: ${error.message}`);
-            });
-            
+
             ethereum
             .request({ method: 'eth_chainId' })
-            .then((chainId) => {
+            .then(async (chainId) => {
                 let netId = parseInt(chainId, 16)
                 // console.log('network ID:', netId)
                 // console.log(`decimal number: ${parseInt(chainId, 16)}`);
                 _this.$store.dispatch('setMetaNetworkId', netId)
+
+                await _this.contractPrice(netId)
+
                 switch (netId) {
                 case 1:
                     _this.network.name = 'mainnet';
@@ -432,7 +421,7 @@ export default {
                     return;
                 case 80001:
                     _this.network.name = 'mumbai';
-                    _this.network.unit = 'MATIC';
+                    _this.network.unit = 'USDC';
                     _this.network.center_fail = false
                     _this.$store.dispatch('setMetaNetworkInfo', _this.network)
                     if(_this.meta) {
@@ -518,6 +507,60 @@ export default {
             }).catch(error => {
                 console.log(error)
             })
+        },
+        contractPrice(netId) {
+            let _this = this
+            try {
+                if(netId != 80001){
+                    ethereum
+                    .request(
+                        {
+                            "jsonrpc":"2.0",
+                            "method":"eth_getBalance",
+                            "params":[_this.addrChild, "latest"],
+                            "id":19999
+                        }
+                    )
+                    .then((balance) => {
+                        let balanceAll = web3.utils.fromWei(balance, 'ether')
+                        _this.priceAccound = Number(balanceAll).toFixed(4)
+                    })
+                    .catch((error) => {
+                        console.error(`Error fetching getBalance: ${error.code}: ${error.message}`);
+                        _this.priceAccound = 0
+                    });
+                }else{
+                    if(_this.$root.SWAN_PAYMENT_CONTRACT_ADDRESS){
+                        // 授权代币
+                        contract_erc20 = new web3.eth.Contract( erc20_contract_json );
+                        contract_erc20.options.address = _this.$root.USDC_ADDRESS
+                        // 查询剩余代币余额为：
+                        contract_erc20.methods.balanceOf(_this.metaAddress).call()
+                        .then(balance => {
+                            let usdcAvailable = web3.utils.fromWei(balance, 'ether');
+                            // console.log('Available:', _this.formatDecimal(usdcAvailable, 3))
+                            _this.priceAccound = _this.formatDecimal(usdcAvailable, 3)
+                        })
+                    }else {
+                        setTimeout(function(){
+                            _this.contractPrice(netId)
+                        }, 1000)
+                    }
+                }
+            } catch (err) {
+                console.error(err)
+                _this.priceAccound = 0
+            }
+        },
+        formatDecimal(num, decimal) {
+            num = num.toString()
+            let index = num.indexOf('.')
+            if (index !== -1) {
+                num = num.substring(0, decimal + index + 1)
+            } else {
+                num = num.substring(0)
+            }
+            return parseFloat(parseFloat(num).toFixed(decimal))
         },
         reverseChange(val) {
             let reverse = val ? 1 : 0

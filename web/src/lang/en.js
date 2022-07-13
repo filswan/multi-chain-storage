@@ -591,6 +591,7 @@ export default {
         TOKEN: 'Token',
         FILENAME: 'File Name',
         PAYLOADCID: 'Data CID',
+        deals_price: 'Price',
         WALLET: 'Wallet',
         NETWORK: 'Network',
         PAYMENTDATE: 'Payment Date',

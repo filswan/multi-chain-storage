@@ -596,6 +596,7 @@ export default {
         TOKEN: '代币',
         FILENAME: '文件名称',
         PAYLOADCID: '数据CID',
+        deals_price: '价格',
         WALLET: '钱包',
         NETWORK: '网络',
         PAYMENTDATE: '付款日期',

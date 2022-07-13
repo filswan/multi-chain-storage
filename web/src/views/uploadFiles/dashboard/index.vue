@@ -108,32 +108,15 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="payload_cid" min-width="120">
+          <el-table-column prop="pay_amount" min-width="120">
             <template slot="header" slot-scope="scope">
               <div class="tips">
-                {{$t('billing.PAYLOADCID')}}
-                    
-                <el-tooltip effect="dark" :content="$t('uploadFile.data_tooltip')" placement="top">
-                    <img src="@/assets/images/info.png"/>
-                </el-tooltip>
+                {{$t('billing.deals_price')}}
               </div>
             </template>
             <template slot-scope="scope">
               <div class="hot-cold-box">
-                <el-popover
-                    v-if="scope.row.payload_cid"
-                    placement="top"
-                    trigger="hover" width="300"
-                    v-model="scope.row.payloadAct">
-                    <div class="upload_form_right">
-                        <p>{{scope.row.payload_cid}}</p>
-                    </div>
-                    <el-button slot="reference" class="resno" @click="copyTextToClipboard(scope.row.payload_cid)">
-                        <img src="@/assets/images/copy.png" alt="">
-                        {{scope.row.payload_cid}}
-                    </el-button>
-                </el-popover>
-                <span v-else>-</span>
+                {{scope.row.pay_amount | balanceFilter}} USDC
               </div>
             </template>
           </el-table-column>
@@ -636,36 +619,49 @@ export default {
             from: _this.metaAddress,
             gas: web3.utils.toHex(_this.$root.PAY_GAS_LIMIT),
         };
-        
-        let cidArray = []
-        cidArray.push(row.w_cid)
-        try{
-          _this.refundPow = row
-          contract_instance.methods.refund(cidArray)
-          .send(payObject)
-          .on('transactionHash', function(hash){
-              console.log('unlock hash console:', hash);
-              _this.txHash = hash
-          })
-          .on('confirmation', function(confirmationNumber, receipt){
-              // console.log('confirmationNumber console:', confirmationNumber, receipt);
-          })
-          .on('receipt', function(receipt){
-              // console.log('receipt console:', receipt);
-              _this.checkTransaction(receipt.transactionHash)
-              _this.txHash = receipt.transactionHash
-          })
-          .on('error', function(error){
-              console.log('refund error console:', error)
-              _this.loading = false
-              if(_this.finishTransaction) return false
-              if(_this.txHash) _this.waitTransaction = true
-              else _this.failTransaction = true
-          }); 
-        }catch (err){
-          console.log(err)
-          _this.loading = false
-        }
+
+        let wcid_api = `${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/storage/source_file_upload/${row.source_file_upload_id}?wallet_address=${_this.metaAddress}`
+        axios.get(wcid_api, {
+            headers: {
+              // 'Authorization': "Bearer "+ _this.$store.getters.accessToken
+            },
+        })
+        .then((json) => {
+            if(json.data.status == 'success'){
+              let cidArray = []
+              cidArray.push(json.data.data.source_file_upload.w_cid)
+              try{
+                _this.refundPow = row
+                contract_instance.methods.refund(cidArray)
+                .send(payObject)
+                .on('transactionHash', function(hash){
+                    console.log('unlock hash console:', hash);
+                    _this.txHash = hash
+                })
+                .on('confirmation', function(confirmationNumber, receipt){
+                    // console.log('confirmationNumber console:', confirmationNumber, receipt);
+                })
+                .on('receipt', function(receipt){
+                    // console.log('receipt console:', receipt);
+                    _this.checkTransaction(receipt.transactionHash)
+                    _this.txHash = receipt.transactionHash
+                })
+                .on('error', function(error){
+                    console.log('refund error console:', error)
+                    _this.loading = false
+                    if(_this.finishTransaction) return false
+                    if(_this.txHash) _this.waitTransaction = true
+                    else _this.failTransaction = true
+                }); 
+              }catch (err){
+                console.log(err)
+                _this.loading = false
+              }
+
+            }
+        }).catch(error => {
+            console.log(error)
+        })
     },
     payStartClick(rowAmount){
       let _this = this
@@ -1197,6 +1193,31 @@ export default {
           i += 1
       }
       return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];
+    },
+    balanceFilter (value) {
+        if (String(value) === '0') return 0;
+        if (!value) return '-';
+        // if (!Number(value)) return 0;
+        // if (isNaN(value)) return value;
+        // 18 - 单位换算需要 / 1000000000000000000，浮点运算显示有bug
+        value = Number(value)
+        if(String(value).length > 18){
+            let v1 = String(value).substring(0, String(value).length - 18)
+            let v2 = String(value).substring(String(value).length - 18)
+            let v3 = String(v2).replace(/(0+)\b/gi,"")
+            if(v3){
+                return v1 + '.' + v3
+            }else{
+                return v1
+            }
+            return parseFloat(v1.replace(/(\d)(?=(?:\d{3})+$)/g, "$1,") + '.' + v2)
+        }else{
+            let v3 = ''
+            for(let i = 0; i < 18 - String(value).length; i++){
+                v3 += '0'
+            }
+            return '0.' + String(v3 + value).replace(/(0+)\b/gi,"")
+        }
     },
   },
 };

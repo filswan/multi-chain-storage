@@ -401,6 +401,7 @@
                                                             })
                                                             .catch(error => {
                                                                 // console.log('errorerrorerror', error)
+                                                                _this.finishClose()
                                                             })
                                                         }else{
                                                             _this.contractSend(res.data)

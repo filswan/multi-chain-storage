@@ -10,16 +10,19 @@ import (
 	"multi-chain-storage/on-chain/client"
 	"multi-chain-storage/service"
 	"net/http"
+	"path/filepath"
 	"strconv"
 	"strings"
 
 	"github.com/filswan/go-swan-lib/logs"
+	libutils "github.com/filswan/go-swan-lib/utils"
 	"github.com/gin-gonic/gin"
 )
 
 func Storage(router *gin.RouterGroup) {
 	router.POST("/ipfs/upload", UploadFile)
 	router.GET("/tasks/deals", GetDeals)
+	router.GET("/tasks/deals/download", DownloadDeals)
 	router.GET("/source_file_upload/:source_file_upload_id", GetSourceFileUpload)
 	router.GET("/deal/detail/:deal_id", GetDealFromFlink)
 	router.GET("/deal/log/:offline_deal_id", GetDealLogs)
@@ -139,6 +142,22 @@ func GetDeals(c *gin.Context) {
 		"source_file_upload": sourceFileUploads,
 		"total_record_count": *totalRecordCount,
 	}))
+}
+
+func DownloadDeals(c *gin.Context) {
+	fileFullPath := "/Users/dorachen/work/srcFiles/duration.csv"
+	_, content, err := libutils.ReadFile(fileFullPath)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.ERROR_INTERNAL, err.Error()))
+		return
+	}
+
+	filename := filepath.Base(fileFullPath)
+	c.Header("Content-Disposition", "attachment; filename="+filename)
+	c.Header("Content-Type", "application/text/plain")
+	c.Header("Accept-Length", fmt.Sprintf("%d", len(content)))
+	c.Writer.Write(content)
 }
 
 func GetSourceFileUpload(c *gin.Context) {

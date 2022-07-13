@@ -153,6 +153,15 @@ func DownloadDeals(c *gin.Context) {
 		return
 	}
 
+	URL := c.Request.URL.Query()
+	walletAddress := strings.Trim(URL.Get("wallet_address"), " ")
+	if walletAddress == "" {
+		err := fmt.Errorf("wallet_address is required")
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_NULL, err.Error()))
+		return
+	}
+
 	filename := filepath.Base(fileFullPath)
 	c.Header("Content-Disposition", "attachment; filename="+filename)
 	c.Header("Content-Type", "application/text/plain")

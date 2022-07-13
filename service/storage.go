@@ -169,7 +169,7 @@ func GetSourceFileUploads(walletAddress, status, fileName, orderBy, is_minted st
 		return nil, nil, err
 	}
 
-	srcFileUploads, totalRecordCount, err := models.GetSourceFileUploads(wallet.ID, status, fileName, orderBy, is_minted, isAscend, limit, offset)
+	srcFileUploads, totalRecordCount, err := models.GetSourceFileUploads(wallet.ID, &status, &fileName, &orderBy, &is_minted, isAscend, &limit, &offset)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, nil, err

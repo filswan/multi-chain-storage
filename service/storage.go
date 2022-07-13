@@ -226,8 +226,17 @@ func DownloadSourceFileUploads(walletAddress string) (*string, error) {
 		}
 
 		if srcFileUpload.NftTxHash != nil {
-			contentStr = contentStr + *srcFileUpload.NftTxHash
+			contentStr = contentStr + *srcFileUpload.NftTxHash + ","
+		} else {
+			contentStr = contentStr + ","
 		}
+
+		minerFids := ""
+		for _, offlineDeal := range srcFileUpload.OfflineDeals {
+			minerFids = offlineDeal.MinerFid + ","
+		}
+
+		contentStr = contentStr + minerFids
 
 		contentStr = contentStr + "\n"
 	}

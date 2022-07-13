@@ -10,12 +10,10 @@ import (
 	"multi-chain-storage/on-chain/client"
 	"multi-chain-storage/service"
 	"net/http"
-	"path/filepath"
 	"strconv"
 	"strings"
 
 	"github.com/filswan/go-swan-lib/logs"
-	libutils "github.com/filswan/go-swan-lib/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -131,7 +129,7 @@ func GetDeals(c *gin.Context) {
 
 	isAscend := strings.EqualFold(strings.Trim(URL.Get("is_ascend"), " "), "y")
 
-	sourceFileUploads, totalRecordCount, err := service.GetSourceFileUploads(walletAddress, status, fileName, orderBy, is_minted, isAscend, limit, offset)
+	sourceFileUploads, totalRecordCount, err := service.GetSourceFileUploads(walletAddress, &status, &fileName, &orderBy, &is_minted, isAscend, &limit, &offset)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.ERROR_INTERNAL, err.Error()))
@@ -145,14 +143,6 @@ func GetDeals(c *gin.Context) {
 }
 
 func DownloadDeals(c *gin.Context) {
-	fileFullPath := "/Users/dorachen/work/srcFiles/duration.csv"
-	_, content, err := libutils.ReadFile(fileFullPath)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.ERROR_INTERNAL, err.Error()))
-		return
-	}
-
 	URL := c.Request.URL.Query()
 	walletAddress := strings.Trim(URL.Get("wallet_address"), " ")
 	if walletAddress == "" {
@@ -162,7 +152,15 @@ func DownloadDeals(c *gin.Context) {
 		return
 	}
 
-	filename := filepath.Base(fileFullPath)
+	sourceFileUploads, err := service.DownloadSourceFileUploads(walletAddress)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.ERROR_INTERNAL, err.Error()))
+		return
+	}
+
+	content := []byte(*sourceFileUploads)
+	filename := "source_file_uploads.csv"
 	c.Header("Content-Disposition", "attachment; filename="+filename)
 	c.Header("Content-Type", "application/text/plain")
 	c.Header("Accept-Length", fmt.Sprintf("%d", len(content)))

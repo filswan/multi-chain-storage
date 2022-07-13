@@ -199,7 +199,6 @@ func GetSourceFileUploadsNeed2Car() ([]*SourceFileUploadNeed2Car, error) {
 
 type SourceFileUploadResult struct {
 	SourceFileUploadId int64             `json:"source_file_upload_id"`
-	CarFileId          int64             `json:"car_file_id"`
 	FileName           string            `json:"file_name"`
 	FileSize           int64             `json:"file_size"`
 	UploadAt           int64             `json:"upload_at"`

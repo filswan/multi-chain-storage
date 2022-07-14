@@ -8,6 +8,7 @@ import (
 	"multi-chain-storage/database"
 	"net/url"
 	"strings"
+	"time"
 
 	"multi-chain-storage/config"
 	"multi-chain-storage/models"
@@ -19,10 +20,12 @@ import (
 
 	"github.com/filswan/go-swan-lib/client/ipfs"
 	"github.com/filswan/go-swan-lib/client/web"
+	libconstants "github.com/filswan/go-swan-lib/constants"
 	"github.com/filswan/go-swan-lib/logs"
 	libutils "github.com/filswan/go-swan-lib/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/shopspring/decimal"
 )
 
 var uploadMutext sync.Mutex
@@ -162,14 +165,14 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType 
 	return uploadResult, nil
 }
 
-func GetSourceFileUploads(walletAddress string, status, fileName, orderBy, is_minted *string, isAscend bool, limit, offset *int) ([]*models.SourceFileUploadResult, *int, error) {
+func GetSourceFileUploads(walletAddress string, status, fileName, orderBy, isMinted *string, isAscend bool, limit, offset *int, uploadAtStart, uploadAtEnd *int64) ([]*models.SourceFileUploadResult, *int, error) {
 	wallet, err := models.GetWalletByAddress(walletAddress, constants.WALLET_TYPE_META_MASK)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, nil, err
 	}
 
-	srcFileUploads, totalRecordCount, err := models.GetSourceFileUploads(wallet.ID, status, fileName, orderBy, is_minted, isAscend, limit, offset)
+	srcFileUploads, totalRecordCount, err := models.GetSourceFileUploads(wallet.ID, status, fileName, orderBy, isMinted, isAscend, limit, offset, uploadAtStart, uploadAtEnd)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, nil, err
@@ -194,49 +197,81 @@ func GetSourceFileUploads(walletAddress string, status, fileName, orderBy, is_mi
 	return srcFileUploads, totalRecordCount, nil
 }
 
-func DownloadSourceFileUploads(walletAddress string) (*string, error) {
-	srcFileUploads, _, err := GetSourceFileUploads(walletAddress, nil, nil, nil, nil, true, nil, nil)
+func DownloadSourceFileUploads(locationStr, walletAddress string, uploadAtStart, uploadAtEnd *int64) (*string, error) {
+	srcFileUploads, _, err := GetSourceFileUploads(walletAddress, nil, nil, nil, nil, true, nil, nil, uploadAtStart, uploadAtEnd)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
 	}
 
-	contentStr := ""
-	for _, srcFileUpload := range srcFileUploads {
-		contentStr = contentStr + strconv.FormatInt(srcFileUpload.SourceFileUploadId, 10) + ","
-		contentStr = contentStr + srcFileUpload.FileName + ","
-		contentStr = contentStr + strconv.FormatInt(srcFileUpload.FileSize, 10) + ","
-		contentStr = contentStr + strconv.FormatInt(srcFileUpload.UploadAt, 10) + ","
-		contentStr = contentStr + strconv.Itoa(srcFileUpload.Duration) + ","
-		contentStr = contentStr + srcFileUpload.IpfsUrl + ","
-		contentStr = contentStr + srcFileUpload.PinStatus + ","
-		contentStr = contentStr + srcFileUpload.PayAmount + ","
-		contentStr = contentStr + srcFileUpload.Status + ","
-		contentStr = contentStr + strconv.FormatBool(srcFileUpload.IsMinted) + ","
-		if srcFileUpload.TokenId != nil {
-			contentStr = contentStr + *srcFileUpload.TokenId + ","
-		} else {
-			contentStr = contentStr + ","
-		}
+	contentStr := "No.,File Name,File Size,Status,Pin Status,Price,Storage Providers,Upload Time,"
+	contentStr = contentStr + "Payment,Mint\n"
 
-		if srcFileUpload.MintAddress != nil {
-			contentStr = contentStr + *srcFileUpload.MintAddress + ","
-		} else {
-			contentStr = contentStr + ","
-		}
-
-		if srcFileUpload.NftTxHash != nil {
-			contentStr = contentStr + *srcFileUpload.NftTxHash + ","
-		} else {
-			contentStr = contentStr + ","
-		}
-
+	for i, srcFileUpload := range srcFileUploads {
+		status := srcFileUpload.Status
 		minerFids := ""
 		for _, offlineDeal := range srcFileUpload.OfflineDeals {
-			minerFids = offlineDeal.MinerFid + ","
+			minerFids = minerFids + offlineDeal.MinerFid + ","
+			if offlineDeal.Status == constants.OFFLINE_DEAL_STATUS_SUCCESS {
+				status = constants.SOURCE_FILE_UPLOAD_STATUS_SUCCESS
+			}
+		}
+		minerFids = strings.Trim(minerFids, ",")
+
+		contentStr = contentStr + strconv.Itoa(i+1) + ","
+
+		contentStr = contentStr + srcFileUpload.FileName + ","
+
+		fileSize := srcFileUpload.FileSize / constants.BYTES_1GB
+		if fileSize > 0 {
+			contentStr = contentStr + strconv.FormatInt(fileSize, 10) + "GB,"
+		} else {
+			fileSize = srcFileUpload.FileSize / constants.BYTES_1MB
+			if fileSize > 0 {
+				contentStr = contentStr + strconv.FormatInt(fileSize, 10) + "MB,"
+			} else {
+				fileSize = srcFileUpload.FileSize / constants.BYTES_1KB
+				if fileSize > 0 {
+					contentStr = contentStr + strconv.FormatInt(fileSize, 10) + "KB,"
+				} else {
+					contentStr = contentStr + strconv.FormatInt(fileSize, 10) + "B,"
+				}
+			}
 		}
 
-		contentStr = contentStr + minerFids
+		contentStr = contentStr + status + ","
+		contentStr = contentStr + srcFileUpload.PinStatus + ","
+
+		price, err := decimal.NewFromString(srcFileUpload.PayAmount)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return nil, err
+		}
+		e18 := decimal.NewFromFloat32(libconstants.LOTUS_PRICE_MULTIPLE_1E18)
+		price = price.Div(e18)
+		contentStr = contentStr + price.String() + " USDC,"
+
+		contentStr = contentStr + "\"" + minerFids + "\"" + ","
+
+		uploadAt := time.Unix(srcFileUpload.UploadAt, 0)
+		location, err := time.LoadLocation(locationStr)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return nil, err
+		}
+
+		contentStr = contentStr + uploadAt.In(location).Format("2006-01-02 15:04:05") + ","
+
+		if srcFileUpload.Status == constants.SOURCE_FILE_UPLOAD_STATUS_PENDING {
+			contentStr = contentStr + constants.SOURCE_FILE_UPLOAD_STATUS_PENDING
+		} else {
+			contentStr = contentStr + constants.SOURCE_FILE_UPLOAD_STATUS_PAID
+		}
+		contentStr = contentStr + ","
+
+		if srcFileUpload.IsMinted {
+			contentStr = contentStr + "Minted"
+		}
 
 		contentStr = contentStr + "\n"
 	}

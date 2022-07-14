@@ -129,7 +129,7 @@ func GetDeals(c *gin.Context) {
 
 	isAscend := strings.EqualFold(strings.Trim(URL.Get("is_ascend"), " "), "y")
 
-	sourceFileUploads, totalRecordCount, err := service.GetSourceFileUploads(walletAddress, &status, &fileName, &orderBy, &is_minted, isAscend, &limit, &offset)
+	sourceFileUploads, totalRecordCount, err := service.GetSourceFileUploads(walletAddress, &status, &fileName, &orderBy, &is_minted, isAscend, &limit, &offset, nil, nil)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.ERROR_INTERNAL, err.Error()))
@@ -152,7 +152,61 @@ func DownloadDeals(c *gin.Context) {
 		return
 	}
 
-	sourceFileUploads, err := service.DownloadSourceFileUploads(walletAddress)
+	location := strings.Trim(URL.Get("location"), " ")
+	if walletAddress == "" {
+		err := fmt.Errorf("location is required")
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_NULL, err.Error()))
+		return
+	}
+
+	uploadAtStartStr := strings.Trim(URL.Get("upload_at_start"), " ")
+	if uploadAtStartStr == "" {
+		err := fmt.Errorf("upload_at_start is required")
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_NULL, err.Error()))
+		return
+	}
+
+	uploadAtStart, err := strconv.ParseInt(uploadAtStartStr, 10, 64)
+	if err != nil {
+		err := fmt.Errorf("%s,upload_at_start must be a valid number", err.Error())
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_INVALID_VALUE, err.Error()))
+		return
+	}
+
+	if uploadAtStart < 0 {
+		err := fmt.Errorf("upload_at_start must be >= 0")
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_INVALID_VALUE, err.Error()))
+		return
+	}
+
+	uploadAtEndStr := strings.Trim(URL.Get("upload_at_end"), " ")
+	if uploadAtEndStr == "" {
+		err := fmt.Errorf("upload_at_end is required")
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_NULL, err.Error()))
+		return
+	}
+
+	uploadAtEnd, err := strconv.ParseInt(uploadAtEndStr, 10, 64)
+	if err != nil {
+		err := fmt.Errorf("%s,upload_at_end must be a valid number", err.Error())
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_INVALID_VALUE, err.Error()))
+		return
+	}
+
+	if uploadAtEnd < 0 {
+		err := fmt.Errorf("upload_at_end must be >= 0")
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_INVALID_VALUE, err.Error()))
+		return
+	}
+
+	sourceFileUploads, err := service.DownloadSourceFileUploads(location, walletAddress, &uploadAtStart, &uploadAtEnd)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.ERROR_INTERNAL, err.Error()))

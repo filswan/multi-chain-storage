@@ -207,6 +207,7 @@ func DownloadSourceFileUploads(locationStr, walletAddress string, uploadAtStart,
 	contentStr := "No.,File Name,File Size,Status,Pin Status,Price,Storage Providers,Upload Time,"
 	contentStr = contentStr + "Payment,Mint\n"
 
+	e18 := decimal.NewFromFloat32(libconstants.LOTUS_PRICE_MULTIPLE_1E18)
 	for i, srcFileUpload := range srcFileUploads {
 		status := srcFileUpload.Status
 		minerFids := ""
@@ -242,14 +243,17 @@ func DownloadSourceFileUploads(locationStr, walletAddress string, uploadAtStart,
 		contentStr = contentStr + status + ","
 		contentStr = contentStr + srcFileUpload.PinStatus + ","
 
-		price, err := decimal.NewFromString(srcFileUpload.PayAmount)
-		if err != nil {
-			logs.GetLogger().Error(err)
-			return nil, err
+		if libutils.IsStrEmpty(&srcFileUpload.PayAmount) {
+			contentStr = contentStr + ","
+		} else {
+			price, err := decimal.NewFromString(srcFileUpload.PayAmount)
+			if err != nil {
+				logs.GetLogger().Error(err)
+				return nil, err
+			}
+			price = price.Div(e18)
+			contentStr = contentStr + price.String() + " USDC,"
 		}
-		e18 := decimal.NewFromFloat32(libconstants.LOTUS_PRICE_MULTIPLE_1E18)
-		price = price.Div(e18)
-		contentStr = contentStr + price.String() + " USDC,"
 
 		contentStr = contentStr + "\"" + minerFids + "\"" + ","
 

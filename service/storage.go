@@ -204,10 +204,10 @@ func DownloadSourceFileUploads(locationStr, walletAddress string, uploadAtStart,
 		return nil, err
 	}
 
-	contentStr := "File Name,File Size,Status,Pin Status,Price,Storage Providers,Upload Time,"
+	contentStr := "No.,File Name,File Size,Status,Pin Status,Price,Storage Providers,Upload Time,"
 	contentStr = contentStr + "Payment,Mint\n"
 
-	for _, srcFileUpload := range srcFileUploads {
+	for i, srcFileUpload := range srcFileUploads {
 		status := srcFileUpload.Status
 		minerFids := ""
 		for _, offlineDeal := range srcFileUpload.OfflineDeals {
@@ -217,6 +217,8 @@ func DownloadSourceFileUploads(locationStr, walletAddress string, uploadAtStart,
 			}
 		}
 		minerFids = strings.Trim(minerFids, ",")
+
+		contentStr = contentStr + strconv.Itoa(i+1) + ","
 
 		contentStr = contentStr + srcFileUpload.FileName + ","
 

@@ -52,6 +52,8 @@ const (
 	SOURCE_FILE_TYPE_MINT   = 1
 
 	BYTES_1GB     = 1024 * 1024 * 1024
+	BYTES_1MB     = 1024 * 1024
+	BYTES_1KB     = 1024
 	EPOCH_PER_DAY = 24 * 60 * 2
 
 	PRIVATE_KEY_ON_POLYGON = "privateKeyOnPolygon"

@@ -202,8 +202,8 @@ func DownloadSourceFileUploads(walletAddress string, uploadAtStart, uploadAtEnd 
 		return nil, err
 	}
 
-	contentStr := "file_name,file_size,status,pin_status,pay_amount,miners,upload_at,"
-	contentStr = contentStr + "is_minted,token_id,mint_address,nft_tx_hash\n"
+	contentStr := "File Name,File Size,Status,Pin Status,Price,Storage Providers,Upload Time,"
+	contentStr = contentStr + "Payment,Mint\n"
 
 	for _, srcFileUpload := range srcFileUploads {
 		status := srcFileUpload.Status
@@ -217,26 +217,40 @@ func DownloadSourceFileUploads(walletAddress string, uploadAtStart, uploadAtEnd 
 		minerFids = strings.Trim(minerFids, ",")
 
 		contentStr = contentStr + srcFileUpload.FileName + ","
-		contentStr = contentStr + strconv.FormatInt(srcFileUpload.FileSize, 10) + ","
+
+		fileSize := srcFileUpload.FileSize / constants.BYTES_1GB
+		if fileSize > 0 {
+			contentStr = contentStr + strconv.FormatInt(fileSize, 10) + "GB,"
+		} else {
+			fileSize = srcFileUpload.FileSize / constants.BYTES_1MB
+			if fileSize > 0 {
+				contentStr = contentStr + strconv.FormatInt(fileSize, 10) + "MB,"
+			} else {
+				fileSize = srcFileUpload.FileSize / constants.BYTES_1KB
+				if fileSize > 0 {
+					contentStr = contentStr + strconv.FormatInt(fileSize, 10) + "KB,"
+				} else {
+					contentStr = contentStr + strconv.FormatInt(fileSize, 10) + "B,"
+				}
+			}
+		}
+
 		contentStr = contentStr + status + ","
 		contentStr = contentStr + srcFileUpload.PinStatus + ","
 		contentStr = contentStr + srcFileUpload.PayAmount + ","
 		contentStr = contentStr + "\"" + minerFids + "\"" + ","
 		uploadAt := time.Unix(srcFileUpload.UploadAt, 0)
 		contentStr = contentStr + uploadAt.Format(time.RFC3339) + ","
-		contentStr = contentStr + strconv.FormatBool(srcFileUpload.IsMinted) + ","
-		if srcFileUpload.TokenId != nil {
-			contentStr = contentStr + *srcFileUpload.TokenId
+
+		if srcFileUpload.Status == constants.SOURCE_FILE_UPLOAD_STATUS_PENDING {
+			contentStr = contentStr + constants.SOURCE_FILE_UPLOAD_STATUS_PENDING
+		} else {
+			contentStr = contentStr + constants.SOURCE_FILE_UPLOAD_STATUS_PAID
 		}
 		contentStr = contentStr + ","
 
-		if srcFileUpload.MintAddress != nil {
-			contentStr = contentStr + *srcFileUpload.MintAddress
-		}
-		contentStr = contentStr + ","
-
-		if srcFileUpload.NftTxHash != nil {
-			contentStr = contentStr + *srcFileUpload.NftTxHash
+		if srcFileUpload.IsMinted {
+			contentStr = contentStr + "Minted"
 		}
 
 		contentStr = contentStr + "\n"

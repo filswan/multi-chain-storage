@@ -1,14 +1,14 @@
 package utils
 
 import (
-	"crypto/md5"
+	"crypto/sha256"
 	"fmt"
 
 	"github.com/filswan/go-swan-lib/logs"
 )
 
 func GenerateHash(str string) string {
-	var hash = md5.Sum([]byte(str))
+	hash := sha256.Sum256([]byte(str))
 	hashStr := fmt.Sprintf("%x", hash)
 	logs.GetLogger().Info(hashStr)
 	return hashStr

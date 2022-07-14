@@ -8,6 +8,7 @@ import (
 	"multi-chain-storage/database"
 	"net/url"
 	"strings"
+	"time"
 
 	"multi-chain-storage/config"
 	"multi-chain-storage/models"
@@ -162,14 +163,14 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType 
 	return uploadResult, nil
 }
 
-func GetSourceFileUploads(walletAddress string, status, fileName, orderBy, is_minted *string, isAscend bool, limit, offset *int) ([]*models.SourceFileUploadResult, *int, error) {
+func GetSourceFileUploads(walletAddress string, status, fileName, orderBy, isMinted *string, isAscend bool, limit, offset *int, uploadAtStart, uploadAtEnd *int64) ([]*models.SourceFileUploadResult, *int, error) {
 	wallet, err := models.GetWalletByAddress(walletAddress, constants.WALLET_TYPE_META_MASK)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, nil, err
 	}
 
-	srcFileUploads, totalRecordCount, err := models.GetSourceFileUploads(wallet.ID, status, fileName, orderBy, is_minted, isAscend, limit, offset)
+	srcFileUploads, totalRecordCount, err := models.GetSourceFileUploads(wallet.ID, status, fileName, orderBy, isMinted, isAscend, limit, offset, uploadAtStart, uploadAtEnd)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, nil, err
@@ -194,49 +195,49 @@ func GetSourceFileUploads(walletAddress string, status, fileName, orderBy, is_mi
 	return srcFileUploads, totalRecordCount, nil
 }
 
-func DownloadSourceFileUploads(walletAddress string) (*string, error) {
-	srcFileUploads, _, err := GetSourceFileUploads(walletAddress, nil, nil, nil, nil, true, nil, nil)
+func DownloadSourceFileUploads(walletAddress string, uploadAtStart, uploadAtEnd *int64) (*string, error) {
+	srcFileUploads, _, err := GetSourceFileUploads(walletAddress, nil, nil, nil, nil, true, nil, nil, uploadAtStart, uploadAtEnd)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
 	}
 
-	contentStr := ""
+	contentStr := "file_name,file_size,status,pin_status,pay_amount,miners,upload_at,"
+	contentStr = contentStr + "is_minted,token_id,mint_address,nft_tx_hash\n"
+
 	for _, srcFileUpload := range srcFileUploads {
-		contentStr = contentStr + strconv.FormatInt(srcFileUpload.SourceFileUploadId, 10) + ","
-		contentStr = contentStr + srcFileUpload.FileName + ","
-		contentStr = contentStr + strconv.FormatInt(srcFileUpload.FileSize, 10) + ","
-		contentStr = contentStr + strconv.FormatInt(srcFileUpload.UploadAt, 10) + ","
-		contentStr = contentStr + strconv.Itoa(srcFileUpload.Duration) + ","
-		contentStr = contentStr + srcFileUpload.IpfsUrl + ","
-		contentStr = contentStr + srcFileUpload.PinStatus + ","
-		contentStr = contentStr + srcFileUpload.PayAmount + ","
-		contentStr = contentStr + srcFileUpload.Status + ","
-		contentStr = contentStr + strconv.FormatBool(srcFileUpload.IsMinted) + ","
-		if srcFileUpload.TokenId != nil {
-			contentStr = contentStr + *srcFileUpload.TokenId + ","
-		} else {
-			contentStr = contentStr + ","
-		}
-
-		if srcFileUpload.MintAddress != nil {
-			contentStr = contentStr + *srcFileUpload.MintAddress + ","
-		} else {
-			contentStr = contentStr + ","
-		}
-
-		if srcFileUpload.NftTxHash != nil {
-			contentStr = contentStr + *srcFileUpload.NftTxHash + ","
-		} else {
-			contentStr = contentStr + ","
-		}
-
+		status := srcFileUpload.Status
 		minerFids := ""
 		for _, offlineDeal := range srcFileUpload.OfflineDeals {
-			minerFids = offlineDeal.MinerFid + ","
+			minerFids = minerFids + offlineDeal.MinerFid + ","
+			if offlineDeal.Status == constants.OFFLINE_DEAL_STATUS_SUCCESS {
+				status = constants.SOURCE_FILE_UPLOAD_STATUS_SUCCESS
+			}
 		}
+		minerFids = strings.Trim(minerFids, ",")
 
-		contentStr = contentStr + minerFids
+		contentStr = contentStr + srcFileUpload.FileName + ","
+		contentStr = contentStr + strconv.FormatInt(srcFileUpload.FileSize, 10) + ","
+		contentStr = contentStr + status + ","
+		contentStr = contentStr + srcFileUpload.PinStatus + ","
+		contentStr = contentStr + srcFileUpload.PayAmount + ","
+		contentStr = contentStr + "\"" + minerFids + "\"" + ","
+		uploadAt := time.Unix(srcFileUpload.UploadAt, 0)
+		contentStr = contentStr + uploadAt.Format(time.RFC3339) + ","
+		contentStr = contentStr + strconv.FormatBool(srcFileUpload.IsMinted) + ","
+		if srcFileUpload.TokenId != nil {
+			contentStr = contentStr + *srcFileUpload.TokenId
+		}
+		contentStr = contentStr + ","
+
+		if srcFileUpload.MintAddress != nil {
+			contentStr = contentStr + *srcFileUpload.MintAddress
+		}
+		contentStr = contentStr + ","
+
+		if srcFileUpload.NftTxHash != nil {
+			contentStr = contentStr + *srcFileUpload.NftTxHash
+		}
 
 		contentStr = contentStr + "\n"
 	}

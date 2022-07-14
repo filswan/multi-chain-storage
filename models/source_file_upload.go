@@ -231,7 +231,7 @@ func (a SourceFileUploadResultByUploadAt) Len() int           { return len(a) }
 func (a SourceFileUploadResultByUploadAt) Less(i, j int) bool { return a[i].UploadAt < a[j].UploadAt }
 func (a SourceFileUploadResultByUploadAt) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 
-func GetSourceFileUploads(walletId int64, status, fileName, orderBy, is_minted *string, isAscend bool, limit, offset *int) ([]*SourceFileUploadResult, *int, error) {
+func GetSourceFileUploads(walletId int64, status, fileName, orderBy, isMinted *string, isAscend bool, limit, offset *int, uploadAtStart, uploadAtEnd *int64) ([]*SourceFileUploadResult, *int, error) {
 	sql := "select\n" +
 		"a.id source_file_upload_id,a.file_name,b.file_size,a.create_at upload_at,a.duration,\n" +
 		"b.ipfs_url,b.pin_status,f.pay_amount,a.status,\n" +
@@ -248,6 +248,16 @@ func GetSourceFileUploads(walletId int64, status, fileName, orderBy, is_minted *
 
 	params := []interface{}{}
 	params = append(params, walletId)
+
+	if uploadAtStart != nil {
+		sql = sql + " and a.create_at>=?"
+		params = append(params, *uploadAtStart)
+	}
+
+	if uploadAtEnd != nil {
+		sql = sql + " and a.create_at<=?"
+		params = append(params, *uploadAtEnd)
+	}
 
 	if !libutils.IsStrEmpty(status) {
 		switch strings.Trim(*status, " ") {
@@ -268,10 +278,10 @@ func GetSourceFileUploads(walletId int64, status, fileName, orderBy, is_minted *
 		}
 	}
 
-	if is_minted != nil {
-		if strings.EqualFold(*is_minted, "y") {
+	if isMinted != nil {
+		if strings.EqualFold(*isMinted, "y") {
 			sql = sql + " and e.id is not null"
-		} else if strings.EqualFold(*is_minted, "n") {
+		} else if strings.EqualFold(*isMinted, "n") {
 			sql = sql + " and e.id is null"
 		}
 	}

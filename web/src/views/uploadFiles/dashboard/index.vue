@@ -706,6 +706,7 @@ export default {
                                 })
                                 .catch(error => {
                                   // console.log('errorerrorerror', error)
+                                  _this.finishClose()
                                 })
                             }else{
                               _this.contractSend(res.data.data.w_cid, web3.utils.toWei(rowAmount, 'ether'))

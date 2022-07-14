@@ -20,10 +20,12 @@ import (
 
 	"github.com/filswan/go-swan-lib/client/ipfs"
 	"github.com/filswan/go-swan-lib/client/web"
+	libconstants "github.com/filswan/go-swan-lib/constants"
 	"github.com/filswan/go-swan-lib/logs"
 	libutils "github.com/filswan/go-swan-lib/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/shopspring/decimal"
 )
 
 var uploadMutext sync.Mutex
@@ -237,7 +239,16 @@ func DownloadSourceFileUploads(walletAddress string, uploadAtStart, uploadAtEnd 
 
 		contentStr = contentStr + status + ","
 		contentStr = contentStr + srcFileUpload.PinStatus + ","
-		contentStr = contentStr + srcFileUpload.PayAmount + ","
+
+		price, err := decimal.NewFromString(srcFileUpload.PayAmount)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return nil, err
+		}
+		e18 := decimal.NewFromFloat32(libconstants.LOTUS_PRICE_MULTIPLE_1E18)
+		price = price.Div(e18)
+		contentStr = contentStr + price.String() + " USDC,"
+
 		contentStr = contentStr + "\"" + minerFids + "\"" + ","
 		uploadAt := time.Unix(srcFileUpload.UploadAt, 0)
 		contentStr = contentStr + uploadAt.Format(time.RFC3339) + ","

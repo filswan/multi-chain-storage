@@ -170,7 +170,7 @@ func DownloadDeals(c *gin.Context) {
 
 	uploadAtStart, err := strconv.ParseInt(uploadAtStartStr, 10, 64)
 	if err != nil {
-		err := fmt.Errorf("upload_at_start must be a valid number")
+		err := fmt.Errorf("%s,upload_at_start must be a valid number", err.Error())
 		logs.GetLogger().Error(err)
 		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_INVALID_VALUE, err.Error()))
 		return
@@ -193,7 +193,7 @@ func DownloadDeals(c *gin.Context) {
 
 	uploadAtEnd, err := strconv.ParseInt(uploadAtEndStr, 10, 64)
 	if err != nil {
-		err := fmt.Errorf("upload_at_end must be a valid number")
+		err := fmt.Errorf("%s,upload_at_end must be a valid number", err.Error())
 		logs.GetLogger().Error(err)
 		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_INVALID_VALUE, err.Error()))
 		return

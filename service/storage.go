@@ -224,17 +224,17 @@ func DownloadSourceFileUploads(locationStr, walletAddress string, uploadAtStart,
 
 		fileSize := srcFileUpload.FileSize / constants.BYTES_1GB
 		if fileSize > 0 {
-			contentStr = contentStr + strconv.FormatInt(fileSize, 10) + "GB,"
+			contentStr = contentStr + strconv.FormatInt(fileSize, 10) + " GB,"
 		} else {
 			fileSize = srcFileUpload.FileSize / constants.BYTES_1MB
 			if fileSize > 0 {
-				contentStr = contentStr + strconv.FormatInt(fileSize, 10) + "MB,"
+				contentStr = contentStr + strconv.FormatInt(fileSize, 10) + " MB,"
 			} else {
 				fileSize = srcFileUpload.FileSize / constants.BYTES_1KB
 				if fileSize > 0 {
-					contentStr = contentStr + strconv.FormatInt(fileSize, 10) + "KB,"
+					contentStr = contentStr + strconv.FormatInt(fileSize, 10) + " KB,"
 				} else {
-					contentStr = contentStr + strconv.FormatInt(fileSize, 10) + "B,"
+					contentStr = contentStr + strconv.FormatInt(srcFileUpload.FileSize, 10) + " B,"
 				}
 			}
 		}

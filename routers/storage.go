@@ -20,6 +20,7 @@ import (
 func Storage(router *gin.RouterGroup) {
 	router.POST("/ipfs/upload", UploadFile)
 	router.GET("/tasks/deals", GetDeals)
+	router.GET("/tasks/deals/download", DownloadDeals)
 	router.GET("/source_file_upload/:source_file_upload_id", GetSourceFileUpload)
 	router.GET("/deal/detail/:deal_id", GetDealFromFlink)
 	router.GET("/deal/log/:offline_deal_id", GetDealLogs)
@@ -128,7 +129,7 @@ func GetDeals(c *gin.Context) {
 
 	isAscend := strings.EqualFold(strings.Trim(URL.Get("is_ascend"), " "), "y")
 
-	sourceFileUploads, totalRecordCount, err := service.GetSourceFileUploads(walletAddress, status, fileName, orderBy, is_minted, isAscend, limit, offset)
+	sourceFileUploads, totalRecordCount, err := service.GetSourceFileUploads(walletAddress, &status, &fileName, &orderBy, &is_minted, isAscend, &limit, &offset)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.ERROR_INTERNAL, err.Error()))
@@ -139,6 +140,31 @@ func GetDeals(c *gin.Context) {
 		"source_file_upload": sourceFileUploads,
 		"total_record_count": *totalRecordCount,
 	}))
+}
+
+func DownloadDeals(c *gin.Context) {
+	URL := c.Request.URL.Query()
+	walletAddress := strings.Trim(URL.Get("wallet_address"), " ")
+	if walletAddress == "" {
+		err := fmt.Errorf("wallet_address is required")
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_NULL, err.Error()))
+		return
+	}
+
+	sourceFileUploads, err := service.DownloadSourceFileUploads(walletAddress)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.ERROR_INTERNAL, err.Error()))
+		return
+	}
+
+	content := []byte(*sourceFileUploads)
+	filename := "source_file_uploads.csv"
+	c.Header("Content-Disposition", "attachment; filename="+filename)
+	c.Header("Content-Type", "application/text/plain")
+	c.Header("Accept-Length", fmt.Sprintf("%d", len(content)))
+	c.Writer.Write(content)
 }
 
 func GetSourceFileUpload(c *gin.Context) {

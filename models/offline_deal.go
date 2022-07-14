@@ -171,6 +171,20 @@ func GetOfflineDealOutsByCarFileId(carFileId int64) ([]*OfflineDealOut, error) {
 	return offlineDeals, nil
 }
 
+func GetOfflineDealOutsBySourceFileUploadId(sourceFileUploadId int64) ([]*OfflineDealOut, error) {
+	var offlineDeals []*OfflineDealOut
+	sql := "select b.*,c.fid miner_fid from car_file_source a,offline_deal b,miner c\n" +
+		"where a.source_file_upload_id=? and a.car_file_id=b.car_file_id and b.miner_id=c.id\n"
+	err := database.GetDB().Raw(sql, sourceFileUploadId).Scan(&offlineDeals).Error
+
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	return offlineDeals, nil
+}
+
 func GetOfflineDealByDealId(dealId int64) (*OfflineDeal, error) {
 	if dealId <= 0 {
 		err := fmt.Errorf("deal id must be greater than 0")

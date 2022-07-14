@@ -199,7 +199,6 @@ func GetSourceFileUploadsNeed2Car() ([]*SourceFileUploadNeed2Car, error) {
 
 type SourceFileUploadResult struct {
 	SourceFileUploadId int64             `json:"source_file_upload_id"`
-	CarFileId          int64             `json:"car_file_id"`
 	FileName           string            `json:"file_name"`
 	FileSize           int64             `json:"file_size"`
 	UploadAt           int64             `json:"upload_at"`
@@ -232,7 +231,7 @@ func (a SourceFileUploadResultByUploadAt) Len() int           { return len(a) }
 func (a SourceFileUploadResultByUploadAt) Less(i, j int) bool { return a[i].UploadAt < a[j].UploadAt }
 func (a SourceFileUploadResultByUploadAt) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 
-func GetSourceFileUploads(walletId int64, status, fileName, orderBy, is_minted string, isAscend bool, limit, offset int) ([]*SourceFileUploadResult, *int, error) {
+func GetSourceFileUploads(walletId int64, status, fileName, orderBy, is_minted *string, isAscend bool, limit, offset *int) ([]*SourceFileUploadResult, *int, error) {
 	sql := "select\n" +
 		"a.id source_file_upload_id,a.file_name,b.file_size,a.create_at upload_at,a.duration,\n" +
 		"b.ipfs_url,b.pin_status,f.pay_amount,a.status,\n" +
@@ -243,15 +242,15 @@ func GetSourceFileUploads(walletId int64, status, fileName, orderBy, is_minted s
 		"left outer join transaction f on a.id=f.source_file_upload_id\n" +
 		"where a.wallet_id=? and a.file_type=0"
 
-	if fileName != "" {
-		sql = sql + " and a.file_name like '%" + fileName + "%'\n"
+	if fileName != nil {
+		sql = sql + " and a.file_name like '%" + *fileName + "%'\n"
 	}
 
 	params := []interface{}{}
 	params = append(params, walletId)
 
-	if !libutils.IsStrEmpty(&status) {
-		switch strings.Trim(status, " ") {
+	if !libutils.IsStrEmpty(status) {
+		switch strings.Trim(*status, " ") {
 		case constants.SOURCE_FILE_UPLOAD_STATUS_PENDING,
 			constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDABLE,
 			constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDED,
@@ -269,10 +268,12 @@ func GetSourceFileUploads(walletId int64, status, fileName, orderBy, is_minted s
 		}
 	}
 
-	if strings.EqualFold(is_minted, "y") {
-		sql = sql + " and e.id is not null"
-	} else if strings.EqualFold(is_minted, "n") {
-		sql = sql + " and e.id is null"
+	if is_minted != nil {
+		if strings.EqualFold(*is_minted, "y") {
+			sql = sql + " and e.id is not null"
+		} else if strings.EqualFold(*is_minted, "n") {
+			sql = sql + " and e.id is null"
+		}
 	}
 
 	var sourceFileUploadResult []*SourceFileUploadResult
@@ -283,7 +284,12 @@ func GetSourceFileUploads(walletId int64, status, fileName, orderBy, is_minted s
 		return nil, nil, err
 	}
 
-	switch strings.Trim(orderBy, " ") {
+	if orderBy == nil {
+		orderByDefault := "upload_at"
+		orderBy = &orderByDefault
+	}
+
+	switch strings.Trim(*orderBy, " ") {
 	case "file_name":
 		if isAscend {
 			sort.Sort(SourceFileUploadResultByFileName(sourceFileUploadResult))
@@ -311,8 +317,13 @@ func GetSourceFileUploads(walletId int64, status, fileName, orderBy, is_minted s
 	}
 
 	totalRecordCount := len(sourceFileUploadResult)
-	start := (offset - 1) * limit
-	end := start + limit
+
+	if limit == nil || offset == nil {
+		return sourceFileUploadResult, &totalRecordCount, nil
+	}
+
+	start := (*offset - 1) * *limit
+	end := start + *limit
 	if start >= totalRecordCount {
 		return nil, &totalRecordCount, nil
 	}

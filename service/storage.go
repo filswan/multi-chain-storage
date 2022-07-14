@@ -197,7 +197,7 @@ func GetSourceFileUploads(walletAddress string, status, fileName, orderBy, isMin
 	return srcFileUploads, totalRecordCount, nil
 }
 
-func DownloadSourceFileUploads(walletAddress string, uploadAtStart, uploadAtEnd *int64) (*string, error) {
+func DownloadSourceFileUploads(locationStr, walletAddress string, uploadAtStart, uploadAtEnd *int64) (*string, error) {
 	srcFileUploads, _, err := GetSourceFileUploads(walletAddress, nil, nil, nil, nil, true, nil, nil, uploadAtStart, uploadAtEnd)
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -250,8 +250,15 @@ func DownloadSourceFileUploads(walletAddress string, uploadAtStart, uploadAtEnd 
 		contentStr = contentStr + price.String() + " USDC,"
 
 		contentStr = contentStr + "\"" + minerFids + "\"" + ","
+
 		uploadAt := time.Unix(srcFileUpload.UploadAt, 0)
-		contentStr = contentStr + uploadAt.Format(time.RFC3339) + ","
+		location, err := time.LoadLocation(locationStr)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return nil, err
+		}
+
+		contentStr = contentStr + uploadAt.In(location).Format("2006-01-02 15:04:05") + ","
 
 		if srcFileUpload.Status == constants.SOURCE_FILE_UPLOAD_STATUS_PENDING {
 			contentStr = contentStr + constants.SOURCE_FILE_UPLOAD_STATUS_PENDING

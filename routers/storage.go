@@ -152,6 +152,14 @@ func DownloadDeals(c *gin.Context) {
 		return
 	}
 
+	location := strings.Trim(URL.Get("location"), " ")
+	if walletAddress == "" {
+		err := fmt.Errorf("location is required")
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_NULL, err.Error()))
+		return
+	}
+
 	uploadAtStartStr := strings.Trim(URL.Get("upload_at_start"), " ")
 	if uploadAtStartStr == "" {
 		err := fmt.Errorf("upload_at_start is required")
@@ -198,7 +206,7 @@ func DownloadDeals(c *gin.Context) {
 		return
 	}
 
-	sourceFileUploads, err := service.DownloadSourceFileUploads(walletAddress, &uploadAtStart, &uploadAtEnd)
+	sourceFileUploads, err := service.DownloadSourceFileUploads(location, walletAddress, &uploadAtStart, &uploadAtEnd)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.ERROR_INTERNAL, err.Error()))

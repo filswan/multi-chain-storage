@@ -365,7 +365,12 @@ type mintInfoUpload struct {
 
 func RecordMintInfo(c *gin.Context) {
 	var model mintInfoUpload
-	c.BindJSON(&model)
+	err := c.BindJSON(&model)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_INVALID_VALUE, err.Error()))
+		return
+	}
 
 	sourceFileIploadId := model.SourceFileIploadId
 	nftTxHash := model.TxHash

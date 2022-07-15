@@ -343,9 +343,9 @@
             />
           </div>
 
-          <!-- <div class="down" @click="downVisible=true">
-              [ Download <span>xxxx</span> Export ]
-          </div> -->
+          <div class="down" @click="downVisible=true">
+              [ {{$t('billing.data_download')}} <span>CSV</span> {{$t('billing.data_export')}} ]
+          </div>
         </div>
       </div>
 
@@ -422,7 +422,6 @@
         </el-dialog>
 
         <mint-tip v-if="mineVisible" :mineVisible="mineVisible" :mintRow="mintRow" @getMintDialog="getMintDialog"></mint-tip>
-      
         <download v-if="downVisible" :downVisible="downVisible" :titlePage="$t('billing.download_module_title_file')" @getDownload="getDownload"></download>
     <!-- 回到顶部 -->
     <el-backtop target=".content-box" :bottom="40" :right="20"></el-backtop>

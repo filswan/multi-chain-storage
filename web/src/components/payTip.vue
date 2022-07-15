@@ -281,7 +281,7 @@
                             justify-content: flex-start;
                             align-items: center;
                             width: 47%;
-                            padding: 0 3% 0 0;
+                            padding: 0 2% 0 0;
                             // max-width: 2rem;
                             line-height: 1.5;
                             text-align: left;

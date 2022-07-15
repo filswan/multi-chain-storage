@@ -359,13 +359,18 @@ func GetDealLogs(c *gin.Context) {
 type mintInfoUpload struct {
 	SourceFileIploadId int64  `json:"source_file_upload_id"`
 	TxHash             string `json:"tx_hash"`
-	TokenId            string `json:"token_id"`
+	TokenId            int64  `json:"token_id"`
 	MintAddress        string `json:"mint_address"`
 }
 
 func RecordMintInfo(c *gin.Context) {
 	var model mintInfoUpload
-	c.BindJSON(&model)
+	err := c.BindJSON(&model)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_INVALID_VALUE, err.Error()))
+		return
+	}
 
 	sourceFileIploadId := model.SourceFileIploadId
 	nftTxHash := model.TxHash
@@ -379,11 +384,19 @@ func RecordMintInfo(c *gin.Context) {
 		return
 	}
 
-	if nftTxHash == "" || tokenId == "" || mintAddress == "" {
-		errMsg := "tx_hash, token_id and mint_address cannot be empty"
+	if nftTxHash == "" || mintAddress == "" {
+		errMsg := "tx_hash, and mint_address cannot be empty"
 		err := errors.New(errMsg)
 		logs.GetLogger().Error(err)
 		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_NULL, errMsg))
+		return
+	}
+
+	if tokenId < 0 {
+		errMsg := "token_id cannot be less than 0"
+		err := errors.New(errMsg)
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_INVALID_VALUE, errMsg))
 		return
 	}
 

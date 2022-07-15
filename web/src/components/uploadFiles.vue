@@ -540,7 +540,7 @@
             // 文件上传
             uploadFile(params) {
                 this._file = params.file;
-                const isLt2M = this._file.size / 1024 / 1024 / 1024 <= 1;  // or 1000
+                const isLt2M = this._file.size / 1024 / 1024 / 1024 <= 25;  // or 1000
                 this.ruleForm.file_size = this.sizeChange(this._file.size)
                 this.ruleForm.file_size_byte = this.byteChange(this._file.size)
                 console.log('bytes', this._file.size)
@@ -876,7 +876,7 @@
                                 justify-content: flex-start;
                                 align-items: center;
                                 width: 47%;
-                                padding: 0 3% 0 0;
+                                padding: 0 2% 0 0;
                                 // max-width: 2rem;
                                 line-height: 1.5;
                                 text-align: left;
@@ -1315,7 +1315,7 @@
                             justify-content: flex-end;
                             align-items: center;
                             width: 47%;
-                            padding: 0 3% 0 0;
+                            padding: 0 2% 0 0;
                             // max-width: 2rem;
                             line-height: 1.5;
                             text-align: left;

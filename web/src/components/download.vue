@@ -1,5 +1,5 @@
 <template>
-        <el-dialog :title="$t('billing.download_module_title')+titlePage" :modal="true" :width="widthDia" :visible.sync="downVisible" :before-close="closeDia">
+        <el-dialog :title="$t('billing.download_module_title')+titlePage+$t('billing.download_module_title_kh')" :modal="true" :width="widthDia" :visible.sync="downVisible" :before-close="closeDia">
             <div class="upload_form">
                 <el-date-picker
                     v-model="downloadTime"
@@ -9,82 +9,94 @@
                     :end-placeholder="$t('billing.end_date')">
                 </el-date-picker>
                 <div class="drag_container">
-                    <span>{{$t('billing.verify')}}</span>
-                    <drag-verify 
-                        ref="Verify"
-                        :width="width" 
-                        :height="height" 
-                        :text="text" 
-                        :success-text="successText" 
-                        :background="background" 
-                        :handlerBg="handlerBg" 
-                        :progress-bar-bg="background" 
-                        :completed-bg="completedBg" 
-                        :handler-icon="handlerIcon" 
-                        :text-size="textSize" 
-                        :success-icon="successIcon"
-                        :circle="false" >
-                    </drag-verify>
+                    <span style="white-space: nowrap;margin-right: 0.15rem;">{{$t('billing.verify')}}</span>
+                    <JcRange status="statusAll" :successFun="onMpanelSuccess" :errorFun="onMpanelError"></JcRange>
                 </div>
                 <div class="upload_bot">
-                    <el-button type="primary" @click="download">{{$t('billing.download_module_btn')}}</el-button>
+                    <el-button type="primary" @click="downloadClick" :disabled="!downloadTime || !sliderValidator">
+                      {{$t('billing.download_module_btn')}}
+                    </el-button>
                 </div>
             </div>
         </el-dialog>
 </template>
 
 <script>
-import dragVerify from "vue-drag-verify";
+let that;
+import JcRange from "@/components/JcRange";
+import Moment from "moment-timezone";
+import axios from 'axios'
+import QS from 'qs'
 export default {
   name: "download",
   data() {
+    var checkStatus = (rule, value, callback) => {
+      console.log(value);
+      if (!value) {
+        return callback(new Error(that.$t("billing.verify_tip")));
+      } else {
+        callback();
+      }
+    };
     return {
       widthDia: document.body.clientWidth <= 600 ? "95%" : document.body.clientWidth <= 1600 ? "520px" : "640px",
       downloadTime: "",
-
-      handlerIcon: "el-icon-d-arrow-right",
-      successIcon: "el-icon-check",
-      background: "#dadada",
-      handlerBg: "#fff",
-      completedBg: "#66cc66",
-      text: this.$t("billing.verify_tip"),
-      successText: this.$t("billing.verify_result"),
-      width:
-        document.body.clientWidth > 1600
-          ? 480
-          : document.body.clientWidth > 600 ? 400 : 290,
-      height:
-        document.body.clientWidth > 1800
-          ? 55
-          : document.body.clientWidth > 1440
-            ? 48
-            : document.body.clientWidth > 1280 ? 40 : 35,
-      textSize: "0.22rem",
-      textColor: "#888",
-      isCircle: "true",
-      radius: "12px"
+      statusAll: [{ validator: checkStatus, trigger: "change" }],
+      sliderValidator: false
     };
   },
   props: ["downVisible", 'titlePage'],
   components: {
-    dragVerify
+    JcRange
+  },
+  computed: {
+      metaAddress() {
+          return this.$store.getters.metaAddress
+      }
   },
   methods: {
-    closeDia() {
-      this.$emit("getDownload", false);
+    onMpanelSuccess() {
+      this.sliderValidator = true
     },
-    download() {
-      // console.log(this.$refs.Verify.isMoving)
-      console.log(
-        "Time:",
-        this.downloadTime,
-        "Verify:",
-        this.$refs.Verify.isPassing
-      );
-      // console.log(this.$refs.Verify.handlerIconClass)
+    onMpanelError() {
+      this.sliderValidator = false
+    },
+    closeDia() {
+      that.$emit("getDownload", false);
+    },
+    async downloadClick() {
+      if(!that.downloadTime || !that.sliderValidator) return false
+
+      let params = {
+        location: Moment.tz.guess(),
+        wallet_address: that.metaAddress,
+        upload_at_start: that.downloadTime[0].getTime()/1000,
+        upload_at_end: that.downloadTime[1].getTime()/1000
+      }
+      const dataRes = await that.getRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/storage/tasks/deals/download?${QS.stringify(params)}`)
+      let url = that.genUrl(dataRes, {});
+      let a = document.createElement('a');
+      a.href = url;
+      a.download = that.titlePage + ".csv";
+      a.click();
+      window.URL.revokeObjectURL(url);
+    },
+    genUrl(encoded, options) {
+        const dataBlob = new Blob([`\ufeff${encoded}`], { type: 'text/plain;charset=utf-8' });//返回的格式
+        return window.URL.createObjectURL(dataBlob);
+    },
+    async getRequest(apilink) {
+        try {
+            const response = await axios.get(apilink)
+            return response.data
+        } catch (err) {
+            console.error(err)
+        }
     }
   },
-  mounted() {}
+  mounted() {
+    that = this
+  }
 };
 </script>
 
@@ -186,7 +198,7 @@ export default {
             top: 4px;
             bottom: 4px;
             height: auto !important;
-            margin-left: 4px;
+            margin-left: 1px;
             border-radius: 0.12rem !important;
             border: 0;
             i {
@@ -214,6 +226,11 @@ export default {
           border: 0;
           background: linear-gradient(45deg, #4f8aff, #4b5eff);
           border-radius: 14px;
+          &.is-disabled, &.is-disabled:active, &.is-disabled:focus, &.is-disabled:hover {
+              color: #FFF;
+              background: #a0cfff;
+              border-color: #a0cfff;
+          }
         }
       }
     }

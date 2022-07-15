@@ -85,7 +85,7 @@ export default {
         curated_dataset: '数据集:',
         upload_form_type: '类型:',
         upload_form_file: 'CSV文件:',
-        upload_form_file_tip: '文件最大为 1 GB',
+        upload_form_file_tip: '文件最大为 25 GB',
         upload_form_file_tip01: '文件最小为 1 MB',
         upload_form_minerId: '存储节点ID:',
         upload_form_dataset: '数据集:',
@@ -603,13 +603,16 @@ export default {
         UNLOCKDATE: '解锁日期',
         Deadline: '截止日期',
         download_module_title: '下载数据（',
-        download_module_title_file: '文件详情）',
-        download_module_title_billing: '账单详情）',
+        download_module_title_kh: '）',
+        download_module_title_file: '文件详情',
+        download_module_title_billing: '账单详情',
         download_module_btn: '下载',
         verify: '验证:',
         verify_result: '验证成功',
         verify_tip: '将滑块拖动到最右侧',
         end_date: '结束日期',
-        time_to: '至'
+        time_to: '至',
+        data_download: '下载',
+        data_export: '导出'
     }
 }

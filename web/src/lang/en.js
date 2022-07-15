@@ -86,7 +86,7 @@ export default {
         curated_dataset: 'Curated Dataset:',
         upload_form_type: 'Type:',
         upload_form_file: 'CSV File:',
-        upload_form_file_tip: 'The maximum size of the file is 1 GB',
+        upload_form_file_tip: 'The maximum size of the file is 25 GB',
         upload_form_file_tip01: 'The minimum value of the file is 1 MB',
         upload_form_minerId: 'W3SS ID:',
         upload_form_dataset: 'Curated Dataset',
@@ -598,14 +598,17 @@ export default {
         UNLOCKDATE: 'Unlock Date',
         Deadline: 'Deadline',
         download_module_title: 'Download Data (',
-        download_module_title_file: 'File History)',
-        download_module_title_billing: 'Billing History)',
+        download_module_title_kh: ')',
+        download_module_title_file: 'File History',
+        download_module_title_billing: 'Billing History',
         download_module_btn: 'Download',
         verify: 'Verify:',
         verify_result: 'Verification successful',
         verify_tip: 'Drag the slider to the far right',
         start_date: 'Start date',
         end_date: 'End date',
-        time_to: 'To'
+        time_to: 'To',
+        data_download: 'Download',
+        data_export: 'Export'
     }
 }

@@ -51,9 +51,9 @@ $ npm run build:prod
 
 The build artifacts will be stored in the `dist/` directory.
 
-## install vue-drag-verify
+## install moment-timezone
 
-Run `npm install vue-drag-verify --save` to generate component.
+Run `npm install moment-timezone --save` to generate component.
 
 ## Reference documents
 

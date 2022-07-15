@@ -435,7 +435,7 @@ func GetSourceFileUploadDeal(sourceFileUploadId int64, dealId int64) (*SourceFil
 	return sourceFileUploadDeal, daoSignatures, nil
 }
 
-func RecordMintInfo(sourceFileIploadId int64, txHash string, tokenId string, mintAddress string) (*models.SourceFileMint, error) {
+func RecordMintInfo(sourceFileIploadId int64, txHash string, tokenId int64, mintAddress string) (*models.SourceFileMint, error) {
 	/*
 		ethClient, _, err := client.GetEthClient()
 		if err != nil {

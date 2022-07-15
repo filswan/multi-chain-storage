@@ -93,7 +93,7 @@ create table source_file_mint (
     source_file_upload_id bigint        not null,
     nft_tx_hash           varchar(100)  not null,
     mint_address          varchar(100)  not null,
-    token_id              varchar(100)  not null,
+    token_id              bigint        not null,
     create_at             bigint        not null,
     update_at             bigint        not null,
     primary key pk_source_file_mint(id),
@@ -265,4 +265,9 @@ create table dao_signature_source_file_upload (
 
 #--alter table offline_deal add note             text;
 #--alter table mcs_v2.dao_signature modify wallet_id_recipient bigint;
+
+
+#--2022.07.15
+#--alter table source_file_mint modify token_id bigint  not null;
+
 

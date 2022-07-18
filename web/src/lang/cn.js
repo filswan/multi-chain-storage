@@ -612,7 +612,7 @@ export default {
         verify_tip: '将滑块拖动到最右侧',
         end_date: '结束日期',
         time_to: '至',
-        data_download: '下载',
-        data_export: '导出'
+        data_download: '导出',
+        data_export: '格式'
     }
 }

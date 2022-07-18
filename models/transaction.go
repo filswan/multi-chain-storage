@@ -409,7 +409,7 @@ func GetTransactions(walletId int64, txHash, fileName, orderBy string, isAscend 
 	params = append(params, walletId)
 
 	if !libutils.IsStrEmpty(&txHash) {
-		sql = sql + " and a.tx_hash =?"
+		sql = sql + " and a.pay_tx_hash =?"
 		params = append(params, txHash)
 	}
 

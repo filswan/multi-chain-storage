@@ -1,6 +1,6 @@
 <template>
         <el-dialog :title="$t('billing.download_module_title')+titlePage+$t('billing.download_module_title_kh')" :modal="true" :width="widthDia" :visible.sync="downVisible" :before-close="closeDia">
-            <div class="upload_form">
+            <div class="upload_form" v-loading="loading">
                 <el-date-picker
                     v-model="downloadTime"
                     type="daterange"
@@ -42,7 +42,8 @@ export default {
       widthDia: document.body.clientWidth <= 600 ? "95%" : document.body.clientWidth <= 1600 ? "520px" : "640px",
       downloadTime: "",
       statusAll: [{ validator: checkStatus, trigger: "change" }],
-      sliderValidator: false
+      sliderValidator: false,
+      loading: false
     };
   },
   props: ["downVisible", 'titlePage'],
@@ -67,6 +68,7 @@ export default {
     async downloadClick() {
       if(!that.downloadTime || !that.sliderValidator) return false
 
+      that.loading = true
       let params = {
         location: Moment.tz.guess(),
         wallet_address: that.metaAddress,
@@ -80,10 +82,16 @@ export default {
       a.download = that.titlePage + ".csv";
       a.click();
       window.URL.revokeObjectURL(url);
+
+      await that.timeout(1000)
+      that.closeDia()
     },
     genUrl(encoded, options) {
         const dataBlob = new Blob([`\ufeff${encoded}`], { type: 'text/plain;charset=utf-8' });//返回的格式
         return window.URL.createObjectURL(dataBlob);
+    },
+    timeout (delay) {
+        return new Promise((res) => setTimeout(res, delay))
     },
     async getRequest(apilink) {
         try {

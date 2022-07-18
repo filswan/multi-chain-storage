@@ -344,7 +344,7 @@
           </div>
 
           <div class="down" @click="downVisible=true">
-              [ {{$t('billing.data_download')}} <span>CSV</span> {{$t('billing.data_export')}} ]
+              [ <span>{{$t('billing.data_download')}} CSV {{$t('billing.data_export')}}</span> ]
           </div>
         </div>
       </div>

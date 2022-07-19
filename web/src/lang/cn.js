@@ -606,6 +606,7 @@ export default {
         download_module_title_kh: '）',
         download_module_title_file: '文件详情',
         download_module_title_billing: '账单详情',
+        download_module_title_tooltip: '下载时间依据数据大小而调整',
         download_module_btn: '下载',
         verify: '验证:',
         verify_result: '验证成功',

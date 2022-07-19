@@ -1,7 +1,16 @@
 <template>
-        <el-dialog :title="$t('billing.download_module_title')+titlePage+$t('billing.download_module_title_kh')" :modal="true" :width="widthDia" :visible.sync="downVisible" :before-close="closeDia">
+        <el-dialog :modal="true" :width="widthDia" :visible.sync="downVisible" :before-close="closeDia">
+            <div slot="title" class="dialog-title">
+                {{$t('billing.download_module_title')+titlePage+$t('billing.download_module_title_kh')}}
+                <el-tooltip effect="dark" placement="top">
+                    <div slot="content">
+                        {{$t('billing.download_module_title_tooltip')}}
+                    </div>
+                    <img src="@/assets/images/info.png"/>
+                </el-tooltip>
+            </div>
             <div class="upload_form" v-loading="loading">
-                <el-date-picker
+                <el-date-picker popper-class="elPopDate"
                     v-model="downloadTime"
                     type="daterange"
                     :range-separator="$t('billing.time_to')"
@@ -40,7 +49,10 @@ export default {
     };
     return {
       widthDia: document.body.clientWidth <= 600 ? "95%" : document.body.clientWidth <= 1600 ? "520px" : "640px",
-      downloadTime: "",
+      downloadTime: [
+        new Date(new Date(new Date().toLocaleDateString()).getTime() - 3600 * 1000 * 24 * 7), 
+        new Date(new Date(new Date().toLocaleDateString()).getTime() + 24 * 60 * 60 * 1000 - 1)
+      ],
       statusAll: [{ validator: checkStatus, trigger: "change" }],
       sliderValidator: false,
       loading: false
@@ -69,11 +81,12 @@ export default {
       if(!that.downloadTime || !that.sliderValidator) return false
 
       that.loading = true
+      let end = new Date(that.downloadTime[1].toLocaleDateString()).getTime() + 24 * 60 * 60 * 1000 - 1 //设置为选中end日期的23:59:59, 默认为00:00:00
       let params = {
         location: Moment.tz.guess(),
         wallet_address: that.metaAddress,
-        upload_at_start: that.downloadTime[0].getTime()/1000,
-        upload_at_end: that.downloadTime[1].getTime()/1000
+        upload_at_start: Date.parse(that.downloadTime[0])/1000, // 标准时间转时间戳（毫秒）
+        upload_at_end: Date.parse(new Date(end))/1000
       }
       const dataRes = await that.getRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/storage/tasks/deals/download?${QS.stringify(params)}`)
       let url = that.genUrl(dataRes, {});
@@ -123,12 +136,31 @@ export default {
       padding: 0.3rem 0.4rem;
       display: flex;
       border-bottom: 1px solid #dfdfdf;
-      .el-dialog__title {
-        color: #333;
-        font-size: 0.22rem;
-        font-weight: 500;
-        line-height: 1;
-        text-transform: capitalize;
+      .dialog-title{
+          display: flex;
+          align-items: center;
+          color: #333;
+          font-size: 0.22rem;
+          font-weight: 500;
+          line-height: 1;
+          text-transform: capitalize;
+          .el-tooltip{
+              width: 20px;
+              height: 20px;
+              margin: 0 0 0 5px;
+              @media screen and (min-width:1800px){
+                  width: 22px;
+                  height: 22px;
+              }
+              @media screen and (max-width:1440px){
+                  width: 17px;
+                  height: 17px;
+              }
+              @media screen and (max-width: 1280px){
+                  width: 16px;
+                  height: 16px;
+              }
+          }
       }
       .el-dialog__headerbtn {
         display: none;
@@ -151,7 +183,7 @@ export default {
         i {
           display: none;
         }
-        .el-icon-date {
+        .el-icon-date, .el-icon-time {
           display: block;
           position: absolute;
           top: 0;

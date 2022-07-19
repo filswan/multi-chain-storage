@@ -601,6 +601,7 @@ export default {
         download_module_title_kh: ')',
         download_module_title_file: 'File History',
         download_module_title_billing: 'Billing History',
+        download_module_title_tooltip: "Downloading data can take a while, depending on the data's size",
         download_module_btn: 'Download',
         verify: 'Verify:',
         verify_result: 'Verification successful',

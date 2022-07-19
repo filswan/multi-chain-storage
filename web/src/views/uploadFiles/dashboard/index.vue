@@ -120,7 +120,7 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="miner_fid" min-width="120">
+          <el-table-column prop="miner_fid" min-width="100">
             <template slot="header" slot-scope="scope">
               <div class="tips">
                 {{$t('uploadFile.w3ss_ids')}}

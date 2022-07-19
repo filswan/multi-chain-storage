@@ -702,20 +702,21 @@ body,
 }
 
 @media screen and (max-width:441px){
-.el-date-range-picker{
+.elPopDate{
   width: 100%;
   left: 0;
+  overflow: scroll;
 }
-.el-date-range-picker .el-picker-panel__body{
+/* .elPopDate .el-picker-panel__body{
   min-width: auto;
   width:  100%;
-}
-.el-date-range-picker__content{
+} */
+/* .elPopDate .el-date-range-picker__content{
   width:  100%;
   clear: both;
   padding: 0;
-}
-.el-date-range-picker__content.is-left{
+} */
+/* .elPopDate .el-date-range-picker__content.is-left{
   border: 0;
-}
+} */
 }

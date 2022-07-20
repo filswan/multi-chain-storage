@@ -449,10 +449,10 @@ export default {
         },
         fn() {
             let _this = this
-            ethereum.on("accountsChanged", function(accounts) {
-                // console.log('account header:', accounts[0]);  //Once the account is switched, it will be executed here
-                if(_this.metaAddress && accounts[0]){
-                    // web3.eth.getAccounts().then(accounts => {
+            ethereum.on("accountsChanged", function(account) {
+                // console.log('account header:', account[0]);  //Once the account is switched, it will be executed here
+                if(_this.metaAddress && account[0]){
+                    web3.eth.getAccounts().then(accounts => {
                         _this.addrChild = accounts[0]
                         _this.walletInfo()
                         _this.$store.dispatch('setMetaAddress', accounts[0])
@@ -460,7 +460,7 @@ export default {
                             _this.$router.push({ path: '/my_files' })
                         }
                         _this.$router.go(0)
-                    // })
+                    })
                 }else{
                     _this.signOutFun()
                 }

@@ -120,9 +120,9 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="miner_fid" min-width="100">
+          <el-table-column prop="miner_fid" min-width="120">
             <template slot="header" slot-scope="scope">
-              <div class="tips">
+              <div class="tips tipsWidth">
                 {{$t('uploadFile.w3ss_ids')}}
                     
                 <el-tooltip effect="dark" :content="$t('uploadFile.w3ss_id_tooltip')" placement="top">
@@ -1732,6 +1732,18 @@ export default {
                         width: 15px;
                         height: 15px;
                     }
+                }
+              }
+              .tipsWidth{
+                width: 110px;
+                @media screen and (max-width:1600px){
+                  width: 95px;
+                }
+                @media screen and (max-width:1440px){
+                  width: 90px;
+                }
+                @media screen and (max-width:1280px){
+                  width: 80px;
                 }
               }
               .el-table__column-filter-trigger{

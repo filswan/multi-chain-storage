@@ -252,9 +252,11 @@ contract SwanPayment is IPaymentMinimal, Initializable {
             uint256 unitPrice = tokenAmount / size;
             for (uint8 i = 0; i < cidList.length; i++) {
                 TxInfo storage t = txCarMap[cidList[i]];
+                if(t.copyLimit == 0) continue;
                 uint256 cost = unitPrice * t.size;
 
                 t.lockedFee = t.lockedFee - cost;
+                t.copyLimit = t.copyLimit - 1;
                 if (t.lockedFee < 0) {
                     t.lockedFee = 0;
                 }
@@ -263,9 +265,8 @@ contract SwanPayment is IPaymentMinimal, Initializable {
 
             IERC20(_ERC20_TOKEN).transfer(recipient, tokenAmount);
             //todo: add unlock event here
-            emit UnlockCarPayment(dealId, network, recipient);
         }
-
+        emit UnlockCarPayment(dealId, network, recipient);
         return true;
     }
 

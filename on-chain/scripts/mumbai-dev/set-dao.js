@@ -21,7 +21,10 @@ async function main() {
   const contract = await hre.ethers.getContractFactory("FilswanOracle");
   const daoOracleInstance = await contract.attach(oracleDAOContractAddress);
 
-  const tx = await daoOracleInstance.connect(signer).setDAOUsers(addressList);
+  let tx = await daoOracleInstance.connect(signer).setFilinkOracle(filinkAddress);
+  await tx.wait();
+
+  tx = await daoOracleInstance.connect(signer).setDAOUsers(addressList);
   await tx.wait();
 
   const role = await daoOracleInstance.DAO_ROLE.call();

@@ -1,35 +1,25 @@
 package scheduler
 
 import (
-	"crypto/ecdsa"
 	"fmt"
-	"multi-chain-storage/common/constants"
 	"multi-chain-storage/config"
-	"multi-chain-storage/on-chain/client"
 	"os"
 	"path/filepath"
 	"reflect"
 	"runtime"
-	"sync"
 	"time"
 
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/filswan/go-swan-lib/logs"
 	libutils "github.com/filswan/go-swan-lib/utils"
 )
 
 type Schedule struct {
-	Name  string
-	Rule  string
-	Func  func() error
-	Mutex *sync.Mutex
+	Rule string
+	Func func() error
 }
 
 var carDir string
 var srcDir string
-
-var adminWalletPrivateKey *ecdsa.PrivateKey = nil
-var adminWalletPublicKey *common.Address = nil
 
 func GetSrcDir() string {
 	return srcDir
@@ -37,17 +27,10 @@ func GetSrcDir() string {
 
 func InitScheduler() {
 	createDir()
-	setAdminWallet()
-	initTxDataDecoderPayment()
-	initTxDataDecoderDao()
 
 	go runJob(CreateTask, config.GetConfig().ScheduleRule.CreateTaskIntervalSecond)
 	go runJob(SendDeal, config.GetConfig().ScheduleRule.SendDealIntervalSecond)
 	go runJob(ScanDeal, config.GetConfig().ScheduleRule.ScanDealStatusIntervalSecond)
-	go runJob(UnlockPayment, config.GetConfig().ScheduleRule.UnlockIntervalSecond)
-	go runJob(RefundCarFiles, config.GetConfig().ScheduleRule.RefundIntervalSecond)
-	go runJob(ScanPolygon4Payment, config.GetConfig().ScheduleRule.ScanPolygonIntervalSecond)
-	go runJob(ScanPolygon4Dao, config.GetConfig().ScheduleRule.ScanPolygonIntervalSecond)
 }
 
 func runJob(func2Run func() error, intervalSecond time.Duration) {
@@ -97,14 +80,4 @@ func createDir() {
 		logs.GetLogger().Error(err)
 		logs.GetLogger().Fatal("creating dir:", carDir, " failed")
 	}
-}
-
-func setAdminWallet() {
-	privateKey, publicKey, err := client.GetPrivateKeyPublicKey(constants.PRIVATE_KEY_ON_POLYGON)
-	if err != nil {
-		logs.GetLogger().Fatal(err)
-	}
-
-	adminWalletPrivateKey = privateKey
-	adminWalletPublicKey = publicKey
 }

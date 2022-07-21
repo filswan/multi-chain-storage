@@ -12,18 +12,18 @@ import (
 )
 
 type Configuration struct {
-	Port                  int          `toml:"port"`
-	Release               bool         `toml:"release"`
-	SwanPlatformFilWallet string       `toml:"swan_platform_fil_wallet"`
-	FlinkUrl              string       `toml:"flink_url"`
-	FilecoinNetwork       string       `toml:"filecoin_network"`
-	Polygon               polygon      `toml:"polygon"`
-	Database              database     `toml:"database"`
-	SwanApi               swanApi      `toml:"swan_api"`
-	Lotus                 lotus        `toml:"lotus"`
-	IpfsServer            ipfsServer   `toml:"ipfs_server"`
-	SwanTask              swanTask     `toml:"swan_task"`
-	ScheduleRule          ScheduleRule `toml:"schedule_rule"`
+	Port            int          `toml:"port"`
+	Release         bool         `toml:"release"`
+	FilecoinNetwork string       `toml:"filecoin_network"`
+	FilecoinWallet  string       `toml:"filecoin_wallet"`
+	FlinkUrl        string       `toml:"flink_url"`
+	Polygon         polygon      `toml:"polygon"`
+	Database        database     `toml:"database"`
+	SwanApi         swanApi      `toml:"swan_api"`
+	Lotus           lotus        `toml:"lotus"`
+	IpfsServer      ipfsServer   `toml:"ipfs_server"`
+	SwanTask        swanTask     `toml:"swan_task"`
+	ScheduleRule    ScheduleRule `toml:"schedule_rule"`
 }
 
 type polygon struct {

@@ -29,7 +29,7 @@ const overrides = {
 
 async function main() {
 
-  const [deployer] = await ethers.getSigners();
+  const [k1, deployer] = await ethers.getSigners();
 
   console.log("deployer: ", deployer.address);
 
@@ -43,8 +43,8 @@ async function main() {
     "0xE41c53Eb9fce0AC9D204d4F361e28a8f28559D54"
   ];
 
-  const USDCInstance = new ethers.Contract(usdcAddress, erc20ABI);
-  // const wFilInstance = new ethers.Contract(wFilAddress, erc20ABI);
+  // const USDCInstance = new ethers.Contract(usdcAddress, erc20ABI);
+  const wFilInstance = new ethers.Contract(wFilAddress, erc20ABI);
 
   // addressList.forEach(async (address) => {
   //   console.log("address: ", address);
@@ -52,8 +52,9 @@ async function main() {
   //   await wFilInstance.connect(deployer).mint(address, oneHundred);
   // });
 
-  await USDCInstance.connect(deployer).mint(addressList[0], fiveMillion);
-  // await wFilInstance.connect(deployer).mint(addressList[0], oneHundred);
+  // await USDCInstance.connect(deployer).mint(addressList[0], fiveMillion);
+  const tx = await wFilInstance.connect(deployer).mint(addressList[0], oneMillion);
+  await tx.wait();
 
   // await USDCInstance.connect(deployer).mint(addressList[1], tenThousand);
   // await wFilInstance.connect(deployer).mint(addressList[1], oneHundred);

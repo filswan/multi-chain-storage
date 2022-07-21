@@ -51,9 +51,13 @@ module.exports = {
         "0x8b3a350cf5c34c9194ca85829a2df0ec3153be0318b5e2d3348e872092edffba",
         "bb2ab0f910c23824b521af2920a7779077bd261133de5993802d22e9a2cfbba4"],
     },
+    ethereum: {
+      url: `https://rpc.flashbots.net`,
+      accounts: [process.env.ownerPK, process.env.key2, process.env.key3,process.env.key4,process.env.key5]
+    },
     goerli: {
       url: `https://goerli.infura.io/v3/${process.env.infuraKey}`,
-      accounts: [process.env.ownerPK]
+      accounts: [process.env.ownerPK, process.env.key2, process.env.key3,process.env.key4]
     },
     kovan: {
       url: `https://kovan.infura.io/v3/${process.env.infuraKey}`,
@@ -69,6 +73,12 @@ module.exports = {
       url: "https://data-seed-prebsc-1-s1.binance.org:8545",
       accounts: [process.env.ownerPK]
     },
+    polygon: {
+      url: `https://polygon-mainnet.g.alchemy.com/v2/${process.env.alchemyKey}`,
+      accounts: [process.env.ownerPK, process.env.key2, process.env.key3,process.env.key4,process.env.key5]
+    },
+
+    
   },
   solidity: {
     compilers: [

@@ -191,6 +191,19 @@
     "inputs": [
       {
         "indexed": false,
+        "internalType": "bytes32",
+        "name": "voteKey",
+        "type": "bytes32"
+      }
+    ],
+    "name": "SignHash",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
         "internalType": "string",
         "name": "cid",
         "type": "string"
@@ -293,6 +306,97 @@
   {
     "inputs": [
       {
+        "internalType": "string",
+        "name": "dealId",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "network",
+        "type": "string"
+      },
+      {
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      }
+    ],
+    "name": "getOracleInfo",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "paid",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "terms",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "recipient",
+            "type": "address"
+          },
+          {
+            "internalType": "bool",
+            "name": "status",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "flag",
+            "type": "bool"
+          },
+          {
+            "internalType": "string[]",
+            "name": "cidList",
+            "type": "string[]"
+          },
+          {
+            "internalType": "address",
+            "name": "signer",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "timestamp",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "blockNumber",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "signStatus",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint8",
+            "name": "batch",
+            "type": "uint8"
+          },
+          {
+            "internalType": "string[][256]",
+            "name": "batchCidList",
+            "type": "string[][256]"
+          }
+        ],
+        "internalType": "struct FilswanOracle.TxOracleInfo",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "bytes32",
         "name": "role",
         "type": "bytes32"
@@ -370,6 +474,21 @@
             "internalType": "uint256",
             "name": "blockNumber",
             "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "signStatus",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint8",
+            "name": "batch",
+            "type": "uint8"
+          },
+          {
+            "internalType": "string[][256]",
+            "name": "batchCidList",
+            "type": "string[][256]"
           }
         ],
         "internalType": "struct FilswanOracle.TxOracleInfo[]",
@@ -656,6 +775,19 @@
       }
     ],
     "name": "signCarTransaction",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "voteKey",
+        "type": "bytes32"
+      }
+    ],
+    "name": "signHash",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

@@ -56,7 +56,9 @@ Chain ID: **80001**
 | usdc token address  | 0xe11A86849d99F524cAC3E7A0Ec1241828e332C62  |
 | wFil token address  | 0x97916e6CC8DD75c6E6982FFd949Fc1768CF8c055  |
 | batch sign dao contract  | 0xA12EB17A664E206f363bB240e01dbAa746d2f804  |
+| batch mcp payment contract  | 0xA0b4F7BD06f9D4921652F9c7cA03CDc467fA5931  |
 
+0xba6D15AB0147968CCB8e34BEFde12210c17A68b1
 
 DEX pool, usdc, wFil addresses are the same, since we are using the same network
 ##### Wallet List

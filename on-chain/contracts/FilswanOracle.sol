@@ -51,6 +51,8 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
         address recipient
     );
 
+    event SignHash(bytes32 voteKey);
+
     function initialize(address admin, uint8 threshold) public initializer {
         __Ownable_init();
         __AccessControl_init();
@@ -229,6 +231,8 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
         emit PreSign(dealId, network, recipient, batchCount);
     }
 
+   
+
     function sign(string memory dealId, string memory network, string[] memory cidList, uint8 batchNo) public onlyRole(DAO_ROLE) {
 
         string memory key = concatenate(dealId, network);
@@ -278,5 +282,10 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
         }
 
         emit Sign(dealId, network, cidList, batchNo);
+    }
+
+    function signHash(bytes32 voteKey) public onlyRole(DAO_ROLE) {
+        txVoteMap[voteKey] = txVoteMap[voteKey] + 1;
+        emit SignHash(voteKey);
     }
 }

@@ -21,7 +21,7 @@ async function main() {
 
   const recipientAddress = "0xE53AEd6DEA9e44116D4551a93eEeE28bC8684916";
 
-  const gatewayContractAddress = "0x80a186DCD922175019913b274568ab172F6E20b1";
+  const gatewayContractAddress = "0xA0b4F7BD06f9D4921652F9c7cA03CDc467fA5931";
 
   const cid = "abcd2bzacedh6keeksywaoa3wjryqzihqixyfekqgfljfosrcoyaja";
 
@@ -36,17 +36,17 @@ async function main() {
   const contract = await hre.ethers.getContractFactory("SwanPayment");
   const paymentInstance = await contract.attach(gatewayContractAddress);
 
-  // const tx = await paymentInstance.connect(payer).lockTokenPayment({
-  //   id: cid,
-  //   minPayment: one,
-  //   amount: ten,
-  //   lockTime: 60, // 6 days
-  //   recipient: recipientAddress,
-  //   size:100,
-  //   copyLimit: 2,
-  // }, overrides);
+  const tx = await paymentInstance.connect(payer).lockTokenPayment({
+    id: cid,
+    minPayment: one,
+    amount: ten,
+    lockTime: 60, // 6 days
+    recipient: recipientAddress,
+    size:100,
+    copyLimit: 2,
+  }, overrides);
 
-  // await tx.wait();
+  await tx.wait();
 
   const info = await paymentInstance.connect(payer).getLockedPaymentInfo(cid);
 

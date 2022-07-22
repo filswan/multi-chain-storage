@@ -24,6 +24,7 @@ type DaoSignature struct {
 	WalletIdContract int64  `json:"wallet_id_contract"`
 	TxHash           string `json:"tx_hash"`
 	Status           string `json:"status"`
+	SignedByHash     bool   `json:"signed_by_hash"`
 	CreateAt         int64  `json:"create_at"`
 	UpdateAt         int64  `json:"update_at"`
 }

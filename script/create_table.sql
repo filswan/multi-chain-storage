@@ -218,6 +218,7 @@ create table dao_signature (
     wallet_id_contract           bigint        not null,
     tx_hash                      varchar(100)  not null,
     status                       varchar(100)  not null,
+    signed_by_hash               boolean       not null,
     create_at                    bigint        not null,
     update_at                    bigint        not null,
     primary key pk_dao_signature(id),

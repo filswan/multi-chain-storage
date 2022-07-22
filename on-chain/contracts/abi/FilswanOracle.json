@@ -254,6 +254,34 @@
     "inputs": [
       {
         "internalType": "string",
+        "name": "s1",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "s2",
+        "type": "string"
+      },
+      {
+        "internalType": "address",
+        "name": "a1",
+        "type": "address"
+      },
+      {
+        "internalType": "string[]",
+        "name": "sa",
+        "type": "string[]"
+      }
+    ],
+    "name": "f",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
         "name": "dealId",
         "type": "string"
       },

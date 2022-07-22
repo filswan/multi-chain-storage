@@ -10,6 +10,7 @@
   "event SignTransaction(string,string,address)",
   "function DAO_ROLE() view returns (bytes32)",
   "function DEFAULT_ADMIN_ROLE() view returns (bytes32)",
+  "function f(string,string,address,string[])",
   "function getCarPaymentVotes(string,string,address) view returns (uint8)",
   "function getCidList(string,string) view returns (string[])",
   "function getOracleInfo(string,string,address) view returns (tuple(uint256,uint256,address,bool,bool,string[],address,uint256,uint256,uint256,uint8,string[][256]))",

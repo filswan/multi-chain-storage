@@ -140,3 +140,4 @@ config_*.toml
 .vscode
 __debug_bin
 extern/filecoin-ffi
+extern/filecoin-ffi

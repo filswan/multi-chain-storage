@@ -61,7 +61,7 @@ func GetSourceFileUploadsByCarFileId(carFileId int64, batchNo *int) ([]*SourceFi
 		params = append(params, offset)
 	}
 
-	err := database.GetDB().Raw(sql, params).Scan(&sourceFileUploads).Error
+	err := database.GetDB().Raw(sql, params...).Scan(&sourceFileUploads).Error
 
 	if err != nil {
 		logs.GetLogger().Error(err)

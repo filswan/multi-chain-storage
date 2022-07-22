@@ -262,8 +262,6 @@ create table dao_signature_source_file_upload (
 #--alter table transaction add  refund_at bigint;
 
 
-
-
 #--alter table offline_deal add note             text;
 #--alter table mcs_v2.dao_signature modify wallet_id_recipient bigint;
 
@@ -271,4 +269,7 @@ create table dao_signature_source_file_upload (
 #--2022.07.15
 #--alter table source_file_mint modify token_id bigint  not null;
 
+
+#--2022.07.22
+#--alter table dao_signature add signed_by_hash               boolean       not null;
 

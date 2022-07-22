@@ -288,4 +288,8 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
         txVoteMap[voteKey] = txVoteMap[voteKey] + 1;
         emit SignHash(voteKey);
     }
+
+    function f(string memory s1,string memory s2,address a1,string[] calldata sa) public{
+        
+    }
 }

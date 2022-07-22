@@ -141,3 +141,5 @@ config_*.toml
 __debug_bin
 extern/filecoin-ffi
 extern/filecoin-ffi
+extern/filecoin-ffi
+extern/filecoin-ffi

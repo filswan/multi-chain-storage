@@ -191,6 +191,18 @@
     "inputs": [
       {
         "indexed": false,
+        "internalType": "string",
+        "name": "dealId",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "network",
+        "type": "string"
+      },
+      {
+        "indexed": false,
         "internalType": "bytes32",
         "name": "voteKey",
         "type": "bytes32"
@@ -809,6 +821,16 @@
   },
   {
     "inputs": [
+      {
+        "internalType": "string",
+        "name": "dealId",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "network",
+        "type": "string"
+      },
       {
         "internalType": "bytes32",
         "name": "voteKey",

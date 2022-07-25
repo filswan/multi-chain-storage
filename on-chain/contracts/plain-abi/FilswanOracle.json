@@ -6,7 +6,7 @@
   "event RoleRevoked(bytes32 indexed,address indexed,address indexed)",
   "event Sign(string,string,string[],uint8)",
   "event SignCarTransaction(string[],string,string,address)",
-  "event SignHash(string,string,bytes32)",
+  "event SignHash(string,string,address,bytes32)",
   "event SignTransaction(string,string,address)",
   "function DAO_ROLE() view returns (bytes32)",
   "function DEFAULT_ADMIN_ROLE() view returns (bytes32)",
@@ -30,7 +30,7 @@
   "function setFilinkOracle(address) returns (bool)",
   "function sign(string,string,string[],uint8)",
   "function signCarTransaction(string[],string,string,address)",
-  "function signHash(string,string,bytes32)",
+  "function signHash(string,string,address,bytes32)",
   "function supportsInterface(bytes4) view returns (bool)",
   "function transferOwnership(address)",
   "function updateThreshold(uint8) returns (bool)"

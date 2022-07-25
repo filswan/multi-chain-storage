@@ -203,6 +203,12 @@
       },
       {
         "indexed": false,
+        "internalType": "address",
+        "name": "recipient",
+        "type": "address"
+      },
+      {
+        "indexed": false,
         "internalType": "bytes32",
         "name": "voteKey",
         "type": "bytes32"
@@ -830,6 +836,11 @@
         "internalType": "string",
         "name": "network",
         "type": "string"
+      },
+      {
+        "internalType": "address",
+        "name": "recipient",
+        "type": "address"
       },
       {
         "internalType": "bytes32",

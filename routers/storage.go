@@ -25,6 +25,7 @@ func Storage(router *gin.RouterGroup) {
 	router.GET("/deal/detail/:deal_id", GetDealFromFlink)
 	router.GET("/deal/log/:offline_deal_id", GetDealLogs)
 	router.POST("/mint/info", RecordMintInfo)
+	router.POST("/unpin_source_file/:source_file_upload_id", UnpinSourceFile)
 }
 
 func UploadFile(c *gin.Context) {

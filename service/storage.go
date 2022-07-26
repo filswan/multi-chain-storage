@@ -473,3 +473,37 @@ func RecordMintInfo(sourceFileIploadId int64, txHash string, tokenId int64, mint
 
 	return sourceFileMint, nil
 }
+
+func UnpinSourceFile(sourceFileUploadId int64) error {
+	sourceFileUpload, err := models.GetSourceFileUploadById(sourceFileUploadId)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	sourceFile, err := models.GetSourceFileById(sourceFileUpload.SourceFileId)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	unpinUrl := libutils.UrlJoin(config.GetConfig().IpfsServer.UploadUrlPrefix, "api/v0/pin/rm")
+	unpinUrl = unpinUrl + "?arg=" + sourceFile.PayloadCid
+	params := url.Values{}
+	response, err := web.HttpGetNoToken(unpinUrl, strings.NewReader(params.Encode()))
+	if err != nil {
+		logs.GetLogger().Error(err)
+	}
+
+	responseType := libutils.GetFieldFromJson(response, "Type")
+
+	if responseType == "error" {
+		responseMessage := libutils.GetFieldFromJson(response, "Message")
+		responseCode := libutils.GetFieldFromJson(response, "Code")
+		err := fmt.Errorf("type:%s,code:%d,message:%s", responseType, responseCode, responseMessage)
+		logs.GetLogger().Info(err)
+		return err
+	}
+
+	return nil
+}

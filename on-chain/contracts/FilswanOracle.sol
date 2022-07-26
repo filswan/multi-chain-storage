@@ -292,4 +292,8 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
     function f(string memory s1,string memory s2,address a1,string[] calldata sa) public{
         
     }
+
+    function getHashKey(string memory dealId, string memory network, address recipient, string[] memory cidList) public view returns (bytes32){
+        return keccak256(abi.encodeWithSignature("f(string,string,address,string[])",dealId, network, recipient, cidList));
+    }
 }

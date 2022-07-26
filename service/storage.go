@@ -490,7 +490,7 @@ func UnpinSourceFile(sourceFileUploadId int64) error {
 	unpinUrl := libutils.UrlJoin(config.GetConfig().IpfsServer.UploadUrlPrefix, "api/v0/pin/rm")
 	unpinUrl = unpinUrl + "?arg=" + sourceFile.PayloadCid
 	params := url.Values{}
-	response, err := web.HttpGetNoToken(unpinUrl, strings.NewReader(params.Encode()))
+	response, err := web.HttpPostNoToken(unpinUrl, strings.NewReader(params.Encode()))
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err

@@ -493,6 +493,7 @@ func UnpinSourceFile(sourceFileUploadId int64) error {
 	response, err := web.HttpGetNoToken(unpinUrl, strings.NewReader(params.Encode()))
 	if err != nil {
 		logs.GetLogger().Error(err)
+		return err
 	}
 
 	responseType := libutils.GetFieldFromJson(response, "Type")
@@ -502,6 +503,12 @@ func UnpinSourceFile(sourceFileUploadId int64) error {
 		responseCode := libutils.GetFieldFromJson(response, "Code")
 		err := fmt.Errorf("type:%s,code:%d,message:%s", responseType, responseCode, responseMessage)
 		logs.GetLogger().Info(err)
+		return err
+	}
+
+	err = models.UpdateSourceFilePinStatus(sourceFileUpload.SourceFileId, constants.IPFS_File_UNPINNED_STATUS)
+	if err != nil {
+		logs.GetLogger().Error(err)
 		return err
 	}
 

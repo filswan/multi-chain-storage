@@ -5,6 +5,7 @@ import (
 	"multi-chain-storage/database"
 
 	"github.com/filswan/go-swan-lib/logs"
+	libutils "github.com/filswan/go-swan-lib/utils"
 	"github.com/shopspring/decimal"
 )
 
@@ -70,4 +71,19 @@ func CreateSourceFile(sourceFile *SourceFile) (*SourceFile, error) {
 	sourceFileCreated := value.(*SourceFile)
 
 	return sourceFileCreated, nil
+}
+
+func UpdateSourceFilePinStatus(sourceFileId int64, pinStatus string) error {
+	currentUtcSecond := libutils.GetCurrentUtcSecond()
+	fields2BeUpdated := make(map[string]interface{})
+	fields2BeUpdated["pin_status"] = pinStatus
+	fields2BeUpdated["update_at"] = currentUtcSecond
+
+	err := database.GetDB().Model(SourceFile{}).Where("id=?", sourceFileId).Update(fields2BeUpdated).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	return nil
 }

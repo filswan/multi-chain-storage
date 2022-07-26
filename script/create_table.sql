@@ -218,6 +218,7 @@ create table dao_signature (
     wallet_id_contract           bigint        not null,
     tx_hash                      varchar(100)  not null,
     status                       varchar(100)  not null,
+    signed_by_hash               boolean       not null,
     create_at                    bigint        not null,
     update_at                    bigint        not null,
     primary key pk_dao_signature(id),
@@ -261,8 +262,6 @@ create table dao_signature_source_file_upload (
 #--alter table transaction add  refund_at bigint;
 
 
-
-
 #--alter table offline_deal add note             text;
 #--alter table mcs_v2.dao_signature modify wallet_id_recipient bigint;
 
@@ -270,4 +269,7 @@ create table dao_signature_source_file_upload (
 #--2022.07.15
 #--alter table source_file_mint modify token_id bigint  not null;
 
+
+#--2022.07.22
+#--alter table dao_signature add signed_by_hash               boolean       not null;
 

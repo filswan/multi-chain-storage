@@ -25,6 +25,7 @@ func Storage(router *gin.RouterGroup) {
 	router.GET("/deal/detail/:deal_id", GetDealFromFlink)
 	router.GET("/deal/log/:offline_deal_id", GetDealLogs)
 	router.POST("/mint/info", RecordMintInfo)
+	router.POST("/unpin_source_file/:source_file_upload_id", UnpinSourceFile)
 }
 
 func UploadFile(c *gin.Context) {
@@ -408,4 +409,39 @@ func RecordMintInfo(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, common.CreateSuccessResponse(sourceFileMint))
+}
+
+func UnpinSourceFile(c *gin.Context) {
+	logs.GetLogger().Info("ip:", c.ClientIP(), ",port:", c.Request.URL.Port())
+	sourceFileUploadIdStr := strings.Trim(c.Params.ByName("source_file_upload_id"), " ")
+	if sourceFileUploadIdStr == "" {
+		err := fmt.Errorf("source_file_upload_id is required")
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_NULL, err.Error()))
+		return
+	}
+
+	sourceFileUploadId, err := strconv.ParseInt(sourceFileUploadIdStr, 10, 64)
+	if err != nil {
+		err := fmt.Errorf("source_file_upload_id must be a valid number")
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_WRONG_TYPE, err.Error()))
+		return
+	}
+
+	if sourceFileUploadId <= 0 {
+		err := fmt.Errorf("source_file_upload_id must be greater than 0")
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_PARAM_INVALID_VALUE, err.Error()))
+		return
+	}
+
+	err = service.UnpinSourceFile(sourceFileUploadId)
+	if err != nil {
+		logs.GetLogger().Error(err.Error())
+		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_INTERNAL, err.Error()))
+		return
+	}
+
+	c.JSON(http.StatusOK, common.CreateSuccessResponse(nil))
 }

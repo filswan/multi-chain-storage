@@ -97,6 +97,21 @@ func GetDeals2Sign(signerWalletId int64) ([]*Deal2Sign, error) {
 	return deals2Sign, nil
 }
 
+func GetDeals2SignHash(signerWalletId int64) ([]*Deal2Sign, error) {
+	var deals2Sign []*Deal2Sign
+	sql := "select b.offline_deal_id,a.deal_id,a.car_file_id from offline_deal a\n" +
+		"left outer join dao_signature b on b.offline_deal_id=a.id and b.status=? and b.wallet_id_signer=?\n" +
+		"where b.id is null\n"
+	err := database.GetDB().Raw(sql, constants.DAO_SIGNATURE_STATUS_SUCCESS, signerWalletId).Scan(&deals2Sign).Error
+
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	return deals2Sign, nil
+}
+
 type Deal2Unlock struct {
 	DealId int64 `json:"deal_id"`
 }

@@ -473,3 +473,34 @@ func RecordMintInfo(sourceFileIploadId int64, txHash string, tokenId int64, mint
 
 	return sourceFileMint, nil
 }
+
+func UnpinSourceFile(sourceFileUploadId int64) error {
+	sourceFileUpload, err := models.GetSourceFileUploadById(sourceFileUploadId)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	sourceFile, err := models.GetSourceFileById(sourceFileUpload.SourceFileId)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	unpinUrl := libutils.UrlJoin(config.GetConfig().IpfsServer.UploadUrlPrefix, "api/v0/pin/rm")
+	unpinUrl = unpinUrl + "?arg=" + sourceFile.PayloadCid
+	params := url.Values{}
+	_, err = web.HttpPostNoToken(unpinUrl, strings.NewReader(params.Encode()))
+	if err != nil {
+		logs.GetLogger().Info(err)
+		return err
+	}
+
+	err = models.UpdateSourceFilePinStatus(sourceFileUpload.SourceFileId, constants.IPFS_File_UNPINNED_STATUS)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	return nil
+}

@@ -52,7 +52,7 @@ func GetDeals2Sign(signerWalletAddress string) ([]*models.Deal2Sign, error) {
 			}
 
 			if !signed {
-				sourceFileUploads, err := models.GetSourceFileUploadsByCarFileId(deal2Sign.CarFileId, i)
+				sourceFileUploads, err := models.GetSourceFileUploadsByCarFileId(deal2Sign.CarFileId, &i)
 				if err != nil {
 					logs.GetLogger().Error(err)
 					return nil, err
@@ -71,6 +71,43 @@ func GetDeals2Sign(signerWalletAddress string) ([]*models.Deal2Sign, error) {
 				deal2Sign.BatchInfo = append(deal2Sign.BatchInfo, deal2SignBatchInfo)
 			}
 		}
+	}
+
+	return deals2Sign, nil
+}
+
+func GetDeals2SignHash(signerWalletAddress string) ([]*models.Deal2Sign, error) {
+	signerWallet, err := models.GetWalletByAddress(signerWalletAddress, constants.WALLET_TYPE_META_MASK)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	deals2Sign, err := models.GetDeals2SignHash(signerWallet.ID)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	for _, deal2Sign := range deals2Sign {
+		sourceFileUploads, err := models.GetSourceFileUploadsByCarFileId(deal2Sign.CarFileId, nil)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return nil, err
+		}
+
+		wCids := []string{}
+		for _, sourceFileUpload := range sourceFileUploads {
+			wCid := sourceFileUpload.Uuid + sourceFileUpload.PayloadCid
+			wCids = append(wCids, wCid)
+		}
+
+		deal2SignBatchInfo := &models.Deal2SignBatchInfo{
+			BatchNo: 0,
+			WCid:    wCids,
+		}
+
+		deal2Sign.BatchInfo = append(deal2Sign.BatchInfo, deal2SignBatchInfo)
 	}
 
 	return deals2Sign, nil

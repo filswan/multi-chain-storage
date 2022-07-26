@@ -39,6 +39,7 @@ const (
 
 	IPFS_URL_PREFIX_BEFORE_HASH = "/ipfs/"
 	IPFS_File_PINNED_STATUS     = "Pinned"
+	IPFS_File_UNPINNED_STATUS   = "UnPinned"
 
 	DAO_SIGNATURE_STATUS_SUCCESS = "Success"
 	DAO_SIGNATURE_STATUS_FAILED  = "Failed"

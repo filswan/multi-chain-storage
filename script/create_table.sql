@@ -276,4 +276,7 @@ create table dao_signature_source_file_upload (
 
 #--2022.07.27
 #--alter table source_file_upload add pin_status    varchar(100)  not null;
+#--SET SQL_SAFE_UPDATES = 0;
+#--update source_file_upload a set pin_status=(select pin_status from source_file b where a.source_file_id=b.id);
+#--SET SQL_SAFE_UPDATES = 1;
 

@@ -143,6 +143,18 @@ func GetSourceFileUploadBySourceFileIdUuid(sourceFileId int64, uuid string) (*So
 	return nil, nil
 }
 
+func GetSourceFileUploadsBySourceFileIdPinStatus(sourceFileId int64, pinStatus string) ([]*SourceFileUpload, error) {
+	var sourceFileUploads []*SourceFileUpload
+	err := database.GetDB().Where("source_file_id=? and pin_status=?", sourceFileId, pinStatus).Find(&sourceFileUploads).Error
+
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	return sourceFileUploads, nil
+}
+
 func GetSourceFileUploadById(id int64) (*SourceFileUpload, error) {
 	var sourceFileUpload []*SourceFileUpload
 	err := database.GetDB().Where("id=?", id).Find(&sourceFileUpload).Error

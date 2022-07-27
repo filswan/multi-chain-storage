@@ -21,6 +21,7 @@ type SourceFileUpload struct {
 	WalletId     int64  `json:"wallet_id"`
 	Status       string `json:"status"`
 	Duration     int    `json:"duration"`
+	PinStatus    string `json:"pin_status"`
 	CreateAt     int64  `json:"create_at"`
 	UpdateAt     int64  `json:"update_at"`
 }

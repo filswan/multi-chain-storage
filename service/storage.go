@@ -112,6 +112,7 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType 
 	} else {
 		if !libutils.IsFileExistsFullPath(sourceFile.ResourceUri) {
 			sourceFile.ResourceUri = srcFilepath
+			sourceFile.PinStatus = constants.IPFS_File_PINNED_STATUS
 			sourceFile.UpdateAt = currentUtcMilliSec
 			err := database.SaveOne(sourceFile)
 			if err != nil {
@@ -119,6 +120,14 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType 
 				return nil, err
 			}
 		} else {
+			sourceFile.PinStatus = constants.IPFS_File_PINNED_STATUS
+			sourceFile.UpdateAt = currentUtcMilliSec
+			err := database.SaveOne(sourceFile)
+			if err != nil {
+				logs.GetLogger().Error(err)
+				return nil, err
+			}
+
 			if !strings.EqualFold(sourceFile.ResourceUri, srcFilepath) {
 				// remove the current copy of file
 				err = os.Remove(srcFilepath)
@@ -139,6 +148,7 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType 
 		WalletId:     wallet.ID,
 		Status:       constants.SOURCE_FILE_UPLOAD_STATUS_PENDING,
 		Duration:     duration,
+		PinStatus:    constants.IPFS_File_PINNED_STATUS,
 		CreateAt:     currentUtcMilliSec,
 		UpdateAt:     currentUtcMilliSec,
 	}
@@ -407,7 +417,12 @@ func GetSourceFileUploadDeal(sourceFileUploadId int64, dealId int64) (*SourceFil
 		return nil, nil, err
 	}
 
-	sourceFileUploadDeal.IpfsUrl = sourceFile.IpfsUrl
+	if sourceFileUpload.PinStatus == constants.IPFS_File_PINNED_STATUS {
+		sourceFileUploadDeal.IpfsUrl = sourceFile.IpfsUrl
+	} else {
+		sourceFileUploadDeal.IpfsUrl = ""
+	}
+
 	sourceFileUploadDeal.FileName = sourceFileUpload.FileName
 	sourceFileUploadDeal.WCid = sourceFileUpload.Uuid + sourceFile.PayloadCid
 
@@ -475,6 +490,12 @@ func RecordMintInfo(sourceFileIploadId int64, txHash string, tokenId int64, mint
 }
 
 func UnpinSourceFile(sourceFileUploadId int64) error {
+	err := models.UpdateSourceFileUploadPinStatus(sourceFileUploadId, constants.IPFS_File_UNPINNED_STATUS)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
 	sourceFileUpload, err := models.GetSourceFileUploadById(sourceFileUploadId)
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -487,19 +508,27 @@ func UnpinSourceFile(sourceFileUploadId int64) error {
 		return err
 	}
 
-	unpinUrl := libutils.UrlJoin(config.GetConfig().IpfsServer.UploadUrlPrefix, "api/v0/pin/rm")
-	unpinUrl = unpinUrl + "?arg=" + sourceFile.PayloadCid
-	params := url.Values{}
-	_, err = web.HttpPostNoToken(unpinUrl, strings.NewReader(params.Encode()))
-	if err != nil {
-		logs.GetLogger().Info(err)
-		return err
-	}
-
-	err = models.UpdateSourceFilePinStatus(sourceFileUpload.SourceFileId, constants.IPFS_File_UNPINNED_STATUS)
+	sourceFileUploadsPinned, err := models.GetSourceFileUploadsBySourceFileIdPinStatus(sourceFileUpload.SourceFileId, constants.IPFS_File_PINNED_STATUS)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err
+	}
+
+	if len(sourceFileUploadsPinned) == 0 {
+		unpinUrl := libutils.UrlJoin(config.GetConfig().IpfsServer.UploadUrlPrefix, "api/v0/pin/rm")
+		unpinUrl = unpinUrl + "?arg=" + sourceFile.PayloadCid
+		params := url.Values{}
+		_, err = web.HttpPostNoToken(unpinUrl, strings.NewReader(params.Encode()))
+		if err != nil {
+			logs.GetLogger().Info(err)
+			return err
+		}
+
+		err = models.UpdateSourceFilePinStatus(sourceFileUpload.SourceFileId, constants.IPFS_File_UNPINNED_STATUS)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return err
+		}
 	}
 
 	return nil

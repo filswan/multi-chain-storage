@@ -16,17 +16,18 @@ import (
 )
 
 type DaoSignature struct {
-	Id               *int64 `json:"id"`
-	OfflineDealId    int64  `json:"offline_deal_id"`
-	BatchNo          int    `json:"batch_no"`
-	NetworkId        int64  `json:"network_id"`
-	WalletIdSigner   int64  `json:"wallet_id_signer"`
-	WalletIdContract int64  `json:"wallet_id_contract"`
-	TxHash           string `json:"tx_hash"`
-	Status           string `json:"status"`
-	SignedByHash     bool   `json:"signed_by_hash"`
-	CreateAt         int64  `json:"create_at"`
-	UpdateAt         int64  `json:"update_at"`
+	Id                *int64 `json:"id"`
+	OfflineDealId     int64  `json:"offline_deal_id"`
+	BatchNo           *int   `json:"batch_no"`
+	NetworkId         int64  `json:"network_id"`
+	WalletIdSigner    int64  `json:"wallet_id_signer"`
+	WalletIdRecipient *int64 `json:"wallet_id_recipient"`
+	WalletIdContract  int64  `json:"wallet_id_contract"`
+	TxHash            string `json:"tx_hash"`
+	Status            string `json:"status"`
+	SignedByHash      bool   `json:"signed_by_hash"`
+	CreateAt          int64  `json:"create_at"`
+	UpdateAt          int64  `json:"update_at"`
 }
 
 type DaoSignatureOut struct {
@@ -183,7 +184,7 @@ func WriteDaoSignature(txHash string, dealId int64, wCids []string, batchNo int)
 
 	daoSignature.NetworkId = network.ID
 	daoSignature.OfflineDealId = offlineDeal.Id
-	daoSignature.BatchNo = batchNo
+	daoSignature.BatchNo = &batchNo
 	daoSignature.WalletIdSigner = walletSigner.ID
 	daoSignature.WalletIdContract = walletContract.ID
 	daoSignature.TxHash = txHash

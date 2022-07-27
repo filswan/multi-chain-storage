@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"multi-chain-storage/common/constants"
 	"multi-chain-storage/database"
 
 	"github.com/filswan/go-swan-lib/logs"
@@ -80,6 +81,26 @@ func UpdateSourceFilePinStatus(sourceFileId int64, pinStatus string) error {
 	fields2BeUpdated["update_at"] = currentUtcSecond
 
 	err := database.GetDB().Model(SourceFile{}).Where("id=?", sourceFileId).Update(fields2BeUpdated).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	return nil
+}
+
+func UpdateSourceFile2Unpinned(sourceFileId int64) error {
+	sql := "update source_file set pin_status=?,update_at=? where id=?\n" +
+		"and not exists (select 1 from source_file_upload b where source_file_id=? and pin_status=?)\n"
+
+	params := []interface{}{}
+	params = append(params, constants.IPFS_File_UNPINNED_STATUS)
+	params = append(params, libutils.GetCurrentUtcSecond())
+	params = append(params, sourceFileId)
+	params = append(params, sourceFileId)
+	params = append(params, constants.IPFS_File_PINNED_STATUS)
+
+	err := database.GetDB().Exec(sql, params...).Error
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err

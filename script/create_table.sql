@@ -79,6 +79,7 @@ create table source_file_upload (
     wallet_id      bigint        not null,
     status         varchar(100)  not null,
     duration       int           not null,  #--unit:day
+    pin_status     varchar(100)  not null,
     create_at      bigint        not null,
     update_at      bigint        not null,
     primary key pk_source_file_upload(id),
@@ -272,4 +273,7 @@ create table dao_signature_source_file_upload (
 
 #--2022.07.22
 #--alter table dao_signature add signed_by_hash               boolean       not null;
+
+#--2022.07.27
+#--alter table source_file_upload add pin_status    varchar(100)  not null;
 

@@ -408,3 +408,18 @@ func GetSourceFileUploadByWCid(wCid string) (*SourceFile, *SourceFileUpload, err
 
 	return sourceFile, sourceFileUpload, nil
 }
+
+func UpdateSourceFileUploadPinStatus(sourceFileUploadId int64, pinStatus string) error {
+	currentUtcSecond := libutils.GetCurrentUtcSecond()
+	fields2BeUpdated := make(map[string]interface{})
+	fields2BeUpdated["pin_status"] = pinStatus
+	fields2BeUpdated["update_at"] = currentUtcSecond
+
+	err := database.GetDB().Model(SourceFileUpload{}).Where("id=?", sourceFileUploadId).Update(fields2BeUpdated).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	return nil
+}

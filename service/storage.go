@@ -496,7 +496,13 @@ func UnpinSourceFile(sourceFileUploadId int64) error {
 		return err
 	}
 
-	err = models.UpdateSourceFilePinStatus(sourceFileUpload.SourceFileId, constants.IPFS_File_UNPINNED_STATUS)
+	err = models.UpdateSourceFileUploadPinStatus(sourceFileUpload.SourceFileId, constants.IPFS_File_UNPINNED_STATUS)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	err = models.UpdateSourceFile2Unpinned(sourceFileUpload.SourceFileId)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return err

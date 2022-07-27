@@ -91,7 +91,7 @@ func UpdateSourceFilePinStatus(sourceFileId int64, pinStatus string) error {
 
 func UpdateSourceFile2Unpinned(sourceFileId int64) error {
 	sql := "update source_file set pin_status=?,update_at=? where id=?\n" +
-		"and not exists (select 1 from source_file_load b where source_file_id=? and pin_status=?)\n"
+		"and not exists (select 1 from source_file_upload b where source_file_id=? and pin_status=?)\n"
 
 	params := []interface{}{}
 	params = append(params, constants.IPFS_File_UNPINNED_STATUS)

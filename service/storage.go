@@ -112,6 +112,7 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType 
 	} else {
 		if !libutils.IsFileExistsFullPath(sourceFile.ResourceUri) {
 			sourceFile.ResourceUri = srcFilepath
+			sourceFile.PinStatus = constants.IPFS_File_PINNED_STATUS
 			sourceFile.UpdateAt = currentUtcMilliSec
 			err := database.SaveOne(sourceFile)
 			if err != nil {
@@ -139,6 +140,7 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType 
 		WalletId:     wallet.ID,
 		Status:       constants.SOURCE_FILE_UPLOAD_STATUS_PENDING,
 		Duration:     duration,
+		PinStatus:    constants.IPFS_File_PINNED_STATUS,
 		CreateAt:     currentUtcMilliSec,
 		UpdateAt:     currentUtcMilliSec,
 	}

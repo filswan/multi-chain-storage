@@ -46,7 +46,7 @@ func GetDeals2Sign(signerWalletAddress string) ([]*models.Deal2Sign, error) {
 		for i := 0; i < deal2Sign.BatchCount; i++ {
 			signed := false
 			for _, daodaoSignature := range daoSignatures {
-				if daodaoSignature.BatchNo == i {
+				if daodaoSignature.BatchNo != nil && *daodaoSignature.BatchNo == i && !daodaoSignature.SignedByHash {
 					signed = true
 				}
 			}

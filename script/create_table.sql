@@ -213,9 +213,10 @@ create table dao_pre_sign (
 create table dao_signature (
     id                           bigint        not null auto_increment,
     offline_deal_id              bigint        not null,
-    batch_no                     int           not null,
+    batch_no                     int,
     network_id                   bigint        not null,
     wallet_id_signer             bigint        not null,
+    wallet_id_recipient          bigint,
     wallet_id_contract           bigint        not null,
     tx_hash                      varchar(100)  not null,
     status                       varchar(100)  not null,
@@ -227,6 +228,7 @@ create table dao_signature (
     constraint fk_dao_signature_network_id foreign key (network_id) references network(id),
     constraint fk_dao_signature_offline_deal_id foreign key (offline_deal_id) references offline_deal(id),
     constraint fk_dao_signature_wallet_id_signer foreign key (wallet_id_signer) references wallet(id),
+    constraint fk_dao_signature_wallet_id_recipient foreign key (wallet_id_recipient) references wallet(id),
     constraint fk_dao_signature_wallet_id_contract foreign key (wallet_id_contract) references wallet(id)
 );
 
@@ -279,4 +281,6 @@ create table dao_signature_source_file_upload (
 #--SET SQL_SAFE_UPDATES = 0;
 #--update source_file_upload a set pin_status=(select pin_status from source_file b where a.source_file_id=b.id);
 #--SET SQL_SAFE_UPDATES = 1;
+#--alter table dao_signature modify batch_no int;
+alter table dao_signature modify wallet_id_recipient          bigint;
 

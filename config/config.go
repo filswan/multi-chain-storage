@@ -121,7 +121,7 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 	requiredFields := [][]string{
 		{"port"},
 		{"release"},
-		{"swan_platform_fil_wallet"},
+		{"filecoin_wallet"},
 		{"flink_url"},
 		{"filecoin_network"},
 

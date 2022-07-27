@@ -243,7 +243,7 @@ func (a SourceFileUploadResultByUploadAt) Swap(i, j int)      { a[i], a[j] = a[j
 func GetSourceFileUploads(walletId int64, status, fileName, orderBy, isMinted *string, isAscend bool, limit, offset *int, uploadAtStart, uploadAtEnd *int64) ([]*SourceFileUploadResult, *int, error) {
 	sql := "select\n" +
 		"a.id source_file_upload_id,a.file_name,b.file_size,a.create_at upload_at,a.duration,\n" +
-		"b.ipfs_url,b.pin_status,f.pay_amount,a.status,\n" +
+		"case when a.pin_status=? then b.ipfs_url else '' end pin_status,a.pin_status,f.pay_amount,a.status,\n" +
 		"e.id is not null is_minted,e.token_id,e.mint_address,e.nft_tx_hash\n" +
 		"from source_file_upload a\n" +
 		"left join source_file b on a.source_file_id=b.id\n" +
@@ -256,6 +256,7 @@ func GetSourceFileUploads(walletId int64, status, fileName, orderBy, isMinted *s
 	}
 
 	params := []interface{}{}
+	params = append(params, constants.IPFS_File_PINNED_STATUS)
 	params = append(params, walletId)
 
 	if uploadAtStart != nil {

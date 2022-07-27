@@ -407,7 +407,12 @@ func GetSourceFileUploadDeal(sourceFileUploadId int64, dealId int64) (*SourceFil
 		return nil, nil, err
 	}
 
-	sourceFileUploadDeal.IpfsUrl = sourceFile.IpfsUrl
+	if sourceFileUpload.PinStatus == constants.IPFS_File_PINNED_STATUS {
+		sourceFileUploadDeal.IpfsUrl = sourceFile.IpfsUrl
+	} else {
+		sourceFileUploadDeal.IpfsUrl = ""
+	}
+
 	sourceFileUploadDeal.FileName = sourceFileUpload.FileName
 	sourceFileUploadDeal.WCid = sourceFileUpload.Uuid + sourceFile.PayloadCid
 

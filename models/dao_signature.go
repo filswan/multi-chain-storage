@@ -47,22 +47,6 @@ func GetDaoSignaturesByDealId(dealId int64) ([]*DaoSignatureOut, error) {
 	return daoSignatures, nil
 }
 
-func GetDaoSignatureByOfflineDealIdTxHash(offlineDealId int64, txHash string) (*DaoSignature, error) {
-	var daoSignatures []*DaoSignature
-	err := database.GetDB().Where("offline_deal_id=? and tx_hash=?", offlineDealId, txHash).Find(&daoSignatures).Error
-
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-
-	if len(daoSignatures) >= 1 {
-		return daoSignatures[0], nil
-	}
-
-	return nil, nil
-}
-
 func GetDaoSignaturesByOfflineDealIdWalletIdSigner(offlineDealId int64, walletIdSigner int64) ([]*DaoSignature, error) {
 	var daoSignatures []*DaoSignature
 	err := database.GetDB().Where("offline_deal_id=? and wallet_id_signer=?", offlineDealId, walletIdSigner).Find(&daoSignatures).Error
@@ -73,27 +57,4 @@ func GetDaoSignaturesByOfflineDealIdWalletIdSigner(offlineDealId int64, walletId
 	}
 
 	return daoSignatures, nil
-}
-
-func SaveDaoSignature(daoSignature *DaoSignature) (*DaoSignature, error) {
-	if daoSignature.Id != nil {
-		err := database.SaveOne(daoSignature)
-		if err != nil {
-			logs.GetLogger().Error(err)
-			return nil, err
-		}
-
-		return daoSignature, nil
-	}
-
-	daoSignatureResult := database.GetDB().Create(daoSignature)
-	err := daoSignatureResult.Error
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-
-	daoSignatureCreated := daoSignatureResult.Value.(*DaoSignature)
-
-	return daoSignatureCreated, nil
 }

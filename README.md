@@ -157,11 +157,9 @@ nohup ./build/multi-chain-storage >> ./build/mcs.log &       #After installation
 - **min_file_size**: Source files size lower limit when merge them to a car file
 
 #### [schedule_rule]
-- **unlock_interval_second**: Job running interval, unit: second, default: 300
 - **create_task_interval_second**: Job running interval, unit: second, default: 120
 - **send_deal_interval_second**: Job running interval, unit: second, default: 180
 - **scan_deal_status_interval_second**: Job running interval, unit: second, default: 300
-- **scan_polygon_interval_second**: Job running interval, unit: second, default: 1
 
 #### [polygon]
 - **polygon_rpc_url**: Your polygon network rpc url
@@ -174,9 +172,6 @@ nohup ./build/multi-chain-storage >> ./build/mcs.log &       #After installation
 - **gas_limit**: Gas limit for transaction
 - **lock_time**: Lock days defined in smart contract, it is 6 now
 - **pay_multiply_factor**:
-- **unlock_interval_minute**: Unlock interval in minutes between 2 unlock operations, in cannot be less than 1
-- **dao_unlock_interval_block**: Interval block between unlock & last dao signature after reaching dao threshold
-- **scan_polygon_block_step**: How many blocks to scan each time, default 1000
 
 ### ~/.swan/mcs/.env
 - **privateKeyOnPolygon**: Private key of the wallet used to execute contract methods on the polygon network and pay for gas

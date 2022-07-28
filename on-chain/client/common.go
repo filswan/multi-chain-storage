@@ -4,20 +4,13 @@ import (
 	"context"
 	"crypto/ecdsa"
 	"fmt"
-	"math/big"
 	"multi-chain-storage/config"
-	"multi-chain-storage/on-chain/goBind"
 	"os"
 	"strings"
-	"time"
 
-	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/filswan/go-swan-lib/logs"
 
-	"github.com/ethereum/go-ethereum"
-	"github.com/ethereum/go-ethereum/accounts/abi"
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/ethereum/go-ethereum/rpc"
@@ -70,134 +63,4 @@ func GetEthClient() (*ethclient.Client, *rpc.Client, error) {
 	}
 
 	return ethClient, rpcClient, nil
-}
-
-func GetSwanPaymentTransactor(ethClient *ethclient.Client) (*goBind.SwanPaymentTransactor, error) {
-	contractAddress := common.HexToAddress(config.GetConfig().Polygon.PaymentContractAddress)
-	swanPaymentTransactor, err := goBind.NewSwanPaymentTransactor(contractAddress, ethClient)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-
-	return swanPaymentTransactor, nil
-}
-
-func GetFilswanOracleSession(ethClient *ethclient.Client) (*goBind.FilswanOracleSession, error) {
-	daoContractAddress := common.HexToAddress(config.GetConfig().Polygon.DaoContractAddress)
-	filswanOracle, err := goBind.NewFilswanOracle(daoContractAddress, ethClient)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-
-	filswanOracleSession := &goBind.FilswanOracleSession{
-		Contract: filswanOracle,
-	}
-
-	return filswanOracleSession, nil
-}
-
-func GetTransactOpts(ethClient *ethclient.Client, privateKey *ecdsa.PrivateKey, publicKeyAddress common.Address) (*bind.TransactOpts, error) {
-	nonce, err := ethClient.PendingNonceAt(context.Background(), publicKeyAddress)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-
-	gasPrice, err := ethClient.SuggestGasPrice(context.Background())
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-
-	chainId, err := ethClient.ChainID(context.Background())
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-
-	transactOpts, err := bind.NewKeyedTransactorWithChainID(privateKey, chainId)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-
-	transactOpts.Nonce = big.NewInt(int64(nonce))
-	transactOpts.GasPrice = gasPrice
-	transactOpts.GasLimit = config.GetConfig().Polygon.GasLimit
-	transactOpts.Context = context.Background()
-
-	return transactOpts, nil
-}
-
-func GetContractAbi() (*abi.ABI, error) {
-	paymentAbiString := goBind.SwanPaymentABI
-
-	contractAbi, err := abi.JSON(strings.NewReader(paymentAbiString))
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-
-	return &contractAbi, nil
-}
-
-func GetSwanPaymentFilterer() (*goBind.SwanPaymentFilterer, error) {
-	contractAddress := common.HexToAddress(config.GetConfig().Polygon.PaymentContractAddress)
-	swanPaymentFilterer, err := goBind.NewSwanPaymentFilterer(contractAddress, nil)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-
-	return swanPaymentFilterer, nil
-}
-
-func CheckTx(client *ethclient.Client, txHash common.Hash) (*types.Receipt, error) {
-	checkIntervalSecond := config.GetConfig().Polygon.TxHashCheckIntervalSecond
-	txHashMaxCheckSecond := config.GetConfig().Polygon.TxHashMaxCheckSecond.Seconds()
-	txHashMaxCheckCount := int(txHashMaxCheckSecond / checkIntervalSecond.Seconds())
-
-	var err error
-	var txReceipt *types.Receipt
-	for i := 0; i < txHashMaxCheckCount; i++ {
-		time.Sleep(checkIntervalSecond * time.Second)
-
-		txReceipt, err = client.TransactionReceipt(context.Background(), txHash)
-		if err == nil {
-			return txReceipt, nil
-		}
-
-		if err != ethereum.NotFound {
-			logs.GetLogger().Error("TransactionReceipt fail: %s", err)
-			return nil, err
-		}
-
-		logs.GetLogger().Info("tx hash:", txHash.String(), " not found, check it later")
-	}
-
-	return nil, err
-}
-
-func GetFromAndToAddressByTxHash(client *ethclient.Client, chainID *big.Int, txHash common.Hash) (*addressInfo, error) {
-	addrInfo := new(addressInfo)
-	tx, _, err := client.TransactionByHash(context.Background(), txHash)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-	addrInfo.AddrTo = tx.To().Hex()
-	txMsg, err := tx.AsMessage(types.LatestSignerForChainID(chainID), nil)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-	addrInfo.AddrFrom = txMsg.From().Hex()
-	return addrInfo, nil
-}
-
-type addressInfo struct {
-	AddrFrom string
-	AddrTo   string
 }

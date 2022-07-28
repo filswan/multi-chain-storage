@@ -27,21 +27,16 @@ type Configuration struct {
 }
 
 type polygon struct {
-	PolygonRpcUrl             string        `toml:"polygon_rpc_url"`
-	PaymentContractAddress    string        `toml:"payment_contract_address"`
-	PaymentRecipientAddress   string        `toml:"payment_recipient_address"`
-	DaoContractAddress        string        `toml:"dao_contract_address"`
-	MintContractAddress       string        `toml:"mint_contract_address"`
-	SushiDexAddress           string        `toml:"sushi_dex_address"`
-	UsdcWFilPoolContract      string        `toml:"usdc_wFil_pool_contract"`
-	GasLimit                  uint64        `toml:"gas_limit"`
-	LockTime                  int           `toml:"lock_time"`
-	PayMultiplyFactor         float32       `toml:"pay_multiply_factor"`
-	UnlockIntervalSecond      time.Duration `toml:"unlock_interval_second"`
-	DaoUnlockIntervalBlock    int64         `toml:"dao_unlock_interval_block"`
-	ScanPolygonBlockStep      int64         `toml:"scan_polygon_block_step"`
-	TxHashCheckIntervalSecond time.Duration `toml:"tx_hash_check_interval_second"`
-	TxHashMaxCheckSecond      time.Duration `toml:"tx_hash_max_check_second"`
+	PolygonRpcUrl           string  `toml:"polygon_rpc_url"`
+	PaymentContractAddress  string  `toml:"payment_contract_address"`
+	PaymentRecipientAddress string  `toml:"payment_recipient_address"`
+	DaoContractAddress      string  `toml:"dao_contract_address"`
+	MintContractAddress     string  `toml:"mint_contract_address"`
+	SushiDexAddress         string  `toml:"sushi_dex_address"`
+	UsdcWFilPoolContract    string  `toml:"usdc_wFil_pool_contract"`
+	GasLimit                uint64  `toml:"gas_limit"`
+	LockTime                int     `toml:"lock_time"`
+	PayMultiplyFactor       float32 `toml:"pay_multiply_factor"`
 }
 
 type database struct {
@@ -156,9 +151,6 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 		{"schedule_rule", "create_task_interval_second"},
 		{"schedule_rule", "send_deal_interval_second"},
 		{"schedule_rule", "scan_deal_status_interval_second"},
-		{"schedule_rule", "scan_polygon_interval_second"},
-		{"schedule_rule", "unlock_interval_second"},
-		{"schedule_rule", "refund_interval_second"},
 
 		{"polygon", "polygon_rpc_url"},
 		{"polygon", "payment_contract_address"},
@@ -170,11 +162,6 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 		{"polygon", "gas_limit"},
 		{"polygon", "lock_time"},
 		{"polygon", "pay_multiply_factor"},
-		{"polygon", "unlock_interval_second"},
-		{"polygon", "dao_unlock_interval_block"},
-		{"polygon", "scan_polygon_block_step"},
-		{"polygon", "tx_hash_check_interval_second"},
-		{"polygon", "tx_hash_max_check_second"},
 	}
 
 	for _, v := range requiredFields {

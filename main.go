@@ -24,12 +24,6 @@ func main() {
 	defer database.CloseDB(db)
 
 	scheduler.InitScheduler()
-	//scheduler.GetPayments()
-	//scheduler.CreateTask()
-	//scheduler.UnlockPayment()
-	//scheduler.Refund()
-	//scheduler.SendDeal()
-	//scheduler.UpdateSourceFile2Refundable()
 
 	createGinServer()
 }

@@ -60,6 +60,8 @@ func GetSourceFileUploadsByCarFileId(carFileId int64, batchNo *int) ([]*SourceFi
 		params = append(params, constants.MAX_WCID_COUNT_IN_TRANSACTION)
 		offset := constants.MAX_WCID_COUNT_IN_TRANSACTION * *batchNo
 		params = append(params, offset)
+	} else {
+		sql = sql + "\norder by b.id"
 	}
 
 	err := database.GetDB().Raw(sql, params...).Scan(&sourceFileUploads).Error

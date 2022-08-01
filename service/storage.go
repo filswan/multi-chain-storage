@@ -502,6 +502,12 @@ func UnpinSourceFile(sourceFileUploadId int64) error {
 		return err
 	}
 
+	if sourceFileUpload == nil {
+		err := fmt.Errorf("source file upload with id:%d not exists", sourceFileUploadId)
+		logs.GetLogger().Error(err)
+		return err
+	}
+
 	sourceFile, err := models.GetSourceFileById(sourceFileUpload.SourceFileId)
 	if err != nil {
 		logs.GetLogger().Error(err)

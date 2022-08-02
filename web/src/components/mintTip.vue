@@ -103,7 +103,7 @@
                                 source_file_upload_id: that.mintRow.source_file_upload_id,
                                 payload_cid: that.mintRow.payload_cid,
                                 tx_hash: that.nftHash,
-                                token_id: that.tokenId,
+                                token_id: parseInt(that.tokenId),
                                 mint_address: that.$root.MINT_CONTRACT
                             }
                             const mintInfoResponse = await that.sendPostRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/storage/mint/info`, mintInfoJson)

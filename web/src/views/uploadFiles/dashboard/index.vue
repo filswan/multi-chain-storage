@@ -100,11 +100,17 @@
               </div>
             </template>
             <template slot-scope="scope">
-              <div class="statusStyle" style="color: #6c757d" v-if="scope.row.pin_status&&scope.row.pin_status.toLowerCase()=='unpinned'">
-                  {{scope.row.pin_status}}
-              </div>
-              <div class="statusStyle" style="color: #FF9966" v-if="scope.row.pin_status&&scope.row.pin_status.toLowerCase()=='pinned'">
-                  {{scope.row.pin_status}}
+              <div class="hot-cold-box">
+                <el-button class="uploadBtn blue" type="primary"
+                  v-if="scope.row.pin_status&&scope.row.pin_status.toLowerCase()=='pinned'"
+                  @click.stop="pinClick(scope.row)">
+                  Unpin
+                </el-button>
+                <el-button class="uploadBtn grey opacity"
+                  v-else
+                  :disabled="true">
+                  Unpinned
+                </el-button>
               </div>
             </template>
           </el-table-column>
@@ -597,6 +603,21 @@ export default {
       _this.payRow.file_size = row.file_size
       _this.payVisible = true
       return false
+    },
+    async pinClick(row){
+      let _this = this
+      _this.loading = true
+      const dataRes = await _this.sendPostRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/storage/unpin_source_file/${row.source_file_upload_id}`)
+      if(!dataRes || dataRes.status != 'success') {
+        _this.loading = false
+        _this.$message.error(dataRes?dataRes.message:'Fail')
+        return false
+      }
+      await _this.timeout(1000)
+      _this.getData()
+    },
+    timeout (delay) {
+        return new Promise((res) => setTimeout(res, delay))
     },
     mintFunction(row){
       this.mintRow = row

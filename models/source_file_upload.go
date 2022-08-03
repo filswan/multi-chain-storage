@@ -89,46 +89,6 @@ func GetSourceFileUploadsNotCompletedByCarFileId(carFileId int64) ([]*SourceFile
 	return sourceFileUploads, nil
 }
 
-func GetSourceFileUploads2BeRefundedAfterExpired() ([]*SourceFileUploadOut, error) {
-	sql := "select a.*,b.payload_cid \n" +
-		"from source_file_upload a, source_file b, transaction c\n" +
-		"where a.file_type=? and a.source_file_id=b.id and a.id=c.source_file_upload_id and c.deadline<? and a.status not in (?,?,?,?)"
-
-	currentUtcSecond := libutils.GetCurrentUtcSecond()
-	var models []*SourceFileUploadOut
-	params := []interface{}{}
-	params = append(params, constants.SOURCE_FILE_TYPE_NORMAL)
-	params = append(params, currentUtcSecond)
-	params = append(params, constants.SOURCE_FILE_UPLOAD_STATUS_SUCCESS)
-	params = append(params, constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDABLE)
-	params = append(params, constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDED)
-	params = append(params, constants.SOURCE_FILE_UPLOAD_STATUS_PENDING)
-	err := database.GetDB().Raw(sql, params...).Scan(&models).Error
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-	return models, nil
-}
-
-func GetSourceFileUploads2BeRefundedByCarFileStatus(carFileStatus string) ([]*SourceFileUploadOut, error) {
-	sql := "select a.*,d.payload_cid from source_file_upload a, car_file_source b, car_file c, source_file d\n" +
-		"where a.id=b.source_file_upload_id and b.car_file_id=c.id and a.source_file_id=d.id\n" +
-		"  and a.file_type=? and a.status not in (?,?) and c.status=?"
-	var models []*SourceFileUploadOut
-	params := []interface{}{}
-	params = append(params, constants.SOURCE_FILE_TYPE_NORMAL)
-	params = append(params, constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDABLE)
-	params = append(params, constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDED)
-	params = append(params, carFileStatus)
-	err := database.GetDB().Raw(sql, params...).Scan(&models).Error
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-	return models, nil
-}
-
 func GetSourceFileUploadBySourceFileIdUuid(sourceFileId int64, uuid string) (*SourceFileUpload, error) {
 	var sourceFileUploads []*SourceFileUpload
 	err := database.GetDB().Where("source_file_id=? and uuid=?", sourceFileId, uuid).Find(&sourceFileUploads).Error

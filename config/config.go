@@ -1,6 +1,7 @@
 package config
 
 import (
+	"multi-chain-storage/common/constants"
 	"os"
 	"path/filepath"
 	"time"
@@ -17,6 +18,7 @@ type Configuration struct {
 	FilecoinNetwork string       `toml:"filecoin_network"`
 	FilecoinWallet  string       `toml:"filecoin_wallet"`
 	FlinkUrl        string       `toml:"flink_url"`
+	Web3ApiUrl      string       `toml:"web3_api_url"`
 	Polygon         polygon      `toml:"polygon"`
 	Database        database     `toml:"database"`
 	SwanApi         swanApi      `toml:"swan_api"`
@@ -81,20 +83,18 @@ type ScheduleRule struct {
 	CreateTaskIntervalSecond     time.Duration `toml:"create_task_interval_second"`
 	SendDealIntervalSecond       time.Duration `toml:"send_deal_interval_second"`
 	ScanDealStatusIntervalSecond time.Duration `toml:"scan_deal_status_interval_second"`
-	ScanPolygonIntervalSecond    time.Duration `toml:"scan_polygon_interval_second"`
-	UnlockIntervalSecond         time.Duration `toml:"unlock_interval_second"`
-	RefundIntervalSecond         time.Duration `toml:"refund_interval_second"`
 }
 
 var config *Configuration
 
-func InitConfig() {
+func InitConfig(paymentChainName string) {
 	homedir, err := os.UserHomeDir()
 	if err != nil {
 		logs.GetLogger().Fatal("Cannot get home directory.")
 	}
 
-	configFile := filepath.Join(homedir, ".swan/mcs/config.toml")
+	configFilename := "config_" + paymentChainName + ".toml"
+	configFile := filepath.Join(homedir, constants.CONFIG_PATH, configFilename)
 
 	if metaData, err := toml.DecodeFile(configFile, &config); err != nil {
 		logs.GetLogger().Fatal("error:", err)
@@ -107,7 +107,7 @@ func InitConfig() {
 
 func GetConfig() Configuration {
 	if config == nil {
-		InitConfig()
+		logs.GetLogger().Fatal("config not initialized")
 	}
 	return *config
 }
@@ -119,6 +119,7 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 		{"filecoin_wallet"},
 		{"flink_url"},
 		{"filecoin_network"},
+		{"web3_api_url"},
 
 		{"database", "db_host"},
 		{"database", "db_port"},

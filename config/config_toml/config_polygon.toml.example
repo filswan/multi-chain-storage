@@ -1,0 +1,56 @@
+port = 8889
+release = true              # when work in release mode: set this to true, otherwise to false and enviornment variable GIN_MODE not to release
+filecoin_network = "filecoin_calibration"   # filecoin_mainnet or filecoin_calibration
+filecoin_wallet = ""
+flink_url="https://flink-adapter.filswan.com/deal"
+web3_api_url="http://localhost:8891"
+
+[database]
+db_host="localhost"
+db_port="3306"
+db_schema_name="mcs_v2"
+db_username="root"
+db_password=""
+db_args="charset=utf8mb4&parseTime=True&loc=Local"
+
+[swan_api]
+api_url = "https://calibration-go-swan-server.filswan.com"
+api_key = ""
+access_token = ""
+
+[lotus]
+client_api_url="http://[ip]:[port]/rpc/v0"   # Url of lotus web api
+client_access_token=""   # Access token of lotus web api
+
+[ipfs_server]
+download_url_prefix = "http://[ip]:[port]"
+upload_url_prefix = "http://[ip]:[port]"
+
+[swan_task]
+dir_deal="~/.swan/mcs/temp/deal"
+description = ""
+curated_dataset = ""
+max_price = 0.00005
+expire_days = 4
+verified_deal = false
+fast_retrieval = true
+start_epoch_hours = 96
+min_file_size = 1073741824   # unit: byte
+max_file_num_per_car = 5000
+
+[schedule_rule]
+create_task_interval_second = 120
+send_deal_interval_second = 180
+scan_deal_status_interval_second = 300
+
+[polygon]
+polygon_rpc_url = ""
+payment_contract_address = "0xF444942DC3fA63C1027907E27F501ca1920b8290" # token locked to, unlocked from, refunded from this address
+payment_recipient_address = ""
+dao_contract_address = "0xA12EB17A664E206f363bB240e01dbAa746d2f804"     # DAO sign to this address
+mint_contract_address = "0x1A1e5AC88C493e0608C84c60b7bb5f04D9cF50B3"
+sushi_dex_address = "0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506"
+usdc_wFil_pool_contract = "0x74038ed7D891A043d4aF41FeA242ED01914c2636"
+gas_limit = 8000000
+lock_time = 6
+pay_multiply_factor = 1.5

@@ -1,13 +1,11 @@
 package scheduler
 
 import (
-	"math/big"
 	"multi-chain-storage/common/constants"
 	"multi-chain-storage/common/utils"
 	"multi-chain-storage/config"
 	"multi-chain-storage/database"
 	"multi-chain-storage/models"
-	"multi-chain-storage/on-chain/client"
 	"os"
 	"path/filepath"
 	"time"
@@ -64,7 +62,7 @@ func createTask() (*int, error) {
 	createdTimeMin := currentUtcMilliSec
 	var maxPrice *decimal.Decimal
 
-	fileCoinPriceInUsdc, err := client.GetWfilPriceFromSushiPrice("1")
+	systemParam, err := utils.GetSystemParam()
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
@@ -88,7 +86,7 @@ func createTask() (*int, error) {
 			logs.GetLogger().Info("downloaded ", srcFileUpload.IpfsUrl, " to ", srcFilepathTemp)
 		}
 
-		maxPriceTemp, err := getMaxPrice(srcFileUpload.FileSize, srcFileUpload.PayAmount, fileCoinPriceInUsdc)
+		maxPriceTemp, err := getMaxPrice(srcFileUpload.FileSize, srcFileUpload.PayAmount, systemParam.FilecoinPrice)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			os.Remove(srcFilepathTemp)
@@ -173,10 +171,10 @@ func createTask() (*int, error) {
 	return &numSrcFiles, nil
 }
 
-func getMaxPrice(fileSize int64, lockedFee decimal.Decimal, rate *big.Int) (*decimal.Decimal, error) {
+func getMaxPrice(fileSize int64, lockedFee decimal.Decimal, rate int64) (*decimal.Decimal, error) {
 	_, sectorSize := libutils.CalculatePieceSize(fileSize)
 
-	lockedFeeInFileCoin := lockedFee.Div(decimal.NewFromFloat(libconstants.LOTUS_PRICE_MULTIPLE_1E18)).Div(decimal.NewFromInt(rate.Int64()))
+	lockedFeeInFileCoin := lockedFee.Div(decimal.NewFromFloat(libconstants.LOTUS_PRICE_MULTIPLE_1E18)).Div(decimal.NewFromInt(rate))
 
 	durationEpoch := decimal.NewFromInt(constants.DURATION_DAYS_DEFAULT * constants.EPOCH_PER_DAY)
 	sectorSizeGB := decimal.NewFromFloat(sectorSize).Div(decimal.NewFromInt(constants.BYTES_1GB))

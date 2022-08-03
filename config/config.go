@@ -18,6 +18,7 @@ type Configuration struct {
 	FilecoinNetwork string       `toml:"filecoin_network"`
 	FilecoinWallet  string       `toml:"filecoin_wallet"`
 	FlinkUrl        string       `toml:"flink_url"`
+	Web3ApiUrl      string       `toml:"web3_api_url"`
 	Polygon         polygon      `toml:"polygon"`
 	Database        database     `toml:"database"`
 	SwanApi         swanApi      `toml:"swan_api"`
@@ -118,6 +119,7 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 		{"filecoin_wallet"},
 		{"flink_url"},
 		{"filecoin_network"},
+		{"web3_api_url"},
 
 		{"database", "db_host"},
 		{"database", "db_port"},

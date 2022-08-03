@@ -6,8 +6,8 @@ import (
 	"multi-chain-storage/common"
 	"multi-chain-storage/common/constants"
 	"multi-chain-storage/common/errorinfo"
+	"multi-chain-storage/common/utils"
 	"multi-chain-storage/models"
-	"multi-chain-storage/on-chain/client"
 	"multi-chain-storage/service"
 	"net/http"
 	"strconv"
@@ -299,7 +299,7 @@ func GetDealFromFlink(c *gin.Context) {
 		return
 	}
 
-	threshold, err := client.GetThreshHold()
+	systemParam, err := utils.GetSystemParam()
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_INTERNAL, err.Error()))
@@ -315,7 +315,7 @@ func GetDealFromFlink(c *gin.Context) {
 
 	c.JSON(http.StatusOK, common.CreateSuccessResponse(gin.H{
 		"source_file_upload_deal": sourceFileUploadDeal,
-		"dao_threshold":           threshold,
+		"dao_threshold":           systemParam.DaoThreshold,
 		"dao_signature":           daoSignatures,
 	}))
 }

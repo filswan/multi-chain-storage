@@ -3,6 +3,7 @@ release = true              # when work in release mode: set this to true, other
 filecoin_network = "filecoin_calibration"   # filecoin_mainnet or filecoin_calibration
 filecoin_wallet = ""
 flink_url="https://flink-adapter.filswan.com/deal"
+web3_api_url="http://localhost:8891"
 
 [database]
 db_host="localhost"

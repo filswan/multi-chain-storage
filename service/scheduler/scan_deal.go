@@ -5,7 +5,6 @@ import (
 	"multi-chain-storage/config"
 	"multi-chain-storage/database"
 	"multi-chain-storage/models"
-	"multi-chain-storage/on-chain/client"
 	"strings"
 
 	libutils "github.com/filswan/go-swan-lib/utils"
@@ -17,11 +16,6 @@ import (
 
 func ScanDeal() error {
 	err := updateOfflineDealStatusAndLog()
-	if err != nil {
-		logs.GetLogger().Error(err)
-	}
-
-	err = UpdateSourceFiles2Refundable()
 	if err != nil {
 		logs.GetLogger().Error(err)
 	}
@@ -92,57 +86,4 @@ func updateOfflineDealStatusAndLog() error {
 	}
 
 	return nil
-}
-
-func UpdateSourceFiles2Refundable() error {
-	sourceFileUploads, err := models.GetSourceFileUploads2BeRefundedAfterExpired()
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
-
-	setSourceFiles2Refundable(sourceFileUploads)
-
-	// no offline deals, and only set source file upload status to refundable
-	sourceFileUploads, err = models.GetSourceFileUploads2BeRefundedByCarFileStatus(constants.CAR_FILE_STATUS_DEAL_SEND_EXPIRED)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
-
-	setSourceFiles2Refundable(sourceFileUploads)
-
-	// no offline deals, and only set source file upload status to refundable
-	sourceFileUploads, err = models.GetSourceFileUploads2BeRefundedByCarFileStatus(constants.CAR_FILE_STATUS_DEAL_SENT_FAILED)
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
-	}
-
-	setSourceFiles2Refundable(sourceFileUploads)
-
-	return nil
-}
-
-func setSourceFiles2Refundable(sourceFileUploads []*models.SourceFileUploadOut) {
-	for _, sourceFileUpload := range sourceFileUploads {
-		wCid := sourceFileUpload.Uuid + sourceFileUpload.PayloadCid
-		lockedPayment, err := client.GetLockedPaymentInfo(wCid)
-		if err != nil {
-			logs.GetLogger().Error(err)
-			continue
-		}
-
-		sourceFileUploadStatus := constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDED
-		if lockedPayment != nil {
-			sourceFileUploadStatus = constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDABLE
-		} else {
-			logs.GetLogger().Info("payment not exists for ", wCid, ", source file upload id:", sourceFileUpload.Id)
-		}
-
-		err = models.UpdateSourceFileUploadStatus(sourceFileUpload.Id, sourceFileUploadStatus)
-		if err != nil {
-			logs.GetLogger().Error(err)
-		}
-	}
 }

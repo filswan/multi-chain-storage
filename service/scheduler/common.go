@@ -13,11 +13,6 @@ import (
 	libutils "github.com/filswan/go-swan-lib/utils"
 )
 
-type Schedule struct {
-	Rule string
-	Func func() error
-}
-
 var carDir string
 var srcDir string
 

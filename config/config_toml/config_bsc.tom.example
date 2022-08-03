@@ -41,9 +41,6 @@ max_file_num_per_car = 5000
 create_task_interval_second = 120
 send_deal_interval_second = 180
 scan_deal_status_interval_second = 300
-scan_polygon_interval_second = 1
-unlock_interval_second = 300
-refund_interval_second = 300
 
 [polygon]
 polygon_rpc_url = ""

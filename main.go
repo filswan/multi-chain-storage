@@ -1,12 +1,12 @@
 package main
 
 import (
+	"multi-chain-storage/common/constants"
 	"multi-chain-storage/config"
 	"multi-chain-storage/database"
 	"multi-chain-storage/routers"
 	"multi-chain-storage/service/scheduler"
 	"os"
-	"path/filepath"
 	"strconv"
 	"time"
 
@@ -14,11 +14,14 @@ import (
 
 	"github.com/gin-gonic/gin"
 	cors "github.com/itsjamie/gin-cors"
-	"github.com/joho/godotenv"
 )
 
 func main() {
-	LoadEnv()
+	paymentChainName := constants.PAYMENT_CHAIN_NAME_POLYGON
+	if len(os.Args) > 1 {
+		paymentChainName = os.Args[1]
+	}
+	config.InitConfig(paymentChainName)
 
 	db := database.Init()
 	defer database.CloseDB(db)
@@ -54,20 +57,4 @@ func createGinServer() {
 	if err != nil {
 		logs.GetLogger().Fatal(err)
 	}
-}
-
-func LoadEnv() {
-	homedir, err := os.UserHomeDir()
-	if err != nil {
-		logs.GetLogger().Fatal("Cannot get home directory.")
-	}
-
-	envFile := filepath.Join(homedir, ".swan/mcs/.env")
-	err = godotenv.Load(envFile)
-	if err != nil {
-		logs.GetLogger().Fatal(err)
-	}
-
-	keyName := "privateKeyOnPolygon"
-	logs.GetLogger().Info(keyName, ":", os.Getenv(keyName))
 }

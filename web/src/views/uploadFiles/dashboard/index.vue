@@ -101,11 +101,14 @@
             </template>
             <template slot-scope="scope">
               <div class="hot-cold-box">
-                <el-button class="uploadBtn blue" type="primary"
-                  v-if="scope.row.pin_status&&scope.row.pin_status.toLowerCase()=='pinned'"
-                  @click.stop="pinClick(scope.row)">
-                  Unpin
-                </el-button>
+                <el-tooltip
+                  v-if="scope.row.pin_status&&scope.row.pin_status.toLowerCase()=='pinned'" 
+                  class="item" effect="dark" :content="$t('uploadFile.status_button_tooltip')" placement="top">
+                    <el-button class="uploadBtn blue" type="primary"
+                      @click.stop="pinClick(scope.row)">
+                          Unpin
+                    </el-button>
+                </el-tooltip>
                 <el-button class="uploadBtn grey opacity"
                   v-else
                   :disabled="true">

@@ -458,6 +458,7 @@ export default {
         cid: 'CID',
         status: 'PIN状态',
         status_tooltip: '文件或数据在FilSwan IPFS节点上的存储状态。',
+        status_button_tooltip: '点击unpin后即不可修改。',
         file_name: '文件名称',
         file_name_tooltip: '请点击文件名以查阅更多交易详情和DAO签名详情。',
         file_name_tip: '请选择文件',

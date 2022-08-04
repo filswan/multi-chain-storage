@@ -29,5 +29,15 @@ func GetSystemParams(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, common.CreateSuccessResponse(params))
+	params1 := make(map[string]interface{})
+	params1["PAYMENT_CONTRACT_ADDRESS"] = params.PaymentContractAddress
+	params1["PAYMENT_RECIPIENT_ADDRESS"] = params.PaymentRecipientAddress
+	params1["MINT_CONTRACT_ADDRESS"] = params.MintContractAddress
+	params1["USDC_ADDRESS"] = params.UsdcAddress
+	params1["PAY_MULTIPLY_FACTOR"] = params.PayMultiplyFactor
+	params1["LOCK_TIME"] = params.LockTime
+	params1["GAS_LIMIT"] = params.GasLimit
+	params1["USDC_ADDRESS"] = params.UsdcAddress
+
+	c.JSON(http.StatusOK, common.CreateSuccessResponse(params1))
 }

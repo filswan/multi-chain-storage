@@ -1,7 +1,6 @@
 package models
 
 import (
-	"multi-chain-storage/common/constants"
 	"multi-chain-storage/database"
 
 	libutils "github.com/filswan/go-swan-lib/utils"
@@ -82,28 +81,6 @@ type CarFile2Refund struct {
 	DealFailCnt   int   `json:"fail_cnt"`
 	DealTotalCnt  int   `json:"total_cnt"`
 	LastUnlockAt  int64 `json:"last_unlock_at"`
-}
-
-func GetCarFiles2Refund() ([]*CarFile2Refund, error) {
-	sql := "select b.car_file_id,\n" +
-		"sum(case when b.status=? then 1 else 0 end) deal_success_cnt,\n" +
-		"sum(case when b.status=? then 1 else 0 end) deal_fail_cnt,\n" +
-		"count(*) deal_total_cnt,\n" +
-		"max(unlock_at) last_unlock_at\n" +
-		"from car_file a, offline_deal b \n" +
-		"where a.id=b.car_file_id and a.status=?\n" +
-		"group by b.car_file_id\n" +
-		"having deal_total_cnt=deal_success_cnt+deal_fail_cnt;"
-
-	var carFiles2Refund []*CarFile2Refund
-
-	err := database.GetDB().Raw(sql, constants.OFFLINE_DEAL_STATUS_SUCCESS, constants.OFFLINE_DEAL_STATUS_FAILED, constants.CAR_FILE_STATUS_DEAL_SENT).Scan(&carFiles2Refund).Error
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-
-	return carFiles2Refund, nil
 }
 
 func GetCarFileBySourceFileUploadId(srcFileUploadId int64) (*CarFile, error) {

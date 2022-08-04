@@ -35,7 +35,7 @@ type OfflineDealOut struct {
 
 func GetOfflineDeals2BeScanned() ([]*OfflineDeal, error) {
 	var offlineDeals []*OfflineDeal
-	err := database.GetDB().Where("status not in (?,?)", constants.OFFLINE_DEAL_STATUS_ACTIVE, constants.OFFLINE_DEAL_STATUS_FAILED).Find(&offlineDeals).Error
+	err := database.GetDB().Where("status not in (?,?)", constants.OFFLINE_DEAL_STATUS_SUCCESS, constants.OFFLINE_DEAL_STATUS_FAILED).Find(&offlineDeals).Error
 
 	if err != nil {
 		logs.GetLogger().Error(err)

@@ -47,7 +47,7 @@ func GetSourceFileUploads2RefundByCarFileId(carFileId int64) ([]*SourceFileUploa
 	return sourceFileUploadOut, nil
 }
 
-func GetSourceFileUploadsByCarFileId(carFileId int64, batchNo *int) ([]*SourceFileUploadOut, error) {
+func GetSourceFileUploadsByCarFileId(carFileId int64, batchNo, batchSizeMax *int) ([]*SourceFileUploadOut, error) {
 	var sourceFileUploads []*SourceFileUploadOut
 	sql := "select b.*,c.payload_cid from car_file_source a, source_file_upload b, source_file c\n" +
 		"where a.car_file_id=? and a.source_file_upload_id=b.id and b.source_file_id=c.id"
@@ -55,10 +55,10 @@ func GetSourceFileUploadsByCarFileId(carFileId int64, batchNo *int) ([]*SourceFi
 	params := []interface{}{}
 	params = append(params, carFileId)
 
-	if batchNo != nil {
+	if batchNo != nil && batchSizeMax != nil {
 		sql = sql + "\norder by b. id limit ? offset ?"
-		params = append(params, constants.MAX_WCID_COUNT_IN_TRANSACTION)
-		offset := constants.MAX_WCID_COUNT_IN_TRANSACTION * *batchNo
+		params = append(params, *batchSizeMax)
+		offset := *batchSizeMax * *batchNo
 		params = append(params, offset)
 	} else {
 		sql = sql + "\norder by b.id"

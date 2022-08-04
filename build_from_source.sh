@@ -1,6 +1,6 @@
 #!/bin/bash
 
-CONF_FILE_DIR_SRC=./config/config_toml
+CONF_FILE_DIR_SRC=./config/config_file
 CONF_FILE_DIR_DEST=${HOME}/.swan/mcs
 mkdir -p ${CONF_FILE_DIR}
 

@@ -52,7 +52,7 @@ func GetDeals2Sign(signerWalletAddress string) ([]*models.Deal2Sign, error) {
 			}
 
 			if !signed {
-				sourceFileUploads, err := models.GetSourceFileUploadsByCarFileId(deal2Sign.CarFileId, &i)
+				sourceFileUploads, err := models.GetSourceFileUploadsByCarFileId(deal2Sign.CarFileId, &i, &deal2Sign.BatchSizeMax)
 				if err != nil {
 					logs.GetLogger().Error(err)
 					return nil, err
@@ -90,7 +90,7 @@ func GetDeals2SignHash(signerWalletAddress string) ([]*models.Deal2Sign, error) 
 	}
 
 	for _, deal2Sign := range deals2Sign {
-		sourceFileUploads, err := models.GetSourceFileUploadsByCarFileId(deal2Sign.CarFileId, nil)
+		sourceFileUploads, err := models.GetSourceFileUploadsByCarFileId(deal2Sign.CarFileId, nil, nil)
 		if err != nil {
 			logs.GetLogger().Error(err)
 			return nil, err

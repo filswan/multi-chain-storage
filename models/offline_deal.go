@@ -35,7 +35,7 @@ type OfflineDealOut struct {
 
 func GetOfflineDeals2BeScanned() ([]*OfflineDeal, error) {
 	var offlineDeals []*OfflineDeal
-	err := database.GetDB().Where("status not in (?,?)", constants.OFFLINE_DEAL_STATUS_ACTIVE, constants.OFFLINE_DEAL_STATUS_FAILED).Find(&offlineDeals).Error
+	err := database.GetDB().Where("status not in (?,?,?)", constants.OFFLINE_DEAL_STATUS_ACTIVE, constants.OFFLINE_DEAL_STATUS_SUCCESS, constants.OFFLINE_DEAL_STATUS_FAILED).Find(&offlineDeals).Error
 
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -80,12 +80,13 @@ type Deal2Sign struct {
 	CarFileId     int64                 `json:"car_file_id"`
 	DealId        int64                 `json:"deal_id"`
 	BatchCount    int                   `json:"batch_count"`
+	BatchSizeMax  int                   `json:"batch_size_max"`
 	BatchInfo     []*Deal2SignBatchInfo `json:"batch_info"`
 }
 
 func GetDeals2Sign(signerWalletId int64) ([]*Deal2Sign, error) {
 	var deals2Sign []*Deal2Sign
-	sql := "select a.offline_deal_id,b.deal_id,b.car_file_id,a.batch_count from dao_pre_sign a\n" +
+	sql := "select a.offline_deal_id,b.deal_id,b.car_file_id,a.batch_count,a.batch_size_max from dao_pre_sign a\n" +
 		"left join offline_deal b on a.offline_deal_id=b.id\n" +
 		"where a.source_file_upload_cnt_sign<a.source_file_upload_cnt_total and a.status=? and a.wallet_id_signer=?\n"
 	err := database.GetDB().Raw(sql, constants.DAO_PRE_SIGN_STATUS_SUCCESS, signerWalletId).Scan(&deals2Sign).Error
@@ -100,10 +101,10 @@ func GetDeals2Sign(signerWalletId int64) ([]*Deal2Sign, error) {
 
 func GetDeals2SignHash(signerWalletId int64) ([]*Deal2Sign, error) {
 	var deals2Sign []*Deal2Sign
-	sql := "select b.offline_deal_id,a.deal_id,a.car_file_id from offline_deal a\n" +
+	sql := "select a.id offline_deal_id,a.deal_id,a.car_file_id from offline_deal a\n" +
 		"left outer join dao_signature b on b.offline_deal_id=a.id and b.status=? and b.wallet_id_signer=?\n" +
-		"where b.id is null\n"
-	err := database.GetDB().Raw(sql, constants.DAO_SIGNATURE_STATUS_SUCCESS, signerWalletId).Scan(&deals2Sign).Error
+		"where a.status=? and b.id is null\n"
+	err := database.GetDB().Raw(sql, constants.DAO_SIGNATURE_STATUS_SUCCESS, signerWalletId, constants.OFFLINE_DEAL_STATUS_ACTIVE).Scan(&deals2Sign).Error
 
 	if err != nil {
 		logs.GetLogger().Error(err)

@@ -19,26 +19,12 @@ type Configuration struct {
 	FilecoinWallet  string       `toml:"filecoin_wallet"`
 	FlinkUrl        string       `toml:"flink_url"`
 	Web3ApiUrl      string       `toml:"web3_api_url"`
-	Polygon         polygon      `toml:"polygon"`
 	Database        database     `toml:"database"`
 	SwanApi         swanApi      `toml:"swan_api"`
 	Lotus           lotus        `toml:"lotus"`
 	IpfsServer      ipfsServer   `toml:"ipfs_server"`
 	SwanTask        swanTask     `toml:"swan_task"`
 	ScheduleRule    ScheduleRule `toml:"schedule_rule"`
-}
-
-type polygon struct {
-	PolygonRpcUrl           string  `toml:"polygon_rpc_url"`
-	PaymentContractAddress  string  `toml:"payment_contract_address"`
-	PaymentRecipientAddress string  `toml:"payment_recipient_address"`
-	DaoContractAddress      string  `toml:"dao_contract_address"`
-	MintContractAddress     string  `toml:"mint_contract_address"`
-	SushiDexAddress         string  `toml:"sushi_dex_address"`
-	UsdcWFilPoolContract    string  `toml:"usdc_wFil_pool_contract"`
-	GasLimit                uint64  `toml:"gas_limit"`
-	LockTime                int     `toml:"lock_time"`
-	PayMultiplyFactor       float32 `toml:"pay_multiply_factor"`
 }
 
 type database struct {
@@ -152,17 +138,6 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 		{"schedule_rule", "create_task_interval_second"},
 		{"schedule_rule", "send_deal_interval_second"},
 		{"schedule_rule", "scan_deal_status_interval_second"},
-
-		{"polygon", "polygon_rpc_url"},
-		{"polygon", "payment_contract_address"},
-		{"polygon", "payment_recipient_address"},
-		{"polygon", "dao_contract_address"},
-		{"polygon", "mint_contract_address"},
-		{"polygon", "sushi_dex_address"},
-		{"polygon", "usdc_wFil_pool_contract"},
-		{"polygon", "gas_limit"},
-		{"polygon", "lock_time"},
-		{"polygon", "pay_multiply_factor"},
 	}
 
 	for _, v := range requiredFields {

@@ -15,15 +15,6 @@ import (
 )
 
 func ScanDeal() error {
-	err := updateOfflineDealStatusAndLog()
-	if err != nil {
-		logs.GetLogger().Error(err)
-	}
-
-	return nil
-}
-
-func updateOfflineDealStatusAndLog() error {
 	offlineDeals, err := models.GetOfflineDeals2BeScanned()
 	if err != nil {
 		logs.GetLogger().Error(err)

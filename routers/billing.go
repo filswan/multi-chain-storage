@@ -5,6 +5,7 @@ import (
 	common "multi-chain-storage/common"
 	"multi-chain-storage/common/constants"
 	"multi-chain-storage/common/errorinfo"
+	"multi-chain-storage/common/utils"
 	"multi-chain-storage/service"
 	"net/http"
 	"strconv"
@@ -18,6 +19,7 @@ import (
 func BillingManager(router *gin.RouterGroup) {
 	router.GET("", GetUserBillingHistory)
 	router.GET("/deal/lockpayment/info", GetLockPaymentInfo)
+	router.GET("/price/filecoin", GetFilecoinPrice)
 }
 
 func GetUserBillingHistory(c *gin.Context) {
@@ -109,4 +111,15 @@ func GetLockPaymentInfo(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, common.CreateSuccessResponse(sourceFileUploadInfo))
+}
+
+func GetFilecoinPrice(c *gin.Context) {
+	params, err := utils.GetSystemParam()
+	if err != nil {
+		logs.GetLogger().Error(err)
+		c.JSON(http.StatusOK, common.CreateErrorResponse(errorinfo.ERROR_INTERNAL, err.Error()))
+		return
+	}
+
+	c.JSON(http.StatusOK, common.CreateSuccessResponse(params.FilecoinPrice))
 }

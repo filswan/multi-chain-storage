@@ -39,5 +39,5 @@ func GetSystemParams(c *gin.Context) {
 	params1["GAS_LIMIT"] = params.GasLimit
 	params1["USDC_ADDRESS"] = params.UsdcAddress
 
-	c.JSON(http.StatusOK, common.CreateSuccessResponse(params1))
+	c.JSON(http.StatusOK, common.CreateSuccessResponse(params))
 }

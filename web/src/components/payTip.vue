@@ -55,7 +55,7 @@
                         <img src="@/assets/images/info.png"/>
                     </el-tooltip>
                 </div>
-                <div class="desc">{{$t('uploadFile.latest_exchange_rate')}} {{bilingPrice}}.</div>
+                <div class="desc">{{$t('uploadFile.latest_exchange_rate')}} {{biling_price}}.</div>
                 <div class="upload_plan_radio">
                     <el-radio-group v-model="pay.lock_plan" @change="agreeChange">
                         <el-radio label="1" border>
@@ -113,7 +113,7 @@
                 }
             };
         },
-        props: ['payVisible', 'payRow', 'bilingPrice'],
+        props: ['payVisible', 'payRow'],
         components: {},
         computed: {
             metaAddress() {
@@ -156,9 +156,7 @@
                 let cost = storageRes.data.average_price_per_GB_per_year?storageRes.data.average_price_per_GB_per_year.split(" "):[]
                 if(cost[0]) _this.storage = cost[0]
 
-                const bilingRes = await _this.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/billing/price/filecoin?wallet_address=${_this.metaAddress}`)
-                _this.biling_price = bilingRes.data
-
+                _this.biling_price = _this.$root.filecoin_price
                 _this.getData()
             },
             async sendRequest(apilink) {

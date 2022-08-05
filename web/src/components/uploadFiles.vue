@@ -602,8 +602,7 @@
                     let cost = storageRes.data.average_price_per_GB_per_year?storageRes.data.average_price_per_GB_per_year.split(" "):[]
                     if(cost[0]) _this.storage = cost[0]
 
-                    const bilingRes = await _this.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/billing/price/filecoin?wallet_address=${_this.metaAddress}`)
-                    _this.biling_price = bilingRes.data
+                    _this.biling_price = _this.$root.filecoin_price
 
                     _this.loading = false
                 }else {

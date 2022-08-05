@@ -85,7 +85,9 @@ new Vue({
         PAY_WITH_MULTIPLY_FACTOR: "1.5",
         RECIPIENT: "",
         SWAN_PAYMENT_CONTRACT_ADDRESS: "",
-        USDC_ADDRESS: ""
+        USDC_ADDRESS: "",
+        dao_threshold: "",
+        filecoin_price: ""
       }
   }
 })

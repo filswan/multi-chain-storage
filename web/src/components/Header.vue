@@ -496,13 +496,15 @@ export default {
             })
             .then((json) => {
                 if(json.data.status == 'success'){
-                    _this.$root.LOCK_TIME = json.data.data.LOCK_TIME
-                    _this.$root.PAY_GAS_LIMIT = json.data.data.GAS_LIMIT
-                    _this.$root.PAY_WITH_MULTIPLY_FACTOR = json.data.data.PAY_MULTIPLY_FACTOR
-                    _this.$root.RECIPIENT = json.data.data.PAYMENT_RECIPIENT_ADDRESS
-                    _this.$root.SWAN_PAYMENT_CONTRACT_ADDRESS = json.data.data.PAYMENT_CONTRACT_ADDRESS
-                    _this.$root.USDC_ADDRESS = json.data.data.USDC_ADDRESS
-                    _this.$root.MINT_CONTRACT = json.data.data.MINT_CONTRACT_ADDRESS
+                    _this.$root.LOCK_TIME = json.data.data.lock_time
+                    _this.$root.PAY_GAS_LIMIT = json.data.data.gas_limit
+                    _this.$root.PAY_WITH_MULTIPLY_FACTOR = json.data.data.pay_multiply_factor
+                    _this.$root.RECIPIENT = json.data.data.payment_recipient_address
+                    _this.$root.SWAN_PAYMENT_CONTRACT_ADDRESS = json.data.data.payment_contract_address
+                    _this.$root.USDC_ADDRESS = json.data.data.usdc_address
+                    _this.$root.MINT_CONTRACT = json.data.data.mint_contract_address
+                    _this.$root.dao_threshold = json.data.data.dao_threshold
+                    _this.$root.filecoin_price = json.data.data.filecoin_price
                 }
             }).catch(error => {
                 console.log(error)

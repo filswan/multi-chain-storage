@@ -42,11 +42,11 @@ Run `npm run dev` for a dev server. Navigate to `http://localhost:8080/`. The ap
 # Build test projects
 $ npm run build:test
 
-# Build staging projects
-$ npm run build:staging
+# Build calibration projects
+$ npm run build:calibration
 
-# Build prod projects
-$ npm run build:prod
+# Build semi prod projects
+$ npm run build:semi_prod
 ```
 
 The build artifacts will be stored in the `dist/` directory.

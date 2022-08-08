@@ -453,7 +453,7 @@ export default {
         cid: 'CID',
         status: 'Pin Status',
         status_tooltip: "Reports the status of a file or piece of data stored on FilSwan's IPFS nodes.",
-        status_button_tooltip: "It's an unmodifiable option after clicking unpin.",
+        status_button_tooltip: "It's an irrevocable option after clicking unpin.",
         file_name: 'File Name',
         file_name_tooltip: 'Click on the file name to view more Deal Details and DAO Signature details.',
         file_name_tip: 'Please choose a file',

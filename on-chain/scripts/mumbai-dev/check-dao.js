@@ -29,13 +29,13 @@ async function main() {
   // const tx1 = await daoOracleInstance.connect(signer3).preSign('20015', 'filecoin_calibration', recipient, 1);
   // await tx1.wait();
 
-  const cidList = ['e38bb9da-67d2-4374-ae46-9d67ce93b39eQmf4N6uo9NqYPgRTvCnkhMZh1wjGAxdFtgh74RGFyh1mW1',
-  'a6aa114b-df42-442c-92dd-537db6905115Qmf4N6uo9NqYPgRTvCnkhMZh1wjGAxdFtgh74RGFyh1mW1'];
+  // const cidList = ['e38bb9da-67d2-4374-ae46-9d67ce93b39eQmf4N6uo9NqYPgRTvCnkhMZh1wjGAxdFtgh74RGFyh1mW1',
+  // 'a6aa114b-df42-442c-92dd-537db6905115Qmf4N6uo9NqYPgRTvCnkhMZh1wjGAxdFtgh74RGFyh1mW1'];
 
-  const tx2 = await daoOracleInstance.connect(signer3).sign('20015', 'filecoin_calibration', cidList, 0);
-  await tx2.wait();
+  // const tx2 = await daoOracleInstance.connect(signer3).sign('20015', 'filecoin_calibration', cidList, 0);
+  // await tx2.wait();
 
-  const result1 = await daoOracleInstance.getCidList('20015', 'filecoin_calibration');
+  const result1 = await daoOracleInstance.getCidList('8460147', 'filecoin_mainnet');
   console.log(result1);
 
   
@@ -47,7 +47,7 @@ async function main() {
   // console.log(result3);
   
   
-  const result2 = await daoOracleInstance.isCarPaymentAvailable('20015', 'filecoin_calibration', '0xc4fcaAdCb0b00a9501e56215c37B10fAF9e79c0a');
+  const result2 = await daoOracleInstance.isCarPaymentAvailable('8460147', 'filecoin_mainnet', '0xc4fcaAdCb0b00a9501e56215c37B10fAF9e79c0a');
   console.log(result2);
 
   // const hasRole = await daoOracleInstance.connect(signer).hasRole(

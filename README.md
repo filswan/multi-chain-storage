@@ -161,18 +161,6 @@ nohup ./build/multi-chain-storage >> ./build/mcs.log &       #After installation
 - **send_deal_interval_second**: Job running interval, unit: second, default: 180
 - **scan_deal_status_interval_second**: Job running interval, unit: second, default: 300
 
-#### [polygon]
-- **polygon_rpc_url**: Your polygon network rpc url
-- **payment_contract_address**:  Swan payment contract address on polygon to lock money
-- **payment_recipient_address**:  MCS wallet address to receive money from unlock operation
-- **dao_contract_address**:  Swan DAO address on polygon, to receive DAO signatures
-- **mint_contract_address**:  Swan mint address on polygon
-- **sushi_dex_address**:  Sushi address on polygon
-- **usdc_wFil_pool_contract**:  Address to get exchange rate between USDC and wFil from sushi on polygon
-- **gas_limit**: Gas limit for transaction
-- **lock_time**: Lock days defined in smart contract, it is 6 now
-- **pay_multiply_factor**:
-
 ### ~/.swan/mcs/.env
 - **privateKeyOnPolygon**: Private key of the wallet used to execute contract methods on the polygon network and pay for gas
 

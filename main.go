@@ -5,6 +5,7 @@ import (
 	"multi-chain-storage/config"
 	"multi-chain-storage/database"
 	"multi-chain-storage/routers"
+	"multi-chain-storage/service/scheduler"
 	"os"
 	"strconv"
 	"time"
@@ -25,7 +26,7 @@ func main() {
 	db := database.Init()
 	defer database.CloseDB(db)
 
-	//scheduler.InitScheduler()
+	scheduler.InitScheduler()
 
 	createGinServer()
 }

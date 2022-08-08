@@ -110,6 +110,11 @@
                                     @current-change="handleCurrentChange"
                                     @size-change="handleSizeChange"
                                 />
+                                <div class="span" v-if="!bodyWidth">
+                                    <span>{{$t('uploadFile.goTo')}}</span>
+                                        <el-input class="paginaInput" @change="pageSizeChange" v-model.number="parma.jumperOffset" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')" autocomplete="off"></el-input>
+                                    <span>{{$t('uploadFile.goTopage')}}</span>
+                                </div>
                             </div>
 
                             <!-- <div class="down" @click="downVisible=true">

@@ -16,6 +16,11 @@ import (
 	libutils "github.com/filswan/go-swan-lib/utils"
 )
 
+const (
+	LOTUS_JSON_RPC_ID      = 7878
+	LOTUS_JSON_RPC_VERSION = "2.0"
+)
+
 func DownloadFile(sourceUrl string, destFilepath string) error {
 	// Create the file
 	out, err := os.Create(destFilepath)
@@ -86,4 +91,62 @@ func GetSystemParam() (*SystemParam, error) {
 	}
 
 	return &systemParamResponse.Data, nil
+}
+
+type DealState struct {
+	Result *struct {
+		State struct {
+			SectorStartEpoch int
+		}
+	} `json:"result"`
+	Error *struct {
+		Code    int    `json:"code"`
+		Message string `json:"message"`
+	} `json:"error"`
+}
+
+type LotusJsonRpcParams struct {
+	JsonRpc string        `json:"jsonrpc"`
+	Method  string        `json:"method"`
+	Params  []interface{} `json:"params"`
+	Id      int           `json:"id"`
+}
+
+func IsDealActive(dealId int64) (*bool, error) {
+	lotusApiUrl := config.GetConfig().Lotus.ClientApiUrl
+
+	var params []interface{}
+	params = append(params, dealId)
+	params = append(params, nil)
+
+	jsonRpcParams := LotusJsonRpcParams{
+		JsonRpc: LOTUS_JSON_RPC_VERSION,
+		Method:  "Filecoin.StateMarketStorageDeal",
+		Params:  params,
+		Id:      LOTUS_JSON_RPC_ID,
+	}
+
+	response, err := web.HttpGetNoToken(lotusApiUrl, jsonRpcParams)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	var dealState DealState
+	err = json.Unmarshal(response, &dealState)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	if dealState.Error != nil {
+		message := fmt.Sprintf("no deal state, code:%d,message:%s", dealState.Error.Code, dealState.Error.Message)
+		logs.GetLogger().Info(message)
+		dealStateBool := false
+		return &dealStateBool, nil
+	}
+
+	dealStateBool := dealState.Result.State.SectorStartEpoch > -1
+
+	return &dealStateBool, nil
 }

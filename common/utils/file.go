@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"multi-chain-storage/common/constants"
 	"multi-chain-storage/config"
 	"net/http"
 	"net/url"
@@ -74,6 +75,12 @@ func GetSystemParam() (*SystemParam, error) {
 	var systemParamResponse SystemParamResponse
 	err = json.Unmarshal(response, &systemParamResponse)
 	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	if !strings.EqualFold(systemParamResponse.Status, constants.HTTP_STATUS_SUCCESS) {
+		err := fmt.Errorf("get parameters failed, status:%s,message:%s", systemParamResponse.Status, systemParamResponse.Message)
 		logs.GetLogger().Error(err)
 		return nil, err
 	}

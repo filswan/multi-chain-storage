@@ -62,7 +62,7 @@ func ScanDeal() error {
 			}
 		}
 
-		if offlineDeal.DealId != nil {
+		if offlineDeal.DealId != nil && !strings.EqualFold(offlineDeal.Status, constants.OFFLINE_DEAL_STATUS_ACTIVE) {
 			isDealActive, err := utils.IsDealActive(*offlineDeal.DealId)
 			if err != nil {
 				logs.GetLogger().Error(err)

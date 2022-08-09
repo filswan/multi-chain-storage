@@ -11,8 +11,8 @@
             >
             </el-input>
           </div>
-          <div class="createTask" @click="uploadDigShow = true">
-            <a>
+          <div class="createTask" v-loading="loading && firstIndex === 0">
+            <a @click="uploadDigShow = true">
                 <img src="@/assets/images/my_file/icon_Upload@2x.png" alt="">
                 <span>{{$t('uploadFile.Upload_More_Files')}}</span>
             </a>

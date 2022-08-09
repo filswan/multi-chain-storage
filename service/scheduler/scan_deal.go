@@ -39,6 +39,8 @@ func ScanDeal() error {
 				note := err.Error()
 				offlineDeal.Status = constants.OFFLINE_DEAL_STATUS_FAILED
 				offlineDeal.Note = &note
+			} else {
+				continue
 			}
 		} else {
 			if offlineDeal.OnChainStatus == nil || *offlineDeal.OnChainStatus != dealInfo.Status || offlineDeal.DealId == nil || *offlineDeal.DealId != dealInfo.DealId ||

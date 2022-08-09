@@ -140,9 +140,8 @@ func IsDealActive(dealId int64) (*bool, error) {
 	}
 
 	if dealState.Error != nil {
-		message := fmt.Sprintf("get deal state failed, code:%d,message:%s", dealState.Error.Code, dealState.Error.Message)
+		message := fmt.Sprintf("no deal state, code:%d,message:%s", dealState.Error.Code, dealState.Error.Message)
 		logs.GetLogger().Info(message)
-
 		dealStateBool := false
 		return &dealStateBool, nil
 	}

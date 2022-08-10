@@ -3,6 +3,7 @@ package models
 import (
 	"fmt"
 	"multi-chain-storage/common/constants"
+	"multi-chain-storage/common/utils"
 	"multi-chain-storage/database"
 	"sort"
 	"strings"
@@ -397,4 +398,30 @@ func UpdateSourceFileUploadPinStatus(sourceFileUploadId int64, pinStatus string)
 	}
 
 	return nil
+}
+
+type FreeSizeUsage struct {
+	FreeSize int64 `json:"free_size"`
+}
+
+func GetSourceFileUploadFreeUsage(walletId int64) (*int64, error) {
+	var freeSizeUsages []*FreeSizeUsage
+	sql := "select sum(c.file_size) free_size from source_file_upload a\n" +
+		"left outer join transaction b on a.wallet_id=? and a.create_at>=? and a.id=b.source_file_upload_id\n" +
+		"left join source_file c on a.source_file_id=c.id\n" +
+		"where b.id is null"
+
+	monthStart := utils.GetMonthStart
+	err := database.GetDB().Raw(sql, walletId, monthStart).Scan(&freeSizeUsages).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	if len(freeSizeUsages) > 0 {
+		return &freeSizeUsages[0].FreeSize, nil
+	}
+
+	freeSizeUsage := int64(0)
+	return &freeSizeUsage, nil
 }

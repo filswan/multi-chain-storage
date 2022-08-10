@@ -19,6 +19,7 @@ const (
 	CAR_FILE_STATUS_DEAL_SEND_EXPIRED = "DealSentExpired" //no offline deals, in scan deal set source file upload to Refundable
 	CAR_FILE_STATUS_COMPLETED         = "Completed"
 
+	SOURCE_FILE_UPLOAD_STATUS_FREE         = "Free"
 	SOURCE_FILE_UPLOAD_STATUS_PENDING      = "Pending"
 	SOURCE_FILE_UPLOAD_STATUS_PROCESSING   = "Processing"
 	SOURCE_FILE_UPLOAD_STATUS_PAID         = "Paid"        // create to a car file, then TaskCreated

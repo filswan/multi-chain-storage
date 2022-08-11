@@ -20,6 +20,7 @@ type CarFile struct {
 	TaskUuid    string          `json:"task_uuid"`
 	MaxPrice    decimal.Decimal `json:"max_price"`
 	Status      string          `json:"status"`
+	IsFree      bool            `json:"is_free"`
 	CreateAt    int64           `json:"create_at"`
 	UpdateAt    int64           `json:"update_at"`
 }

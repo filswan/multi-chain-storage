@@ -27,7 +27,7 @@
 
 ## System Design
 
-![MCS Desgin](https://github.com/filswan/multi-chain-storage/blob/main/doc/mcs.png)
+![MCS Desgin](https://github.com/filswan/multi-chain-storage/blob/main/doc%26script/mcs.png)
 
 
 ## Modules

@@ -3,6 +3,7 @@ package models
 import (
 	"fmt"
 	"multi-chain-storage/common/constants"
+	"multi-chain-storage/common/utils"
 	"multi-chain-storage/database"
 	"sort"
 	"strings"
@@ -22,6 +23,7 @@ type SourceFileUpload struct {
 	Status       string `json:"status"`
 	Duration     int    `json:"duration"`
 	PinStatus    string `json:"pin_status"`
+	IsFree       bool   `json:"is_free"`
 	CreateAt     int64  `json:"create_at"`
 	UpdateAt     int64  `json:"update_at"`
 }
@@ -171,6 +173,21 @@ func GetSourceFileUploadsNeed2Car() ([]*SourceFileUploadNeed2Car, error) {
 		"from source_file_upload a, source_file b, transaction c\n" +
 		"where a.file_type=? and a.status=? and a.source_file_id=b.id and a.id=c.source_file_upload_id"
 	err := database.GetDB().Raw(sql, constants.SOURCE_FILE_TYPE_NORMAL, constants.SOURCE_FILE_UPLOAD_STATUS_PAID).Scan(&sourceFileUploadsNeed2Car).Error
+
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	return sourceFileUploadsNeed2Car, nil
+}
+
+func GetFreeSourceFileUploadsNeed2Car() ([]*SourceFileUploadNeed2Car, error) {
+	var sourceFileUploadsNeed2Car []*SourceFileUploadNeed2Car
+	sql := "select a.id source_file_upload_id,b.resource_uri,b.ipfs_url,b.file_size,a.create_at\n" +
+		"from source_file_upload a, source_file b\n" +
+		"where a.file_type=? and a.status=? and a.is_free=true and a.source_file_id=b.id"
+	err := database.GetDB().Raw(sql, constants.SOURCE_FILE_TYPE_NORMAL, constants.SOURCE_FILE_UPLOAD_STATUS_FREE).Scan(&sourceFileUploadsNeed2Car).Error
 
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -397,4 +414,29 @@ func UpdateSourceFileUploadPinStatus(sourceFileUploadId int64, pinStatus string)
 	}
 
 	return nil
+}
+
+type FreeSizeUsage struct {
+	FreeSize int64 `json:"free_size"`
+}
+
+func GetSourceFileUploadFreeUsage(walletId int64) (*int64, error) {
+	var freeSizeUsages []*FreeSizeUsage
+	sql := "select sum(b.file_size) free_size from source_file_upload a\n" +
+		"left join source_file b on a.source_file_id=b.id\n" +
+		"where a.wallet_id=? and a.create_at>=? and is_free=true"
+
+	monthStart := utils.GetMonthStart()
+	err := database.GetDB().Raw(sql, walletId, monthStart).Scan(&freeSizeUsages).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	if len(freeSizeUsages) > 0 {
+		return &freeSizeUsages[0].FreeSize, nil
+	}
+
+	freeSizeUsage := int64(0)
+	return &freeSizeUsage, nil
 }

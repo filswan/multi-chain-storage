@@ -139,6 +139,17 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType 
 		}
 	}
 
+	freeUsage, err := models.GetSourceFileUploadFreeUsage(wallet.ID)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	isFree := false
+	if 10*constants.BYTES_1GB-*freeUsage >= srcFile.Size {
+		isFree = true
+	}
+
 	sourceFileUploadUuid := uuid.NewString()
 	sourceFileUpload := &models.SourceFileUpload{
 		SourceFileId: sourceFile.ID,
@@ -149,6 +160,7 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType 
 		Status:       constants.SOURCE_FILE_UPLOAD_STATUS_PENDING,
 		Duration:     duration,
 		PinStatus:    constants.IPFS_File_PINNED_STATUS,
+		IsFree:       isFree,
 		CreateAt:     currentUtcMilliSec,
 		UpdateAt:     currentUtcMilliSec,
 	}

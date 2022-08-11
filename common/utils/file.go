@@ -10,6 +10,7 @@ import (
 	"net/url"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/filswan/go-swan-lib/client/web"
 	"github.com/filswan/go-swan-lib/logs"
@@ -149,4 +150,11 @@ func IsDealActive(dealId int64) (*bool, error) {
 	dealStateBool := dealState.Result.State.SectorStartEpoch > -1
 
 	return &dealStateBool, nil
+}
+
+func GetMonthStart() int64 {
+	currentTime := time.Now()
+	monthStart := time.Date(currentTime.Year(), currentTime.Month(), 1, 0, 0, 0, 0, currentTime.UTC().Location())
+	monthStartUtc := monthStart.Unix()
+	return monthStartUtc
 }

@@ -39,6 +39,8 @@ func ScanDeal() error {
 				note := err.Error()
 				offlineDeal.Status = constants.OFFLINE_DEAL_STATUS_FAILED
 				offlineDeal.Note = &note
+			} else {
+				continue
 			}
 		} else {
 			if offlineDeal.OnChainStatus == nil || *offlineDeal.OnChainStatus != dealInfo.Status || offlineDeal.DealId == nil || *offlineDeal.DealId != dealInfo.DealId ||
@@ -62,7 +64,7 @@ func ScanDeal() error {
 			}
 		}
 
-		if offlineDeal.DealId != nil {
+		if offlineDeal.DealId != nil && !strings.EqualFold(offlineDeal.Status, constants.OFFLINE_DEAL_STATUS_ACTIVE) {
 			isDealActive, err := utils.IsDealActive(*offlineDeal.DealId)
 			if err != nil {
 				logs.GetLogger().Error(err)

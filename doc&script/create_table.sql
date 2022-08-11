@@ -80,6 +80,7 @@ create table source_file_upload (
     status         varchar(100)  not null,
     duration       int           not null,  #--unit:day
     pin_status     varchar(100)  not null,
+    is_free        boolean       not null,
     create_at      bigint        not null,
     update_at      bigint        not null,
     primary key pk_source_file_upload(id),
@@ -112,6 +113,7 @@ create table car_file (
     task_uuid          varchar(100)  not null,
     max_price          varchar(100)  not null,
     status             varchar(100)  not null,
+    is_free            boolean       not null,
     create_at          bigint        not null,
     update_at          bigint        not null,
     primary key pk_car_file(id)
@@ -283,4 +285,9 @@ create table dao_signature_source_file_upload (
 #--SET SQL_SAFE_UPDATES = 1;
 #--alter table dao_signature modify batch_no int;
 alter table dao_signature modify wallet_id_recipient          bigint;
+
+
+#--2022-08-10
+#--alter table source_file_upload add is_free        boolean       not null;
+#--alter table car_file add is_free        boolean       not null;
 

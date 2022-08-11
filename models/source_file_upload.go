@@ -23,6 +23,7 @@ type SourceFileUpload struct {
 	Status       string `json:"status"`
 	Duration     int    `json:"duration"`
 	PinStatus    string `json:"pin_status"`
+	IsFree       bool   `json:"is_free"`
 	CreateAt     int64  `json:"create_at"`
 	UpdateAt     int64  `json:"update_at"`
 }
@@ -406,12 +407,11 @@ type FreeSizeUsage struct {
 
 func GetSourceFileUploadFreeUsage(walletId int64) (*int64, error) {
 	var freeSizeUsages []*FreeSizeUsage
-	sql := "select sum(c.file_size) free_size from source_file_upload a\n" +
-		"left outer join transaction b on a.wallet_id=? and a.create_at>=? and a.id=b.source_file_upload_id\n" +
-		"left join source_file c on a.source_file_id=c.id\n" +
-		"where b.id is null"
+	sql := "select sum(b.file_size) free_size from source_file_upload a\n" +
+		"left join source_file b on a.source_file_id=b.id\n" +
+		"where a.wallet_id=? and a.create_at>=? and is_free=true"
 
-	monthStart := utils.GetMonthStart
+	monthStart := utils.GetMonthStart()
 	err := database.GetDB().Raw(sql, walletId, monthStart).Scan(&freeSizeUsages).Error
 	if err != nil {
 		logs.GetLogger().Error(err)

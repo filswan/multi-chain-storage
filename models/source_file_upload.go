@@ -182,6 +182,21 @@ func GetSourceFileUploadsNeed2Car() ([]*SourceFileUploadNeed2Car, error) {
 	return sourceFileUploadsNeed2Car, nil
 }
 
+func GetFreeSourceFileUploadsNeed2Car() ([]*SourceFileUploadNeed2Car, error) {
+	var sourceFileUploadsNeed2Car []*SourceFileUploadNeed2Car
+	sql := "select a.id source_file_upload_id,b.resource_uri,b.ipfs_url,b.file_size,a.create_at\n" +
+		"from source_file_upload a, source_file b\n" +
+		"where a.file_type=? and a.status=? and a.is_free=true and a.source_file_id=b.id"
+	err := database.GetDB().Raw(sql, constants.SOURCE_FILE_TYPE_NORMAL, constants.SOURCE_FILE_UPLOAD_STATUS_FREE).Scan(&sourceFileUploadsNeed2Car).Error
+
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	return sourceFileUploadsNeed2Car, nil
+}
+
 type SourceFileUploadResult struct {
 	SourceFileUploadId int64             `json:"source_file_upload_id"`
 	FileName           string            `json:"file_name"`

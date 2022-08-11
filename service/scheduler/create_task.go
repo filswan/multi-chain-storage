@@ -27,11 +27,24 @@ func CreateTask() error {
 		}
 
 		if numSrcFiles == nil || *numSrcFiles == 0 {
-			logs.GetLogger().Info("0 source file created to car file")
+			logs.GetLogger().Info("0 charged source file created to car file")
 			return nil
 		}
 
-		logs.GetLogger().Info(*numSrcFiles, " source file(s) created to car file")
+		logs.GetLogger().Info(*numSrcFiles, " charged source file(s) created to car file")
+
+		numSrcFiles, err = createTaskForFreeFiles()
+		if err != nil {
+			logs.GetLogger().Error(err)
+			return err
+		}
+
+		if numSrcFiles == nil || *numSrcFiles == 0 {
+			logs.GetLogger().Info("0 free source file created to car file")
+			return nil
+		}
+
+		logs.GetLogger().Info(*numSrcFiles, " free source file(s) created to car file")
 	}
 }
 
@@ -154,7 +167,7 @@ func createTask() (*int, error) {
 		return nil, err
 	}
 
-	err = saveCarInfo2DB(fileDesc, srcFiles2Merged, *maxPrice)
+	err = saveCarInfo2DB(fileDesc, srcFiles2Merged, *maxPrice, false)
 	if err != nil {
 		os.RemoveAll(carSrcDir)
 		//os.RemoveAll(carDestDir)
@@ -188,6 +201,119 @@ func getMaxPrice(fileSize int64, lockedFee decimal.Decimal, rate int64) (*decima
 	}
 
 	return &maxPrice, nil
+}
+
+func createTaskForFreeFiles() (*int, error) {
+	srcFileUploads, err := models.GetFreeSourceFileUploadsNeed2Car()
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	if len(srcFileUploads) == 0 {
+		logs.GetLogger().Info("0 free source file upload to be created to car file")
+		return nil, nil
+	}
+
+	currentTimeStr := time.Now().Format("2006-01-02T15:04:05")
+	carSrcDir := filepath.Join(carDir, "free_src_"+currentTimeStr)
+	carDestDir := filepath.Join(carDir, "free_car_"+currentTimeStr)
+
+	err = libutils.CreateDir(carSrcDir)
+	if err != nil {
+		logs.GetLogger().Error("creating dir:", carSrcDir, " failed,", err)
+		return nil, err
+	}
+
+	totalSize := int64(0)
+	currentUtcMilliSec := libutils.GetCurrentUtcSecond()
+	createdTimeMin := currentUtcMilliSec
+
+	fileSizeMin := config.GetConfig().SwanTask.MinFileSize
+	var srcFiles2Merged []*models.SourceFileUploadNeed2Car
+	for _, srcFileUpload := range srcFileUploads {
+		srcFilepathTemp := filepath.Join(carSrcDir, filepath.Base(srcFileUpload.ResourceUri))
+		bytesCopied, err := libutils.CopyFile(srcFileUpload.ResourceUri, srcFilepathTemp)
+		if err != nil {
+			logs.GetLogger().Info(err)
+			os.Remove(srcFilepathTemp)
+			logs.GetLogger().Info("downloading ", srcFileUpload.IpfsUrl, " to ", srcFilepathTemp)
+			err = utils.DownloadFile(srcFileUpload.IpfsUrl, srcFilepathTemp)
+			if err != nil {
+				logs.GetLogger().Error(err)
+				os.Remove(srcFilepathTemp)
+				continue
+			}
+			logs.GetLogger().Info("downloaded ", srcFileUpload.IpfsUrl, " to ", srcFilepathTemp)
+		}
+
+		totalSize = totalSize + bytesCopied
+
+		if srcFileUpload.CreateAt < createdTimeMin {
+			createdTimeMin = srcFileUpload.CreateAt
+		}
+
+		srcFiles2Merged = append(srcFiles2Merged, srcFileUpload)
+
+		if totalSize >= fileSizeMin {
+			logs.GetLogger().Info("total size is:", totalSize, ", ", len(srcFiles2Merged), " files to be created to car file")
+			break
+		}
+	}
+
+	if totalSize == 0 {
+		os.RemoveAll(carSrcDir)
+		logs.GetLogger().Info("0 source file to be created to car file")
+		return nil, nil
+	}
+
+	passedMilliSec := currentUtcMilliSec - createdTimeMin
+	createAnyway := false
+	if passedMilliSec >= 24*60*60*1000 {
+		logs.GetLogger().Info("earliest uploaded file pass one day, create car file")
+		createAnyway = true
+	} else if totalSize >= fileSizeMin {
+		logs.GetLogger().Info("total file size:", totalSize, " >= min car file size:", fileSizeMin, ", create car file")
+		createAnyway = true
+	}
+
+	if !createAnyway {
+		logs.GetLogger().Info("cannot meet conditions to create car file, wait")
+		os.RemoveAll(carSrcDir)
+		return nil, nil
+	}
+
+	err = libutils.CreateDir(carDestDir)
+	if err != nil {
+		logs.GetLogger().Error("creating dir:", carDestDir, " failed,", err)
+		os.RemoveAll(carSrcDir)
+		return nil, err
+	}
+
+	maxPrice := config.GetConfig().SwanTask.MaxPrice
+	fileDesc, err := createTask4SrcFiles(carSrcDir, carDestDir, maxPrice)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		os.RemoveAll(carSrcDir)
+		//os.RemoveAll(carDestDir)
+		return nil, err
+	}
+
+	err = saveCarInfo2DB(fileDesc, srcFiles2Merged, maxPrice, true)
+	if err != nil {
+		os.RemoveAll(carSrcDir)
+		//os.RemoveAll(carDestDir)
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	err = os.RemoveAll(carSrcDir)
+	if err != nil {
+		logs.GetLogger().Error(err)
+	}
+
+	numSrcFiles := len(srcFiles2Merged)
+	return &numSrcFiles, nil
 }
 
 func createTask4SrcFiles(srcDir, carDir string, maxPrice decimal.Decimal) (*libmodel.FileDesc, error) {
@@ -258,7 +384,7 @@ func createTask4SrcFiles(srcDir, carDir string, maxPrice decimal.Decimal) (*libm
 	return fileDesc, nil
 }
 
-func saveCarInfo2DB(fileDesc *libmodel.FileDesc, srcFiles []*models.SourceFileUploadNeed2Car, maxPrice decimal.Decimal) error {
+func saveCarInfo2DB(fileDesc *libmodel.FileDesc, srcFiles []*models.SourceFileUploadNeed2Car, maxPrice decimal.Decimal, isFree bool) error {
 	db := database.GetDBTransaction()
 	currentUtcSecond := libutils.GetCurrentUtcSecond()
 	carFile := models.CarFile{
@@ -271,6 +397,7 @@ func saveCarInfo2DB(fileDesc *libmodel.FileDesc, srcFiles []*models.SourceFileUp
 		UpdateAt:    currentUtcSecond,
 		Duration:    constants.DURATION_DAYS_DEFAULT,
 		Status:      constants.CAR_FILE_STATUS_TASK_CREATED,
+		IsFree:      isFree,
 		MaxPrice:    maxPrice,
 		TaskUuid:    fileDesc.Uuid,
 	}

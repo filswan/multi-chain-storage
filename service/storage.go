@@ -210,8 +210,7 @@ func GetSourceFileUploads(walletAddress string, status, fileName, orderBy, isMin
 
 		if srcFileUpload.Status != constants.SOURCE_FILE_UPLOAD_STATUS_PENDING &&
 			srcFileUpload.Status != constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDABLE &&
-			srcFileUpload.Status != constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDED &&
-			srcFileUpload.Status != constants.SOURCE_FILE_UPLOAD_STATUS_SUCCESS {
+			srcFileUpload.Status != constants.SOURCE_FILE_UPLOAD_STATUS_COMPLETED {
 			srcFileUpload.Status = constants.SOURCE_FILE_UPLOAD_STATUS_PROCESSING
 		}
 	}

@@ -146,8 +146,10 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType 
 	}
 
 	isFree := false
+	sourceFileUploadStatus := constants.SOURCE_FILE_UPLOAD_STATUS_PENDING
 	if 10*constants.BYTES_1GB-*freeUsage >= srcFile.Size {
 		isFree = true
+		sourceFileUploadStatus = constants.SOURCE_FILE_UPLOAD_STATUS_FREE
 	}
 
 	sourceFileUploadUuid := uuid.NewString()
@@ -157,7 +159,7 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType 
 		FileName:     srcFile.Filename,
 		Uuid:         sourceFileUploadUuid,
 		WalletId:     wallet.ID,
-		Status:       constants.SOURCE_FILE_UPLOAD_STATUS_PENDING,
+		Status:       sourceFileUploadStatus,
 		Duration:     duration,
 		PinStatus:    constants.IPFS_File_PINNED_STATUS,
 		IsFree:       isFree,

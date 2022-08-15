@@ -82,6 +82,17 @@ func ScanDeal() error {
 			if offlineDeal.Note != nil {
 				message = *offlineDeal.Note
 			}
+
+			if offlineDeal.Status == constants.OFFLINE_DEAL_STATUS_ACTIVE {
+				carFile, err := models.GetCarFileById(offlineDeal.CarFileId)
+				if err != nil {
+					logs.GetLogger().Error(err)
+					continue
+				}
+				if carFile.IsFree {
+					offlineDeal.Status = constants.OFFLINE_DEAL_STATUS_SUCCESS
+				}
+			}
 			err = models.CreateOfflineDealLog(offlineDeal.Id, offlineDeal.Status, message)
 			if err != nil {
 				logs.GetLogger().Error(err)

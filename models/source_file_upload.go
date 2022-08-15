@@ -33,22 +33,6 @@ type SourceFileUploadOut struct {
 	PayloadCid string `json:"payload_cid"`
 }
 
-func GetSourceFileUploads2RefundByCarFileId(carFileId int64) ([]*SourceFileUploadOut, error) {
-	var sourceFileUploadOut []*SourceFileUploadOut
-	sql := "select a.*,b.payload_cid from source_file_upload a\n" +
-		"left join source_file b on a.source_file_id=b.id\n" +
-		"where a.id in (select source_file_upload_id from car_file_source where car_file_id=?)\n" +
-		" and a.status!=? and a.status!=?"
-	err := database.GetDB().Raw(sql, carFileId, constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDED, constants.SOURCE_FILE_UPLOAD_STATUS_SUCCESS).Scan(&sourceFileUploadOut).Error
-
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-
-	return sourceFileUploadOut, nil
-}
-
 func GetSourceFileUploadsByCarFileId(carFileId int64, batchNo, batchSizeMax *int) ([]*SourceFileUploadOut, error) {
 	var sourceFileUploads []*SourceFileUploadOut
 	sql := "select b.*,c.payload_cid from car_file_source a, source_file_upload b, source_file c\n" +
@@ -67,21 +51,6 @@ func GetSourceFileUploadsByCarFileId(carFileId int64, batchNo, batchSizeMax *int
 	}
 
 	err := database.GetDB().Raw(sql, params...).Scan(&sourceFileUploads).Error
-
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return nil, err
-	}
-
-	return sourceFileUploads, nil
-}
-
-func GetSourceFileUploadsNotCompletedByCarFileId(carFileId int64) ([]*SourceFileUpload, error) {
-	var sourceFileUploads []*SourceFileUpload
-	sql := "select b.* from car_file_source a, source_file_upload b\n" +
-		"where a.car_file_id=? and a.source_file_upload_id=b.id\n" +
-		"  and b.status!=? and b.status!=?"
-	err := database.GetDB().Raw(sql, carFileId, constants.SOURCE_FILE_UPLOAD_STATUS_SUCCESS, constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDED).Scan(&sourceFileUploads).Error
 
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -264,16 +233,16 @@ func GetSourceFileUploads(walletId int64, status, fileName, orderBy, isMinted *s
 		switch strings.Trim(*status, " ") {
 		case constants.SOURCE_FILE_UPLOAD_STATUS_PENDING,
 			constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDABLE,
-			constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDED,
-			constants.SOURCE_FILE_UPLOAD_STATUS_SUCCESS:
+			constants.SOURCE_FILE_UPLOAD_STATUS_FREE,
+			constants.SOURCE_FILE_UPLOAD_STATUS_COMPLETED:
 			sql = sql + " and a.status=?"
 			params = append(params, status)
 		case constants.SOURCE_FILE_UPLOAD_STATUS_PROCESSING:
 			sql = sql + " and a.status not in (?,?,?,?)"
 			params = append(params, constants.SOURCE_FILE_UPLOAD_STATUS_PENDING)
 			params = append(params, constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDABLE)
-			params = append(params, constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDED)
-			params = append(params, constants.SOURCE_FILE_UPLOAD_STATUS_SUCCESS)
+			params = append(params, constants.SOURCE_FILE_UPLOAD_STATUS_FREE)
+			params = append(params, constants.SOURCE_FILE_UPLOAD_STATUS_COMPLETED)
 		default:
 			logs.GetLogger().Info("input status:", status, ", get records with all kinds of statuses")
 		}

@@ -130,7 +130,7 @@ func GetDeals(c *gin.Context) {
 
 	isAscend := strings.EqualFold(strings.Trim(URL.Get("is_ascend"), " "), "y")
 
-	sourceFileUploads, totalRecordCount, err := service.GetSourceFileUploads(walletAddress, &status, &fileName, &orderBy, &is_minted, isAscend, &limit, &offset, nil, nil)
+	sourceFileUploads, totalRecordCount, freeUsage, err := service.GetSourceFileUploads(walletAddress, &status, &fileName, &orderBy, &is_minted, isAscend, &limit, &offset, nil, nil)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, common.CreateErrorResponse(errorinfo.ERROR_INTERNAL, err.Error()))
@@ -140,6 +140,7 @@ func GetDeals(c *gin.Context) {
 	c.JSON(http.StatusOK, common.CreateSuccessResponse(gin.H{
 		"source_file_upload": sourceFileUploads,
 		"total_record_count": *totalRecordCount,
+		"free_usage":         *freeUsage,
 	}))
 }
 

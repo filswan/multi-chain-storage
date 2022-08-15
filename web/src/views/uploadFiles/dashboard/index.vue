@@ -40,7 +40,7 @@
             </template>
             <template slot-scope="scope">
               <div class="hot-cold-box" style="text-decoration: underline;font-size:0.17rem;" @click="toDetail(scope.row)">
-                <span target="_blank" style="color: inherit;">{{ scope.row.file_name }}</span>
+                <span target="_blank" style="color: inherit;word-break: break-all;">{{ scope.row.file_name }}</span>
               </div>
             </template>
           </el-table-column>

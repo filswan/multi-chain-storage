@@ -76,4 +76,6 @@ const (
 	PAYMENT_CHAIN_NAME_BSC     = "bsc"
 
 	CONFIG_PATH = ".swan/mcs"
+
+	FREE_SIZE_PER_WALLET_MONTH = 10 * BYTES_1GB
 )

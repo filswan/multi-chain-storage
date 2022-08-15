@@ -138,9 +138,10 @@ func GetDeals(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, common.CreateSuccessResponse(gin.H{
-		"source_file_upload": sourceFileUploads,
-		"total_record_count": *totalRecordCount,
-		"free_usage":         *freeUsage,
+		"source_file_upload":   sourceFileUploads,
+		"total_record_count":   *totalRecordCount,
+		"free_usage":           *freeUsage,
+		"free_quota_per_month": constants.FREE_SIZE_PER_WALLET_MONTH,
 	}))
 }
 

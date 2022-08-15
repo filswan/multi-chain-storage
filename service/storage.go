@@ -191,24 +191,24 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType 
 	return uploadResult, nil
 }
 
-func GetSourceFileUploads(walletAddress string, status, fileName, orderBy, isMinted *string, isAscend bool, limit, offset *int, uploadAtStart, uploadAtEnd *int64) ([]*models.SourceFileUploadResult, *int, error) {
+func GetSourceFileUploads(walletAddress string, status, fileName, orderBy, isMinted *string, isAscend bool, limit, offset *int, uploadAtStart, uploadAtEnd *int64) ([]*models.SourceFileUploadResult, *int, *int64, error) {
 	wallet, err := models.GetWalletByAddress(walletAddress, constants.WALLET_TYPE_META_MASK)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	srcFileUploads, totalRecordCount, err := models.GetSourceFileUploads(wallet.ID, status, fileName, orderBy, isMinted, isAscend, limit, offset, uploadAtStart, uploadAtEnd)
 	if err != nil {
 		logs.GetLogger().Error(err)
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	for _, srcFileUpload := range srcFileUploads {
 		offlineDeals, err := models.GetOfflineDealOutsBySourceFileUploadId(srcFileUpload.SourceFileUploadId)
 		if err != nil {
 			logs.GetLogger().Error(err)
-			return nil, nil, err
+			return nil, nil, nil, err
 		}
 		srcFileUpload.OfflineDeals = offlineDeals
 
@@ -219,11 +219,17 @@ func GetSourceFileUploads(walletAddress string, status, fileName, orderBy, isMin
 		}
 	}
 
-	return srcFileUploads, totalRecordCount, nil
+	freeUsage, err := models.GetSourceFileUploadFreeUsage(wallet.ID)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, nil, nil, err
+	}
+
+	return srcFileUploads, totalRecordCount, freeUsage, nil
 }
 
 func DownloadSourceFileUploads(locationStr, walletAddress string, uploadAtStart, uploadAtEnd *int64) (*string, error) {
-	srcFileUploads, _, err := GetSourceFileUploads(walletAddress, nil, nil, nil, nil, true, nil, nil, uploadAtStart, uploadAtEnd)
+	srcFileUploads, _, _, err := GetSourceFileUploads(walletAddress, nil, nil, nil, nil, true, nil, nil, uploadAtStart, uploadAtEnd)
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err

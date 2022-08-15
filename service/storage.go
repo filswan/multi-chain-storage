@@ -36,6 +36,7 @@ type UploadResult struct {
 	IpfsUrl            string `json:"ipfs_url"`
 	FileSize           int64  `json:"file_size"`
 	WCid               string `json:"w_cid"`
+	Status             string `json:"status"`
 }
 
 func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType int, walletAddress string) (*UploadResult, error) {
@@ -180,6 +181,7 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType 
 
 	uploadResult := &UploadResult{
 		SourceFileUploadId: sourceFileUpload.Id,
+		Status:             sourceFileUploadStatus,
 		PayloadCid:         *ipfsFileHash,
 		IpfsUrl:            ipfsUrl,
 		FileSize:           sourceFile.FileSize,

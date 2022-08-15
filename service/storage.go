@@ -148,7 +148,7 @@ func SaveFile(c *gin.Context, srcFile *multipart.FileHeader, duration, fileType 
 
 	isFree := false
 	sourceFileUploadStatus := constants.SOURCE_FILE_UPLOAD_STATUS_PENDING
-	if 10*constants.BYTES_1GB-*freeUsage >= srcFile.Size {
+	if constants.FREE_SIZE_PER_WALLET_MONTH-*freeUsage >= srcFile.Size {
 		isFree = true
 		sourceFileUploadStatus = constants.SOURCE_FILE_UPLOAD_STATUS_FREE
 	}

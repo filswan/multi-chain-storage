@@ -176,6 +176,7 @@ type SourceFileUploadResult struct {
 	PinStatus          string            `json:"pin_status"`
 	PayAmount          string            `json:"pay_amount"`
 	Status             string            `json:"status"`
+	IsFree             bool              `json:"is_free"`
 	IsMinted           bool              `json:"is_minted"`
 	TokenId            *string           `json:"token_id"`
 	MintAddress        *string           `json:"mint_address"`
@@ -203,7 +204,7 @@ func (a SourceFileUploadResultByUploadAt) Swap(i, j int)      { a[i], a[j] = a[j
 func GetSourceFileUploads(walletId int64, status, fileName, orderBy, isMinted *string, isAscend bool, limit, offset *int, uploadAtStart, uploadAtEnd *int64) ([]*SourceFileUploadResult, *int, error) {
 	sql := "select\n" +
 		"a.id source_file_upload_id,a.file_name,b.file_size,a.create_at upload_at,a.duration,\n" +
-		"case when a.pin_status=? then b.ipfs_url else '' end ipfs_url,a.pin_status,f.pay_amount,a.status,\n" +
+		"case when a.pin_status=? then b.ipfs_url else '' end ipfs_url,a.pin_status,f.pay_amount,a.status,a.is_free,\n" +
 		"e.id is not null is_minted,e.token_id,e.mint_address,e.nft_tx_hash\n" +
 		"from source_file_upload a\n" +
 		"left join source_file b on a.source_file_id=b.id\n" +

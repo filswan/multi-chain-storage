@@ -26,6 +26,11 @@
                             <i class="el-icon-switch-button" style="font-size:15px; "></i>
                             <span slot="title" @click="signOutFun">{{$t('fs3.Disconnect')}}</span>
                         </el-menu-item>
+                        <div class="progress mobileShow">
+                            <el-progress :percentage="(free_usage/free_quota_per_month)*100"></el-progress>
+                            <span v-if="languageMcs === 'en'" class="tip">{{free_usage | byteStorage}} GB of {{free_quota_per_month | byteStorage}} GB free storage</span>
+                            <span v-else class="tip">目前使用量：{{free_usage | byteStorage}} GB（免费储存空间配额：{{free_quota_per_month | byteStorage}} GB）</span>
+                        </div>
                     </div>
                     <div class="fes-icon-logo">
                         <a href="https://filswan.medium.com/" target="_block"><img :src="share_img1" alt=""></a>
@@ -131,6 +136,12 @@ export default {
         },
         metaAddress() {
             return this.$store.getters.metaAddress
+        },
+        free_usage() {
+            return this.$store.getters.free_usage
+        },
+        free_quota_per_month() {
+            return this.$store.getters.free_quota_per_month
         }
     },
     watch: {
@@ -234,6 +245,16 @@ export default {
             this.$store.dispatch('setMetaNetworkInfo', JSON.stringify({}))
             this.$router.push("/supplierAllBack");
         },
+    },
+    filters: {
+        byteStorage(limit) {
+            // 只转换成GB
+            if(limit <= 0){
+                return '0'
+            }else{
+                return (limit/( 1024 * 1024 * 1024)).toPrecision(2)  //or 1000
+            }
+        }
     }
 };
 </script>
@@ -250,6 +271,25 @@ export default {
     background: #080B29;
     .mobileShow{
         display: none;
+    }
+    .progress{
+        margin: 0.4rem 0.28rem 0;
+        .el-progress /deep/{
+            font-size: 12px;
+            .el-progress-bar{
+                padding-right: 20px;
+                margin: 0 0 5px 0;
+            }
+            .el-progress__text{
+                display: none;
+            }
+        }
+        .tip{
+            display: block;
+            font-size: 12px;
+            line-height: 1.2;
+            color: rgb(179, 192, 231);
+        }
     }
     .sidebar_close{
         position: absolute;

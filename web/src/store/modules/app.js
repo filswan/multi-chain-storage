@@ -18,7 +18,9 @@ const app = {
         metaAddress: sessionStorage.getItem('metaAddress') || '',
         networkID: sessionStorage.getItem('networkID') || 0,
         metaNetworkInfo: sessionStorage.getItem('metaNetworkInfo') || {},
-        reverse: localStorage.getItem('reverse') || 0
+        reverse: localStorage.getItem('reverse') || 0,
+        free_usage: sessionStorage.getItem('free_usage') || 0,
+        free_quota_per_month: sessionStorage.getItem('free_quota_per_month') || 0
     },
     mutations: {
         TOGGLE_SIDEBAR: state => {
@@ -76,6 +78,14 @@ const app = {
         SET_REVERSE: (state, reverse) => {
             state.reverse = reverse
             localStorage.setItem('reverse', reverse)
+        },
+        SET_FREEUSAGE: (state, free_usage) => {
+            state.free_usage = free_usage
+            sessionStorage.setItem('free_usage', free_usage)
+        },
+        SET_FREEQUOTE: (state, free_quota_per_month) => {
+            state.free_quota_per_month = free_quota_per_month
+            sessionStorage.setItem('free_quota_per_month', free_quota_per_month)
         }
     },
     actions: {
@@ -117,6 +127,12 @@ const app = {
         },
         setReverse({commit}, reverse) {
             commit('SET_REVERSE', reverse)
+        },
+        setFreeUsage({commit}, free_usage) {
+            commit('SET_FREEUSAGE', free_usage)
+        },
+        setFreeQuote({commit}, free_quota_per_month) {
+            commit('SET_FREEQUOTE', free_quota_per_month)
         }
     }
 }

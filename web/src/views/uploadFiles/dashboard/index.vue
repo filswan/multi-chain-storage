@@ -81,6 +81,9 @@
               <el-button plain type="refunding" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='refundable'&&!scope.row.status_file">
                   {{ languageMcs == "en" ? "Refundable" : '可退款'}}
               </el-button>
+              <el-button plain type="refunding" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='free'&&!scope.row.status_file">
+                  {{ languageMcs == "en" ? "Free" : '免费'}}
+              </el-button>
               <el-button type="successPart" class="statusStyle" v-else-if="scope.row.status_file">
                   {{ languageMcs == "en" ? "Success" : '完成'}}
               </el-button>
@@ -311,6 +314,10 @@
                   v-else-if="tableData[scope.$index].status.toLowerCase()=='failed'"
                   :disabled="true"
                   class="uploadBtn grey opacity">{{$t('uploadFile.failed')}}</el-button>
+                <el-button 
+                  v-else-if="tableData[scope.$index].status.toLowerCase()=='free'"
+                  :disabled="true"
+                  class="uploadBtn grey opacity">{{$t('uploadFile.filter_status_Free')}}</el-button>
                 <el-button 
                   v-else
                   :disabled="true"
@@ -1110,6 +1117,8 @@ export default {
             if(response.data.status == 'success'){
               if(currentData && _this.searchNowCurrent !== currentData) return false
               const data = response.data.data;
+              _this.$store.dispatch("setFreeUsage", response.data.data.free_usage || 0);
+              _this.$store.dispatch("setFreeQuote", response.data.data.free_quota_per_month || 0);
               _this.parma.total = Number(response.data.data.total_record_count);
               _this.tableData = response.data.data.source_file_upload?response.data.data.source_file_upload:[];
               _this.tableData.map((item,s) => {

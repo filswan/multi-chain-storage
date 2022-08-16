@@ -60,6 +60,16 @@
                         </template>
                         {{ruleForm.storage_copy}}
                     </el-form-item>
+                    <el-form-item prop="Free_Storage_Capacity">
+                        <template slot="label">
+                            {{$t('uploadFile.Free_Storage_Capacity')}} 
+                            
+                            <el-tooltip effect="dark" :content="$t('uploadFile.Free_Storage_Capacity_tooltip')" placement="top">
+                                <img src="@/assets/images/info.png"/>
+                            </el-tooltip>
+                        </template>
+                        <span  style="color:#2C7FF8">{{free_quota_per_month-free_usage | byteStorage}} GB</span> 
+                    </el-form-item>
                     <el-form-item prop="storage_cost">
                         <template slot="label">
                             {{$t('uploadFile.Estimated_Storage_Cost')}} 
@@ -68,7 +78,8 @@
                                 <img src="@/assets/images/info.png"/>
                             </el-tooltip>
                         </template>
-                        <span  style="color:#2C7FF8">{{ruleForm.storage_cost | NumStorage}} FIL</span> 
+                        <span v-if="free" style="color:#2C7FF8;text-transform: uppercase;">{{$t('uploadFile.filter_status_Free')}}</span>
+                        <span v-else style="color:#2C7FF8">{{ruleForm.storage_cost | NumStorage}} FIL</span> 
                     </el-form-item>
                 </el-form>
                 <div class="upload_plan">
@@ -79,24 +90,24 @@
                         </el-tooltip>
                     </div>
                     <div class="desc">{{$t('uploadFile.latest_exchange_rate')}} {{biling_price}}.</div>
-                    <div class="upload_plan_radio">
-                        <el-radio-group v-model="ruleForm.lock_plan" @change="agreeChange">
+                    <div class="upload_plan_radio" :class="{'upload_plan_radio_free': free}">
+                        <el-radio-group :disabled="free?true:false" v-model="ruleForm.lock_plan" @change="agreeChange">
                             <el-radio label="1" border>
                                 <div class="title">{{$t('uploadFile.Low')}}</div>
                                 <div class="cont">
-                                    {{storage_cost_low}} USDC
+                                    {{free?0:storage_cost_low}} USDC
                                 </div>
                             </el-radio>
                             <el-radio label="2" border>
                                 <div class="title">{{$t('uploadFile.Average')}}</div>
                                 <div class="cont">
-                                    {{storage_cost_average}} USDC
+                                    {{free?0:storage_cost_average}} USDC
                                 </div>
                             </el-radio>
                             <el-radio label="3" border>
                                 <div class="title">{{$t('uploadFile.High')}}</div>
                                 <div class="cont">
-                                    {{storage_cost_high}} USDC
+                                    {{free?0:storage_cost_high}} USDC
                                 </div>
                             </el-radio>
                         </el-radio-group>
@@ -259,7 +270,8 @@
                 loadMetamaskPay: false,
                 metamaskLoginTip: false,
                 lastTime: 0,
-                found_link: process.env.NODE_ENV == "production"?"https://calibration-faucet.filswan.com/":"http://192.168.88.216:8080/faucet/#/dashboard"
+                found_link: process.env.NODE_ENV == "production"?"https://calibration-faucet.filswan.com/":"http://192.168.88.216:8080/faucet/#/dashboard",
+                free: false
             };
         },
         props: ['uploadDigShow'],
@@ -390,23 +402,28 @@
                                             if(i <= 1){
                                                 _this.percentIn = xhr.readyState === 4 ? '100%' : _this.percentIn
                                                 if(res.status == "success"){
-                                                    contract_erc20.methods.allowance(_this.gatewayContractAddress, _this.metaAddress).call()
-                                                    .then(resultUSDC => {
-                                                        console.log('allowance：'+ resultUSDC);
-                                                        if(resultUSDC < web3.utils.toWei(_this.ruleForm.amount, 'ether')){
-                                                            contract_erc20.methods.approve(_this.gatewayContractAddress, web3.utils.toWei(_this.ruleForm.amount, 'ether')).send({from:  _this.metaAddress})
-                                                            .then(receipt => {
-                                                                // console.log('approve receipt:', receipt)
+                                                    if(res.data.status == 'Free') {
+                                                        _this.finishClose()
+                                                        return false
+                                                    }else{
+                                                        contract_erc20.methods.allowance(_this.gatewayContractAddress, _this.metaAddress).call()
+                                                        .then(resultUSDC => {
+                                                            console.log('allowance：'+ resultUSDC);
+                                                            if(resultUSDC < web3.utils.toWei(_this.ruleForm.amount, 'ether')){
+                                                                contract_erc20.methods.approve(_this.gatewayContractAddress, web3.utils.toWei(_this.ruleForm.amount, 'ether')).send({from:  _this.metaAddress})
+                                                                .then(receipt => {
+                                                                    // console.log('approve receipt:', receipt)
+                                                                    _this.contractSend(res.data)
+                                                                })
+                                                                .catch(error => {
+                                                                    // console.log('errorerrorerror', error)
+                                                                    _this.finishClose()
+                                                                })
+                                                            }else{
                                                                 _this.contractSend(res.data)
-                                                            })
-                                                            .catch(error => {
-                                                                // console.log('errorerrorerror', error)
-                                                                _this.finishClose()
-                                                            })
-                                                        }else{
-                                                            _this.contractSend(res.data)
-                                                        }
-                                                    })
+                                                            }
+                                                        })
+                                                    }
                                                 }else{
                                                     _this.$message.error(_this.$t('uploadFile.xhr_tip'))
                                                 }
@@ -543,7 +560,8 @@
                 const isLt2M = this._file.size / 1024 / 1024 / 1024 <= 25;  // or 1000
                 this.ruleForm.file_size = this.sizeChange(this._file.size)
                 this.ruleForm.file_size_byte = this.byteChange(this._file.size)
-                console.log('bytes', this._file.size)
+                this.free = (this.free_quota_per_month - this.free_usage) >= this._file.size?true:false
+                console.log('bytes', this._file.size, this.free_quota_per_month-this.free_usage, this.free)
                 if (!isLt2M) {
                     // this.$message.error(this.$t('deal.upload_form_file_tip'))
                     this.ruleForm.fileList_tip = true
@@ -640,6 +658,14 @@
             NumStoragePlan(value) {
                 if (!value) return "-";
                 return value.toFixed(9) > 0 ? value.toFixed(9) : '0.000000001';
+            },
+            byteStorage(limit) {
+                // 只转换成GB
+                if(limit <= 0){
+                    return '0'
+                }else{
+                    return limit/( 1024 * 1024 * 1024)  //or 1000
+                }
             }
         },
         computed: {
@@ -648,6 +674,12 @@
             },
             networkID() {
                 return this.$store.getters.networkID
+            },
+            free_usage() {
+                return this.$store.getters.free_usage
+            },
+            free_quota_per_month() {
+                return this.$store.getters.free_quota_per_month
             }
         },
     };
@@ -1182,6 +1214,9 @@
                         }
 
                     }
+                    .upload_plan_radio_free{
+                        opacity: .5;
+                    }
                 }
                 .upload_bot{
                     width: 100%;
@@ -1554,6 +1589,9 @@
 
                     }
 
+                }
+                .upload_plan_radio_free{
+                    opacity: .5;
                 }
             }
             .upload_bot{

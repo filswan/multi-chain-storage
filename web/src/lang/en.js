@@ -538,6 +538,8 @@ export default {
         Storage_copy_tooltip: 'The number of copies of files stored in Filecoin network. Your file will be assigned to different storage providers. ',
         Estimated_Storage_Cost: 'Estimated Storage Cost',
         Estimated_Storage_Cost_tooltip: 'The estimated storage cost is calculated according to your file size, the duration you set, and the average provider price.',
+        Free_Storage_Capacity: 'Free Storage Capacity',
+        Free_Storage_Capacity_tooltip: "You'll be granted 10GB Free Storage Capacity monthly.",
         Select_Lock_Funds_Plan: 'Select Lock Funds Plan',
         Select_Lock_Funds_Plan_tooltip: 'The more funds locked, the sooner your file will be stored on the Filecoin network. The overpaid funds will be returned automatically after the deal is on chain.',
         latest_exchange_rate: 'The latest exchange rate of FIL to USDC is',
@@ -578,7 +580,8 @@ export default {
         filter_status_Unlocked: 'Unlocked',
         filter_status_Success: 'Success',
         filter_status_Pending: 'Pending',
-        filter_status_Processing: 'Processing'
+        filter_status_Processing: 'Processing',
+        filter_status_Free: 'Free'
     },
     billing: {
         search_placeholder: 'Search by ',

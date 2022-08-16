@@ -2,6 +2,11 @@
     <div class="header" :class="{'content-collapse': collapseLocal}">
         <div class="header_arera">
             <div class="header-right">
+                <div class="progress pcShow">
+                    <el-progress :percentage="(free_usage/free_quota_per_month)*100"></el-progress>
+                    <span v-if="languageMcs === 'en'" class="tip">{{free_usage | byteStorage}} GB of {{free_quota_per_month | byteStorage}} GB free storage</span>
+                    <span v-else class="tip">目前使用量：{{free_usage | byteStorage}} GB（免费储存空间配额：{{free_quota_per_month | byteStorage}} GB）</span>
+                </div>
                 <div class="lang_style">
                     <span v-if="languageMcs === 'en'" @click="handleSetLanguage('cn')">EN</span>
                     <span v-else @click="handleSetLanguage('en')">中</span>
@@ -145,6 +150,12 @@ export default {
         },
         reverse() {
             return this.$store.getters.reverse == '1' ? true : false
+        },
+        free_usage() {
+            return this.$store.getters.free_usage
+        },
+        free_quota_per_month() {
+            return this.$store.getters.free_quota_per_month
         }
     },
     watch: {
@@ -611,6 +622,14 @@ export default {
             }else{
                 return '-'
             }
+        },
+        byteStorage(limit) {
+            // 只转换成GB
+            if(limit <= 0){
+                return '0'
+            }else{
+                return (limit/( 1024 * 1024 * 1024)).toPrecision(2)  //or 1000
+            }
         }
     }
 };
@@ -1052,6 +1071,24 @@ export default {
     align-items: center;
     font-size: 0.1372rem;
     color: #959595;
+    .progress{
+        width: 200px;
+        margin: 0 0.4rem 0 0;
+        .el-progress /deep/{
+            .el-progress-bar{
+                padding-right: 20px;
+                margin: 0 0 5px 0;
+            }
+            .el-progress__text{
+                display: none;
+            }
+        }
+        .tip{
+            display: block;
+            font-size: 12px;
+            line-height: 1.2;
+        }
+    }
     .lang_style{    
         width: 0.26rem;
         margin: 0 0.4rem 0 0;

@@ -27,5 +27,7 @@ const getters = {
   networkID: state => state.app.networkID,
   metaNetworkInfo: state => state.app.metaNetworkInfo,
   reverse: state => state.app.reverse,
+  free_usage: state => state.app.free_usage,
+  free_quota_per_month: state => state.app.free_quota_per_month,
 }
 export default getters

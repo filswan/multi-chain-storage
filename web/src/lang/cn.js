@@ -543,6 +543,8 @@ export default {
         Storage_copy_tooltip: '将文件存储到Filecoin网络的份数。您的文件将会被分配到不同的存储提供者。',
         Estimated_Storage_Cost: '预计存储费用',
         Estimated_Storage_Cost_tooltip: '预计存储费用是根据文件大小，存储时间，和平均数据存储价格计算的。',
+        Free_Storage_Capacity: '免费储存空间配额',
+        Free_Storage_Capacity_tooltip: '每月享有10GB免费储存空间配额。',
         Select_Lock_Funds_Plan: '选择资金锁定计划',
         Select_Lock_Funds_Plan_tooltip: '锁定的资金越多，你的文件就会越早存储在Filecoin网络上。超额支付的资金将在Filecoin交易上链后自动返回。',
         latest_exchange_rate: 'USDC兑FIL的最近汇率是',
@@ -583,7 +585,8 @@ export default {
         filter_status_Unlocked: '解锁',
         filter_status_Success: '完成',
         filter_status_Pending: '待支付',
-        filter_status_Processing: '处理中'
+        filter_status_Processing: '处理中',
+        filter_status_Free: '免费'
     },
     billing: {
         search_placeholder: '搜索方式',

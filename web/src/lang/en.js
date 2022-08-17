@@ -581,7 +581,8 @@ export default {
         filter_status_Success: 'Success',
         filter_status_Pending: 'Pending',
         filter_status_Processing: 'Processing',
-        filter_status_Free: 'Free'
+        filter_status_Free: 'Free',
+        filter_status_Failed: 'Failed'
     },
     billing: {
         search_placeholder: 'Search by ',

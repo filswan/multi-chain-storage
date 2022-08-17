@@ -9,7 +9,7 @@
                 <div class="files_title">
                     <div class="flex_left">
                         {{$t('uploadFile.Deal_Detail')}} 
-                        <b v-if="dealCont.source_file_upload_deal.deal_id || dealCont.source_file_upload_deal.deal_id==0" @click="mainnetLink(dealId)" class="golink">#{{dealId}}</b>
+                        <b v-if="dealCont.source_file_upload_deal.deal_id || dealCont.source_file_upload_deal.deal_id==0 || dealId" @click="mainnetLink(dealId)" class="golink">#{{dealId}}</b>
                         <b v-else style="margin: 0 0 0 5px;">#</b>
 
                         <span class="title" v-if="dealId == 0">
@@ -55,9 +55,12 @@
                         <el-col :span="8">{{$t('uploadFile.file_name')}}:</el-col>
                         <el-col :span="16">{{dealCont.source_file_upload_deal.file_name | NumFormat}}</el-col>
                         <el-col :span="8">{{$t('uploadFile.detail_IPFSDownload')}}:</el-col>
-                        <el-col :span="16">
-                            <a :href="dealCont.source_file_upload_deal.ipfs_url" target="_blank" v-if="dealCont.source_file_upload_deal.ipfs_url" class="linkTo">{{dealCont.source_file_upload_deal.ipfs_url}}</a>
+                        <el-col :span="16" style="display: flex;">
+                            <a :href="dealCont.source_file_upload_deal.ipfs_url" target="_blank" v-if="dealCont.source_file_upload_deal.ipfs_url" class="linkTo">
+                                {{dealCont.source_file_upload_deal.ipfs_url}}
+                            </a>
                             <span v-else>-</span>
+                            <img class="imgCopy" src="@/assets/images/copy.png" @click="copyTextToClipboard(dealCont.source_file_upload_deal.ipfs_url)" v-if="dealCont.source_file_upload_deal.ipfs_url" alt="">
                         </el-col>
                         <el-col :span="8">{{$t('uploadFile.detail_Network')}}:</el-col>
                         <el-col :span="16">{{dealCont.source_file_upload_deal.network_name | NumFormat}}</el-col>
@@ -800,6 +803,20 @@ export default {
                 .linkTo{
                     color: #2d43e7;
                     text-decoration: underline;
+                }
+                .imgCopy { 
+                    width: 18px;
+                    height: 18px;
+                    margin: 0 0 0 5px;
+                    cursor: pointer;
+                    @media screen and (min-width:1800px){
+                        width: 22px;
+                        height: 22px;
+                    }
+                    @media screen and (max-width:1280px){
+                        width: 16px;
+                        height: 16px;
+                    }
                 }
             }
             .lotupTitle{

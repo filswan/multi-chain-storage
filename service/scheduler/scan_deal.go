@@ -78,9 +78,14 @@ func ScanDeal() error {
 		}
 
 		if offlineDealStatusChanged {
-			message := ""
+			onChainStatus := ""
+			if offlineDeal.OnChainStatus != nil {
+				onChainStatus = *offlineDeal.OnChainStatus
+			}
+
+			onChainMessage := ""
 			if offlineDeal.Note != nil {
-				message = *offlineDeal.Note
+				onChainMessage = *offlineDeal.Note
 			}
 
 			if offlineDeal.Status == constants.OFFLINE_DEAL_STATUS_ACTIVE {
@@ -93,7 +98,7 @@ func ScanDeal() error {
 					offlineDeal.Status = constants.OFFLINE_DEAL_STATUS_SUCCESS
 				}
 			}
-			err = models.CreateOfflineDealLog(offlineDeal.Id, offlineDeal.Status, message)
+			err = models.CreateOfflineDealLog(offlineDeal.Id, onChainStatus, onChainMessage)
 			if err != nil {
 				logs.GetLogger().Error(err)
 				continue

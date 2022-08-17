@@ -54,11 +54,14 @@
           <el-table-column prop="status" :label="$t('uploadFile.file_status')" min-width="110"
             :filters="[{text: $t('uploadFile.filter_status_Pending'), value: 'Pending'}, {text: $t('uploadFile.filter_status_Processing'), value: 'Processing'}, 
                        {text: $t('uploadFile.filter_status_Refundable'), value: 'Refundable'}, {text: $t('uploadFile.filter_status_Refunded'), value: 'Refunded'},
-                       {text: $t('uploadFile.filter_status_Success'), value: 'Success'}]"
+                       {text: $t('uploadFile.filter_status_Success'), value: 'Success'}, {text: $t('uploadFile.filter_status_Failed'), value: 'Failed'}]"
             :filter-multiple="false" :column-key="'payment'">
             <template slot-scope="scope">
               <el-button type="danger" class="statusStyle" v-if="scope.row.status&&scope.row.status.toLowerCase()=='failed'">
                   {{ languageMcs == "en" ? "Fail" : '失败'}}
+              </el-button>
+              <el-button plain type="pending" class="statusStyle" v-else-if="scope.row.is_free&&scope.row.status_failed_file">
+                  {{ languageMcs == "en" ? "Failed" : '失败'}}
               </el-button>
               <el-button plain type="pending" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='pending'&&!scope.row.status_file">
                   {{ languageMcs == "en" ? "Pending" : '待支付'}}
@@ -86,6 +89,9 @@
               </el-button>
               <el-button type="successPart" class="statusStyle" v-else-if="scope.row.status_file">
                   {{ languageMcs == "en" ? "Success" : '完成'}}
+              </el-button>
+              <el-button plain type="info" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='completed'&&!scope.row.status_file">
+                  {{ languageMcs == "en" ? "Completed" : '完成'}}
               </el-button>
               <el-button plain type="info" class="statusStyle" v-else>
                   {{scope.row.status}}
@@ -306,7 +312,7 @@
                   {{$t('uploadFile.refund')}}
                 </el-button>
                 <el-button class="uploadBtn grey opacity"
-                  v-else-if="tableData[scope.$index].status.toLowerCase()=='refunded'"
+                  v-else-if="tableData[scope.$index].status.toLowerCase()=='refunded' || tableData[scope.$index].status.toLowerCase()=='completed'"
                   :disabled="true">
                   {{$t('uploadFile.refund')}}
                 </el-button>
@@ -315,7 +321,7 @@
                   :disabled="true"
                   class="uploadBtn grey opacity">{{$t('uploadFile.failed')}}</el-button>
                 <el-button 
-                  v-else-if="tableData[scope.$index].status.toLowerCase()=='free'"
+                  v-else-if="tableData[scope.$index].is_free"
                   :disabled="true"
                   class="uploadBtn grey opacity">{{$t('uploadFile.filter_status_Free')}}</el-button>
                 <el-button 
@@ -1124,6 +1130,7 @@ export default {
               _this.tableData.map((item,s) => {
                 item.payloadAct = false
                 item.status_file = false
+                item.status_failed_file = true
                 item.file_size_byte = _this.byteChange(item.file_size)
 
                 let dataTime = new Date(item.upload_at * 1000) + "" //将时间格式转为字符串
@@ -1150,6 +1157,7 @@ export default {
 
                 if(item.offline_deal){
                   item.offline_deal.map(child => {
+                    if(child.status != 'Failed') item.status_failed_file = false
                     if(child.status == 'Success'){
                       item.status_file = true
                       return false

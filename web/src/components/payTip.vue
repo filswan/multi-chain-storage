@@ -37,6 +37,16 @@
                     </template>
                     5
                 </el-form-item>
+                <el-form-item prop="Free_Storage_Capacity">
+                    <template slot="label">
+                        {{$t('uploadFile.Free_Storage_Capacity')}} 
+                        
+                        <el-tooltip effect="dark" :content="$t('uploadFile.Free_Storage_Capacity_tooltip')" placement="top">
+                            <img src="@/assets/images/info.png"/>
+                        </el-tooltip>
+                    </template>
+                    <span  style="color:#2C7FF8">{{free_quota_per_month-free_usage | byteStorage}} GB</span> 
+                </el-form-item>
                 <el-form-item prop="storage_cost">
                     <template slot="label">
                         {{$t('uploadFile.Estimated_Storage_Cost')}} 
@@ -118,6 +128,12 @@
         computed: {
             metaAddress() {
                 return this.$store.getters.metaAddress
+            },
+            free_usage() {
+                return this.$store.getters.free_usage
+            },
+            free_quota_per_month() {
+                return this.$store.getters.free_quota_per_month
             }
         },
         methods: {
@@ -206,6 +222,14 @@
                 }
                 // return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];
                 return Number(bytes / Math.pow(k, i)) + ' ' + sizes[i];
+            },
+            byteStorage(limit) {
+                // 只转换成GB
+                if(limit <= 0){
+                    return '0'
+                }else{
+                    return limit/( 1024 * 1024 * 1024)  //or 1000
+                }
             }
         }
     };

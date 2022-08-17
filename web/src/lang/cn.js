@@ -586,7 +586,8 @@ export default {
         filter_status_Success: '完成',
         filter_status_Pending: '待支付',
         filter_status_Processing: '处理中',
-        filter_status_Free: '免费'
+        filter_status_Free: '免费',
+        filter_status_Failed: '失败'
     },
     billing: {
         search_placeholder: '搜索方式',

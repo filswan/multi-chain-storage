@@ -181,6 +181,7 @@ type SourceFileUploadResult struct {
 	TokenId            *string           `json:"token_id"`
 	MintAddress        *string           `json:"mint_address"`
 	NftTxHash          *string           `json:"nft_tx_hash"`
+	RefundedBySelf     bool              `json:"refunded_by_self"`
 	OfflineDeals       []*OfflineDealOut `json:"offline_deal"`
 }
 type SourceFileUploadResultByFileName []*SourceFileUploadResult
@@ -205,7 +206,8 @@ func GetSourceFileUploads(walletId int64, status, fileName, orderBy, isMinted *s
 	sql := "select\n" +
 		"a.id source_file_upload_id,a.file_name,b.file_size,a.create_at upload_at,a.duration,\n" +
 		"case when a.pin_status=? then b.ipfs_url else '' end ipfs_url,a.pin_status,f.pay_amount,a.status,a.is_free,\n" +
-		"e.id is not null is_minted,e.token_id,e.mint_address,e.nft_tx_hash\n" +
+		"e.id is not null is_minted,e.token_id,e.mint_address,e.nft_tx_hash,\n" +
+		"case when wallet_id_pay=refund_by_wallet_id then true else false end refunded_by_self\n" +
 		"from source_file_upload a\n" +
 		"left join source_file b on a.source_file_id=b.id\n" +
 		"left outer join source_file_mint e on a.id=e.source_file_upload_id\n" +

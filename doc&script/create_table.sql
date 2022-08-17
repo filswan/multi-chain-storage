@@ -180,6 +180,7 @@ create table transaction (
     refund_tx_hash               varchar(100),
     refund_amount                varchar(100),
     refund_at                    bigint,
+    refund_by_wallet_id          bigint,
     create_at                    bigint        not null,
     update_at                    bigint        not null,
     primary key pk_transaction(id),
@@ -189,7 +190,8 @@ create table transaction (
     constraint fk_transaction_token_id foreign key (token_id) references token(id),
     constraint fk_transaction_wallet_id_pay foreign key (wallet_id_pay) references wallet(id),
     constraint fk_transaction_wallet_id_recipient foreign key (wallet_id_recipient) references wallet(id),
-    constraint fk_transaction_wallet_id_contract foreign key (wallet_id_contract) references wallet(id)
+    constraint fk_transaction_wallet_id_contract foreign key (wallet_id_contract) references wallet(id),
+    constraint fk_transaction_refund_by_wallet_id foreign key (refund_by_wallet_id) references wallet(id)
 );
 
 create table dao_pre_sign (
@@ -291,3 +293,5 @@ alter table dao_signature modify wallet_id_recipient          bigint;
 #--alter table source_file_upload add is_free        boolean       not null;
 #--alter table car_file add is_free        boolean       not null;
 
+alter table transaction add refund_by_wallet_id          bigint;
+alter table transaction add constraint fk_transaction_refund_by_wallet_id foreign key (refund_by_wallet_id) references wallet(id);

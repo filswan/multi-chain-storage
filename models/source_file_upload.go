@@ -234,15 +234,13 @@ func GetSourceFileUploads(walletId int64, status, fileName, orderBy, isMinted *s
 		switch strings.Trim(*status, " ") {
 		case constants.SOURCE_FILE_UPLOAD_STATUS_PENDING,
 			constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDABLE,
-			constants.SOURCE_FILE_UPLOAD_STATUS_FREE,
 			constants.SOURCE_FILE_UPLOAD_STATUS_COMPLETED:
 			sql = sql + " and a.status=?"
 			params = append(params, status)
 		case constants.SOURCE_FILE_UPLOAD_STATUS_PROCESSING:
-			sql = sql + " and a.status not in (?,?,?,?)"
+			sql = sql + " and a.status not in (?,?,?)"
 			params = append(params, constants.SOURCE_FILE_UPLOAD_STATUS_PENDING)
 			params = append(params, constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDABLE)
-			params = append(params, constants.SOURCE_FILE_UPLOAD_STATUS_FREE)
 			params = append(params, constants.SOURCE_FILE_UPLOAD_STATUS_COMPLETED)
 		default:
 			logs.GetLogger().Info("input status:", status, ", get records with all kinds of statuses")

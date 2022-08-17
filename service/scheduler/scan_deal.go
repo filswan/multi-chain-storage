@@ -78,14 +78,14 @@ func ScanDeal() error {
 		}
 
 		if offlineDealStatusChanged {
-			onChainMessage := ""
-			if offlineDeal.Note != nil {
-				onChainMessage = *offlineDeal.Note
-			}
-
 			onChainStatus := ""
 			if offlineDeal.OnChainStatus != nil {
 				onChainStatus = *offlineDeal.OnChainStatus
+			}
+
+			onChainMessage := ""
+			if offlineDeal.Note != nil {
+				onChainMessage = *offlineDeal.Note
 			}
 
 			if offlineDeal.Status == constants.OFFLINE_DEAL_STATUS_ACTIVE {

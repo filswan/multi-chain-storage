@@ -293,5 +293,6 @@ alter table dao_signature modify wallet_id_recipient          bigint;
 #--alter table source_file_upload add is_free        boolean       not null;
 #--alter table car_file add is_free        boolean       not null;
 
-alter table transaction add refund_by_wallet_id          bigint;
-alter table transaction add constraint fk_transaction_refund_by_wallet_id foreign key (refund_by_wallet_id) references wallet(id);
+#--2022-08-17
+#--alter table transaction add refund_by_wallet_id          bigint;
+#--alter table transaction add constraint fk_transaction_refund_by_wallet_id foreign key (refund_by_wallet_id) references wallet(id);

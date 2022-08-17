@@ -27,6 +27,7 @@ type Transaction struct {
 	RefundTxHash       *string `json:"refund_tx_hash"`
 	RefundAmount       *string `json:"refund_amount"`
 	RefundAt           *int64  `json:"refund_at"`
+	RefundByWalletId   *int64  `json:"refund_by_wallet_id"`
 	CreateAt           int64   `json:"create_at"`
 	UpdateAt           int64   `json:"update_at"`
 }

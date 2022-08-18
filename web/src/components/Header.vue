@@ -2,15 +2,6 @@
     <div class="header" :class="{'content-collapse': collapseLocal}">
         <div class="header_arera">
             <div class="header-right">
-                <div class="progress pcShow">
-                    <el-progress :percentage="(free_usage/free_quota_per_month)*100"></el-progress>
-                    <span v-if="languageMcs === 'en'" class="tip">{{free_usage | byteStorage}} GB of {{free_quota_per_month | byteStorage}} GB free storage</span>
-                    <span v-else class="tip">目前使用量：{{free_usage | byteStorage}} GB（免费储存空间配额：{{free_quota_per_month | byteStorage}} GB）</span>
-                </div>
-                <div class="lang_style">
-                    <span v-if="languageMcs === 'en'" @click="handleSetLanguage('cn')">EN</span>
-                    <span v-else @click="handleSetLanguage('en')">中</span>
-                </div>
                 <div :class="{'online': addrChild, 'feh-metamask': 1==1}">
                     <div v-if="!addrChild" class="logged_in filter_status">
                         <el-tooltip class="item" effect="dark" :content="$t('fs3Login.toptip_03')" placement="bottom">
@@ -28,18 +19,21 @@
                         <el-button class="text textTrue pcShow" @click="signOutFun">{{$t('fs3.Disconnect')}}</el-button>
                     </div>
                 </div>
+                <div class="lang_style">
+                    <span v-if="languageMcs === 'en'" @click="handleSetLanguage('cn')">EN</span>
+                    <span v-else @click="handleSetLanguage('en')">中</span>
+                </div>
                 <div class="switch">
-                    <el-switch
-                        style="display: block"
-                        v-model="reverseSwitch"
-                        active-color="#4f8aff"
-                        inactive-color="rgb(18, 18, 18)"
-                        :width="switchWidth"
-                        active-icon-class="el-icon-moon"
-                        inactive-icon-class="el-icon-sunny"
-                        @change="reverseChange"
-                    >
-                    </el-switch>
+                    <div class="swithUI" v-if="reverse" @click="reverseChange(false)">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" class="css-sunny">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M10.5 2h3v3h-3V2zM16 12a4 4 0 11-8 0 4 4 0 018 0zM5.99 3.869L3.867 5.99 5.99 8.112 8.111 5.99 5.989 3.87zM2 13.5v-3h3v3H2zm1.868 4.51l2.121 2.12 2.122-2.12-2.122-2.122-2.121 2.121zM13.5 19v3h-3v-3h3zm4.51-3.112l-2.121 2.122 2.121 2.121 2.121-2.121-2.121-2.122zM19 10.5h3v3h-3v-3zm-3.11-4.51l2.12 2.121 2.122-2.121-2.121-2.121-2.122 2.121z" fill="currentColor"></path>
+                        </svg>
+                    </div>
+                    <div class="swithUI" v-else @click="reverseChange(true)">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" class="css-moon">
+                            <path d="M20.968 12.768a7 7 0 01-9.735-9.735 9 9 0 109.735 9.735z" fill="currentColor"></path>
+                        </svg>
+                    </div>
                 </div>
                 <!-- mobile显示 -->
                 <div class="mobileShow">
@@ -536,7 +530,7 @@ export default {
                     )
                     .then((balance) => {
                         let balanceAll = web3.utils.fromWei(balance, 'ether')
-                        _this.priceAccound = Number(balanceAll).toFixed(4)
+                        _this.priceAccound = Number(balanceAll).toFixed(0)
                     })
                     .catch((error) => {
                         console.error(`Error fetching getBalance: ${error.code}: ${error.message}`);
@@ -552,7 +546,8 @@ export default {
                         .then(balance => {
                             let usdcAvailable = web3.utils.fromWei(balance, 'ether');
                             // console.log('Available:', _this.formatDecimal(usdcAvailable, 3))
-                            _this.priceAccound = _this.formatDecimal(usdcAvailable, 3)
+                            // _this.priceAccound = _this.formatDecimal(usdcAvailable, 3)
+                            _this.priceAccound = Number(usdcAvailable).toFixed(0)
                         })
                     }else {
                         setTimeout(function(){
@@ -1091,7 +1086,7 @@ export default {
     }
     .lang_style{    
         width: 0.26rem;
-        margin: 0 0.4rem 0 0;
+        margin: 0 0.2rem;
         line-height: 0.26rem;
         font-size: 0.14rem;
         font-weight: 500;
@@ -1107,11 +1102,11 @@ export default {
             color: #fff;
             width: 25px;
             height: 25px;
-            margin: 0 20px 0 0;
+            margin: 0 15px;
             line-height: 25px;
         }
         @media screen and (max-width:479px) {
-            margin: 0 10px 0 0;
+            margin: 0 10px;
         }
         span{
             cursor: pointer;
@@ -1240,7 +1235,7 @@ export default {
     .switch {
         position: relative;
         display: flex;
-        margin: 0 0 0 0.2rem;
+        margin: 0;
         .on {
             position: absolute;
             top: 0;
@@ -1310,6 +1305,36 @@ export default {
         .el-switch.is-checked /deep/ {
             .el-switch__core::after {
                 margin-left: -22px;
+            }
+        }
+        .swithUI{
+            display: flex;
+            -webkit-box-pack: center;
+            justify-content: center;
+            -webkit-box-align: center;
+            align-items: center;
+            cursor: pointer;
+            font-size: 22px;
+            svg{
+                box-sizing: border-box;
+                margin: 0px;
+                min-width: 0px;
+                font-size: 22px;
+                cursor: pointer;
+                width: 22px;
+                height: 22px;
+            }
+            .css-sunny{
+                color: #fff;
+                &:hover{
+                    color: #4f8aff;
+                }
+            }
+            .css-moon{
+                color: #333;
+                &:hover{
+                    color: #4f8aff;
+                }
             }
         }
     }
@@ -1430,6 +1455,15 @@ export default {
         left: 0 !important;
         height: 0.9rem;
         background: #0b318f;
+        .header-right {
+            .switch {
+                .swithUI{
+                    .css-moon{
+                        color: #fff;
+                    }
+                }
+            }
+        }
     }
     .header_arera{
         margin: 0 0.1rem;

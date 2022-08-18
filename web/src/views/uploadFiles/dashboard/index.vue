@@ -57,23 +57,29 @@
                        {text: $t('uploadFile.filter_status_Success'), value: 'Success'}, {text: $t('uploadFile.filter_status_Failed'), value: 'Failed'}]"
             :filter-multiple="false" :column-key="'payment'">
             <template slot-scope="scope">
-              <el-button type="danger" class="statusStyle" v-if="scope.row.status&&scope.row.status.toLowerCase()=='failed'">
-                  {{ languageMcs == "en" ? "Fail" : '失败'}}
+              <el-button plain type="pending" class="statusStyle" v-if="scope.row.status&&scope.row.status.toLowerCase()=='pending'">
+                  {{ languageMcs == "en" ? "Pending" : '待支付'}}
               </el-button>
-              <el-button plain type="pending" class="statusStyle" v-else-if="scope.row.is_free&&scope.row.status_failed_file">
+              <el-button plain type="pending" class="statusStyle" v-else-if="(scope.row.status&&(scope.row.status.toLowerCase()=='completed' || scope.row.status.toLowerCase()=='refundable')&&scope.row.status_failed_file) || (scope.row.status&&scope.row.status.toLowerCase()=='processing'&&scope.row.status_failed_file&&scope.row.offline_deal.length>0)">
                   {{ languageMcs == "en" ? "Failed" : '失败'}}
               </el-button>
-              <el-button plain type="pending" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='pending'&&!scope.row.status_file">
-                  {{ languageMcs == "en" ? "Pending" : '待支付'}}
+              <el-button plain type="primary" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='processing'&&scope.row.status_failed_file&&scope.row.offline_deal.length<=0">
+                  {{ languageMcs == "en" ? "Processing" : '处理中'}}
+              </el-button>
+              <el-button plain type="success" class="statusStyle" v-else-if="scope.row.status&&(scope.row.status.toLowerCase()=='completed' || scope.row.status.toLowerCase()=='refundable' || scope.row.status.toLowerCase()=='processing' || scope.row.status.toLowerCase()=='success')&&scope.row.status_success_file">
+                  {{ languageMcs == "en" ? "Success" : '完成'}}
+              </el-button>
+              <el-button type="successPart" class="statusStyle" v-else-if="scope.row.status_file">
+                  {{ languageMcs == "en" ? "Success" : '完成'}}
+              </el-button>
+              <el-button type="danger" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='failed'">
+                  {{ languageMcs == "en" ? "Fail" : '失败'}}
               </el-button>
               <el-button plain type="primary" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='processing'&&!scope.row.status_file">
                   {{ languageMcs == "en" ? "Processing" : '处理中'}}
               </el-button>
               <el-button plain type="success" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='active'&&!scope.row.status_file">
                   {{ languageMcs == "en" ? "Active" : '完成'}}
-              </el-button>
-              <el-button plain type="success" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='unlocked'&&!scope.row.status_file || scope.row.status&&scope.row.status.toLowerCase()=='success'">
-                  {{ languageMcs == "en" ? "Success" : '完成'}}
               </el-button>
               <el-button plain type="info" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='refunded'&&!scope.row.status_file">
                   {{ languageMcs == "en" ? "Refunded" : '已退款'}}
@@ -86,9 +92,6 @@
               </el-button>
               <el-button plain type="refunding" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='free'&&!scope.row.status_file">
                   {{ languageMcs == "en" ? "Free" : '免费'}}
-              </el-button>
-              <el-button type="successPart" class="statusStyle" v-else-if="scope.row.status_file">
-                  {{ languageMcs == "en" ? "Success" : '完成'}}
               </el-button>
               <el-button plain type="info" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='completed'&&!scope.row.status_file">
                   {{ languageMcs == "en" ? "Completed" : '完成'}}
@@ -306,14 +309,22 @@
                   @click.stop="payClick(scope.row)">
                   {{$t('uploadFile.pay')}}
                 </el-button>
+                <el-button 
+                  v-else-if="tableData[scope.$index].is_free"
+                  :disabled="true"
+                  class="uploadBtn grey opacity">{{$t('uploadFile.filter_status_Free')}}</el-button>
                 <el-button class="uploadBtn blue" type="primary"
-                  v-else-if="tableData[scope.$index].status.toLowerCase()=='refunding' || tableData[scope.$index].status.toLowerCase()=='refundable'"
-                  @click.stop="refundClick(scope.row)">
+                  v-else-if="tableData[scope.$index].status.toLowerCase()=='completed' && !tableData[scope.$index].is_free && tableData[scope.$index].refunded_by_self"
+                  :disabled="true">
                   {{$t('uploadFile.refund')}}
                 </el-button>
-                <el-button class="uploadBtn grey opacity"
-                  v-else-if="tableData[scope.$index].status.toLowerCase()=='refunded' || tableData[scope.$index].status.toLowerCase()=='completed'"
-                  :disabled="true">
+                <el-button 
+                  v-else-if="tableData[scope.$index].status.toLowerCase()=='completed' && !tableData[scope.$index].is_free && !tableData[scope.$index].refunded_by_self"
+                  :disabled="true"
+                  class="uploadBtn grey opacity">{{$t('uploadFile.paid')}}</el-button>
+                <el-button class="uploadBtn blue" type="primary"
+                  v-else-if="tableData[scope.$index].status.toLowerCase()=='refundable'"
+                  @click.stop="refundClick(scope.row)">
                   {{$t('uploadFile.refund')}}
                 </el-button>
                 <el-button 
@@ -321,9 +332,9 @@
                   :disabled="true"
                   class="uploadBtn grey opacity">{{$t('uploadFile.failed')}}</el-button>
                 <el-button 
-                  v-else-if="tableData[scope.$index].is_free"
+                  v-else-if="tableData[scope.$index].status.toLowerCase()=='processing'"
                   :disabled="true"
-                  class="uploadBtn grey opacity">{{$t('uploadFile.filter_status_Free')}}</el-button>
+                  class="uploadBtn grey opacity">{{$t('uploadFile.paid')}}</el-button>
                 <el-button 
                   v-else
                   :disabled="true"
@@ -1131,6 +1142,7 @@ export default {
                 item.payloadAct = false
                 item.status_file = false
                 item.status_failed_file = true
+                item.status_success_file = true
                 item.file_size_byte = _this.byteChange(item.file_size)
 
                 let dataTime = new Date(item.upload_at * 1000) + "" //将时间格式转为字符串
@@ -1158,11 +1170,11 @@ export default {
                 if(item.offline_deal){
                   item.offline_deal.map(child => {
                     if(child.status != 'Failed') item.status_failed_file = false
-                    if(child.status == 'Success'){
-                      item.status_file = true
-                      return false
-                    }
+                    if(child.status != 'Success') item.status_success_file = false
+                    if(child.status == 'Success') item.status_file = true
                   })
+                }else{
+                  item.status_success_file = false
                 }
               });
               setTimeout(function(){

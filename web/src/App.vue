@@ -18,7 +18,7 @@ export default {
   .el-button, .createTask a, .logged_in .info, .metamaskLogin, .metamask, .sidebar, svg, img.resno,
   .el-popover.el-popper, #billing .form .form_top .search .el-input .el-input__icon,
   #dealManagement .form .form_table .el-table tr th .cell i, .filter_status,
-  .header-right .progress{
+  .header-right .progress, .swithUI svg{
     filter: invert(1) hue-rotate(180deg);
   }
   .color, .resno, .sidebar img{

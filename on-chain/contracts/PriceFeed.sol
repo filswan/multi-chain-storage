@@ -16,8 +16,7 @@ contract PriceFeed is IPriceFeed {
 
     uint8 private _tokenIndex; // wfil token address index in the pair
 
-    constructor(address dexPair, uint8 tokenIndex) public {
-
+    constructor(address dexPair, uint8 tokenIndex) {
         _dexPair = dexPair;
         _tokenIndex = tokenIndex;
     }

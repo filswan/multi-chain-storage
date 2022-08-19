@@ -764,7 +764,7 @@ export default {
         }
         .el-button {    
             padding: 0.1rem 0.2rem;
-            font-size: 0.2rem;
+            font-size: 0.18rem;
             font-family: inherit;
             border-radius: 0.07rem;
             background: #4e82ff;
@@ -791,7 +791,7 @@ export default {
             padding: 0 0 0.15rem;
             .el-col{
                 padding: 0.1rem 0;
-                font-size: 0.2rem;
+                font-size: 0.18rem;
                 font-weight: normal;
                 line-height: 1.3;
                 color: #555;
@@ -921,7 +921,7 @@ export default {
             padding: 0.2rem 0;
             line-height: 1.5;
             text-align: center;
-            font-size: 0.22rem;
+            font-size: 0.2rem;
             font-weight: 600;
             white-space: normal;
             color: #333;
@@ -954,7 +954,7 @@ export default {
                     align-items: center;
                     word-break: break-word;
                     text-align: center;
-                    font-size: 0.2rem;
+                    font-size: 0.18rem;
                     color: #555;
                     .hot-cold-box{
                         .el-button{
@@ -963,7 +963,7 @@ export default {
                             padding: 0;
                             margin: 0;
                             background-color: transparent;
-                            font-size: 0.2rem;
+                            font-size: 0.18rem;
                             word-break: break-word;
                             color: #000;
                             text-align: left;
@@ -1020,7 +1020,7 @@ export default {
             .el-table__header-wrapper{
                 border-radius: 0.2rem;
                 th{
-                    height: 0.7rem;
+                    height: 0.6rem;
                     background-color: #e5eeff !important;
                 }
             }

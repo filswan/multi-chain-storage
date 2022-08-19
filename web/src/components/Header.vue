@@ -2,6 +2,24 @@
     <div class="header" :class="{'content-collapse': collapseLocal}">
         <div class="header_arera">
             <div class="header-right">
+                <div class="network_mainnet" :class="{'error': !(networkID == 97 || networkID == 137 || networkID == 80001)}" @click="networkC=true">
+                    <div class="BSC_mainnet" v-if="networkID == 97" title="BSC TestNet mainnet">
+                        <img src="@/assets/images/network_logo/bsc.png" />
+                        {{bodyWidth?'BSC':'BSC TestNet'}}
+                    </div>
+                    <div class="Polygon_mainnet" v-else-if="networkID == 137" title="Polygon mainnet">
+                        <img src="@/assets/images/network_logo/polygon.png" />
+                        {{bodyWidth?'Polygon':'Polygon Mainnet'}}
+                    </div>
+                    <div class="Mumbai_mainnet" v-else-if="networkID == 80001" title="Mumbai Testnet mainnet">
+                        <img src="@/assets/images/network_logo/polygon.png" />
+                        {{bodyWidth?'Mumbai':'Mumbai Testnet'}}
+                    </div>
+                    <div class="Mumbai_mainnet" v-else :title="metaNetworkInfo.name+' mainnet'">
+                        <span></span>
+                        {{metaNetworkInfo.name}}
+                    </div>
+                </div>
                 <div :class="{'online': addrChild, 'feh-metamask': 1==1}">
                     <div v-if="!addrChild" class="logged_in filter_status">
                         <el-tooltip class="item" effect="dark" :content="$t('fs3Login.toptip_03')" placement="bottom">
@@ -73,17 +91,23 @@
         </el-dialog>
 
         <div class="loadIndexStyle" v-show="loadIndexing" v-loading="loadIndexing"></div>
+
+        <network-change v-if="networkC" :networkC="networkC" @getNetworkC="getNetworkC"></network-change>
     </div>
 </template>
 <script>
 const ethereum = window.ethereum;
 // import bus from './bus';
+import networkChange from "@/components/networkChange"
 import NCWeb3 from "@/utils/web3";
 import * as myAjax from "@/api/login";
 import axios from 'axios'
 import erc20_contract_json from "@/utils/ERC20.json";
 let contract_erc20
 export default {
+    components: {
+        networkChange
+    },
     data() {
         return {
             collapseLocal: this.$store.getters.collapseL == 'true'||this.$store.getters.collapseL==true?true: false,
@@ -113,7 +137,8 @@ export default {
             width: document.body.clientWidth>600?'450px':'95%',
             copyClick: true,
             switchWidth: 56,
-            reverseSwitch: false
+            reverseSwitch: false,
+            networkC: false
         };
     },
     props: ["meta"],
@@ -150,6 +175,9 @@ export default {
         },
         free_quota_per_month() {
             return this.$store.getters.free_quota_per_month
+        },
+        networkID() {
+            return this.$store.getters.networkID
         }
     },
     watch: {
@@ -177,6 +205,63 @@ export default {
         }
     },
     methods: {
+        getNetworkC(dialog, rows){
+            this.networkC = dialog
+            if(rows) {
+                let text = {}
+                switch(rows){
+                    case 80001:
+                        text = {
+                            chainId: web3.utils.numberToHex(80001),
+                            chainName: 'Mumbai Testnet',
+                            nativeCurrency: {
+                                name: 'MATIC',
+                                symbol: 'MATIC', // 2-6 characters long
+                                decimals: 18
+                            },
+                            rpcUrls: ['https://rpc-mumbai.maticvigil.com'],
+                            blockExplorerUrls: ['https://mumbai.polygonscan.com/']
+                        }
+                        break;
+                    case 97:
+                        text = {
+                            chainId: web3.utils.numberToHex(97),
+                            chainName: 'BSC TestNet',
+                            nativeCurrency: {
+                                name: 'tBNB',
+                                symbol: 'tBNB', // 2-6 characters long
+                                decimals: 18
+                            },
+                            rpcUrls: ['https://data-seed-prebsc-1-s1.binance.org:8545'],
+                            blockExplorerUrls: ['https://testnet.bscscan.com']
+                        }
+                        break;
+                    case 137:
+                        text = {
+                            chainId: web3.utils.numberToHex(137),
+                            chainName: 'Polygon Mainnet',
+                            nativeCurrency: {
+                                name: 'tBNB',
+                                symbol: 'tBNB', // 2-6 characters long
+                                decimals: 18
+                            },
+                            rpcUrls: ['https://polygon-rpc.com'],
+                            blockExplorerUrls: ['https://polygonscan.com/']
+                        }
+                        break;
+                }
+                ethereum.request({
+                    method: 'wallet_addEthereumChain',
+                    params: [
+                                text
+                            ]
+                }).then((res)=>{
+                    //添加成功
+                }).catch((err)=>{
+                    //添加失败
+                })
+            }
+        },
         shareTo(){
             window.open('https://mumbai.polygonscan.com/address/'+this.addrChild)
         },
@@ -415,6 +500,12 @@ export default {
                 case 97:
                     _this.network.name = 'BSC';
                     _this.network.unit = 'BNB';
+                    _this.network.center_fail = true
+                    _this.$store.dispatch('setMetaNetworkInfo', _this.network)
+                    return;
+                case 137:
+                    _this.network.name = 'Polygon';
+                    _this.network.unit = 'MATIC';
                     _this.network.center_fail = true
                     _this.$store.dispatch('setMetaNetworkInfo', _this.network)
                     return;
@@ -766,7 +857,7 @@ export default {
     left: 3.33rem;
     box-sizing: border-box;
     height: 1.1rem;
-    font-size: 0.22rem;
+    font-size: 0.2rem;
     color: #fff;
     background-color: #fff;
     -webkit-transition: left .3s ease-in-out;
@@ -1116,6 +1207,41 @@ export default {
             }
         }
     }
+    .network_mainnet{
+        box-sizing: border-box;
+        padding: 0.08rem 0.13rem 0.08rem 0;
+        margin: 0 0.2rem 0 0;
+        // background: linear-gradient(45deg, #4f8aff, #4b5eff);
+        background: rgba(79, 138, 255, 0.05);
+        line-height: 2;
+        color: #333;
+        font-size: 0.2rem;
+        font-weight: 500;
+        border-radius: 0.14rem;
+        white-space: nowrap;
+        cursor: pointer;
+        &:hover{
+            color: #000;
+        }
+        div{
+            display: flex;
+            align-items: center;
+        }
+        img, span{
+            width: 20px;
+            height: 20px;
+            min-width: 20px;
+            min-height: 20px;
+            max-width: 100%;
+            max-height: 100%;
+            margin: auto 0.1rem;
+            background-color: white;
+            border-radius: 20px;
+        }
+    }
+    .error{
+        background: rgba(255, 104, 113, 0.6);
+    }
     .feh-metamask{
         display: flex;
         align-items: center;
@@ -1149,7 +1275,7 @@ export default {
         .logged_in{
             display: flex;
             align-items: center;
-            font-size: 0.22rem;
+            font-size: 0.2rem;
             color: #333;
             h3, h4, h5{
                 font-size: inherit;
@@ -1173,7 +1299,7 @@ export default {
                 // display: none;
             }
             .el-button{
-                padding: 0.08rem 0.3rem;
+                padding: 0.08rem 0.15rem;
                 margin: 0 0 0 0.2rem;
                 line-height: 2;
                 color: #fff;
@@ -1462,6 +1588,9 @@ export default {
                         color: #fff;
                     }
                 }
+            }
+            .network_mainnet{
+                color: #fff;
             }
         }
     }

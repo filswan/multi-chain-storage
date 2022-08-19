@@ -329,7 +329,7 @@ export default {
         background-color: #080B29;
         // transition: width .3s;
         .logo {
-            width: 2.1rem;
+            width: 2rem;
             img{
                 display: block;
                 width: 100%;
@@ -432,6 +432,9 @@ export default {
                 font-size: 12px;
                 line-height: 1.2;
                 color: rgb(179, 192, 231);
+                @media screen and (min-width: 1800px) {
+                    font-size: 14px;
+                }
             }
         }
         .fes-icon-logo{
@@ -440,7 +443,7 @@ export default {
             align-items: center;
             img{
                 display: block;
-                height: 24px;
+                height: 22px;
                 margin: 0 0.15rem;
                 @media screen and (max-width: 999px) {
                     height: 20px;
@@ -460,7 +463,7 @@ export default {
         height: 0.5rem;
         padding: 0 0.28rem;
         margin: 0.12rem 0;
-        font-size: 0.24rem;
+        font-size: 0.2rem;
         font-weight: 500;
         -webkit-box-align: center;
         -ms-flex-align: center;

@@ -1576,22 +1576,22 @@ export default {
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 2.23rem;
-            padding: 0.15rem 0;
+            width: 2rem;
+            padding: 0.13rem 0;
             margin: 0;
             background: linear-gradient(45deg,#4e88ff, #4b5fff);
             border-radius: 0.14rem;
             line-height: 1.5;
             text-align: center;
             color: #fff;
-            font-size: 0.2rem;
+            font-size: 0.19rem;
             border: 0;
             outline: none;
             transition: background-color .3s, border-color .3s, color .3s, box-shadow .3s;
             cursor: pointer;
             img{
               display: inline-block;
-              height: 0.3rem;
+              height: 0.25rem;
               margin: 0 0.1rem 0 0;
             }
             &:hover{
@@ -1625,9 +1625,9 @@ export default {
           .el-input__inner {
             width: 100%;
             color: #555;
-            font-size: 0.2rem;
+            font-size: 0.19rem;
             font-weight: 500;
-            height: 0.6rem;
+            height: 0.54rem;
             line-height: 0.3rem;
             padding: 0;
             background: transparent;
@@ -1760,7 +1760,7 @@ export default {
               align-items: center;
               justify-content: center;
               word-break: break-word;    
-              font-size: 0.2rem;
+              font-size: 0.19rem;
               font-weight: 500;
               color: #555;
               text-transform: capitalize;
@@ -1861,7 +1861,7 @@ export default {
 
             .cell {
               padding: 0;
-              font-size: 0.18rem;
+              font-size: 0.17rem;
               word-break: break-word;
               color: #000;
               text-align: center;
@@ -1982,7 +1982,7 @@ export default {
                     border: 0;
                     padding: 0;
                     background-color: transparent;
-                    font-size: 0.18rem;
+                    font-size: 0.17rem;
                     font-family: inherit;
                     word-break: break-word;
                     color: #000;
@@ -2463,6 +2463,7 @@ export default {
         .pagination {
             display: flex;
             align-items: center;
+            margin: 0;
             font-size: 0.18rem;
             color: #000;
             .el-pagination /deep/{
@@ -2525,7 +2526,7 @@ export default {
         .down{
             position: absolute;
             right: 0;
-            font-size: 0.2rem;
+            font-size: 0.18rem;
             color: #888;
             cursor: pointer;
             @media screen and (max-width: 600px){

@@ -132,7 +132,7 @@
     .stats {
         .title {
             margin: 0 0.1rem;
-            font-size: 0.26rem;
+            font-size: 0.22rem;
             font-weight: 700;
             color: #333;
             line-height: 1.5;
@@ -147,7 +147,7 @@
             .info-num{
                 width: 100%;
                 text-align: center;
-                font-size: 0.26rem;
+                font-size: 0.22rem;
                 font-weight: 500;
                 color: #000;
             }
@@ -173,7 +173,7 @@
         }
 
         .info-up {
-            font-size: 0.22rem;
+            font-size: 0.2rem;
             color: #2C7FF8;
             width: 100%;
             text-align: center;

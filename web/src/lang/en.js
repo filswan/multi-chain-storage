@@ -616,5 +616,8 @@ export default {
         time_to: 'To',
         data_download: 'Download',
         data_export: 'Export'
+    },
+    network: {
+        title: 'All Chains'
     }
 }

@@ -620,5 +620,8 @@ export default {
         time_to: '至',
         data_download: '导出',
         data_export: '格式'
+    },
+    network: {
+        title: 'All Chains'
     }
 }

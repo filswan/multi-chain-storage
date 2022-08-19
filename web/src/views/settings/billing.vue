@@ -540,12 +540,12 @@
                         }
 
                         .el-button /deep/ {
-                            height: 0.6rem;
+                            height: 0.54rem;
                             padding: 0 0.4rem;
                             margin: 0 0.1rem 0 0;
                             color: #fff;
-                            line-height: 0.6rem;
-                            font-size: 0.2rem;
+                            line-height: 0.54rem;
+                            font-size: 0.19rem;
                             font-family: inherit;
                             border: 0;
                             border-radius: 0.14rem;
@@ -560,9 +560,9 @@
                             .el-input__inner {
                                 width: 100%;
                                 color: #555;
-                                font-size: 0.2rem;
+                                font-size: 0.19rem;
                                 font-weight: 500;
-                                height: 0.6rem;
+                                height: 0.54rem;
                                 line-height: 0.3rem;
                                 padding: 0 0.2rem;
                                 background: transparent;
@@ -666,7 +666,7 @@
                                     justify-content: center;
                                     // padding-right: 0;
                                     word-break: break-word;
-                                    font-size: 0.2rem;
+                                    font-size: 0.19rem;
                                     font-weight: 500;
                                     color: #555;
                                     text-transform: capitalize;
@@ -688,7 +688,7 @@
                                 border-bottom: 1px solid #dfdfdf;
                                 .cell{
                                     padding: 0 0.05rem;
-                                    font-size: 0.18rem;
+                                    font-size: 0.17rem;
                                     word-break: break-word;
                                     color: #000;
                                     text-align: center;
@@ -846,6 +846,7 @@
                     .pagination {
                         display: flex;
                         align-items: center;
+                        margin: 0;
                         font-size: 0.18rem;
                         color: #000;
                         .el-pagination /deep/{
@@ -908,7 +909,7 @@
                     .down{
                         position: absolute;
                         right: 0;
-                        font-size: 0.2rem;
+                        font-size: 0.18rem;
                         color: #888;
                         cursor: pointer;
                         @media screen and (max-width: 600px){

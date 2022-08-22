@@ -8,7 +8,7 @@ web3_api_url="http://localhost:8891"
 [database]
 db_host="localhost"
 db_port="3306"
-db_schema_name="mcs_v2"
+db_schema_name="mcs_v2_bsc"
 db_username="root"
 db_password=""
 db_args="charset=utf8mb4&parseTime=True&loc=Local"

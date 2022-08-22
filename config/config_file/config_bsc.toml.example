@@ -1,4 +1,4 @@
-port = 8889
+port = 8892
 release = true              # when work in release mode: set this to true, otherwise to false and enviornment variable GIN_MODE not to release
 filecoin_network = "filecoin_calibration"   # filecoin_mainnet or filecoin_calibration
 filecoin_wallet = ""

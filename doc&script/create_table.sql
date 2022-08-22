@@ -1,7 +1,7 @@
 #-- default database name is mcs_v2_1
 #-- you can change to another one, in that case please modify database name below and in config file accordingly
-create database  mcs_v2_1;
-use  mcs_v2_1;
+#-- create database  mcs_v2_1;
+#-- use  mcs_v2_1;
 
 create table network (
     id                             bigint        not null auto_increment,
@@ -286,7 +286,7 @@ create table dao_signature_source_file_upload (
 #--update source_file_upload a set pin_status=(select pin_status from source_file b where a.source_file_id=b.id);
 #--SET SQL_SAFE_UPDATES = 1;
 #--alter table dao_signature modify batch_no int;
-alter table dao_signature modify wallet_id_recipient          bigint;
+#--alter table dao_signature modify wallet_id_recipient          bigint;
 
 
 #--2022-08-10

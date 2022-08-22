@@ -19,29 +19,29 @@ import (
 )
 
 func CreateTask() error {
-	for {
-		numSrcFiles, err := createTask()
-		if err != nil {
-			logs.GetLogger().Error(err)
+	numSrcFiles, err := createTask()
+	if err != nil {
+		logs.GetLogger().Error(err)
+	} else {
+		if numSrcFiles == nil || *numSrcFiles == 0 {
+			logs.GetLogger().Info("0 charged source file created to car file")
 		} else {
-			if numSrcFiles == nil || *numSrcFiles == 0 {
-				logs.GetLogger().Info("0 charged source file created to car file")
-			} else {
-				logs.GetLogger().Info(*numSrcFiles, " charged source file(s) created to car file")
-			}
-		}
-
-		numSrcFiles, err = createTaskForFreeFiles()
-		if err != nil {
-			logs.GetLogger().Error(err)
-		} else {
-			if numSrcFiles == nil || *numSrcFiles == 0 {
-				logs.GetLogger().Info("0 free source file created to car file")
-			} else {
-				logs.GetLogger().Info(*numSrcFiles, " free source file(s) created to car file")
-			}
+			logs.GetLogger().Info(*numSrcFiles, " charged source file(s) created to car file")
 		}
 	}
+
+	numSrcFiles, err = createTaskForFreeFiles()
+	if err != nil {
+		logs.GetLogger().Error(err)
+	} else {
+		if numSrcFiles == nil || *numSrcFiles == 0 {
+			logs.GetLogger().Info("0 free source file created to car file")
+		} else {
+			logs.GetLogger().Info(*numSrcFiles, " free source file(s) created to car file")
+		}
+	}
+
+	return nil
 }
 
 func createTask() (*int, error) {

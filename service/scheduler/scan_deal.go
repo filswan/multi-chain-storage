@@ -16,6 +16,21 @@ import (
 )
 
 func ScanDeal() error {
+	err := ScanDealBeforeActive()
+	if err != nil {
+		logs.GetLogger().Error(err)
+	}
+
+	err = ScanDealAfterActive()
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	return nil
+}
+
+func ScanDealBeforeActive() error {
 	offlineDeals, err := models.GetOfflineDeals2BeScanned()
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -111,12 +126,6 @@ func ScanDeal() error {
 				continue
 			}
 		}
-	}
-
-	err = ScanDealAfterActive()
-	if err != nil {
-		logs.GetLogger().Error(err)
-		return err
 	}
 
 	return nil

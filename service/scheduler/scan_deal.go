@@ -113,6 +113,12 @@ func ScanDeal() error {
 		}
 	}
 
+	err = ScanDealAfterActive()
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
 	return nil
 }
 

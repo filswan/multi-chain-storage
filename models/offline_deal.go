@@ -267,3 +267,18 @@ func UpdateOfflineDealStatus(id int64, status string) error {
 
 	return nil
 }
+
+func UpdateOfflineDealOnChainStatus(id int64, onChainStatus string) error {
+	currentUtcSecond := libutils.GetCurrentUtcSecond()
+	fields2BeUpdated := make(map[string]interface{})
+	fields2BeUpdated["on_chain_status"] = onChainStatus
+	fields2BeUpdated["update_at"] = currentUtcSecond
+
+	err := database.GetDB().Model(OfflineDeal{}).Where("id=?", id).Update(fields2BeUpdated).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	return nil
+}

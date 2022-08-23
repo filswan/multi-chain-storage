@@ -319,7 +319,7 @@ export default {
                 // payload_cid: _this.$route.params.cid,
                 wallet_address: _this.$store.getters.metaAddress
             }
-            axios.get(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/storage/deal/detail/${_this.dealId}?${QS.stringify(dataCid)}`, {headers: {
+            axios.get(`${_this.baseAPIURL}api/v1/storage/deal/detail/${_this.dealId}?${QS.stringify(dataCid)}`, {headers: {
             // axios.get(`./static/detail_page_response.json`, {headers: {
                     // 'Authorization':"Bearer "
             }}).then((response) => {
@@ -375,7 +375,7 @@ export default {
             let obj = {
                 wallet_address: _this.$store.getters.metaAddress
             }
-            axios.get(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/storage/deal/log/${_this.logId}?${QS.stringify(obj)}`, {headers: {
+            axios.get(`${_this.baseAPIURL}api/v1/storage/deal/log/${_this.logId}?${QS.stringify(obj)}`, {headers: {
             // axios.get(`./static/deal_logs.json`, {headers: {
                     // 'Authorization':"Bearer "
             }}).then((response) => {

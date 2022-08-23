@@ -158,9 +158,7 @@ func ScanDealAfterActive() error {
 				continue
 			}
 
-			offlineDeal.OnChainStatus = &dealInfo.Status
-			offlineDeal.UpdateAt = libutils.GetCurrentUtcSecond()
-			err = database.SaveOne(offlineDeal)
+			err = models.UpdateOfflineDealOnChainStatus(offlineDeal.Id, dealInfo.Status)
 			if err != nil {
 				logs.GetLogger().Error(err)
 				continue

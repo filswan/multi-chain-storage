@@ -382,7 +382,7 @@
                                 _this.fileUploadVisible = true
 
                                 let xhr = new XMLHttpRequest()
-                                xhr.open("POST", `${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/storage/ipfs/upload`, true);   // 设置xhr得请求方式和url。
+                                xhr.open("POST", `${_this.baseAPIURL}api/v1/storage/ipfs/upload`, true);   // 设置xhr得请求方式和url。
                                 xhr.withCredentials = false
                                 const token = _this.$store.getters.accessToken
                                 if (token) {

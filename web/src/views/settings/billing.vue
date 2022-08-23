@@ -284,7 +284,7 @@
                     "order_by": _this.parma.is_ascend?_this.parma.order_by:'',
                     "is_ascend": _this.parma.is_ascend
                 }
-                let upload_api = `${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/billing?${QS.stringify(obj)}`
+                let upload_api = `${_this.baseAPIURL}api/v1/billing?${QS.stringify(obj)}`
                 // let upload_api = `./static/response-billing.json?${QS.stringify(obj)}`;
 
                 axios.get(upload_api)

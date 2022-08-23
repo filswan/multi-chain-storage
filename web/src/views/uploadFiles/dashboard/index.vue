@@ -639,7 +639,7 @@ export default {
     async pinClick(row){
       let _this = this
       _this.loading = true
-      const dataRes = await _this.sendPostRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/storage/unpin_source_file/${row.source_file_upload_id}`)
+      const dataRes = await _this.sendPostRequest(`${_this.baseAPIURL}api/v1/storage/unpin_source_file/${row.source_file_upload_id}`)
       if(!dataRes || dataRes.status != 'success') {
         _this.loading = false
         _this.$message.error(dataRes?dataRes.message:'Fail')
@@ -672,7 +672,7 @@ export default {
             gas: web3.utils.toHex(_this.$root.PAY_GAS_LIMIT),
         };
 
-        let wcid_api = `${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/storage/source_file_upload/${row.source_file_upload_id}?wallet_address=${_this.metaAddress}`
+        let wcid_api = `${_this.baseAPIURL}api/v1/storage/source_file_upload/${row.source_file_upload_id}?wallet_address=${_this.metaAddress}`
         axios.get(wcid_api, {
             headers: {
               // 'Authorization': "Bearer "+ _this.$store.getters.accessToken
@@ -720,7 +720,7 @@ export default {
       if(_this.metaAddress){
         _this.loading = true
         // 发起请求
-        axios.get(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/billing/deal/lockpayment/info?payload_cid=${_this.payRow.payload_cid}&source_file_upload_id=${_this.payRow.source_file_upload_id}&wallet_address=${_this.metaAddress}`,{
+        axios.get(`${_this.baseAPIURL}api/v1/billing/deal/lockpayment/info?payload_cid=${_this.payRow.payload_cid}&source_file_upload_id=${_this.payRow.source_file_upload_id}&wallet_address=${_this.metaAddress}`,{
             headers: {
             // 'Authorization': "Bearer "
             },
@@ -927,7 +927,7 @@ export default {
     },
     payFun(cid, type){
       let _this = this
-      let pay_api = `${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/events/logs/lock/${cid}?wallet_address=${_this.metaAddress}`
+      let pay_api = `${_this.baseAPIURL}api/v1/events/logs/lock/${cid}?wallet_address=${_this.metaAddress}`
 
       axios.get(pay_api, {
           headers: {
@@ -963,7 +963,7 @@ export default {
     },
     sendDeal(){
         let _this = this
-        let sendDeal_api = `${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/storage/lotus/deal/${_this.expands[0]}?wallet_address=${_this.metaAddress}`
+        let sendDeal_api = `${_this.baseAPIURL}api/v1/storage/lotus/deal/${_this.expands[0]}?wallet_address=${_this.metaAddress}`
         axios.get(sendDeal_api, {
             headers: {
                 // 'Authorization': "Bearer "+ _this.$store.getters.accessToken
@@ -1122,7 +1122,7 @@ export default {
       _this.tableData = []
 
       let uploadRes = new Promise((resolve, reject) => {
-        let storage_api = `${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/storage/tasks/deals?${QS.stringify(parma)}`
+        let storage_api = `${_this.baseAPIURL}api/v1/storage/tasks/deals?${QS.stringify(parma)}`
         // let storage_api = `./static/pay-status-response.json?${QS.stringify(parma)}`
 
         axios.get(storage_api, {

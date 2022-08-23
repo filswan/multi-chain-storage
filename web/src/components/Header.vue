@@ -2,7 +2,7 @@
     <div class="header" :class="{'content-collapse': collapseLocal}">
         <div class="header_arera">
             <div class="header-right">
-                <div class="network_mainnet" :class="{'error': !(networkID == 97 || networkID == 137 || networkID == 80001)}" @click="networkC=true">
+                <div class="network_mainnet" v-if="addrChild" :class="{'error': !(networkID == 97 || networkID == 137 || networkID == 80001)}" @click="networkC=true">
                     <div class="BSC_mainnet" v-if="networkID == 97" title="BSC TestNet mainnet">
                         <img src="@/assets/images/network_logo/bsc.png" />
                         {{bodyWidth?'BSC':'BSC TestNet'}}
@@ -206,7 +206,8 @@ export default {
     },
     methods: {
         getNetworkC(dialog, rows){
-            this.networkC = dialog
+            let _this = this
+            _this.networkC = dialog
             if(rows) {
                 let text = {}
                 switch(rows){
@@ -257,6 +258,8 @@ export default {
                             ]
                 }).then((res)=>{
                     //添加成功
+                    _this.$store.dispatch('setMetaNetworkId', rows)
+                    window.location.reload()
                 }).catch((err)=>{
                     //添加失败
                 })
@@ -583,7 +586,7 @@ export default {
         },
         commonParam(){
             let _this = this
-            let common_api = `${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/common/system/params?limit=20&wallet_address=${_this.metaAddress}`
+            let common_api = `${_this.baseAPIURL}api/v1/common/system/params?limit=20&wallet_address=${_this.metaAddress}`
 
             axios.get(common_api, {
                 headers: {

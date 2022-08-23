@@ -74,7 +74,7 @@ export default {
             let _this = this
             _this.loading = true
             
-            axios.get(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/storage/deal/file/${_this.dealID}`)
+            axios.get(`${_this.baseAPIURL}api/v1/storage/deal/file/${_this.dealID}`)
             // axios.get(`./static/pay-filename-response.json`)
             .then((response) => {
                 let json = response.data

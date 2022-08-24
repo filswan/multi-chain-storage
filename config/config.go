@@ -4,6 +4,7 @@ import (
 	"multi-chain-storage/common/constants"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/filswan/go-swan-lib/logs"
@@ -74,6 +75,12 @@ type ScheduleRule struct {
 var config *Configuration
 
 func InitConfig(paymentChainName string) {
+	if !strings.EqualFold(paymentChainName, constants.PAYMENT_CHAIN_NAME_POLYGON_MUMBAI) &&
+		!strings.EqualFold(paymentChainName, constants.PAYMENT_CHAIN_NAME_POLYGON_MAINNET) &&
+		!strings.EqualFold(paymentChainName, constants.PAYMENT_CHAIN_NAME_BSC_TESTNET) {
+		logs.GetLogger().Fatal("invalid payment chain name:", paymentChainName)
+	}
+
 	homedir, err := os.UserHomeDir()
 	if err != nil {
 		logs.GetLogger().Fatal("Cannot get home directory.")

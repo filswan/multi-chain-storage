@@ -18,6 +18,9 @@ create table network (
 insert into network(name,create_at,update_at) values('polygon',unix_timestamp(),unix_timestamp());
 set @network_id_polygon:=@@identity;
 
+insert into network(name,create_at,update_at) values('bsc',unix_timestamp(),unix_timestamp());
+set @network_id_bsc:=@@identity;
+
 create table token (
     id            bigint       not null auto_increment,
     name          varchar(100) not null,
@@ -27,12 +30,13 @@ create table token (
     create_at     bigint       not null,
     update_at     bigint       not null,
     primary key pk_token(id),
-    constraint un_token_name unique(name),
+    constraint un_token_name_network_id unique(name,network_id),
     constraint un_token_address unique(address),
     constraint fk_token_network_id foreign key (network_id) references network(id)
 );
 
 insert into token(name,address,network_id,create_at,update_at) values('USDC','0xe11A86849d99F524cAC3E7A0Ec1241828e332C62',@network_id_polygon,unix_timestamp(),unix_timestamp());
+insert into token(name,address,network_id,create_at,update_at) values('USDC','0x28fC65CF1F2bDe09ab2876fddaA7788340bAf1D7',@network_id_bsc,unix_timestamp(),unix_timestamp());
 
 create table wallet (
     id            bigint       not null auto_increment,
@@ -296,3 +300,8 @@ create table dao_signature_source_file_upload (
 #--2022-08-17
 #--alter table transaction add refund_by_wallet_id          bigint;
 #--alter table transaction add constraint fk_transaction_refund_by_wallet_id foreign key (refund_by_wallet_id) references wallet(id);
+#--alter table token drop key un_token_name;
+#--alter table token add  constraint un_token_name_network_id unique(name,network_id);
+#--insert into network(name,create_at,update_at) values('bsc',unix_timestamp(),unix_timestamp());
+#--set @network_id_bsc:=@@identity;
+#--insert into token(name,address,network_id,create_at,update_at) values('USDC','0x28fC65CF1F2bDe09ab2876fddaA7788340bAf1D7',@network_id_bsc,unix_timestamp(),unix_timestamp());

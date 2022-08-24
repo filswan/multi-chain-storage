@@ -17,7 +17,7 @@ import (
 )
 
 func main() {
-	paymentChainName := constants.PAYMENT_CHAIN_NAME_POLYGON
+	paymentChainName := constants.PAYMENT_CHAIN_NAME_POLYGON_MUMBAI
 	if len(os.Args) > 1 {
 		paymentChainName = os.Args[1]
 	}

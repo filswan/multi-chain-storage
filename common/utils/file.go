@@ -52,9 +52,13 @@ func DownloadFile(sourceUrl string, destFilepath string) error {
 }
 
 type SystemParam struct {
+	ChainName               string  `json:"chain_name"`
 	PaymentContractAddress  string  `json:"payment_contract_address"`
 	PaymentRecipientAddress string  `json:"payment_recipient_address"`
+	DaoContractAddress      string  `json:"dao_contract_address"`
 	MintContractAddress     string  `json:"mint_contract_address"`
+	DexAddress              string  `json:"dex_address"`
+	UsdcWFilPoolContract    string  `json:"usdc_wFil_pool_contract"`
 	UsdcAddress             string  `json:"usdc_address"`
 	GasLimit                uint64  `json:"gas_limit"`
 	LockTime                int     `json:"lock_time"`

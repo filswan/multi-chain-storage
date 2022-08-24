@@ -66,6 +66,7 @@ type SystemParam struct {
 	DaoThreshold            int     `json:"dao_threshold"`
 	FilecoinPrice           int64   `json:"filecoin_price"`
 }
+
 type SystemParamResponse struct {
 	Status  string      `json:"status"`
 	Data    SystemParam `json:"data"`

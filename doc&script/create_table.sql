@@ -15,11 +15,11 @@ create table network (
     constraint un_network_name unique(name)
 );
 
-insert into network(name,create_at,update_at) values('polygon',unix_timestamp(),unix_timestamp());
-set @network_id_polygon:=@@identity;
+insert into network(name,create_at,update_at) values('polygon.mumbai',unix_timestamp(),unix_timestamp());
+set @network_id_polygon_mumbai:=@@identity;
 
-insert into network(name,create_at,update_at) values('bsc',unix_timestamp(),unix_timestamp());
-set @network_id_bsc:=@@identity;
+insert into network(name,create_at,update_at) values('bsc.testnet',unix_timestamp(),unix_timestamp());
+set @network_id_bsc_testnet:=@@identity;
 
 create table token (
     id            bigint       not null auto_increment,
@@ -35,8 +35,8 @@ create table token (
     constraint fk_token_network_id foreign key (network_id) references network(id)
 );
 
-insert into token(name,address,network_id,create_at,update_at) values('USDC','0xe11A86849d99F524cAC3E7A0Ec1241828e332C62',@network_id_polygon,unix_timestamp(),unix_timestamp());
-insert into token(name,address,network_id,create_at,update_at) values('USDC','0x28fC65CF1F2bDe09ab2876fddaA7788340bAf1D7',@network_id_bsc,unix_timestamp(),unix_timestamp());
+insert into token(name,address,network_id,create_at,update_at) values('USDC','0xe11A86849d99F524cAC3E7A0Ec1241828e332C62',@network_id_polygon_mumbai,unix_timestamp(),unix_timestamp());
+insert into token(name,address,network_id,create_at,update_at) values('USDC','0x28fC65CF1F2bDe09ab2876fddaA7788340bAf1D7',@network_id_bsc_testnet,unix_timestamp(),unix_timestamp());
 
 create table wallet (
     id            bigint       not null auto_increment,
@@ -302,6 +302,6 @@ create table dao_signature_source_file_upload (
 #--alter table transaction add constraint fk_transaction_refund_by_wallet_id foreign key (refund_by_wallet_id) references wallet(id);
 #--alter table token drop key un_token_name;
 #--alter table token add  constraint un_token_name_network_id unique(name,network_id);
-#--insert into network(name,create_at,update_at) values('bsc',unix_timestamp(),unix_timestamp());
+#--insert into network(name,create_at,update_at) values('bsc.testnet',unix_timestamp(),unix_timestamp());
 #--set @network_id_bsc:=@@identity;
 #--insert into token(name,address,network_id,create_at,update_at) values('USDC','0x28fC65CF1F2bDe09ab2876fddaA7788340bAf1D7',@network_id_bsc,unix_timestamp(),unix_timestamp());

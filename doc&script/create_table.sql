@@ -300,3 +300,8 @@ create table dao_signature_source_file_upload (
 #--2022-08-17
 #--alter table transaction add refund_by_wallet_id          bigint;
 #--alter table transaction add constraint fk_transaction_refund_by_wallet_id foreign key (refund_by_wallet_id) references wallet(id);
+#--alter table token drop key un_token_name;
+#--alter table token add  constraint un_token_name_network_id unique(name,network_id);
+#--insert into network(name,create_at,update_at) values('bsc',unix_timestamp(),unix_timestamp());
+#--set @network_id_bsc:=@@identity;
+#--insert into token(name,address,network_id,create_at,update_at) values('USDC','0x28fC65CF1F2bDe09ab2876fddaA7788340bAf1D7',@network_id_bsc,unix_timestamp(),unix_timestamp());

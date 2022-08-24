@@ -95,7 +95,7 @@ export default new Router({
                     }
                 },
                 {
-                    path: '/my_files/detail/:id/:deal_id/:source_file_upload_id',
+                    path: '/my_files/detail/:id/:deal_id/:source_file_upload_id/:isFree',
                     name: 'my_files_detail',
                     component: my_files_detail,
                     beforeEnter: (to, from, next) => {

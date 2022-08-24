@@ -1,6 +1,6 @@
 <template>
   <div class="metamaskLogin login">
-    <el-alert type="warning" effect="dark" center show-icon v-if="metaAddress&&networkID!=80001">
+    <el-alert type="warning" effect="dark" center show-icon v-if="metaAddress&&!(networkID==80001 || networkID == 97)">
         <div slot="title">{{$t('fs3Login.toptip_01')}} {{metaNetworkInfo.name}} {{$t('fs3Login.toptip_02')}} <span style="text-decoration: underline;">{{$t('fs3Login.toptip_Network')}}</span>.</div>
     </el-alert>
     <div class="metamask">
@@ -50,7 +50,7 @@
       // 是否已登录
       isLogin() {
         var _this = this
-        if (_this.metaAddress && _this.networkID == 80001) {
+        if (_this.metaAddress && (_this.networkID==80001 || _this.networkID == 97)) {
           _this.$router.push({ path: '/my_files' })
         }
       }

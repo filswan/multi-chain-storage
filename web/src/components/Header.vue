@@ -259,7 +259,10 @@ export default {
                 }).then((res)=>{
                     //添加成功
                     _this.$store.dispatch('setMetaNetworkId', rows)
-                    window.location.reload()
+                    if(_this.$route.name == 'my_files_detail') {
+                        _this.$router.push({ path: '/my_files' })
+                    }
+                    setTimeout(function(){window.location.reload()}, 200)
                 }).catch((err)=>{
                     //添加失败
                 })
@@ -502,9 +505,19 @@ export default {
                     return;
                 case 97:
                     _this.network.name = 'BSC';
-                    _this.network.unit = 'BNB';
-                    _this.network.center_fail = true
+                    _this.network.unit = 'USDC';
+                    _this.network.center_fail = false
                     _this.$store.dispatch('setMetaNetworkInfo', _this.network)
+                    if(_this.meta) {
+                        if(_this.$route.query.redirect && _this.$route.query.redirect != '/supplierAllBack'){
+                            // 防止登录后需要跳转到指定页面
+                            _this.$router.push({ path: _this.$route.query.redirect })
+                        }else{
+                            _this.$router.push({ path: '/my_files' })
+                        }
+                        window.location.reload()
+                        _this.$emit("getMetamaskLogin", false)
+                    }
                     return;
                 case 137:
                     _this.network.name = 'Polygon';
@@ -612,7 +625,7 @@ export default {
         contractPrice(netId) {
             let _this = this
             try {
-                if(netId != 80001){
+                if(netId != 80001 && netId != 97){
                     ethereum
                     .request(
                         {
@@ -639,9 +652,10 @@ export default {
                         contract_erc20.methods.balanceOf(_this.metaAddress).call()
                         .then(balance => {
                             let usdcAvailable = web3.utils.fromWei(balance, 'ether');
-                            // console.log('Available:', _this.formatDecimal(usdcAvailable, 3))
+                            console.log('Available:', usdcAvailable)
                             // _this.priceAccound = _this.formatDecimal(usdcAvailable, 3)
-                            _this.priceAccound = Number(usdcAvailable).toFixed(0)
+                            // _this.priceAccound = Number(usdcAvailable).toFixed(0)
+                            _this.priceAccound = parseInt(usdcAvailable)
                         })
                     }else {
                         setTimeout(function(){

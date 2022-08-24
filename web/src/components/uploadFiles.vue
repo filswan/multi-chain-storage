@@ -332,7 +332,7 @@
                 let _this = this;
                 _this.$refs[formName].validate((valid) => {
                     if (valid) {
-                        if(_this.metaAddress&&_this.networkID!=80001) {
+                        if(_this.metaAddress&&!(_this.networkID==80001 || _this.networkID == 97)) {
                             _this.metamaskLoginTip = true
                             return false
                         }

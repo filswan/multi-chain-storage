@@ -294,7 +294,7 @@
                 this.storage_cost_low = number_price > 0 ? Number(_price * 2).toFixed(9) : '0.000000001'
                 this.storage_cost_average = number_price > 0 ? Number(_price * 3).toFixed(9) : '0.000000002'
                 this.storage_cost_high = number_price > 0 ? Number(_price * 5).toFixed(9) : '0.000000003'
-                this.ruleForm.amount = this.storage_cost_average
+                this.ruleForm.amount = this.free ? 0 : this.storage_cost_average
             },
             agreeChange(val){
                 this.ruleForm.lock_plan_tip = false
@@ -336,7 +336,7 @@
                             _this.metamaskLoginTip = true
                             return false
                         }
-                        if(!_this.ruleForm.lock_plan || _this.ruleForm.amount<=0){
+                        if(!_this.ruleForm.lock_plan || (_this.ruleForm.amount<=0&&!_this.free)){
                             _this.ruleForm.lock_plan_tip = true
                             return false
                         }
@@ -362,8 +362,7 @@
                             contract_erc20.methods.balanceOf(_this.metaAddress).call()
                             .then(resultUSDC => {
                                 _this.usdcAvailable = web3.utils.fromWei(resultUSDC, 'ether');
-                                console.log('Available:', _this.usdcAvailable)
-                                // console.log(_this.ruleForm.amount, _this.usdcAvailable)
+                                console.log('Available:', _this.usdcAvailable, _this.ruleForm.amount)
 
                                 // 判断支付金额是否大于代币余额
                                 if(Number(_this.ruleForm.amount) > Number(_this.usdcAvailable) ){
@@ -561,7 +560,7 @@
                 this.ruleForm.file_size = this.sizeChange(this._file.size)
                 this.ruleForm.file_size_byte = this.byteChange(this._file.size)
                 this.free = (this.free_quota_per_month - this.free_usage) >= this._file.size?true:false
-                console.log('bytes', this._file.size, this.free_quota_per_month-this.free_usage, this.free)
+                // console.log('bytes', this._file.size, this.free_quota_per_month-this.free_usage, this.free)
                 if (!isLt2M) {
                     // this.$message.error(this.$t('deal.upload_form_file_tip'))
                     this.ruleForm.fileList_tip = true

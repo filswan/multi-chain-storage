@@ -148,7 +148,7 @@ func ScanDealAfterActive() error {
 		dealInfo, err := lotusClient.LotusClientGetDealInfo(offlineDeal.DealCid)
 		if err != nil {
 			logs.GetLogger().Error(err)
-			return err
+			continue
 		}
 
 		if offlineDeal.OnChainStatus == nil || *offlineDeal.OnChainStatus != dealInfo.Status {

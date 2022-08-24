@@ -617,16 +617,16 @@ export default {
     },
     toDetail(row){
       if(row.offline_deal && row.offline_deal.length>0){
-        this.$router.push({name: 'my_files_detail', params: {id: row.offline_deal[0].id, deal_id: row.offline_deal[0].deal_id,cid: row.payload_cid, source_file_upload_id: row.source_file_upload_id}})
+        this.$router.push({name: 'my_files_detail', params: {id: row.offline_deal[0].id, deal_id: row.offline_deal[0].deal_id,cid: row.payload_cid, source_file_upload_id: row.source_file_upload_id, isFree: row.is_free?1:0}})
       }else{
-        this.$router.push({name: 'my_files_detail', params: {id: 0, deal_id: 0, cid: row.payload_cid, source_file_upload_id: row.source_file_upload_id}})
+        this.$router.push({name: 'my_files_detail', params: {id: 0, deal_id: 0, cid: row.payload_cid, source_file_upload_id: row.source_file_upload_id, isFree: row.is_free?1:0}})
       }
       localStorage.setItem('offlineDeals', row.offline_deal?JSON.stringify(row.offline_deal):[])
       localStorage.setItem('offlineDealsIndex', '0')
     },
     payClick(row){
       let _this = this
-      if(_this.metaAddress&&_this.networkID!=80001) {
+      if(_this.metaAddress&& !(_this.networkID==80001 || _this.networkID == 97)) {
           _this.metamaskLoginTip = true
           return false
       }

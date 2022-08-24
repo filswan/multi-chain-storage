@@ -52,6 +52,7 @@ func DownloadFile(sourceUrl string, destFilepath string) error {
 }
 
 type SystemParam struct {
+	ChainName               string  `json:"chain_name"`
 	PaymentContractAddress  string  `json:"payment_contract_address"`
 	PaymentRecipientAddress string  `json:"payment_recipient_address"`
 	DaoContractAddress      string  `json:"dao_contract_address"`
@@ -65,7 +66,6 @@ type SystemParam struct {
 	DaoThreshold            int     `json:"dao_threshold"`
 	FilecoinPrice           int64   `json:"filecoin_price"`
 }
-
 type SystemParamResponse struct {
 	Status  string      `json:"status"`
 	Data    SystemParam `json:"data"`

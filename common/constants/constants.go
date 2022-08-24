@@ -72,8 +72,9 @@ const (
 
 	DAO_SIGNATURE_THRESHOLD = 2
 
-	PAYMENT_CHAIN_NAME_POLYGON = "polygon"
-	PAYMENT_CHAIN_NAME_BSC     = "bsc"
+	PAYMENT_CHAIN_NAME_POLYGON_MUMBAI  = "polygon.mumbai"
+	PAYMENT_CHAIN_NAME_POLYGON_MAINNET = "polygon.mainnet"
+	PAYMENT_CHAIN_NAME_BSC_TESTNET     = "bsc.testnet"
 
 	CONFIG_PATH = ".swan/mcs"
 

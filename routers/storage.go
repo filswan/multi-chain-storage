@@ -301,7 +301,7 @@ func GetDealFromFlink(c *gin.Context) {
 		return
 	}
 
-	systemParam, err := utils.GetSystemParam()
+	systemParam, err := utils.GetSystemParam("")
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.JSON(http.StatusBadRequest, common.CreateErrorResponse(errorinfo.ERROR_INTERNAL, err.Error()))

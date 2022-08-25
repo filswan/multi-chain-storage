@@ -4,6 +4,7 @@ import (
 	"multi-chain-storage/common"
 	"multi-chain-storage/common/errorinfo"
 	"multi-chain-storage/common/utils"
+	"multi-chain-storage/config"
 	"multi-chain-storage/service"
 	"net/http"
 
@@ -14,6 +15,7 @@ import (
 func HostManager(router *gin.RouterGroup) {
 	router.GET("/host/info", GetHostInfo)
 	router.GET("/system/params", GetSystemParams)
+	router.GET("/system/params_all_chain", GetSystemParams4AllChains)
 }
 
 func GetHostInfo(c *gin.Context) {
@@ -22,7 +24,7 @@ func GetHostInfo(c *gin.Context) {
 }
 
 func GetSystemParams(c *gin.Context) {
-	params, err := utils.GetSystemParam()
+	params, err := utils.GetSystemParam("")
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.JSON(http.StatusOK, common.CreateErrorResponse(errorinfo.ERROR_INTERNAL, err.Error()))
@@ -30,4 +32,21 @@ func GetSystemParams(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, common.CreateSuccessResponse(params))
+}
+
+func GetSystemParams4AllChains(c *gin.Context) {
+	paramsPolygonMumbai, err := utils.GetSystemParam(config.GetConfig().Web3ApiUrlPolygonMumbai)
+	if err != nil {
+		logs.GetLogger().Error(err)
+	}
+
+	paramsBscTestnet, err := utils.GetSystemParam(config.GetConfig().Web3ApiUrlBscTestnet)
+	if err != nil {
+		logs.GetLogger().Error(err)
+	}
+
+	c.JSON(http.StatusOK, common.CreateSuccessResponse(gin.H{
+		"polygon_mumbai": paramsPolygonMumbai,
+		"bsc_testnet":    paramsBscTestnet,
+	}))
 }

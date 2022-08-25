@@ -71,7 +71,7 @@ func createTask() (*int, error) {
 	createdTimeMin := currentUtcMilliSec
 	var maxPrice *decimal.Decimal
 
-	systemParam, err := utils.GetSystemParam()
+	systemParam, err := utils.GetSystemParam("")
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err

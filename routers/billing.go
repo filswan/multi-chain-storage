@@ -114,7 +114,7 @@ func GetLockPaymentInfo(c *gin.Context) {
 }
 
 func GetFilecoinPrice(c *gin.Context) {
-	params, err := utils.GetSystemParam()
+	params, err := utils.GetSystemParam("")
 	if err != nil {
 		logs.GetLogger().Error(err)
 		c.JSON(http.StatusOK, common.CreateErrorResponse(errorinfo.ERROR_INTERNAL, err.Error()))

@@ -269,7 +269,7 @@ export default {
             }
         },
         shareTo(){
-            window.open('https://mumbai.polygonscan.com/address/'+this.addrChild)
+            window.open(`${this.baseAddressURL}${this.addrChild}`)
         },
         copyTextToClipboard(text) {
             let _this = this

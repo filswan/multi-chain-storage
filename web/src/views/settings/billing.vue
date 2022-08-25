@@ -204,8 +204,8 @@
         },
         methods: {
             networkLink(hash, network) {
-                if(network && network.toLowerCase() == 'polygon'){
-                    window.open('https://mumbai.polygonscan.com/tx/'+hash)
+                if(network && network.toLowerCase().indexOf('polygon') > -1){
+                    window.open(this.baseAddressURL+hash)
                 }
             },
             getDownload(dialog, rows){

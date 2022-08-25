@@ -158,7 +158,7 @@
                                             <p>{{scope.row.tx_hash}}</p>
                                         </div>
                                         <!-- :class="{'color': dealCont.network&&dealCont.network.toLowerCase() == 'polygon'}" -->
-                                        <el-button slot="reference" @click="networkLink('https://mumbai.polygonscan.com/tx/'+scope.row.tx_hash)" class="color">
+                                        <el-button slot="reference" @click="networkLink(baseAddressURL+scope.row.tx_hash)" class="color">
                                             <!-- <img src="@/assets/images/copy.png" alt=""> -->
                                             {{scope.row.tx_hash}}
                                         </el-button>

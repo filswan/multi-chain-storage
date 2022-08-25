@@ -5,5 +5,7 @@ module.exports = {
   BASE_PAYMENT_GATEWAY_API: '"http://192.168.88.41:8889/"',
   BASE_PAYMENT_GATEWAY_BSC_API: '"https://calibration-mcs-bsc.filswan.com/"',
   BASE_MAINNET_ADDRESS: '"https://filscan.io/tipset/dsn-detail"',
-  BASE_CALIBRATION_ADDRESS: '"https://calibration.filscan.io/tipset/dsn-detail"'
+  BASE_CALIBRATION_ADDRESS: '"https://calibration.filscan.io/tipset/dsn-detail"',
+  BASE_POLYGON_ADDRESS: '"https://mumbai.polygonscan.com/address/"',
+  BASE_BSC_ADDRESS: '"https://bscscan.com/tx/"'
 }

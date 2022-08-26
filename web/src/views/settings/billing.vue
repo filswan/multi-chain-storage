@@ -205,7 +205,7 @@
         methods: {
             networkLink(hash, network) {
                 if(network && network.toLowerCase().indexOf('polygon') > -1){
-                    window.open(this.baseAddressURL+hash)
+                    window.open(`${this.baseAddressURL}tx/${hash}`)
                 }
             },
             getDownload(dialog, rows){

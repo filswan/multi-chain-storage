@@ -269,7 +269,7 @@ export default {
             }
         },
         shareTo(){
-            window.open(`${this.baseAddressURL}${this.addrChild}`)
+            window.open(`${this.baseAddressURL}address/${this.addrChild}`)
         },
         copyTextToClipboard(text) {
             let _this = this

@@ -408,7 +408,7 @@
             <img src="@/assets/images/alert-icon.png" class="resno" />
             <h1>{{$t('uploadFile.COMPLETED')}}!</h1>
             <h3>{{$t('uploadFile.SUCCESS')}}</h3>
-            <a :href="baseAddressURL+txHash" target="_blank">{{txHash}}</a>
+            <a :href="baseAddressURL+'tx/'+txHash" target="_blank">{{txHash}}</a>
             <a class="a-close" @click="finishClose">{{$t('uploadFile.CLOSE')}}</a>
         </el-dialog>
 
@@ -418,7 +418,7 @@
             <img src="@/assets/images/error.png" class="resno" />
             <h1>{{$t('uploadFile.Fail')}}!</h1>
             <h3>{{$t('uploadFile.FailTIP')}}</h3>
-            <a :href="baseAddressURL+txHash" target="_blank">{{txHash}}</a>
+            <a :href="baseAddressURL+'tx/'+txHash" target="_blank">{{txHash}}</a>
             <a class="a-close" @click="failClose">{{$t('uploadFile.CLOSE')}}</a>
         </el-dialog>
 
@@ -428,7 +428,7 @@
             <img src="@/assets/images/waiting.png" class="resno" />
             <h1>{{$t('uploadFile.waiting')}}</h1>
             <h3>{{$t('uploadFile.waitingTIP')}}</h3>
-            <a :href="baseAddressURL+txHash" target="_blank">{{txHash}}</a>
+            <a :href="baseAddressURL+'tx/'+txHash" target="_blank">{{txHash}}</a>
             <a class="a-close" @click="failClose">{{$t('uploadFile.CLOSE')}}</a>
         </el-dialog>
 
@@ -453,7 +453,7 @@
             <h3>{{$t('uploadFile.View_Your_NFT_tips')}}</h3>
             <a :href="'https://testnets.opensea.io/assets/mumbai/'+mint_address+'/'+tokenId" target="_blank">{{$t('uploadFile.View_Your_NFT_OpenSea')}}</a>
             <h3>{{$t('uploadFile.View_Your_NFT_tips01')}}</h3>
-            <a :href="baseAddressURL+txHash" target="_blank">{{txHash}}</a>
+            <a :href="baseAddressURL+'tx/'+txHash" target="_blank">{{txHash}}</a>
             <br />
             <h3>{{$t('uploadFile.View_Your_NFT_Note')}}</h3>
             <a class="a-close" @click="failClose">{{$t('uploadFile.CLOSE')}}</a>

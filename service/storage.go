@@ -315,7 +315,9 @@ func DownloadSourceFileUploads(locationStr, walletAddress string, uploadAtStart,
 }
 
 type SourceFileUpload struct {
-	WCid string `json:"w_cid"`
+	WCid   string `json:"w_cid"`
+	Status string `json:"status"`
+	IsFree bool   `json:"is_free"`
 }
 
 func GetSourceFileUpload(sourceFileUploadId int64) (*SourceFileUpload, error) {
@@ -338,7 +340,15 @@ func GetSourceFileUpload(sourceFileUploadId int64) (*SourceFileUpload, error) {
 	}
 
 	sourceFileUploadOut := &SourceFileUpload{
-		WCid: sourceFileUpload.Uuid + sourceFile.PayloadCid,
+		WCid:   sourceFileUpload.Uuid + sourceFile.PayloadCid,
+		Status: sourceFileUpload.Status,
+		IsFree: sourceFileUpload.IsFree,
+	}
+
+	if sourceFileUpload.Status != constants.SOURCE_FILE_UPLOAD_STATUS_PENDING &&
+		sourceFileUpload.Status != constants.SOURCE_FILE_UPLOAD_STATUS_REFUNDABLE &&
+		sourceFileUpload.Status != constants.SOURCE_FILE_UPLOAD_STATUS_COMPLETED {
+		sourceFileUploadOut.Status = constants.SOURCE_FILE_UPLOAD_STATUS_PROCESSING
 	}
 
 	return sourceFileUploadOut, nil

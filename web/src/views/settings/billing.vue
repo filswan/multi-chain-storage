@@ -446,7 +446,7 @@
                 // if (!Number(value)) return 0;
                 // if (isNaN(value)) return value;
                 // 18 - 单位换算需要 / 1000000000000000000，浮点运算显示有bug
-                value = Number(value)
+                // value = Number(value)
                 if(String(value).length > 18){
                     let v1 = String(value).substring(0, String(value).length - 18)
                     let v2 = String(value).substring(String(value).length - 18)

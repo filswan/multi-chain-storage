@@ -29,7 +29,7 @@
                     </div>
                     <div class="fes-icon">
                         <div class="progress">
-                            <el-progress :percentage="(free_usage/free_quota_per_month)*100"></el-progress>
+                            <el-progress :percentage="(free_usage/free_quota_per_month)*100 || 0"></el-progress>
                             <span v-if="languageMcs === 'en'" class="tip">{{free_usage | byteStorage}} GB of {{free_quota_per_month | byteStorage}} GB free storage</span>
                             <span v-else class="tip">目前使用量：{{free_usage | byteStorage}} GB（免费储存空间配额：{{free_quota_per_month | byteStorage}} GB）</span>
                         </div>

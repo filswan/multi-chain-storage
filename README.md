@@ -117,12 +117,14 @@ nohup ./build/multi-chain-storage >> ./build/mcs.log &       #After installation
 
 ## Configuration
 
-### ~/.swan/mcs/config.toml
+### ~/.swan/mcs/config_[polygon.mumbai|polygon.mainnet|bsc.testnet].toml
 - **port**: Web api port
 - **release**: When work in release mode: set this to true, otherwise to false and enviornment variable GIN_MODE not to release
 - **filecoin_network**: filecoin_calibration or filecoin_mainnet
 - **filecoin_wallet**: The wallet address used to pay on the filecoin network
 - **flink_url**: Deals data can be searched from here
+- **web3_api_url_polygon_mumbai**: Web3 api url for polygon mumbai
+- **web3_api_url_bsc_testnet**: Web3 api url for BSC testnet
 
 #### [database]
 - **db_host**: Host MCS database resides in
@@ -160,9 +162,6 @@ nohup ./build/multi-chain-storage >> ./build/mcs.log &       #After installation
 - **create_task_interval_second**: Job running interval, unit: second, default: 120
 - **send_deal_interval_second**: Job running interval, unit: second, default: 180
 - **scan_deal_status_interval_second**: Job running interval, unit: second, default: 300
-
-### ~/.swan/mcs/.env
-- **privateKeyOnPolygon**: Private key of the wallet used to execute contract methods on the polygon network and pay for gas
 
 ## Work Process
 

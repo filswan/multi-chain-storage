@@ -222,8 +222,8 @@ func createTaskForFreeFiles() (*int, error) {
 	}
 
 	totalSize := int64(0)
-	currentUtcMilliSec := libutils.GetCurrentUtcSecond()
-	createdTimeMin := currentUtcMilliSec
+	currentUtcSec := libutils.GetCurrentUtcSecond()
+	createdTimeMinSec := currentUtcSec
 
 	fileSizeMin := config.GetConfig().SwanTask.MinFileSize
 	var srcFiles2Merged []*models.SourceFileUploadNeed2Car
@@ -240,13 +240,14 @@ func createTaskForFreeFiles() (*int, error) {
 				os.Remove(srcFilepathTemp)
 				continue
 			}
+			bytesCopied = libutils.GetFileSize(srcFilepathTemp)
 			logs.GetLogger().Info("downloaded ", srcFileUpload.IpfsUrl, " to ", srcFilepathTemp)
 		}
 
 		totalSize = totalSize + bytesCopied
 
-		if srcFileUpload.CreateAt < createdTimeMin {
-			createdTimeMin = srcFileUpload.CreateAt
+		if srcFileUpload.CreateAt < createdTimeMinSec {
+			createdTimeMinSec = srcFileUpload.CreateAt
 		}
 
 		srcFiles2Merged = append(srcFiles2Merged, srcFileUpload)
@@ -263,9 +264,9 @@ func createTaskForFreeFiles() (*int, error) {
 		return nil, nil
 	}
 
-	passedMilliSec := currentUtcMilliSec - createdTimeMin
+	passedMilliSec := currentUtcSec - createdTimeMinSec
 	createAnyway := false
-	if passedMilliSec >= 24*60*60*1000 {
+	if passedMilliSec >= 24*60*60 {
 		logs.GetLogger().Info("earliest uploaded file pass one day, create car file")
 		createAnyway = true
 	} else if totalSize >= fileSizeMin {

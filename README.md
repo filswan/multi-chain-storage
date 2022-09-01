@@ -107,15 +107,15 @@ vi ~/.swan/mcs/.env
 ```
 - After set your config and env variable in the related files, you can run MCS using one of the following methods
 ```shell
-./multi-chain-storage-2.0.0-linux-amd64     #After installation from Option 2
-./build/multi-chain-storage                 #After installation from Option 2
+./multi-chain-storage-2.0.0-linux-amd64 polygon.mumbai|polygon.mainnet|bsc.testnet    #After installation from Option 2
+./build/multi-chain-storage polygon.mumbai|polygon.mainnet|bsc.testnet                #After installation from Option 2
 ```
 ### Note
 - Logs are in directory `./logs`
 - You can use the following methods to avoid it be stopped when you exit your OS session:
 ```shell
-nohup ./multi-chain-storage-2.0.0-linux-amd64 >> mcs.log &   #After installation from Option 1
-nohup ./build/multi-chain-storage >> ./build/mcs.log &       #After installation from Option 2
+nohup ./multi-chain-storage-2.0.0-linux-amd64 polygon.mumbai|polygon.mainnet|bsc.testnet >> mcs.log &   #After installation from Option 1
+nohup ./build/multi-chain-storage polygon.mumbai|polygon.mainnet|bsc.testnet >> ./build/mcs.log &       #After installation from Option 2
 ```
 
 ## Configuration

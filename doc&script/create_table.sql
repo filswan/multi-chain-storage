@@ -318,3 +318,5 @@ SET SQL_SAFE_UPDATES = 0;
 update source_file_upload a set status='Completed' where status='Refunded';
 SET SQL_SAFE_UPDATES = 1;
 
+update network set name='polygon.mumbai' where name='polygon';
+

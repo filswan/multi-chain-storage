@@ -313,3 +313,8 @@ create table dao_pre_sign (
     constraint fk_dao_pre_sign_offline_deal_id foreign key (offline_deal_id) references offline_deal(id)
 );
 
+
+SET SQL_SAFE_UPDATES = 0;
+update source_file_upload a set status='Completed' where status='Refunded';
+SET SQL_SAFE_UPDATES = 1;
+

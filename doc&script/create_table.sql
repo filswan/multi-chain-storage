@@ -262,7 +262,6 @@ alter table transaction change refund_after_unlock_amount refund_amount varchar(
 alter table transaction change refund_after_unlock_at refund_at bigint;
 alter table transaction change refund_after_unlock_tx_hash refund_tx_hash varchar(100);
 
-
 SET SQL_SAFE_UPDATES = 0;
 update transaction set refund_amount=refund_after_expired_amount where refund_amount is null and refund_after_expired_amount is not null;
 update transaction set refund_at=refund_after_expired_at where refund_at is null and refund_after_expired_at is not null;
@@ -273,10 +272,7 @@ alter table transaction drop column refund_after_expired_at;
 SET SQL_SAFE_UPDATES = 1;
 
 alter table offline_deal add note             text;
-
-
 alter table source_file_mint modify token_id bigint  not null;
-
 alter table dao_signature add signed_by_hash               boolean       not null;
 
 alter table source_file_upload add pin_status    varchar(100)  not null;
@@ -296,7 +292,6 @@ alter table token add  constraint un_token_name_network_id unique(name,network_i
 insert into network(name,create_at,update_at) values('bsc.testnet',unix_timestamp(),unix_timestamp());
 set @network_id_bsc:=@@identity;
 insert into token(name,address,network_id,create_at,update_at) values('USDC','0x28fC65CF1F2bDe09ab2876fddaA7788340bAf1D7',@network_id_bsc,unix_timestamp(),unix_timestamp());
-
 
 create table dao_pre_sign (
     id                           bigint        not null auto_increment,

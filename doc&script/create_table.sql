@@ -254,6 +254,7 @@ create table dao_signature_source_file_upload (
 
 
 #--2022.09.06
+/*
 alter table network add last_scan_block_number_dao bigint;
 alter table network change last_scan_block_number last_scan_block_number_payment bigint;
 alter table car_file drop column deal_success;
@@ -319,4 +320,4 @@ update source_file_upload a set status='Completed' where status='Refunded';
 SET SQL_SAFE_UPDATES = 1;
 
 update network set name='polygon.mumbai' where name='polygon';
-
+*/

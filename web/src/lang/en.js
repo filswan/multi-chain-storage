@@ -438,7 +438,7 @@ export default {
         toptip_Network: 'Mumbai Testnet or BSC TestNet',
         title: 'Connect your wallet.',
         MetaMask: 'MetaMask',
-        MetaMask_tip: 'Please connect your wallet to Mumbai Testnet.',
+        MetaMask_tip: 'Please connect your wallet to Mumbai Testnet or BSC TestNet.',
         toptip_03: 'Connect to your MetaMask Wallet',
         Account: 'Account',
         Connected_MetaMask: 'Connected with MetaMask',

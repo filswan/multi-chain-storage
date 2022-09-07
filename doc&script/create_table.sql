@@ -251,57 +251,72 @@ create table dao_signature_source_file_upload (
     constraint fk_dao_signature_source_file_upload_source_file_upload_id foreign key (source_file_upload_id) references source_file_upload(id)
 );
 
-2022.06.17
-#--alter table network add last_scan_block_number_dao bigint;
-#--alter table network change last_scan_block_number last_scan_block_number_payment bigint;
-#--alter table dao_signature add batch_no int not null;
-#--alter table dao_signature DROP FOREIGN KEY fk_dao_signature_wallet_id_recipient;
-#--alter table dao_signature drop column wallet_id_recipient;
-#--alter table car_file drop column deal_success;
-#--alter table transaction add refund_tx_hash varchar(100);
-#--alter table transaction add refund_amount varchar(100);
-#--alter table transaction add refund_at bigint;
-
-#--alter table transaction drop column refund_after_unlock_tx_hash;
-#--alter table transaction drop column refund_after_unlock_amount;
-#--alter table transaction drop column refund_after_unlock_at;
-#--alter table transaction drop column refund_after_expired_tx_hash;
-#--alter table transaction drop column refund_after_expired_amount;
-#--alter table transaction drop column refund_after_expired_at;
-#--alter table transaction add refund_tx_hash varchar(100);
-#--alter table transaction add refund_amount varchar(100);
-#--alter table transaction add  refund_at bigint;
 
 
-#--alter table offline_deal add note             text;
-#--alter table mcs_v2.dao_signature modify wallet_id_recipient bigint;
+#--2022.09.06
+alter table network add last_scan_block_number_dao bigint;
+alter table network change last_scan_block_number last_scan_block_number_payment bigint;
+alter table car_file drop column deal_success;
+
+alter table transaction change refund_after_unlock_amount refund_amount varchar(100);
+alter table transaction change refund_after_unlock_at refund_at bigint;
+alter table transaction change refund_after_unlock_tx_hash refund_tx_hash varchar(100);
+
+SET SQL_SAFE_UPDATES = 0;
+update transaction set refund_amount=refund_after_expired_amount where refund_amount is null and refund_after_expired_amount is not null;
+update transaction set refund_at=refund_after_expired_at where refund_at is null and refund_after_expired_at is not null;
+update transaction set refund_tx_hash=refund_after_expired_tx_hash is null and refund_after_expired_tx_hash is not null;
+alter table transaction drop column refund_after_expired_tx_hash;
+alter table transaction drop column refund_after_expired_amount;
+alter table transaction drop column refund_after_expired_at;
+SET SQL_SAFE_UPDATES = 1;
+
+alter table offline_deal add note             text;
+alter table source_file_mint modify token_id bigint  not null;
+alter table dao_signature add signed_by_hash               boolean       not null;
+
+alter table source_file_upload add pin_status    varchar(100)  not null;
+SET SQL_SAFE_UPDATES = 0;
+update source_file_upload a set pin_status=(select pin_status from source_file b where a.source_file_id=b.id);
+SET SQL_SAFE_UPDATES = 1;
+alter table dao_signature add batch_no int;
+alter table dao_signature modify wallet_id_recipient          bigint;
+
+alter table source_file_upload add is_free        boolean       not null;
+alter table car_file add is_free        boolean       not null;
+
+alter table transaction add refund_by_wallet_id          bigint;
+alter table transaction add constraint fk_transaction_refund_by_wallet_id foreign key (refund_by_wallet_id) references wallet(id);
+alter table token drop key un_token_name;
+alter table token add  constraint un_token_name_network_id unique(name,network_id);
+insert into network(name,create_at,update_at) values('bsc.testnet',unix_timestamp(),unix_timestamp());
+set @network_id_bsc:=@@identity;
+insert into token(name,address,network_id,create_at,update_at) values('USDC','0x28fC65CF1F2bDe09ab2876fddaA7788340bAf1D7',@network_id_bsc,unix_timestamp(),unix_timestamp());
+
+create table dao_pre_sign (
+    id                           bigint        not null auto_increment,
+    offline_deal_id              bigint        not null,
+    batch_count                  int           not null,
+    batch_size_max               int           not null,
+    source_file_upload_cnt_total int           not null,
+    source_file_upload_cnt_sign  int           not null,
+    network_id                   bigint        not null,
+    wallet_id_signer             bigint        not null,
+    wallet_id_recipient          bigint        not null,
+    wallet_id_contract           bigint        not null,
+    tx_hash                      varchar(100)  not null,
+    status                       varchar(100)  not null,
+    create_at                    bigint        not null,
+    update_at                    bigint        not null,
+    primary key pk_dao_pre_sign(id),
+    constraint un_dao_pre_sign unique(offline_deal_id,wallet_id_signer),
+    constraint fk_dao_pre_sign_offline_deal_id foreign key (offline_deal_id) references offline_deal(id)
+);
 
 
-#--2022.07.15
-#--alter table source_file_mint modify token_id bigint  not null;
+SET SQL_SAFE_UPDATES = 0;
+update source_file_upload a set status='Completed' where status='Refunded';
+SET SQL_SAFE_UPDATES = 1;
 
+update network set name='polygon.mumbai' where name='polygon';
 
-#--2022.07.22
-#--alter table dao_signature add signed_by_hash               boolean       not null;
-
-#--2022.07.27
-#--alter table source_file_upload add pin_status    varchar(100)  not null;
-#--SET SQL_SAFE_UPDATES = 0;
-#--update source_file_upload a set pin_status=(select pin_status from source_file b where a.source_file_id=b.id);
-#--SET SQL_SAFE_UPDATES = 1;
-#--alter table dao_signature modify batch_no int;
-#--alter table dao_signature modify wallet_id_recipient          bigint;
-
-
-#--2022-08-10
-#--alter table source_file_upload add is_free        boolean       not null;
-#--alter table car_file add is_free        boolean       not null;
-
-#--2022-08-17
-#--alter table transaction add refund_by_wallet_id          bigint;
-#--alter table transaction add constraint fk_transaction_refund_by_wallet_id foreign key (refund_by_wallet_id) references wallet(id);
-#--alter table token drop key un_token_name;
-#--alter table token add  constraint un_token_name_network_id unique(name,network_id);
-#--insert into network(name,create_at,update_at) values('bsc.testnet',unix_timestamp(),unix_timestamp());
-#--set @network_id_bsc:=@@identity;
-#--insert into token(name,address,network_id,create_at,update_at) values('USDC','0x28fC65CF1F2bDe09ab2876fddaA7788340bAf1D7',@network_id_bsc,unix_timestamp(),unix_timestamp());

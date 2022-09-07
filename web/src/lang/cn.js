@@ -444,7 +444,7 @@ export default {
         toptip_Network: 'Mumbai Testnet或BSC TestNet',
         title: '连接您的钱包。',
         MetaMask: 'MetaMask',
-        MetaMask_tip: '请将您的钱包连接到Mumbai Testnet。',
+        MetaMask_tip: '请将您的钱包连接到Mumbai Testnet或BSC TestNet。',
         Account: '账户',
         Connected_MetaMask: '连接到MetaMask',
         View_explorer: '在浏览器查看',

@@ -269,19 +269,7 @@ export default {
             window.open(link)
         },
         mainnetLink(dealId) {
-            const network_name = this.dealCont.source_file_upload_deal.network_name
-            switch(network_name) {
-                case 'filecoin_calibration':
-                    window.open(`${process.env.BASE_CALIBRATION_ADDRESS}?dealid=${dealId}`)
-                    break;
-                case 'filecoin_mainnet':
-                    window.open(`${process.env.BASE_MAINNET_ADDRESS}?dealid=${dealId}`)
-                    break;
-                default:
-                    if(network_name && network_name.indexOf('calibration') > -1) window.open(`${process.env.BASE_CALIBRATION_ADDRESS}?dealid=${dealId}`)
-                    else window.open(`${process.env.BASE_MAINNET_ADDRESS}?dealid=${dealId}`)
-                    break;
-            }
+            window.open(`${process.env.BASE_CALIBRATION_POLYGON_ADDRESS}?dealid=${dealId}`)
         },
         copyTextToClipboard(text) {
             let _this = this

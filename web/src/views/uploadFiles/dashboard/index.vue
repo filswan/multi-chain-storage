@@ -451,7 +451,7 @@
             <img src="@/assets/images/alert-icon.png" class="resno" />
             <h1>{{$t('uploadFile.View_Your_NFT')}}</h1>
             <h3>{{$t('uploadFile.View_Your_NFT_tips')}}</h3>
-            <a :href="'https://testnets.opensea.io/assets/mumbai/'+mint_address+'/'+tokenId" target="_blank">{{$t('uploadFile.View_Your_NFT_OpenSea')}}</a>
+            <a :href="'https://opensea.io/assets/matic/'+mint_address+'/'+tokenId" target="_blank">{{$t('uploadFile.View_Your_NFT_OpenSea')}}</a>
             <h3>{{$t('uploadFile.View_Your_NFT_tips01')}}</h3>
             <a :href="baseAddressURL+'tx/'+txHash" target="_blank">{{txHash}}</a>
             <br />
@@ -626,7 +626,7 @@ export default {
     },
     payClick(row){
       let _this = this
-      if(_this.metaAddress&& !(_this.networkID==80001 || _this.networkID == 97)) {
+      if(_this.metaAddress&& !(_this.networkID==137)) {
           _this.metamaskLoginTip = true
           return false
       }

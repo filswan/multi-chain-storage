@@ -2,7 +2,7 @@
     <div class="header" :class="{'content-collapse': collapseLocal}">
         <div class="header_arera">
             <div class="header-right">
-                <div class="network_mainnet" v-if="addrChild" :class="{'error': !(networkID == 97 || networkID == 137 || networkID == 80001)}" @click="networkC=true">
+                <div class="network_mainnet" v-if="addrChild" :class="{'error': !(networkID == 137)}" @click="networkC=true">
                     <div class="BSC_mainnet" v-if="networkID == 97" title="BSC TestNet mainnet">
                         <img src="@/assets/images/network_logo/bsc.png" />
                         {{bodyWidth?'BSC':'BSC TestNet'}}
@@ -521,9 +521,19 @@ export default {
                     return;
                 case 137:
                     _this.network.name = 'Polygon';
-                    _this.network.unit = 'MATIC';
+                    _this.network.unit = 'USDC';
                     _this.network.center_fail = true
                     _this.$store.dispatch('setMetaNetworkInfo', _this.network)
+                    if(_this.meta) {
+                        if(_this.$route.query.redirect && _this.$route.query.redirect != '/supplierAllBack'){
+                            // 防止登录后需要跳转到指定页面
+                            _this.$router.push({ path: _this.$route.query.redirect })
+                        }else{
+                            _this.$router.push({ path: '/my_files' })
+                        }
+                        window.location.reload()
+                        _this.$emit("getMetamaskLogin", false)
+                    }
                     return;
                 case 999:
                     _this.network.name = 'NBAI';
@@ -580,6 +590,7 @@ export default {
             // networkChanged
             ethereum.on("chainChanged", function(accounts) {
                 _this.walletInfo()
+                _this.$router.go(0)
             });
             // 监听metamask网络断开
             ethereum.on('disconnect', (code, reason) => {

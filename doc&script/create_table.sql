@@ -21,6 +21,10 @@ set @network_id_polygon_mumbai:=@@identity;
 insert into network(name,create_at,update_at) values('bsc.testnet',unix_timestamp(),unix_timestamp());
 set @network_id_bsc_testnet:=@@identity;
 
+insert into network(name,create_at,update_at) values('polygon.mainnet',unix_timestamp(),unix_timestamp());
+set @network_id_polygon_mainnet:=@@identity;
+
+
 create table token (
     id            bigint       not null auto_increment,
     name          varchar(100) not null,
@@ -37,6 +41,7 @@ create table token (
 
 insert into token(name,address,network_id,create_at,update_at) values('USDC','0xe11A86849d99F524cAC3E7A0Ec1241828e332C62',@network_id_polygon_mumbai,unix_timestamp(),unix_timestamp());
 insert into token(name,address,network_id,create_at,update_at) values('USDC','0x28fC65CF1F2bDe09ab2876fddaA7788340bAf1D7',@network_id_bsc_testnet,unix_timestamp(),unix_timestamp());
+insert into token(name,address,network_id,create_at,update_at) values('USDC','0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',@network_id_polygon_mainnet,unix_timestamp(),unix_timestamp());
 
 create table wallet (
     id            bigint       not null auto_increment,

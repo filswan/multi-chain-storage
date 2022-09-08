@@ -43,6 +43,8 @@ func GetSystemParam(web3ApiUrlPrefix string) (*SystemParam, error) {
 			web3ApiUrlPrefix = config.GetConfig().Web3ApiUrlPolygonMumbai
 		case constants.PAYMENT_CHAIN_NAME_BSC_TESTNET:
 			web3ApiUrlPrefix = config.GetConfig().Web3ApiUrlBscTestnet
+		case constants.PAYMENT_CHAIN_NAME_POLYGON_MAINNET:
+			web3ApiUrlPrefix = config.GetConfig().Web3ApiUrlPolygonMainnet
 		default:
 			err := fmt.Errorf("chain:%s not supported now", config.GetConfig().PaymentChainName)
 			logs.GetLogger().Error(err)

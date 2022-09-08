@@ -14,20 +14,21 @@ import (
 )
 
 type Configuration struct {
-	Port                    int          `toml:"port"`
-	Release                 bool         `toml:"release"`
-	FilecoinNetwork         string       `toml:"filecoin_network"`
-	FilecoinWallet          string       `toml:"filecoin_wallet"`
-	FlinkUrl                string       `toml:"flink_url"`
-	Web3ApiUrlPolygonMumbai string       `toml:"web3_api_url_polygon_mumbai"`
-	Web3ApiUrlBscTestnet    string       `toml:"web3_api_url_bsc_testnet"`
-	Database                database     `toml:"database"`
-	SwanApi                 swanApi      `toml:"swan_api"`
-	Lotus                   lotus        `toml:"lotus"`
-	IpfsServer              ipfsServer   `toml:"ipfs_server"`
-	SwanTask                swanTask     `toml:"swan_task"`
-	ScheduleRule            ScheduleRule `toml:"schedule_rule"`
-	PaymentChainName        string
+	Port                     int          `toml:"port"`
+	Release                  bool         `toml:"release"`
+	FilecoinNetwork          string       `toml:"filecoin_network"`
+	FilecoinWallet           string       `toml:"filecoin_wallet"`
+	FlinkUrl                 string       `toml:"flink_url"`
+	Web3ApiUrlPolygonMumbai  string       `toml:"web3_api_url_polygon_mumbai"`
+	Web3ApiUrlBscTestnet     string       `toml:"web3_api_url_bsc_testnet"`
+	Web3ApiUrlPolygonMainnet string       `toml:"web3_api_url_polygon_mainnet"`
+	Database                 database     `toml:"database"`
+	SwanApi                  swanApi      `toml:"swan_api"`
+	Lotus                    lotus        `toml:"lotus"`
+	IpfsServer               ipfsServer   `toml:"ipfs_server"`
+	SwanTask                 swanTask     `toml:"swan_task"`
+	ScheduleRule             ScheduleRule `toml:"schedule_rule"`
+	PaymentChainName         string
 }
 
 type database struct {

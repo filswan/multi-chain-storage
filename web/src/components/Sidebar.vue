@@ -26,21 +26,23 @@
                             <i class="el-icon-switch-button" style="font-size:15px; "></i>
                             <span slot="title" @click="signOutFun">{{$t('fs3.Disconnect')}}</span>
                         </el-menu-item>
-                        <div class="progress mobileShow">
-                            <el-progress :percentage="(free_usage/free_quota_per_month)*100"></el-progress>
+                    </div>
+                    <div class="fes-icon">
+                        <div class="progress">
+                            <el-progress :percentage="(free_usage/free_quota_per_month)*100 || 0"></el-progress>
                             <span v-if="languageMcs === 'en'" class="tip">{{free_usage | byteStorage}} GB of {{free_quota_per_month | byteStorage}} GB free storage</span>
                             <span v-else class="tip">目前使用量：{{free_usage | byteStorage}} GB（免费储存空间配额：{{free_quota_per_month | byteStorage}} GB）</span>
                         </div>
-                    </div>
-                    <div class="fes-icon-logo">
-                        <a href="https://filswan.medium.com/" target="_block"><img :src="share_img1" alt=""></a>
-                        <a href="https://discord.com/invite/KKGhy8ZqzK" target="_block"><img :src="share_img10" alt=""></a>
-                        <a href="https://twitter.com/0xfilswan" target="_block"><img :src="share_img2" alt=""></a>
-                        <a href="https://github.com/filswan" target="_block"><img :src="share_img3" alt=""></a>
-                        <!-- <a href="https://www.facebook.com/filswan.technology" target="_block"><img :src="share_img5" alt=""></a>
-                        <a href="https://filswan.slack.com" target="_block"><img :src="share_img7" alt=""></a>
-                        <a href="https://youtube.com/channel/UCcvrZdNqFWYl3FwfcHS9xIg" target="_block"><img :src="share_img8" alt=""></a> -->
-                        <a href="https://t.me/filswan" target="_block"><img :src="share_img9" alt=""></a>
+                        <div class="fes-icon-logo">
+                            <a href="https://filswan.medium.com/" target="_block"><img :src="share_img1" alt=""></a>
+                            <a href="https://discord.com/invite/KKGhy8ZqzK" target="_block"><img :src="share_img10" alt=""></a>
+                            <a href="https://twitter.com/0xfilswan" target="_block"><img :src="share_img2" alt=""></a>
+                            <a href="https://github.com/filswan" target="_block"><img :src="share_img3" alt=""></a>
+                            <!-- <a href="https://www.facebook.com/filswan.technology" target="_block"><img :src="share_img5" alt=""></a>
+                            <a href="https://filswan.slack.com" target="_block"><img :src="share_img7" alt=""></a>
+                            <a href="https://youtube.com/channel/UCcvrZdNqFWYl3FwfcHS9xIg" target="_block"><img :src="share_img8" alt=""></a> -->
+                            <a href="https://t.me/filswan" target="_block"><img :src="share_img9" alt=""></a>
+                        </div>
                     </div>
                 </template>
             </template>
@@ -272,25 +274,6 @@ export default {
     .mobileShow{
         display: none;
     }
-    .progress{
-        margin: 0.4rem 0.28rem 0;
-        .el-progress /deep/{
-            font-size: 12px;
-            .el-progress-bar{
-                padding-right: 20px;
-                margin: 0 0 5px 0;
-            }
-            .el-progress__text{
-                display: none;
-            }
-        }
-        .tip{
-            display: block;
-            font-size: 12px;
-            line-height: 1.2;
-            color: rgb(179, 192, 231);
-        }
-    }
     .sidebar_close{
         position: absolute;
         right: 0;
@@ -346,7 +329,7 @@ export default {
         background-color: #080B29;
         // transition: width .3s;
         .logo {
-            width: 2.1rem;
+            width: 2rem;
             img{
                 display: block;
                 width: 100%;
@@ -426,21 +409,45 @@ export default {
             }
         }
     }
-    .fes-icon-logo{
-        display: flex;
-        justify-content: center;
-        align-items: center;
+    .fes-icon{
         position: absolute;
         left: 0;
         right: 0;
         bottom: 0;
         padding: 0.1rem 0 0.3rem;
-        img{
-            display: block;
-            height: 24px;
-            margin: 0 0.18rem;
-            @media screen and (max-width: 999px) {
-                height: 20px;
+        .progress{
+            margin: 0.2rem 0.28rem 0.3rem;
+            .el-progress /deep/{
+                font-size: 12px;
+                .el-progress-bar{
+                    padding-right: 20px;
+                    margin: 0 0 5px 0;
+                }
+                .el-progress__text{
+                    display: none;
+                }
+            }
+            .tip{
+                display: block;
+                font-size: 12px;
+                line-height: 1.2;
+                color: rgb(179, 192, 231);
+                @media screen and (min-width: 1800px) {
+                    font-size: 14px;
+                }
+            }
+        }
+        .fes-icon-logo{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            img{
+                display: block;
+                height: 22px;
+                margin: 0 0.15rem;
+                @media screen and (max-width: 999px) {
+                    height: 20px;
+                }
             }
         }
     }
@@ -456,7 +463,7 @@ export default {
         height: 0.5rem;
         padding: 0 0.28rem;
         margin: 0.12rem 0;
-        font-size: 0.24rem;
+        font-size: 0.2rem;
         font-weight: 500;
         -webkit-box-align: center;
         -ms-flex-align: center;

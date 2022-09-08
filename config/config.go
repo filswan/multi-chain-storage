@@ -4,6 +4,7 @@ import (
 	"multi-chain-storage/common/constants"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/filswan/go-swan-lib/logs"
@@ -13,18 +14,20 @@ import (
 )
 
 type Configuration struct {
-	Port            int          `toml:"port"`
-	Release         bool         `toml:"release"`
-	FilecoinNetwork string       `toml:"filecoin_network"`
-	FilecoinWallet  string       `toml:"filecoin_wallet"`
-	FlinkUrl        string       `toml:"flink_url"`
-	Web3ApiUrl      string       `toml:"web3_api_url"`
-	Database        database     `toml:"database"`
-	SwanApi         swanApi      `toml:"swan_api"`
-	Lotus           lotus        `toml:"lotus"`
-	IpfsServer      ipfsServer   `toml:"ipfs_server"`
-	SwanTask        swanTask     `toml:"swan_task"`
-	ScheduleRule    ScheduleRule `toml:"schedule_rule"`
+	Port                    int          `toml:"port"`
+	Release                 bool         `toml:"release"`
+	FilecoinNetwork         string       `toml:"filecoin_network"`
+	FilecoinWallet          string       `toml:"filecoin_wallet"`
+	FlinkUrl                string       `toml:"flink_url"`
+	Web3ApiUrlPolygonMumbai string       `toml:"web3_api_url_polygon_mumbai"`
+	Web3ApiUrlBscTestnet    string       `toml:"web3_api_url_bsc_testnet"`
+	Database                database     `toml:"database"`
+	SwanApi                 swanApi      `toml:"swan_api"`
+	Lotus                   lotus        `toml:"lotus"`
+	IpfsServer              ipfsServer   `toml:"ipfs_server"`
+	SwanTask                swanTask     `toml:"swan_task"`
+	ScheduleRule            ScheduleRule `toml:"schedule_rule"`
+	PaymentChainName        string
 }
 
 type database struct {
@@ -74,6 +77,12 @@ type ScheduleRule struct {
 var config *Configuration
 
 func InitConfig(paymentChainName string) {
+	if !strings.EqualFold(paymentChainName, constants.PAYMENT_CHAIN_NAME_POLYGON_MUMBAI) &&
+		!strings.EqualFold(paymentChainName, constants.PAYMENT_CHAIN_NAME_POLYGON_MAINNET) &&
+		!strings.EqualFold(paymentChainName, constants.PAYMENT_CHAIN_NAME_BSC_TESTNET) {
+		logs.GetLogger().Fatal("invalid payment chain name:", paymentChainName)
+	}
+
 	homedir, err := os.UserHomeDir()
 	if err != nil {
 		logs.GetLogger().Fatal("Cannot get home directory.")
@@ -89,6 +98,8 @@ func InitConfig(paymentChainName string) {
 			logs.GetLogger().Fatal("required fields not given")
 		}
 	}
+
+	config.PaymentChainName = paymentChainName
 }
 
 func GetConfig() Configuration {
@@ -105,7 +116,8 @@ func requiredFieldsAreGiven(metaData toml.MetaData) bool {
 		{"filecoin_wallet"},
 		{"flink_url"},
 		{"filecoin_network"},
-		{"web3_api_url"},
+		{"web3_api_url_polygon_mumbai"},
+		{"web3_api_url_bsc_testnet"},
 
 		{"database", "db_host"},
 		{"database", "db_port"},

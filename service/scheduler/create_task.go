@@ -19,33 +19,29 @@ import (
 )
 
 func CreateTask() error {
-	for {
-		numSrcFiles, err := createTask()
-		if err != nil {
-			logs.GetLogger().Error(err)
-			return err
-		}
-
+	numSrcFiles, err := createTask()
+	if err != nil {
+		logs.GetLogger().Error(err)
+	} else {
 		if numSrcFiles == nil || *numSrcFiles == 0 {
 			logs.GetLogger().Info("0 charged source file created to car file")
-			return nil
+		} else {
+			logs.GetLogger().Info(*numSrcFiles, " charged source file(s) created to car file")
 		}
+	}
 
-		logs.GetLogger().Info(*numSrcFiles, " charged source file(s) created to car file")
-
-		numSrcFiles, err = createTaskForFreeFiles()
-		if err != nil {
-			logs.GetLogger().Error(err)
-			return err
-		}
-
+	numSrcFiles, err = createTaskForFreeFiles()
+	if err != nil {
+		logs.GetLogger().Error(err)
+	} else {
 		if numSrcFiles == nil || *numSrcFiles == 0 {
 			logs.GetLogger().Info("0 free source file created to car file")
-			return nil
+		} else {
+			logs.GetLogger().Info(*numSrcFiles, " free source file(s) created to car file")
 		}
-
-		logs.GetLogger().Info(*numSrcFiles, " free source file(s) created to car file")
 	}
+
+	return nil
 }
 
 func createTask() (*int, error) {
@@ -75,7 +71,7 @@ func createTask() (*int, error) {
 	createdTimeMin := currentUtcMilliSec
 	var maxPrice *decimal.Decimal
 
-	systemParam, err := utils.GetSystemParam()
+	systemParam, err := utils.GetSystemParam("")
 	if err != nil {
 		logs.GetLogger().Error(err)
 		return nil, err
@@ -226,8 +222,8 @@ func createTaskForFreeFiles() (*int, error) {
 	}
 
 	totalSize := int64(0)
-	currentUtcMilliSec := libutils.GetCurrentUtcSecond()
-	createdTimeMin := currentUtcMilliSec
+	currentUtcSec := libutils.GetCurrentUtcSecond()
+	createdTimeMinSec := currentUtcSec
 
 	fileSizeMin := config.GetConfig().SwanTask.MinFileSize
 	var srcFiles2Merged []*models.SourceFileUploadNeed2Car
@@ -244,13 +240,14 @@ func createTaskForFreeFiles() (*int, error) {
 				os.Remove(srcFilepathTemp)
 				continue
 			}
+			bytesCopied = libutils.GetFileSize(srcFilepathTemp)
 			logs.GetLogger().Info("downloaded ", srcFileUpload.IpfsUrl, " to ", srcFilepathTemp)
 		}
 
 		totalSize = totalSize + bytesCopied
 
-		if srcFileUpload.CreateAt < createdTimeMin {
-			createdTimeMin = srcFileUpload.CreateAt
+		if srcFileUpload.CreateAt < createdTimeMinSec {
+			createdTimeMinSec = srcFileUpload.CreateAt
 		}
 
 		srcFiles2Merged = append(srcFiles2Merged, srcFileUpload)
@@ -267,9 +264,9 @@ func createTaskForFreeFiles() (*int, error) {
 		return nil, nil
 	}
 
-	passedMilliSec := currentUtcMilliSec - createdTimeMin
+	passedMilliSec := currentUtcSec - createdTimeMinSec
 	createAnyway := false
-	if passedMilliSec >= 24*60*60*1000 {
+	if passedMilliSec >= 24*60*60 {
 		logs.GetLogger().Info("earliest uploaded file pass one day, create car file")
 		createAnyway = true
 	} else if totalSize >= fileSizeMin {

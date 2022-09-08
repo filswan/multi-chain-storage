@@ -2,14 +2,23 @@
     <div class="header" :class="{'content-collapse': collapseLocal}">
         <div class="header_arera">
             <div class="header-right">
-                <div class="progress pcShow">
-                    <el-progress :percentage="(free_usage/free_quota_per_month)*100"></el-progress>
-                    <span v-if="languageMcs === 'en'" class="tip">{{free_usage | byteStorage}} GB of {{free_quota_per_month | byteStorage}} GB free storage</span>
-                    <span v-else class="tip">目前使用量：{{free_usage | byteStorage}} GB（免费储存空间配额：{{free_quota_per_month | byteStorage}} GB）</span>
-                </div>
-                <div class="lang_style">
-                    <span v-if="languageMcs === 'en'" @click="handleSetLanguage('cn')">EN</span>
-                    <span v-else @click="handleSetLanguage('en')">中</span>
+                <div class="network_mainnet" v-if="addrChild" :class="{'error': !(networkID == 97 || networkID == 137 || networkID == 80001)}" @click="networkC=true">
+                    <div class="BSC_mainnet" v-if="networkID == 97" title="BSC TestNet mainnet">
+                        <img src="@/assets/images/network_logo/bsc.png" />
+                        {{bodyWidth?'BSC':'BSC TestNet'}}
+                    </div>
+                    <div class="Polygon_mainnet" v-else-if="networkID == 137" title="Polygon mainnet">
+                        <img src="@/assets/images/network_logo/polygon.png" />
+                        {{bodyWidth?'Polygon':'Polygon Mainnet'}}
+                    </div>
+                    <div class="Mumbai_mainnet" v-else-if="networkID == 80001" title="Mumbai Testnet mainnet">
+                        <img src="@/assets/images/network_logo/polygon.png" />
+                        {{bodyWidth?'Mumbai':'Mumbai Testnet'}}
+                    </div>
+                    <div class="Mumbai_mainnet" v-else :title="metaNetworkInfo.name+' mainnet'">
+                        <span></span>
+                        {{metaNetworkInfo.name}}
+                    </div>
                 </div>
                 <div :class="{'online': addrChild, 'feh-metamask': 1==1}">
                     <div v-if="!addrChild" class="logged_in filter_status">
@@ -28,18 +37,21 @@
                         <el-button class="text textTrue pcShow" @click="signOutFun">{{$t('fs3.Disconnect')}}</el-button>
                     </div>
                 </div>
+                <div class="lang_style">
+                    <span v-if="languageMcs === 'en'" @click="handleSetLanguage('cn')">EN</span>
+                    <span v-else @click="handleSetLanguage('en')">中</span>
+                </div>
                 <div class="switch">
-                    <el-switch
-                        style="display: block"
-                        v-model="reverseSwitch"
-                        active-color="#4f8aff"
-                        inactive-color="rgb(18, 18, 18)"
-                        :width="switchWidth"
-                        active-icon-class="el-icon-moon"
-                        inactive-icon-class="el-icon-sunny"
-                        @change="reverseChange"
-                    >
-                    </el-switch>
+                    <div class="swithUI" v-if="reverse" @click="reverseChange(false)">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" class="css-sunny">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M10.5 2h3v3h-3V2zM16 12a4 4 0 11-8 0 4 4 0 018 0zM5.99 3.869L3.867 5.99 5.99 8.112 8.111 5.99 5.989 3.87zM2 13.5v-3h3v3H2zm1.868 4.51l2.121 2.12 2.122-2.12-2.122-2.122-2.121 2.121zM13.5 19v3h-3v-3h3zm4.51-3.112l-2.121 2.122 2.121 2.121 2.121-2.121-2.121-2.122zM19 10.5h3v3h-3v-3zm-3.11-4.51l2.12 2.121 2.122-2.121-2.121-2.121-2.122 2.121z" fill="currentColor"></path>
+                        </svg>
+                    </div>
+                    <div class="swithUI" v-else @click="reverseChange(true)">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" class="css-moon">
+                            <path d="M20.968 12.768a7 7 0 01-9.735-9.735 9 9 0 109.735 9.735z" fill="currentColor"></path>
+                        </svg>
+                    </div>
                 </div>
                 <!-- mobile显示 -->
                 <div class="mobileShow">
@@ -79,17 +91,23 @@
         </el-dialog>
 
         <div class="loadIndexStyle" v-show="loadIndexing" v-loading="loadIndexing"></div>
+
+        <network-change v-if="networkC" :networkC="networkC" @getNetworkC="getNetworkC"></network-change>
     </div>
 </template>
 <script>
 const ethereum = window.ethereum;
 // import bus from './bus';
+import networkChange from "@/components/networkChange"
 import NCWeb3 from "@/utils/web3";
 import * as myAjax from "@/api/login";
 import axios from 'axios'
 import erc20_contract_json from "@/utils/ERC20.json";
 let contract_erc20
 export default {
+    components: {
+        networkChange
+    },
     data() {
         return {
             collapseLocal: this.$store.getters.collapseL == 'true'||this.$store.getters.collapseL==true?true: false,
@@ -119,7 +137,8 @@ export default {
             width: document.body.clientWidth>600?'450px':'95%',
             copyClick: true,
             switchWidth: 56,
-            reverseSwitch: false
+            reverseSwitch: false,
+            networkC: false
         };
     },
     props: ["meta"],
@@ -156,6 +175,9 @@ export default {
         },
         free_quota_per_month() {
             return this.$store.getters.free_quota_per_month
+        },
+        networkID() {
+            return this.$store.getters.networkID
         }
     },
     watch: {
@@ -183,8 +205,71 @@ export default {
         }
     },
     methods: {
+        getNetworkC(dialog, rows){
+            let _this = this
+            _this.networkC = dialog
+            if(rows) {
+                let text = {}
+                switch(rows){
+                    case 80001:
+                        text = {
+                            chainId: web3.utils.numberToHex(80001),
+                            chainName: 'Mumbai Testnet',
+                            nativeCurrency: {
+                                name: 'MATIC',
+                                symbol: 'MATIC', // 2-6 characters long
+                                decimals: 18
+                            },
+                            rpcUrls: ['https://rpc-mumbai.maticvigil.com'],
+                            blockExplorerUrls: ['https://mumbai.polygonscan.com/']
+                        }
+                        break;
+                    case 97:
+                        text = {
+                            chainId: web3.utils.numberToHex(97),
+                            chainName: 'BSC TestNet',
+                            nativeCurrency: {
+                                name: 'tBNB',
+                                symbol: 'tBNB', // 2-6 characters long
+                                decimals: 18
+                            },
+                            rpcUrls: ['https://data-seed-prebsc-1-s1.binance.org:8545'],
+                            blockExplorerUrls: ['https://testnet.bscscan.com']
+                        }
+                        break;
+                    case 137:
+                        text = {
+                            chainId: web3.utils.numberToHex(137),
+                            chainName: 'Polygon Mainnet',
+                            nativeCurrency: {
+                                name: 'tBNB',
+                                symbol: 'tBNB', // 2-6 characters long
+                                decimals: 18
+                            },
+                            rpcUrls: ['https://polygon-rpc.com'],
+                            blockExplorerUrls: ['https://polygonscan.com/']
+                        }
+                        break;
+                }
+                ethereum.request({
+                    method: 'wallet_addEthereumChain',
+                    params: [
+                                text
+                            ]
+                }).then((res)=>{
+                    //添加成功
+                    _this.$store.dispatch('setMetaNetworkId', rows)
+                    if(_this.$route.name == 'my_files_detail') {
+                        _this.$router.push({ path: '/my_files' })
+                    }
+                    setTimeout(function(){window.location.reload()}, 200)
+                }).catch((err)=>{
+                    //添加失败
+                })
+            }
+        },
         shareTo(){
-            window.open('https://mumbai.polygonscan.com/address/'+this.addrChild)
+            window.open(`${this.baseAddressURL}address/${this.addrChild}`)
         },
         copyTextToClipboard(text) {
             let _this = this
@@ -420,7 +505,23 @@ export default {
                     return;
                 case 97:
                     _this.network.name = 'BSC';
-                    _this.network.unit = 'BNB';
+                    _this.network.unit = 'USDC';
+                    _this.network.center_fail = false
+                    _this.$store.dispatch('setMetaNetworkInfo', _this.network)
+                    if(_this.meta) {
+                        if(_this.$route.query.redirect && _this.$route.query.redirect != '/supplierAllBack'){
+                            // 防止登录后需要跳转到指定页面
+                            _this.$router.push({ path: _this.$route.query.redirect })
+                        }else{
+                            _this.$router.push({ path: '/my_files' })
+                        }
+                        window.location.reload()
+                        _this.$emit("getMetamaskLogin", false)
+                    }
+                    return;
+                case 137:
+                    _this.network.name = 'Polygon';
+                    _this.network.unit = 'MATIC';
                     _this.network.center_fail = true
                     _this.$store.dispatch('setMetaNetworkInfo', _this.network)
                     return;
@@ -498,7 +599,7 @@ export default {
         },
         commonParam(){
             let _this = this
-            let common_api = `${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/common/system/params?limit=20&wallet_address=${_this.metaAddress}`
+            let common_api = `${_this.baseAPIURL}api/v1/common/system/params?limit=20&wallet_address=${_this.metaAddress}`
 
             axios.get(common_api, {
                 headers: {
@@ -524,7 +625,7 @@ export default {
         contractPrice(netId) {
             let _this = this
             try {
-                if(netId != 80001){
+                if(netId != 80001 && netId != 97){
                     ethereum
                     .request(
                         {
@@ -536,7 +637,7 @@ export default {
                     )
                     .then((balance) => {
                         let balanceAll = web3.utils.fromWei(balance, 'ether')
-                        _this.priceAccound = Number(balanceAll).toFixed(4)
+                        _this.priceAccound = Number(balanceAll).toFixed(0)
                     })
                     .catch((error) => {
                         console.error(`Error fetching getBalance: ${error.code}: ${error.message}`);
@@ -551,8 +652,10 @@ export default {
                         contract_erc20.methods.balanceOf(_this.metaAddress).call()
                         .then(balance => {
                             let usdcAvailable = web3.utils.fromWei(balance, 'ether');
-                            // console.log('Available:', _this.formatDecimal(usdcAvailable, 3))
-                            _this.priceAccound = _this.formatDecimal(usdcAvailable, 3)
+                            // console.log('Available:', usdcAvailable)
+                            // _this.priceAccound = _this.formatDecimal(usdcAvailable, 3)
+                            // _this.priceAccound = Number(usdcAvailable).toFixed(0)
+                            _this.priceAccound = parseInt(usdcAvailable)
                         })
                     }else {
                         setTimeout(function(){
@@ -771,7 +874,7 @@ export default {
     left: 3.33rem;
     box-sizing: border-box;
     height: 1.1rem;
-    font-size: 0.22rem;
+    font-size: 0.2rem;
     color: #fff;
     background-color: #fff;
     -webkit-transition: left .3s ease-in-out;
@@ -1091,7 +1194,7 @@ export default {
     }
     .lang_style{    
         width: 0.26rem;
-        margin: 0 0.4rem 0 0;
+        margin: 0 0.2rem;
         line-height: 0.26rem;
         font-size: 0.14rem;
         font-weight: 500;
@@ -1107,11 +1210,11 @@ export default {
             color: #fff;
             width: 25px;
             height: 25px;
-            margin: 0 20px 0 0;
+            margin: 0 15px;
             line-height: 25px;
         }
         @media screen and (max-width:479px) {
-            margin: 0 10px 0 0;
+            margin: 0 10px;
         }
         span{
             cursor: pointer;
@@ -1120,6 +1223,41 @@ export default {
                 color: #4b5eff;
             }
         }
+    }
+    .network_mainnet{
+        box-sizing: border-box;
+        padding: 0.08rem 0.13rem 0.08rem 0;
+        margin: 0 0.2rem 0 0;
+        // background: linear-gradient(45deg, #4f8aff, #4b5eff);
+        background: rgba(79, 138, 255, 0.05);
+        line-height: 2;
+        color: #333;
+        font-size: 0.2rem;
+        font-weight: 500;
+        border-radius: 0.14rem;
+        white-space: nowrap;
+        cursor: pointer;
+        &:hover{
+            color: #000;
+        }
+        div{
+            display: flex;
+            align-items: center;
+        }
+        img, span{
+            width: 20px;
+            height: 20px;
+            min-width: 20px;
+            min-height: 20px;
+            max-width: 100%;
+            max-height: 100%;
+            margin: auto 0.1rem;
+            background-color: white;
+            border-radius: 20px;
+        }
+    }
+    .error{
+        background: rgba(255, 104, 113, 0.6);
     }
     .feh-metamask{
         display: flex;
@@ -1154,7 +1292,7 @@ export default {
         .logged_in{
             display: flex;
             align-items: center;
-            font-size: 0.22rem;
+            font-size: 0.2rem;
             color: #333;
             h3, h4, h5{
                 font-size: inherit;
@@ -1178,7 +1316,7 @@ export default {
                 // display: none;
             }
             .el-button{
-                padding: 0.08rem 0.3rem;
+                padding: 0.08rem 0.15rem;
                 margin: 0 0 0 0.2rem;
                 line-height: 2;
                 color: #fff;
@@ -1240,7 +1378,7 @@ export default {
     .switch {
         position: relative;
         display: flex;
-        margin: 0 0 0 0.2rem;
+        margin: 0;
         .on {
             position: absolute;
             top: 0;
@@ -1310,6 +1448,36 @@ export default {
         .el-switch.is-checked /deep/ {
             .el-switch__core::after {
                 margin-left: -22px;
+            }
+        }
+        .swithUI{
+            display: flex;
+            -webkit-box-pack: center;
+            justify-content: center;
+            -webkit-box-align: center;
+            align-items: center;
+            cursor: pointer;
+            font-size: 22px;
+            svg{
+                box-sizing: border-box;
+                margin: 0px;
+                min-width: 0px;
+                font-size: 22px;
+                cursor: pointer;
+                width: 22px;
+                height: 22px;
+            }
+            .css-sunny{
+                color: #fff;
+                &:hover{
+                    color: #4f8aff;
+                }
+            }
+            .css-moon{
+                color: #333;
+                &:hover{
+                    color: #4f8aff;
+                }
             }
         }
     }
@@ -1430,6 +1598,18 @@ export default {
         left: 0 !important;
         height: 0.9rem;
         background: #0b318f;
+        .header-right {
+            .switch {
+                .swithUI{
+                    .css-moon{
+                        color: #fff;
+                    }
+                }
+            }
+            .network_mainnet{
+                color: #fff;
+            }
+        }
     }
     .header_arera{
         margin: 0 0.1rem;

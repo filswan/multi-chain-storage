@@ -57,23 +57,29 @@
                        {text: $t('uploadFile.filter_status_Success'), value: 'Success'}, {text: $t('uploadFile.filter_status_Failed'), value: 'Failed'}]"
             :filter-multiple="false" :column-key="'payment'">
             <template slot-scope="scope">
-              <el-button type="danger" class="statusStyle" v-if="scope.row.status&&scope.row.status.toLowerCase()=='failed'">
-                  {{ languageMcs == "en" ? "Fail" : '失败'}}
+              <el-button plain type="pending" class="statusStyle" v-if="scope.row.status&&scope.row.status.toLowerCase()=='pending'">
+                  {{ languageMcs == "en" ? "Pending" : '待支付'}}
               </el-button>
-              <el-button plain type="pending" class="statusStyle" v-else-if="scope.row.is_free&&scope.row.status_failed_file">
+              <el-button plain type="pending" class="statusStyle" v-else-if="(scope.row.status&&(scope.row.status.toLowerCase()=='completed' || scope.row.status.toLowerCase()=='refundable')&&scope.row.status_failed_file) || (scope.row.status&&scope.row.status.toLowerCase()=='processing'&&scope.row.status_failed_file&&scope.row.offline_deal.length>0)">
                   {{ languageMcs == "en" ? "Failed" : '失败'}}
               </el-button>
-              <el-button plain type="pending" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='pending'&&!scope.row.status_file">
-                  {{ languageMcs == "en" ? "Pending" : '待支付'}}
+              <el-button plain type="primary" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='processing'&&scope.row.status_failed_file&&scope.row.offline_deal.length<=0">
+                  {{ languageMcs == "en" ? "Processing" : '处理中'}}
+              </el-button>
+              <el-button plain type="success" class="statusStyle" v-else-if="scope.row.status&&(scope.row.status.toLowerCase()=='completed' || scope.row.status.toLowerCase()=='refundable' || scope.row.status.toLowerCase()=='processing' || scope.row.status.toLowerCase()=='success')&&scope.row.status_success_file">
+                  {{ languageMcs == "en" ? "Success" : '完成'}}
+              </el-button>
+              <el-button type="successPart" class="statusStyle" v-else-if="scope.row.status_file">
+                  {{ languageMcs == "en" ? "Success" : '完成'}}
+              </el-button>
+              <el-button type="danger" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='failed'">
+                  {{ languageMcs == "en" ? "Fail" : '失败'}}
               </el-button>
               <el-button plain type="primary" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='processing'&&!scope.row.status_file">
                   {{ languageMcs == "en" ? "Processing" : '处理中'}}
               </el-button>
               <el-button plain type="success" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='active'&&!scope.row.status_file">
                   {{ languageMcs == "en" ? "Active" : '完成'}}
-              </el-button>
-              <el-button plain type="success" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='unlocked'&&!scope.row.status_file || scope.row.status&&scope.row.status.toLowerCase()=='success'">
-                  {{ languageMcs == "en" ? "Success" : '完成'}}
               </el-button>
               <el-button plain type="info" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='refunded'&&!scope.row.status_file">
                   {{ languageMcs == "en" ? "Refunded" : '已退款'}}
@@ -86,9 +92,6 @@
               </el-button>
               <el-button plain type="refunding" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='free'&&!scope.row.status_file">
                   {{ languageMcs == "en" ? "Free" : '免费'}}
-              </el-button>
-              <el-button type="successPart" class="statusStyle" v-else-if="scope.row.status_file">
-                  {{ languageMcs == "en" ? "Success" : '完成'}}
               </el-button>
               <el-button plain type="info" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='completed'&&!scope.row.status_file">
                   {{ languageMcs == "en" ? "Completed" : '完成'}}
@@ -306,14 +309,22 @@
                   @click.stop="payClick(scope.row)">
                   {{$t('uploadFile.pay')}}
                 </el-button>
+                <el-button 
+                  v-else-if="tableData[scope.$index].is_free"
+                  :disabled="true"
+                  class="uploadBtn grey opacity">{{$t('uploadFile.filter_status_Free')}}</el-button>
                 <el-button class="uploadBtn blue" type="primary"
-                  v-else-if="tableData[scope.$index].status.toLowerCase()=='refunding' || tableData[scope.$index].status.toLowerCase()=='refundable'"
-                  @click.stop="refundClick(scope.row)">
+                  v-else-if="tableData[scope.$index].status.toLowerCase()=='completed' && !tableData[scope.$index].is_free && tableData[scope.$index].refunded_by_self"
+                  :disabled="true">
                   {{$t('uploadFile.refund')}}
                 </el-button>
-                <el-button class="uploadBtn grey opacity"
-                  v-else-if="tableData[scope.$index].status.toLowerCase()=='refunded' || tableData[scope.$index].status.toLowerCase()=='completed'"
-                  :disabled="true">
+                <el-button 
+                  v-else-if="tableData[scope.$index].status.toLowerCase()=='completed' && !tableData[scope.$index].is_free && !tableData[scope.$index].refunded_by_self"
+                  :disabled="true"
+                  class="uploadBtn grey opacity">{{$t('uploadFile.paid')}}</el-button>
+                <el-button class="uploadBtn blue" type="primary"
+                  v-else-if="tableData[scope.$index].status.toLowerCase()=='refundable'"
+                  @click.stop="refundClick(scope.row)">
                   {{$t('uploadFile.refund')}}
                 </el-button>
                 <el-button 
@@ -321,9 +332,9 @@
                   :disabled="true"
                   class="uploadBtn grey opacity">{{$t('uploadFile.failed')}}</el-button>
                 <el-button 
-                  v-else-if="tableData[scope.$index].is_free"
+                  v-else-if="tableData[scope.$index].status.toLowerCase()=='processing'"
                   :disabled="true"
-                  class="uploadBtn grey opacity">{{$t('uploadFile.filter_status_Free')}}</el-button>
+                  class="uploadBtn grey opacity">{{$t('uploadFile.paid')}}</el-button>
                 <el-button 
                   v-else
                   :disabled="true"
@@ -331,7 +342,7 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="MINT" min-width="100" :label="$t('uploadFile.MINT')"
+          <el-table-column v-if="networkID != 97" prop="MINT" min-width="100" :label="$t('uploadFile.MINT')"
             :filters="[{text: $t('uploadFile.filter_no_minted'), value: 'n'}, {text: $t('uploadFile.filter_minted'), value: 'y'}]"
             :filter-multiple="false" :column-key="'minted'">
             <template slot-scope="scope">
@@ -397,7 +408,7 @@
             <img src="@/assets/images/alert-icon.png" class="resno" />
             <h1>{{$t('uploadFile.COMPLETED')}}!</h1>
             <h3>{{$t('uploadFile.SUCCESS')}}</h3>
-            <a :href="'https://mumbai.polygonscan.com/tx/'+txHash" target="_blank">{{txHash}}</a>
+            <a :href="baseAddressURL+'tx/'+txHash" target="_blank">{{txHash}}</a>
             <a class="a-close" @click="finishClose">{{$t('uploadFile.CLOSE')}}</a>
         </el-dialog>
 
@@ -407,7 +418,7 @@
             <img src="@/assets/images/error.png" class="resno" />
             <h1>{{$t('uploadFile.Fail')}}!</h1>
             <h3>{{$t('uploadFile.FailTIP')}}</h3>
-            <a :href="'https://mumbai.polygonscan.com/tx/'+txHash" target="_blank">{{txHash}}</a>
+            <a :href="baseAddressURL+'tx/'+txHash" target="_blank">{{txHash}}</a>
             <a class="a-close" @click="failClose">{{$t('uploadFile.CLOSE')}}</a>
         </el-dialog>
 
@@ -417,7 +428,7 @@
             <img src="@/assets/images/waiting.png" class="resno" />
             <h1>{{$t('uploadFile.waiting')}}</h1>
             <h3>{{$t('uploadFile.waitingTIP')}}</h3>
-            <a :href="'https://mumbai.polygonscan.com/tx/'+txHash" target="_blank">{{txHash}}</a>
+            <a :href="baseAddressURL+'tx/'+txHash" target="_blank">{{txHash}}</a>
             <a class="a-close" @click="failClose">{{$t('uploadFile.CLOSE')}}</a>
         </el-dialog>
 
@@ -442,7 +453,7 @@
             <h3>{{$t('uploadFile.View_Your_NFT_tips')}}</h3>
             <a :href="'https://testnets.opensea.io/assets/mumbai/'+mint_address+'/'+tokenId" target="_blank">{{$t('uploadFile.View_Your_NFT_OpenSea')}}</a>
             <h3>{{$t('uploadFile.View_Your_NFT_tips01')}}</h3>
-            <a :href="'https://mumbai.polygonscan.com/tx/'+txHash" target="_blank">{{txHash}}</a>
+            <a :href="baseAddressURL+'tx/'+txHash" target="_blank">{{txHash}}</a>
             <br />
             <h3>{{$t('uploadFile.View_Your_NFT_Note')}}</h3>
             <a class="a-close" @click="failClose">{{$t('uploadFile.CLOSE')}}</a>
@@ -606,16 +617,16 @@ export default {
     },
     toDetail(row){
       if(row.offline_deal && row.offline_deal.length>0){
-        this.$router.push({name: 'my_files_detail', params: {id: row.offline_deal[0].id, deal_id: row.offline_deal[0].deal_id,cid: row.payload_cid, source_file_upload_id: row.source_file_upload_id}})
+        this.$router.push({name: 'my_files_detail', params: {id: row.offline_deal[0].id, deal_id: row.offline_deal[0].deal_id,cid: row.payload_cid, source_file_upload_id: row.source_file_upload_id, isFree: row.is_free?1:0}})
       }else{
-        this.$router.push({name: 'my_files_detail', params: {id: 0, deal_id: 0, cid: row.payload_cid, source_file_upload_id: row.source_file_upload_id}})
+        this.$router.push({name: 'my_files_detail', params: {id: 0, deal_id: 0, cid: row.payload_cid, source_file_upload_id: row.source_file_upload_id, isFree: row.is_free?1:0}})
       }
       localStorage.setItem('offlineDeals', row.offline_deal?JSON.stringify(row.offline_deal):[])
       localStorage.setItem('offlineDealsIndex', '0')
     },
     payClick(row){
       let _this = this
-      if(_this.metaAddress&&_this.networkID!=80001) {
+      if(_this.metaAddress&& !(_this.networkID==80001 || _this.networkID == 97)) {
           _this.metamaskLoginTip = true
           return false
       }
@@ -628,7 +639,7 @@ export default {
     async pinClick(row){
       let _this = this
       _this.loading = true
-      const dataRes = await _this.sendPostRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/storage/unpin_source_file/${row.source_file_upload_id}`)
+      const dataRes = await _this.sendPostRequest(`${_this.baseAPIURL}api/v1/storage/unpin_source_file/${row.source_file_upload_id}`)
       if(!dataRes || dataRes.status != 'success') {
         _this.loading = false
         _this.$message.error(dataRes?dataRes.message:'Fail')
@@ -661,7 +672,7 @@ export default {
             gas: web3.utils.toHex(_this.$root.PAY_GAS_LIMIT),
         };
 
-        let wcid_api = `${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/storage/source_file_upload/${row.source_file_upload_id}?wallet_address=${_this.metaAddress}`
+        let wcid_api = `${_this.baseAPIURL}api/v1/storage/source_file_upload/${row.source_file_upload_id}?wallet_address=${_this.metaAddress}`
         axios.get(wcid_api, {
             headers: {
               // 'Authorization': "Bearer "+ _this.$store.getters.accessToken
@@ -709,7 +720,7 @@ export default {
       if(_this.metaAddress){
         _this.loading = true
         // 发起请求
-        axios.get(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/billing/deal/lockpayment/info?payload_cid=${_this.payRow.payload_cid}&source_file_upload_id=${_this.payRow.source_file_upload_id}&wallet_address=${_this.metaAddress}`,{
+        axios.get(`${_this.baseAPIURL}api/v1/billing/deal/lockpayment/info?payload_cid=${_this.payRow.payload_cid}&source_file_upload_id=${_this.payRow.source_file_upload_id}&wallet_address=${_this.metaAddress}`,{
             headers: {
             // 'Authorization': "Bearer "
             },
@@ -916,7 +927,7 @@ export default {
     },
     payFun(cid, type){
       let _this = this
-      let pay_api = `${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/events/logs/lock/${cid}?wallet_address=${_this.metaAddress}`
+      let pay_api = `${_this.baseAPIURL}api/v1/events/logs/lock/${cid}?wallet_address=${_this.metaAddress}`
 
       axios.get(pay_api, {
           headers: {
@@ -952,7 +963,7 @@ export default {
     },
     sendDeal(){
         let _this = this
-        let sendDeal_api = `${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/storage/lotus/deal/${_this.expands[0]}?wallet_address=${_this.metaAddress}`
+        let sendDeal_api = `${_this.baseAPIURL}api/v1/storage/lotus/deal/${_this.expands[0]}?wallet_address=${_this.metaAddress}`
         axios.get(sendDeal_api, {
             headers: {
                 // 'Authorization': "Bearer "+ _this.$store.getters.accessToken
@@ -1111,7 +1122,7 @@ export default {
       _this.tableData = []
 
       let uploadRes = new Promise((resolve, reject) => {
-        let storage_api = `${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/storage/tasks/deals?${QS.stringify(parma)}`
+        let storage_api = `${_this.baseAPIURL}api/v1/storage/tasks/deals?${QS.stringify(parma)}`
         // let storage_api = `./static/pay-status-response.json?${QS.stringify(parma)}`
 
         axios.get(storage_api, {
@@ -1131,6 +1142,7 @@ export default {
                 item.payloadAct = false
                 item.status_file = false
                 item.status_failed_file = true
+                item.status_success_file = true
                 item.file_size_byte = _this.byteChange(item.file_size)
 
                 let dataTime = new Date(item.upload_at * 1000) + "" //将时间格式转为字符串
@@ -1158,11 +1170,11 @@ export default {
                 if(item.offline_deal){
                   item.offline_deal.map(child => {
                     if(child.status != 'Failed') item.status_failed_file = false
-                    if(child.status == 'Success'){
-                      item.status_file = true
-                      return false
-                    }
+                    if(child.status != 'Success') item.status_success_file = false
+                    if(child.status == 'Success') item.status_file = true
                   })
+                }else{
+                  item.status_success_file = false
                 }
               });
               setTimeout(function(){
@@ -1246,7 +1258,7 @@ export default {
         // if (!Number(value)) return 0;
         // if (isNaN(value)) return value;
         // 18 - 单位换算需要 / 1000000000000000000，浮点运算显示有bug
-        value = Number(value)
+        // value = Number(value)
         if(String(value).length > 18){
             let v1 = String(value).substring(0, String(value).length - 18)
             let v2 = String(value).substring(String(value).length - 18)
@@ -1564,22 +1576,22 @@ export default {
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 2.23rem;
-            padding: 0.15rem 0;
+            width: 2rem;
+            padding: 0.13rem 0;
             margin: 0;
             background: linear-gradient(45deg,#4e88ff, #4b5fff);
             border-radius: 0.14rem;
             line-height: 1.5;
             text-align: center;
             color: #fff;
-            font-size: 0.2rem;
+            font-size: 0.19rem;
             border: 0;
             outline: none;
             transition: background-color .3s, border-color .3s, color .3s, box-shadow .3s;
             cursor: pointer;
             img{
               display: inline-block;
-              height: 0.3rem;
+              height: 0.25rem;
               margin: 0 0.1rem 0 0;
             }
             &:hover{
@@ -1613,9 +1625,9 @@ export default {
           .el-input__inner {
             width: 100%;
             color: #555;
-            font-size: 0.2rem;
+            font-size: 0.19rem;
             font-weight: 500;
-            height: 0.6rem;
+            height: 0.54rem;
             line-height: 0.3rem;
             padding: 0;
             background: transparent;
@@ -1748,7 +1760,7 @@ export default {
               align-items: center;
               justify-content: center;
               word-break: break-word;    
-              font-size: 0.2rem;
+              font-size: 0.19rem;
               font-weight: 500;
               color: #555;
               text-transform: capitalize;
@@ -1849,7 +1861,7 @@ export default {
 
             .cell {
               padding: 0;
-              font-size: 0.18rem;
+              font-size: 0.17rem;
               word-break: break-word;
               color: #000;
               text-align: center;
@@ -1970,7 +1982,7 @@ export default {
                     border: 0;
                     padding: 0;
                     background-color: transparent;
-                    font-size: 0.18rem;
+                    font-size: 0.17rem;
                     font-family: inherit;
                     word-break: break-word;
                     color: #000;
@@ -2451,6 +2463,7 @@ export default {
         .pagination {
             display: flex;
             align-items: center;
+            margin: 0;
             font-size: 0.18rem;
             color: #000;
             .el-pagination /deep/{
@@ -2513,7 +2526,7 @@ export default {
         .down{
             position: absolute;
             right: 0;
-            font-size: 0.2rem;
+            font-size: 0.18rem;
             color: #888;
             cursor: pointer;
             @media screen and (max-width: 600px){

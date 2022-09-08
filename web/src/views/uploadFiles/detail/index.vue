@@ -9,7 +9,8 @@
                 <div class="files_title">
                     <div class="flex_left">
                         {{$t('uploadFile.Deal_Detail')}} 
-                        <b v-if="dealCont.source_file_upload_deal.deal_id || dealCont.source_file_upload_deal.deal_id==0 || dealId" @click="mainnetLink(dealId)" class="golink">#{{dealId}}</b>
+
+                        <b v-if="dealCont.source_file_upload_deal.deal_id || dealCont.source_file_upload_deal.deal_id==0 || (dealId&&dealId!=0)" @click="mainnetLink(dealId)" class="golink">#{{dealId}}</b>
                         <b v-else style="margin: 0 0 0 5px;">#</b>
 
                         <span class="title" v-if="dealId == 0">
@@ -17,7 +18,8 @@
                                 <img src="@/assets/images/info.png" class="resno"/>
                             </el-tooltip>
                         </span>
-                        <span v-if="!dealCont.source_file_upload_deal.locked_fee">
+                        <span v-if="isFree == 1"></span>
+                        <span v-else-if="!dealCont.source_file_upload_deal.locked_fee">
                             <img src="@/assets/images/error.png" class="resno" />
                             <span>{{$t('uploadFile.no_fund_locked')}}</span>
                         </span>
@@ -37,10 +39,28 @@
                     <el-button type="primary" size="small" @click="getDealLogsData">{{$t('uploadFile.view_deal_logs')}}</el-button>
                 </div>
 
+                <div class="descMain">
+                    <el-descriptions title="" :column="1">
+                        <el-descriptions-item :label="$t('uploadFile.file_name')">{{dealCont.source_file_upload_deal.file_name | NumFormat}}</el-descriptions-item>
+                        <el-descriptions-item :label="$t('uploadFile.detail_IPFSDownload')">
+                            <div class="module">
+                                <a :href="dealCont.source_file_upload_deal.ipfs_url" target="_blank" v-if="dealCont.source_file_upload_deal.ipfs_url" class="linkTo">
+                                    {{dealCont.source_file_upload_deal.ipfs_url}}
+                                </a>
+                                <span v-else>-</span>
+                                <img class="imgCopy" src="@/assets/images/copy.png" @click="copyTextToClipboard(dealCont.source_file_upload_deal.ipfs_url)" v-if="dealCont.source_file_upload_deal.ipfs_url" alt="">
+                            </div>
+                        </el-descriptions-item>
+                        <el-descriptions-item :label="$t('uploadFile.detail_Network')">{{dealCont.source_file_upload_deal.network_name | NumFormat}}</el-descriptions-item>
+                        <el-descriptions-item :label="$t('billing.PAYLOADCID')">{{dealCont.source_file_upload_deal.car_file_payload_cid | NumFormat}}</el-descriptions-item>
+                    </el-descriptions>
+                </div>
+
                 <el-tabs v-model="activeName" :tab-position="tabPosition" type="card" @tab-click="handleClick">
                     <el-tab-pane v-for="(item, i) in offline_deals_data" :key="i" :name="''+i+''">
                         <span slot="label">
-                            <img v-if="!dealCont.source_file_upload_deal.locked_fee" src="@/assets/images/error.png" class="resno" />
+                            <i v-if="isFree == 1" style="display: none;"></i>
+                            <img v-else-if="!dealCont.source_file_upload_deal.locked_fee" src="@/assets/images/error.png" class="resno" />
                             <img v-else-if="dealCont.source_file_upload_deal.unlocked" src="@/assets/images/dao_success.png" class="resno" />
                             <img v-else-if="dealCont.dao_signature.length >= dealCont.dao_threshold" src="@/assets/images/dao_waiting.png" class="resno" />
                             <img v-else src="@/assets/images/dao_waiting.png" class="resno" />
@@ -52,18 +72,6 @@
 
                 <div class="upload">
                     <el-row :class="{'elColLeftEn': languageMcs === 'en', 'elColLeftZh': languageMcs === 'cn'}">
-                        <el-col :span="8">{{$t('uploadFile.file_name')}}:</el-col>
-                        <el-col :span="16">{{dealCont.source_file_upload_deal.file_name | NumFormat}}</el-col>
-                        <el-col :span="8">{{$t('uploadFile.detail_IPFSDownload')}}:</el-col>
-                        <el-col :span="16" style="display: flex;">
-                            <a :href="dealCont.source_file_upload_deal.ipfs_url" target="_blank" v-if="dealCont.source_file_upload_deal.ipfs_url" class="linkTo">
-                                {{dealCont.source_file_upload_deal.ipfs_url}}
-                            </a>
-                            <span v-else>-</span>
-                            <img class="imgCopy" src="@/assets/images/copy.png" @click="copyTextToClipboard(dealCont.source_file_upload_deal.ipfs_url)" v-if="dealCont.source_file_upload_deal.ipfs_url" alt="">
-                        </el-col>
-                        <el-col :span="8">{{$t('uploadFile.detail_Network')}}:</el-col>
-                        <el-col :span="16">{{dealCont.source_file_upload_deal.network_name | NumFormat}}</el-col>
                         <el-col :span="8">{{$t('uploadFile.detail_Locked_funds')}}:</el-col>
                         <el-col :span="16">{{dealCont.source_file_upload_deal.locked_fee | NumFormatPrice}} USDC</el-col>
                         <el-col :span="8">{{$t('uploadFile.w3ss_id')}}:</el-col>
@@ -72,8 +80,6 @@
                         <el-col :span="8">{{$t('uploadFile.detail_Storage_Price')}}:</el-col>
                         <el-col :span="16" v-if="dealId == 0">-</el-col>
                         <el-col :span="16" v-else>{{dealCont.source_file_upload_deal.storage_price | NumFormatPrice}} FIL</el-col>
-                        <el-col :span="8">{{$t('billing.PAYLOADCID')}}:</el-col>
-                        <el-col :span="16">{{dealCont.source_file_upload_deal.car_file_payload_cid | NumFormat}}</el-col>
                         <el-col :span="8">{{$t('uploadFile.detail_ProposalCID')}}:</el-col>
                         <el-col :span="16" v-if="dealId == 0">-</el-col>
                         <el-col :span="16" v-else>{{dealCont.source_file_upload_deal.deal_cid | NumFormat}}</el-col>
@@ -110,13 +116,13 @@
                         </el-col>
                     </el-row>
                         
-                    <div class="title">
+                    <div class="title" v-if="isFree != 1">
                         {{$t('uploadFile.detail_DAO_Signatures')}}
                         <el-tooltip effect="dark" :content="$t('uploadFile.detail_DAO_Signatures_tooltip')" placement="top">
                             <img src="@/assets/images/info.png"/>
                         </el-tooltip>
                     </div>
-                    <el-table :data="daoCont" stripe style="width: 100%">
+                    <el-table v-if="isFree != 1" :data="daoCont" stripe style="width: 100%">
                         <el-table-column type="index" width="180">
                             <template slot-scope="scope">
                                 <!-- Signature {{scope.$index+1}} -->
@@ -152,7 +158,7 @@
                                             <p>{{scope.row.tx_hash}}</p>
                                         </div>
                                         <!-- :class="{'color': dealCont.network&&dealCont.network.toLowerCase() == 'polygon'}" -->
-                                        <el-button slot="reference" @click="networkLink('https://mumbai.polygonscan.com/tx/'+scope.row.tx_hash)" class="color">
+                                        <el-button slot="reference" @click="networkLink(baseAddressURL+'tx/'+scope.row.tx_hash)" class="color">
                                             <!-- <img src="@/assets/images/copy.png" alt=""> -->
                                             {{scope.row.tx_hash}}
                                         </el-button>
@@ -217,6 +223,7 @@ export default {
             bodyWidth: document.documentElement.clientWidth<1024?true:false,
             dealId: '',
             logId: null,
+            isFree: 0,
             dealCont: {
                 dao_signatureAll: 0,
                 source_file_upload_deal: {}
@@ -253,7 +260,8 @@ export default {
                     id: this.offline_deals_data[tab.index].id,
                     deal_id: this.offline_deals_data[tab.index].deal_id,
                     // cid: this.$route.params.cid,
-                    source_file_upload_id: this.$route.params.source_file_upload_id
+                    source_file_upload_id: this.$route.params.source_file_upload_id,
+                    isFree: this.$route.params.isFree
                 }
             })
         },
@@ -319,7 +327,7 @@ export default {
                 // payload_cid: _this.$route.params.cid,
                 wallet_address: _this.$store.getters.metaAddress
             }
-            axios.get(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/storage/deal/detail/${_this.dealId}?${QS.stringify(dataCid)}`, {headers: {
+            axios.get(`${_this.baseAPIURL}api/v1/storage/deal/detail/${_this.dealId}?${QS.stringify(dataCid)}`, {headers: {
             // axios.get(`./static/detail_page_response.json`, {headers: {
                     // 'Authorization':"Bearer "
             }}).then((response) => {
@@ -375,7 +383,7 @@ export default {
             let obj = {
                 wallet_address: _this.$store.getters.metaAddress
             }
-            axios.get(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/storage/deal/log/${_this.logId}?${QS.stringify(obj)}`, {headers: {
+            axios.get(`${_this.baseAPIURL}api/v1/storage/deal/log/${_this.logId}?${QS.stringify(obj)}`, {headers: {
             // axios.get(`./static/deal_logs.json`, {headers: {
                     // 'Authorization':"Bearer "
             }}).then((response) => {
@@ -408,6 +416,7 @@ export default {
         let _this = this
         _this.dealId = _this.$route.params.deal_id
         _this.logId = _this.$route.params.id
+        _this.isFree = _this.$route.params.isFree
         if(localStorage.getItem('offlineDeals')) _this.offline_deals_data = JSON.parse(localStorage.getItem('offlineDeals'))
         _this.getData()
         document.getElementById("content-box").scrollTop = 0;
@@ -764,7 +773,7 @@ export default {
         }
         .el-button {    
             padding: 0.1rem 0.2rem;
-            font-size: 0.2rem;
+            font-size: 0.18rem;
             font-family: inherit;
             border-radius: 0.07rem;
             background: #4e82ff;
@@ -791,7 +800,7 @@ export default {
             padding: 0 0 0.15rem;
             .el-col{
                 padding: 0.1rem 0;
-                font-size: 0.2rem;
+                font-size: 0.18rem;
                 font-weight: normal;
                 line-height: 1.3;
                 color: #555;
@@ -921,7 +930,7 @@ export default {
             padding: 0.2rem 0;
             line-height: 1.5;
             text-align: center;
-            font-size: 0.22rem;
+            font-size: 0.2rem;
             font-weight: 600;
             white-space: normal;
             color: #333;
@@ -954,7 +963,7 @@ export default {
                     align-items: center;
                     word-break: break-word;
                     text-align: center;
-                    font-size: 0.2rem;
+                    font-size: 0.18rem;
                     color: #555;
                     .hot-cold-box{
                         .el-button{
@@ -963,7 +972,7 @@ export default {
                             padding: 0;
                             margin: 0;
                             background-color: transparent;
-                            font-size: 0.2rem;
+                            font-size: 0.18rem;
                             word-break: break-word;
                             color: #000;
                             text-align: left;
@@ -1020,8 +1029,63 @@ export default {
             .el-table__header-wrapper{
                 border-radius: 0.2rem;
                 th{
-                    height: 0.7rem;
+                    height: 0.6rem;
                     background-color: #e5eeff !important;
+                }
+            }
+        }
+    }
+    .descMain{
+        padding: 0.15rem 0.3rem;
+        margin: 0 0 0.1rem;
+        background-color: #fff;
+        border-radius: 0.1rem;
+        .el-descriptions /deep/{
+            .el-descriptions__body {
+                .el-descriptions__table{
+                    .el-descriptions-item__cell{
+                        padding: 0.05rem 0;
+                        font-size: 0.18rem;
+                        font-weight: normal;
+                        color: #555;
+                        word-break: break-word;
+                        .el-descriptions-item__container{
+                            .el-descriptions-item__label{
+                                color: #000;
+                            }
+                            @media screen and (max-width:600px){
+                                flex-wrap: wrap;
+                                .el-descriptions-item__label{
+                                    width: 100%;
+                                }
+                            }
+                        }
+                        @media screen and (max-width:600px){
+                            font-size: 14px;
+                        }
+                    }
+                }
+            }
+        } 
+        .module{
+            display: flex;
+            align-items: center;
+            .imgCopy { 
+                width: 18px;
+                height: 18px;
+                margin: 0 0 0 5px;
+                cursor: pointer;
+                @media screen and (min-width:1800px){
+                    width: 22px;
+                    height: 22px;
+                }
+                @media screen and (max-width:1280px){
+                    width: 16px;
+                    height: 16px;
+                }
+                @media screen and (max-width:600px){
+                    width: 20px;
+                    height: 20px;
                 }
             }
         }

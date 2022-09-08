@@ -16,6 +16,21 @@ import (
 )
 
 func ScanDeal() error {
+	err := ScanDealBeforeActive()
+	if err != nil {
+		logs.GetLogger().Error(err)
+	}
+
+	err = ScanDealAfterActive()
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	return nil
+}
+
+func ScanDealBeforeActive() error {
 	offlineDeals, err := models.GetOfflineDeals2BeScanned()
 	if err != nil {
 		logs.GetLogger().Error(err)
@@ -106,6 +121,44 @@ func ScanDeal() error {
 
 			offlineDeal.UpdateAt = libutils.GetCurrentUtcSecond()
 			err = database.SaveOne(offlineDeal)
+			if err != nil {
+				logs.GetLogger().Error(err)
+				continue
+			}
+		}
+	}
+
+	return nil
+}
+
+func ScanDealAfterActive() error {
+	offlineDeals, err := models.GetOfflineDeals2BeScannedAfterActive()
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	lotusClient, err := lotus.LotusGetClient(config.GetConfig().Lotus.ClientApiUrl, config.GetConfig().Lotus.ClientAccessToken)
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	for _, offlineDeal := range offlineDeals {
+		dealInfo, err := lotusClient.LotusClientGetDealInfo(offlineDeal.DealCid)
+		if err != nil {
+			logs.GetLogger().Error(err)
+			continue
+		}
+
+		if offlineDeal.OnChainStatus == nil || *offlineDeal.OnChainStatus != dealInfo.Status {
+			err = models.CreateOfflineDealLog(offlineDeal.Id, dealInfo.Status, dealInfo.Message)
+			if err != nil {
+				logs.GetLogger().Error(err)
+				continue
+			}
+
+			err = models.UpdateOfflineDealOnChainStatus(offlineDeal.Id, dealInfo.Status)
 			if err != nil {
 				logs.GetLogger().Error(err)
 				continue

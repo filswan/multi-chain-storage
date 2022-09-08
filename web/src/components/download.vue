@@ -88,7 +88,7 @@ export default {
         upload_at_start: Date.parse(that.downloadTime[0])/1000, // 标准时间转时间戳（毫秒）
         upload_at_end: Date.parse(new Date(end))/1000
       }
-      const dataRes = await that.getRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/storage/tasks/deals/download?${QS.stringify(params)}`)
+      const dataRes = await that.getRequest(`${that.baseAPIURL}api/v1/storage/tasks/deals/download?${QS.stringify(params)}`)
       let url = that.genUrl(dataRes, {});
       let a = document.createElement('a');
       a.href = url;

@@ -441,10 +441,10 @@ export default {
         toptip_01: '您的钱包被错误地连接到',
         toptip_02: '网络。使用我们的网站，请切换到',
         toptip_03: '连接到您的MetaMask钱包',
-        toptip_Network: 'Mumbai Testnet',
+        toptip_Network: 'Mumbai Testnet或BSC TestNet',
         title: '连接您的钱包。',
         MetaMask: 'MetaMask',
-        MetaMask_tip: '请将您的钱包连接到Mumbai Testnet。',
+        MetaMask_tip: '请将您的钱包连接到Mumbai Testnet或BSC TestNet。',
         Account: '账户',
         Connected_MetaMask: '连接到MetaMask',
         View_explorer: '在浏览器查看',
@@ -620,5 +620,8 @@ export default {
         time_to: '至',
         data_download: '导出',
         data_export: '格式'
+    },
+    network: {
+        title: 'All Chains'
     }
 }

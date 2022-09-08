@@ -45,6 +45,18 @@ func GetOfflineDeals2BeScanned() ([]*OfflineDeal, error) {
 	return offlineDeals, nil
 }
 
+func GetOfflineDeals2BeScannedAfterActive() ([]*OfflineDeal, error) {
+	var offlineDeals []*OfflineDeal
+	err := database.GetDB().Where("status in (?,?) and on_chain_status!=?", constants.OFFLINE_DEAL_STATUS_ACTIVE, constants.OFFLINE_DEAL_STATUS_SUCCESS, constants.ON_CHAIN_DEAL_STATUS_ACTIVE).Find(&offlineDeals).Error
+
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return nil, err
+	}
+
+	return offlineDeals, nil
+}
+
 type Deal2PreSign struct {
 	DealId              int64 `json:"deal_id"`
 	SourceFileUploadCnt int   `json:"source_file_upload_cnt"`
@@ -245,6 +257,21 @@ func UpdateOfflineDealStatus(id int64, status string) error {
 	currentUtcSecond := libutils.GetCurrentUtcSecond()
 	fields2BeUpdated := make(map[string]interface{})
 	fields2BeUpdated["status"] = status
+	fields2BeUpdated["update_at"] = currentUtcSecond
+
+	err := database.GetDB().Model(OfflineDeal{}).Where("id=?", id).Update(fields2BeUpdated).Error
+	if err != nil {
+		logs.GetLogger().Error(err)
+		return err
+	}
+
+	return nil
+}
+
+func UpdateOfflineDealOnChainStatus(id int64, onChainStatus string) error {
+	currentUtcSecond := libutils.GetCurrentUtcSecond()
+	fields2BeUpdated := make(map[string]interface{})
+	fields2BeUpdated["on_chain_status"] = onChainStatus
 	fields2BeUpdated["update_at"] = currentUtcSecond
 
 	err := database.GetDB().Model(OfflineDeal{}).Where("id=?", id).Update(fields2BeUpdated).Error

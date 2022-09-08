@@ -85,7 +85,7 @@
                             formData.append('file_type', 1)
                             formData.append('wallet_address', that.metaAddress)
 
-                            const metadataUploadResponse = await that.sendPostRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/storage/ipfs/upload`, formData)
+                            const metadataUploadResponse = await that.sendPostRequest(`${that.baseAPIURL}api/v1/storage/ipfs/upload`, formData)
                             const nftUrl = metadataUploadResponse.data.ipfs_url
                             that.isloadText = that.$t('uploadFile.payment_tip_deal01')
                             console.log('upload success')
@@ -106,7 +106,7 @@
                                 token_id: parseInt(that.tokenId),
                                 mint_address: that.$root.MINT_CONTRACT
                             }
-                            const mintInfoResponse = await that.sendPostRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/storage/mint/info`, mintInfoJson)
+                            const mintInfoResponse = await that.sendPostRequest(`${that.baseAPIURL}api/v1/storage/mint/info`, mintInfoJson)
                             
                             if(mintInfoResponse) that.$emit('getMintDialog', false, that.tokenId, that.nftHash)
                         }
@@ -169,7 +169,7 @@
                 that.ruleForm.image = that.mintRow.ipfs_url
                 that.ruleForm.external_url = that.mintRow.ipfs_url
 
-                const hashRes = await that.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/billing/deal/lockpayment/info?payload_cid=${that.mintRow.payload_cid}&wallet_address=${that.metaAddress}&source_file_upload_id=${that.mintRow.source_file_upload_id}`)
+                const hashRes = await that.sendRequest(`${that.baseAPIURL}api/v1/billing/deal/lockpayment/info?payload_cid=${that.mintRow.payload_cid}&wallet_address=${that.metaAddress}&source_file_upload_id=${that.mintRow.source_file_upload_id}`)
                 that.ruleForm.tx_hash = hashRes.data.pay_tx_hash
 
                 that.hashload = false

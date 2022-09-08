@@ -435,10 +435,10 @@ export default {
         toptip_01: 'Your wallet is wrongly connected to',
         toptip_02: 'Network. To use our site, please switch to',
         toptip_03: 'Connect to your MetaMask Wallet',
-        toptip_Network: 'Mumbai Testnet',
+        toptip_Network: 'Mumbai Testnet or BSC TestNet',
         title: 'Connect your wallet.',
         MetaMask: 'MetaMask',
-        MetaMask_tip: 'Please connect your wallet to Mumbai Testnet.',
+        MetaMask_tip: 'Please connect your wallet to Mumbai Testnet or BSC TestNet.',
         toptip_03: 'Connect to your MetaMask Wallet',
         Account: 'Account',
         Connected_MetaMask: 'Connected with MetaMask',
@@ -616,5 +616,8 @@ export default {
         time_to: 'To',
         data_download: 'Download',
         data_export: 'Export'
+    },
+    network: {
+        title: 'All Chains'
     }
 }

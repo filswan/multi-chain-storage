@@ -663,7 +663,7 @@ export default {
                         // 查询剩余代币余额为：
                         contract_erc20.methods.balanceOf(_this.metaAddress).call()
                         .then(balance => {
-                            let usdcAvailable = web3.utils.fromWei(balance, 'ether');
+                            let usdcAvailable = netId != 137?web3.utils.fromWei(balance, 'ether'):web3.utils.fromWei(balance, 'mwei');
                             console.log('Available:', usdcAvailable, balance, _this.$root.USDC_ADDRESS)
                             // _this.priceAccound = _this.formatDecimal(usdcAvailable, 3)
                             // _this.priceAccound = Number(usdcAvailable).toFixed(0)

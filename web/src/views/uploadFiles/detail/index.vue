@@ -269,7 +269,7 @@ export default {
             window.open(link)
         },
         mainnetLink(dealId) {
-            window.open(`${process.env.BASE_CALIBRATION_POLYGON_ADDRESS}?dealid=${dealId}`)
+            window.open(`${process.env.BASE_MAINNET_ADDRESS}?dealid=${dealId}`)
         },
         copyTextToClipboard(text) {
             let _this = this

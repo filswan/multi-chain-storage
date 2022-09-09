@@ -9,6 +9,5 @@ module.exports = merge(prodEnv, {
   BASE_PAYMENT_GATEWAY_BSC_API: '"https://calibration-mcs-bsc.filswan.com/"',
   BASE_PAYMENT_GATEWAY_POLYGON_API: '"https://api.multichain.storage/"',
   BASE_MAINNET_ADDRESS: '"https://filscan.io/tipset/dsn-detail"',
-  BASE_CALIBRATION_ADDRESS: '"https://calibration.filscan.io/tipset/dsn-detail"',
-  BASE_CALIBRATION_POLYGON_ADDRESS: '"https://filscan.io/tipset/dsn-detail"'
+  BASE_CALIBRATION_ADDRESS: '"https://calibration.filscan.io/tipset/dsn-detail"'
 })

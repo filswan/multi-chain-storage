@@ -111,7 +111,8 @@
                                 <img class="img" src="@/assets/images/copy.png" @click="copyTextToClipboard(copy_filename)" alt="">
                             </el-col>
                         </el-col>
-                        <el-col :span="24" class="lotupContent" :class="{'color': !dealCont.source_file_upload_deal.provider && !dealCont.source_file_upload_deal.car_file_payload_cid}" @click="copyTextToClipboard(copy_filename)">
+                         <!-- :class="{'color': !dealCont.source_file_upload_deal.provider && !dealCont.source_file_upload_deal.car_file_payload_cid}" -->
+                        <el-col :span="24" class="lotupContent" @click="copyTextToClipboard(copy_filename)">
                             {{copy_filename}}
                         </el-col>
                     </el-row>

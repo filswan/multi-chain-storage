@@ -48,7 +48,7 @@ export default new Router({
                 //     meta: {
                 //         metaInfo: {
                 //             title: 'Upload File',
-                //             description: "Swan is a marketplace for Filecoin miners, clients post/bidding deals the online."
+                //             description: "Multi-Chain storage (MCS) is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks."
                 //         }
                 //     }
                 // },
@@ -69,7 +69,7 @@ export default new Router({
                     meta: {
                         metaInfo: {
                             title: 'My Files',
-                            description: "Swan is a marketplace for Filecoin miners, clients post/bidding deals the online."
+                            description: "Multi-Chain storage (MCS) is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks."
                         }
                     }
                 },
@@ -90,7 +90,7 @@ export default new Router({
                     meta: {
                         metaInfo: {
                             title: 'My Files',
-                            description: "Swan is a marketplace for Filecoin miners, clients post/bidding deals the online."
+                            description: "Multi-Chain storage (MCS) is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks."
                         }
                     }
                 },
@@ -111,7 +111,7 @@ export default new Router({
                     meta: {
                         metaInfo: {
                             title: 'My Files',
-                            description: "Swan is a marketplace for Filecoin miners, clients post/bidding deals the online."
+                            description: "Multi-Chain storage (MCS) is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks."
                         }
                     }
                 },
@@ -132,7 +132,7 @@ export default new Router({
                     meta: {
                         metaInfo: {
                             title: 'Search File',
-                            description: "Swan is a marketplace for Filecoin miners, clients post/bidding deals the online."
+                            description: "Multi-Chain storage (MCS) is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks."
                         }
                     }
                 },
@@ -153,7 +153,7 @@ export default new Router({
                     meta: {
                         metaInfo: {
                             title: 'Billing',
-                            description: "Swan is a marketplace for Filecoin miners, clients post/bidding deals the online."
+                            description: "Multi-Chain storage (MCS) is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks."
                         }
                     }
                 },
@@ -174,7 +174,7 @@ export default new Router({
                     meta: {
                         metaInfo: {
                             title: 'Settings',
-                            description: "Swan is a marketplace for Filecoin miners, clients post/bidding deals the online."
+                            description: "Multi-Chain storage (MCS) is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks."
                         }
                     }
                 },
@@ -185,7 +185,7 @@ export default new Router({
                     meta: {
                         metaInfo: {
                             title: 'Stats',
-                            description: "Swan is a marketplace for Filecoin miners, clients post/bidding deals the online."
+                            description: "Multi-Chain storage (MCS) is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks."
                         }
                     }
                 },
@@ -205,7 +205,7 @@ export default new Router({
                     },
                     meta: {
                         metaInfo: {
-                            description: "Swan is a marketplace for Filecoin miners, clients post/bidding deals the online."
+                            description: "Multi-Chain storage (MCS) is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks."
                         }
                     }
 
@@ -218,7 +218,7 @@ export default new Router({
                     meta: {
                         metaInfo: {
                             title: 'Login',
-                            description: "Swan is a marketplace for Filecoin miners, clients post/bidding deals the online."
+                            description: "Multi-Chain storage (MCS) is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks."
                         }
                     }
                 },
@@ -229,7 +229,7 @@ export default new Router({
                     meta: {
                         metaInfo: {
                             title: 'Login',
-                            description: "Swan is a marketplace for Filecoin miners, clients post/bidding deals the online."
+                            description: "Multi-Chain storage (MCS) is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks."
                         }
                     }
                 },
@@ -241,7 +241,7 @@ export default new Router({
                     meta: {
                         metaInfo: {
                             title: 'Register',
-                            description: "Swan is a marketplace for Filecoin miners, clients post/bidding deals the online."
+                            description: "Multi-Chain storage (MCS) is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks."
                         }
                     }
                 },
@@ -257,7 +257,7 @@ export default new Router({
                     meta: {
                         metaInfo: {
                             title: 'Forget',
-                            description: "Swan is a marketplace for Filecoin miners, clients post/bidding deals the online."
+                            description: "Multi-Chain storage (MCS) is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks."
                         }
                     }
                 },
@@ -268,7 +268,7 @@ export default new Router({
                     meta: {
                         metaInfo: {
                             title: 'MailForget',
-                            description: "Swan is a marketplace for Filecoin miners, clients post/bidding deals the online."
+                            description: "Multi-Chain storage (MCS) is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks."
                         }
                     }
                 },
@@ -279,7 +279,7 @@ export default new Router({
                     meta: {
                         metaInfo: {
                             title: 'MailResetPassword',
-                            description: "Swan is a marketplace for Filecoin miners, clients post/bidding deals the online."
+                            description: "Multi-Chain storage (MCS) is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks."
                         }
                     }
                 },
@@ -290,7 +290,7 @@ export default new Router({
                     meta: {
                         metaInfo: {
                             title: 'MailForgetSuccess',
-                            description: "Swan is a marketplace for Filecoin miners, clients post/bidding deals the online."
+                            description: "Multi-Chain storage (MCS) is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks."
                         }
                     }
                 },
@@ -301,7 +301,7 @@ export default new Router({
                     meta: {
                         metaInfo: {
                             title: 'Account Activation',
-                            description: "Swan is a marketplace for Filecoin miners, clients post/bidding deals the online."
+                            description: "Multi-Chain storage (MCS) is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks."
                         }
                     }
                 },

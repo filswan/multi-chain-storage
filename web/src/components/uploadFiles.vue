@@ -118,7 +118,7 @@
                         <el-button type="primary" class="cancel" @click="closeDia">{{$t('deal.Cancel')}}</el-button>
                         <el-button type="primary" @click="submitForm('ruleForm')">{{$t('deal.Submit')}}</el-button>
                     </div>
-                    <a :href="found_link" target="_blank">{{$t('uploadFile.upload_funds')}}</a>
+                    <!-- <a :href="found_link" target="_blank">{{$t('uploadFile.upload_funds')}}</a> -->
                 </div>
             </div>
         </el-dialog>

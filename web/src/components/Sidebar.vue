@@ -16,6 +16,7 @@
                     <!-- 折叠按钮 -->
                     <div class="header_logo pcShow" :class="{'header_left_hidd': collapseLocal}">
                         <div class="logo" v-if="!collapseLocal"><img src="@/assets/images/LOGO_MCS@2x.png"></div>
+                        <img class="beta" v-if="!collapseLocal" src="@/assets/images/landing/beta.png">
                     </div>
                     <div class="menu_list">
                         <el-menu-item v-for="(item, i) in items" :key="i" :index="item.index" @click="sidebarLiIndex(item.name, item.index, item.type)">
@@ -321,6 +322,7 @@ export default {
 
     }
     .header_logo{
+        position: relative;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -335,6 +337,12 @@ export default {
                 width: 100%;
                 height: auto;
             }
+        }
+        .beta{
+            position: absolute;
+            width: 60px;
+            right: 0;
+            top: 0.75rem;
         }
         .header_btn{
             display: flex;

@@ -740,8 +740,8 @@ export default {
                   // 查询剩余代币余额为：
                   contract_erc20.methods.balanceOf(_this.metaAddress).call()
                   .then(balance => {
-                      let usdcAvailable = web3.utils.fromWei(balance, 'ether');
-                      // console.log('Available:', usdcAvailable, rowAmount)
+                      let usdcAvailable = _this.networkID != 137?web3.utils.fromWei(balance, 'ether'):web3.utils.fromWei(balance, 'mwei');
+                      console.log('Available pay:', usdcAvailable, rowAmount)
                       // 判断支付金额是否大于代币余额
                       if(Number(rowAmount) > Number(usdcAvailable)){
                           _this.$message.error('Insufficient balance')

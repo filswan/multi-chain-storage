@@ -361,8 +361,8 @@
                             // 查询剩余代币余额为：
                             contract_erc20.methods.balanceOf(_this.metaAddress).call()
                             .then(resultUSDC => {
-                                _this.usdcAvailable = web3.utils.fromWei(resultUSDC, 'ether');
-                                console.log('Available:', _this.usdcAvailable, _this.ruleForm.amount)
+                                _this.usdcAvailable = _this.networkID != 137?web3.utils.fromWei(resultUSDC, 'ether'):web3.utils.fromWei(resultUSDC, 'mwei');
+                                console.log('Available upload:', _this.usdcAvailable, _this.ruleForm.amount)
 
                                 // 判断支付金额是否大于代币余额
                                 if(Number(_this.ruleForm.amount) > Number(_this.usdcAvailable) ){

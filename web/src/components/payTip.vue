@@ -169,7 +169,7 @@
                 let _this = this
                 _this.hashload = true
                 const storageRes = await _this.sendRequest(`${process.env.BASE_API}stats/storage?wallet_address=${_this.metaAddress}`)
-                let cost = storageRes.data.average_price_per_GB_per_year?storageRes.data.average_price_per_GB_per_year.split(" "):[]
+                let cost = storageRes.data.historical_average_price_verified?storageRes.data.historical_average_price_verified.split(" "):[]
                 if(cost[0]) _this.storage = cost[0]
 
                 _this.biling_price = _this.$root.filecoin_price
@@ -185,7 +185,7 @@
             },
             getData() {
                 let _this = this
-                _this.payRow.storage_cost = _this.payRow.file_size_byte * _this.payRow.duration * _this.storage * 5 / 365 //5是Storage Copy
+                _this.payRow.storage_cost = _this.payRow.file_size_byte * _this.payRow.duration * _this.storage / 365
                 let _price = _this.payRow.storage_cost * _this.biling_price
                 let number_price = Number(_price).toFixed(9)
                 _this.payRow.amount_minprice = number_price > 0.000000001 ? number_price : '0.0000000005'

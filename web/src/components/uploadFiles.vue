@@ -407,9 +407,10 @@
                                                     }else{
                                                         contract_erc20.methods.allowance(_this.gatewayContractAddress, _this.metaAddress).call()
                                                         .then(resultUSDC => {
-                                                            console.log('allowance：'+ resultUSDC);
-                                                            if(resultUSDC < web3.utils.toWei(_this.ruleForm.amount, 'ether')){
-                                                                contract_erc20.methods.approve(_this.gatewayContractAddress, web3.utils.toWei(_this.ruleForm.amount, 'ether')).send({from:  _this.metaAddress})
+                                                            let amount_pay = _this.networkID != 137?web3.utils.toWei(_this.ruleForm.amount, 'ether'):web3.utils.fromWei(web3.utils.toWei(_this.ruleForm.amount, 'ether'), 'mwei')
+                                                            console.log('allowance：'+ resultUSDC, amount_pay);                    
+                                                            if(resultUSDC < amount_pay){
+                                                                contract_erc20.methods.approve(_this.gatewayContractAddress, amount_pay).send({from:  _this.metaAddress})
                                                                 .then(receipt => {
                                                                     // console.log('approve receipt:', receipt)
                                                                     _this.contractSend(res.data)
@@ -488,11 +489,11 @@
                     // gasPrice: web3.utils.toHex(web3.utils.toWei(_this.ruleForm.gasprice + '', 'gwei')),
                     // value: web3.utils.toHex(web3.utils.toWei(_this.ruleForm.amount, 'ether')),
                 };
-                
+                let amount_pay = _this.networkID != 137?web3.utils.toWei(_this.ruleForm.amount, 'ether'):web3.utils.fromWei(web3.utils.toWei(_this.ruleForm.amount, 'ether'), 'mwei')
                 let lockObj = {
                     id: resData.w_cid,
-                    minPayment: web3.utils.toWei(String(_this.ruleForm.amount_minprice), 'ether'),
-                    amount: web3.utils.toWei(_this.ruleForm.amount, 'ether'),
+                    minPayment: (amount_pay/2) || '0.0000000005',
+                    amount: amount_pay,
                     lockTime: 86400 * Number(_this.$root.LOCK_TIME), // one day
                     recipient: _this.recipientAddress, //todo:
                     size: resData.file_size,

@@ -100,6 +100,27 @@
                                     this.list[item].title = 'Average Verified Price'
                             }
                             this.list[item].num = res.data.data[item]?res.data.data[item]:'0 FIL/GiB/year'
+                            break
+                        case 'historical_average_price_regular' :
+                            switch (language) {
+                                case 'cn' :
+                                    this.list[item].title = '历史平均数据存储价格'
+                                    break
+                                case 'en' :
+                                    this.list[item].title = 'Historical Average Regular Price'
+                            }
+                            this.list[item].num = res.data.data[item]?res.data.data[item]:'0 FIL/GiB/100 deals'
+                            break
+                        case 'historical_average_price_verified' :
+                            switch (language) {
+                                case 'cn' :
+                                    this.list[item].title = '历史平均真实数据存储价格'
+                                    break
+                                case 'en' :
+                                    this.list[item].title = 'Historical Average Verified Price'
+                            }
+                            this.list[item].num = res.data.data[item]?res.data.data[item]:'0 FIL/GiB/100 deals'
+                            break
                     }
                 }
                 this.loading = false

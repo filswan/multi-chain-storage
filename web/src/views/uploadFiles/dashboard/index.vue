@@ -28,7 +28,7 @@
            v-loading="loading" @sort-change="sortChange"
            :default-sort = "{prop: 'date', order: 'descending'}" @filter-change="filterChange" 
         >
-          <el-table-column prop="file_name" min-width="120" sortable="custom">
+          <el-table-column prop="file_name" width="200" sortable="custom">
             <template slot="header" slot-scope="scope">
               <div class="tips" style="white-space: nowrap;">
                 {{$t('uploadFile.file_name')}}
@@ -749,19 +749,20 @@ export default {
                       }else{
                         contract_erc20.methods.allowance(_this.gatewayContractAddress, _this.metaAddress).call()
                         .then(resultUSDC => {
-                            // console.log('allowance：'+ resultUSDC);
-                            if(resultUSDC < web3.utils.toWei(rowAmount, 'ether')){
-                                contract_erc20.methods.approve(_this.gatewayContractAddress, web3.utils.toWei(rowAmount, 'ether')).send({from:  _this.metaAddress})
+                              let amount_pay = _this.networkID != 137?web3.utils.toWei(rowAmount, 'ether'):web3.utils.fromWei(web3.utils.toWei(rowAmount, 'ether'), 'mwei')
+                              console.log('allowance：'+ resultUSDC, amount_pay);                             
+                              if(resultUSDC < amount_pay){
+                                contract_erc20.methods.approve(_this.gatewayContractAddress, amount_pay).send({from:  _this.metaAddress})
                                 .then(receipt => {
                                   // console.log('approve receipt:', receipt)
-                                  _this.contractSend(res.data.data.w_cid, web3.utils.toWei(rowAmount, 'ether'))
+                                  _this.contractSend(res.data.data.w_cid, amount_pay)
                                 })
                                 .catch(error => {
                                   // console.log('errorerrorerror', error)
                                   _this.finishClose()
                                 })
                             }else{
-                              _this.contractSend(res.data.data.w_cid, web3.utils.toWei(rowAmount, 'ether'))
+                              _this.contractSend(res.data.data.w_cid, amount_pay)
                             }
                         })
                       }

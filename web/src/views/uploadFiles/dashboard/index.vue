@@ -136,7 +136,10 @@
               </div>
             </template>
             <template slot-scope="scope">
-              <div class="hot-cold-box">
+              <div class="hot-cold-box" v-if="networkID == 137">
+                {{scope.row.pay_amount | balanceMweiFilter}} USDC
+              </div>
+              <div class="hot-cold-box" v-else>
                 {{scope.row.pay_amount | balanceFilter}} USDC
               </div>
             </template>
@@ -749,7 +752,7 @@ export default {
                       }else{
                         contract_erc20.methods.allowance(_this.gatewayContractAddress, _this.metaAddress).call()
                         .then(resultUSDC => {
-                              let amount_pay = _this.networkID != 137?web3.utils.toWei(rowAmount, 'ether'):web3.utils.fromWei(web3.utils.toWei(rowAmount, 'ether'), 'mwei')
+                              let amount_pay = _this.networkID != 137?web3.utils.toWei(rowAmount, 'ether'):web3.utils.toWei(rowAmount, 'mwei')
                               console.log('allowance：'+ resultUSDC, amount_pay);                             
                               if(resultUSDC < amount_pay){
                                 contract_erc20.methods.approve(_this.gatewayContractAddress, amount_pay).send({from:  _this.metaAddress})
@@ -1273,6 +1276,27 @@ export default {
         }else{
             let v3 = ''
             for(let i = 0; i < 18 - String(value).length; i++){
+                v3 += '0'
+            }
+            return '0.' + String(v3 + value).replace(/(0+)\b/gi,"")
+        }
+    },
+    balanceMweiFilter (value) {
+        if (String(value) === '0') return 0;
+        if (!value) return '-';
+        if(String(value).length > 6){
+            let v1 = String(value).substring(0, String(value).length - 6)
+            let v2 = String(value).substring(String(value).length - 6)
+            let v3 = String(v2).replace(/(0+)\b/gi,"")
+            if(v3){
+                return v1 + '.' + v3
+            }else{
+                return v1
+            }
+            return parseFloat(v1.replace(/(\d)(?=(?:\d{3})+$)/g, "$1,") + '.' + v2)
+        }else{
+            let v3 = ''
+            for(let i = 0; i < 6 - String(value).length; i++){
                 v3 += '0'
             }
             return '0.' + String(v3 + value).replace(/(0+)\b/gi,"")

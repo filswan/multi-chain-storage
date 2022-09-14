@@ -798,7 +798,7 @@ export default {
         
         let lockObj = {
             id: cid,
-            minPayment: String(payAmount/2),
+            minPayment: String(Math.floor(payAmount/2)),
             amount: payAmount,
             lockTime: 86400 * Number(_this.$root.LOCK_TIME), // one day
             recipient: _this.recipientAddress, //todo:

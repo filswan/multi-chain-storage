@@ -491,7 +491,7 @@
                 };
                 let lockObj = {
                     id: resData.w_cid,
-                    minPayment: String(amount_pay/2) || '0.0000005',
+                    minPayment: String(Math.floor(amount_pay/2)),
                     amount: amount_pay,
                     lockTime: 86400 * Number(_this.$root.LOCK_TIME), // one day
                     recipient: _this.recipientAddress, //todo:

@@ -189,9 +189,9 @@
                 let _price = _this.payRow.storage_cost * _this.biling_price
                 let number_price = Number(_price).toFixed(6)
                 _this.payRow.amount_minprice = number_price > 0.000001 ? number_price : '0.0000005'
-                _this.cost.storage_cost_low = number_price > 0 ? Number(_price * 2).toFixed(6) : '0.000001'
-                _this.cost.storage_cost_average = number_price > 0 ? Number(_price * 3).toFixed(6) : '0.000002'
-                _this.cost.storage_cost_high = number_price > 0 ? Number(_price * 5).toFixed(6) : '0.000003'
+                _this.cost.storage_cost_low = number_price > 0 ? Number(_price * 2).toFixed(6) : '0.000002'
+                _this.cost.storage_cost_average = number_price > 0 ? Number(_price * 3).toFixed(6) : '0.000003'
+                _this.cost.storage_cost_high = number_price > 0 ? Number(_price * 5).toFixed(6) : '0.000004'
                 _this.pay.amount = _this.cost.storage_cost_average
 
                 _this.hashload = false

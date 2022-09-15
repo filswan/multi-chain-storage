@@ -291,9 +291,9 @@
                 let _price = this.ruleForm.storage_cost * this.biling_price
                 let number_price = Number(_price).toFixed(6)
                 this.ruleForm.amount_minprice = number_price > 0.000001 ? number_price : '0.0000005'
-                this.storage_cost_low = number_price > 0 ? Number(_price * 2).toFixed(6) : '0.000001'
-                this.storage_cost_average = number_price > 0 ? Number(_price * 3).toFixed(6) : '0.000002'
-                this.storage_cost_high = number_price > 0 ? Number(_price * 5).toFixed(6) : '0.000003'
+                this.storage_cost_low = number_price > 0 ? Number(_price * 2).toFixed(6) : '0.000002'
+                this.storage_cost_average = number_price > 0 ? Number(_price * 3).toFixed(6) : '0.000003'
+                this.storage_cost_high = number_price > 0 ? Number(_price * 5).toFixed(6) : '0.000004'
                 this.ruleForm.amount = this.free ? 0 : this.storage_cost_average
             },
             agreeChange(val){

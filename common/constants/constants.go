@@ -79,4 +79,6 @@ const (
 	CONFIG_PATH = ".swan/mcs"
 
 	FREE_SIZE_PER_WALLET_MONTH = 10 * BYTES_1GB
+
+	SECOND_PER_DAY = 24 * 60 * 60
 )

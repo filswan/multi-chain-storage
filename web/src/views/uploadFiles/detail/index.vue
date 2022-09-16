@@ -1,6 +1,6 @@
 <template>
     <div id="dealManagement">
-        <div class="backTo" @click="back">
+        <div class="backTo" @click="back" v-if="false">
             <span class="el-icon-back"></span>
             <span style="font-size:0.22rem;margin-left:0.05rem">{{$t('deal.backto')}}</span>
         </div>

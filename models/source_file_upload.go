@@ -138,9 +138,9 @@ type SourceFileUploadNeed2Car struct {
 
 func GetSourceFileUploadsNeed2Car() ([]*SourceFileUploadNeed2Car, error) {
 	var sourceFileUploadsNeed2Car []*SourceFileUploadNeed2Car
-	sql := "select a.id source_file_upload_id,b.resource_uri,b.ipfs_url,b.file_size,a.create_at,c.pay_amount\n" +
-		"from source_file_upload a, source_file b, transaction c\n" +
-		"where a.file_type=? and a.status=? and a.source_file_id=b.id and a.id=c.source_file_upload_id"
+	sql := `select a.id source_file_upload_id,b.resource_uri,b.ipfs_url,b.file_size,a.create_at,c.pay_amount
+		from source_file_upload a, source_file b, transaction c
+		where a.file_type=? and a.status=? and a.source_file_id=b.id and a.id=c.source_file_upload_id`
 	err := database.GetDB().Raw(sql, constants.SOURCE_FILE_TYPE_NORMAL, constants.SOURCE_FILE_UPLOAD_STATUS_PAID).Scan(&sourceFileUploadsNeed2Car).Error
 
 	if err != nil {

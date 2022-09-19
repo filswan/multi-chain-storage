@@ -19,25 +19,31 @@ import (
 )
 
 func CreateTask() error {
-	numSrcFiles, err := createTask()
-	if err != nil {
-		logs.GetLogger().Error(err)
-	} else {
-		if numSrcFiles == nil || *numSrcFiles == 0 {
-			logs.GetLogger().Info("0 charged source file created to car file")
+	for {
+		numSrcFiles, err := createTask()
+		if err != nil {
+			logs.GetLogger().Error(err)
 		} else {
-			logs.GetLogger().Info(*numSrcFiles, " charged source file(s) created to car file")
+			if numSrcFiles == nil || *numSrcFiles == 0 {
+				logs.GetLogger().Info("0 charged source file created to car file")
+				break
+			} else {
+				logs.GetLogger().Info(*numSrcFiles, " charged source file(s) created to car file")
+			}
 		}
 	}
 
-	numSrcFiles, err = createTaskForFreeFiles()
-	if err != nil {
-		logs.GetLogger().Error(err)
-	} else {
-		if numSrcFiles == nil || *numSrcFiles == 0 {
-			logs.GetLogger().Info("0 free source file created to car file")
+	for {
+		numSrcFiles, err := createTaskForFreeFiles()
+		if err != nil {
+			logs.GetLogger().Error(err)
 		} else {
-			logs.GetLogger().Info(*numSrcFiles, " free source file(s) created to car file")
+			if numSrcFiles == nil || *numSrcFiles == 0 {
+				logs.GetLogger().Info("0 free source file created to car file")
+				break
+			} else {
+				logs.GetLogger().Info(*numSrcFiles, " free source file(s) created to car file")
+			}
 		}
 	}
 
@@ -67,8 +73,8 @@ func createTask() (*int, error) {
 	}
 
 	totalSize := int64(0)
-	currentUtcMilliSec := libutils.GetCurrentUtcSecond()
-	createdTimeMin := currentUtcMilliSec
+	currentUtcSec := libutils.GetCurrentUtcSecond()
+	createdTimeMin := currentUtcSec
 	var maxPrice *decimal.Decimal
 
 	systemParam, err := utils.GetSystemParam("")
@@ -128,10 +134,10 @@ func createTask() (*int, error) {
 		return nil, nil
 	}
 
-	passedMilliSec := currentUtcMilliSec - createdTimeMin
+	passedSec := currentUtcSec - createdTimeMin
 	maxFileNumPerCar := config.GetConfig().SwanTask.MaxFileNumPerCar
 	createAnyway := false
-	if passedMilliSec >= 24*60*60*1000 {
+	if passedSec >= constants.SECOND_PER_DAY {
 		logs.GetLogger().Info("earliest uploaded file pass one day, create car file")
 		createAnyway = true
 	} else if len(srcFiles2Merged) >= maxFileNumPerCar {
@@ -264,9 +270,9 @@ func createTaskForFreeFiles() (*int, error) {
 		return nil, nil
 	}
 
-	passedMilliSec := currentUtcSec - createdTimeMinSec
+	passedSec := currentUtcSec - createdTimeMinSec
 	createAnyway := false
-	if passedMilliSec >= 24*60*60 {
+	if passedSec >= constants.SECOND_PER_DAY {
 		logs.GetLogger().Info("earliest uploaded file pass one day, create car file")
 		createAnyway = true
 	} else if totalSize >= fileSizeMin {

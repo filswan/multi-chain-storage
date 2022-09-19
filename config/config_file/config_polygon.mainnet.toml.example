@@ -5,6 +5,7 @@ filecoin_wallet = ""
 flink_url="https://flink-adapter.filswan.com/deal"
 web3_api_url_polygon_mumbai="http://localhost:8891"
 web3_api_url_bsc_testnet="http://localhost:8893"
+web3_api_url_polygon_mainnet="http://localhost:8891"
 
 [database]
 db_host="localhost"

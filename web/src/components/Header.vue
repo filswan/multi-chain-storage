@@ -578,9 +578,7 @@ export default {
                         _this.addrChild = accounts[0]
                         _this.walletInfo()
                         _this.$store.dispatch('setMetaAddress', accounts[0])
-                        if(_this.$route.name == 'my_files_detail') {
-                            _this.$router.push({ path: '/my_files' })
-                        }
+                        if(_this.$route.name == 'my_files_detail') _this.$router.push({ path: '/my_files' })
                         _this.$router.go(0)
                     })
                 }else{
@@ -590,7 +588,7 @@ export default {
             // networkChanged
             ethereum.on("chainChanged", function(accounts) {
                 _this.walletInfo()
-                _this.$router.go(0)
+                if(_this.$route.name == 'my_files_detail') _this.$router.push({ path: '/my_files' })
             });
             // 监听metamask网络断开
             ethereum.on('disconnect', (code, reason) => {
@@ -664,7 +662,7 @@ export default {
                         contract_erc20.methods.balanceOf(_this.metaAddress).call()
                         .then(balance => {
                             let usdcAvailable = netId != 137?web3.utils.fromWei(balance, 'ether'):web3.utils.fromWei(balance, 'mwei');
-                            console.log('Available balance:', usdcAvailable, balance)
+                            // console.log('Available balance:', usdcAvailable, balance)
                             // _this.priceAccound = _this.formatDecimal(usdcAvailable, 3)
                             // _this.priceAccound = Number(usdcAvailable).toFixed(0)
                             _this.priceAccound = parseInt(usdcAvailable)

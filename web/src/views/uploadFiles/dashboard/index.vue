@@ -33,9 +33,13 @@
               <div class="tips" style="white-space: nowrap;">
                 {{$t('uploadFile.file_name')}}
                     
-                <el-tooltip effect="dark" :content="$t('uploadFile.file_name_tooltip')" placement="top">
-                    <img src="@/assets/images/info.png"/>
-                </el-tooltip>
+                <el-popover
+                  placement="top" popper-class="elPopTitle"
+                  width="200"
+                  trigger="hover"
+                  :content="$t('uploadFile.file_name_tooltip')">
+                  <img slot="reference" src="@/assets/images/info.png"/>
+                </el-popover>
               </div>
             </template>
             <template slot-scope="scope">
@@ -106,21 +110,28 @@
               <div class="tips">
                 {{$t('uploadFile.status')}}
                     
-                <el-tooltip effect="dark" :content="$t('uploadFile.status_tooltip')" placement="top">
-                    <img src="@/assets/images/info.png"/>
-                </el-tooltip>
+                <el-popover
+                  placement="top" popper-class="elPopTitle"
+                  width="200"
+                  trigger="hover"
+                  :content="$t('uploadFile.status_tooltip')">
+                  <img slot="reference" src="@/assets/images/info.png"/>
+                </el-popover>
               </div>
             </template>
             <template slot-scope="scope">
               <div class="hot-cold-box">
-                <el-tooltip
+                <el-popover
                   v-if="scope.row.pin_status&&scope.row.pin_status.toLowerCase()=='pinned'" 
-                  class="item" effect="dark" :content="$t('uploadFile.status_button_tooltip')" placement="top">
-                    <el-button class="uploadBtn blue" type="primary"
+                  placement="top" popper-class="elPopTitle" class="item"
+                  width="200"
+                  trigger="hover"
+                  :content="$t('uploadFile.status_button_tooltip')">
+                  <el-button slot="reference" class="uploadBtn blue" type="primary"
                       @click.stop="pinClick(scope.row)">
                           Unpin
                     </el-button>
-                </el-tooltip>
+                </el-popover>
                 <el-button class="uploadBtn grey opacity"
                   v-else
                   :disabled="true">
@@ -149,9 +160,13 @@
               <div class="tips tipsWidth">
                 {{$t('uploadFile.w3ss_ids')}}
                     
-                <el-tooltip effect="dark" :content="$t('uploadFile.w3ss_id_tooltip')" placement="top">
-                    <img src="@/assets/images/info.png"/>
-                </el-tooltip>
+                <el-popover
+                  placement="top" popper-class="elPopTitle"
+                  width="200"
+                  trigger="hover"
+                  :content="$t('uploadFile.w3ss_id_tooltip')">
+                  <img slot="reference" src="@/assets/images/info.png"/>
+                </el-popover>
               </div>
             </template>
             <template slot-scope="scope">
@@ -291,9 +306,13 @@
                       style="display: flex;align-items: center;">
                         {{$t('uploadFile.w3ss_id_nothing')}}
                         
-                        <el-tooltip effect="dark" :content="$t('uploadFile.w3ss_id_nothing_tooltip')" placement="top">
-                            {{$t('uploadFile.w3ss_id_nothing')}}<img src="@/assets/images/info.png"/>
-                        </el-tooltip>
+                        <el-popover
+                          placement="top" popper-class="elPopTitle"
+                          width="200"
+                          trigger="hover"
+                          :content="$t('uploadFile.w3ss_id_nothing_tooltip')">
+                          <img slot="reference" style="display:block" src="@/assets/images/info.png"/>
+                        </el-popover>
                   </div>
                 </div>
               </div>
@@ -1803,6 +1822,7 @@ export default {
                 align-items: center;    
                 justify-content: center;
                 img{
+                    display: block;
                     width: 20px;
                     height: 20px;
                     margin: 0 0 0 5px;

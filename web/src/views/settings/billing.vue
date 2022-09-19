@@ -50,10 +50,24 @@
                                     </template>                    
                                 </el-table-column>
                                 <el-table-column prop="pay_amount" :label="$t('billing.AMOUNT')" min-width="150" sortable="custom">
-                                    <template slot-scope="scope">{{scope.row.pay_amount | balanceFilter}}</template>
+                                    <template slot-scope="scope">
+                                        <div class="hot-cold-box" v-if="networkID == 137">
+                                            {{scope.row.pay_amount | balanceMweiFilter}}
+                                        </div>
+                                        <div class="hot-cold-box" v-else>
+                                            {{scope.row.pay_amount | balanceFilter}}
+                                        </div>
+                                    </template>
                                 </el-table-column>
                                 <el-table-column prop="unlock_amount" :label="$t('billing.UNLOCKAMOUNT')" min-width="150" sortable="custom">
-                                    <template slot-scope="scope">{{scope.row.unlock_amount | balanceFilter}}</template>
+                                    <template slot-scope="scope">
+                                        <div class="hot-cold-box" v-if="networkID == 137">
+                                            {{scope.row.unlock_amount | balanceMweiFilter}}
+                                        </div>
+                                        <div class="hot-cold-box" v-else>
+                                            {{scope.row.unlock_amount | balanceFilter}}
+                                        </div>
+                                    </template>
                                 </el-table-column>
                                 <el-table-column prop="token_name" :label="$t('billing.TOKEN')" min-width="120"></el-table-column>
                                 <el-table-column prop="file_name" :label="$t('billing.FILENAME')" min-width="180" sortable="custom"></el-table-column>
@@ -460,6 +474,31 @@
                 }else{
                     let v3 = ''
                     for(let i = 0; i < 18 - String(value).length; i++){
+                        v3 += '0'
+                    }
+                    return '0.' + String(v3 + value).replace(/(0+)\b/gi,"")
+                }
+            },
+            balanceMweiFilter (value) {
+                if (String(value) === '0') return 0;
+                if (!value) return '-';
+                // if (!Number(value)) return 0;
+                // if (isNaN(value)) return value;
+                // 18 - 单位换算需要 / 1000000000000000000，浮点运算显示有bug
+                // value = Number(value)
+                if(String(value).length > 6){
+                    let v1 = String(value).substring(0, String(value).length - 6)
+                    let v2 = String(value).substring(String(value).length - 6)
+                    let v3 = String(v2).replace(/(0+)\b/gi,"")
+                    if(v3){
+                        return v1 + '.' + v3
+                    }else{
+                        return v1
+                    }
+                    return parseFloat(v1.replace(/(\d)(?=(?:\d{3})+$)/g, "$1,") + '.' + v2)
+                }else{
+                    let v3 = ''
+                    for(let i = 0; i < 6 - String(value).length; i++){
                         v3 += '0'
                     }
                     return '0.' + String(v3 + value).replace(/(0+)\b/gi,"")

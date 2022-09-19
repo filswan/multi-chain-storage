@@ -51,16 +51,16 @@ export default {
       widthDia: document.body.clientWidth <= 600 ? "95%" : document.body.clientWidth <= 1600 ? "520px" : "640px",
       loading: false,
       listData: [
-        {
-          img: require('@/assets/images/network_logo/polygon.png'),
-          name: 'Mumbai Testnet',
-          id: 80001
-        },
-        {
-          img: require('@/assets/images/network_logo/bsc.png'),
-          name: 'BSC TestNet',
-          id: 97
-        },
+        // {
+        //   img: require('@/assets/images/network_logo/polygon.png'),
+        //   name: 'Mumbai Testnet',
+        //   id: 80001
+        // },
+        // {
+        //   img: require('@/assets/images/network_logo/bsc.png'),
+        //   name: 'BSC TestNet',
+        //   id: 97
+        // },
         {
           img: require('@/assets/images/network_logo/polygon.png'),
           name: 'Polygon Mainnet',

@@ -73,7 +73,8 @@
                 <div class="upload">
                     <el-row :class="{'elColLeftEn': languageMcs === 'en', 'elColLeftZh': languageMcs === 'cn'}">
                         <el-col :span="8">{{$t('uploadFile.detail_Locked_funds')}}:</el-col>
-                        <el-col :span="16">{{dealCont.source_file_upload_deal.locked_fee | NumFormatPrice}} USDC</el-col>
+                        <el-col :span="16" v-if="networkID == 137">{{dealCont.source_file_upload_deal.locked_fee | NumFormatMweiPrice}} USDC</el-col>
+                        <el-col :span="16" v-else>{{dealCont.source_file_upload_deal.locked_fee | NumFormatPrice}} USDC</el-col>
                         <el-col :span="8">{{$t('uploadFile.w3ss_id')}}:</el-col>
                         <el-col :span="16" v-if="dealId == 0">-</el-col>
                         <el-col :span="16" v-else>{{dealCont.source_file_upload_deal.provider | NumFormat}}</el-col>
@@ -243,6 +244,9 @@ export default {
     computed: {
         languageMcs() {
             return this.$store.getters.languageMcs
+        },
+        networkID() {
+            return this.$store.getters.networkID
         }
     },
     watch: {
@@ -270,19 +274,7 @@ export default {
             window.open(link)
         },
         mainnetLink(dealId) {
-            const network_name = this.dealCont.source_file_upload_deal.network_name
-            switch(network_name) {
-                case 'filecoin_calibration':
-                    window.open(`${process.env.BASE_CALIBRATION_ADDRESS}?dealid=${dealId}`)
-                    break;
-                case 'filecoin_mainnet':
-                    window.open(`${process.env.BASE_MAINNET_ADDRESS}?dealid=${dealId}`)
-                    break;
-                default:
-                    if(network_name && network_name.indexOf('calibration') > -1) window.open(`${process.env.BASE_CALIBRATION_ADDRESS}?dealid=${dealId}`)
-                    else window.open(`${process.env.BASE_MAINNET_ADDRESS}?dealid=${dealId}`)
-                    break;
-            }
+            window.open(`${process.env.BASE_MAINNET_ADDRESS}?dealid=${dealId}`)
         },
         copyTextToClipboard(text) {
             let _this = this
@@ -448,6 +440,29 @@ export default {
             }else{
                 let v3 = ''
                 for(let i = 0; i < 18 - valueNum.length; i++){
+                    v3 += '0'
+                }
+                return '0.' + String(v3 + valueNum).replace(/(0+)\b/gi,"")
+            }
+        },
+        NumFormatMweiPrice (value) {
+            if (String(value) === '0') return 0;
+            if (!value) return '-';
+            // 18 - 单位换算需要 / 1000000000000000000，浮点运算显示有bug
+            let valueNum = String(value)
+            if(value.length > 6){
+                let v1 = valueNum.substring(0, valueNum.length - 6)
+                let v2 = valueNum.substring(valueNum.length - 6)
+                let v3 = String(v2).replace(/(0+)\b/gi,"")
+                if(v3){
+                    return v1 + '.' + v3
+                }else{
+                    return v1
+                }
+                return parseFloat(v1.replace(/(\d)(?=(?:\d{3})+$)/g, "$1,") + '.' + v2)
+            }else{
+                let v3 = ''
+                for(let i = 0; i < 6 - valueNum.length; i++){
                     v3 += '0'
                 }
                 return '0.' + String(v3 + valueNum).replace(/(0+)\b/gi,"")

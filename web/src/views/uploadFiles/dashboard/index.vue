@@ -28,14 +28,18 @@
            v-loading="loading" @sort-change="sortChange"
            :default-sort = "{prop: 'date', order: 'descending'}" @filter-change="filterChange" 
         >
-          <el-table-column prop="file_name" min-width="120" sortable="custom">
+          <el-table-column prop="file_name" width="200" sortable="custom">
             <template slot="header" slot-scope="scope">
               <div class="tips" style="white-space: nowrap;">
                 {{$t('uploadFile.file_name')}}
                     
-                <el-tooltip effect="dark" :content="$t('uploadFile.file_name_tooltip')" placement="top">
-                    <img src="@/assets/images/info.png"/>
-                </el-tooltip>
+                <el-popover
+                  placement="top" popper-class="elPopTitle"
+                  width="200"
+                  trigger="hover"
+                  :content="$t('uploadFile.file_name_tooltip')">
+                  <img slot="reference" src="@/assets/images/info.png"/>
+                </el-popover>
               </div>
             </template>
             <template slot-scope="scope">
@@ -106,21 +110,28 @@
               <div class="tips">
                 {{$t('uploadFile.status')}}
                     
-                <el-tooltip effect="dark" :content="$t('uploadFile.status_tooltip')" placement="top">
-                    <img src="@/assets/images/info.png"/>
-                </el-tooltip>
+                <el-popover
+                  placement="top" popper-class="elPopTitle"
+                  width="200"
+                  trigger="hover"
+                  :content="$t('uploadFile.status_tooltip')">
+                  <img slot="reference" src="@/assets/images/info.png"/>
+                </el-popover>
               </div>
             </template>
             <template slot-scope="scope">
               <div class="hot-cold-box">
-                <el-tooltip
+                <el-popover
                   v-if="scope.row.pin_status&&scope.row.pin_status.toLowerCase()=='pinned'" 
-                  class="item" effect="dark" :content="$t('uploadFile.status_button_tooltip')" placement="top">
-                    <el-button class="uploadBtn blue" type="primary"
+                  placement="top" popper-class="elPopTitle" class="item"
+                  width="200"
+                  trigger="hover"
+                  :content="$t('uploadFile.status_button_tooltip')">
+                  <el-button slot="reference" class="uploadBtn blue" type="primary"
                       @click.stop="pinClick(scope.row)">
                           Unpin
                     </el-button>
-                </el-tooltip>
+                </el-popover>
                 <el-button class="uploadBtn grey opacity"
                   v-else
                   :disabled="true">
@@ -136,7 +147,10 @@
               </div>
             </template>
             <template slot-scope="scope">
-              <div class="hot-cold-box">
+              <div class="hot-cold-box" v-if="networkID == 137">
+                {{scope.row.pay_amount | balanceMweiFilter}} USDC
+              </div>
+              <div class="hot-cold-box" v-else>
                 {{scope.row.pay_amount | balanceFilter}} USDC
               </div>
             </template>
@@ -146,9 +160,13 @@
               <div class="tips tipsWidth">
                 {{$t('uploadFile.w3ss_ids')}}
                     
-                <el-tooltip effect="dark" :content="$t('uploadFile.w3ss_id_tooltip')" placement="top">
-                    <img src="@/assets/images/info.png"/>
-                </el-tooltip>
+                <el-popover
+                  placement="top" popper-class="elPopTitle"
+                  width="200"
+                  trigger="hover"
+                  :content="$t('uploadFile.w3ss_id_tooltip')">
+                  <img slot="reference" src="@/assets/images/info.png"/>
+                </el-popover>
               </div>
             </template>
             <template slot-scope="scope">
@@ -288,9 +306,13 @@
                       style="display: flex;align-items: center;">
                         {{$t('uploadFile.w3ss_id_nothing')}}
                         
-                        <el-tooltip effect="dark" :content="$t('uploadFile.w3ss_id_nothing_tooltip')" placement="top">
-                            {{$t('uploadFile.w3ss_id_nothing')}}<img src="@/assets/images/info.png"/>
-                        </el-tooltip>
+                        <el-popover
+                          placement="top" popper-class="elPopTitle"
+                          width="200"
+                          trigger="hover"
+                          :content="$t('uploadFile.w3ss_id_nothing_tooltip')">
+                          <img slot="reference" style="display:block" src="@/assets/images/info.png"/>
+                        </el-popover>
                   </div>
                 </div>
               </div>
@@ -451,7 +473,7 @@
             <img src="@/assets/images/alert-icon.png" class="resno" />
             <h1>{{$t('uploadFile.View_Your_NFT')}}</h1>
             <h3>{{$t('uploadFile.View_Your_NFT_tips')}}</h3>
-            <a :href="'https://testnets.opensea.io/assets/mumbai/'+mint_address+'/'+tokenId" target="_blank">{{$t('uploadFile.View_Your_NFT_OpenSea')}}</a>
+            <a :href="'https://opensea.io/assets/matic/'+mint_address+'/'+tokenId" target="_blank">{{$t('uploadFile.View_Your_NFT_OpenSea')}}</a>
             <h3>{{$t('uploadFile.View_Your_NFT_tips01')}}</h3>
             <a :href="baseAddressURL+'tx/'+txHash" target="_blank">{{txHash}}</a>
             <br />
@@ -626,7 +648,7 @@ export default {
     },
     payClick(row){
       let _this = this
-      if(_this.metaAddress&& !(_this.networkID==80001 || _this.networkID == 97)) {
+      if(_this.metaAddress&& !(_this.networkID==137)) {
           _this.metamaskLoginTip = true
           return false
       }
@@ -740,8 +762,8 @@ export default {
                   // 查询剩余代币余额为：
                   contract_erc20.methods.balanceOf(_this.metaAddress).call()
                   .then(balance => {
-                      let usdcAvailable = web3.utils.fromWei(balance, 'ether');
-                      // console.log('Available:', usdcAvailable, rowAmount)
+                      let usdcAvailable = _this.networkID != 137?web3.utils.fromWei(balance, 'ether'):web3.utils.fromWei(balance, 'mwei');
+                      console.log('Available pay:', usdcAvailable, rowAmount)
                       // 判断支付金额是否大于代币余额
                       if(Number(rowAmount) > Number(usdcAvailable)){
                           _this.$message.error('Insufficient balance')
@@ -749,19 +771,20 @@ export default {
                       }else{
                         contract_erc20.methods.allowance(_this.gatewayContractAddress, _this.metaAddress).call()
                         .then(resultUSDC => {
-                            // console.log('allowance：'+ resultUSDC);
-                            if(resultUSDC < web3.utils.toWei(rowAmount, 'ether')){
-                                contract_erc20.methods.approve(_this.gatewayContractAddress, web3.utils.toWei(rowAmount, 'ether')).send({from:  _this.metaAddress})
+                              let amount_pay = _this.networkID != 137?web3.utils.toWei(rowAmount, 'ether'):web3.utils.toWei(rowAmount, 'mwei')
+                              console.log('allowance：'+ resultUSDC, amount_pay);                             
+                              if(resultUSDC < amount_pay){
+                                contract_erc20.methods.approve(_this.gatewayContractAddress, amount_pay).send({from:  _this.metaAddress})
                                 .then(receipt => {
                                   // console.log('approve receipt:', receipt)
-                                  _this.contractSend(res.data.data.w_cid, web3.utils.toWei(rowAmount, 'ether'))
+                                  _this.contractSend(res.data.data.w_cid, amount_pay)
                                 })
                                 .catch(error => {
                                   // console.log('errorerrorerror', error)
                                   _this.finishClose()
                                 })
                             }else{
-                              _this.contractSend(res.data.data.w_cid, web3.utils.toWei(rowAmount, 'ether'))
+                              _this.contractSend(res.data.data.w_cid, amount_pay)
                             }
                         })
                       }
@@ -794,7 +817,7 @@ export default {
         
         let lockObj = {
             id: cid,
-            minPayment: String(payAmount/2),
+            minPayment: String(Math.floor(payAmount/2)),
             amount: payAmount,
             lockTime: 86400 * Number(_this.$root.LOCK_TIME), // one day
             recipient: _this.recipientAddress, //todo:
@@ -1272,6 +1295,27 @@ export default {
         }else{
             let v3 = ''
             for(let i = 0; i < 18 - String(value).length; i++){
+                v3 += '0'
+            }
+            return '0.' + String(v3 + value).replace(/(0+)\b/gi,"")
+        }
+    },
+    balanceMweiFilter (value) {
+        if (String(value) === '0') return 0;
+        if (!value) return '-';
+        if(String(value).length > 6){
+            let v1 = String(value).substring(0, String(value).length - 6)
+            let v2 = String(value).substring(String(value).length - 6)
+            let v3 = String(v2).replace(/(0+)\b/gi,"")
+            if(v3){
+                return v1 + '.' + v3
+            }else{
+                return v1
+            }
+            return parseFloat(v1.replace(/(\d)(?=(?:\d{3})+$)/g, "$1,") + '.' + v2)
+        }else{
+            let v3 = ''
+            for(let i = 0; i < 6 - String(value).length; i++){
                 v3 += '0'
             }
             return '0.' + String(v3 + value).replace(/(0+)\b/gi,"")
@@ -1778,6 +1822,7 @@ export default {
                 align-items: center;    
                 justify-content: center;
                 img{
+                    display: block;
                     width: 20px;
                     height: 20px;
                     margin: 0 0 0 5px;

@@ -30,8 +30,8 @@
                     <div class="fes-icon">
                         <div class="progress">
                             <el-progress :percentage="(free_usage/free_quota_per_month)*100 || 0"></el-progress>
-                            <span v-if="languageMcs === 'en'" class="tip">{{free_usage | byteStorage}} GB of {{free_quota_per_month | byteStorage}} GB free storage</span>
-                            <span v-else class="tip">目前使用量：{{free_usage | byteStorage}} GB（免费储存空间配额：{{free_quota_per_month | byteStorage}} GB）</span>
+                            <span v-if="languageMcs === 'en'" class="tip">{{free_usage | byteStorage}}GB of {{free_quota_per_month | byteStorage}}GB used (free storage) </span>
+                            <span v-else class="tip">目前使用量：{{free_usage | byteStorage}}GB（免费储存空间配额：{{free_quota_per_month | byteStorage}}GB）</span>
                         </div>
                         <div class="fes-icon-logo">
                             <a href="https://filswan.medium.com/" target="_block"><img :src="share_img1" alt=""></a>
@@ -254,7 +254,16 @@ export default {
             if(limit <= 0){
                 return '0'
             }else{
-                return (limit/( 1024 * 1024 * 1024)).toPrecision(2)  //or 1000
+                // return (limit/( 1024 * 1024 * 1024)).toPrecision(2)  //or 1000
+                let value = limit/( 1024 * 1024 * 1024)
+                let v1 = String(value).split(".")
+                let v2 = v1[1] || ''
+                let v3 = String(v2).replace(/(0+)\b/gi,"")
+                if(v3){
+                    return v1[0] + '.' + v3.slice(0,2)
+                }else{
+                    return v1[0]
+                }
             }
         }
     }

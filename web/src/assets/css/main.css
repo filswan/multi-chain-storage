@@ -578,6 +578,10 @@ border: 0;
 .elPopMiner{
   text-align: center;
 }
+.elPopTitle{
+  word-break: break-word;
+  text-align: left;
+}
 .el-popover.el-popper{
   max-width: 400px;
 }

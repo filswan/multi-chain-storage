@@ -169,6 +169,7 @@ export default {
             let _this = this
             let head_title = ''
             let indexNow = Number(index)
+            sessionStorage.removeItem('dealsPaginationIndex')
             switch (indexNow) {
                 case 2:
                     localStorage.removeItem('tabTask_name')

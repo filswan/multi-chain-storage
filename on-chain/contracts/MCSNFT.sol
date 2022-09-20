@@ -20,7 +20,7 @@ contract MCSNFT is Initializable, ERC721Upgradeable, ERC721URIStorageUpgradeable
     constructor() initializer {}
 
     function initialize() initializer public {
-        __ERC721_init("MCP NFT", "MCP");
+        __ERC721_init("MCS NFT", "MCS");
         __ERC721URIStorage_init();
         __Ownable_init();
     }

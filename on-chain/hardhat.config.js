@@ -64,7 +64,7 @@ module.exports = {
       accounts: [process.env.ownerPK]
     },
     matictest: {
-      url: "https://matic-mumbai.chainstacklabs.com/", // https://forum.openzeppelin.com/t/hardhat-upgrade-failing-with-hh110-on-matic-testnet/12911
+      url: "https://polygon-mumbai.g.alchemy.com/v2/h0hrnucL6avUmswe31DKRNhOwI14SRbs", // https://forum.openzeppelin.com/t/hardhat-upgrade-failing-with-hh110-on-matic-testnet/12911
       accounts: [process.env.ownerPK, process.env.key2, process.env.key3,process.env.key4],
       gasPrice: 10000000000,
       gasLimit: 9999999

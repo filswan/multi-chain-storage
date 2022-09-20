@@ -42,6 +42,9 @@ contract SwanFaucet is OwnableUpgradeable {
         isAdmin[_address] = false;
     }
 
+    receive() external payable {
+    }
+
     fallback() external payable {
     }
 
@@ -55,7 +58,8 @@ contract SwanFaucet is OwnableUpgradeable {
         for(uint i=0; i<_tokenAddresses.length; i++) {
             if(_tokenAddresses[i] == NATIVE ){
                 if( _tokenAmounts[i] <= address(this).balance){
-                    _address.call{value: _tokenAmounts[i]}("");
+                    //_address.call{value: _tokenAmounts[i]}("");
+                    payable(_address).transfer(_tokenAmounts[i]);
                 }
             }
             else if (_tokenAmounts[i] <= ERC20(_tokenAddresses[i]).balanceOf(address(this))) {

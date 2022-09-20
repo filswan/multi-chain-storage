@@ -4,6 +4,8 @@ pragma solidity ^0.8.4;
 // import "@openzeppelin/contracts/access/Ownable.sol";
 
 import "@chainlink/contracts/src/v0.8/ChainlinkClient.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 /**
  * Request testnet LINK and ETH here: https://faucets.chain.link/
@@ -14,7 +16,7 @@ import "@chainlink/contracts/src/v0.8/ChainlinkClient.sol";
  * THIS IS AN EXAMPLE CONTRACT WHICH USES HARDCODED VALUES FOR CLARITY.
  * PLEASE DO NOT USE THIS CODE IN PRODUCTION.
  */
-contract FilinkConsumer is ChainlinkClient {
+contract PolygonFilink is ChainlinkClient, Ownable {
     using Chainlink for Chainlink.Request;
   
     mapping(bytes32 => string) private mapRequestDeal;
@@ -52,7 +54,7 @@ contract FilinkConsumer is ChainlinkClient {
         setChainlinkToken(_chainlinkToken);
         setChainlinkOracle(_oracle);
         oracle = _oracle;
-        jobId = '7599d3c8f31e4ce78ad2b790cbcfc673';
+        jobId = "a052732022e04e89be3e0fc06e457985";
         fee = _fee; // (Varies by network and job)
     }
 
@@ -85,7 +87,7 @@ contract FilinkConsumer is ChainlinkClient {
         // request.add("deal", deal);
 
         request.add("path", "data,deal,storage_price");
-        request.addInt('multiply', 1);
+        request.addInt('times', 1);
         
         bytes32 id = sendChainlinkRequestTo(oracle, request, fee);
         mapRequestDeal[id] = key;
@@ -108,7 +110,8 @@ contract FilinkConsumer is ChainlinkClient {
         return mapDealPrice[key];
     }
 
-   
-
-
+     function withdrawTokens(address tokenAddress) public onlyOwner {
+        uint256 balance = IERC20(tokenAddress).balanceOf(address(this));
+        IERC20(tokenAddress).transfer(msg.sender, balance);
+    }
 }

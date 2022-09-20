@@ -169,7 +169,7 @@
                 let _this = this
                 _this.hashload = true
                 const storageRes = await _this.sendRequest(`${process.env.BASE_API}stats/storage?wallet_address=${_this.metaAddress}`)
-                let cost = storageRes.data.historical_average_price_verified?storageRes.data.historical_average_price_verified.split(" "):[]
+                let cost = storageRes.data.average_price_per_GB_per_year?storageRes.data.average_price_per_GB_per_year.split(" "):[]
                 if(cost[0]) _this.storage = cost[0]
 
                 _this.biling_price = _this.$root.filecoin_price

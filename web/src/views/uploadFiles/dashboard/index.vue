@@ -386,6 +386,7 @@
         <div class="form_pagination">
           <div class="pagination">
             <el-pagination
+              v-if="parma.total != 0"
               :total="parma.total"
               :page-size="parma.limit"
               :current-page="parma.offset"
@@ -642,6 +643,7 @@ export default {
       }
       localStorage.setItem('offlineDeals', row.offline_deal?JSON.stringify(row.offline_deal):[])
       localStorage.setItem('offlineDealsIndex', '0')
+      sessionStorage.setItem('dealsPaginationIndexMain', this.parma.offset)
     },
     payClick(row){
       let _this = this
@@ -1242,6 +1244,7 @@ export default {
     document.getElementById("content-box").scrollTop = 0;
     _this.$store.dispatch("setRouterMenu", 1);
     _this.$store.dispatch("setHeadertitle", _this.$t('route.Deal'));
+    if(sessionStorage.getItem('dealsPaginationIndexMain')) _this.parma.offset = Number(sessionStorage.getItem('dealsPaginationIndexMain'))
     _this.stats()
     document.onkeydown = function (e) {
       if (e.keyCode === 13) {

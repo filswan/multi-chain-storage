@@ -897,6 +897,7 @@ export default {
         this.uploadDigShow = dialog
         if(rows) {
           this.firstIndex = 0
+          this.parma.offset = 1
           this.getData()
         }
     },

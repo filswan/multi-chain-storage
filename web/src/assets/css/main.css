@@ -638,6 +638,10 @@ body,
 .wrapper {
     font-size: 50px;
 }
+
+.content-box, .header{
+  left: 3.83rem !important;
+}
 }
 
 @media screen and (max-width:999px){

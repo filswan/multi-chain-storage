@@ -6,7 +6,10 @@
 
 <script>
 export default {
-  name: 'App'
+  name: 'App',
+  beforeCreate(){
+    if(localStorage.getItem('headertitle') != 'Details') sessionStorage.removeItem('dealsPaginationIndexMain')
+  }
 }
 </script>
 

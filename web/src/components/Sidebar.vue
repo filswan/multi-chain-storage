@@ -13,19 +13,20 @@
         >
             <template>
                 <template>
-                    <!-- 折叠按钮 -->
-                    <div class="header_logo pcShow" :class="{'header_left_hidd': collapseLocal}">
-                        <div class="logo" v-if="!collapseLocal"><img src="@/assets/images/LOGO_MCS@2x.png"></div>
-                    </div>
-                    <div class="menu_list">
-                        <el-menu-item v-for="(item, i) in items" :key="i" :index="item.index" @click="sidebarLiIndex(item.name, item.index, item.type)">
-                            <i :class="item.icon" style="font-size:15px"></i>
-                            <span slot="title">{{ item.title }}</span>
-                        </el-menu-item>
-                        <el-menu-item class="mobileShow" v-if="metaAddress">
-                            <i class="el-icon-switch-button" style="font-size:15px; "></i>
-                            <span slot="title" @click="signOutFun">{{$t('fs3.Disconnect')}}</span>
-                        </el-menu-item>
+                    <div class="fes-menu">
+                        <div class="header_logo pcShow" :class="{'header_left_hidd': collapseLocal}">
+                            <div class="logo" v-if="!collapseLocal"><img src="@/assets/images/LOGO_MCS@2x.png"></div>
+                        </div>
+                        <div class="menu_list">
+                            <el-menu-item v-for="(item, i) in items" :key="i" :index="item.index" @click="sidebarLiIndex(item.name, item.index, item.type)">
+                                <i :class="item.icon" style="font-size:15px"></i>
+                                <span slot="title">{{ item.title }}</span>
+                            </el-menu-item>
+                            <el-menu-item class="mobileShow" v-if="metaAddress">
+                                <i class="el-icon-switch-button" style="font-size:15px; "></i>
+                                <span slot="title" @click="signOutFun">{{$t('fs3.Disconnect')}}</span>
+                            </el-menu-item>
+                        </div>
                     </div>
                     <div class="fes-icon">
                         <div class="progress">
@@ -419,14 +420,28 @@ export default {
             }
         }
     }
+    .fes-menu{
+        height: calc(100% - 100px);
+        overflow-y: scroll;
+        &::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        &::-webkit-scrollbar {
+            width: 6px;
+            background: transparent;
+        }
+        &::-webkit-scrollbar-thumb {
+            background: #ccc;
+        }
+    }
     .fes-icon{
         position: absolute;
         left: 0;
         right: 0;
         bottom: 0;
-        padding: 0.1rem 0 0.3rem;
+        padding: 5px 0 20px;
         .progress{
-            margin: 0.2rem 0.28rem 0.3rem;
+            margin: 0 0.28rem 15px;
             .el-progress /deep/{
                 font-size: 12px;
                 .el-progress-bar{
@@ -455,7 +470,7 @@ export default {
                 display: block;
                 height: 22px;
                 margin: 0 0.15rem;
-                @media screen and (max-width: 999px) {
+                @media screen and (max-width: 1024px) {
                     height: 20px;
                 }
             }
@@ -673,6 +688,9 @@ export default {
     }
     &:not(.el-menu--collapse) {
         width: 3.33rem;
+        @media screen and (max-width:1024px){
+            width: 3.83rem;
+        }
         li{
           width: auto;
         }

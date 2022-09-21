@@ -901,6 +901,7 @@ export default {
         this.uploadDigShow = dialog
         if(rows) {
           this.firstIndex = 0
+          this.parma.offset = 1
           this.getData()
         }
     },
@@ -1065,7 +1066,7 @@ export default {
     async stats(){
         let _this = this
         _this.loading = true
-        if(_this.$root.SWAN_PAYMENT_CONTRACT_ADDRESS){
+        if(_this.$root.SWAN_PAYMENT_CONTRACT_ADDRESS && _this.networkID == 137){
             _this.gatewayContractAddress = _this.$root.SWAN_PAYMENT_CONTRACT_ADDRESS
             _this.usdcAddress = _this.$root.USDC_ADDRESS
             _this.recipientAddress = _this.$root.RECIPIENT

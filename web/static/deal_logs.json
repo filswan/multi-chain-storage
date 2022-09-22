@@ -1,0 +1,99 @@
+{
+
+  "status": "success",
+
+  "code": 200,
+
+  "data": {
+
+    "offline_deal_log": [
+
+      {
+
+        "id": 1,
+
+        "offline_deal_id": 1,
+
+        "on_chain_status": "StorageDealCheckForAcceptance",
+
+        "on_chain_message": "Provider state: StorageDealWaitingForData",
+
+        "create_at": 1650656861
+
+      },
+
+      {
+
+        "id": 1,
+
+        "offline_deal_id": 1,
+
+        "on_chain_status": "StorageDealCheckForAcceptance",
+
+        "on_chain_message": "Provider state: StorageDealWaitingForData",
+
+        "create_at": 1650656861
+
+      },
+
+      {
+
+        "id": 1,
+
+        "offline_deal_id": 1,
+
+        "on_chain_status": "StorageDealCheckForAcceptance",
+
+        "on_chain_message": "Provider state: StorageDealWaitingForData",
+
+        "create_at": 1650656861
+
+      },
+
+      {
+
+        "id": 1,
+
+        "offline_deal_id": 1,
+
+        "on_chain_status": "StorageDealCheckForAcceptance",
+
+        "on_chain_message": "Provider state: StorageDealWaitingForData",
+
+        "create_at": 1650656861
+
+      },
+
+      {
+
+        "id": 1,
+
+        "offline_deal_id": 1,
+
+        "on_chain_status": "StorageDealCheckForAcceptance",
+
+        "on_chain_message": "Provider state: StorageDealWaitingForData",
+
+        "create_at": 1650656861
+
+      },
+
+      {
+
+        "id": 1,
+
+        "offline_deal_id": 1,
+
+        "on_chain_status": "StorageDealCheckForAcceptance",
+
+        "on_chain_message": "Provider state: StorageDealWaitingForData",
+
+        "create_at": 1650656861
+
+      }
+
+    ]
+
+  }
+
+}

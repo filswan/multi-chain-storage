@@ -37,10 +37,6 @@ a {
   display: none;
 }
 .content-box {
-  position: absolute;
-  left: 3.33rem;
-  right: 0;
-  top: 1.1rem;
   bottom: 0;
   -webkit-transition: left .3s ease-in-out;
   transition: left .3s ease-in-out;
@@ -639,9 +635,6 @@ body,
     font-size: 50px;
 }
 
-.content-box, .header{
-  left: 3.83rem !important;
-}
 }
 
 @media screen and (max-width:999px){
@@ -690,8 +683,6 @@ body,
   }
 
   .content-box{
-    left: 0 !important;
-    top: 0.9rem;
     overflow-x: hidden
   }
 }

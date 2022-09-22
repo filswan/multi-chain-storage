@@ -1,8 +1,8 @@
 <template>
     <div class="wrapper">
-        <v-head :meta="meta" @getMetamaskLogin="getMetamaskLogin"></v-head>
-        <v-sidebar></v-sidebar>
-        <div class="content-box" id="content-box" :class="{'content-collapse':collapseP}">
+        <el-col :xs="8" :sm="8" :md="5" :lg="4" class="side" :class="{'slidarShow': collapseP&&bodyWidth}"><v-sidebar></v-sidebar></el-col>
+        <el-col :xs="24" :sm="24" :md="19" :lg="20" class="content-box" id="content-box">
+            <v-head :meta="meta" @getMetamaskLogin="getMetamaskLogin"></v-head>
             <div id="headerMb" v-if="bodyWidth">
                 <div class="headerMb" v-if="email">
                     {{headertitle}}
@@ -21,7 +21,7 @@
                 </div>
                 <div class="fes-icon">
                     <div class="fes-icon-copy">
-                        <span>© 2022 FilSwan Canada</span>
+                        <span>© 2022 FilSwan</span>
                         <el-divider direction="vertical"></el-divider>
                         <a href="https://www.filswan.com/" target="_block">filswan.com</a>
 
@@ -29,7 +29,7 @@
                 </div>
                 <el-backtop target=".content"></el-backtop>
             </div>
-        </div>
+        </el-col>
     </div>
 </template>
 
@@ -43,7 +43,7 @@ export default {
             tagsList: [],
             collapse: false,
             collapseP: this.$store.getters.collapseL == 'true'||this.$store.getters.collapseL==true?true: false,
-            bodyWidth: document.body.clientWidth<1024?true:false,
+            bodyWidth: document.body.clientWidth<992?true:false,
             tabshow: localStorage.getItem('tabTask_name') == 'User_Profile'?true:false,
             share_img1: require('@/assets/images/landing/medium.png'),
             share_img2: require('@/assets/images/landing/twitter.png'),
@@ -90,6 +90,7 @@ export default {
     watch: {
         'collapseL': function(){
             this.collapseP = this.$store.getters.collapseL == 'true'||this.$store.getters.collapseL==true?true: false
+            this.bodyWidth = document.body.clientWidth<992?true:false
         },
         reverse: function() {
             this.init()
@@ -106,13 +107,13 @@ export default {
     },
     mounted() {
         let bo = this.bodyWidth
-        window.onresize = function () {
-            if((!bo && document.body.clientWidth<1024) || (bo && document.body.clientWidth>=1024)){
-                window.location.reload();
-            }
-        }
+        // window.onresize = function () {
+        //     if((!bo && document.body.clientWidth<1024) || (bo && document.body.clientWidth>=1024)){
+        //         window.location.reload();
+        //     }
+        // }
         this.init()
-        console.log('update time: 2022-09-21') 
+        console.log('update time: 2022-09-22') 
     }
 };
 </script>
@@ -141,31 +142,50 @@ export default {
     @media screen and (max-width:1024px){
         width: 20.48rem;
     }
+    .side{
+        height: 100%;
+        // transition: all 0.3s ease;
+        @media screen and (max-width:991px){
+            position: fixed;
+            left: -33.33333%;
+            z-index: 9999;
+        }
+        @media screen and (max-width:415px){
+            left: -60%;
+            width: 60%;
+        }
+        &.slidarShow{
+            left: 0;
+        }
+    }
+    .content-box{
+        height: 100%;
+    }
     .content{
         position: relative;
-        height: 100%;
-        // overflow-y: scroll;
+        height: calc(100% - 1.1rem);
+        overflow-y: scroll;
         // transition: all;
         // transition-duration: .3s;
-        // &::-webkit-scrollbar{
-        //     width: 1px;
-        //     height: 1px;
-        //     background-color: #eee;
-        // }
+        &::-webkit-scrollbar{
+            width: 1px;
+            height: 1px;
+            background-color: #eee;
+        }
 
-        // &::-webkit-scrollbar-track {
-        //     box-shadow: none;
-        //     -webkit-box-shadow: none;
-        //     border-radius: 10px;
-        //     background-color: #eee;
-        // }
+        &::-webkit-scrollbar-track {
+            box-shadow: none;
+            -webkit-box-shadow: none;
+            border-radius: 10px;
+            background-color: #eee;
+        }
 
-        // &::-webkit-scrollbar-thumb{
-        //     border-radius: 10px;
-        //     box-shadow: none;
-        //     -webkit-box-shadow: none;
-        //     background-color: #eee;
-        // }
+        &::-webkit-scrollbar-thumb{
+            border-radius: 10px;
+            box-shadow: none;
+            -webkit-box-shadow: none;
+            background-color: #eee;
+        }
         .content_body{
             // position: relative;
             min-height: calc(100% - 0.84rem);
@@ -192,7 +212,7 @@ export default {
                     display: block;
                     height: 20px;
                     margin: 0 0.05rem;
-                    @media screen and (max-width: 999px) {
+                    @media screen and (max-width: 991px) {
                         height: 20px;
                     }
                 }

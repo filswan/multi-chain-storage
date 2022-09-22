@@ -56,8 +56,8 @@
                 <!-- mobile显示 -->
                 <div class="mobileShow">
                     <div class="collapse-btn-cont" @click="collapseChage">
-                        <div class="header_btn">
-                            <span></span>
+                        <div class="header_btn" :class="{'el-icon-s-unfold': !collapseLocal, 'el-icon-s-fold': collapseLocal}" >
+                            <!-- <span></span> -->
                         </div>
                     </div>
                 </div>
@@ -118,7 +118,7 @@ export default {
             langNew: '',
             userShow: false,
             loginShow: localStorage.getItem("mcsLoginAccessToken") ? false : true,
-            bodyWidth: document.body.clientWidth<999?true:false,
+            bodyWidth: document.body.clientWidth<992?true:false,
             langShow: true,
             loadIndexing: false,
             // 控制是否在路由栈中清理当前页面的数据
@@ -186,10 +186,6 @@ export default {
                 this.replaceData = 'replace'
             }else{
                 this.replaceData = ''
-            }
-            if(this.bodyWidth){
-                this.collapseLocal = false
-                this.collapseChage();
             }
         },
         'collapseL': function(){
@@ -686,10 +682,6 @@ export default {
     mounted() {
         let _this = this
         _this.reverseSwitch = _this.reverse
-        if(_this.bodyWidth){
-            _this.collapseLocal = false
-            _this.collapseChage();
-        }
 
         var visProp = _this.getHiddenProp();
         if (visProp) 
@@ -868,10 +860,6 @@ export default {
   background: rgba(255, 255, 255, 1);
 }
 .header {
-    position: absolute;
-    top: 0;
-    right: 0;
-    left: 3.33rem;
     box-sizing: border-box;
     height: 1.1rem;
     font-size: 0.2rem;
@@ -909,9 +897,11 @@ export default {
                 flex-wrap: wrap;
                 width: 0.26rem;
                 height: 0.26rem;
-                margin: 0 0 0 0.06rem;
+                margin: 0 0.03rem 0 0.06rem;
                 transition: all 0.4s ease;
                 outline: none;
+                color: #000;
+                font-size: 22px;
             }
             .header_btn span{
                 position: relative;
@@ -919,7 +909,7 @@ export default {
                 width: 100%;
                 height: 1px;
                 margin: auto;
-                background-color:#fff;
+                background-color:#000;
                 transition: all 0.4s ease;
             }
             .header_btn span::after{
@@ -929,7 +919,7 @@ export default {
                 right: 0;
                 width: 100%;
                 height: 1px;
-                background-color: #fff;
+                background-color: #000;
                 transition: all 0.4s ease;
             }
             .header_btn span::before{
@@ -939,7 +929,7 @@ export default {
                 right: 0;
                 width: 100%;
                 height: 1px;
-                background-color: #fff;
+                background-color: #000;
                 transition: all 0.4s ease;
             }
             .header_btn.header_btn_left span::before,.header_btn.header_btn_left span::after{
@@ -948,7 +938,7 @@ export default {
             }
             .header_btn:hover span,.header_btn:hover span::before,.header_btn:hover span::after{
                 width: 100%;
-                background-color: #fff;
+                background-color: #555;
             }
         }
         
@@ -989,7 +979,7 @@ export default {
             width: 100%;
             height: 1px;
             margin: auto;
-            background-color:#fff;
+            background-color:#000;
             transition: all 0.4s ease;
         }
         .header_btn span::after{
@@ -999,7 +989,7 @@ export default {
             right: 0;
             width: 50%;
             height: 1px;
-            background-color: #fff;
+            background-color: #000;
             transition: all 0.4s ease;
         }
         .header_btn span::before{
@@ -1009,7 +999,7 @@ export default {
             right: 0;
             width: 75%;
             height: 1px;
-            background-color: #fff;
+            background-color: #000;
             transition: all 0.4s ease;
         }
         .header_btn.header_btn_left span::before,.header_btn.header_btn_left span::after{
@@ -1018,7 +1008,7 @@ export default {
         }
         .header_btn:hover span,.header_btn:hover span::before,.header_btn:hover span::after{
             width: 100%;
-            background-color: #fff;
+            background-color: #555;
         }
     }
     .header_left_hidd{
@@ -1123,11 +1113,16 @@ export default {
                 flex-wrap: wrap;
                 width: 22px;
                 height: 22px;
-                margin: 0 0 0 20px;
+                margin: 0 5px 0 15px;
                 transition: all 0.4s ease;
                 outline: none;
+                color: #000;
+                font-size: 22px;
                 @media screen and (max-width:479px) {
                     margin: 0 0 0 10px;
+                }
+                &:hover{
+                    color: #4b5fff;
                 }
             }
             .header_btn span{
@@ -1136,7 +1131,7 @@ export default {
                 width: 100%;
                 height: 1px;
                 margin: auto;
-                background-color:#fff;
+                background-color:#000;
                 transition: all 0.4s ease;
             }
             .header_btn span::after{
@@ -1146,7 +1141,7 @@ export default {
                 right: 0;
                 width: 100%;
                 height: 1px;
-                background-color: #fff;
+                background-color: #000;
                 transition: all 0.4s ease;
             }
             .header_btn span::before{
@@ -1156,7 +1151,7 @@ export default {
                 right: 0;
                 width: 100%;
                 height: 1px;
-                background-color: #fff;
+                background-color: #000;
                 transition: all 0.4s ease;
             }
             .header_btn.header_btn_left span::before,.header_btn.header_btn_left span::after{
@@ -1165,7 +1160,7 @@ export default {
             }
             .header_btn:hover span,.header_btn:hover span::before,.header_btn:hover span::after{
                 width: 100%;
-                background-color: #fff;
+                background-color: #555;
             }
         }
 .header-right{
@@ -1193,7 +1188,7 @@ export default {
         }
     }
     .lang_style{    
-        width: 0.26rem;
+        min-width: 0.26rem;
         margin: 0 0.2rem;
         line-height: 0.26rem;
         font-size: 0.14rem;
@@ -1205,9 +1200,8 @@ export default {
         @media screen and (min-width:1800px) {
             font-size: 16px;
         }
-        @media screen and (max-width:999px) {
+        @media screen and (max-width:991px) {
             font-size: 13px;
-            color: #fff;
             width: 25px;
             height: 25px;
             margin: 0 15px;
@@ -1237,6 +1231,11 @@ export default {
         border-radius: 0.14rem;
         white-space: nowrap;
         cursor: pointer;
+        @media screen and (max-width:415px){
+            max-width: 100px;
+            white-space: normal;
+            line-height: 1.2;
+        }
         &:hover{
             color: #000;
         }
@@ -1269,7 +1268,7 @@ export default {
         cursor: pointer;
         border-radius: 0.14rem;
         background: linear-gradient(45deg,#4f8aff, #4b5eff);
-        @media screen and (max-width:999px) {
+        @media screen and (max-width:991px) {
             margin: 0;
         }
         img{
@@ -1593,24 +1592,7 @@ export default {
   background-color: transparent;
   color: #ffb933;
 }
-@media screen and (max-width:999px){
-    .header{
-        left: 0 !important;
-        height: 0.9rem;
-        background: #0b318f;
-        .header-right {
-            .switch {
-                .swithUI{
-                    .css-moon{
-                        color: #fff;
-                    }
-                }
-            }
-            .network_mainnet{
-                color: #fff;
-            }
-        }
-    }
+@media screen and (max-width:991px){
     .header_arera{
         margin: 0 0.1rem;
         // height: auto;

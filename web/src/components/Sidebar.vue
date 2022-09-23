@@ -1,10 +1,10 @@
 <template>
-    <div class="sidebar" :class="{'slidarShow': !collapseLocal&&bodyWidth}">
-        <div class="sidebar_close el-icon-close" v-if="!collapseLocal&&bodyWidth" @click="collapseChage"></div>
+    <div class="sidebar">
+        <div class="sidebar_close el-icon-close" v-if="collapseLocal&&bodyWidth" @click="collapseChage"></div>
         <el-menu
             class="sidebar-el-menu"
             :default-active="routerMenu"
-            :collapse="collapseLocal"
+            :collapse="false"
             background-color="#080B29"
             text-color="#B3C0E7"
             active-text-color="#fff"
@@ -14,9 +14,9 @@
             <template>
                 <template>
                     <div class="fes-menu">
-                        <div class="header_logo pcShow" :class="{'header_left_hidd': collapseLocal}">
-                            <div class="logo" v-if="!collapseLocal"><img src="@/assets/images/LOGO_MCS@2x.png"></div>
-                            <img class="beta" v-if="!collapseLocal" src="@/assets/images/landing/beta.png">
+                        <div class="header_logo pcShow">
+                            <div class="logo"><img src="@/assets/images/LOGO_MCS@2x.png"></div>
+                            <img class="beta" src="@/assets/images/landing/beta.png">
                         </div>
                         <div class="menu_list">
                             <el-menu-item v-for="(item, i) in items" :key="i" :index="item.index" @click="sidebarLiIndex(item.name, item.index, item.type)">
@@ -151,6 +151,7 @@ export default {
     watch: {
         'collapseL': function(){
             this.collapseLocal = this.$store.getters.collapseL == 'true'||this.$store.getters.collapseL==true?true: false
+            this.bodyWidth = document.body.clientWidth<992?true:false
         }
     },
     created() {
@@ -276,10 +277,7 @@ export default {
 <style scoped lang="scss">
 .sidebar {
     display: block;
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
+    height: 100%;
     z-index: 9999;
     transition: all .3s;
     background: #080B29;
@@ -288,15 +286,14 @@ export default {
     }
     .sidebar_close{
         position: absolute;
-        right: 0;
-        top: 0;
-        font-size: 18px;
+        right: 5px;
+        top: 5px;
+        font-size: 20px;
         font-weight: 600;
-        color: #000000;
+        color: #f2f3f8;
         cursor: pointer;
         z-index: 999999;
         display: block;
-        background: #f2f3f8;
         padding: 0.05rem;
     }
 }
@@ -453,7 +450,7 @@ export default {
             .el-progress /deep/{
                 font-size: 12px;
                 .el-progress-bar{
-                    padding-right: 20px;
+                    padding-right: 0;
                     margin: 0 0 5px 0;
                 }
                 .el-progress__text{
@@ -494,7 +491,7 @@ export default {
     li{
         display: flex;
         height: 0.5rem;
-        padding: 0 0.28rem;
+        padding: 0 15px;
         margin: 0.12rem 0;
         font-size: 0.2rem;
         font-weight: 500;
@@ -502,6 +499,9 @@ export default {
         -ms-flex-align: center;
         align-items: center;
         line-height: 0.5rem;
+        @media screen and (max-width:1200px){
+            padding: 0 10px;
+        }
         div{
             display: flex;
             align-items: center;
@@ -684,7 +684,7 @@ export default {
         position: absolute;
         left: 50%;
         width: 0;
-        bottom: 7px;
+        bottom: 4px;
         margin: auto;
         height: 2px;
         background-color: #080B29;
@@ -695,54 +695,40 @@ export default {
         width: 100%;
     }
     &:not(.el-menu--collapse) {
-        width: 3.33rem;
-        @media screen and (max-width:1024px){
-            width: 3.83rem;
-        }
         li{
           width: auto;
         }
     }
 }
 .copyStyle {
-  padding: 0 0 0 0.1rem;
-  background: #080B29;
-  font-size: 0.12rem;
-  line-height: 0.3rem;
-  color: #9c9c9c;
-  border-top: 0.01rem solid rgba(255, 255, 255, 0.2);
-  z-index: 999;
+    padding: 0 0 0 20px;
+    background: #080B29;
+    font-size: 0.12rem;
+    line-height: 0.3rem;
+    color: #9c9c9c;
+    border-top: 0.01rem solid rgba(255, 255, 255, 0.2);
+    z-index: 999;
+    @media screen and (max-width:1200px){
+        padding: 0 0 0 10px;
+    }
 }
 
-@media screen and (max-width:999px){
+@media screen and (max-width:991px){
   .sidebar{
-    top: 0;
-    left: -4rem;
-    -webkit-transition: all 0.3s ease;
-    -moz-transition: all 0.3s ease;
-    -ms-transition: all 0.3s ease;
-    -o-transition: all 0.3s ease;
     transition: all 0.3s ease;
     .mobileShow{
         display: block;
     }
     .sidebar-el-menu {
-        width: 4rem;
+        width: 100%;;
       .menu_list{
         // height: calc(100% - 0.5rem);
         padding: 50px 0 0;
-      }
-
-      &:not(.el-menu--collapse) {
-          width: 4rem;
       }
     }
     .pcShow{
       display: none;
     }
-  }
-  .slidarShow{
-      left: 0;
   }
 }
 </style>

@@ -13,7 +13,7 @@
   "function f(string,string,address,string[])",
   "function getCarPaymentVotes(string,string,address) view returns (uint8)",
   "function getCidList(string,string) view returns (string[])",
-  "function getHashKey(string,string,address,string[]) view returns (bytes32)",
+  "function getHashKey(string,string,address,string[]) pure returns (bytes32)",
   "function getOracleInfo(string,string,address) view returns (tuple(uint256,uint256,address,bool,bool,string[],address,uint256,uint256,uint256,uint8,string[][256]))",
   "function getRoleAdmin(bytes32) view returns (bytes32)",
   "function getSignatureList(string,string) view returns (tuple(uint256,uint256,address,bool,bool,string[],address,uint256,uint256,uint256,uint8,string[][256])[])",

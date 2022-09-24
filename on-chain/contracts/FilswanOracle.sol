@@ -120,7 +120,7 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
 
         bytes32 voteKey = keccak256(
             abi.encodeWithSignature(
-                "f(string, string,address,string[])",
+                "f(string,string,address,string[])",
                 dealId,
                 network,
                 recipient,
@@ -231,7 +231,6 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
         emit PreSign(dealId, network, recipient, batchCount);
     }
 
-   
 
     function sign(string memory dealId, string memory network, string[] memory cidList, uint8 batchNo) public onlyRole(DAO_ROLE) {
 
@@ -273,7 +272,7 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
 
             txVoteMap[voteKey] = txVoteMap[voteKey] + 1;
             
-            if (txVoteMap[voteKey] == _threshold 
+            if (txVoteMap[voteKey] >= _threshold 
             && _filinkAddress != address(0)
             ) {
                 cidListMap[key] = txInfoMap[key][msg.sender].cidList;
@@ -285,7 +284,18 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
     }
 
     function signHash(string memory dealId, string memory network, address recipient, bytes32 voteKey) public onlyRole(DAO_ROLE) {
+        string memory key = concatenate(dealId, network);
+
         txVoteMap[voteKey] = txVoteMap[voteKey] + 1;
+        if(txInfoMap[key][msg.sender].signStatus == 0){
+            if (txVoteMap[voteKey] >= _threshold 
+            && _filinkAddress != address(0)
+            ) {
+                cidListMap[key] = txInfoMap[key][msg.sender].cidList;
+                FilinkConsumer(_filinkAddress).requestDealInfo(dealId, network);
+            }
+        }
+        // todo: add check total count of cid list and do chianlink requestDealInfo
         emit SignHash(dealId, network, recipient, voteKey);
     }
 
@@ -293,7 +303,8 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
         
     }
 
-    function getHashKey(string memory dealId, string memory network, address recipient, string[] memory cidList) public view returns (bytes32){
+    function getHashKey(string memory dealId, string memory network, address recipient, string[] memory cidList) public pure returns (bytes32){
         return keccak256(abi.encodeWithSignature("f(string,string,address,string[])",dealId, network, recipient, cidList));
     }
+
 }

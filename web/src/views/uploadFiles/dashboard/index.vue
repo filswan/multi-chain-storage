@@ -1250,6 +1250,7 @@ export default {
     _this.$store.dispatch("setRouterMenu", 1);
     _this.$store.dispatch("setHeadertitle", _this.$t('route.Deal'));
     if(sessionStorage.getItem('dealsPaginationIndex')) _this.parma.offset = Number(sessionStorage.getItem('dealsPaginationIndex'))
+
     _this.stats()
     document.onkeydown = function (e) {
       if (e.keyCode === 13) {

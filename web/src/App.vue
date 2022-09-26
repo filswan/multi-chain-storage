@@ -8,7 +8,7 @@
 export default {
   name: 'App',
   beforeCreate(){
-    if(localStorage.getItem('headertitle') != 'Details') sessionStorage.removeItem('dealsPaginationIndexMain')
+    if(localStorage.getItem('headertitle') != 'Details') sessionStorage.removeItem('dealsPaginationIndex')
   }
 }
 </script>

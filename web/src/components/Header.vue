@@ -2,7 +2,7 @@
     <div class="header" :class="{'content-collapse': collapseLocal}">
         <div class="header_arera">
             <div class="header-right">
-                <div class="network_mainnet" v-if="addrChild" :class="{'error': !(networkID == 97 || networkID == 137 || networkID == 80001)}" @click="networkC=true">
+                <div class="network_mainnet" v-if="addrChild" :class="{'error': !(networkID == 137)}" @click="networkC=true">
                     <div class="BSC_mainnet" v-if="networkID == 97" title="BSC TestNet mainnet">
                         <img src="@/assets/images/network_logo/bsc.png" />
                         {{bodyWidth?'BSC':'BSC TestNet'}}
@@ -56,7 +56,7 @@
                 <!-- mobile显示 -->
                 <div class="mobileShow">
                     <div class="collapse-btn-cont" @click="collapseChage">
-                        <div class="header_btn" :class="{'el-icon-s-unfold': !collapseLocal, 'el-icon-s-fold': collapseLocal}" >
+                        <div class="header_btn" :class="{'el-icon-s-unfold': !collapseLocal, 'el-icon-s-fold': collapseLocal}">
                             <!-- <span></span> -->
                         </div>
                     </div>
@@ -517,9 +517,19 @@ export default {
                     return;
                 case 137:
                     _this.network.name = 'Polygon';
-                    _this.network.unit = 'MATIC';
+                    _this.network.unit = 'USDC';
                     _this.network.center_fail = true
                     _this.$store.dispatch('setMetaNetworkInfo', _this.network)
+                    if(_this.meta) {
+                        if(_this.$route.query.redirect && _this.$route.query.redirect != '/supplierAllBack'){
+                            // 防止登录后需要跳转到指定页面
+                            _this.$router.push({ path: _this.$route.query.redirect })
+                        }else{
+                            _this.$router.push({ path: '/my_files' })
+                        }
+                        window.location.reload()
+                        _this.$emit("getMetamaskLogin", false)
+                    }
                     return;
                 case 999:
                     _this.network.name = 'NBAI';
@@ -564,9 +574,7 @@ export default {
                         _this.addrChild = accounts[0]
                         _this.walletInfo()
                         _this.$store.dispatch('setMetaAddress', accounts[0])
-                        if(_this.$route.name == 'my_files_detail') {
-                            _this.$router.push({ path: '/my_files' })
-                        }
+                        if(_this.$route.name == 'my_files_detail') _this.$router.push({ path: '/my_files' })
                         _this.$router.go(0)
                     })
                 }else{
@@ -576,6 +584,7 @@ export default {
             // networkChanged
             ethereum.on("chainChanged", function(accounts) {
                 _this.walletInfo()
+                if(_this.$route.name == 'my_files_detail') _this.$router.push({ path: '/my_files' })
             });
             // 监听metamask网络断开
             ethereum.on('disconnect', (code, reason) => {
@@ -621,7 +630,7 @@ export default {
         contractPrice(netId) {
             let _this = this
             try {
-                if(netId != 80001 && netId != 97){
+                if(netId != 80001 && netId != 97 && netId != 137){
                     ethereum
                     .request(
                         {
@@ -633,6 +642,7 @@ export default {
                     )
                     .then((balance) => {
                         let balanceAll = web3.utils.fromWei(balance, 'ether')
+                        console.log('balance', balanceAll)
                         _this.priceAccound = Number(balanceAll).toFixed(0)
                     })
                     .catch((error) => {
@@ -647,8 +657,8 @@ export default {
                         // 查询剩余代币余额为：
                         contract_erc20.methods.balanceOf(_this.metaAddress).call()
                         .then(balance => {
-                            let usdcAvailable = web3.utils.fromWei(balance, 'ether');
-                            // console.log('Available:', usdcAvailable)
+                            let usdcAvailable = netId != 137?web3.utils.fromWei(balance, 'ether'):web3.utils.fromWei(balance, 'mwei');
+                            // console.log('Available balance:', usdcAvailable, balance)
                             // _this.priceAccound = _this.formatDecimal(usdcAvailable, 3)
                             // _this.priceAccound = Number(usdcAvailable).toFixed(0)
                             _this.priceAccound = parseInt(usdcAvailable)
@@ -969,9 +979,11 @@ export default {
             flex-wrap: wrap;
             width: 0.26rem;
             height: 0.26rem;
-            margin: 0 0 0 0.06rem;
+            margin: 0 0.03rem 0 0.06rem;
             transition: all 0.4s ease;
             outline: none;
+            color: #000;
+            font-size: 22px;
         }
         .header_btn span{
             position: relative;

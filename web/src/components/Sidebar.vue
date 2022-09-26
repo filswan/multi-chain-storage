@@ -16,6 +16,7 @@
                     <div class="fes-menu">
                         <div class="header_logo pcShow">
                             <div class="logo"><img src="@/assets/images/LOGO_MCS@2x.png"></div>
+                            <img class="beta" src="@/assets/images/landing/beta.png">
                         </div>
                         <div class="menu_list">
                             <el-menu-item v-for="(item, i) in items" :key="i" :index="item.index" @click="sidebarLiIndex(item.name, item.index, item.type)">
@@ -31,7 +32,7 @@
                     <div class="fes-icon">
                         <div class="progress">
                             <el-progress :percentage="(free_usage/free_quota_per_month)*100 || 0"></el-progress>
-                            <span v-if="languageMcs === 'en'" class="tip">{{free_usage | byteStorage}}GB of {{free_quota_per_month | byteStorage}}GB used (free storage) </span>
+                            <span v-if="languageMcs === 'en'" class="tip">{{free_usage | byteStorage}}GB of {{free_quota_per_month | byteStorage}}GB used (free storage)</span>
                             <span v-else class="tip">目前使用量：{{free_usage | byteStorage}}GB（免费储存空间配额：{{free_quota_per_month | byteStorage}}GB）</span>
                         </div>
                         <div class="fes-icon-logo">
@@ -170,7 +171,7 @@ export default {
             let _this = this
             let head_title = ''
             let indexNow = Number(index)
-            sessionStorage.removeItem('dealsPaginationIndexMain')
+            sessionStorage.removeItem('dealsPaginationIndex')
             switch (indexNow) {
                 case 2:
                     localStorage.removeItem('tabTask_name')
@@ -329,6 +330,7 @@ export default {
 
     }
     .header_logo{
+        position: relative;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -343,6 +345,12 @@ export default {
                 width: 100%;
                 height: auto;
             }
+        }
+        .beta{
+            position: absolute;
+            width: 60px;
+            right: 0;
+            top: 0.75rem;
         }
         .header_btn{
             display: flex;
@@ -712,7 +720,7 @@ export default {
         display: block;
     }
     .sidebar-el-menu {
-        width: 100%;
+        width: 100%;;
       .menu_list{
         // height: calc(100% - 0.5rem);
         padding: 50px 0 0;

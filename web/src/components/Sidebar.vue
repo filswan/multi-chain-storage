@@ -22,6 +22,10 @@
                                 <i :class="item.icon" style="font-size:15px"></i>
                                 <span slot="title">{{ item.title }}</span>
                             </el-menu-item>
+                             <el-menu-item @click="documentLink">
+                                <i class="el-icon-s-documentation" style="font-size:15px; "></i>
+                                <span slot="title">{{$t('route.documentation')}}</span>
+                            </el-menu-item>
                             <el-menu-item class="mobileShow" v-if="metaAddress">
                                 <i class="el-icon-switch-button" style="font-size:15px; "></i>
                                 <span slot="title" @click="signOutFun">{{$t('fs3.Disconnect')}}</span>
@@ -64,13 +68,6 @@ export default {
             lanShow: false,
             bodyWidth: document.body.clientWidth<999?true:false,
             items: [
-                // {
-                //     icon: 'el-icon-s-upload',
-                //     index: '0',
-                //     title: this.$t('route.Upload_files'),
-                //     name: 'upload_file',
-                //     type: ''
-                // },
                 {
                     icon: 'el-icon-s-deal',
                     index: '1',
@@ -78,13 +75,6 @@ export default {
                     name: 'my_files',
                     type: ''
                 },
-                // {
-                //     icon: 'el-icon-search',
-                //     index: '2',
-                //     title: this.$t('route.Search_file'),
-                //     name: 'Search_file',
-                //     type: ''
-                // },
                 {
                     icon: 'el-icon-s-billing',
                     index: '5',
@@ -92,27 +82,13 @@ export default {
                     name: 'billing',
                     type: ''
                 },
-                // {
-                //     icon: 'el-icon-s-myAccount',
-                //     index: '3',
-                //     title: this.$t('route.myAccount'),
-                //     name: 'settings',
-                //     type: ''
-                // },
                 {
                     icon: 'el-icon-s-Stats',
                     index: '4',
                     title: this.$t('route.Stats'),
                     name: 'Stats',
                     type: ''
-                },
-                {
-                    icon: 'el-icon-s-documentation',
-                    index: '',
-                    title: this.$t('route.documentation'),
-                    name: '',
-                    type: ''
-                },
+                }
             ],
             share_img1: require('@/assets/images/landing/medium.png'),
             share_img2: require('@/assets/images/landing/twitter.png'),
@@ -166,6 +142,9 @@ export default {
         // });
     },
     methods: {
+        documentLink() {
+            window.open('https://docs.filswan.com/multi-chain-storage/overview', "_blank")
+        },
         sidebarLiIndex(nameNow, index, typeNow) {
             let _this = this
             let head_title = ''
@@ -181,11 +160,6 @@ export default {
                     localStorage.removeItem('myProfileActive')
                     break;
                 default:
-            }
-            if(!nameNow && !indexNow){
-                window.open('https://docs.filswan.com/multi-chain-storage/overview', "_blank")
-                window.location.reload();
-                return false
             }
             _this.$store.dispatch("setRouterMenu", Number(index));
             if(typeNow){
@@ -709,7 +683,12 @@ export default {
   .sidebar{
     transition: all 0.3s ease;
     .mobileShow{
-        display: block;
+         display: flex;
+        &:hover{
+            i{
+                color: #fff;
+            }
+        }
     }
     .sidebar-el-menu {
         width: 100%;

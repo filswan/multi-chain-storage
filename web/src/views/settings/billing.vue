@@ -304,8 +304,7 @@
                 axios.get(upload_api)
                 .then((json) => {
                     if(json.data.status == 'success'){
-                        _this.tableData = []
-                        _this.tableData = json.data.data.billing;
+                        _this.tableData = json.data.data.billing || [];
                         _this.tableData.map(item => {
                             item.txHashVis = false
                             item.payloadVis = false

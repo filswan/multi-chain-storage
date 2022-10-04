@@ -371,12 +371,12 @@
                                 let xhr = new XMLHttpRequest()
                                 xhr.open("POST", `${_this.baseAPIURL}api/v1/storage/ipfs/upload`, true);   // 设置xhr得请求方式和url。
                                 xhr.withCredentials = false
-                                const token = _this.$store.getters.accessToken
+                                const token = _this.$store.getters.mcsjwtToken
                                 if (token) {
-                                    // xhr.setRequestHeader(
-                                    // "Authorization",
-                                    // "Bearer " + _this.$store.getters.accessToken
-                                    // )
+                                    xhr.setRequestHeader(
+                                        "Authorization",
+                                        "Bearer " + _this.$store.getters.mcsjwtToken
+                                    )
                                 }
                                 let i = 0;
 

@@ -31,12 +31,16 @@ function Init(callback){
       if(!accounts){
         return false
       }
-      web3.eth.getAccounts().then(webAccounts => {
+      web3.eth.getAccounts().then(async webAccounts => {
         store.dispatch('setMetaAddress', webAccounts[0])
+        const chainId = await ethereum.request({ method: 'eth_chainId' })
+        store.dispatch('setMetaNetworkId', parseInt(chainId, 16))
         callback(webAccounts[0])
       })
-      .catch((error) => {
+      .catch(async (error) => {
         store.dispatch('setMetaAddress', accounts[0])
+        const chainId = await ethereum.request({ method: 'eth_chainId' })
+        store.dispatch('setMetaNetworkId', parseInt(chainId, 16))
         callback(accounts[0])
       })
     })

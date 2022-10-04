@@ -20,38 +20,40 @@
 </template>
 
 <script>
+  let that
   import NCWeb3 from "@/utils/web3";
+  import metaLogin from "@/utils/login";
   export default {
     name: 'login',
     data() {
       return {
-        fromEnter: ''
+        fromEnter: '',
+        account: null,
+        token: null,
+        address: null,
+        welcome: null
       }
     },
     methods: {
       signFun(){
-          let _this = this
-          if(!_this.metaAddress || _this.metaAddress == 'undefined'){
-              NCWeb3.Init(addr=>{
-                  _this.$nextTick(() => {
-                      _this.$store.dispatch('setMetaAddress', addr)
-                      _this.$emit("getMetamaskLogin", true)
-                  })
+          if(!that.metaAddress || that.metaAddress == 'undefined'){
+              NCWeb3.Init(async addr=>{
+                  that.$store.dispatch('setMetaAddress', addr)
+                  const l_status = await metaLogin.login()
+                  if(l_status) that.$emit("getMetamaskLogin", true)
               })
               return false
           }
       },
       walletInfo() {
-          let _this = this
-          if(!_this.metaAddress || _this.metaAddress == 'undefined'){
+          if(!that.metaAddress || that.metaAddress == 'undefined'){
               return false
           }
       },
       // 是否已登录
       isLogin() {
-        var _this = this
-        if (_this.metaAddress && (_this.networkID==80001 || _this.networkID == 97)) {
-          _this.$router.push({ path: '/my_files' })
+        if (that.metaAddress && (that.networkID==80001 || that.networkID == 97)) {
+          that.$router.push({ path: '/my_files' })
         }
       }
     },
@@ -67,8 +69,9 @@
       }
     },
     mounted() {
-      this.isLogin()
-      this.fromEnter = this.$route.query.redirect
+      that = this
+      that.isLogin()
+      that.fromEnter = that.$route.query.redirect
     }
   }
 </script>

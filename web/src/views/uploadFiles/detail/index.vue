@@ -330,7 +330,7 @@ export default {
             }
             axios.get(`${_this.baseAPIURL}api/v1/storage/deal/detail/${_this.dealId}?${QS.stringify(dataCid)}`, {headers: {
             // axios.get(`./static/detail_page_response.json`, {headers: {
-                    // 'Authorization':"Bearer "
+					'Authorization': "Bearer "+ _this.$store.getters.mcsjwtToken
             }}).then((response) => {
                 let json = response.data
                 let dao_signatureAll = 0
@@ -386,7 +386,7 @@ export default {
             }
             axios.get(`${_this.baseAPIURL}api/v1/storage/deal/log/${_this.logId}?${QS.stringify(obj)}`, {headers: {
             // axios.get(`./static/deal_logs.json`, {headers: {
-                    // 'Authorization':"Bearer "
+					'Authorization': "Bearer "+ _this.$store.getters.mcsjwtToken
             }}).then((response) => {
                 let json = response.data
                 _this.loadlogs = false

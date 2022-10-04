@@ -108,7 +108,11 @@ export default {
     },
     async getRequest(apilink) {
         try {
-            const response = await axios.get(apilink)
+            const response = await axios.get(apilink, {
+                  headers: {
+                    'Authorization': "Bearer "+ that.$store.getters.mcsjwtToken
+                },
+            })
             return response.data
         } catch (err) {
             console.error(err)

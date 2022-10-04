@@ -176,7 +176,11 @@
             },
             async sendRequest(apilink) {
                 try {
-                    const response = await axios.get(apilink)
+                    const response = await axios.get(apilink, {
+                        headers: {
+                            'Authorization': "Bearer "+ that.$store.getters.mcsjwtToken
+                        },
+                    })
                     return response.data
                 } catch (err) {
                     console.error(err)
@@ -184,7 +188,11 @@
             },
             async sendPostRequest(apilink, jsonObject) {
                 try {
-                    const response = await axios.post(apilink, jsonObject)
+                    const response = await axios.post(apilink, jsonObject, {
+                        headers: {
+                            'Authorization': "Bearer "+ that.$store.getters.mcsjwtToken
+                        },
+                    })
                     return response.data
                 } catch (err) {
                     console.error(err)

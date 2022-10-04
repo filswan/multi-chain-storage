@@ -32,7 +32,7 @@
 
             axios.get(stats_api, {
                 headers: {
-                //   'Authorization': "Bearer "+ this.$store.getters.accessToken
+                        'Authorization': "Bearer "+ this.$store.getters.mcsjwtToken
                 },
             }).then(res => {
                 this.list = this.deepClone(res.data.data)

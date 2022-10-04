@@ -695,8 +695,8 @@ export default {
 
         let wcid_api = `${_this.baseAPIURL}api/v1/storage/source_file_upload/${row.source_file_upload_id}?wallet_address=${_this.metaAddress}`
         axios.get(wcid_api, {
-            headers: {
-              // 'Authorization': "Bearer "+ _this.$store.getters.accessToken
+              headers: {
+                'Authorization': "Bearer "+ _this.$store.getters.mcsjwtToken
             },
         })
         .then((json) => {
@@ -741,9 +741,9 @@ export default {
       if(_this.metaAddress){
         _this.loading = true
         // 发起请求
-        axios.get(`${_this.baseAPIURL}api/v1/billing/deal/lockpayment/info?payload_cid=${_this.payRow.payload_cid}&source_file_upload_id=${_this.payRow.source_file_upload_id}&wallet_address=${_this.metaAddress}`,{
-            headers: {
-            // 'Authorization': "Bearer "
+        axios.get(`${_this.baseAPIURL}api/v1/billing/deal/lockpayment/info?payload_cid=${_this.payRow.payload_cid}&source_file_upload_id=${_this.payRow.source_file_upload_id}&wallet_address=${_this.metaAddress}`, {
+              headers: {
+                'Authorization': "Bearer "+ _this.$store.getters.mcsjwtToken
             },
         })
         .then((res) => {
@@ -869,8 +869,13 @@ export default {
         );
     },
     async sendPostRequest(apilink, jsonObject) {
+      let _this = this
         try {
-            const response = await axios.post(apilink, jsonObject)
+            const response = await axios.post(apilink, jsonObject, {
+                  headers: {
+                    'Authorization': "Bearer "+ _this.$store.getters.mcsjwtToken
+                },
+            })
             return response.data
         } catch (err) {
             console.error(err)
@@ -952,10 +957,10 @@ export default {
       let pay_api = `${_this.baseAPIURL}api/v1/events/logs/lock/${cid}?wallet_address=${_this.metaAddress}`
 
       axios.get(pay_api, {
-          headers: {
-            // 'Authorization': "Bearer "+ _this.$store.getters.accessToken
-          },
-      })
+        headers: {
+            'Authorization': "Bearer "+ _this.$store.getters.mcsjwtToken
+        },
+			})
       .then((json) => {
           if(json.data.status == 'success'){
             if(type){
@@ -988,7 +993,7 @@ export default {
         let sendDeal_api = `${_this.baseAPIURL}api/v1/storage/lotus/deal/${_this.expands[0]}?wallet_address=${_this.metaAddress}`
         axios.get(sendDeal_api, {
             headers: {
-                // 'Authorization': "Bearer "+ _this.$store.getters.accessToken
+                'Authorization': "Bearer "+ _this.$store.getters.mcsjwtToken
             },
         }).then(res => {
             if(res.data.status == 'success'){
@@ -1149,7 +1154,7 @@ export default {
 
         axios.get(storage_api, {
             headers: {
-                // 'Authorization': "Bearer "+ _this.$store.getters.accessToken
+                'Authorization': "Bearer "+ _this.$store.getters.mcsjwtToken
             },
         })
         .then((response) => {

@@ -287,7 +287,11 @@
                 let upload_api = `${_this.baseAPIURL}api/v1/billing?${QS.stringify(obj)}`
                 // let upload_api = `./static/response-billing.json?${QS.stringify(obj)}`;
 
-                axios.get(upload_api)
+                axios.get(upload_api, {
+                    headers: {
+                            'Authorization': "Bearer "+ _this.$store.getters.mcsjwtToken
+                    },
+				})
                 .then((json) => {
                     if(json.data.status == 'success'){
                         _this.tableData = json.data.data.billing || [];

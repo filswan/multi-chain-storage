@@ -27,6 +27,7 @@ async function sendPostRequest(apilink, jsonObject) {
         return response.data
     } catch (err) {
         console.error(err)
+        signOutFun()
     }
 }
 

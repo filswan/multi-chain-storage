@@ -583,9 +583,8 @@ export default {
             // networkChanged
             ethereum.on("chainChanged", function(accounts) {
                 // console.log('accounts', accounts)
-                _this.walletInfo()
-                _this.changeChaid(parseInt(accounts, 16))
-                // _this.signOutFun()
+                // _this.walletInfo()
+                _this.signOutFun()
             });
             // 监听metamask网络断开
             ethereum.on('disconnect', (code, reason) => {

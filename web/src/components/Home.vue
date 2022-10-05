@@ -113,7 +113,7 @@ export default {
         //     }
         // }
         this.init()
-        console.log('update time: 2022-10-04') 
+        console.log('update time: 2022-10-05') 
     }
 };
 </script>

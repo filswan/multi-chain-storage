@@ -180,10 +180,10 @@ export default {
             var _this = this;
 
             let params = {};
-            axios.post(_this.data_api+'auth/logout', params,{
+            axios.post(_this.data_api+'auth/logout', params, {
                 headers: {
-                  'Authorization': "Bearer "+_this.$store.getters.accessToken
-                },
+                        'Authorization': "Bearer "+ _this.$store.getters.mcsjwtToken
+                }	
             }).then((response) => {
                   if(response.data.status == 'success'){
                     _this.$store.dispatch("FedLogOut").then(() => {
@@ -221,6 +221,7 @@ export default {
         },
         signOutFun() {
             this.$store.dispatch('setMetaAddress', '')
+            this.$store.dispatch('setMCSjwtToken', '')
             this.$store.dispatch('setMetaNetworkId', 0)
             this.$store.dispatch('setMetaNetworkInfo', JSON.stringify({}))
             this.$router.push("/supplierAllBack");

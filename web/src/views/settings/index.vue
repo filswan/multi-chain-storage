@@ -140,10 +140,10 @@ export default {
                 wallet_address: _this.metaAddress
             }
             _this.loading = true
-            axios.post(process.env.BASE_API+'user/update_login_password', reqData,{
+            axios.post(process.env.BASE_API+'user/update_login_password', reqData, {
                 headers: {
-                //   'Authorization': "Bearer "+_this.$store.getters.accessToken
-                },
+                        'Authorization': "Bearer "+ _this.$store.getters.mcsjwtToken
+                }	
             }).then((response) => {
                 _this.loading = false
                 if (response.data.status == 'success') {

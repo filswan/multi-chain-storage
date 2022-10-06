@@ -23,7 +23,7 @@ service.interceptors.request.use(function (config) {
     // config.headers.userId = 74
 	// config.headers.accessToken = "1723113221611601ad4845f48209bfe8d2cacb54c43"
 	// config.headers['Authorization']  =  store.getters.accessToken
-	config.headers['Authorization'] = "Bearer"+ store.getters.accessToken;
+	config.headers['Authorization'] = "Bearer"+ store.getters.mcsjwtToken;
     // config.headers['Access-Control-Allow-Origin'] = '*'
     sessionStorage.time = 70
     return config

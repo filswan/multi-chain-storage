@@ -100,6 +100,7 @@ const ethereum = window.ethereum;
 // import bus from './bus';
 import networkChange from "@/components/networkChange"
 import NCWeb3 from "@/utils/web3";
+import metaLogin from "@/utils/login";
 import * as myAjax from "@/api/login";
 import axios from 'axios'
 import erc20_contract_json from "@/utils/ERC20.json";
@@ -254,15 +255,25 @@ export default {
                             ]
                 }).then((res)=>{
                     //添加成功
-                    _this.$store.dispatch('setMetaNetworkId', rows)
-                    if(_this.$route.name == 'my_files_detail') {
-                        _this.$router.push({ path: '/my_files' })
-                    }
-                    setTimeout(function(){window.location.reload()}, 200)
+                    // _this.$store.dispatch('setMetaNetworkId', rows)
+                    // if(_this.$route.name == 'my_files_detail') {
+                    //     _this.$router.push({ path: '/my_files' })
+                    // }
+                    // setTimeout(function(){window.location.reload()}, 200)
+                    // _this.changeChaid(rows)
                 }).catch((err)=>{
                     //添加失败
                 })
             }
+        },
+        async changeChaid(rows) {
+            let _this = this
+            _this.$store.dispatch('setMetaNetworkId', rows)
+            const l_status = await metaLogin.login()
+            if(_this.$route.name == 'my_files_detail') {
+                _this.$router.push({ path: '/my_files' })
+            }
+            if(l_status) setTimeout(function(){window.location.reload()}, 200)
         },
         shareTo(){
             window.open(`${this.baseAddressURL}address/${this.addrChild}`)
@@ -321,10 +332,10 @@ export default {
             var _this = this;
 
             let params = {};
-            axios.post(_this.data_api+'auth/logout', params,{
+            axios.post(_this.data_api+'auth/logout', params, {
                 headers: {
-                  'Authorization': "Bearer "+_this.$store.getters.accessToken
-                },
+                        'Authorization': "Bearer "+ _this.$store.getters.mcsjwtToken
+                }	
             }).then((response) => {
                 //   console.log('logout', response.data)
                   if(response.data.status == 'success'){
@@ -393,9 +404,10 @@ export default {
             let _this = this
             if(!_this.metaAddress || _this.metaAddress == 'undefined'){
                 NCWeb3.Init(addr=>{
-                    _this.$nextTick(() => {
+                    _this.$nextTick(async () => {
                         _this.$store.dispatch('setMetaAddress', addr)
-                        _this.$emit("getMetamaskLogin", true)
+                        const l_status = await metaLogin.login()
+                        if(l_status) _this.$emit("getMetamaskLogin", true)
                     })
                 })
                 return false
@@ -569,22 +581,26 @@ export default {
             let _this = this
             ethereum.on("accountsChanged", function(account) {
                 // console.log('account header:', account[0]);  //Once the account is switched, it will be executed here
-                if(_this.metaAddress && account[0]){
-                    web3.eth.getAccounts().then(accounts => {
-                        _this.addrChild = accounts[0]
-                        _this.walletInfo()
-                        _this.$store.dispatch('setMetaAddress', accounts[0])
-                        if(_this.$route.name == 'my_files_detail') _this.$router.push({ path: '/my_files' })
-                        _this.$router.go(0)
-                    })
-                }else{
+                // if(_this.metaAddress && account[0]){
+                //     web3.eth.getAccounts().then(accounts => {
+                //         _this.addrChild = accounts[0]
+                //         _this.walletInfo()
+                //         _this.$store.dispatch('setMetaAddress', accounts[0])
+                //         if(_this.$route.name == 'my_files_detail') _this.$router.push({ path: '/my_files' })
+                //         _this.$router.go(0)
+                //     })
+                // }else{
                     _this.signOutFun()
-                }
+                // }
             });
             // networkChanged
             ethereum.on("chainChanged", function(accounts) {
-                _this.walletInfo()
-                if(_this.$route.name == 'my_files_detail') _this.$router.push({ path: '/my_files' })
+                if(parseInt(accounts, 16) != 137) window.open('https://calibration-mcs.filswan.com/#/metamask_login')
+                else{
+                    _this.walletInfo()
+                    _this.changeChaid(parseInt(accounts, 16))
+                    if(_this.$route.name == 'my_files_detail') _this.$router.push({ path: '/my_files' })
+                }
             });
             // 监听metamask网络断开
             ethereum.on('disconnect', (code, reason) => {
@@ -594,6 +610,7 @@ export default {
         signOutFun() {
             this.addrChild = ''
             this.$store.dispatch('setMetaAddress', '')
+            this.$store.dispatch('setMCSjwtToken', '')
             this.$store.dispatch('setMetaNetworkId', 0)
             this.network.name = '';
             this.network.unit = '';
@@ -608,8 +625,8 @@ export default {
 
             axios.get(common_api, {
                 headers: {
-                    // 'Authorization': "Bearer "+ _this.$store.getters.accessToken
-                },
+                        'Authorization': "Bearer "+ _this.$store.getters.mcsjwtToken
+                }	
             })
             .then((json) => {
                 if(json.data.status == 'success'){

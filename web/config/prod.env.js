@@ -9,5 +9,6 @@ module.exports = {
   BASE_CALIBRATION_ADDRESS: '"https://calibration.filscan.io/tipset/dsn-detail"',
   BASE_MUMBAI_ADDRESS: '"https://mumbai.polygonscan.com/"',
   BASE_BSC_ADDRESS: '"https://testnet.bscscan.com/"',
-  BASE_POLYGON_ADDRESS: '"https://polygonscan.com/"'
+  BASE_POLYGON_ADDRESS: '"https://polygonscan.com/"',
+  BASE_ECO_API: '"https://ecosystem-api.multichain.storage/"'
 }

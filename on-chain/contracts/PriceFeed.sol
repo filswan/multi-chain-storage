@@ -52,6 +52,7 @@ contract PriceFeed is IPriceFeed {
         // we multiply 10^12 because USDC has 6 decimal instead of 18
         // now we have the price of 1 WFIL, so we multiply by amount / 18 decimals
         // convert 0.001 WFIL to USD * 10^12 * 10^3 * amount / 10^18
-        return retAmount.mul(10**(18-TEMP_DECIMAL)).mul(10**(18-_decimal)).mul(amount).div(10**18);
+        // return retAmount.mul(10**(18-TEMP_DECIMAL)).mul(10**(18-_decimal)).mul(amount).div(10**18);
+        return retAmount.mul(10**(18-TEMP_DECIMAL)).mul(amount).div(10**(18-_decimal));
     }
 }

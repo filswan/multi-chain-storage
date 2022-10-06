@@ -32,8 +32,8 @@ Vue.prototype.$status_color = status_color;
 Vue.config.productionTip = false
 Vue.prototype.data_api=process.env.NODE_ENV === 'production' ? process.env.BASE_API : '/api/';
 let netData = sessionStorage.getItem('networkID') || 0
-Vue.prototype.baseAPIURL = netData == 97?process.env.BASE_PAYMENT_GATEWAY_BSC_API:netData == 137?process.env.BASE_PAYMENT_GATEWAY_POLYGON_API:process.env.BASE_PAYMENT_GATEWAY_API
-Vue.prototype.baseAddressURL = netData == 97?process.env.BASE_BSC_ADDRESS:netData == 137?process.env.BASE_POLYGON_ADDRESS:process.env.BASE_MUMBAI_ADDRESS
+Vue.prototype.baseAPIURL = netData == 97?process.env.BASE_PAYMENT_GATEWAY_BSC_API:netData == 80001?process.env.BASE_PAYMENT_GATEWAY_API:process.env.BASE_PAYMENT_GATEWAY_POLYGON_API
+Vue.prototype.baseAddressURL = netData == 97?process.env.BASE_BSC_ADDRESS:netData == 80001?process.env.BASE_MUMBAI_ADDRESS:process.env.BASE_POLYGON_ADDRESS
 
 import './utils/web3.min.js';
 import Web3 from 'web3'

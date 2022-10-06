@@ -313,18 +313,6 @@
                         return;
                 }
             },
-            signFun(){
-                let _this = this
-                if(!_this.metaAddress || _this.metaAddress == 'undefined'){
-                    NCWeb3.Init(addr=>{
-                        _this.$nextTick(() => {
-                            _this.$store.dispatch('setMetaAddress', addr)
-                            _this.$emit("getMetamaskLogin", true)
-                        })
-                    })
-                    return false
-                }
-            },
             closeDia() {
                 this.$emit('getUploadDialog', false)
             },
@@ -383,12 +371,12 @@
                                 let xhr = new XMLHttpRequest()
                                 xhr.open("POST", `${_this.baseAPIURL}api/v1/storage/ipfs/upload`, true);   // 设置xhr得请求方式和url。
                                 xhr.withCredentials = false
-                                const token = _this.$store.getters.accessToken
+                                const token = _this.$store.getters.mcsjwtToken
                                 if (token) {
-                                    // xhr.setRequestHeader(
-                                    // "Authorization",
-                                    // "Bearer " + _this.$store.getters.accessToken
-                                    // )
+                                    xhr.setRequestHeader(
+                                        "Authorization",
+                                        "Bearer " + _this.$store.getters.mcsjwtToken
+                                    )
                                 }
                                 let i = 0;
 
@@ -629,8 +617,13 @@
                 }
             },
             async sendRequest(apilink) {
+                let _this = this
                 try {
-                    const response = await axios.get(apilink)
+                    const response = await axios.get(apilink, {
+                        headers: {
+                                'Authorization': "Bearer "+ _this.$store.getters.mcsjwtToken
+                        }	
+                    })
                     return response.data
                 } catch (err) {
                     console.error(err)

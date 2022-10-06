@@ -20,7 +20,8 @@ const app = {
         metaNetworkInfo: sessionStorage.getItem('metaNetworkInfo') || {},
         reverse: localStorage.getItem('reverse') || 0,
         free_usage: sessionStorage.getItem('free_usage') || 0,
-        free_quota_per_month: sessionStorage.getItem('free_quota_per_month') || 0
+        free_quota_per_month: sessionStorage.getItem('free_quota_per_month') || 0,
+        mcsjwtToken: sessionStorage.getItem('mcs_main_jwtToken') || ''
     },
     mutations: {
         TOGGLE_SIDEBAR: state => {
@@ -86,6 +87,10 @@ const app = {
         SET_FREEQUOTE: (state, free_quota_per_month) => {
             state.free_quota_per_month = free_quota_per_month
             sessionStorage.setItem('free_quota_per_month', free_quota_per_month)
+        },
+        SET_MCSJWTTOKEN: (state, mcsjwtToken) => {
+            state.mcsjwtToken = mcsjwtToken
+            sessionStorage.setItem('mcs_main_jwtToken', mcsjwtToken)
         }
     },
     actions: {
@@ -133,6 +138,9 @@ const app = {
         },
         setFreeQuote({commit}, free_quota_per_month) {
             commit('SET_FREEQUOTE', free_quota_per_month)
+        },
+        setMCSjwtToken({commit}, mcsjwtToken) {
+            commit('SET_MCSJWTTOKEN', mcsjwtToken)
         }
     }
 }

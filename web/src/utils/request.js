@@ -21,7 +21,7 @@ service.interceptors.request.use(function (config) {
     // config.headers.userId = store.getters.userId
 	// config.headers.accessToken = store.getters.accessToken
 	// config.headers['Authorization']  =  store.getters.accessToken
-	config.headers['Authorization']  =  "Bearer  "+ store.getters.accessToken;
+	config.headers['Authorization']  =  "Bearer  "+ store.getters.mcsjwtToken;
     sessionStorage.time = 70
     return config
 }, function (error) {

@@ -7,5 +7,6 @@ module.exports = {
   BASE_MAINNET_ADDRESS: '"https://filscan.io/tipset/dsn-detail"',
   BASE_CALIBRATION_ADDRESS: '"https://calibration.filscan.io/tipset/dsn-detail"',
   BASE_POLYGON_ADDRESS: '"https://mumbai.polygonscan.com/"',
-  BASE_BSC_ADDRESS: '"https://testnet.bscscan.com/"'
+  BASE_BSC_ADDRESS: '"https://testnet.bscscan.com/"',
+  BASE_ECO_API: '"https://ecosystem-api.multichain.storage/"'
 }

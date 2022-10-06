@@ -583,8 +583,12 @@ export default {
             // networkChanged
             ethereum.on("chainChanged", function(accounts) {
                 // console.log('accounts', accounts)
-                // _this.walletInfo()
-                _this.signOutFun()
+                // _this.signOutFun()
+                if(parseInt(accounts, 16) == 97) window.open('https://www.multichain.storage/#/metamask_login')
+                else{
+                    _this.walletInfo()
+                    _this.changeChaid(parseInt(accounts, 16))
+                }
             });
             // 监听metamask网络断开
             ethereum.on('disconnect', (code, reason) => {

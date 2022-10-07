@@ -263,12 +263,17 @@ export default {
         },
         async changeChaid(rows) {
             let _this = this
+            if(!_this.metaAddress || _this.metaAddress == 'undefined') return false
             _this.$store.dispatch('setMetaNetworkId', rows)
-            const l_status = await metaLogin.login()
-            if(_this.$route.name == 'my_files_detail') {
-                _this.$router.push({ path: '/my_files' })
+            if(_this.networkID == 137) window.open('https://www.multichain.storage/#/metamask_login')
+            else if(_this.networkID == 97 || _this.networkID == 80001){
+                const l_status = await metaLogin.login()
+                if(l_status) _this.$emit("getMetamaskLogin", true)
+                if(_this.$route.name == 'my_files_detail') {
+                    _this.$router.push({ path: '/my_files' })
+                }
+                if(l_status) setTimeout(function(){window.location.reload()}, 200)
             }
-            if(l_status) setTimeout(function(){window.location.reload()}, 200)
         },
         shareTo(){
             window.open(`${this.baseAddressURL}address/${this.addrChild}`)
@@ -401,8 +406,11 @@ export default {
                 NCWeb3.Init(addr=>{
                     _this.$nextTick(async () => {
                         _this.$store.dispatch('setMetaAddress', addr)
-                        const l_status = await metaLogin.login()
-                        if(l_status) _this.$emit("getMetamaskLogin", true)
+                        if(_this.networkID == 137) window.open('https://www.multichain.storage/#/metamask_login')
+                        else if(_this.networkID == 97 || _this.networkID == 80001){
+                            const l_status = await metaLogin.login()
+                            if(l_status) _this.$emit("getMetamaskLogin", true)
+                        }
                     })
                 })
                 return false
@@ -584,6 +592,7 @@ export default {
             ethereum.on("chainChanged", function(accounts) {
                 // console.log('accounts', accounts)
                 // _this.signOutFun()
+                _this.$store.dispatch('setMCSjwtToken', '')
                 if(parseInt(accounts, 16) == 137) window.open('https://www.multichain.storage/#/metamask_login')
                 else{
                     _this.walletInfo()

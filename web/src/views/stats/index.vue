@@ -1,7 +1,10 @@
 <template>
     <div class="statsCont" v-loading="loading">
         <div :class="{'opacity': loading, 'stats': true}">
-            <div class="title">{{generateState('network_overview')}}</div>
+            <div class="title">
+                <!-- {{generateState('network_overview')}} -->
+                Network overview
+            </div>
             <div class="main">
                 <div v-for="(item,key,index) in list" :key="index" class="info">
                     <img src="@/assets/images/icon_shangzhang.png" alt="">
@@ -10,40 +13,23 @@
                     </div>
                     <div class="info-num">{{ item.num | NumStatsFormat }}</div>
                 </div>
+                <div v-for="(item, index) in MCS_Dataset" :key="index+8" class="info">
+                    <img src="@/assets/images/icon_shangzhang.png" alt="">
+                    <div class="info-up">
+                        {{item.desc}}
+                    </div>
+                    <div class="info-num">{{item.data}}</div>
+                </div>
             </div>
         </div>
 
-        
         <el-row :class="{'opacity': loading_ecosystem, 'Eco': true}">
             <el-col :span="24">
-                <div class="gradient"></div>
-                <div class="subtitle">Multichain Storage Dataset</div>
-                <el-row :gutter="20" class="mcs_dataset">
-                    <el-col :xs="24" :sm="12" :md="8" :lg="6" v-for="(item, index) in MCS_Dataset" :key="index">
-                        <div class="space">
-                            <div class="tit">
-                                <svg preserveAspectRatio="none">
-                                    <defs>
-                                        <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
-                                            <stop offset="0%" style="stop-color:#1c73ff; stop-opacity:1" />
-                                            <stop offset="100%" style="stop-color:#78e4ff; stop-opacity:1" />
-                                        </linearGradient>
-                                    </defs>
-                                    <text x="0" y="36" fill="url(#grad)">{{item.data}}</text>
-                                </svg>
-                            </div>
-                            <div class="sub">{{item.desc}}</div>
-                        </div>
-                    </el-col>
-                </el-row>
                 <div class="subtitle">Collaborators</div>
-                <el-row class="collaborators">
-                    <el-col v-for="(item, index) in collaboratorsData" :key="index">
-                        <a :href="item.link" target="_blank"><img :src="item.img" alt="logo" /></a>
-                    </el-col>
-                </el-row>
             </el-col>
         </el-row>
+
+        <CarouselContainer :slide-list="collaboratorsData" currentIndex="1"></CarouselContainer>
     </div>
 </template>
 
@@ -52,8 +38,12 @@
     // import {getStatsStorage} from "@/api/stats";
     import axios from 'axios'
     import { generateState } from '@/utils/i18n'
+    import CarouselContainer from '@/components/CarouselContainer.vue'
     export default {
         name: "stats",
+        components: {
+            CarouselContainer,
+        },
         data() {
             return {
                 list: [],
@@ -121,15 +111,15 @@
                 MCS_Dataset: [
                     {
                         data: '-',
-                        desc: 'Total root CIDs uploaded to MCS. This value does not include sub objects references.'
+                        desc: 'Total sealed storage'
                     },
                     {
                         data: '-',
-                        desc: 'Active successful storage deals on the Filecoin Network'
+                        desc: 'Total pinned IPFS storage'
                     },
                     {
                         data: '-',
-                        desc: 'Total sealed storage contributed to Filecoin including a 5x replication'
+                        desc: 'Total root CIDs uploaded'
                     },
                     {
                         data: '-',
@@ -137,15 +127,15 @@
                     },
                     {
                         data: '-',
-                        desc: 'Total number of object references provided by every root CID in the network.'
+                        desc: 'Total reference by every root'
                     },
                     {
                         data: '-',
-                        desc: 'Total pinned IPFS storage for hot retrieval from any IPFS gateway. This data is not stored on Filecoin'
+                        desc: 'Active successful storage'
                     },
                     {
                         data: '-',
-                        desc: 'Total storage providers receiving deals from our MCS node'
+                        desc: 'Total storage providers'
                     }
                 ]
             }
@@ -175,7 +165,7 @@
                     return response.data
                 } catch (err) {
                     console.error(err, err.response)
-                    return err.response.data
+                    return false
                 }
             },
             async getStats() {
@@ -196,80 +186,80 @@
                         that.list[item].num = res.data.data[item]
                         switch (item) {
                             case 'average_cost_push_message' :
-                                switch (language) {
-                                    case 'cn' :
-                                        that.list[item].title = '平均消息推送费用'
-                                        break
-                                    case 'en' :
+                                // switch (language) {
+                                //     case 'cn' :
+                                //         that.list[item].title = '平均消息推送费用'
+                                //         break
+                                //     case 'en' :
                                         that.list[item].title = 'Average Push Message Cost'
-                                }
+                                // }
                                 break
                             case 'average_data_cost_sealing_1TB' :
-                                switch (language) {
-                                    case 'cn' :
-                                        that.list[item].title = '每TiB质押费'
-                                        break
-                                    case 'en' :
+                                // switch (language) {
+                                //     case 'cn' :
+                                //         that.list[item].title = '每TiB质押费'
+                                //         break
+                                //     case 'en' :
                                         that.list[item].title = 'Pledge Collateral'
-                                }
+                                // }
                                 break
                             case 'average_gas_cost_sealing_1TB' :
-                                switch (language) {
-                                    case 'cn' :
-                                        that.list[item].title = '平均封装手续费'
-                                        break
-                                    case 'en' :
+                                // switch (language) {
+                                //     case 'cn' :
+                                //         that.list[item].title = '平均封装手续费'
+                                //         break
+                                //     case 'en' :
                                         that.list[item].title = 'Cost of Sealing'
-                                }
+                                // }
                                 break
                             case 'average_min_piece_size' :
-                                switch (language) {
-                                    case 'cn' :
-                                        that.list[item].title = '平均最小文件'
-                                        break
-                                    case 'en' :
+                                // switch (language) {
+                                //     case 'cn' :
+                                //         that.list[item].title = '平均最小文件'
+                                //         break
+                                //     case 'en' :
                                         that.list[item].title = 'Average Minimum Piece Size'
-                                }
+                                // }
                                 that.list[item].num = res.data.data[item]?res.data.data[item]:'0 GiB'
                                 break
                             case 'average_price_per_GB_per_year' :
-                                switch (language) {
-                                    case 'cn' :
-                                        that.list[item].title = '平均数据存储价格'
-                                        break
-                                    case 'en' :
+                                // switch (language) {
+                                //     case 'cn' :
+                                //         that.list[item].title = '平均数据存储价格'
+                                //         break
+                                //     case 'en' :
                                         that.list[item].title = 'Average Price'
-                                }
+                                // }
                                 that.list[item].num = res.data.data[item]?res.data.data[item]:'0 FIL/GiB/year'
                                 break
                             case 'average_verified_price_per_GB_per_year' :
-                                switch (language) {
-                                    case 'cn' :
-                                        that.list[item].title = '平均真实数据存储价格'
-                                        break
-                                    case 'en' :
+                                // switch (language) {
+                                //     case 'cn' :
+                                //         that.list[item].title = '平均真实数据存储价格'
+                                //         break
+                                //     case 'en' :
                                         that.list[item].title = 'Average Verified Price'
-                                }
+                                // }
                                 that.list[item].num = res.data.data[item]?res.data.data[item]:'0 FIL/GiB/year'
                                 break
                             case 'historical_average_price_regular' :
-                                switch (language) {
-                                    case 'cn' :
-                                        that.list[item].title = '历史平均数据存储价格'
-                                        break
-                                    case 'en' :
+                                // switch (language) {
+                                //     case 'cn' :
+                                //         that.list[item].title = '历史平均数据存储价格'
+                                //         break
+                                //     case 'en' :
                                         that.list[item].title = 'Historical Average Regular Price'
-                                }
+                                // }
                                 that.list[item].num = res.data.data[item]?res.data.data[item]:'0 FIL/GiB/100 deals'
                                 break
                             case 'historical_average_price_verified' :
-                                switch (language) {
-                                    case 'cn' :
-                                        that.list[item].title = '历史平均真实数据存储价格'
-                                        break
-                                    case 'en' :
+                                // switch (language) {
+                                //     case 'cn' :
+                                //         that.list[item].title = '历史平均真实数据存储价格'
+                                //         break
+                                //     case 'en' :
                                         that.list[item].title = 'Historical Average Verified Price'
-                                }
+                                // }
                                 that.list[item].num = res.data.data[item]?res.data.data[item]:'0 FIL/GiB/100 deals'
                                 break
                         }
@@ -293,17 +283,17 @@
             dataset(data, i){
                 switch(i){
                     case 0:
-                        return that.NumFormat(data.cid_count)
-                    case 1:
-                        return that.NumFormat(data.active_deal)
-                    case 2:
                         return that.byteChange(data.sealed_storage)
+                    case 1:
+                        return that.byteChange(data.pinned_ipfs_size)
+                    case 2:
+                        return that.NumFormat(data.cid_count)
                     case 3:
                         return that.NumFormat(data.wallet_count)
                     case 4:
                         return that.NumFormat(data.cid_object_reference)
                     case 5:
-                        return that.byteChange(data.pinned_ipfs_size)
+                        return that.NumFormat(data.active_deal)
                     case 6:
                         return that.NumFormat(data.miner_count)
                     default:
@@ -348,7 +338,9 @@
     position: relative;
     padding: 0.3rem 0.2rem;
     background-color: #000;
-    background-image: url(../../assets/images/dashboard/bg_top.png), url(../../assets/images/dashboard/bg_bottom.png);
+    background-image: 
+        url(../../assets/images/dashboard/bg_top.png), 
+        url(../../assets/images/dashboard/bg_bottom.png);
     background-position: left top, right bottom;
     background-repeat: no-repeat, no-repeat;
     background-size: 27%, 22%;
@@ -357,7 +349,7 @@
     }
     .stats {
         .title {
-            margin: 0 0.1rem;
+            margin: 0 0.2rem;
             font-size: 0.22rem;
             font-weight: 700;
             color: #fff;
@@ -380,13 +372,13 @@
             img{
                 display: block;
                 width: 0.44rem;
-                margin: 0 auto 0.3rem;
+                margin: 0 auto 0.15rem;
             }
         }
 
         .info {
-            width: calc(33.33% - 0.2rem);
-            padding: 0.5rem 0;
+            width: calc(25% - 0.2rem);
+            padding: 0.2rem 0;
             min-height: 100px;
             display: flex;
             justify-content: center;
@@ -396,6 +388,18 @@
             border-radius: 0.2rem;
             margin: 0.1rem;
             line-height: 1;
+            @media screen and (max-width: 1260px) {
+                width: calc(25% - 0.2rem);
+            }
+            @media screen and (max-width: 1024px) {
+                width: calc(33.33% - 0.2rem);
+            }
+            @media screen and (max-width: 768px) {
+                width: calc(50% - 0.2rem);
+            }
+            @media screen and (max-width: 441px) {
+                width: calc(100% - 0.2rem);
+            }
         }
 
         .info-up {
@@ -421,7 +425,7 @@
         opacity: 0;
     }
     .Eco /deep/{
-        padding: 0.1rem;
+        padding: 0.1rem 0.2rem 0;
         font-size: 0.22rem;
         font-weight: 700;
         color: #fff;
@@ -444,7 +448,7 @@
             }
         }
         .subtitle {
-            padding: 20px 0 10px;
+            padding: 20px 0 0;
             font-size: 22px;
             font-weight: 600;
             @media screen and (max-width: 1600px) {
@@ -569,7 +573,6 @@
                 }
             }
             .info {
-                width: calc(100%);
                 display: flex;
                 justify-content: center;
                 /*align-items: center;*/

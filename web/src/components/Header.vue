@@ -269,11 +269,14 @@ export default {
         async changeChaid(rows) {
             let _this = this
             _this.$store.dispatch('setMetaNetworkId', rows)
-            const l_status = await metaLogin.login()
-            if(_this.$route.name == 'my_files_detail') {
-                _this.$router.push({ path: '/my_files' })
+            if(_this.networkID == 97 || _this.networkID == 80001) window.open('https://calibration-mcs.filswan.com/#/metamask_login')
+            else if(_this.networkID == 137){
+                const l_status = await metaLogin.login()
+                if(_this.$route.name == 'my_files_detail') {
+                    _this.$router.push({ path: '/my_files' })
+                }
+                if(l_status) setTimeout(function(){window.location.reload()}, 200)
             }
-            if(l_status) setTimeout(function(){window.location.reload()}, 200)
         },
         shareTo(){
             window.open(`${this.baseAddressURL}address/${this.addrChild}`)
@@ -406,8 +409,11 @@ export default {
                 NCWeb3.Init(addr=>{
                     _this.$nextTick(async () => {
                         _this.$store.dispatch('setMetaAddress', addr)
-                        const l_status = await metaLogin.login()
-                        if(l_status) _this.$emit("getMetamaskLogin", true)
+                        if(_this.networkID == 97 || _this.networkID == 80001) window.open('https://calibration-mcs.filswan.com/#/metamask_login')
+                        else if(_this.networkID == 137){
+                            const l_status = await metaLogin.login()
+                            if(l_status) _this.$emit("getMetamaskLogin", true)
+                        }
                     })
                 })
                 return false
@@ -595,7 +601,8 @@ export default {
             });
             // networkChanged
             ethereum.on("chainChanged", function(accounts) {
-                if(parseInt(accounts, 16) != 137) window.open('https://calibration-mcs.filswan.com/#/metamask_login')
+                _this.$store.dispatch('setMCSjwtToken', '')
+                if(parseInt(accounts, 16) == 97 || parseInt(accounts, 16) == 80001) window.open('https://calibration-mcs.filswan.com/#/metamask_login')
                 else{
                     _this.walletInfo()
                     _this.changeChaid(parseInt(accounts, 16))
@@ -659,7 +666,7 @@ export default {
                     )
                     .then((balance) => {
                         let balanceAll = web3.utils.fromWei(balance, 'ether')
-                        console.log('balance', balanceAll)
+                        // console.log('balance', balanceAll)
                         _this.priceAccound = Number(balanceAll).toFixed(0)
                     })
                     .catch((error) => {

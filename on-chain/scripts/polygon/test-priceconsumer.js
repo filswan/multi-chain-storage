@@ -1,11 +1,11 @@
 const { ethers, upgrades } = require('hardhat')
 
-const CONSULT_AMOUNT = '0.000001'
+const CONSULT_AMOUNT = '1'
 
 async function main() {
   const PriceFeed = await ethers.getContractFactory('ChainlinkPriceFeed')
   const priceFeed = PriceFeed.attach(
-    '0xF740299a8D09642F83BA66254569521f7944E827',
+    '0xFC8B846fEd57579F91973F0561a08a235A39a8dA',
   )
 
   console.log('priceFeed address:', priceFeed.address)

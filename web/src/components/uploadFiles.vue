@@ -287,7 +287,7 @@
         },
         methods: {
             calculation(type){
-                this.ruleForm.storage_cost = this.ruleForm.file_size_byte * this.ruleForm.duration * this.storage / 365
+                this.ruleForm.storage_cost = this.ruleForm.file_size_byte * this.ruleForm.duration * this.storage
                 let _price = this.ruleForm.storage_cost * this.biling_price
                 let number_price = Number(_price).toFixed(9)
                 this.ruleForm.amount_minprice = number_price > 0.000000001 ? number_price : '0.0000000005'

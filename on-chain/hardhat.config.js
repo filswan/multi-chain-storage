@@ -110,6 +110,12 @@ module.exports = {
       gas: 2100000,
       gasPrice: 8000000000,
     },
+    mumbai: {
+      url: process.env.MUMBAI_RPC,
+      accounts: [process.env.PRIVATE_KEY],
+      gas: 2100000,
+      gasPrice: 8000000000,
+    },
   },
   solidity: {
     compilers: [

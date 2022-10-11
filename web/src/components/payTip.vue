@@ -190,7 +190,7 @@
             },
             getData() {
                 let _this = this
-                _this.payRow.storage_cost = _this.payRow.file_size_byte * _this.payRow.duration * _this.storage / 365 
+                _this.payRow.storage_cost = _this.payRow.file_size_byte * _this.payRow.duration * _this.storage
                 let _price = _this.payRow.storage_cost * _this.biling_price
                 let number_price = Number(_price).toFixed(6)
                 _this.payRow.amount_minprice = number_price > 0.000001 ? number_price : '0.0000005'

@@ -47,8 +47,12 @@
                     }
                     that.$store.dispatch('setMetaNetworkInfo', networkCont)
                   }
-                  const l_status = await metaLogin.login()
-                  if(l_status) that.$emit("getMetamaskLogin", true)
+                  
+                  if(that.networkID == 97 || that.networkID == 80001) window.open('https://calibration-mcs.filswan.com/#/metamask_login')
+                  else if(that.networkID == 137){
+                      const l_status = await metaLogin.login()
+                      if(l_status) that.$emit("getMetamaskLogin", true)
+                  }
               })
               return false
           }

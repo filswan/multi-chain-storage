@@ -39,8 +39,7 @@
           if(!that.metaAddress || that.metaAddress == 'undefined'){
               NCWeb3.Init(async addr=>{
                   that.$store.dispatch('setMetaAddress', addr)
-                  if(that.networkID == 137) window.open('https://www.multichain.storage/#/metamask_login')
-                  else if(that.networkID == 97 || that.networkID == 80001){
+                  if(that.networkID == 97 || that.networkID == 80001){
                     const l_status = await metaLogin.login()
                     if(l_status) that.$emit("getMetamaskLogin", true)
                   }
@@ -176,6 +175,9 @@
           line-height: 1.5;
           color: red;
           margin: 0.1rem 0 0;
+          @media screen and (min-width: 1600px){
+              font-size: 14px;
+          }
           @media screen and (max-width:600px){
               font-size: 12px;
           }

@@ -441,6 +441,8 @@ export default {
         toptip_01: '您的钱包被错误地连接到',
         toptip_02: '网络。使用我们的网站，请切换到',
         toptip_03: '连接到您的MetaMask钱包',
+        toptip_04: '如果您想访问',
+        toptip_04_1: 'Testnet，请单击',
         toptip_Network: 'Polygon Mainnet',
         title: '连接您的钱包。',
         MetaMask: 'MetaMask',

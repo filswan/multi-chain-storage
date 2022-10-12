@@ -435,7 +435,7 @@ export default {
         toptip_01: 'Your wallet is wrongly connected to',
         toptip_02: 'Network. To use our site, please switch to',
         toptip_03: 'Connect to your MetaMask Wallet',
-        toptip_04: 'If you would like to visit',
+        toptip_04: 'If you would like to visit MCS',
         toptip_04_1: 'Testnet, please click',
         toptip_Network: 'Polygon Mainnet',
         title: 'Connect your wallet.',

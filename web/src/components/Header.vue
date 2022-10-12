@@ -142,7 +142,7 @@ export default {
             networkC: false
         };
     },
-    props: ["meta"],
+    props: ["meta", "netId"],
     computed: {
         email() {
             return this.$store.state.user.email
@@ -199,6 +199,9 @@ export default {
         },
         meta: function() {
             this.walletInfo()
+        },
+        netId: function() {
+            if(this.netId == 80001 || this.netId == 97) this.getNetworkC(false, this.netId)
         }
     },
     methods: {
@@ -256,8 +259,10 @@ export default {
                 }).then((res)=>{
                     //添加成功
                     // _this.changeChaid(rows)
+                    _this.$emit("getNetId", 0)
                 }).catch((err)=>{
                     //添加失败
+                    _this.$emit("getNetId", 0)
                 })
             }
         },
@@ -265,14 +270,13 @@ export default {
             let _this = this
             if(!_this.metaAddress || _this.metaAddress == 'undefined') return false
             _this.$store.dispatch('setMetaNetworkId', rows)
-            if(_this.networkID == 137) window.open('https://www.multichain.storage/#/metamask_login')
-            else if(_this.networkID == 97 || _this.networkID == 80001){
+            if(_this.networkID == 97 || _this.networkID == 80001){
                 const l_status = await metaLogin.login()
                 if(l_status) _this.$emit("getMetamaskLogin", true)
-                if(_this.$route.name == 'my_files_detail') {
-                    _this.$router.push({ path: '/my_files' })
-                }
                 if(l_status) setTimeout(function(){window.location.reload()}, 200)
+            }
+            if(_this.$route.name == 'my_files_detail') {
+                _this.$router.push({ path: '/my_files' })
             }
         },
         shareTo(){
@@ -406,8 +410,7 @@ export default {
                 NCWeb3.Init(addr=>{
                     _this.$nextTick(async () => {
                         _this.$store.dispatch('setMetaAddress', addr)
-                        if(_this.networkID == 137) window.open('https://www.multichain.storage/#/metamask_login')
-                        else if(_this.networkID == 97 || _this.networkID == 80001){
+                        if(_this.networkID == 97 || _this.networkID == 80001){
                             const l_status = await metaLogin.login()
                             if(l_status) _this.$emit("getMetamaskLogin", true)
                         }
@@ -593,11 +596,8 @@ export default {
                 // console.log('accounts', accounts)
                 // _this.signOutFun()
                 _this.$store.dispatch('setMCSjwtToken', '')
-                if(parseInt(accounts, 16) == 137) window.open('https://www.multichain.storage/#/metamask_login')
-                else{
-                    _this.walletInfo()
-                    _this.changeChaid(parseInt(accounts, 16))
-                }
+                _this.walletInfo()
+                _this.changeChaid(parseInt(accounts, 16))
             });
             // 监听metamask网络断开
             ethereum.on('disconnect', (code, reason) => {

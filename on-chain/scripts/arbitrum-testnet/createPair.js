@@ -18,13 +18,16 @@ async function main() {
   await renFil.deployed()
   console.log(`RenFil address: ${renFil.address}`)
 
-  const UniswapFactory = await ethers.getContractFactory('UniswapV2Library')
+  const UniswapFactory = await ethers.getContractFactory('UniswapV2Factory')
   const uniswap = await UniswapFactory.deploy(deployer.address)
   await uniswap.deployed()
   console.log(`UniswapFactory address: ${uniswap.address}`)
 
   const tx = await uniswap.createPair(usdc.address, renFil.address)
+  await tx.wait()
   console.log(tx.hash)
+
+  console.log(await uniswap.allPairsLength())
 }
 
 main()

@@ -8,7 +8,7 @@ import "hardhat/console.sol";
 import "../interfaces/IPaymentGateway.sol";
 import "../interfaces/IPriceFeed.sol";
 
-abstract contract SwanPaymentNoRefund is IPaymentMinimal, Initializable {
+contract SwanPaymentNoUnlock is IPaymentNoUnlock, Initializable {
     address public constant NATIVE_TOKEN =
         0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
 

@@ -1,7 +1,7 @@
 const { ethers } = require('hardhat')
 
 const ONE_ETH = ethers.utils.parseEther('1')
-const USDC_WFIL_PAIR = '0x30cc00a22c782e686c4646f0dd5d78220d53c2f3'
+const USDC_WFIL_PAIR = '0xFF2278d5C5C5761d951Fd87bA077947Aa31d737f'
 
 async function main() {
   const [deployer] = await ethers.getSigners()
@@ -9,7 +9,7 @@ async function main() {
 
   const PriceFeed = await ethers.getContractFactory('PriceFeed')
   //const feed = await PriceFeed.deploy(USDC_WFIL_PAIR, 1, 6)
-  const feed = PriceFeed.attach('0x58d089CF567900cB63F82947Da4495A6c509Aa1b')
+  const feed = PriceFeed.attach('0x150FAc29ABc9E790e06C726920aad3cFE2862275')
   console.log('price feed address:', feed.address)
 
   const price = await feed.consult(USDC_WFIL_PAIR, ONE_ETH)

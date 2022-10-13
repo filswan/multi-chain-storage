@@ -116,6 +116,10 @@ module.exports = {
       gas: 2100000,
       gasPrice: 8000000000,
     },
+    tbnc: {
+      url: 'https://data-seed-prebsc-1-s1.binance.org:8545/',
+      accounts: [process.env.PRIVATE_KEY],
+    },
   },
   solidity: {
     compilers: [

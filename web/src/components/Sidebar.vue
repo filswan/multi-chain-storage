@@ -40,14 +40,15 @@
                             <span v-else class="tip">目前使用量：{{free_usage | byteStorage}}GB（免费储存空间配额：{{free_quota_per_month | byteStorage}}GB）</span>
                         </div>
                         <div class="fes-icon-logo">
-                            <a href="https://filswan.medium.com/" target="_block"><img :src="share_img1" alt=""></a>
-                            <a href="https://discord.com/invite/KKGhy8ZqzK" target="_block"><img :src="share_img10" alt=""></a>
-                            <a href="https://twitter.com/0xfilswan" target="_block"><img :src="share_img2" alt=""></a>
-                            <a href="https://github.com/filswan" target="_block"><img :src="share_img3" alt=""></a>
-                            <!-- <a href="https://www.facebook.com/filswan.technology" target="_block"><img :src="share_img5" alt=""></a>
-                            <a href="https://filswan.slack.com" target="_block"><img :src="share_img7" alt=""></a>
-                            <a href="https://youtube.com/channel/UCcvrZdNqFWYl3FwfcHS9xIg" target="_block"><img :src="share_img8" alt=""></a> -->
-                            <a href="https://t.me/filswan" target="_block"><img :src="share_img9" alt=""></a>
+                            <a href="https://filswan.medium.com/" target="_blank"><img :src="share_img1" alt=""></a>
+                            <a href="https://discord.com/invite/KKGhy8ZqzK" target="_blank"><img :src="share_img10" alt=""></a>
+                            <a href="https://twitter.com/0xfilswan" target="_blank"><img :src="share_img2" alt=""></a>
+                            <a href="https://github.com/filswan" target="_blank"><img :src="share_img3" alt=""></a>
+                            <a href="https://t.me/filswan" target="_blank"><img :src="share_img9" alt=""></a>
+                        </div>
+                        <!-- market data black badge -->
+                        <div class="fes-market">
+                            <a href="https://chn.lk/3DTWSjE" target="_blank"><img src="https://chain.link/badge-market-data-black" alt="market data secured with chainlink"></a>
                         </div>
                     </div>
                 </template>
@@ -401,8 +402,11 @@ export default {
         }
     }
     .fes-menu{
-        height: calc(100% - 100px);
+        height: calc(100% - 135px);
         overflow-y: scroll;
+        @media screen and (min-width: 1800px) {
+            height: calc(100% - 145px);
+        }
         &::-webkit-scrollbar-track {
             background: transparent;
         }
@@ -419,7 +423,7 @@ export default {
         left: 0;
         right: 0;
         bottom: 0;
-        padding: 5px 0 20px;
+        padding: 5px 0;
         .progress{
             margin: 0 0.28rem 15px;
             .el-progress /deep/{
@@ -452,6 +456,18 @@ export default {
                 margin: 0 0.15rem;
                 @media screen and (max-width: 1024px) {
                     height: 20px;
+                }
+            }
+        }
+        .fes-market{
+            display: flex;
+            justify-content: center;
+            img{
+                display: block;
+                height: 35px;
+                margin: 10px auto 5px;
+                @media screen and (min-width: 1800px) {
+                    height: 45px;
                 }
             }
         }

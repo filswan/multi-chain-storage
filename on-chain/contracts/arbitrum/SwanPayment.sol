@@ -143,5 +143,8 @@ contract SwanPaymentNoUnlock is IPaymentNoUnlock, Initializable {
         return true;
     }
 
-    
+    function withdraw(address token) external onlyOwner {
+        uint balance = IERC20(token).balanceOf(address(this));
+        IERC20(token).transfer(msg.sender, balance);
+    }
 }

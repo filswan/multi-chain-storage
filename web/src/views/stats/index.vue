@@ -13,6 +13,11 @@
                     </div>
                     <div class="info-num">{{ item.num | NumStatsFormat }}</div>
                 </div>
+            </div>
+            <div class="title">
+                Multichain Storage Dataset
+            </div>
+            <div class="main">
                 <div v-for="(item, index) in MCS_Dataset" :key="index+8" class="info">
                     <img src="@/assets/images/icon_shangzhang.png" alt="">
                     <div class="info-up">
@@ -52,61 +57,49 @@
                 logo_img_black: require("@/assets/images/icons/MCSLOGO.png"),
                 collaboratorsData: [
                     {
-                        img: require("@/assets/images/dashboard/MULTI-CHAIN-02.png"),
-                        link: 'https://filecoin.io/'
-                    },
-                    {
-                        img: require("@/assets/images/dashboard/MULTI-CHAIN-03.png"),
-                        link: 'https://ipfs.tech/'
-                    },
-                    {
-                        img: require("@/assets/images/dashboard/MULTI-CHAIN-04.png"),
-                        link: 'https://www.binance.com/en'
-                    },
-                    {
-                        img: require("@/assets/images/dashboard/MULTI-CHAIN-05.png"),
-                        link: 'https://polygon.technology/'
-                    },
-                    {
-                        img: require("@/assets/images/dashboard/MULTI-CHAIN-06.png"),
-                        link: 'https://chain.link/'
-                    },
-                    {
-                        img: require("@/assets/images/dashboard/MULTI-CHAIN-07.png"),
+                        img: require("@/assets/images/dashboard/MULTI-CHAIN-01.png"),
                         link: 'https://protocol.ai/'
                     },
                     {
+                        img: require("@/assets/images/dashboard/MULTI-CHAIN-02.png"),
+                        link: 'https://ipfs.tech/'
+                    },
+                    {
+                        img: require("@/assets/images/dashboard/MULTI-CHAIN-03.png"),
+                        link: 'https://filecoin.io/'
+                    },
+                    {
+                        img: require("@/assets/images/dashboard/MULTI-CHAIN-04.png"),
+                        link: 'https://polygon.technology/'
+                    },
+                    {
+                        img: require("@/assets/images/dashboard/MULTI-CHAIN-05.png"),
+                        link: 'https://chainlinklabs.com/'
+                    },
+                    {
+                        img: require("@/assets/images/dashboard/MULTI-CHAIN-06.png"),
+                        link: 'https://labs.binance.com/'
+                    },
+                    {
+                        img: require("@/assets/images/dashboard/MULTI-CHAIN-07.png"),
+                        link: 'https://opensea.io/'
+                    },
+                    {
                         img: require("@/assets/images/dashboard/MULTI-CHAIN-08.png"),
-                        link: 'http://waterdrip.io/'
+                        link: 'https://arbitrum.io/'
                     },
                     {
                         img: require("@/assets/images/dashboard/MULTI-CHAIN-09.png"),
-                        link: 'http://capital-chain.com/'
+                        link: 'https://akash.network/'
                     },
                     {
                         img: require("@/assets/images/dashboard/MULTI-CHAIN-10.png"),
-                        link: 'https://www.cidgravity.com/'
+                        link: 'https://aptos.dev/'
                     },
                     {
                         img: require("@/assets/images/dashboard/MULTI-CHAIN-11.png"),
-                        link: 'https://www.fbg.capital/'
-                    },
-                    {
-                        img: require("@/assets/images/dashboard/MULTI-CHAIN-12.png"),
-                        link: 'https://ldcap.com/'
-                    },
-                    {
-                        img: require("@/assets/images/dashboard/MULTI-CHAIN-13.png"),
-                        link: 'https://ti-capital.co/'
-                    },
-                    {
-                        img: require("@/assets/images/dashboard/MULTI-CHAIN-14.png"),
-                        link: 'https://www.mcgill.ca/'
-                    },
-                    {
-                        img: require("@/assets/images/dashboard/MULTI-CHAIN-15.png"),
-                        link: ''
-                    },
+                        link: 'https://sui.io/'
+                    }
                 ],
                 MCS_Dataset: [
                     {
@@ -356,7 +349,7 @@
         .main {
             font-size: 18px;
             width: 100%;
-            padding: 0.1rem 0 0;
+            padding: 0.1rem 0 0.2rem;
             display: flex;
             flex-wrap: wrap;
             .info-num{
@@ -418,7 +411,7 @@
         opacity: 0;
     }
     .Eco /deep/{
-        padding: 0.1rem 0.2rem 0;
+        padding: 0 0.2rem;
         font-size: 0.22rem;
         font-weight: 700;
         color: #fff;

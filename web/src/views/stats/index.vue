@@ -434,7 +434,7 @@
             }
         }
         .subtitle {
-            padding: 20px 0 0;
+            padding: 10px 0 0;
             font-size: 22px;
             font-weight: 600;
             @media screen and (max-width: 1600px) {

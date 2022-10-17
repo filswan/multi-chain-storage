@@ -1,5 +1,6 @@
 {
-  "name": "MCS NFT",
+  "name": "SWAN NFT",
+  "symbol": "SWAN",
   "description": "ERC-1155 minted on multi-chain storage",
   "image": "https://calibration-ipfs.filswan.com/ipfs/QmRaDNkbLajNJ9jc5FvyJcxp8yjthVqzcABaqvZ9huqfYN",
   "external_link": "https://www.multichain.storage",

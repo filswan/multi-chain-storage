@@ -52,7 +52,6 @@ contract SwanNFT is Initializable, ERC1155Upgradeable, ERC1155SupplyUpgradeable,
     // mints a new (non-unqiue) token (with data)
     function mint(address account, uint256 amount, bytes memory data)
         public
-        onlyOwner
     {
         _tokenIdCounter.increment();
         uint256 tokenId = _tokenIdCounter.current();
@@ -64,7 +63,6 @@ contract SwanNFT is Initializable, ERC1155Upgradeable, ERC1155SupplyUpgradeable,
     // mints more of an existing token (must not be unqiue)
     function mintMore(address account, uint256 id, uint256 amount, bytes memory data)
         public
-        onlyOwner
     {
         require(exists(id), 'Supply: tokenId does not exist');
         require(!isUnique[id], 'Unique: cannot mint more than one');

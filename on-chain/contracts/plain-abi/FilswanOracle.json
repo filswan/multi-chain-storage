@@ -1,4 +1,5 @@
 [
+  "event Initialized(uint8)",
   "event OwnershipTransferred(address indexed,address indexed)",
   "event PreSign(string,string,address,uint8)",
   "event RoleAdminChanged(bytes32 indexed,bytes32 indexed,bytes32 indexed)",

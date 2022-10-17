@@ -13,6 +13,11 @@
                     </div>
                     <div class="info-num">{{ item.num | NumStatsFormat }}</div>
                 </div>
+            </div>
+            <div class="title">
+                Multichain Storage Dataset
+            </div>
+            <div class="main">
                 <div v-for="(item, index) in MCS_Dataset" :key="index+8" class="info">
                     <img src="@/assets/images/icon_shangzhang.png" alt="">
                     <div class="info-up">
@@ -347,7 +352,7 @@
         .main {
             font-size: 18px;
             width: 100%;
-            padding: 0.1rem 0 0;
+            padding: 0.1rem 0 0.2rem;
             display: flex;
             flex-wrap: wrap;
             .info-num{
@@ -413,7 +418,7 @@
         opacity: 0;
     }
     .Eco /deep/{
-        padding: 0.1rem 0.2rem 0;
+        padding: 0 0.2rem;
         font-size: 0.22rem;
         font-weight: 700;
         color: #fff;
@@ -436,7 +441,7 @@
             }
         }
         .subtitle {
-            padding: 20px 0 0;
+            padding: 10px 0 0;
             font-size: 22px;
             font-weight: 600;
             @media screen and (max-width: 1600px) {

@@ -120,7 +120,7 @@
                 try {
                     console.log('start mint contract')
                     const transaction = await nftContract.methods
-                    .mintData(that.metaAddress, nftUrl)
+                    .mintUnique(that.metaAddress, nftUrl)
                     .send()
                     .on('transactionHash', function(hash){
                         that.nftHash = hash
@@ -139,8 +139,8 @@
                         return false
                     });
                     // console.log('transaction.events:', transaction.events)
-                    that.tokenId = transaction.events.Mint.returnValues.tokenId_
-                    console.log('mintData success')
+                    that.tokenId = transaction.events.TransferSingle.returnValues.id
+                    console.log('mintUnique success')
                 } catch (err) {
                     console.log('err.response', err);
                     if (err.includes('not mined within 50 blocks')) {

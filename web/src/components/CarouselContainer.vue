@@ -3,7 +3,7 @@
     <div ref="mySwiper" class="swiper-container" :id="currentIndex"  >
       <div class="swiper-wrapper">
         <div class="swiper-slide my-swiper-slide" v-for="(item,index) of slideList" :key="index">
-            <a :href="item.link" target="_blank"><img :src="item.img" alt="logo" /></a>
+            <a :href="item.link" target="_blank"><img :src="item.img" :class="{'height': index == 4 || index == 6 || index == 7}" alt="logo" /></a>
         </div>
       </div>
       <!-- 分页器 -->
@@ -124,13 +124,16 @@ export default {
 <style lang="scss" scoped>
   .CarouselContainer{
     width: 97%;
-    margin: auto;
+    margin: 0 auto 20px;
     .swiper-container  /deep/{
-        padding: 20px 0;
+        padding: 10px 0;
         .my-swiper-slide{
             height: 100px;
             @media screen and (max-width: 1600px) {
                 height: 85px;
+            }
+            @media screen and (max-width: 1440px) {
+                height: 75px;
             }
             a{
                 img{
@@ -143,6 +146,16 @@ export default {
                     }
                     @media screen and (max-width: 1440px) {
                         margin: 15px auto;
+                    }
+                }
+                .height{
+                    height: 80px;
+                    margin: 10px auto;
+                    @media screen and (max-width: 1600px) {
+                        height: 65px;
+                    }
+                    @media screen and (max-width: 1440px) {
+                        margin: 5px auto;
                     }
                 }
             }

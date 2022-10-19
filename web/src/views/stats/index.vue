@@ -107,37 +107,37 @@
                     {
                         data: '-',
                         desc: 'Total sealed storage',
-                        popover: 'Total sealed storage contributed to filecoin more than 4x replication'
+                        popover: 'Total sealed storage contributed to filecoin.'
                     },
                     {
                         data: '-',
-                        desc: 'Total pinned IPFS storage',
+                        desc: 'Total Pinned IPFS Storage',
                         popover: 'Total pinned ipfs storage for hot retrieval from any ipfs gateway. This data is not stored on filecoin.'
                     },
                     {
                         data: '-',
-                        desc: 'Total registered users',
-                        popover: 'Users registered on Multichain.storage'
+                        desc: 'Total Register Users',
+                        popover: 'Wallet address registered on mutlichain.storage'
                     },
                     {
                         data: '-',
                         desc: 'Total Storage Deal Submitted',
-                        popover: 'Total Storage deals submitted on Multichain.storage'
+                        popover: 'Total storages order submitted on mutlichain.storage'
                     },
                     {
                         data: '-',
                         desc: 'Active successful storage deals',
-                        popover: 'The quantity of active deals on Multichain.storage.'
+                        popover: 'The quantity of active deals on Multichain.storage'
                     },
                     {
                         data: '-',
-                        desc: 'Total storage providers',
-                        popover: 'Storage providers offering storage capacity to the Filecoin network.'
+                        desc: 'Total Storage Providers',
+                        popover: 'Miners providers offering storage capacity to the Filecoin network.'
                     },
                     {
                         data: '-',
-                        desc: 'Total CIDs quantity',
-                        popover: 'The number of CIDs quantity on Multichain.storage'
+                        desc: 'Total CID Quantity',
+                        popover: 'The number of sourcefile CIDs quantity on Multichain.storage'
                     }
                 ]
             }
@@ -291,13 +291,13 @@
                     case 2:
                         return that.NumFormat(data.wallet_count)
                     case 3:
-                        return that.NumFormat(data.cid_object_reference)
+                        return that.NumFormat(data.user_uploads)
                     case 4:
-                        return that.NumFormat(data.active_deal)
+                        return that.NumFormat(data.active_deals)
                     case 5:
                         return that.NumFormat(data.miner_count)
                     case 6:
-                        return that.NumFormat(data.cid_count)
+                        return that.NumFormat(data.source_file_cids)
                     default:
                         return '-';
                 }

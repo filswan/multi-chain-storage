@@ -1,4 +1,12 @@
-## MCS Contracts
+# MCS Contracts
+
+1. `SwanPayment` is used to lock an estimated amount of USDC for filecoin storage
+2. `FilswanOracle` verifies the deal is on chain, signing transactions until the treshold of 3 is met
+3. `FilinkConsumer` is used to get the storage price of a deal in FIL
+4. `PriceFeed` converts this amount to USDC
+5. `SwanPayment` will unlock any over-estimated amount back to the user.
+
+## Functions
 
 ### MCSNFT.sol
 
@@ -61,7 +69,7 @@ contract's `unlock` function will be called, to return excess payment to the use
   - transfer the `serviceCost in USDC` to `recipient`
 - **`refund(cidList[])`** return any excess `lockedFee` to its owner
 
-### FilSwanOracle.sol
+### FilswanOracle.sol
 
 This is the DAO contract to sign transactions. Once a deal has enough signatures
 (depending on `threshold`), the locked funds can be unlocked to the owner.

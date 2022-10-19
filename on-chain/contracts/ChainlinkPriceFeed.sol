@@ -2,14 +2,14 @@
 pragma solidity ^0.8.7;
 
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
-import "../interfaces/IPriceFeed.sol";
+import "./interfaces/IPriceFeed.sol";
 
 interface IERC20 {
     function decimals() external view returns (uint8);
 }
 
+/// @notice Chainlink price feed to get the USD/FIL price
 contract ChainlinkPriceFeed is IPriceFeed {
-
     AggregatorV3Interface internal priceFeed;
 
     /**
@@ -35,6 +35,9 @@ contract ChainlinkPriceFeed is IPriceFeed {
         return price;
     }
 
+    /// @notice get USD price in 6 decimals
+    /// @param token used to format the return decimals, ex USDC token would format the output with 6 decimals
+    /// @param amount amount of FIL to convert (in Wei)
     function consult(
         address token,
         uint256 amount

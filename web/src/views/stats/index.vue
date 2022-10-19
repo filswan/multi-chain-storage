@@ -1,40 +1,45 @@
 <template>
-    <div class="statsCont" v-loading="loading">
-        <div :class="{'opacity': loading, 'stats': true}">
+    <div class="statsCont" v-loading="loading_ecosystem">
+        <div :class="{'opacity': loading_ecosystem, 'stats': true}">
             <div class="title">
-                <!-- {{generateState('network_overview')}} -->
-                Network overview
+                Collaborators
             </div>
-            <div class="main">
-                <div v-for="(item,key,index) in list" :key="index" class="info">
-                    <img src="@/assets/images/icon_shangzhang.png" alt="">
-                    <div class="info-up">
-                        {{ item.title }}
-                    </div>
-                    <div class="info-num">{{ item.num | NumStatsFormat }}</div>
-                </div>
-            </div>
+            <el-row class="collaborators">
+                <el-col v-for="(item, index) in collaboratorsData" :key="index">
+                    <a :href="item.link" target="_blank"><img :src="item.img" :class="{'height': index == 4 || index == 6 || index == 7}" alt="logo" /></a>
+                </el-col>
+            </el-row>
+            <!-- <CarouselContainer :slide-list="collaboratorsData" currentIndex="1"></CarouselContainer> -->
+
             <div class="title">
-                Multichain Storage Dataset
+                Multichain Storage Overview
             </div>
             <div class="main">
                 <div v-for="(item, index) in MCS_Dataset" :key="index+8" class="info">
-                    <img src="@/assets/images/icon_shangzhang.png" alt="">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                        <path v-if="index == 2" stroke-linecap="round" stroke-linejoin="round" d="M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM4 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 0110.374 21c-2.331 0-4.512-.645-6.374-1.766z" />
+                        <path v-else-if="index == 1" stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125" />
+                        <path v-else-if="index == 5" stroke-linecap="round" stroke-linejoin="round" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 01-1.125-1.125M3.375 19.5h7.5c.621 0 1.125-.504 1.125-1.125m-9.75 0V5.625m0 12.75v-1.5c0-.621.504-1.125 1.125-1.125m18.375 2.625V5.625m0 12.75c0 .621-.504 1.125-1.125 1.125m1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125m0 3.75h-7.5A1.125 1.125 0 0112 18.375m9.75-12.75c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125m19.5 0v1.5c0 .621-.504 1.125-1.125 1.125M2.25 5.625v1.5c0 .621.504 1.125 1.125 1.125m0 0h17.25m-17.25 0h7.5c.621 0 1.125.504 1.125 1.125M3.375 8.25c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125m17.25-3.75h-7.5c-.621 0-1.125.504-1.125 1.125m8.625-1.125c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125m-17.25 0h7.5m-7.5 0c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125M12 10.875v-1.5m0 1.5c0 .621-.504 1.125-1.125 1.125M12 10.875c0 .621.504 1.125 1.125 1.125m-2.25 0c.621 0 1.125.504 1.125 1.125M13.125 12h7.5m-7.5 0c-.621 0-1.125.504-1.125 1.125M20.625 12c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125m-17.25 0h7.5M12 14.625v-1.5m0 1.5c0 .621-.504 1.125-1.125 1.125M12 14.625c0 .621.504 1.125 1.125 1.125m-2.25 0c.621 0 1.125.504 1.125 1.125m0 1.5v-1.5m0 0c0-.621.504-1.125 1.125-1.125m0 0h7.5" />
+                        <path v-else-if="index == 3" stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m6.75 12l-3-3m0 0l-3 3m3-3v6m-1.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                        <path v-else-if="index == 4" stroke-linecap="round" stroke-linejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 013.413-.387m7.5 0V5.25A2.25 2.25 0 0013.5 3h-3a2.25 2.25 0 00-2.25 2.25v.894m7.5 0a48.667 48.667 0 00-7.5 0M12 12.75h.008v.008H12v-.008z" />
+                        <path v-else-if="index == 0" stroke-linecap="round" stroke-linejoin="round" d="M19.5 5.25l-7.5 7.5-7.5-7.5m15 6l-7.5 7.5-7.5-7.5" />
+                        <path v-else stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+                    </svg>
+
                     <div class="info-up">
                         {{item.desc}}
+                        <el-popover
+                            placement="top" popper-class="elPopTitle"
+                            width="200"
+                            trigger="hover"
+                            :content="item.popover">
+                            <img slot="reference" src="@/assets/images/info.png"/>
+                        </el-popover>
                     </div>
                     <div class="info-num">{{item.data}}</div>
                 </div>
             </div>
         </div>
-
-        <el-row :class="{'opacity': loading_ecosystem, 'Eco': true}">
-            <el-col :span="24">
-                <div class="subtitle">Collaborators</div>
-            </el-col>
-        </el-row>
-
-        <CarouselContainer :slide-list="collaboratorsData" currentIndex="1"></CarouselContainer>
     </div>
 </template>
 
@@ -43,12 +48,9 @@
     // import {getStatsStorage} from "@/api/stats";
     import axios from 'axios'
     import { generateState } from '@/utils/i18n'
-    import CarouselContainer from '@/components/CarouselContainer.vue'
     export default {
-        name: "stats",
-        components: {
-            CarouselContainer,
-        },
+        name: "Stats",
+        components: { },
         data() {
             return {
                 list: [],
@@ -104,31 +106,38 @@
                 MCS_Dataset: [
                     {
                         data: '-',
-                        desc: 'Total sealed storage'
+                        desc: 'Total sealed storage',
+                        popover: 'Total sealed storage contributed to filecoin.'
                     },
                     {
                         data: '-',
-                        desc: 'Total pinned IPFS storage'
+                        desc: 'Total Pinned IPFS Storage',
+                        popover: 'Total pinned ipfs storage for hot retrieval from any ipfs gateway. This data is not stored on filecoin.'
                     },
                     {
                         data: '-',
-                        desc: 'Total root CIDs uploaded'
+                        desc: 'Total Register Users',
+                        popover: 'Wallet address registered on mutlichain.storage'
                     },
                     {
                         data: '-',
-                        desc: 'Total registered users'
+                        desc: 'Total Storage Deal Submitted',
+                        popover: 'Total storages order submitted on mutlichain.storage'
                     },
                     {
                         data: '-',
-                        desc: 'Total reference by every root'
+                        desc: 'Active successful storage deals',
+                        popover: 'The quantity of active deals on Multichain.storage'
                     },
                     {
                         data: '-',
-                        desc: 'Active successful storage'
+                        desc: 'Total Storage Providers',
+                        popover: 'Miners providers offering storage capacity to the Filecoin network.'
                     },
                     {
                         data: '-',
-                        desc: 'Total storage providers'
+                        desc: 'Total CID Quantity',
+                        popover: 'The number of sourcefile CIDs quantity on Multichain.storage'
                     }
                 ]
             }
@@ -139,7 +148,7 @@
             document.getElementById('content-box').scrollTop = 0
             that.$store.dispatch('setRouterMenu', 4)
             that.$store.dispatch('setHeadertitle', that.$t('navbar.Stats'))
-            that.getStats()
+            // that.getStats()
             that.getData()
         },
         methods:{
@@ -279,15 +288,15 @@
                     case 1:
                         return that.byteChange(data.pinned_ipfs_size)
                     case 2:
-                        return that.NumFormat(data.cid_count)
-                    case 3:
                         return that.NumFormat(data.wallet_count)
+                    case 3:
+                        return that.NumFormat(data.user_uploads)
                     case 4:
-                        return that.NumFormat(data.cid_object_reference)
+                        return that.NumFormat(data.active_deals)
                     case 5:
-                        return that.NumFormat(data.active_deal)
-                    case 6:
                         return that.NumFormat(data.miner_count)
+                    case 6:
+                        return that.NumFormat(data.source_file_cids)
                     default:
                         return '-';
                 }
@@ -327,6 +336,7 @@
 <style lang="scss" scoped>
 .statsCont{
     position: relative;
+    width: calc(100% - 0.4rem);
     padding: 0.3rem 0.2rem;
     background-color: #000;
     background-image: 
@@ -340,7 +350,7 @@
     }
     .stats {
         .title {
-            margin: 0 0.2rem;
+            margin: 10px 0.2rem;
             font-size: 0.22rem;
             font-weight: 700;
             color: #fff;
@@ -359,10 +369,10 @@
                 font-weight: 500;
                 color: #000;
             }
-            img{
+            img, svg{
                 display: block;
-                width: 0.44rem;
-                margin: 0 auto 0.15rem;
+                width: 0.35rem;
+                margin: 0 auto 0.2rem;
             }
         }
         .info {
@@ -393,10 +403,25 @@
         .info-up {
             font-size: 0.2rem;
             color: #2C7FF8;
-            width: 100%;
+            width: 96%;
+            padding: 0 2%;
             text-align: center;
             font-weight: 500;
             margin-bottom: 0.2rem;
+            display: flex;
+            align-items: center;    
+            justify-content: center;
+            img{
+                display: block;
+                width: 20px;
+                height: 20px;
+                margin: 0 0 0 5px;
+                cursor: pointer;
+                @media screen and (max-width:1440px){
+                    width: 17px;
+                    height: 17px;
+                }
+            }
         }
         .el-icon-dog{
             background-size: contain;
@@ -405,6 +430,54 @@
             content: "dog";
             font-size: 12px;
             visibility: hidden;
+        }
+        .collaborators{
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            flex-wrap: wrap;
+            width: 97%;
+            margin: auto;
+            .el-col{
+                flex: 0 0 14%;
+                margin: 0 auto;
+                @media screen and (max-width: 1200px) {
+                    flex: 0 0 20%;
+                }
+                @media screen and (max-width: 1024px) {
+                    flex: 0 0 25%;
+                }
+                @media screen and (max-width: 768px) {
+                    flex: 0 0 50%;
+                }
+                @media screen and (max-width: 414px) {
+                    flex: 0 0 100%;
+                }
+                a{
+                    img{
+                        display: block;
+                        height: 60px;
+                        margin: 20px auto;
+                        cursor: pointer;
+                        @media screen and (max-width: 1600px) {
+                            height: 45px;
+                        }
+                        @media screen and (max-width: 1440px) {
+                            margin: 15px auto;
+                        }
+                    }
+                    .height{
+                        height: 80px;
+                        margin: 10px auto;
+                        @media screen and (max-width: 1600px) {
+                            height: 65px;
+                        }
+                        @media screen and (max-width: 1440px) {
+                            margin: 5px auto;
+                        }
+                    }
+                }
+            }
         }
     }
     .opacity{

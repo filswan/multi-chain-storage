@@ -10,7 +10,7 @@
                 </div>
             </div>
             <div class="content">
-                <div class="content_body">
+                <div class="content_body" :class="{'stats': $route.name == 'Stats'}">
                     <el-alert type="warning" effect="dark" center show-icon v-if="metaAddress&&!(networkID==137)">
                         <div slot="title">
                             {{$t('fs3Login.toptip_01')}} {{metaNetworkInfo.name}} {{$t('fs3Login.toptip_02')}} 
@@ -127,7 +127,7 @@ export default {
         //     }
         // }
         this.init()
-        console.log('update time: 2022-10-18') 
+        console.log('update time: 2022-10-19') 
     }
 };
 </script>
@@ -250,6 +250,10 @@ export default {
                         }
                     }
                 }
+            }
+            &.stats{
+                display: flex;
+                flex-wrap: wrap;
             }
         }
         .fes-icon{

@@ -12,9 +12,12 @@ async function main() {
   const feed = PriceFeed.attach('0xa976fb4e934f07aa3b57e167879772dee2ca7a00')
   console.log('price feed address:', feed.address)
 
-  const price = await feed.consult(USDC_WFIL_PAIR, ONE_ETH)
+  const price = await feed.consult(
+    USDC_WFIL_PAIR,
+    ethers.utils.parseEther('0.000002'),
+  )
 
-  console.log('0.000002 wFIL to USDC:', ethers.utils.formatEther(price))
+  console.log('0.000002 wFIL to USDC:', price.toString())
 }
 
 main()

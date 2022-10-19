@@ -101,7 +101,7 @@ contract SwanNFT is Initializable, ERC1155Upgradeable, ERC1155SupplyUpgradeable,
     }
     
     function contractURI() external pure returns (string memory) {
-        return "https://ipfs.multichain.storage/ipfs/QmVpP18zbovAwEB8AVFWXxe62haaR5UfHwDDFCuTjWxzG9";
+        return "https://ipfs.multichain.storage/ipfs/QmTnvCrc3U3Df5WEpbtQneChZtRNB4SFbnndQVN6S6rzsd";
     }
 
 

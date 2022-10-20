@@ -142,7 +142,7 @@ export default {
             networkC: false
         };
     },
-    props: ["meta"],
+    props: ["meta", "netId"],
     computed: {
         email() {
             return this.$store.state.user.email
@@ -199,6 +199,9 @@ export default {
         },
         meta: function() {
             this.walletInfo()
+        },
+        netId: function() {
+            if(this.netId == 137) this.getNetworkC(false, this.netId)
         }
     },
     methods: {
@@ -255,25 +258,24 @@ export default {
                             ]
                 }).then((res)=>{
                     //添加成功
-                    // _this.$store.dispatch('setMetaNetworkId', rows)
-                    // if(_this.$route.name == 'my_files_detail') {
-                    //     _this.$router.push({ path: '/my_files' })
-                    // }
-                    // setTimeout(function(){window.location.reload()}, 200)
                     // _this.changeChaid(rows)
+                    _this.$emit("getNetId", 0)
                 }).catch((err)=>{
                     //添加失败
+                    _this.$emit("getNetId", 0)
                 })
             }
         },
         async changeChaid(rows) {
             let _this = this
             _this.$store.dispatch('setMetaNetworkId', rows)
-            const l_status = await metaLogin.login()
+            if(_this.networkID == 137){
+                const l_status = await metaLogin.login()
+                if(l_status) setTimeout(function(){window.location.reload()}, 200)
+            }
             if(_this.$route.name == 'my_files_detail') {
                 _this.$router.push({ path: '/my_files' })
             }
-            if(l_status) setTimeout(function(){window.location.reload()}, 200)
         },
         shareTo(){
             window.open(`${this.baseAddressURL}address/${this.addrChild}`)
@@ -406,8 +408,10 @@ export default {
                 NCWeb3.Init(addr=>{
                     _this.$nextTick(async () => {
                         _this.$store.dispatch('setMetaAddress', addr)
-                        const l_status = await metaLogin.login()
-                        if(l_status) _this.$emit("getMetamaskLogin", true)
+                        if(_this.networkID == 137){
+                            const l_status = await metaLogin.login()
+                            if(l_status) _this.$emit("getMetamaskLogin", true)
+                        }
                     })
                 })
                 return false
@@ -514,7 +518,7 @@ export default {
                 case 97:
                     _this.network.name = 'BSC';
                     _this.network.unit = 'USDC';
-                    _this.network.center_fail = false
+                    _this.network.center_fail = true
                     _this.$store.dispatch('setMetaNetworkInfo', _this.network)
                     if(_this.meta) {
                         if(_this.$route.query.redirect && _this.$route.query.redirect != '/supplierAllBack'){
@@ -530,7 +534,7 @@ export default {
                 case 137:
                     _this.network.name = 'Polygon';
                     _this.network.unit = 'USDC';
-                    _this.network.center_fail = true
+                    _this.network.center_fail = false
                     _this.$store.dispatch('setMetaNetworkInfo', _this.network)
                     if(_this.meta) {
                         if(_this.$route.query.redirect && _this.$route.query.redirect != '/supplierAllBack'){
@@ -550,9 +554,9 @@ export default {
                     _this.$store.dispatch('setMetaNetworkInfo', _this.network)
                     return;
                 case 80001:
-                    _this.network.name = 'mumbai';
+                    _this.network.name = 'Mumbai';
                     _this.network.unit = 'USDC';
-                    _this.network.center_fail = false
+                    _this.network.center_fail = true
                     _this.$store.dispatch('setMetaNetworkInfo', _this.network)
                     if(_this.meta) {
                         if(_this.$route.query.redirect && _this.$route.query.redirect != '/supplierAllBack'){
@@ -595,12 +599,10 @@ export default {
             });
             // networkChanged
             ethereum.on("chainChanged", function(accounts) {
-                if(parseInt(accounts, 16) != 137) window.open('https://calibration-mcs.filswan.com/#/metamask_login')
-                else{
-                    _this.walletInfo()
-                    _this.changeChaid(parseInt(accounts, 16))
-                    if(_this.$route.name == 'my_files_detail') _this.$router.push({ path: '/my_files' })
-                }
+                _this.$store.dispatch('setMCSjwtToken', '')
+                _this.walletInfo()
+                _this.changeChaid(parseInt(accounts, 16))
+                if(_this.$route.name == 'my_files_detail') _this.$router.push({ path: '/my_files' })
             });
             // 监听metamask网络断开
             ethereum.on('disconnect', (code, reason) => {
@@ -638,7 +640,7 @@ export default {
                     _this.$root.USDC_ADDRESS = json.data.data.usdc_address
                     _this.$root.MINT_CONTRACT = json.data.data.mint_contract_address
                     _this.$root.dao_threshold = json.data.data.dao_threshold
-                    _this.$root.filecoin_price = json.data.data.filecoin_price
+                    _this.$root.filecoin_price = json.data.data.filecoin_price * 0.00000001
                 }
             }).catch(error => {
                 console.log(error)
@@ -659,7 +661,7 @@ export default {
                     )
                     .then((balance) => {
                         let balanceAll = web3.utils.fromWei(balance, 'ether')
-                        console.log('balance', balanceAll)
+                        // console.log('balance', balanceAll)
                         _this.priceAccound = Number(balanceAll).toFixed(0)
                     })
                     .catch((error) => {

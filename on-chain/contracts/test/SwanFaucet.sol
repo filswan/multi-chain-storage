@@ -9,6 +9,7 @@ interface ERC20 {
     function balanceOf(address _address) external view returns (uint256);
 }
 
+/// @notice faucet contract that allows callers to receive tokens (daily limit on their wallet address)
 contract SwanFaucet is OwnableUpgradeable {
     uint256 constant public tokenAmount = 10000000000; //100 token x 10^8
     uint256 constant public waitTime = 24 hours;
@@ -49,6 +50,10 @@ contract SwanFaucet is OwnableUpgradeable {
     }
 
     // pass in array of token addresses and the amount array to send, with a receiving address
+    /// @notice receive tokens from this address (if there is enough balance in the contract)
+    /// @param _tokenAddresses list of token addresses
+    /// @param _tokenAmounts list of amounts
+    /// @param _address recipient of tokens
     function sendMultiTokens(address[] memory _tokenAddresses, uint[] memory _tokenAmounts, address _address) public onlyAdmin {
         require(allowedToWithdraw(_address), "please wait 24 hours");
         require(_address != address(0));

@@ -2,16 +2,26 @@
     <div class="wrapper">
         <el-col :xs="8" :sm="8" :md="5" :lg="4" class="side" :class="{'slidarShow': collapseP&&bodyWidth}"><v-sidebar></v-sidebar></el-col>
         <el-col :xs="24" :sm="24" :md="19" :lg="20" class="content-box" id="content-box">
-            <v-head :meta="meta" @getMetamaskLogin="getMetamaskLogin"></v-head>
+            <v-head :meta="meta" @getMetamaskLogin="getMetamaskLogin" 
+                    :netId="netId" @getNetId="changeNet"></v-head>
             <div id="headerMb" v-if="bodyWidth">
                 <div class="headerMb" v-if="email">
                     {{headertitle}}
                 </div>
             </div>
             <div class="content">
-                <div class="content_body">
+                <div class="content_body" :class="{'stats': $route.name == 'Stats'}">
                     <el-alert type="warning" effect="dark" center show-icon v-if="metaAddress&&!(networkID==137)">
-                        <div slot="title">{{$t('fs3Login.toptip_01')}} {{metaNetworkInfo.name}} {{$t('fs3Login.toptip_02')}} <span style="text-decoration: underline;">{{$t('fs3Login.toptip_Network')}}</span>.</div>
+                        <div slot="title">
+                            {{$t('fs3Login.toptip_01')}} {{metaNetworkInfo.name}} {{$t('fs3Login.toptip_02')}} 
+                            <span @click="changeNet(137)">{{$t('fs3Login.toptip_Network')}}</span>.
+                            <p v-if="networkID == 80001 || networkID == 97">
+                                {{$t('fs3Login.toptip_04')}} 
+                                {{metaNetworkInfo.name}}
+                                {{$t('fs3Login.toptip_04_1')}} 
+                                <a href="https://calibration-mcs.filswan.com/#/metamask_login" target="_blank">calibration-mcs.filswan.com</a>.
+                            </p>
+                        </div>
                     </el-alert>
                     <transition name="move" mode="out-in">
                         <keep-alive :include="tagsList">
@@ -54,7 +64,8 @@ export default {
             share_img9: require('@/assets/images/landing/telegram.png'),
             share_img10: require('@/assets/images/landing/discord.png'),
             share_logo: require('@/assets/images/landing/logo_small.png'),
-            meta: false
+            meta: false,
+            netId: 0
         };
     },
     components: {
@@ -97,6 +108,9 @@ export default {
         }
     },
     methods: {
+        changeNet(id) {
+            this.netId = id
+        },
         getMetamaskLogin(meta) {
             this.meta = meta
         },
@@ -113,7 +127,7 @@ export default {
         //     }
         // }
         this.init()
-        console.log('update time: 2022-10-06') 
+        console.log('update time: 2022-10-19') 
     }
 };
 </script>
@@ -189,15 +203,57 @@ export default {
         .content_body{
             // position: relative;
             min-height: calc(100% - 0.84rem);
-            .el-alert{
+            .el-alert /deep/{
                 position: absolute;
                 left: 0;
                 top: 0;
                 z-index: 9;
+                .el-alert__icon{
+                    @media screen and (min-width: 1600px){
+                        font-size: 20px;
+                        width: 20px;
+                    }
+                }
                 .el-alert__content{
                     display: flex;
                     align-items: center;
+                    .el-alert__title{
+                        @media screen and (min-width: 1600px){
+                            font-size: 14px;
+                            line-height: 1.3;
+                        }
+                        @media screen and (min-width: 1680px){
+                            font-size: 16px;
+                            line-height: 1.3;
+                        }
+                        @media screen and (min-width: 1800px){
+                            font-size: 18px;
+                            line-height: 1.3;
+                        }
+                        span{
+                            text-decoration: underline;
+                            cursor: pointer;
+                        }
+                        a{
+                            text-decoration: underline; 
+                            color: #fff;
+                        }
+                    }
+                    .el-icon-close{
+                        @media screen and (min-width: 1600px){
+                            font-size: 16px;
+                            line-height: 1.3;
+                        }
+                        @media screen and (min-width: 1800px){
+                            font-size: 18px;
+                            line-height: 1.3;
+                        }
+                    }
                 }
+            }
+            &.stats{
+                display: flex;
+                flex-wrap: wrap;
             }
         }
         .fes-icon{

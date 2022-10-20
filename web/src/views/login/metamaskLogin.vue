@@ -13,7 +13,7 @@
       </el-row>
       <div class="login_footer">
           <el-button type="primary" @click="signFun">{{$t('fs3.Connect_Wallet')}}</el-button>
-          <p v-if="metaNetworkInfo.center_fail&&networkID!=137">{{$t('fs3Login.MetaMask_tip')}}</p>
+          <p v-if="metaNetworkInfo.center_fail">{{$t('fs3Login.MetaMask_tip')}}</p>
       </div>
     </div>
   </div>
@@ -47,8 +47,11 @@
                     }
                     that.$store.dispatch('setMetaNetworkInfo', networkCont)
                   }
-                  const l_status = await metaLogin.login()
-                  if(l_status) that.$emit("getMetamaskLogin", true)
+                  
+                  if(that.networkID == 137){
+                      const l_status = await metaLogin.login()
+                      if(l_status) that.$emit("getMetamaskLogin", true)
+                  }
               })
               return false
           }
@@ -181,6 +184,9 @@
           line-height: 1.5;
           color: red;
           margin: 0.1rem 0 0;
+          @media screen and (min-width: 1600px){
+              font-size: 14px;
+          }
           @media screen and (max-width:600px){
               font-size: 12px;
           }

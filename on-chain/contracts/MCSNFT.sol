@@ -7,6 +7,7 @@ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 
+/// @notice ERC-721 contract with open minting capabilities
 contract MCSNFT is Initializable, ERC721Upgradeable, ERC721URIStorageUpgradeable, OwnableUpgradeable {
     using CountersUpgradeable for CountersUpgradeable.Counter;
 
@@ -33,6 +34,9 @@ contract MCSNFT is Initializable, ERC721Upgradeable, ERC721URIStorageUpgradeable
         return contractURI;
     }
 
+    /// @notice mint NFTs by giving an URI
+    /// @param minter recipient of NFT
+    /// @param uri NFT metadata URI
     function mintData(address minter, string memory uri)
         public
         returns (uint256)
@@ -47,7 +51,6 @@ contract MCSNFT is Initializable, ERC721Upgradeable, ERC721URIStorageUpgradeable
     }
 
     // The following functions are overrides required by Solidity.
-
     function _burn(uint256 tokenId)
         internal
         override(ERC721Upgradeable, ERC721URIStorageUpgradeable)
@@ -68,12 +71,11 @@ contract MCSNFT is Initializable, ERC721Upgradeable, ERC721URIStorageUpgradeable
         baseURI = _newBaseURI;
     }
 
-
     function setContractURI(string memory _newContractURI) public onlyOwner {
         contractURI = _newContractURI;
     }
 
-    // get the current supply of tokens
+    /// @notice get the current supply of tokens
     function totalSupply() public view returns (uint256) {
         return _tokenIdCounter.current();
     }

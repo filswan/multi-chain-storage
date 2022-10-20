@@ -16,7 +16,7 @@
                     <img src="@/assets/images/info.png"/>
                 </el-tooltip>
             </template>
-            <div class="upload_form">
+            <div class="upload_form" id="uploadDigID">
                 <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" class="demo-ruleForm">
                     <el-form-item prop="fileList" :label="$t('uploadFile.upload')" :style="{'align-items': ruleForm.fileList_tip?'flex-start':'center'}">
                         <div>
@@ -610,6 +610,7 @@
                     _this.biling_price = _this.$root.filecoin_price
 
                     _this.loading = false
+                    _this.addEvent()
                 }else {
                     setTimeout(function(){
                         _this.stats()
@@ -628,6 +629,38 @@
                 } catch (err) {
                     console.error(err)
                 }
+            },
+            dropHandler(e) {
+                e.preventDefault()
+                const fileList = e.dataTransfer.files;
+
+                if (fileList.length == 0) {
+                    return;
+                }
+                const uploadFile = {
+                    file: fileList[0]
+                }
+                that.uploadFile(uploadFile)
+                that.ruleForm.fileList = [fileList[0]]
+            },
+            addEvent() {
+                const oDragWrap = document.getElementById('uploadDigID');
+                oDragWrap.addEventListener("dragenter", (e) => {
+                        e.preventDefault(); //拖进
+                    }, false
+                );
+                oDragWrap.addEventListener("dragleave", (e) => {
+                        e.preventDefault(); //拖离
+                    }, false
+                );
+                oDragWrap.addEventListener("dragover", (e) => {
+                        e.preventDefault(); //清除默认事件
+                    }, false
+                );
+                oDragWrap.addEventListener("drop", (e) => {
+                        that.dropHandler(e); //抛下
+                    }, false
+                )
             }
         },
         mounted() {
@@ -872,16 +905,22 @@
                 }
             }
             .el-dialog__body{
-                padding: 0 0.4rem;
-                @media screen and (max-width: 479px){
-                    padding: 0 0.2rem;
-                }
+                padding: 0;
                 .upload_form{
                     // display: flex;
                     // align-items: baseline;
-                    width: 100%; 
+                    width: calc(100% - 0.8rem); 
+                    padding: 0 0.4rem;
                     margin: auto; 
                     justify-content: flex-start;
+                    @media screen and (max-width: 1200px){
+                        width: calc(100% - 0.6rem); 
+                        padding: 0 0.3rem;
+                    }
+                    @media screen and (max-width: 479px){
+                        width: calc(100% - 0.4rem); 
+                        padding: 0 0.2rem;
+                    }
                     .el-form{
                         width: 100%;
                         margin: 0;

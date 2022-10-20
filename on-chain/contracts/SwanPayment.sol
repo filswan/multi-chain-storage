@@ -10,6 +10,7 @@ import "./FilswanOracle.sol";
 import "./FilinkConsumer.sol";
 import "./interfaces/IPriceFeed.sol";
 
+/// @notice MCS payment contract, handles lock and unlock of tokens
 contract SwanPayment is IPaymentMinimal, Initializable {
     address public constant NATIVE_TOKEN =
         0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
@@ -172,15 +173,6 @@ contract SwanPayment is IPaymentMinimal, Initializable {
             t._isExisted = true;
             t.copyLimit = param.copyLimit;
             t.blockNumber = block.number;
-
-            // emit LockPayment(
-            //     param.id,
-            //     t.token,
-            //     t.lockedFee,
-            //     param.minPayment,
-            //     param.recipient,
-            //     t.deadline
-            // );
         }
 
         return true;

@@ -4,17 +4,11 @@ pragma solidity ^0.8.4;
 // import "@openzeppelin/contracts/access/Ownable.sol";
 
 import "@chainlink/contracts/src/v0.8/ChainlinkClient.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-/**
- * Request testnet LINK and ETH here: https://faucets.chain.link/
- * Find information on LINK Token Contracts and get the latest ETH and LINK faucets here: https://docs.chain.link/docs/link-token-contracts/
- */
-
-/**
- * THIS IS AN EXAMPLE CONTRACT WHICH USES HARDCODED VALUES FOR CLARITY.
- * PLEASE DO NOT USE THIS CODE IN PRODUCTION.
- */
-contract FilinkConsumer is ChainlinkClient {
+/// @notice get filecoin storage price for deal
+contract FilinkConsumer is ChainlinkClient, Ownable {
     using Chainlink for Chainlink.Request;
   
     mapping(bytes32 => string) private mapRequestDeal;
@@ -26,33 +20,16 @@ contract FilinkConsumer is ChainlinkClient {
 
     uint256 public price;
 
-    
     /**
-     * Network: matic test
-     * Oracle: 0x0bDDCD124709aCBf9BB3F824EbC61C87019888bb (Chainlink Devrel   
-     * Node)
-     * Chainlink address: 0x326C977E6efc84E512bB9C30f76E30c160eD06FB
-     * post -> bytes32
-     * Job ID: 35738ec3cf9f4fd296b17bb91fdda32e
-     * Fee: 0.01 LINK
+     * LINK Token address: 0xb0897686c545045afc77cf20ec7a532e3120e0f1
+     * Oracle address: 0x3d5552a177Fe380CDDe28a034EA93C2d30b80b2D
+     * Fee: 0.1 LINK
      */
-
-    // function initialize(address admin, address _chainlinkToken, address _oracle, bytes32 _jobId, uint256 _fee) public initializer {
-    //     __Ownable_init();
-    //     __AccessControl_init();
-    //     _setupRole(DEFAULT_ADMIN_ROLE, admin);
-    //     setChainlinkToken(_chainlinkToken);
-    //     oracle = _oracle;
-    //     jobId = _jobId;
-    //     fee = _fee; // (Varies by network and job)
-    // }
-
-
     constructor(address _chainlinkToken, address _oracle, uint256 _fee) {
         setChainlinkToken(_chainlinkToken);
         setChainlinkOracle(_oracle);
         oracle = _oracle;
-        jobId = '7599d3c8f31e4ce78ad2b790cbcfc673';
+        jobId = "a052732022e04e89be3e0fc06e457985";
         fee = _fee; // (Varies by network and job)
     }
 
@@ -68,24 +45,25 @@ contract FilinkConsumer is ChainlinkClient {
      * data, then multiply by 1000000000000000000 (to remove decimal places from data).
      */
 
-     // todo: use call back to pay
-    function requestDealInfo(string calldata deal, string calldata network) public returns (bytes32 requestId) 
-    {
+    /// @notice Creates a Chainlink GET request to retrieve storage_price of given deal and network
+    function requestDealInfo(string calldata deal, string calldata network) public returns (bytes32 requestId) {
         require(mapDealPrice[deal] == 0, "deal price is already on-chain, call getPrice(deal)");
 
         Chainlink.Request memory request = buildChainlinkRequest(jobId, address(this), this.fulfill.selector);
 
+        // <deal>?network=<network>
         string memory tmp = concatenate(deal, "?network=");
         string memory params = concatenate(tmp, network);
 
         string memory key = concatenate(deal, network);
         
-        // Set the URL to perform the GET request on
+        /**
+         * GET http://35.168.51.2:7886/deal/<deal>?network=<network>
+         * ex. GET http://35.168.51.2:7886/deal/123456?network=filecoin_calibration, data.deal.storage_price = 8294400600825600
+         */ 
         request.add("get", concatenate("http://35.168.51.2:7886/deal/", params));
-        // request.add("deal", deal);
-
         request.add("path", "data,deal,storage_price");
-        request.addInt('multiply', 1);
+        request.addInt('times', 1);
         
         bytes32 id = sendChainlinkRequestTo(oracle, request, fee);
         mapRequestDeal[id] = key;
@@ -93,22 +71,21 @@ contract FilinkConsumer is ChainlinkClient {
         return id;
     }
     
-    /**
-     * Receive the response in the form of uint256
-     */ 
-    function fulfill( bytes32  _requestId, uint256 _price) public recordChainlinkFulfillment(_requestId)
-    {
+    
+    /// @dev Chainlink oracle will call this function to set the price
+    function fulfill( bytes32  _requestId, uint256 _price) public recordChainlinkFulfillment(_requestId) {
         price = _price;
         mapDealPrice[mapRequestDeal[_requestId]] = _price;
     }
 
-    function getPrice(string calldata deal, string calldata network) public view returns (uint256)
-    {
+    /// @notice get the storage price for given deal and network
+    function getPrice(string calldata deal, string calldata network) public view returns (uint256) {
         string memory key = concatenate(deal, network);
         return mapDealPrice[key];
     }
 
-   
-
-
+    function withdrawTokens(address tokenAddress) public onlyOwner {
+        uint256 balance = IERC20(tokenAddress).balanceOf(address(this));
+        IERC20(tokenAddress).transfer(msg.sender, balance);
+    }
 }

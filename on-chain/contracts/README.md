@@ -8,12 +8,12 @@
 
 ## Functions
 
-### MCSNFT.sol
+### SwanNFT.sol
 
-MCSNFT is an ERC-721 contract, that allows any user to mint a new NFT for this
+MCSNFT is an ERC-1155 contract, that allows any user to mint a new NFT for this
 collection.
 
-- **`mintData(minter, uri)`** mints a new token for `minter` and attaches the `uri` to the `tokenId`
+- **`mintUnique(minter, uri)`** mints a new unique token for `minter` and attaches the `uri` to the `tokenId`
 - **`totalSupply()`** returns the total number of NFTs
 
 ### FilinkConsumer.sol

@@ -53,7 +53,7 @@ Chain ID: **137**
 | FilinkConsumer     | 0x2Bf5dBde4Fdd30de18b36405CF587044172ffD33 |
 | FilswanOracle      | 0x2621BB3140D8914806E977F7e6035B468675304D |
 | SwanPayment        | 0xA1f32c758c4324cC3070A3AA107C4dC7DdFe1a6f |
-| SwanNFT            | 0x7a5FB09Adc5f1bCd7bd1E230Dcc8B6d933c4995E |
+| SwanNFT            | 0xA6787587159c017AD83fe28e746FCFAE0DD91383 |
 
 ##### Wallet List
 

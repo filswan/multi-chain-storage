@@ -1,0 +1,9 @@
+{
+  "name": "SWAN NFT",
+  "symbol": "SWAN",
+  "description": "ERC-1155 minted on multi-chain storage",
+  "image": "https://calibration-ipfs.filswan.com/ipfs/QmRaDNkbLajNJ9jc5FvyJcxp8yjthVqzcABaqvZ9huqfYN",
+  "external_link": "https://www.multichain.storage",
+  "seller_fee_basis_points": 100,
+  "fee_recipient": "0xb1DAB7708d6E3dE3006861b68dE3c1a4055DbAaB"
+}

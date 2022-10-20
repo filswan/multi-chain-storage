@@ -1,8 +1,9 @@
 <template>
     <div id="Create">
         <el-dialog :modal="true" :close-on-click-modal="false" :width="widthDia" :visible.sync="uploadDigShow"
-            custom-class="uploadDig"
+            custom-class="uploadDig" id="uploadDigBody"
             :before-close="closeDia">
+            <div class="uploadDigID el-icon-upload" :style="{'z-index': bgStyle ? '99' : '-1'}"></div>
             <div class="loadMetamaskPay" v-if="loading">
                 <div>
                     <div class="el-loading-spinner"><svg viewBox="25 25 50 50" class="circular"><circle cx="50" cy="50" r="20" fill="none" class="path"></circle></svg><!----></div>
@@ -16,7 +17,7 @@
                     <img src="@/assets/images/info.png"/>
                 </el-tooltip>
             </template>
-            <div class="upload_form" id="uploadDigID">
+            <div class="upload_form">
                 <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" class="demo-ruleForm">
                     <el-form-item prop="fileList" :label="$t('uploadFile.upload')" :style="{'align-items': ruleForm.fileList_tip?'flex-start':'center'}">
                         <div>
@@ -271,7 +272,8 @@
                 metamaskLoginTip: false,
                 lastTime: 0,
                 found_link: process.env.NODE_ENV == "production"?"https://calibration-faucet.filswan.com/":"http://192.168.88.216:8080/faucet/#/dashboard",
-                free: false
+                free: false,
+                bgStyle: false
             };
         },
         props: ['uploadDigShow'],
@@ -633,7 +635,6 @@
             dropHandler(e) {
                 e.preventDefault()
                 const fileList = e.dataTransfer.files;
-
                 if (fileList.length == 0) {
                     return;
                 }
@@ -642,25 +643,31 @@
                 }
                 that.uploadFile(uploadFile)
                 that.ruleForm.fileList = [fileList[0]]
+                that.bgStyle = false
             },
             addEvent() {
-                const oDragWrap = document.getElementById('uploadDigID');
+                const oDragBody = document.querySelector('.uploadDig')
+                oDragBody.addEventListener("dragenter", (e) => {
+                        e.preventDefault(); //拖进
+                        that.bgStyle = true
+                })
+                oDragBody.addEventListener("dragover", (e) => {
+                        e.preventDefault(); //清除默认事件
+                })
+                const oDragWrap = document.querySelector('.uploadDigID')
                 oDragWrap.addEventListener("dragenter", (e) => {
                         e.preventDefault(); //拖进
-                    }, false
-                );
+                })
                 oDragWrap.addEventListener("dragleave", (e) => {
                         e.preventDefault(); //拖离
-                    }, false
-                );
+                        that.bgStyle = false
+                })
                 oDragWrap.addEventListener("dragover", (e) => {
                         e.preventDefault(); //清除默认事件
-                    }, false
-                );
+                })
                 oDragWrap.addEventListener("drop", (e) => {
                         that.dropHandler(e); //抛下
-                    }, false
-                )
+                })
             }
         },
         mounted() {
@@ -1305,6 +1312,43 @@
         height: calc(100% - 0.6rem);
         padding: 0.4rem 0.2rem 0;
         font-size: 0.24rem;
+        .uploadDigID{
+            position: absolute;
+            left: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 99;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(255,255,255,.9);
+            border-radius: 0.2rem;
+            font-size: 18px;
+            @media screen and (max-width: 1600px){
+                font-size: 16px;
+            }
+            .elUpload{
+                i{
+                    display: flex;
+                    justify-content: center;
+                    font-size: 45px;
+                    color: #979797;
+                }
+            }
+            &:before{
+                display: flex;
+                justify-content: center;
+                font-size: 55px;
+                color: #979797;
+                @media screen and (max-width: 1600px){
+                    font-size: 50px;
+                }
+                @media screen and (max-width: 1200px){
+                    font-size: 45px;
+                }
+            }
+        }
         .loadMetamaskPay{
             position: absolute;
             left: 0;

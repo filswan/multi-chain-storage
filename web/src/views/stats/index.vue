@@ -106,38 +106,38 @@
                 MCS_Dataset: [
                     {
                         data: '-',
-                        desc: 'Total sealed storage',
-                        popover: 'Total sealed storage contributed to filecoin.'
+                        desc: 'Total Sealed Storage ',
+                        popover: 'Total sealed storage contributed to Filecoin networks.'
                     },
                     {
                         data: '-',
                         desc: 'Total Pinned IPFS Storage',
-                        popover: 'Total pinned ipfs storage for hot retrieval from any ipfs gateway. This data is not stored on filecoin.'
+                        popover: 'Total pinned ipfs storage for hot retrieval from any ipfs gateway. These data are not stored on Filecoin networks.'
                     },
                     {
                         data: '-',
-                        desc: 'Total Register Users',
-                        popover: 'Wallet address registered on mutlichain.storage'
+                        desc: 'Total Registered Users',
+                        popover: 'Amount of wallet addresses registered on mutlichain.storage'
                     },
                     {
                         data: '-',
                         desc: 'Total Storage Deal Submitted',
-                        popover: 'Total storages order submitted on mutlichain.storage'
+                        popover: 'Total storage orders submitted on mutlichain.storage'
                     },
                     {
                         data: '-',
-                        desc: 'Active successful storage deals',
-                        popover: 'The quantity of active deals on Multichain.storage'
+                        desc: 'Active Successful Storage Deals',
+                        popover: 'The quantity of active deals on Multichain.storage.'
                     },
                     {
                         data: '-',
                         desc: 'Total Storage Providers',
-                        popover: 'Miners providers offering storage capacity to the Filecoin network.'
+                        popover: 'Numbers of miners offering storage capacity to Filecoin networks.'
                     },
                     {
                         data: '-',
-                        desc: 'Total CID Quantity',
-                        popover: 'The number of sourcefile CIDs quantity on Multichain.storage'
+                        desc: 'Total CIDs Quantity',
+                        popover: 'The quantity of sourcefile CIDs on Multichain.storage'
                     }
                 ]
             }
@@ -172,7 +172,6 @@
             },
             async getStats() {
                 let stats_api = `${process.env.BASE_API}stats/storage?wallet_address=${that.$store.getters.metaAddress}`
-
                 axios.get(stats_api, {
                     headers: {
                             'Authorization': "Bearer "+ that.$store.getters.mcsjwtToken
@@ -311,7 +310,6 @@
                 var k = 1024, // or 1000
                     sizes = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'],
                     i = Math.floor(Math.log(bytes) / Math.log(k));
-
                 if (Math.round((bytes / Math.pow(k, i))).toString().length > 3) {
                     i += 1
                 }
@@ -358,7 +356,6 @@
             color: #fff;
             line-height: 1.5;
         }
-
         .main {
             font-size: 18px;
             width: 100%;
@@ -378,7 +375,6 @@
                 margin: 0 auto 0.2rem;
             }
         }
-
         .info {
             width: calc(25% - 0.2rem);
             padding: 0.2rem 0;
@@ -404,7 +400,6 @@
                 width: calc(100% - 0.2rem);
             }
         }
-
         .info-up {
             font-size: 0.2rem;
             color: #2C7FF8;
@@ -428,9 +423,7 @@
                 }
             }
         }
-
         .el-icon-dog{
-
             background-size: contain;
         }
         .el-icon-dog:before{
@@ -645,7 +638,6 @@
                 flex-direction: column;
                 margin: 5px;
             }
-
             .info-up {
                 font-size: 14px;
                 color: #0b318f;
@@ -655,9 +647,7 @@
                 margin-bottom: 10px;
                 height: 30px;
             }
-
             .el-icon-dog{
-
                 background-size: contain;
             }
             .el-icon-dog:before{

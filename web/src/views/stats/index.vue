@@ -106,38 +106,38 @@
                 MCS_Dataset: [
                     {
                         data: '-',
-                        desc: 'Total sealed storage',
-                        popover: 'Total sealed storage contributed to filecoin.'
+                        desc: 'Total Sealed Storage ',
+                        popover: 'Total sealed storage contributed to Filecoin networks.'
                     },
                     {
                         data: '-',
                         desc: 'Total Pinned IPFS Storage',
-                        popover: 'Total pinned ipfs storage for hot retrieval from any ipfs gateway. This data is not stored on filecoin.'
+                        popover: 'Total pinned ipfs storage for hot retrieval from any ipfs gateway. These data are not stored on Filecoin networks.'
                     },
                     {
                         data: '-',
-                        desc: 'Total Register Users',
-                        popover: 'Wallet address registered on mutlichain.storage'
+                        desc: 'Total Registered Users',
+                        popover: 'Amount of wallet addresses registered on mutlichain.storage'
                     },
                     {
                         data: '-',
                         desc: 'Total Storage Deal Submitted',
-                        popover: 'Total storages order submitted on mutlichain.storage'
+                        popover: 'Total storage orders submitted on mutlichain.storage'
                     },
                     {
                         data: '-',
-                        desc: 'Active successful storage deals',
-                        popover: 'The quantity of active deals on Multichain.storage'
+                        desc: 'Active Successful Storage Deals',
+                        popover: 'The quantity of active deals on Multichain.storage.'
                     },
                     {
                         data: '-',
                         desc: 'Total Storage Providers',
-                        popover: 'Miners providers offering storage capacity to the Filecoin network.'
+                        popover: 'Numbers of miners offering storage capacity to Filecoin networks.'
                     },
                     {
                         data: '-',
-                        desc: 'Total CID Quantity',
-                        popover: 'The number of sourcefile CIDs quantity on Multichain.storage'
+                        desc: 'Total CIDs Quantity',
+                        popover: 'The quantity of sourcefile CIDs on Multichain.storage'
                     }
                 ]
             }

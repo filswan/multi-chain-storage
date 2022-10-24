@@ -16,6 +16,7 @@
   "dependencies": {
     "axios": "^0.21.1",
     "cross-env": "^7.0.3",
+    "echarts": "^5.4.0",
     "element-resize-detector": "^1.2.3",
     "element-ui": "^2.15.6",
     "jquery": "^3.6.0",
@@ -28,7 +29,8 @@
     "vue-meta": "^2.4.0",
     "vue-router": "^3.0.1",
     "vuex": "^3.6.2",
-    "web3": "^0.20.6"
+    "web3": "^0.20.6",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",

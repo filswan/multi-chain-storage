@@ -149,13 +149,13 @@
                     },
                     {
                         data: '-',
-                        desc: 'Total files achieved',
-                        popover: 'The number of files achieved on the Filecoin network'
+                        desc: 'Total files archived',
+                        popover: 'The number of files archived on the Filecoin network'
                     },
                     {
                         data: '-',
-                        desc: 'Storage achieved',
-                        popover: 'Total storage achieved on the Filecoin network'
+                        desc: 'Storage archived',
+                        popover: 'Total storage archived on the Filecoin network'
                     },
                     {
                         data: '-',
@@ -228,6 +228,15 @@
             async getPie() {
                 const myChart = echarts.init(document.getElementById('roseChart'))
                 const option = {
+                    toolbox: {
+                        show: true,
+                        feature: {
+                        dataZoom: {
+                            yAxisIndex: 'none'
+                        },
+                        magicType: { type: ['line', 'bar'] },
+                        }
+                    },
                     tooltip: {
                         trigger: 'axis',
                         axisPointer: {
@@ -255,7 +264,7 @@
                         boundaryGap: false,
                         boundaryGap: true,
                         axisLabel: {
-                            interval: that.echartData.time.length - 2,
+                            // interval: that.echartData.time.length - 2,
                             show: true,
                             textStyle: {
                                 color: "#000",

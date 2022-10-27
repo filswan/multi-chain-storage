@@ -293,11 +293,11 @@
             calculation(type){
                 this.ruleForm.storage_cost = this.ruleForm.file_size_byte * this.ruleForm.duration * this.storage
                 let _price = this.ruleForm.storage_cost * this.biling_price
-                let number_price = Number(_price).toFixed(9)
-                this.ruleForm.amount_minprice = number_price > 0.000000001 ? number_price : '0.0000000005'
-                this.storage_cost_low = number_price > 0 ? Number(_price * 2).toFixed(9) : '0.000000001'
-                this.storage_cost_average = number_price > 0 ? Number(_price * 3).toFixed(9) : '0.000000002'
-                this.storage_cost_high = number_price > 0 ? Number(_price * 5).toFixed(9) : '0.000000003'
+                let number_price = Number(_price).toFixed(6)
+                this.ruleForm.amount_minprice = number_price > 0.000001 ? number_price : '0.0000005'
+                this.storage_cost_low = number_price > 0 ? Number(_price * 2).toFixed(6) : '0.000002'
+                this.storage_cost_average = number_price > 0 ? Number(_price * 3).toFixed(6) : '0.000003'
+                this.storage_cost_high = number_price > 0 ? Number(_price * 5).toFixed(6) : '0.000004'
                 this.ruleForm.amount = this.free ? 0 : this.storage_cost_average
             },
             agreeChange(val){
@@ -357,8 +357,8 @@
                             // 查询剩余代币余额为：
                             contract_erc20.methods.balanceOf(_this.metaAddress).call()
                             .then(resultUSDC => {
-                                _this.usdcAvailable = web3.utils.fromWei(resultUSDC, 'ether');
-                                console.log('Available:', _this.usdcAvailable, _this.ruleForm.amount)
+                                _this.usdcAvailable = web3.utils.fromWei(resultUSDC, 'mwei');
+                                console.log('Available upload:', _this.usdcAvailable, _this.ruleForm.amount)
 
                                 // 判断支付金额是否大于代币余额
                                 if(Number(_this.ruleForm.amount) > Number(_this.usdcAvailable) ){
@@ -403,19 +403,20 @@
                                                     }else{
                                                         contract_erc20.methods.allowance(_this.gatewayContractAddress, _this.metaAddress).call()
                                                         .then(resultUSDC => {
-                                                            console.log('allowance：'+ resultUSDC);
-                                                            if(resultUSDC < web3.utils.toWei(_this.ruleForm.amount, 'ether')){
-                                                                contract_erc20.methods.approve(_this.gatewayContractAddress, web3.utils.toWei(_this.ruleForm.amount, 'ether')).send({from:  _this.metaAddress})
+                                                            let amount_pay = web3.utils.toWei(_this.ruleForm.amount, 'mwei')
+                                                            console.log('allowance：'+ resultUSDC, amount_pay); 
+                                                            if(resultUSDC < amount_pay){
+                                                                contract_erc20.methods.approve(_this.gatewayContractAddress, amount_pay).send({from:  _this.metaAddress})
                                                                 .then(receipt => {
                                                                     // console.log('approve receipt:', receipt)
-                                                                    _this.contractSend(res.data)
+                                                                    _this.contractSend(res.data, amount_pay)
                                                                 })
                                                                 .catch(error => {
                                                                     // console.log('errorerrorerror', error)
                                                                     _this.finishClose()
                                                                 })
                                                             }else{
-                                                                _this.contractSend(res.data)
+                                                                _this.contractSend(res.data, amount_pay)
                                                             }
                                                         })
                                                     }
@@ -470,7 +471,7 @@
                     }
                 });
             },
-            contractSend(resData){
+            contractSend(resData, amount_pay){
                 let _this = this
                 // 合约转账
                 let contract_instance = new web3.eth.Contract( first_contract_json );
@@ -487,8 +488,8 @@
                 
                 let lockObj = {
                     id: resData.w_cid,
-                    minPayment: web3.utils.toWei(String(_this.ruleForm.amount_minprice), 'ether'),
-                    amount: web3.utils.toWei(_this.ruleForm.amount, 'ether'),
+                    minPayment: String(Math.floor(amount_pay/2)),
+                    amount: amount_pay,
                     lockTime: 86400 * Number(_this.$root.LOCK_TIME), // one day
                     recipient: _this.recipientAddress, //todo:
                     size: resData.file_size,

@@ -435,9 +435,9 @@ export default {
             if (!value) return '-';
             // 18 - 单位换算需要 / 1000000000000000000，浮点运算显示有bug
             let valueNum = String(value)
-            if(value.length > 18){
-                let v1 = valueNum.substring(0, valueNum.length - 18)
-                let v2 = valueNum.substring(valueNum.length - 18)
+            if(value.length > 6){
+                let v1 = valueNum.substring(0, valueNum.length - 6)
+                let v2 = valueNum.substring(valueNum.length - 6)
                 let v3 = String(v2).replace(/(0+)\b/gi,"")
                 if(v3){
                     return v1 + '.' + v3
@@ -447,7 +447,7 @@ export default {
                 return parseFloat(v1.replace(/(\d)(?=(?:\d{3})+$)/g, "$1,") + '.' + v2)
             }else{
                 let v3 = ''
-                for(let i = 0; i < 18 - valueNum.length; i++){
+                for(let i = 0; i < 6 - valueNum.length; i++){
                     v3 += '0'
                 }
                 return '0.' + String(v3 + valueNum).replace(/(0+)\b/gi,"")

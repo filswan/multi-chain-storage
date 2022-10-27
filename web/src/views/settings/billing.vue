@@ -352,7 +352,7 @@
                 if(!value){
                     return value
                 }else if(value.toString().indexOf('.') < 0){
-                    return value.toFixed(18)
+                    return value.toFixed(6)
                 }
                 var d = value.toString().split(".");
                 if (d.length == 1) {
@@ -450,9 +450,9 @@
                 // if (isNaN(value)) return value;
                 // 18 - 单位换算需要 / 1000000000000000000，浮点运算显示有bug
                 // value = Number(value)
-                if(String(value).length > 18){
-                    let v1 = String(value).substring(0, String(value).length - 18)
-                    let v2 = String(value).substring(String(value).length - 18)
+                if(String(value).length > 6){
+                    let v1 = String(value).substring(0, String(value).length - 6)
+                    let v2 = String(value).substring(String(value).length - 6)
                     let v3 = String(v2).replace(/(0+)\b/gi,"")
                     if(v3){
                         return v1 + '.' + v3
@@ -462,7 +462,7 @@
                     return parseFloat(v1.replace(/(\d)(?=(?:\d{3})+$)/g, "$1,") + '.' + v2)
                 }else{
                     let v3 = ''
-                    for(let i = 0; i < 18 - String(value).length; i++){
+                    for(let i = 0; i < 6 - String(value).length; i++){
                         v3 += '0'
                     }
                     return '0.' + String(v3 + value).replace(/(0+)\b/gi,"")

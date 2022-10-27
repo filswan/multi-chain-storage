@@ -761,8 +761,8 @@ export default {
                   // 查询剩余代币余额为：
                   contract_erc20.methods.balanceOf(_this.metaAddress).call()
                   .then(balance => {
-                      let usdcAvailable = web3.utils.fromWei(balance, 'ether');
-                      // console.log('Available:', usdcAvailable, rowAmount)
+                      let usdcAvailable = web3.utils.fromWei(balance, 'mwei');
+                      console.log('Available pay:', usdcAvailable, rowAmount)
                       // 判断支付金额是否大于代币余额
                       if(Number(rowAmount) > Number(usdcAvailable)){
                           _this.$message.error('Insufficient balance')
@@ -771,18 +771,20 @@ export default {
                         contract_erc20.methods.allowance(_this.gatewayContractAddress, _this.metaAddress).call()
                         .then(resultUSDC => {
                             // console.log('allowance：'+ resultUSDC);
-                            if(resultUSDC < web3.utils.toWei(rowAmount, 'ether')){
-                                contract_erc20.methods.approve(_this.gatewayContractAddress, web3.utils.toWei(rowAmount, 'ether')).send({from:  _this.metaAddress})
+                            let amount_pay = web3.utils.toWei(rowAmount, 'mwei')
+                            console.log('allowance：'+ resultUSDC, amount_pay);                             
+                            if(resultUSDC < amount_pay){
+                                contract_erc20.methods.approve(_this.gatewayContractAddress, amount_pay).send({from:  _this.metaAddress})
                                 .then(receipt => {
                                   // console.log('approve receipt:', receipt)
-                                  _this.contractSend(res.data.data.w_cid, web3.utils.toWei(rowAmount, 'ether'))
+                                  _this.contractSend(res.data.data.w_cid, amount_pay)
                                 })
                                 .catch(error => {
                                   // console.log('errorerrorerror', error)
                                   _this.finishClose()
                                 })
                             }else{
-                              _this.contractSend(res.data.data.w_cid, web3.utils.toWei(rowAmount, 'ether'))
+                              _this.contractSend(res.data.data.w_cid, amount_pay)
                             }
                         })
                       }
@@ -815,7 +817,7 @@ export default {
         
         let lockObj = {
             id: cid,
-            minPayment: String(payAmount/2),
+            minPayment: String(Math.floor(payAmount/2)),
             amount: payAmount,
             lockTime: 86400 * Number(_this.$root.LOCK_TIME), // one day
             recipient: _this.recipientAddress, //todo:
@@ -1287,9 +1289,9 @@ export default {
         // if (isNaN(value)) return value;
         // 18 - 单位换算需要 / 1000000000000000000，浮点运算显示有bug
         // value = Number(value)
-        if(String(value).length > 18){
-            let v1 = String(value).substring(0, String(value).length - 18)
-            let v2 = String(value).substring(String(value).length - 18)
+        if(String(value).length > 6){
+            let v1 = String(value).substring(0, String(value).length - 6)
+            let v2 = String(value).substring(String(value).length - 6)
             let v3 = String(v2).replace(/(0+)\b/gi,"")
             if(v3){
                 return v1 + '.' + v3
@@ -1299,7 +1301,7 @@ export default {
             return parseFloat(v1.replace(/(\d)(?=(?:\d{3})+$)/g, "$1,") + '.' + v2)
         }else{
             let v3 = ''
-            for(let i = 0; i < 18 - String(value).length; i++){
+            for(let i = 0; i < 6 - String(value).length; i++){
                 v3 += '0'
             }
             return '0.' + String(v3 + value).replace(/(0+)\b/gi,"")

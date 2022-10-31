@@ -33,7 +33,8 @@ export default {
   .el-button, .createTask a, .logged_in .info, .metamaskLogin, .metamask, .sidebar, svg, img.resno,
   .el-popover.el-popper, #billing .form .form_top .search .el-input .el-input__icon,
   #dealManagement .form .form_table .el-table tr th .cell i, .filter_status,
-  .header-right .progress, .swithUI svg, .network_mainnet img, .el-alert, .statsCont, .el-backtop{
+  .header-right .progress, .swithUI svg, .network_mainnet img, .el-alert, .el-backtop, 
+  .statsCont .info, .statsCont .collaborators img{
     filter: invert(1) hue-rotate(180deg);
   }
   .color, .resno, .sidebar img, .statsCont svg{

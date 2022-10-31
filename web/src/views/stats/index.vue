@@ -52,9 +52,9 @@
 <script>
     let that
     import axios from 'axios'
-    import * as XLSX from "xlsx"
     import * as echarts from 'echarts'
     import { generateState } from '@/utils/i18n'
+    import moment from "moment"
     export default {
         name: "Stats",
         components: { },
@@ -81,11 +81,6 @@
                         link: 'https://filecoin.io/'
                     },
                     {
-                        img: require("@/assets/images/dashboard/moon/MULTI-CHAIN-04.png"),
-                        img_sunny: require("@/assets/images/dashboard/sunny/MULTI-CHAIN-04-sunny.png"),
-                        link: 'https://polygon.technology/'
-                    },
-                    {
                         img: require("@/assets/images/dashboard/moon/MULTI-CHAIN-05.png"),
                         img_sunny: require("@/assets/images/dashboard/sunny/MULTI-CHAIN-05-sunny.png"),
                         link: 'https://chainlinklabs.com/'
@@ -106,14 +101,14 @@
                         link: 'https://opensea.io/'
                     },
                     {
-                        img: require("@/assets/images/dashboard/moon/MULTI-CHAIN-12.png"),
-                        img_sunny: require("@/assets/images/dashboard/sunny/MULTI-CHAIN-12-sunny.png"),
-                        link: 'https://www.nebulablock.com/'
-                    },
-                    {
                         img: require("@/assets/images/dashboard/moon/MULTI-CHAIN-09.png"),
                         img_sunny: require("@/assets/images/dashboard/sunny/MULTI-CHAIN-09-sunny.png"),
                         link: 'https://akash.network/'
+                    },
+                    {
+                        img: require("@/assets/images/dashboard/moon/MULTI-CHAIN-04.png"),
+                        img_sunny: require("@/assets/images/dashboard/sunny/MULTI-CHAIN-04-sunny.png"),
+                        link: 'https://polygon.technology/'
                     },
                     {
                         img: require("@/assets/images/dashboard/moon/MULTI-CHAIN-10.png"),
@@ -124,6 +119,36 @@
                         img: require("@/assets/images/dashboard/moon/MULTI-CHAIN-11.png"),
                         img_sunny: require("@/assets/images/dashboard/sunny/MULTI-CHAIN-11-sunny.png"),
                         link: 'https://sui.io/'
+                    },
+                    {
+                        img: require("@/assets/images/dashboard/moon/MULTI-CHAIN-13.png"),
+                        img_sunny: require("@/assets/images/dashboard/sunny/MULTI-CHAIN-13-sunny.png"),
+                        link: 'https://en.fogmeta.com/'
+                    },
+                    {
+                        img: require("@/assets/images/dashboard/moon/MULTI-CHAIN-14.png"),
+                        img_sunny: require("@/assets/images/dashboard/sunny/MULTI-CHAIN-14-sunny.png"),
+                        link: 'https://www.web3cloud.tech/'
+                    },
+                    {
+                        img: require("@/assets/images/dashboard/moon/MULTI-CHAIN-15.png"),
+                        img_sunny: require("@/assets/images/dashboard/sunny/MULTI-CHAIN-15-sunny.png"),
+                        link: 'https://github.com/srblabotw69/Afianthack'
+                    },
+                    {
+                        img: require("@/assets/images/dashboard/moon/MULTI-CHAIN-16.png"),
+                        img_sunny: require("@/assets/images/dashboard/sunny/MULTI-CHAIN-16-sunny.png"),
+                        link: 'https://github.com/IKalonji/CooperDB'
+                    },
+                    {
+                        img: require("@/assets/images/dashboard/moon/MULTI-CHAIN-17.png"),
+                        img_sunny: require("@/assets/images/dashboard/sunny/MULTI-CHAIN-17-sunny.png"),
+                        link: 'https://sao.network/#/'
+                    },
+                    {
+                        img: require("@/assets/images/dashboard/moon/MULTI-CHAIN-12.png"),
+                        img_sunny: require("@/assets/images/dashboard/sunny/MULTI-CHAIN-12-sunny.png"),
+                        link: 'https://www.nebulablock.com/'
                     }
                 ],
                 MCS_Dataset: [
@@ -177,36 +202,8 @@
             that.$store.dispatch('setRouterMenu', 4)
             that.$store.dispatch('setHeadertitle', that.$t('navbar.Stats'))
             that.getData()
-
-            const url = "./static/stats.xlsx";
-            that.readExcelFile(url)
         },
         methods:{
-            async readExcelFile(url) {
-                axios.get(url,{responseType:'arraybuffer'})
-                .then(async (res)=>{
-                    const data = new Uint8Array(res.data)
-                    const a = XLSX
-                    const workbook = XLSX.read(data, {type:"array"})
-                    const sheets = workbook.Sheets[workbook.SheetNames[0]] // 获取文档数据
-                    // console.log('content', sheets)
-                    const content = await that.transformSheets(sheets)
-                    console.log('*****content-Excel data acquired*****', content, that.echartData)
-                    that.getPie()
-                }).catch( err =>{
-                    console.log(err)
-                })
-            },
-            transformSheets(sheets){
-                let content = []
-                content.push(XLSX.utils.sheet_to_json(sheets, {raw: false}))
-                content[0].forEach((e, index) => {
-                    that.echartData.time.push(e[' '])
-                    that.echartData.upload.push(e['Files uploaded'])
-                    that.echartData.achieved.push(e['Storage Achieved (GiB)'])
-                })
-                return content[0]
-            },
             generateState,
             deepClone(obj) {
                 const _obj = JSON.stringify(obj)
@@ -231,10 +228,10 @@
                     toolbox: {
                         show: true,
                         feature: {
-                        dataZoom: {
-                            yAxisIndex: 'none'
-                        },
-                        magicType: { type: ['line', 'bar'] },
+                            dataZoom: {
+                                yAxisIndex: 'none'
+                            },
+                            magicType: { type: ['line', 'bar'] },
                         }
                     },
                     tooltip: {
@@ -247,83 +244,49 @@
                         }
                     },
                     legend: {
-                        bottom: 10,
+                        bottom: 0,
                         left: 'center',
                         textStyle: {
                             color: '#000',
-                            fontSize: 14
+                            fontSize: 13
                         },
                         data: ['Files uploaded', 'Storage Achieved (GiB)']
+                    },
+                    grid: {
+                        top: '70', 
+                        left: '3%',
+                        right: '3%',
+                        bottom: '50',
+                        containLabel: true
                     },
                     color: ['#4472c4', '#ed7d31'],
                     xAxis: {
                         type: 'category',
-                        axisTick: {
-                            show:false
-                        },
                         boundaryGap: false,
-                        boundaryGap: true,
-                        axisLabel: {
-                            // interval: that.echartData.time.length - 2,
-                            show: true,
-                            textStyle: {
-                                color: "#000",
-                                fontSize: 13
-                            }
-                        },
-                        data: that.echartData.time
+                        data:   that.echartData.time.map(function (str) {
+                                    return str.replace(' ', '\n');
+                                }),
                     },
                     yAxis: [
                         {
-                            boundaryGap: [0, '30%'],
-                            type: 'value',
-                            name: 'File Count',
-                            nameTextStyle:{
-                                color:'#000'  
-                            },
-                            position: 'left',
+                            // boundaryGap: [0, '30%'],
+                            name: "File Count",
+                            type: "value",
+                            // min: that.echartData.min_file,
+                            // max: that.echartData.max_file,
                             scale: true,
-                            axisTick: {
-                                inside: 'false',
-                                length: 10,
-                            },
-                            splitLine: {
-                                show: false
-                            },
-                            axisLabel: {
-                                textStyle: {
-                                    color: "#000",
-                                    fontSize: 13
-                                },
-                                formatter: function(value, index) {
-                                    return value;
-                                }
-                            }
+                            splitNumber: 5,
+                            alignTicks: true
                         },
                         {
-                            boundaryGap: [0, '50%'],
-                            type: 'value',
-                            name: 'GiB',
-                            nameTextStyle:{
-                                color:'#000'  
-                            },
-                            position: 'right',
-                            axisTick: {
-                                inside: 'false',
-                                length: 10,
-                            },
-                            splitLine: {
-                                show: false
-                            },
-                            axisLabel: {
-                                textStyle: {
-                                    color: "#000",
-                                    fontSize: 13
-                                },
-                                formatter: function(value, index) {
-                                    return value;
-                                }
-                            }
+                            // boundaryGap: [0, '50%'],
+                            name: "GiB",
+                            type: "value",
+                            position: "right",
+                            // min: that.echartData.min_val,
+                            // max: that.echartData.max_val,
+                            scale: true,
+                            splitNumber: 5
                         }
                     ],
                     series: [
@@ -332,18 +295,17 @@
                             type: 'line',
                             data: that.echartData.upload,
                             yAxisIndex: 0,
-                            symbolSize: 0
+                            // symbolSize: 0
                         },
                         {
                             name: 'Storage Achieved (GiB)',
                             type: 'line',
                             data: that.echartData.achieved,
                             yAxisIndex: 1,
-                            showSymbol: false
+                            // showSymbol: false
                         }
                     ]
-
-                }
+                };
                 myChart.setOption(option)
                 window.onresize = function () {
                     myChart.resize()
@@ -359,8 +321,27 @@
                 that.MCS_Dataset.forEach((element, i) => {
                     element.data = that.dataset(ecosysRes.data, i)
                 });
+                if(ecosysRes.data.graph){
+                    that.echartData.max_file = ecosysRes.data.graph.max_file || 0
+                    that.echartData.max_val = ecosysRes.data.graph.max_val || 0
+                    that.echartData.min_file = ecosysRes.data.graph.min_file || 0
+                    that.echartData.min_val = ecosysRes.data.graph.min_val || 0
+                    await that.time(ecosysRes.data.graph.time)
+                    that.echartData.upload = ecosysRes.data.graph.user_uploads || []
+                    that.echartData.achieved = ecosysRes.data.graph.sealed_storage || []
+                }
                 await that.timeout(500)
                 that.loading_ecosystem = false
+                that.getPie()
+            },
+            time(data){
+                let timeData = data || []
+                timeData.map((item, index) => {
+                    item = item
+                                ? moment(new Date(parseInt(item * 1000))).format("YYYY-MM-DD HH:mm:ss")
+                                : "-"
+                    that.echartData.time.push(item)
+                })
             },
             dataset(data, i){
                 switch(i){
@@ -469,28 +450,28 @@
             flex-wrap: wrap;
             justify-content: center;
             padding: 0;
-            margin: 0 auto;
+            margin: 0.15rem auto;
             @media screen and (max-width: 600px){
                 display: block;
             }
             #roseChart{
                 width: 100%;
-                height: 400px;
+                height: 460px;
                 margin: 0.2rem 0 0.35rem;
                 @media screen and (max-width: 1600px){
-                    height: 380px;
+                    height: 440px;
                 }
                 @media screen and (max-width: 1366px){
-                    height: 320px;
+                    height: 400px;
                 }
                 @media screen and (max-width: 999px){
-                    height: 300px;
+                    height: 360px;
                 }
                 @media screen and (max-width: 768px){
-                    height: 380px;
+                    height: 420px;
                 }
                 @media screen and (max-width: 441px){
-                    height: 350px;
+                    height: 390px;
                 }
             }
         }

@@ -51,9 +51,9 @@ $ npm run build:semi_prod
 
 The build artifacts will be stored in the `dist/` directory.
 
-## install echarts, xlsx, swiper
+## install echarts, swiper
 
-Run `npm install echarts --save``npm install xlsx --save``npm i swiper@5.2.0` to generate component.
+Run `npm install echarts --save``npm i swiper@5.2.0` to generate component.
 
 ## Reference documents
 

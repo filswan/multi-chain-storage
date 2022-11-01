@@ -45,9 +45,9 @@
                             <a href="https://github.com/filswan" target="_blank"><img :src="share_img3" alt=""></a>
                             <a href="https://t.me/filswan" target="_blank"><img :src="share_img9" alt=""></a>
                         </div>
-                        <!-- market data black badge -->
+                        <!-- market data white badge -->
                         <div class="fes-market">
-                            <a href="https://chn.lk/3DTWSjE" target="_blank"><img src="https://chain.link/badge-market-data-black" alt="market data secured with chainlink"></a>
+                            <a href="https://chn.lk/3DTWSjE" target="_blank"><img src="https://chain.link/badge-market-data-white" alt="market data secured with chainlink"></a>
                         </div>
                     </div>
                 </template>

@@ -27,8 +27,7 @@
                         </el-popover>
                     </div>
                     <div class="info-num">
-                        <span v-if="index == 4" style="font-size:12px;color:#4d4d4d">current formula is the deal number</span>
-                        <span v-else>{{item.data}}</span>
+                        <span>{{item.data}}</span>
                     </div>
                 </div>
             </div>

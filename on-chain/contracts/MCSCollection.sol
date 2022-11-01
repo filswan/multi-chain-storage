@@ -7,21 +7,36 @@ import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Supply.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
-// TODO: add admin role, create factory contract, test scripts
+// TODO: test scripts
 contract MCSCollection is ERC1155, ERC1155Supply, ERC1155URIStorage, Ownable {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIdCounter;
 
     string public contractURI;
 
+    mapping(address => bool) public isAdmin;
+    event AdminSet(address user, bool status);
+
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor(string memory contractURI_) ERC1155("") {
         contractURI = contractURI_;
+
+        isAdmin[msg.sender] = true;
+    }
+
+    modifier onlyAdmin {
+        require(isAdmin[msg.sender], "this sender is not an admin");
+        _;
+    }
+
+    function setAdmin(address _address, bool status) public onlyOwner {
+        isAdmin[_address] = status;
+        emit AdminSet(_address, status);
     }
 
     // mints a new token
     function mint(address account, uint256 amount, string memory newUri, bytes memory data)
-        public
+        public onlyAdmin
     {
         _tokenIdCounter.increment();
         uint256 tokenId = _tokenIdCounter.current();
@@ -32,7 +47,7 @@ contract MCSCollection is ERC1155, ERC1155Supply, ERC1155URIStorage, Ownable {
 
     // mints more of an existing token
     function mintMore(address account, uint256 id, uint256 amount, bytes memory data)
-        public
+        public onlyAdmin
     {
         require(exists(id), 'Supply: tokenId does not exist');
         _mint(account, id, amount, data);

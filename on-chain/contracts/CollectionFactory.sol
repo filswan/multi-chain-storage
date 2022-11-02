@@ -7,6 +7,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "./MCSCollection.sol";
 
 contract CollectionFactory is Initializable, OwnableUpgradeable {
+    address public defaultCollectionAddress;
     mapping(address => address[]) userToCollections;
 
     event CreateCollection(address collectionOwner, address collectionAddress);
@@ -16,7 +17,8 @@ contract CollectionFactory is Initializable, OwnableUpgradeable {
         _disableInitializers();
     }
 
-    function initialize() public initializer {
+    function initialize(address defaultCollection) public initializer {
+        defaultCollectionAddress = defaultCollection;
         __Ownable_init();
     }
 
@@ -35,7 +37,7 @@ contract CollectionFactory is Initializable, OwnableUpgradeable {
 
     //TODO: mint functions
     function mint(address collection, address recipient, uint amount, string memory uri) public {
-        require(MCSCollection(collection).isAdmin(msg.sender), 'caller is not admin');
+        require(collection == defaultCollectionAddress || MCSCollection(collection).isAdmin(msg.sender), 'caller is not admin');
 
         MCSCollection(collection).mint(recipient, amount, uri, "");
     }

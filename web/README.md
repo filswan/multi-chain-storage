@@ -51,13 +51,9 @@ $ npm run build:semi_prod
 
 The build artifacts will be stored in the `dist/` directory.
 
-## install moment-timezone
+## install echarts, swiper
 
-Run `npm install moment-timezone --save` to generate component.
-
-## install swiper
-
-Run `npm i swiper@5.2.0` to generate component.
+Run `npm install echarts --save``npm i swiper@5.2.0` to generate component.
 
 ## Reference documents
 

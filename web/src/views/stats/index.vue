@@ -358,6 +358,7 @@
             },
             dataFilter(data, type){
                 let timeData = data || []
+                let num = 0
                 timeData.map((item, index) => {
                     if(type){
                         item = item
@@ -365,7 +366,12 @@
                                     : "-"
                         that.echartData.time.push(item)
                     }else{
-                        that.echartData.achieved.push(that.byteChange(item))
+                        if(item <= 0) that.echartData.achieved.push(0)
+                        else{
+                            num = (item/( 1024 * 1024 * 1024))  //or 1000
+                            that.echartData.achieved.push(num)
+                        }
+                        
                     }
                 })
                 return

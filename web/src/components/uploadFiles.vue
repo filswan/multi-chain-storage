@@ -18,29 +18,31 @@
                 </el-tooltip>
             </template>
             <div class="upload_form">
+                <div>
+                    <el-upload
+                        class="upload-demo" :style="{'border': ruleForm.fileList_tip?'2px dashed #f56c6c':'0'}"
+                        drag
+                        ref="uploadFileRef"
+                        action="customize"
+                        :http-request="uploadFile"
+                        :file-list="ruleForm.fileList"
+                        :on-change="handleChange"
+                        :on-remove="handleRemove">
+                        <svg t="1666583167832" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="8421" width="128" height="128"><path d="M795.694545 395.636364a289.047273 289.047273 0 0 0-567.38909 0 197.585455 197.585455 0 0 0 18.385454 395.636363h30.952727a23.272727 23.272727 0 0 0 0-46.545454H246.690909a151.272727 151.272727 0 1 1-2.327273-302.545455l23.272728 5.352727 3.025454-25.6a242.269091 242.269091 0 0 1 480.814546 0l4.654545 25.134546 23.272727-4.887273a151.272727 151.272727 0 1 1-2.327272 302.545455h-34.909091a23.272727 23.272727 0 0 0 0 46.545454h35.141818a197.585455 197.585455 0 0 0 18.385454-395.636363z" p-id="8422" fill="#8a8a8a"></path><path d="M528.523636 480.349091a23.272727 23.272727 0 0 0-33.047272 0l-131.490909 131.490909a23.272727 23.272727 0 0 0 0 33.047273 23.272727 23.272727 0 0 0 32.814545 0L488.727273 552.96V837.818182a23.272727 23.272727 0 0 0 46.545454 0V552.96l93.090909 91.927273a23.272727 23.272727 0 0 0 16.523637 6.749091 23.272727 23.272727 0 0 0 16.290909-39.796364z" p-id="8423" fill="#8a8a8a"></path></svg>
+                        <div class="el-upload__text"><small>{{$t('uploadFile.uploadDray')}}</small></div>
+                        <div class="el-upload__text"><small>{{$t('uploadFile.uploadDray_or')}}</small></div>
+                        <el-button size="small">
+                            {{$t('uploadFile.uploadDray_text')}}
+                        </el-button>
+                    </el-upload>
+                    <p v-if="ruleForm.fileList.length>0" style="display: flex;align-items: center;">
+                        <svg t="1637031488880" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3310" style="width: 14px;height: 14px;margin: 0 6px 0 5px;"><path d="M512 1024a512 512 0 1 1 512-512 32 32 0 0 1-32 32h-448v448a32 32 0 0 1-32 32zM512 64a448 448 0 0 0-32 896V512a32 32 0 0 1 32-32h448A448 448 0 0 0 512 64z" fill="#999999" p-id="3311"></path><path d="M858.88 976a32 32 0 0 1-32-32V640a32 32 0 0 1 32-32 32 32 0 0 1 32 32v304a32 32 0 0 1-32 32z" fill="#999999" p-id="3312"></path><path d="M757.12 773.12a34.56 34.56 0 0 1-22.4-8.96 32 32 0 0 1 0-45.44l101.12-101.12a32 32 0 0 1 45.44 0 30.72 30.72 0 0 1 0 44.8l-101.12 101.76a34.56 34.56 0 0 1-23.04 8.96z" fill="#999999" p-id="3313"></path><path d="M960 773.12a32 32 0 0 1-22.4-8.96l-101.76-101.76a32 32 0 0 1 0-44.8 32 32 0 0 1 45.44 0l101.12 101.12a32 32 0 0 1-22.4 54.4z" fill="#999999" p-id="3314"></path></svg>
+                        {{ruleForm.file_size}}
+                    </p>
+                    <p v-if="ruleForm.fileList_tip" style="color: #F56C6C;font-size: 12px;line-height: 1;">{{ruleForm.fileList_tip_text}}</p>
+                </div>
                 <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" class="demo-ruleForm">
-                    <el-form-item prop="fileList" :label="$t('uploadFile.upload')" :style="{'align-items': ruleForm.fileList_tip?'flex-start':'center'}">
-                        <div>
-                            <el-upload
-                                class="upload-demo"
-                                ref="uploadFileRef"
-                                action="customize"
-                                :http-request="uploadFile"
-                                :file-list="ruleForm.fileList"
-                                :on-change="handleChange"
-                                :on-remove="handleRemove">
-                                <el-button size="small" type="primary">
-                                    <img src="@/assets/images/my_file/icon_Upload@2x.png" alt="">
-                                    {{$t('uploadFile.upload')}}
-                                </el-button>
-                            </el-upload>
-                            <p v-if="ruleForm.fileList.length>0" style="display: flex;align-items: center;">
-                                <svg t="1637031488880" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3310" style="width: 14px;height: 14px;margin: 0 6px 0 5px;"><path d="M512 1024a512 512 0 1 1 512-512 32 32 0 0 1-32 32h-448v448a32 32 0 0 1-32 32zM512 64a448 448 0 0 0-32 896V512a32 32 0 0 1 32-32h448A448 448 0 0 0 512 64z" fill="#999999" p-id="3311"></path><path d="M858.88 976a32 32 0 0 1-32-32V640a32 32 0 0 1 32-32 32 32 0 0 1 32 32v304a32 32 0 0 1-32 32z" fill="#999999" p-id="3312"></path><path d="M757.12 773.12a34.56 34.56 0 0 1-22.4-8.96 32 32 0 0 1 0-45.44l101.12-101.12a32 32 0 0 1 45.44 0 30.72 30.72 0 0 1 0 44.8l-101.12 101.76a34.56 34.56 0 0 1-23.04 8.96z" fill="#999999" p-id="3313"></path><path d="M960 773.12a32 32 0 0 1-22.4-8.96l-101.76-101.76a32 32 0 0 1 0-44.8 32 32 0 0 1 45.44 0l101.12 101.12a32 32 0 0 1-22.4 54.4z" fill="#999999" p-id="3314"></path></svg>
-                                {{ruleForm.file_size}}
-                            </p>
-                            <p v-if="ruleForm.fileList_tip" style="color: #F56C6C;font-size: 12px;line-height: 1;">{{ruleForm.fileList_tip_text}}</p>
-                        </div>
-                    </el-form-item>
+                    <!-- <el-form-item prop="fileList" :label="$t('uploadFile.upload')" :style="{'align-items': ruleForm.fileList_tip?'flex-start':'center'}"></el-form-item> -->
                     <el-form-item prop="duration">
                         <template slot="label">
                             {{$t('uploadFile.Duration')}} 
@@ -322,6 +324,10 @@
                 let _this = this;
                 _this.$refs[formName].validate((valid) => {
                     if (valid) {
+                        if(!_this._file) {
+                            _this.ruleForm.fileList_tip = true
+                            return false
+                        }
                         if(_this.metaAddress&&!(_this.networkID==137)) {
                             _this.metamaskLoginTip = true
                             return false
@@ -612,7 +618,7 @@
                     _this.biling_price = _this.$root.filecoin_price
 
                     _this.loading = false
-                    _this.addEvent()
+                    // _this.addEvent()
                 }else {
                     setTimeout(function(){
                         _this.stats()
@@ -927,6 +933,44 @@
                     @media screen and (max-width: 479px){
                         width: calc(100% - 0.4rem); 
                         padding: 0 0.2rem;
+                    }
+                    .upload-demo{
+                        width: 100%;
+                        margin: 0.25rem 0 0;
+                        .el-upload{
+                            width: 100%;
+                            height: auto;
+                            border: 0;
+                            .el-upload-dragger{
+                                width: 100%;
+                                height: auto;
+                                padding: 0.2rem 0;
+                                color: #97a8be;
+                                svg{
+                                    width: 0.45rem;
+                                    height: 0.45rem;
+                                    margin: 0;
+                                }
+                                .el-upload__text{
+                                    margin: 0 0 6px;
+                                    font-weight: normal;
+                                    color: #9c9c9c;
+                                    line-height: 1;
+                                }
+                                .el-button{
+                                    border-color: rgb(44, 127, 248);
+                                    color: rgb(44, 127, 248);
+                                }
+                            }
+                        }
+                        .el-upload-list__item:first-child{
+                            margin-top: 0;
+                        }
+                        .el-upload-list{
+                            width: 100%;
+                            float: none;
+                            clear: both;
+                        }
                     }
                     .el-form{
                         width: 100%;

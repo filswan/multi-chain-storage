@@ -28,8 +28,12 @@ module.exports = {
   defaultNetwork: 'hardhat',
   networks: {
     polygon: {
-      url: "https://polygon-rpc.com",
+      url: 'https://polygon-rpc.com',
       accounts: [process.env.PERSONAL_KEY],
+    },
+    mumbai: {
+      url: process.env.MUMBAI_RPC,
+      accounts: [process.env.ownerPK],
     },
   },
   solidity: {

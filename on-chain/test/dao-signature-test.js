@@ -10,6 +10,7 @@ describe.only('DAO Signatures', function () {
   let accounts
   let oracleAccounts
   let oracleInstance
+  let filink
 
   const fee = {
     // To convert Ether to Wei:
@@ -40,6 +41,10 @@ describe.only('DAO Signatures', function () {
 
     // console.log("payment instance deployed at:", paymentInstance.address);
 
+    console.log('deploy filink instance')
+    const filinkContract = await ethers.getContractFactory('MockFilink')
+    filink = await filinkContract.deploy()
+
     console.log('deploy oracle instance')
     const oracleContract = await ethers.getContractFactory('NewFilswanOracle')
     oracleInstance = await upgrades.deployProxy(
@@ -52,6 +57,7 @@ describe.only('DAO Signatures', function () {
     console.log('oracle instance deployed at:', oracleInstance.address)
 
     await oracleInstance.setDAOUsers(daoAddressList)
+    await oracleInstance.setFilinkOracle(filink.address)
 
     // console.log('set oracle')
     // await paymentInstance.setOracle(oracleInstance.address);
@@ -149,8 +155,6 @@ describe.only('DAO Signatures', function () {
 
       cidList = await oracleInstance.getCidList(deal, network)
 
-      console.log(cidList)
-
       expect(cidList.length).to.equal(6)
     })
 
@@ -220,6 +224,41 @@ describe.only('DAO Signatures', function () {
 
       let cidList = await oracleInstance.getCidList(deal, network)
       expect(cidList.length).to.equal(0)
+    })
+
+    it('Should not increment vote count when signing with same address', async function () {
+      const deal = '6976658'
+      await doPreSign(deal)
+
+      let hashKey = await oracleInstance.getHashKey(deal, network, recipient, [
+        ...user2CidList1,
+        ...user2CidList2,
+      ])
+      //console.log('key:', hashKey)
+
+      let tx = await oracleInstance
+        .connect(oracleAccounts[0])
+        .sign(deal, network, user2CidList1, 0)
+      tx = await tx.wait()
+
+      tx = await oracleInstance
+        .connect(oracleAccounts[0])
+        .sign(deal, network, user2CidList2, 1)
+      tx = await tx.wait()
+
+      let votes = await oracleInstance.getVotes(hashKey)
+      //console.log('votes:', votes)
+
+      expect(votes).to.equal(1)
+
+      await oracleInstance
+        .connect(oracleAccounts[1])
+        .signHash(deal, network, recipient, hashKey)
+
+      votes = await oracleInstance.getVotes(hashKey)
+      //console.log('votes:', await oracleInstance.getVotes(hashKey))
+
+      expect(votes).to.equal(2)
     })
   })
 })

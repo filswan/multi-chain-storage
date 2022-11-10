@@ -251,9 +251,10 @@ contract NewFilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
                     );
 
             // make sure a user can only sign one time
-            require(!userVotedMap[voteKey][msg.sender], "You already signed this hash");
-
-            txVoteMap[voteKey] = txVoteMap[voteKey] + 1;
+            if (!userVotedMap[voteKey][msg.sender]) {
+                userVotedMap[voteKey][msg.sender] = true;
+                txVoteMap[voteKey] = txVoteMap[voteKey] + 1;
+            }
             
             if (txVoteMap[voteKey] >= _threshold 
             && _filinkAddress != address(0)
@@ -270,9 +271,12 @@ contract NewFilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
         string memory key = concatenate(dealId, network);
 
         // make sure a user can only sign one time
-        require(!userVotedMap[voteKey][msg.sender], "You already signed this hash");
-
-        txVoteMap[voteKey] = txVoteMap[voteKey] + 1;
+        if (!userVotedMap[voteKey][msg.sender]) {
+            userVotedMap[voteKey][msg.sender] = true;
+            txVoteMap[voteKey] = txVoteMap[voteKey] + 1;
+        }
+        
+        // if all batches are signed
         if(txInfoMap[key][msg.sender].signStatus == 0){
             if (txVoteMap[voteKey] >= _threshold 
             && _filinkAddress != address(0)
@@ -291,5 +295,9 @@ contract NewFilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
 
     function getHashKey(string memory dealId, string memory network, address recipient, string[] memory cidList) public pure returns (bytes32){
         return keccak256(abi.encodeWithSignature("f(string,string,address,string[])",dealId, network, recipient, cidList));
+    }
+
+    function getVotes(bytes32 voteKey) public view returns(uint) {
+        return txVoteMap[voteKey];
     }
 }

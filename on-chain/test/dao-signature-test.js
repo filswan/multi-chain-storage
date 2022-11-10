@@ -226,7 +226,7 @@ describe.only('DAO Signatures', function () {
       expect(cidList.length).to.equal(0)
     })
 
-    it('Should not increment vote count when signing with same address', async function () {
+    it('Should not be able to sign twice with the same address', async function () {
       const deal = '6976658'
       await doPreSign(deal)
 
@@ -250,6 +250,12 @@ describe.only('DAO Signatures', function () {
       //console.log('votes:', votes)
 
       expect(votes).to.equal(1)
+
+      await expect(
+        oracleInstance
+          .connect(oracleAccounts[0])
+          .signHash(deal, network, recipient, hashKey),
+      ).to.be.revertedWith('you already signed this hash')
 
       await oracleInstance
         .connect(oracleAccounts[1])

@@ -257,7 +257,8 @@ contract NewFilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
             }
             
             if (txVoteMap[voteKey] >= _threshold 
-            && _filinkAddress != address(0)
+            && _filinkAddress != address(0) &&
+            txInfoMap[key][msg.sender].cidList.length > 0
             ) {
                 cidListMap[key] = txInfoMap[key][msg.sender].cidList;
                 FilinkConsumer(_filinkAddress).requestDealInfo(dealId, network);
@@ -279,7 +280,8 @@ contract NewFilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
         // if all batches are signed
         if(txInfoMap[key][msg.sender].signStatus == 0){
             if (txVoteMap[voteKey] >= _threshold 
-            && _filinkAddress != address(0)
+            && _filinkAddress != address(0) &&
+            txInfoMap[key][msg.sender].cidList.length > 0
             ) {
                 cidListMap[key] = txInfoMap[key][msg.sender].cidList;
                 FilinkConsumer(_filinkAddress).requestDealInfo(dealId, network);

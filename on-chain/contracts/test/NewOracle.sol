@@ -42,6 +42,7 @@ contract NewFilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
     mapping(string => mapping(address => mapping(string => bool))) cidMap;
 
     mapping(bytes32 => mapping(address => bool)) userVotedMap; // tracks whether a user voted or not
+    mapping(bytes32 => string[]) voteKeyCidListMap;
 
     event SignTransaction(string cid, string dealId, address recipient);
 
@@ -250,15 +251,16 @@ contract NewFilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
                         )
                     );
 
-            // make sure a user can only sign one time
-            if (!userVotedMap[voteKey][msg.sender]) {
-                userVotedMap[voteKey][msg.sender] = true;
-                txVoteMap[voteKey] = txVoteMap[voteKey] + 1;
-            }
+            voteKeyCidListMap[voteKey] = txInfoMap[key][msg.sender].cidList;
+
+            // a user CANNOT vote again
+            require(!userVotedMap[voteKey][msg.sender], 'you already signed this hash');
+            userVotedMap[voteKey][msg.sender] = true;
+            txVoteMap[voteKey] = txVoteMap[voteKey] + 1;
             
             if (txVoteMap[voteKey] >= _threshold 
             && _filinkAddress != address(0) &&
-            txInfoMap[key][msg.sender].cidList.length > 0
+            voteKeyCidListMap[voteKey].length > 0
             ) {
                 cidListMap[key] = txInfoMap[key][msg.sender].cidList;
                 FilinkConsumer(_filinkAddress).requestDealInfo(dealId, network);
@@ -271,19 +273,18 @@ contract NewFilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
     function signHash(string memory dealId, string memory network, address recipient, bytes32 voteKey) public onlyRole(DAO_ROLE) {
         string memory key = concatenate(dealId, network);
 
-        // make sure a user can only sign one time
-        if (!userVotedMap[voteKey][msg.sender]) {
-            userVotedMap[voteKey][msg.sender] = true;
-            txVoteMap[voteKey] = txVoteMap[voteKey] + 1;
-        }
+        // a user CANNOT vote again
+        require(!userVotedMap[voteKey][msg.sender], 'you already signed this hash');
+        userVotedMap[voteKey][msg.sender] = true;
+        txVoteMap[voteKey] = txVoteMap[voteKey] + 1;
         
         // if all batches are signed
         if(txInfoMap[key][msg.sender].signStatus == 0){
             if (txVoteMap[voteKey] >= _threshold 
             && _filinkAddress != address(0) &&
-            txInfoMap[key][msg.sender].cidList.length > 0
+            voteKeyCidListMap[voteKey].length > 0
             ) {
-                cidListMap[key] = txInfoMap[key][msg.sender].cidList;
+                cidListMap[key] = voteKeyCidListMap[voteKey];
                 FilinkConsumer(_filinkAddress).requestDealInfo(dealId, network);
             }
         }

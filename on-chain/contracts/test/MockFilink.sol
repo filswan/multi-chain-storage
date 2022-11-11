@@ -8,7 +8,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 /// @notice get filecoin storage price for deal
-contract FilinkConsumer is ChainlinkClient, Ownable {
+contract MockFilink is ChainlinkClient, Ownable {
     using Chainlink for Chainlink.Request;
   
     mapping(bytes32 => string) private mapRequestDeal;
@@ -25,13 +25,7 @@ contract FilinkConsumer is ChainlinkClient, Ownable {
      * Oracle address: 0x3d5552a177Fe380CDDe28a034EA93C2d30b80b2D
      * Fee: 0.1 LINK
      */
-    constructor(address _chainlinkToken, address _oracle, uint256 _fee) {
-        setChainlinkToken(_chainlinkToken);
-        setChainlinkOracle(_oracle);
-        oracle = _oracle;
-        jobId = "a052732022e04e89be3e0fc06e457985";
-        fee = _fee; // (Varies by network and job)
-    }
+    constructor() {}
 
     function concatenate(
         string memory s1,
@@ -47,41 +41,18 @@ contract FilinkConsumer is ChainlinkClient, Ownable {
 
     /// @notice Creates a Chainlink GET request to retrieve storage_price of given deal and network
     function requestDealInfo(string calldata deal, string calldata network) public returns (bytes32 requestId) {
-        require(mapDealPrice[deal] == 0, "deal price is already on-chain, call getPrice(deal)");
-
-        Chainlink.Request memory request = buildChainlinkRequest(jobId, address(this), this.fulfill.selector);
-
-        // <deal>?network=<network>
-        string memory tmp = concatenate(deal, "?network=");
-        string memory params = concatenate(tmp, network);
-
-        string memory key = concatenate(deal, network);
-        
-        /**
-         * GET http://35.168.51.2:7886/deal/<deal>?network=<network>
-         * ex. GET http://35.168.51.2:7886/deal/123456?network=filecoin_calibration, data.deal.storage_price = 8294400600825600
-         */ 
-        request.add("get", concatenate("http://35.168.51.2:7886/deal/", params));
-        request.add("path", "data,deal,storage_price");
-        request.addInt('times', 1);
-        
-        bytes32 id = sendChainlinkRequestTo(oracle, request, fee);
-        mapRequestDeal[id] = key;
-
-        return id;
+        return 0;
     }
     
     
     /// @dev Chainlink oracle will call this function to set the price
     function fulfill( bytes32  _requestId, uint256 _price) public recordChainlinkFulfillment(_requestId) {
-        price = _price;
-        mapDealPrice[mapRequestDeal[_requestId]] = _price;
+        
     }
 
     /// @notice get the storage price for given deal and network
     function getPrice(string calldata deal, string calldata network) public view returns (uint256) {
-        string memory key = concatenate(deal, network);
-        return mapDealPrice[key];
+        return 0;
     }
 
     function withdrawTokens(address tokenAddress) public onlyOwner {

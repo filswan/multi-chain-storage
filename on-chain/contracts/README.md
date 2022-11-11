@@ -1,4 +1,33 @@
-## MCS Contracts
+# MCS Contracts
+
+1. `SwanPayment` is used to lock an estimated amount of USDC for filecoin storage
+2. `FilswanOracle` verifies the deal is on chain, signing transactions until the treshold of 3 is met
+3. `FilinkConsumer` is used to get the storage price of a deal in FIL
+4. `PriceFeed` converts this amount to USDC
+5. `SwanPayment` will unlock any over-estimated amount back to the user.
+
+## Functions
+
+## MCSCollection.sol
+
+MCSCollection is an ERC-1155 contract that allows admins to mint NFTs to this colelction
+
+## CollectionFactory.sol
+
+Users will interact with the CollectionFactory to create MCSCollections, and mint through the factory.
+
+- **`createCollection(collectionURI)`** creates a new collection for the user
+- **`mint(collection, recipient, amount, uri)`** mints `amount` of `uri` NFTs to `recipient` in `collection`
+- **`mintToNewCollection(collectionURI, recipient, amount, uri)`** calls `createCollection` and `mint` in one transaction
+- **`getCollections(user)`** gets all collection contract addresses for the user in the factory
+
+### SwanNFT.sol
+
+MCSNFT is an ERC-1155 contract, that allows any user to mint a new NFT for this
+collection.
+
+- **`mintUnique(minter, uri)`** mints a new unique token for `minter` and attaches the `uri` to the `tokenId`
+- **`totalSupply()`** returns the total number of NFTs
 
 ### FilinkConsumer.sol
 
@@ -6,7 +35,6 @@ Filink Consumer is a Chainlink Client Contract to make a GET request from a
 public API. This API returns the Filecoin deal information given the `deal_id`
 and `network`. MCS uses this API to get the storage price for the deal from the
 Filecoin network
-(Note: `PolygonFilink.sol` is the same logic, just uses a different Oracle and jobID for mainnet deployment).
 
 - **`requestDealInfo(deal, network)`**  
   This function performs a GET request to get the deal information on the network
@@ -15,9 +43,46 @@ Filecoin network
 - **`getPrice(deal, network)`**
   After calling `requestDealInfo`, The chainlink Oracle will call our `fulfill`
   function, storing price in this contract's mapping. Users can retreive the price
-  by calling this function.
+  by calling this function. Returns the storage_price in wFIL (in wei)
 
-### FilSwanOracle.sol
+### PriceFeed.sol
+
+This contract uses Chainlink USD/FIL price data feed to get the lastest price
+
+- **`getLatestPrice()`**
+  This function gets the lastest price of 1 FIL in USD, (8 demicals)
+
+- **`consult(tokenInput, amount)`** gets price of `amount` FIL in USD
+
+  1. `getLatestPrice() * amount / 10^8` to get price in wei
+  2. `price in wei / 10^(18 - tokenInput decimals)` to get price in `tokenInput` decimals
+  3. Return `amount` FIL in USD (`tokenInput` decimal)
+
+### SwanPayment.sol
+
+This contract handles the payment and unlock of funds for files stored on the
+Filecoin network. Users pay in USDC and this contract consults `PriceFeed.sol`
+to get the price in wFIL. With enough signatures in `FilSwanOracle.sol`, this
+contract's `unlock` function will be called, to return excess payment to the user.
+
+- **`setOracle(oracle)`** sets `FilSwanOracle` address
+- **`setChainlinkOracle(chainlinkOracle)`** sets `FilinkConsumer` address
+- **`setPriceFeed(priceFeed)`** sets `PriceFeed` address
+- **`getLockedPaymentInfo(cId)`** get the payment information for the CID
+- **`lockTokenPayment(param)`**
+  - sets payment information for this CID
+  - transfer `param.amount` of ERC20 tokens to this contract
+- **`unlockTokenPayment(param)`** refund the locked amount to user after the deadline has passed.
+- **`unlockCarPayment(dealId, network, recipient)`**
+  - get `serviceCost` from `FilinkConsumer` (in FIL)
+  - get `cidList` for this `dealId` and `network` from `FilSwanOracle`
+  - consult `PriceFeed` to get `serviceCost` in USDC (or another ERC-20 token)
+  - get the total size for files in `cidList`, `unitPrice = serviceCost(USDC) / total size`
+  - cost of each file is `size * unitPrice`, subtract this cost from the file's `lockedFee`
+  - transfer the `serviceCost in USDC` to `recipient`
+- **`refund(cidList[])`** return any excess `lockedFee` to its owner
+
+### FilswanOracle.sol
 
 This is the DAO contract to sign transactions. Once a deal has enough signatures
 (depending on `threshold`), the locked funds can be unlocked to the owner.
@@ -45,57 +110,3 @@ This is the DAO contract to sign transactions. Once a deal has enough signatures
 
 - **`signHash(dealId, network, recipient, voteKey)`**
 - **`getHashKey(dealId, network, recipient, cidList[])`**
-
-### PriceFeed.sol
-
-This contract consults the price for wFIL-USDC by using a SushiSwap liquidity pool.
-
-- **`consult(tokenInput, amount)`**
-  1. find USDC price for 0.001 wFIL (bc LP is small)
-  2. multiply by 10^12 because USDC has 6 decimals instead of 18
-  3. now we have 0.001 wFIL in USDC, multiply by 10^3 to get USDC for 1 wFIL
-  4. multiply by `amount` to get `amount` wFIL in USDC
-  5. finally, divide by 10^18 to get readable USDC price
-
-### SwanPayment.sol
-
-This contract handles the payment and unlock of funds for files stored on the
-Filecoin network. Users pay in USDC and this contract consults `PriceFeed.sol`
-to get the price in wFIL. With enough signatures in `FilSwanOracle.sol`, this
-contract's `unlock` function will be called, to return excess payment to the user.
-
-- **`setOracle(oracle)`** sets `FilSwanOracle` address
-- **`setChainlinkOracle(chainlinkOracle)`** sets `FilinkConsumer` address
-- **`setPriceFeed(priceFeed)`** sets `PriceFeed` address
-- **`getLockedPaymentInfo(cId)`** get the payment information for the CID
-- **`lockTokenPayment(param)`**
-  - sets payment information for this CID
-  - transfer `param.amount` of ERC20 tokens to this contract
-- **`unlockTokenPayment(param)`** refund the locked amount to user after the deadline has passed.
-- **`unlockCarPayment(dealId, network, recipient)`**
-  - get `serviceCost` from `FilinkConsumer` (in FIL)
-  - get `cidList` for this `dealId` and `network` from `FilSwanOracle`
-  - consult `PriceFeed` to get `serviceCost` in USDC (or another ERC-20 token)
-  - get the total size for files in `cidList`, `unitPrice = serviceCost(USDC) / total size`
-  - cost of each file is `size * unitPrice`, subtract this cost from the file's `lockedFee`
-  - transfer the `serviceCost in USDC` to `recipient`
-- **`refund(cidList[])`** return any excess `lockedFee` to its owner
-
-### MCSNFT.sol
-
-MCSNFT is an ERC-721 contract, that allows any user to mint a new NFT for this
-collection.
-
-- **`mintData(minter, uri)`** mints a new token for `minter` and attaches the `uri` to the `tokenId`
-- **`totalSupply()`** returns the total number of NFTs
-
-### SwanFaucet.sol
-
-This contract is deployed on Mumbai and Binance testnet only. This faucet allows
-users to obtain our test USDC tokens and MATIC (on Mumbai). Interact with the UI
-[here](https://calibration-faucet.filswan.com/#/dashboard) (Note: the faucet can
-only be used once a day and the contract limits addresses every 24 hours).
-
-- **`sendMultiTokens(tokenAddresses[], tokenAmounts[], address)`**  
-  This function is only callable by the contract admins. It transfers funds from
-  the contract address to `address`.

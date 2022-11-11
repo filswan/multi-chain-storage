@@ -40,12 +40,9 @@ describe('DAO Signatures', function () {
     // await paymentInstance.deployed(); // have to wait block to include this transaction
 
     // console.log("payment instance deployed at:", paymentInstance.address);
-
-    console.log('deploy filink instance')
     const filinkContract = await ethers.getContractFactory('MockFilink')
     filink = await filinkContract.deploy()
 
-    console.log('deploy oracle instance')
     const oracleContract = await ethers.getContractFactory('NewFilswanOracle')
     oracleInstance = await upgrades.deployProxy(
       oracleContract,
@@ -53,9 +50,6 @@ describe('DAO Signatures', function () {
       overrides,
     )
     await oracleInstance.deployed()
-
-    console.log('oracle instance deployed at:', oracleInstance.address)
-
     await oracleInstance.setDAOUsers(daoAddressList)
     await oracleInstance.setFilinkOracle(filink.address)
 

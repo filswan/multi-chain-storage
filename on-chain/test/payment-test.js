@@ -8,11 +8,9 @@ describe('Swan Payment', function () {
   before('Deploy SwanPayment', async () => {
     accounts = await ethers.getSigners()
 
-    console.log('deploy Token')
     const TokenContract = await ethers.getContractFactory('USDCoin')
     token = await TokenContract.deploy()
 
-    console.log('deploy SwanPayment')
     const contract = await ethers.getContractFactory('SwanPayment')
     paymentInstance = await upgrades.deployProxy(contract, [
       accounts[0].address,
@@ -22,8 +20,6 @@ describe('Swan Payment', function () {
       token.address,
     ])
     await paymentInstance.deployed() // have to wait block to include this transaction
-
-    console.log('payment instance deployed at:', paymentInstance.address)
 
     // console.log('deploy oracle instance')
     // const oracleContract = await ethers.getContractFactory('FilecoinOracle')

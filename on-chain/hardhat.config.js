@@ -33,11 +33,7 @@ module.exports = {
     },
     mumbai: {
       url: process.env.MUMBAI_RPC,
-      accounts: [process.env.PRIVATE_KEY],
-    },
-    tbnc: {
-      url: 'https://data-seed-prebsc-1-s1.binance.org:8545/',
-      accounts: [process.env.PRIVATE_KEY],
+      accounts: [process.env.ownerPK],
     },
   },
   solidity: {

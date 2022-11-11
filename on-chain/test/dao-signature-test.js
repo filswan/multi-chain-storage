@@ -2,7 +2,7 @@ const { expect } = require('chai')
 
 // Important, this test case only works on local test
 // please comments FilswanOracle.sol filink call before run this test case
-describe.only('DAO Signatures', function () {
+describe('DAO Signatures', function () {
   const overrides = {
     gasLimit: 9999999,
   }

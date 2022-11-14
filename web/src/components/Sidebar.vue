@@ -62,191 +62,168 @@
 // import bus from './bus';
 import axios from 'axios'
 export default {
-    data() {
-        return {
-            git_version:null,
-            collapseLocal: this.$store.getters.collapseL == 'true'||this.$store.getters.collapseL==true?true: false,
-            lanShow: false,
-            bodyWidth: document.body.clientWidth<999?true:false,
-            items: [
-                {
-                    icon: 'el-icon-s-deal',
-                    index: '1',
-                    title: this.$t('route.Deal'),
-                    name: 'my_files',
-                    type: ''
-                },
-                {
-                    icon: 'el-icon-s-billing',
-                    index: '5',
-                    title: this.$t('navbar.BillingHistory'),
-                    name: 'billing',
-                    type: ''
-                },
-                {
-                    icon: 'el-icon-s-Stats',
-                    index: '4',
-                    title: this.$t('route.Stats'),
-                    name: 'Stats',
-                    type: ''
-                }
-            ],
-            share_img1: require('@/assets/images/landing/medium.png'),
-            share_img2: require('@/assets/images/landing/twitter.png'),
-            share_img3: require('@/assets/images/landing/github-fill.png'),
-            share_img5: require('@/assets/images/landing/facebook-fill.png'),
-            share_img7: require('@/assets/images/landing/slack.png'),
-            share_img8: require('@/assets/images/landing/youtube.png'),
-            share_img9: require('@/assets/images/landing/telegram.png'),
-            share_img10: require('@/assets/images/landing/discord.png'),
-        };
-    },
-    computed: {
-        routerMenu() {
-          return this.$store.getters.routerMenu.toString()
+  data () {
+    return {
+      git_version: null,
+      collapseLocal: !!(this.$store.getters.collapseL == 'true' || this.$store.getters.collapseL == true),
+      lanShow: false,
+      bodyWidth: document.body.clientWidth < 999,
+      items: [
+        {
+          icon: 'el-icon-s-deal',
+          index: '1',
+          title: this.$t('route.Deal'),
+          name: 'my_files',
+          type: ''
         },
-        languageMcs() {
-            return this.$store.getters.languageMcs
+        {
+          icon: 'el-icon-s-billing',
+          index: '5',
+          title: this.$t('navbar.BillingHistory'),
+          name: 'billing',
+          type: ''
         },
-        email() {
-            return this.$store.state.user.email
-        },
-        collapseL() {
-            return this.$store.getters.collapseL
-        },
-        metaAddress() {
-            return this.$store.getters.metaAddress
-        },
-        free_usage() {
-            return this.$store.getters.free_usage
-        },
-        free_quota_per_month() {
-            return this.$store.getters.free_quota_per_month
+        {
+          icon: 'el-icon-s-Stats',
+          index: '4',
+          title: this.$t('route.Stats'),
+          name: 'Stats',
+          type: ''
         }
-    },
-    watch: {
-        'collapseL': function(){
-            this.collapseLocal = this.$store.getters.collapseL == 'true'||this.$store.getters.collapseL==true?true: false
-            this.bodyWidth = document.body.clientWidth<992?true:false
-        }
-    },
-    created() {
-        if(process.env.COMMITHASH){
-          this.git_version = process.env.COMMITHASH.slice(0,8)
-        }
-        // 通过 Event Bus 进行组件间通信，来折叠侧边栏
-        // bus.$on('collapse', msg => {
-        //     this.collapseChild = msg;
-        //     bus.$emit('collapse-content', msg);
-        //     this.$emit('collapseVisit', this.collapseChild);
-        //     this.$store.dispatch('setCollapse', this.collapseChild)
-        // });
-    },
-    methods: {
-        documentLink() {
-            window.open('https://docs.filswan.com/multi-chain-storage/overview', "_blank")
-        },
-        sidebarLiIndex(nameNow, index, typeNow) {
-            let _this = this
-            let head_title = ''
-            let indexNow = Number(index)
-            sessionStorage.removeItem('dealsPaginationIndexMain')
-            switch (indexNow) {
-                case 2:
-                    localStorage.removeItem('tabTask_name')
-                    localStorage.removeItem('tabTask_search')
-                    localStorage.removeItem('tabTaskMiner_search')
-                    break;
-                case 4:
-                    localStorage.removeItem('myProfileActive')
-                    break;
-                default:
-            }
-            _this.$store.dispatch("setRouterMenu", Number(index));
-            if(typeNow){
-                _this.$router.push({ name: nameNow, params:{type:typeNow} })
-                return false
-            }else{
-                _this.$router.push({ name: nameNow })
-            }
-        },
-        collapseChage() {
-            this.collapseLocal = !this.collapseLocal;
-            this.$store.dispatch('setCollapse', this.collapseLocal)
-            // bus.$emit('collapse', this.collapseLocal);
-            // this.$emit('collapseVisit', this.collapseLocal);
-        },
-        logout() {
-            var _this = this;
-
-            let params = {};
-            axios.post(_this.data_api+'auth/logout', params, {
-                headers: {
-                    'Authorization': "Bearer "+ _this.$store.getters.mcsjwtToken
-                },
-            }).then((response) => {
-                  if(response.data.status == 'success'){
-                    _this.$store.dispatch("FedLogOut").then(() => {
-                        _this.$router.push("/supplierAllBack");
-                        _this.loginShow = localStorage.getItem("mcsLoginAccessToken") ? false : true
-                    });
-                  }else{
-                      console.log(response.data.message);
-                      _this.$message.error(response.data.message)
-                  }
-            }).catch(function (error) {
-                  if (error.response) {
-                    console.log(error.response.headers);
-                  } 
-                  else if (error.request) {
-                      console.log(error.request);
-                  } 
-                  else {
-                    console.log(error.message);
-                  }
-                  console.log(error.config);
-                
-                    _this.$store.dispatch("FedLogOut").then(() => {
-                        _this.$router.push("/login");
-                        _this.loginShow = localStorage.getItem("mcsLoginAccessToken") ? false : true
-                    });
-            });
-
-        },
-        handleSetLanguage(lang){
-            let _this = this
-            _this.$i18n.locale = lang;
-            _this.$store.dispatch("setLanguage", lang);
-            window.location.reload();
-        },
-        signOutFun() {
-            this.$store.dispatch('setMetaAddress', '')
-            this.$store.dispatch('setMCSjwtToken', '')
-            this.$store.dispatch('setMetaNetworkId', 0)
-            this.$store.dispatch('setMetaNetworkInfo', JSON.stringify({}))
-            this.$router.push("/supplierAllBack");
-        },
-    },
-    filters: {
-        byteStorage(limit) {
-            // 只转换成GB
-            if(limit <= 0){
-                return '0'
-            }else{
-                // return (limit/( 1024 * 1024 * 1024)).toPrecision(2)  //or 1000
-                let value = limit/( 1024 * 1024 * 1024)
-                let v1 = String(value).split(".")
-                let v2 = v1[1] || ''
-                let v3 = String(v2).replace(/(0+)\b/gi,"")
-                if(v3){
-                    return v1[0] + '.' + v3.slice(0,2)
-                }else{
-                    return v1[0]
-                }
-            }
-        }
+      ],
+      share_img1: require('@/assets/images/landing/medium.png'),
+      share_img2: require('@/assets/images/landing/twitter.png'),
+      share_img3: require('@/assets/images/landing/github-fill.png'),
+      share_img5: require('@/assets/images/landing/facebook-fill.png'),
+      share_img7: require('@/assets/images/landing/slack.png'),
+      share_img8: require('@/assets/images/landing/youtube.png'),
+      share_img9: require('@/assets/images/landing/telegram.png'),
+      share_img10: require('@/assets/images/landing/discord.png')
     }
-};
+  },
+  computed: {
+    routerMenu () {
+      return this.$store.getters.routerMenu.toString()
+    },
+    languageMcs () {
+      return this.$store.getters.languageMcs
+    },
+    email () {
+      return this.$store.state.user.email
+    },
+    collapseL () {
+      return this.$store.getters.collapseL
+    },
+    metaAddress () {
+      return this.$store.getters.metaAddress
+    },
+    free_usage () {
+      return this.$store.getters.free_usage
+    },
+    free_quota_per_month () {
+      return this.$store.getters.free_quota_per_month
+    }
+  },
+  watch: {
+    'collapseL': function () {
+      this.collapseLocal = !!(this.$store.getters.collapseL == 'true' || this.$store.getters.collapseL == true)
+      this.bodyWidth = document.body.clientWidth < 992
+    }
+  },
+  created () {
+    if (process.env.COMMITHASH) {
+      this.git_version = process.env.COMMITHASH.slice(0, 8)
+    }
+    // 通过 Event Bus 进行组件间通信，来折叠侧边栏
+    // bus.$on('collapse', msg => {
+    //     this.collapseChild = msg;
+    //     bus.$emit('collapse-content', msg);
+    //     this.$emit('collapseVisit', this.collapseChild);
+    //     this.$store.dispatch('setCollapse', this.collapseChild)
+    // });
+  },
+  methods: {
+    documentLink () {
+      window.open('https://docs.filswan.com/multi-chain-storage/overview', '_blank')
+    },
+    sidebarLiIndex (nameNow, index, typeNow) {
+      let _this = this
+      let head_title = ''
+      let indexNow = Number(index)
+      sessionStorage.removeItem('dealsPaginationIndexMain')
+      switch (indexNow) {
+        case 2:
+          localStorage.removeItem('tabTask_name')
+          localStorage.removeItem('tabTask_search')
+          localStorage.removeItem('tabTaskMiner_search')
+          break
+        case 4:
+          localStorage.removeItem('myProfileActive')
+          break
+        default:
+      }
+      _this.$store.dispatch('setRouterMenu', Number(index))
+      if (typeNow) {
+        _this.$router.push({ name: nameNow, params: {type: typeNow} })
+        return false
+      } else {
+        _this.$router.push({ name: nameNow })
+      }
+    },
+    collapseChage () {
+      this.collapseLocal = !this.collapseLocal
+      this.$store.dispatch('setCollapse', this.collapseLocal)
+      // bus.$emit('collapse', this.collapseLocal);
+      // this.$emit('collapseVisit', this.collapseLocal);
+    },
+    handleSetLanguage (lang) {
+      let _this = this
+      _this.$i18n.locale = lang
+      _this.$store.dispatch('setLanguage', lang)
+      window.location.reload()
+    },
+    signOutFun () {
+      let _this = this
+      let params = {}
+      axios.post(`${_this.baseAPIURL}api/v1/user/logout_for_metamask_signature`, params, {
+        headers: {
+          'Authorization': 'Bearer ' + _this.$store.getters.mcsjwtToken
+        }
+      }).then((response) => {
+        if (response.data.status === 'success') {
+          _this.$store.dispatch('setMetaAddress', '')
+          _this.$store.dispatch('setMCSjwtToken', '')
+          _this.$store.dispatch('setMetaNetworkId', 0)
+          _this.$store.dispatch('setMetaNetworkInfo', JSON.stringify({}))
+          _this.$router.push('/supplierAllBack')
+        } else {
+          _this.$message.error(response.data.message || 'Fail')
+        }
+      }).catch(function (error) {
+        console.log(error.config)
+      })
+    }
+  },
+  filters: {
+    byteStorage (limit) {
+      // 只转换成GB
+      if (limit <= 0) {
+        return '0'
+      } else {
+        // return (limit/( 1024 * 1024 * 1024)).toPrecision(2)  //or 1000
+        let value = limit / (1024 * 1024 * 1024)
+        let v1 = String(value).split('.')
+        let v2 = v1[1] || ''
+        let v3 = String(v2).replace(/(0+)\b/gi, '')
+        if (v3) {
+          return v1[0] + '.' + v3.slice(0, 2)
+        } else {
+          return v1[0]
+        }
+      }
+    }
+  }
+}
 </script>
 
 <style scoped lang="scss">
@@ -301,7 +278,6 @@ export default {
         &::-webkit-scrollbar-thumb {
             background: #ccc;
         }
-
 
     }
     .header_logo{

@@ -27,7 +27,7 @@
                         </el-tooltip>
                         <span class="text" @click="metamaskLogin">{{$t('fs3.Connect_Wallet')}}</span>
                     </div>
-                    
+
                     <div v-else class="logged_in">
                         <!-- <span class="text textTrue">{{metaNetworkInfo.name}}</span> -->
                         <div class="info">
@@ -62,8 +62,7 @@
                     </div>
                 </div>
             </div>
-        </div>    
-        
+        </div>
 
         <el-dialog
         :title="$t('fs3Login.Account')"
@@ -96,661 +95,638 @@
     </div>
 </template>
 <script>
-const ethereum = window.ethereum;
 // import bus from './bus';
-import networkChange from "@/components/networkChange"
-import NCWeb3 from "@/utils/web3";
-import metaLogin from "@/utils/login";
-import * as myAjax from "@/api/login";
+import networkChange from '@/components/networkChange'
+import NCWeb3 from '@/utils/web3'
+import metaLogin from '@/utils/login'
+import * as myAjax from '@/api/login'
 import axios from 'axios'
-import erc20_contract_json from "@/utils/ERC20.json";
+import erc20_contract_json from '@/utils/ERC20.json'
+const ethereum = window.ethereum
 let contract_erc20
 export default {
-    components: {
-        networkChange
+  components: {
+    networkChange
+  },
+  data () {
+    return {
+      collapseLocal: !!(this.$store.getters.collapseL == 'true' || this.$store.getters.collapseL == true),
+      collapse: document.body.clientWidth < 1024,
+      fullscreen: false,
+      name: 'linxin',
+      message: 2,
+      langNew: '',
+      userShow: false,
+      loginShow: !localStorage.getItem('mcsLoginAccessToken'),
+      bodyWidth: document.body.clientWidth < 992,
+      langShow: true,
+      loadIndexing: false,
+      // 控制是否在路由栈中清理当前页面的数据
+      replaceData: null,
+      tools: '1',
+      tabOaxLogin: localStorage.getItem('mcsLoginAccessToken'),
+      tabOaxNew: localStorage.getItem('mcsLoginAccessToken'),
+      priceAccound: 0,
+      network: {
+        name: '',
+        unit: '',
+        center_fail: false
+      },
+      addrChild: '',
+      wrongVisible: false,
+      width: document.body.clientWidth > 600 ? '450px' : '95%',
+      copyClick: true,
+      switchWidth: 56,
+      reverseSwitch: false,
+      networkC: false
+    }
+  },
+  props: ['meta', 'netId'],
+  computed: {
+    email () {
+      return this.$store.state.user.email
     },
-    data() {
-        return {
-            collapseLocal: this.$store.getters.collapseL == 'true'||this.$store.getters.collapseL==true?true: false,
-            collapse: document.body.clientWidth<1024?true:false,
-            fullscreen: false,
-            name: 'linxin',
-            message: 2,
-            langNew: '',
-            userShow: false,
-            loginShow: localStorage.getItem("mcsLoginAccessToken") ? false : true,
-            bodyWidth: document.body.clientWidth<992?true:false,
-            langShow: true,
-            loadIndexing: false,
-            // 控制是否在路由栈中清理当前页面的数据
-            replaceData:null,
-            tools: '1',
-            tabOaxLogin: localStorage.getItem("mcsLoginAccessToken"),
-            tabOaxNew: localStorage.getItem("mcsLoginAccessToken"),
-            priceAccound: 0,
-            network: {
-                name: '',
-                unit: '',
-                center_fail: false
-            },
-            addrChild: '',
-            wrongVisible: false,
-            width: document.body.clientWidth>600?'450px':'95%',
-            copyClick: true,
-            switchWidth: 56,
-            reverseSwitch: false,
-            networkC: false
-        };
+    languageMcs () {
+      return this.$store.getters.languageMcs
     },
-    props: ["meta", "netId"],
-    computed: {
-        email() {
-            return this.$store.state.user.email
-        },
-        languageMcs() {
-            return this.$store.getters.languageMcs
-        },
-        routerMenu() {
-            return this.$store.getters.routerMenu
-        },
-        headertitle() {
-            return this.$store.getters.headertitle
-        },
-        avater() {
-            return this.$store.getters.avater
-        },
-        collapseL() {
-            return this.$store.getters.collapseL
-        },
-        metaAddress() {
-            return this.$store.getters.metaAddress
-        },
-        metaNetworkInfo() {
-            return this.$store.getters.metaNetworkInfo?JSON.parse(JSON.stringify(this.$store.getters.metaNetworkInfo)):{}
-        },
-        reverse() {
-            return this.$store.getters.reverse == '1' ? true : false
-        },
-        free_usage() {
-            return this.$store.getters.free_usage
-        },
-        free_quota_per_month() {
-            return this.$store.getters.free_quota_per_month
-        },
-        networkID() {
-            return this.$store.getters.networkID
+    routerMenu () {
+      return this.$store.getters.routerMenu
+    },
+    headertitle () {
+      return this.$store.getters.headertitle
+    },
+    avater () {
+      return this.$store.getters.avater
+    },
+    collapseL () {
+      return this.$store.getters.collapseL
+    },
+    metaAddress () {
+      return this.$store.getters.metaAddress
+    },
+    metaNetworkInfo () {
+      return this.$store.getters.metaNetworkInfo ? JSON.parse(JSON.stringify(this.$store.getters.metaNetworkInfo)) : {}
+    },
+    reverse () {
+      return this.$store.getters.reverse == '1'
+    },
+    free_usage () {
+      return this.$store.getters.free_usage
+    },
+    free_quota_per_month () {
+      return this.$store.getters.free_quota_per_month
+    },
+    networkID () {
+      return this.$store.getters.networkID
+    }
+  },
+  watch: {
+    $route: function (to, from) {
+      if ((to.name === 'register' && from.name === 'login') || (to.name === 'login' && from.name === 'register')) {
+        this.replaceData = 'replace'
+      } else {
+        this.replaceData = ''
+      }
+    },
+    'collapseL': function () {
+      this.collapseLocal = !!(this.$store.getters.collapseL == 'true' || this.$store.getters.collapseL == true)
+    },
+    metaAddress: function () {
+      this.addrChild = this.metaAddress
+      this.commonParam()
+      this.walletInfo()
+    },
+    meta: function () {
+      this.walletInfo()
+    },
+    netId: function () {
+      if (this.netId == 80001 || this.netId == 97) this.getNetworkC(false, this.netId)
+    }
+  },
+  methods: {
+    getNetworkC (dialog, rows) {
+      let _this = this
+      _this.networkC = dialog
+      if (rows) {
+        let text = {}
+        switch (rows) {
+          case 80001:
+            text = {
+              chainId: web3.utils.numberToHex(80001),
+              chainName: 'Mumbai Testnet',
+              nativeCurrency: {
+                name: 'MATIC',
+                symbol: 'MATIC', // 2-6 characters long
+                decimals: 18
+              },
+              rpcUrls: ['https://rpc-mumbai.maticvigil.com'],
+              blockExplorerUrls: ['https://mumbai.polygonscan.com/']
+            }
+            break
+          case 97:
+            text = {
+              chainId: web3.utils.numberToHex(97),
+              chainName: 'BSC TestNet',
+              nativeCurrency: {
+                name: 'tBNB',
+                symbol: 'tBNB', // 2-6 characters long
+                decimals: 18
+              },
+              rpcUrls: ['https://data-seed-prebsc-1-s1.binance.org:8545'],
+              blockExplorerUrls: ['https://testnet.bscscan.com']
+            }
+            break
+          case 137:
+            text = {
+              chainId: web3.utils.numberToHex(137),
+              chainName: 'Polygon Mainnet',
+              nativeCurrency: {
+                name: 'tBNB',
+                symbol: 'tBNB', // 2-6 characters long
+                decimals: 18
+              },
+              rpcUrls: ['https://polygon-rpc.com'],
+              blockExplorerUrls: ['https://polygonscan.com/']
+            }
+            break
         }
+        ethereum.request({
+          method: 'wallet_addEthereumChain',
+          params: [
+            text
+          ]
+        }).then((res) => {
+          // 添加成功
+          // _this.changeChaid(rows)
+          _this.$emit('getNetId', 0)
+        }).catch((err) => {
+          // 添加失败
+          _this.$emit('getNetId', 0)
+        })
+      }
     },
-    watch: {
-        $route: function (to, from) {
-            if((to.name === 'register' && from.name === 'login') || (to.name === 'login' && from.name === 'register')){
-                this.replaceData = 'replace'
-            }else{
-                this.replaceData = ''
-            }
-        },
-        'collapseL': function(){
-            this.collapseLocal = this.$store.getters.collapseL == 'true'||this.$store.getters.collapseL==true?true: false
-        },
-        metaAddress: function() {
-            this.addrChild = this.metaAddress
-            this.commonParam()
-            this.walletInfo()
-        },
-        meta: function() {
-            this.walletInfo()
-        },
-        netId: function() {
-            if(this.netId == 80001 || this.netId == 97) this.getNetworkC(false, this.netId)
+    async changeChaid (rows) {
+      let _this = this
+      if (!_this.metaAddress || _this.metaAddress == 'undefined') return false
+      _this.$store.dispatch('setMetaNetworkId', rows)
+      if (_this.networkID == 97 || _this.networkID == 80001) {
+        const l_status = await metaLogin.login()
+        if (l_status) _this.$emit('getMetamaskLogin', true)
+        if (l_status) setTimeout(function () { window.location.reload() }, 200)
+      }
+      if (_this.$route.name == 'my_files_detail') {
+        _this.$router.push({ path: '/my_files' })
+      }
+    },
+    shareTo () {
+      window.open(`${this.baseAddressURL}address/${this.addrChild}`)
+    },
+    copyTextToClipboard (text) {
+      let _this = this
+      var txtArea = document.createElement('textarea')
+      txtArea.id = 'txt'
+      txtArea.style.position = 'fixed'
+      txtArea.style.top = '0'
+      txtArea.style.left = '0'
+      txtArea.style.opacity = '0'
+      txtArea.value = text
+      document.body.appendChild(txtArea)
+      txtArea.select()
+
+      try {
+        var successful = document.execCommand('copy')
+        var msg = successful ? 'successful' : 'unsuccessful'
+        console.log('Copying text command was ' + msg)
+        if (successful) {
+          _this.copyClick = false
+          setTimeout(function () { _this.copyClick = true }, 600)
+          return true
         }
+      } catch (err) {
+        console.log('Oops, unable to copy')
+      } finally {
+        document.body.removeChild(txtArea)
+      }
+      return false
     },
-    methods: {
-        getNetworkC(dialog, rows){
-            let _this = this
-            _this.networkC = dialog
-            if(rows) {
-                let text = {}
-                switch(rows){
-                    case 80001:
-                        text = {
-                            chainId: web3.utils.numberToHex(80001),
-                            chainName: 'Mumbai Testnet',
-                            nativeCurrency: {
-                                name: 'MATIC',
-                                symbol: 'MATIC', // 2-6 characters long
-                                decimals: 18
-                            },
-                            rpcUrls: ['https://rpc-mumbai.maticvigil.com'],
-                            blockExplorerUrls: ['https://mumbai.polygonscan.com/']
-                        }
-                        break;
-                    case 97:
-                        text = {
-                            chainId: web3.utils.numberToHex(97),
-                            chainName: 'BSC TestNet',
-                            nativeCurrency: {
-                                name: 'tBNB',
-                                symbol: 'tBNB', // 2-6 characters long
-                                decimals: 18
-                            },
-                            rpcUrls: ['https://data-seed-prebsc-1-s1.binance.org:8545'],
-                            blockExplorerUrls: ['https://testnet.bscscan.com']
-                        }
-                        break;
-                    case 137:
-                        text = {
-                            chainId: web3.utils.numberToHex(137),
-                            chainName: 'Polygon Mainnet',
-                            nativeCurrency: {
-                                name: 'tBNB',
-                                symbol: 'tBNB', // 2-6 characters long
-                                decimals: 18
-                            },
-                            rpcUrls: ['https://polygon-rpc.com'],
-                            blockExplorerUrls: ['https://polygonscan.com/']
-                        }
-                        break;
-                }
-                ethereum.request({
-                    method: 'wallet_addEthereumChain',
-                    params: [
-                                text
-                            ]
-                }).then((res)=>{
-                    //添加成功
-                    // _this.changeChaid(rows)
-                    _this.$emit("getNetId", 0)
-                }).catch((err)=>{
-                    //添加失败
-                    _this.$emit("getNetId", 0)
-                })
-            }
-        },
-        async changeChaid(rows) {
-            let _this = this
-            if(!_this.metaAddress || _this.metaAddress == 'undefined') return false
-            _this.$store.dispatch('setMetaNetworkId', rows)
-            if(_this.networkID == 97 || _this.networkID == 80001){
-                const l_status = await metaLogin.login()
-                if(l_status) _this.$emit("getMetamaskLogin", true)
-                if(l_status) setTimeout(function(){window.location.reload()}, 200)
-            }
-            if(_this.$route.name == 'my_files_detail') {
-                _this.$router.push({ path: '/my_files' })
-            }
-        },
-        shareTo(){
-            window.open(`${this.baseAddressURL}address/${this.addrChild}`)
-        },
-        copyTextToClipboard(text) {
-            let _this = this
-            var txtArea = document.createElement("textarea");
-            txtArea.id = 'txt';
-            txtArea.style.position = 'fixed';
-            txtArea.style.top = '0';
-            txtArea.style.left = '0';
-            txtArea.style.opacity = '0';
-            txtArea.value = text;
-            document.body.appendChild(txtArea);
-            txtArea.select();
+    handleSelect (key, keyPath) {
+      // console.log(key, keyPath);
+    },
+    pageJump (data) {
+      let _this = this
+      let name = _this.$router.history.current.name
+      if (name === 'login' || name === 'register') {
+        if (data === 1) {
+          _this.$router.replace('/login')
+        } else if (data === 2) {
+          _this.$router.replace('/register')
+        }
+      } else {
+        if (data === 1) {
+          _this.$router.push('/login')
+        } else if (data === 2) {
+          _this.$router.push('/register')
+        }
+      }
+    },
+    // 侧边栏折叠
+    collapseChage () {
+      this.collapseLocal = !this.collapseLocal
+      this.$store.dispatch('setCollapse', this.collapseLocal)
+      // bus.$emit('collapse', this.collapse);
+    },
+    handleSetLanguage (lang) {
+      let _this = this
+      _this.loadIndexing = true
 
-            try {
-                var successful = document.execCommand('copy');
-                var msg = successful ? 'successful' : 'unsuccessful';
-                console.log('Copying text command was ' + msg);
-                if (successful) {
-                    _this.copyClick = false
-                    setTimeout(function(){_this.copyClick = true}, 600)
-                    return true;
-                }
-            } catch (err) {
-                console.log('Oops, unable to copy');
-            } finally {
-                document.body.removeChild(txtArea);
+      document.body.style.height = '100vh'
+      document.body.style['overflow-y'] = 'hidden'
+      _this.$i18n.locale = lang
+      _this.$store.dispatch('setLanguage', lang)
+
+      window.location.reload()
+    },
+    getHiddenProp () {
+      var prefixes = ['webkit', 'moz', 'ms', 'o']
+
+      // if 'hidden' is natively supported just return it
+      if ('hidden' in document) return 'hidden'
+
+      // otherwise loop over all the known prefixes until we find one
+      for (var i = 0; i < prefixes.length; i++) {
+        if ((prefixes[i] + 'Hidden') in document) { return prefixes[i] + 'Hidden' }
+      }
+
+      // otherwise it's not supported
+      return null
+    },
+    getVisibilityState () {
+      var prefixes = ['webkit', 'moz', 'ms', 'o']
+      if ('visibilityState' in document) return 'visibilityState'
+      for (var i = 0; i < prefixes.length; i++) {
+        if ((prefixes[i] + 'VisibilityState') in document) { return prefixes[i] + 'VisibilityState' }
+      }
+      // otherwise it's not supported
+      return null
+    },
+    metamaskLogin () {
+      // this.$router.push({ path: '/metamask_login' })
+      let _this = this
+      if (!_this.metaAddress || _this.metaAddress == 'undefined') {
+        NCWeb3.Init(addr => {
+          _this.$nextTick(async () => {
+            _this.$store.dispatch('setMetaAddress', addr)
+            if (_this.networkID == 97 || _this.networkID == 80001) {
+              const l_status = await metaLogin.login()
+              if (l_status) _this.$emit('getMetamaskLogin', true)
             }
-            return false;
-        },
-        handleSelect(key, keyPath) {
-            // console.log(key, keyPath);
-        },
-        pageJump(data){
-            let _this = this
-            let name = _this.$router.history.current.name
-            if(name === 'login' || name === 'register'){
-                if(data === 1){
-                    _this.$router.replace('/login')
-                }else if(data === 2){
-                    _this.$router.replace('/register')
-                }
-            }else{
-                if(data === 1){
-                    _this.$router.push('/login')
-                }else if(data === 2){
-                    _this.$router.push('/register')
-                }
-            }
-            
-        },
-        // 用户名下拉菜单选择事件
-        logout() {
-            var _this = this;
-
-            let params = {};
-            axios.post(_this.data_api+'auth/logout', params,{
-                headers: {
-                  'Authorization': "Bearer "+_this.$store.getters.accessToken
-                },
-            }).then((response) => {
-                //   console.log('logout', response.data)
-                  if(response.data.status == 'success'){
-                    _this.$store.dispatch("FedLogOut").then(() => {
-                        _this.$router.push("/supplierAllBack");
-                        _this.loginShow = localStorage.getItem("mcsLoginAccessToken") ? false : true
-                    });
-                  }else{
-                    console.log(response.data.message);
-                    _this.$message.error(response.data.message)
-                  }
-            }).catch(function (error) {
-                console.log(error.config);
-                _this.$store.dispatch("FedLogOut").then(() => {
-                    _this.$router.push("/login");
-                    _this.loginShow = localStorage.getItem("mcsLoginAccessToken") ? false : true
-                });
-            });
-        },
-        // 侧边栏折叠
-        collapseChage() {
-            this.collapseLocal = !this.collapseLocal;
-            this.$store.dispatch('setCollapse', this.collapseLocal)
-            // bus.$emit('collapse', this.collapse);
-        },
-        handleSetLanguage(lang){
-            let _this = this
-            _this.loadIndexing=true;
-
-            document.body.style.height = '100vh'
-            document.body.style['overflow-y'] = 'hidden'
-            _this.$i18n.locale = lang;
-            _this.$store.dispatch("setLanguage", lang);
-
-            window.location.reload();
-        },
-        getHiddenProp() {
-            var prefixes = ['webkit','moz','ms','o'];
-            
-            // if 'hidden' is natively supported just return it
-            if ('hidden' in document) return 'hidden';
-            
-            // otherwise loop over all the known prefixes until we find one
-            for (var i = 0; i < prefixes.length; i++)
+          })
+        })
+        return false
+      }
+    },
+    // Wallet address
+    signFun (redirect) {
+      let _this = this
+      if (!_this.addrChild) {
+        ethereum
+          .request(
             {
-                if ((prefixes[i] + 'Hidden') in document) 
-                    return prefixes[i] + 'Hidden';
+              'jsonrpc': '2.0',
+              'method': 'eth_accounts',
+              'params': [_this.metaAddress, 'latest'],
+              'id': 19998
             }
-        
-            // otherwise it's not supported
-            return null;
-        },
-        getVisibilityState() {
-            var prefixes = ['webkit', 'moz', 'ms', 'o'];
-            if ('visibilityState' in document) return 'visibilityState';
-            for (var i = 0; i < prefixes.length; i++) 
-            {
-                if ((prefixes[i] + 'VisibilityState') in document)
-                    return prefixes[i] + 'VisibilityState';
+          )
+          .then((accounts) => {
+            if (accounts.length <= 0) {
+              _this.signOutFun()
+              return false
             }
-            // otherwise it's not supported
-            return null;
-        },
-        metamaskLogin() {
-            // this.$router.push({ path: '/metamask_login' })
-            let _this = this
-            if(!_this.metaAddress || _this.metaAddress == 'undefined'){
-                NCWeb3.Init(addr=>{
-                    _this.$nextTick(async () => {
-                        _this.$store.dispatch('setMetaAddress', addr)
-                        if(_this.networkID == 97 || _this.networkID == 80001){
-                            const l_status = await metaLogin.login()
-                            if(l_status) _this.$emit("getMetamaskLogin", true)
-                        }
-                    })
-                })
-                return false
-            }
-        },
-        // Wallet address
-        signFun(redirect){
-            let _this = this
-            if(!_this.addrChild){
-                ethereum
-                .request(
-                    {
-                        "jsonrpc":"2.0",
-                        "method":"eth_accounts",
-                        "params":[_this.metaAddress, "latest"],
-                        "id":19998
-                    }
-                )
-                .then((accounts) => {
-                    if(accounts.length<= 0) {
-                        _this.signOutFun()
-                        return false
-                    }
-                    _this.addrChild = _this.metaAddress
-                    _this.walletInfo()
-                })
-                .catch((error) => {
-                    console.log(error)
-                    _this.signOutFun()
-                })
-                return false
-            }
-        },
-        walletInfo() {
-            let _this = this
-            if(!_this.addrChild || _this.addrChild == 'undefined'){
-                return false
-            }
-
-            const ethereum = window.ethereum;
-            if (window.ethereum) {
-                web3 = new Web3(ethereum);
-                web3.setProvider(ethereum);
-            }
-            else if (window.web3) {
-                web3 = window.web3;
-                console.log("Injected web3 detected.");
-            }
-            else {
-                var currentProvider = web3.currentProvider;
-                // var Web3 = web3js.getWeb3();
-                web3 = new Web3(currentProvider);
-                web3.setProvider(currentProvider);
-                console.log("No web3 instance injected, using Local web3.");
-            }
-
-            ethereum
-            .request({ method: 'eth_chainId' })
-            .then(async (chainId) => {
-                let netId = parseInt(chainId, 16)
-                // console.log('network ID:', netId)
-                // console.log(`decimal number: ${parseInt(chainId, 16)}`);
-                _this.$store.dispatch('setMetaNetworkId', netId)
-
-                await _this.contractPrice(netId)
-
-                switch (netId) {
-                case 1:
-                    _this.network.name = 'mainnet';
-                    _this.network.unit = 'ETH';
-                    _this.network.center_fail = true
-                    _this.$store.dispatch('setMetaNetworkInfo', _this.network)
-                    return;
-                case 3:
-                    _this.network.name = 'ropsten';
-                    _this.network.unit = 'ETH';
-                    _this.network.center_fail = true
-                    _this.$store.dispatch('setMetaNetworkInfo', _this.network)
-                    break;
-                case 4:
-                    _this.network.name = 'rinkeby';
-                    _this.network.unit = 'ETH';
-                    _this.network.center_fail = true
-                    _this.$store.dispatch('setMetaNetworkInfo', _this.network)
-                    return;
-                case 5:
-                    _this.network.name = 'goerli';
-                    _this.network.unit = 'ETH';
-                    _this.network.center_fail = true
-                    _this.$store.dispatch('setMetaNetworkInfo', _this.network)
-                    return;
-                case 42:
-                    _this.network.name = 'kovan';
-                    _this.network.unit = 'ETH';
-                    _this.network.center_fail = true
-                    _this.$store.dispatch('setMetaNetworkInfo', _this.network)
-                    return;
-                case 56:
-                    _this.network.name = 'BSC';
-                    _this.network.unit = 'BNB';
-                    _this.network.center_fail = true
-                    _this.$store.dispatch('setMetaNetworkInfo', _this.network)
-                    return;
-                case 97:
-                    _this.network.name = 'BSC';
-                    _this.network.unit = 'USDC';
-                    _this.network.center_fail = false
-                    _this.$store.dispatch('setMetaNetworkInfo', _this.network)
-                    if(_this.meta) {
-                        if(_this.$route.query.redirect && _this.$route.query.redirect != '/supplierAllBack'){
-                            // 防止登录后需要跳转到指定页面
-                            _this.$router.push({ path: _this.$route.query.redirect })
-                        }else{
-                            _this.$router.push({ path: '/my_files' })
-                        }
-                        window.location.reload()
-                        _this.$emit("getMetamaskLogin", false)
-                    }
-                    return;
-                case 137:
-                    _this.network.name = 'Polygon';
-                    _this.network.unit = 'MATIC';
-                    _this.network.center_fail = true
-                    _this.$store.dispatch('setMetaNetworkInfo', _this.network)
-                    return;
-                case 999:
-                    _this.network.name = 'NBAI';
-                    _this.network.unit = 'NBAI';
-                    _this.network.center_fail = true
-                    _this.$store.dispatch('setMetaNetworkInfo', _this.network)
-                    return;
-                case 80001:
-                    _this.network.name = 'mumbai';
-                    _this.network.unit = 'USDC';
-                    _this.network.center_fail = false
-                    _this.$store.dispatch('setMetaNetworkInfo', _this.network)
-                    if(_this.meta) {
-                        if(_this.$route.query.redirect && _this.$route.query.redirect != '/supplierAllBack'){
-                            // 防止登录后需要跳转到指定页面
-                            _this.$router.push({ path: _this.$route.query.redirect })
-                        }else{
-                            _this.$router.push({ path: '/my_files' })
-                        }
-                        window.location.reload()
-                        _this.$emit("getMetamaskLogin", false)
-                    }
-                    return;
-                default:
-                    _this.network.name = 'Custom';
-                    _this.network.unit = '';
-                    _this.network.center_fail = true
-                    _this.$store.dispatch('setMetaNetworkInfo', _this.network)
-                    return;
-                }
-            })
-            .catch((error) => {
-                console.error(`Error fetching chainId: ${error.code}: ${error.message}`);
-            });
-        },
-        fn() {
-            let _this = this
-            ethereum.on("accountsChanged", function(account) {
-                // console.log('account header:', account[0]);  //Once the account is switched, it will be executed here
-                // if(_this.metaAddress && account[0]){
-                //     web3.eth.getAccounts().then(async accounts => {
-                //         _this.addrChild = accounts[0]
-                //         _this.walletInfo()
-                //         _this.$store.dispatch('setMetaAddress', accounts[0])
-                //         if(_this.$route.name == 'my_files_detail') {
-                //             _this.$router.push({ path: '/my_files' })
-                //         }
-                //         _this.$router.go(0)
-                //     })
-                // }else{
-                    _this.signOutFun()
-                // }
-            });
-            // networkChanged
-            ethereum.on("chainChanged", function(accounts) {
-                // console.log('accounts', accounts)
-                // _this.signOutFun()
-                _this.$store.dispatch('setMCSjwtToken', '')
-                _this.walletInfo()
-                _this.changeChaid(parseInt(accounts, 16))
-            });
-            // 监听metamask网络断开
-            ethereum.on('disconnect', (code, reason) => {
-                // console.log(`Ethereum Provider connection closed: ${reason}. Code: ${code}`);
-            });
-        },
-        signOutFun() {
-            this.addrChild = ''
-            this.$store.dispatch('setMetaAddress', '')
-            this.$store.dispatch('setMCSjwtToken', '')
-            this.$store.dispatch('setMetaNetworkId', 0)
-            this.network.name = '';
-            this.network.unit = '';
-            this.network.center_fail = false
-            this.$store.dispatch('setMetaNetworkInfo', JSON.stringify(this.network))
-            // if(this.$route.path == '/my_files') return false
-            this.$router.push("/supplierAllBack");
-        },
-        commonParam(){
-            let _this = this
-            let common_api = `${_this.baseAPIURL}api/v1/common/system/params?limit=20&wallet_address=${_this.metaAddress}`
-
-            axios.get(common_api, {
-                headers: {
-                    'Authorization': "Bearer "+ _this.$store.getters.mcsjwtToken
-                },
-            })
-            .then((json) => {
-                if(json.data.status == 'success'){
-                    _this.$root.LOCK_TIME = json.data.data.lock_time
-                    _this.$root.PAY_GAS_LIMIT = json.data.data.gas_limit
-                    _this.$root.PAY_WITH_MULTIPLY_FACTOR = json.data.data.pay_multiply_factor
-                    _this.$root.RECIPIENT = json.data.data.payment_recipient_address
-                    _this.$root.SWAN_PAYMENT_CONTRACT_ADDRESS = json.data.data.payment_contract_address
-                    _this.$root.USDC_ADDRESS = json.data.data.usdc_address
-                    _this.$root.MINT_CONTRACT = json.data.data.mint_contract_address
-                    _this.$root.dao_threshold = json.data.data.dao_threshold
-                    _this.$root.filecoin_price = json.data.data.filecoin_price
-                }
-            }).catch(error => {
-                console.log(error)
-            })
-        },
-        contractPrice(netId) {
-            let _this = this
-            try {
-                if(netId != 80001 && netId != 97){
-                    ethereum
-                    .request(
-                        {
-                            "jsonrpc":"2.0",
-                            "method":"eth_getBalance",
-                            "params":[_this.addrChild, "latest"],
-                            "id":19999
-                        }
-                    )
-                    .then((balance) => {
-                        let balanceAll = web3.utils.fromWei(balance, 'ether')
-                        _this.priceAccound = Number(balanceAll).toFixed(0)
-                    })
-                    .catch((error) => {
-                        console.error(`Error fetching getBalance: ${error.code}: ${error.message}`);
-                        _this.priceAccound = 0
-                    });
-                }else{
-                    if(_this.$root.SWAN_PAYMENT_CONTRACT_ADDRESS){
-                        // 授权代币
-                        contract_erc20 = new web3.eth.Contract( erc20_contract_json );
-                        contract_erc20.options.address = _this.$root.USDC_ADDRESS
-                        // 查询剩余代币余额为：
-                        contract_erc20.methods.balanceOf(_this.metaAddress).call()
-                        .then(balance => {
-                            let usdcAvailable = web3.utils.fromWei(balance, 'mwei');
-                            console.log('Available balance:', usdcAvailable, balance)
-                            // _this.priceAccound = _this.formatDecimal(usdcAvailable, 3)
-                            // _this.priceAccound = Number(usdcAvailable).toFixed(0)
-                            _this.priceAccound = parseInt(usdcAvailable)
-                        })
-                    }else {
-                        setTimeout(function(){
-                            _this.contractPrice(netId)
-                        }, 1000)
-                    }
-                }
-            } catch (err) {
-                console.error(err)
-                _this.priceAccound = 0
-            }
-        },
-        formatDecimal(num, decimal) {
-            num = num.toString()
-            let index = num.indexOf('.')
-            if (index !== -1) {
-                num = num.substring(0, decimal + index + 1)
-            } else {
-                num = num.substring(0)
-            }
-            return parseFloat(parseFloat(num).toFixed(decimal))
-        },
-        reverseChange(val) {
-            let reverse = val ? 1 : 0
-            this.$store.dispatch('setReverse', reverse)
-        }
-    },
-    mounted() {
-        let _this = this
-        _this.reverseSwitch = _this.reverse
-
-        var visProp = _this.getHiddenProp();
-        if (visProp) 
-        {
-            var evtname = visProp.replace(/[H|h]idden/, '') + 'visibilitychange';
-            document.addEventListener(evtname, function () {
-                _this.tabOaxLogin = document[_this.getVisibilityState()]
-            }, false);
-        }
-
-        _this.commonParam()
-        if(_this.metaAddress){
             _this.addrChild = _this.metaAddress
             _this.walletInfo()
-            // _this.signFun()
-        }
-        _this.fn()
+          })
+          .catch((error) => {
+            console.log(error)
+            _this.signOutFun()
+          })
+        return false
+      }
     },
-    filters: {
-        number (value) {
-            let realVal = ''
-            if (!isNaN(value) && value!== '' && value!==null) {
-                // realVal = 0.000000000000000001 * value
-                realVal = String(value).replace(/^(.*\..{18}).*$/, "$1")
-            } else {
-                realVal = '--'
-            }
-            return realVal
-        },
-        hiddAddress: function (val) {
-            if(val){
-                return `${val.substring(0, 6)}...${val.substring(val.length - 4)}`
-            }else{
-                return '-'
-            }
-        },
-        byteStorage(limit) {
-            // 只转换成GB
-            if(limit <= 0){
-                return '0'
-            }else{
-                return (limit/( 1024 * 1024 * 1024)).toPrecision(2)  //or 1000
-            }
+    walletInfo () {
+      let _this = this
+      if (!_this.addrChild || _this.addrChild == 'undefined') {
+        return false
+      }
+
+      const ethereum = window.ethereum
+      if (window.ethereum) {
+        web3 = new Web3(ethereum)
+        web3.setProvider(ethereum)
+      } else if (window.web3) {
+        web3 = window.web3
+        console.log('Injected web3 detected.')
+      } else {
+        var currentProvider = web3.currentProvider
+        // var Web3 = web3js.getWeb3();
+        web3 = new Web3(currentProvider)
+        web3.setProvider(currentProvider)
+        console.log('No web3 instance injected, using Local web3.')
+      }
+
+      ethereum
+        .request({ method: 'eth_chainId' })
+        .then(async (chainId) => {
+          let netId = parseInt(chainId, 16)
+          // console.log('network ID:', netId)
+          // console.log(`decimal number: ${parseInt(chainId, 16)}`);
+          _this.$store.dispatch('setMetaNetworkId', netId)
+
+          await _this.contractPrice(netId)
+
+          switch (netId) {
+            case 1:
+              _this.network.name = 'mainnet'
+              _this.network.unit = 'ETH'
+              _this.network.center_fail = true
+              _this.$store.dispatch('setMetaNetworkInfo', _this.network)
+              return
+            case 3:
+              _this.network.name = 'ropsten'
+              _this.network.unit = 'ETH'
+              _this.network.center_fail = true
+              _this.$store.dispatch('setMetaNetworkInfo', _this.network)
+              break
+            case 4:
+              _this.network.name = 'rinkeby'
+              _this.network.unit = 'ETH'
+              _this.network.center_fail = true
+              _this.$store.dispatch('setMetaNetworkInfo', _this.network)
+              return
+            case 5:
+              _this.network.name = 'goerli'
+              _this.network.unit = 'ETH'
+              _this.network.center_fail = true
+              _this.$store.dispatch('setMetaNetworkInfo', _this.network)
+              return
+            case 42:
+              _this.network.name = 'kovan'
+              _this.network.unit = 'ETH'
+              _this.network.center_fail = true
+              _this.$store.dispatch('setMetaNetworkInfo', _this.network)
+              return
+            case 56:
+              _this.network.name = 'BSC'
+              _this.network.unit = 'BNB'
+              _this.network.center_fail = true
+              _this.$store.dispatch('setMetaNetworkInfo', _this.network)
+              return
+            case 97:
+              _this.network.name = 'BSC'
+              _this.network.unit = 'USDC'
+              _this.network.center_fail = false
+              _this.$store.dispatch('setMetaNetworkInfo', _this.network)
+              if (_this.meta) {
+                if (_this.$route.query.redirect && _this.$route.query.redirect != '/supplierAllBack') {
+                  // 防止登录后需要跳转到指定页面
+                  _this.$router.push({ path: _this.$route.query.redirect })
+                } else {
+                  _this.$router.push({ path: '/my_files' })
+                }
+                window.location.reload()
+                _this.$emit('getMetamaskLogin', false)
+              }
+              return
+            case 137:
+              _this.network.name = 'Polygon'
+              _this.network.unit = 'MATIC'
+              _this.network.center_fail = true
+              _this.$store.dispatch('setMetaNetworkInfo', _this.network)
+              return
+            case 999:
+              _this.network.name = 'NBAI'
+              _this.network.unit = 'NBAI'
+              _this.network.center_fail = true
+              _this.$store.dispatch('setMetaNetworkInfo', _this.network)
+              return
+            case 80001:
+              _this.network.name = 'mumbai'
+              _this.network.unit = 'USDC'
+              _this.network.center_fail = false
+              _this.$store.dispatch('setMetaNetworkInfo', _this.network)
+              if (_this.meta) {
+                if (_this.$route.query.redirect && _this.$route.query.redirect != '/supplierAllBack') {
+                  // 防止登录后需要跳转到指定页面
+                  _this.$router.push({ path: _this.$route.query.redirect })
+                } else {
+                  _this.$router.push({ path: '/my_files' })
+                }
+                window.location.reload()
+                _this.$emit('getMetamaskLogin', false)
+              }
+              return
+            default:
+              _this.network.name = 'Custom'
+              _this.network.unit = ''
+              _this.network.center_fail = true
+              _this.$store.dispatch('setMetaNetworkInfo', _this.network)
+          }
+        })
+        .catch((error) => {
+          console.error(`Error fetching chainId: ${error.code}: ${error.message}`)
+        })
+    },
+    fn () {
+      let _this = this
+      ethereum.on('accountsChanged', function (account) {
+        // console.log('account header:', account[0]);  //Once the account is switched, it will be executed here
+        // if(_this.metaAddress && account[0]){
+        //     web3.eth.getAccounts().then(async accounts => {
+        //         _this.addrChild = accounts[0]
+        //         _this.walletInfo()
+        //         _this.$store.dispatch('setMetaAddress', accounts[0])
+        //         if(_this.$route.name == 'my_files_detail') {
+        //             _this.$router.push({ path: '/my_files' })
+        //         }
+        //         _this.$router.go(0)
+        //     })
+        // }else{
+        _this.signOutFun()
+        // }
+      })
+      // networkChanged
+      ethereum.on('chainChanged', function (accounts) {
+        // console.log('accounts', accounts)
+        // _this.signOutFun()
+        _this.$store.dispatch('setMCSjwtToken', '')
+        _this.walletInfo()
+        _this.changeChaid(parseInt(accounts, 16))
+      })
+      // 监听metamask网络断开
+      ethereum.on('disconnect', (code, reason) => {
+        // console.log(`Ethereum Provider connection closed: ${reason}. Code: ${code}`);
+      })
+    },
+    signOutFun () {
+      let _this = this
+      let params = {}
+      axios.post(`${_this.baseAPIURL}api/v1/user/logout_for_metamask_signature`, params, {
+        headers: {
+          'Authorization': 'Bearer ' + _this.$store.getters.mcsjwtToken
         }
+      }).then((response) => {
+        if (response.data.status === 'success') {
+          _this.addrChild = ''
+          _this.$store.dispatch('setMetaAddress', '')
+          _this.$store.dispatch('setMCSjwtToken', '')
+          _this.$store.dispatch('setMetaNetworkId', 0)
+          _this.network.name = ''
+          _this.network.unit = ''
+          _this.network.center_fail = false
+          _this.$store.dispatch('setMetaNetworkInfo', JSON.stringify(this.network))
+          _this.$router.push('/supplierAllBack')
+        } else {
+          _this.$message.error(response.data.message || 'Fail')
+        }
+      }).catch(function (error) {
+        console.log(error.config)
+      })
+    },
+    commonParam () {
+      let _this = this
+      let common_api = `${_this.baseAPIURL}api/v1/common/system/params?limit=20&wallet_address=${_this.metaAddress}`
+
+      axios.get(common_api, {
+        headers: {
+          'Authorization': 'Bearer ' + _this.$store.getters.mcsjwtToken
+        }
+      })
+        .then((json) => {
+          if (json.data.status == 'success') {
+            _this.$root.LOCK_TIME = json.data.data.lock_time
+            _this.$root.PAY_GAS_LIMIT = json.data.data.gas_limit
+            _this.$root.PAY_WITH_MULTIPLY_FACTOR = json.data.data.pay_multiply_factor
+            _this.$root.RECIPIENT = json.data.data.payment_recipient_address
+            _this.$root.SWAN_PAYMENT_CONTRACT_ADDRESS = json.data.data.payment_contract_address
+            _this.$root.USDC_ADDRESS = json.data.data.usdc_address
+            _this.$root.MINT_CONTRACT = json.data.data.mint_contract_address
+            _this.$root.dao_threshold = json.data.data.dao_threshold
+            _this.$root.filecoin_price = json.data.data.filecoin_price
+          }
+        }).catch(error => {
+          console.log(error)
+        })
+    },
+    contractPrice (netId) {
+      let _this = this
+      try {
+        if (netId != 80001 && netId != 97) {
+          ethereum
+            .request(
+              {
+                'jsonrpc': '2.0',
+                'method': 'eth_getBalance',
+                'params': [_this.addrChild, 'latest'],
+                'id': 19999
+              }
+            )
+            .then((balance) => {
+              console.log(balance)
+              let balanceAll = web3.utils.fromWei(balance, 'ether')
+              _this.priceAccound = Number(balanceAll).toFixed(0)
+            })
+            .catch((error) => {
+              console.error(`Error fetching getBalance: ${error.code}: ${error.message}`)
+              _this.priceAccound = 0
+            })
+        } else {
+          if (_this.$root.SWAN_PAYMENT_CONTRACT_ADDRESS) {
+            // 授权代币
+            contract_erc20 = new web3.eth.Contract(erc20_contract_json)
+            contract_erc20.options.address = _this.$root.USDC_ADDRESS
+            // 查询剩余代币余额为：
+            contract_erc20.methods.balanceOf(_this.metaAddress).call()
+              .then(balance => {
+                let usdcAvailable = web3.utils.fromWei(balance, 'mwei')
+                console.log('Available balance:', usdcAvailable, balance)
+                // _this.priceAccound = _this.formatDecimal(usdcAvailable, 3)
+                // _this.priceAccound = Number(usdcAvailable).toFixed(0)
+                _this.priceAccound = parseInt(usdcAvailable)
+              })
+          } else {
+            setTimeout(function () {
+              _this.contractPrice(netId)
+            }, 1000)
+          }
+        }
+      } catch (err) {
+        console.error(err)
+        _this.priceAccound = 0
+      }
+    },
+    formatDecimal (num, decimal) {
+      num = num.toString()
+      let index = num.indexOf('.')
+      if (index !== -1) {
+        num = num.substring(0, decimal + index + 1)
+      } else {
+        num = num.substring(0)
+      }
+      return parseFloat(parseFloat(num).toFixed(decimal))
+    },
+    reverseChange (val) {
+      let reverse = val ? 1 : 0
+      this.$store.dispatch('setReverse', reverse)
     }
-};
+  },
+  mounted () {
+    let _this = this
+    _this.reverseSwitch = _this.reverse
+
+    var visProp = _this.getHiddenProp()
+    if (visProp) {
+      var evtname = visProp.replace(/[H|h]idden/, '') + 'visibilitychange'
+      document.addEventListener(evtname, function () {
+        _this.tabOaxLogin = document[_this.getVisibilityState()]
+      }, false)
+    }
+
+    _this.commonParam()
+    if (_this.metaAddress) {
+      _this.addrChild = _this.metaAddress
+      _this.walletInfo()
+      // _this.signFun()
+    }
+    _this.fn()
+  },
+  filters: {
+    number (value) {
+      let realVal = ''
+      if (!isNaN(value) && value !== '' && value !== null) {
+        // realVal = 0.000000000000000001 * value
+        realVal = String(value).replace(/^(.*\..{18}).*$/, '$1')
+      } else {
+        realVal = '--'
+      }
+      return realVal
+    },
+    hiddAddress: function (val) {
+      if (val) {
+        return `${val.substring(0, 6)}...${val.substring(val.length - 4)}`
+      } else {
+        return '-'
+      }
+    },
+    byteStorage (limit) {
+      // 只转换成GB
+      if (limit <= 0) {
+        return '0'
+      } else {
+        return (limit / (1024 * 1024 * 1024)).toPrecision(2) // or 1000
+      }
+    }
+  }
+}
 </script>
 <style  lang="scss" scoped>
 .el-dialog__wrapper /deep/{
@@ -798,7 +774,7 @@ export default {
             }
             label{
                 word-break: break-word;
-                line-height: 1;    
+                line-height: 1;
                 color: #666;
                 font-size: inherit;
             }
@@ -964,7 +940,7 @@ export default {
                 background-color: #555;
             }
         }
-        
+
     }
     .header_left_logo{
         float: left;
@@ -984,7 +960,6 @@ export default {
                 width: 100%;
             }
         }
-
 
         .header_btn{
             display: flex;
@@ -1123,7 +1098,6 @@ export default {
 //     cursor: pointer;
 // }
 
-
         .collapse-btn-cont {
             float: left;
             padding: 0;
@@ -1210,7 +1184,7 @@ export default {
             line-height: 1.2;
         }
     }
-    .lang_style{    
+    .lang_style{
         min-width: 0.26rem;
         margin: 0 0.2rem;
         line-height: 0.26rem;
@@ -1287,7 +1261,7 @@ export default {
         position: relative;
         width: auto;
         padding: 0.15rem 0.3rem;
-        margin: 0;    
+        margin: 0;
         cursor: pointer;
         border-radius: 0.14rem;
         background: linear-gradient(45deg,#4f8aff, #4b5eff);
@@ -1412,7 +1386,7 @@ export default {
             svg{
                 width: 18px;
                 height: 18px;
-                margin: 2px 0 0;  
+                margin: 2px 0 0;
             }
         }
         .off {
@@ -1426,7 +1400,7 @@ export default {
             svg{
                 width: 14px;
                 height: 14px;
-                margin: 4px 0 0;  
+                margin: 4px 0 0;
             }
         }
         .el-switch /deep/ {

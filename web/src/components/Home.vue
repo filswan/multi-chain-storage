@@ -2,7 +2,7 @@
     <div class="wrapper">
         <el-col :xs="8" :sm="8" :md="5" :lg="4" class="side" :class="{'slidarShow': collapseP&&bodyWidth}"><v-sidebar></v-sidebar></el-col>
         <el-col :xs="24" :sm="24" :md="19" :lg="20" class="content-box" id="content-box">
-            <v-head :meta="meta" @getMetamaskLogin="getMetamaskLogin" 
+            <v-head :meta="meta" @getMetamaskLogin="getMetamaskLogin"
                     :netId="netId" @getNetId="changeNet"></v-head>
             <div id="headerMb" v-if="bodyWidth">
                 <div class="headerMb" v-if="email">
@@ -13,7 +13,7 @@
                 <div class="content_body" :class="{'stats': $route.name == 'Stats'}">
                     <el-alert type="warning" effect="dark" center show-icon v-if="metaAddress&&!(networkID==80001 || networkID == 97)">
                         <div slot="title">
-                            {{$t('fs3Login.toptip_01')}} {{metaNetworkInfo.name}} {{$t('fs3Login.toptip_02')}} 
+                            {{$t('fs3Login.toptip_01')}} {{metaNetworkInfo.name}} {{$t('fs3Login.toptip_02')}}
                                 <span @click="changeNet(80001)">Mumbai Testnet</span>
                                 {{$t('fs3Login.toptip_Network')}}
                                 <span @click="changeNet(97)">BSC TestNet</span>.
@@ -41,94 +41,93 @@
 </template>
 
 <script>
-import vHead from './Header.vue';
-import vSidebar from './Sidebar.vue';
+import vHead from './Header.vue'
+import vSidebar from './Sidebar.vue'
 // import bus from './bus';
 export default {
-    data() {
-        return {
-            tagsList: [],
-            collapse: false,
-            collapseP: this.$store.getters.collapseL == 'true'||this.$store.getters.collapseL==true?true: false,
-            bodyWidth: document.body.clientWidth<992?true:false,
-            tabshow: localStorage.getItem('tabTask_name') == 'User_Profile'?true:false,
-            share_img1: require('@/assets/images/landing/medium.png'),
-            share_img2: require('@/assets/images/landing/twitter.png'),
-            share_img3: require('@/assets/images/landing/github-fill.png'),
-            share_img5: require('@/assets/images/landing/facebook-fill.png'),
-            share_img7: require('@/assets/images/landing/slack.png'),
-            share_img8: require('@/assets/images/landing/youtube.png'),
-            share_img9: require('@/assets/images/landing/telegram.png'),
-            share_img10: require('@/assets/images/landing/discord.png'),
-            share_logo: require('@/assets/images/landing/logo_small.png'),
-            meta: false,
-            netId: 0
-        };
-    },
-    components: {
-        vHead,
-        vSidebar
-    },
-    computed: {
-        headertitle() {
-            return this.$store.getters.headertitle
-        },
-        routerMenu() {
-            return this.$store.getters.routerMenu
-        },
-        email() {
-            return this.$store.state.user.email
-        },
-        collapseL() {
-            return this.$store.getters.collapseL
-        },
-        metaAddress() {
-            return this.$store.getters.metaAddress
-        },
-        networkID() {
-            return this.$store.getters.networkID
-        },
-        metaNetworkInfo() {
-            return this.$store.getters.metaNetworkInfo?JSON.parse(JSON.stringify(this.$store.getters.metaNetworkInfo)):{}
-        },
-        reverse() {
-            return this.$store.getters.reverse == '1' ? true : false
-        }
-    },
-    watch: {
-        'collapseL': function(){
-            this.collapseP = this.$store.getters.collapseL == 'true'||this.$store.getters.collapseL==true?true: false
-            this.bodyWidth = document.body.clientWidth<992?true:false
-        },
-        reverse: function() {
-            this.init()
-        }
-    },
-    methods: {
-        changeNet(id) {
-            this.netId = id
-        },
-        getMetamaskLogin(meta) {
-            this.meta = meta
-        },
-        init() {
-            if(this.reverse) document.body.classList.add('reverse_phase');
-            else document.body.classList.remove('reverse_phase'); 
-        }
-    },
-    mounted() {
-        let bo = this.bodyWidth
-        // window.onresize = function () {
-        //     if((!bo && document.body.clientWidth<1024) || (bo && document.body.clientWidth>=1024)){
-        //         window.location.reload();
-        //     }
-        // }
-        this.init()
-        console.log('update time: 2022-11-04') 
+  data () {
+    return {
+      tagsList: [],
+      collapse: false,
+      collapseP: !!(this.$store.getters.collapseL == 'true' || this.$store.getters.collapseL == true),
+      bodyWidth: document.body.clientWidth < 992,
+      tabshow: localStorage.getItem('tabTask_name') == 'User_Profile',
+      share_img1: require('@/assets/images/landing/medium.png'),
+      share_img2: require('@/assets/images/landing/twitter.png'),
+      share_img3: require('@/assets/images/landing/github-fill.png'),
+      share_img5: require('@/assets/images/landing/facebook-fill.png'),
+      share_img7: require('@/assets/images/landing/slack.png'),
+      share_img8: require('@/assets/images/landing/youtube.png'),
+      share_img9: require('@/assets/images/landing/telegram.png'),
+      share_img10: require('@/assets/images/landing/discord.png'),
+      share_logo: require('@/assets/images/landing/logo_small.png'),
+      meta: false,
+      netId: 0
     }
-};
+  },
+  components: {
+    vHead,
+    vSidebar
+  },
+  computed: {
+    headertitle () {
+      return this.$store.getters.headertitle
+    },
+    routerMenu () {
+      return this.$store.getters.routerMenu
+    },
+    email () {
+      return this.$store.state.user.email
+    },
+    collapseL () {
+      return this.$store.getters.collapseL
+    },
+    metaAddress () {
+      return this.$store.getters.metaAddress
+    },
+    networkID () {
+      return this.$store.getters.networkID
+    },
+    metaNetworkInfo () {
+      return this.$store.getters.metaNetworkInfo ? JSON.parse(JSON.stringify(this.$store.getters.metaNetworkInfo)) : {}
+    },
+    reverse () {
+      return this.$store.getters.reverse == '1'
+    }
+  },
+  watch: {
+    'collapseL': function () {
+      this.collapseP = !!(this.$store.getters.collapseL == 'true' || this.$store.getters.collapseL == true)
+      this.bodyWidth = document.body.clientWidth < 992
+    },
+    reverse: function () {
+      this.init()
+    }
+  },
+  methods: {
+    changeNet (id) {
+      this.netId = id
+    },
+    getMetamaskLogin (meta) {
+      this.meta = meta
+    },
+    init () {
+      if (this.reverse) document.body.classList.add('reverse_phase')
+      else document.body.classList.remove('reverse_phase')
+    }
+  },
+  mounted () {
+    let bo = this.bodyWidth
+    // window.onresize = function () {
+    //     if((!bo && document.body.clientWidth<1024) || (bo && document.body.clientWidth>=1024)){
+    //         window.location.reload();
+    //     }
+    // }
+    this.init()
+    console.log('update time: 2022-11-14')
+  }
+}
 </script>
-
 
 <style lang="scss" scoped>
 .wrapper{
@@ -138,13 +137,13 @@ export default {
     width: 21.4rem;
     max-width: 100%;
     margin: auto;
-    @media screen and (max-width: 1440px) { 
+    @media screen and (max-width: 1440px) {
         width: 20.6rem;
     }
-    @media screen and (max-width: 1366px) { 
+    @media screen and (max-width: 1366px) {
         width: 21.1rem;
     }
-    @media screen and (max-width: 1280px) { 
+    @media screen and (max-width: 1280px) {
         width: 21.4rem;
     }
     @media screen and (max-width:1152px){
@@ -232,7 +231,7 @@ export default {
                             cursor: pointer;
                         }
                         a{
-                            text-decoration: underline; 
+                            text-decoration: underline;
                             color: #fff;
                         }
                     }
@@ -293,4 +292,3 @@ export default {
     }
 }
 </style>
-

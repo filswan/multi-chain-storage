@@ -8,7 +8,7 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol"
 
 import "../FilinkConsumer.sol";
 
-contract NewFilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
+contract FilswanOracleV2 is OwnableUpgradeable, AccessControlUpgradeable {
     bytes32 public constant DAO_ROLE = keccak256("DAO_ROLE");
 
     uint8 private _threshold;

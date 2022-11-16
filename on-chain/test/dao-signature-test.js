@@ -43,7 +43,7 @@ describe('DAO Signatures', function () {
     const filinkContract = await ethers.getContractFactory('MockFilink')
     filink = await filinkContract.deploy()
 
-    const oracleContract = await ethers.getContractFactory('NewFilswanOracle')
+    const oracleContract = await ethers.getContractFactory('FilswanOracleV2')
     oracleInstance = await upgrades.deployProxy(
       oracleContract,
       [accounts[0].address, threshold],

@@ -8,6 +8,19 @@
 
 ## Functions
 
+## MCSCollection.sol
+
+MCSCollection is an ERC-1155 contract that allows admins to mint NFTs to this colelction
+
+## CollectionFactory.sol
+
+Users will interact with the CollectionFactory to create MCSCollections, and mint through the factory.
+
+- **`createCollection(collectionURI)`** creates a new collection for the user
+- **`mint(collection, recipient, amount, uri)`** mints `amount` of `uri` NFTs to `recipient` in `collection`
+- **`mintToNewCollection(collectionURI, recipient, amount, uri)`** calls `createCollection` and `mint` in one transaction
+- **`getCollections(user)`** gets all collection contract addresses for the user in the factory
+
 ### SwanNFT.sol
 
 MCSNFT is an ERC-1155 contract, that allows any user to mint a new NFT for this

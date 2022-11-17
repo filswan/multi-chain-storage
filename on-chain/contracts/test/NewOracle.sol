@@ -6,15 +6,15 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 
-import "./FilinkConsumer.sol";
+import "../FilinkConsumer.sol";
 
-contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
+contract FilswanOracleV2 is OwnableUpgradeable, AccessControlUpgradeable {
     bytes32 public constant DAO_ROLE = keccak256("DAO_ROLE");
 
     uint8 private _threshold;
 
     mapping(string => mapping(address => TxOracleInfo)) txInfoMap;
-    mapping(bytes32 => uint8) txVoteMap;
+    mapping(bytes32 => uint8) txVoteMap; // number of votes
 
     address private _filinkAddress;
     mapping(string => string[]) cidListMap;
@@ -22,7 +22,6 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
     address[] private _daoLists;
 
     mapping(string => uint256) signStatusMap;
-    // mapping(string => bool) hasPreSignMap;
 
     struct TxOracleInfo {
         uint256 paid;
@@ -42,6 +41,9 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
 
     mapping(string => mapping(address => mapping(string => bool))) cidMap;
 
+    mapping(bytes32 => mapping(address => bool)) userVotedMap; // tracks whether a user voted or not
+    mapping(bytes32 => string[]) voteKeyCidListMap;
+
     event SignTransaction(string cid, string dealId, address recipient);
 
     event SignCarTransaction(
@@ -52,6 +54,8 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
     );
 
     event SignHash(string dealId, string network, address recipient, bytes32 voteKey);
+    event PreSign(string dealId, string network, address recipient, uint8 batchCount);
+    event Sign(string dealId, string network, string[] cidList, uint8 batchNo);
 
     function initialize(address admin, uint8 threshold) public initializer {
         __Ownable_init();
@@ -83,6 +87,11 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
         onlyRole(DEFAULT_ADMIN_ROLE)
         returns (bool)
     {
+        //first revoke DAO_ROLE from current daoUsers
+        for (uint8 i = 0; i < _daoLists.length; i++) {
+            revokeRole(DAO_ROLE, _daoLists[i]);
+        }
+        //then grant DAO_ROLE to new daoUsers
         for (uint8 i = 0; i < daoUsers.length; i++) {
             grantRole(DAO_ROLE, daoUsers[i]);
         }
@@ -98,46 +107,17 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
         return string(abi.encodePacked(s1, s2));
     }
 
+    // DEPRECIATED
     function signCarTransaction(
         string[] memory cidList,
         string memory dealId,
         string memory network,
         address recipient
     ) public onlyRole(DAO_ROLE) {
-        string memory key = concatenate(dealId, network);
-
-        require(
-            txInfoMap[key][msg.sender].flag == false,
-            "You already sign this transaction"
-        );
-
-        txInfoMap[key][msg.sender].recipient = recipient;
-        txInfoMap[key][msg.sender].flag = true;
-        txInfoMap[key][msg.sender].cidList = cidList;
-        txInfoMap[key][msg.sender].signer = msg.sender;
-        txInfoMap[key][msg.sender].timestamp = block.timestamp;
-        txInfoMap[key][msg.sender].blockNumber = block.number;
-
-        bytes32 voteKey = keccak256(
-            abi.encodeWithSignature(
-                "f(string,string,address,string[])",
-                dealId,
-                network,
-                recipient,
-                cidList
-            )
-        );
-
-        txVoteMap[voteKey] = txVoteMap[voteKey] + 1;
-
-        // todo: check cidList each time.
-        if (txVoteMap[voteKey] == _threshold && _filinkAddress != address(0)) {
-            cidListMap[key] = cidList;
-            FilinkConsumer(_filinkAddress).requestDealInfo(dealId, network);
-        }
-
-        emit SignCarTransaction(cidList, dealId, network, recipient);
+        revert('This function is no longer supported');
     }
+
+    /* GETTER FUNCTIONS */
 
     function isCarPaymentAvailable(
         string memory dealId,
@@ -210,10 +190,10 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
         return txInfoMap[key][sender];
     }
 
-    event PreSign(string dealId, string network, address recipient, uint8 batchCount);
-    event Sign(string dealId, string network, string[] cidList, uint8 batchNo);
+    /* */
 
-
+    /// @dev call preSign before sign
+    /// @notice sets the batch count and initial sign status 
     function preSign(string memory dealId, string memory network, address recipient, uint8 batchCount) public onlyRole(DAO_ROLE) {
         require(batchCount>0, "batch count must greater than 0");
         string memory key = concatenate(dealId, network);
@@ -232,7 +212,6 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
 
         emit PreSign(dealId, network, recipient, batchCount);
     }
-
 
     function sign(string memory dealId, string memory network, string[] memory cidList, uint8 batchNo) public onlyRole(DAO_ROLE) {
 
@@ -272,10 +251,16 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
                         )
                     );
 
+            voteKeyCidListMap[voteKey] = txInfoMap[key][msg.sender].cidList;
+
+            // a user CANNOT vote again
+            require(!userVotedMap[voteKey][msg.sender], 'you already signed this hash');
+            userVotedMap[voteKey][msg.sender] = true;
             txVoteMap[voteKey] = txVoteMap[voteKey] + 1;
             
             if (txVoteMap[voteKey] >= _threshold 
-            && _filinkAddress != address(0)
+            && _filinkAddress != address(0) &&
+            voteKeyCidListMap[voteKey].length > 0
             ) {
                 cidListMap[key] = txInfoMap[key][msg.sender].cidList;
                 FilinkConsumer(_filinkAddress).requestDealInfo(dealId, network);
@@ -288,18 +273,18 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
     function signHash(string memory dealId, string memory network, address recipient, bytes32 voteKey) public onlyRole(DAO_ROLE) {
         string memory key = concatenate(dealId, network);
 
-        // TODO: make sure sign one time for one user
-        // require(
-        //     txInfoMap[key][msg.sender].flag == false,
-        //     "You already sign this transaction"
-        // );
-
+        // a user CANNOT vote again
+        require(!userVotedMap[voteKey][msg.sender], 'you already signed this hash');
+        userVotedMap[voteKey][msg.sender] = true;
         txVoteMap[voteKey] = txVoteMap[voteKey] + 1;
+        
+        // if all batches are signed
         if(txInfoMap[key][msg.sender].signStatus == 0){
             if (txVoteMap[voteKey] >= _threshold 
-            && _filinkAddress != address(0)
+            && _filinkAddress != address(0) &&
+            voteKeyCidListMap[voteKey].length > 0
             ) {
-                cidListMap[key] = txInfoMap[key][msg.sender].cidList;
+                cidListMap[key] = voteKeyCidListMap[voteKey];
                 FilinkConsumer(_filinkAddress).requestDealInfo(dealId, network);
             }
         }
@@ -315,4 +300,7 @@ contract FilswanOracle is OwnableUpgradeable, AccessControlUpgradeable {
         return keccak256(abi.encodeWithSignature("f(string,string,address,string[])",dealId, network, recipient, cidList));
     }
 
+    function getVotes(bytes32 voteKey) public view returns(uint) {
+        return txVoteMap[voteKey];
+    }
 }

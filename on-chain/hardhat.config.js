@@ -33,11 +33,12 @@ module.exports = {
     },
     mumbai: {
       url: process.env.MUMBAI_RPC,
-      accounts: [process.env.ownerPK],
+      accounts: [process.env.PRIVATE_KEY],
     },
   },
   solidity: {
     compilers: [
+      { version: '0.8.2' },
       {
         version: '0.8.7',
       },

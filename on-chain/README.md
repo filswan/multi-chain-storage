@@ -64,6 +64,17 @@ DAO addresses list
 
 ## Development
 
+#### .env file
+
+PERSONAL_KEY - mainnet wallet private key
+
+#### testing
+
+```
+npx hardhat test
+npx hardhat test test-polygon/* --network polygon
+```
+
 #### generate go bind files
 
 ```

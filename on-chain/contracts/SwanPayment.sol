@@ -27,6 +27,9 @@ contract SwanPayment is IPaymentMinimal, Initializable {
     mapping(string => TxInfo) private txMap;
     mapping(string => TxInfo) private txCarMap;
 
+    // TODO: users can refund anytime (before unlock)
+    // mapping(string => bool) dealUnlocked;
+
     function initialize(
         address owner,
         address ERC20_TOKEN,
@@ -178,9 +181,7 @@ contract SwanPayment is IPaymentMinimal, Initializable {
         return true;
     }
 
-    /// @notice real fee is greater than tx.fee, take tx.fee
-    /// real fee is less than tx.minPayment, take minPayment, return tx.fee - minPayment to tx.owner
-    /// otherwise, take real fee, return tx.fee - real fee to tx.owner
+    /// @notice after the file expires (couple days) the file owner can unlock
     /// @param param data
     /// @return Returns true for a successful payment, false for an unsuccessful payment
     function unlockTokenPayment(unlockPaymentParam calldata param)
@@ -247,11 +248,13 @@ contract SwanPayment is IPaymentMinimal, Initializable {
                 if(t.copyLimit == 0) continue;
                 uint256 cost = unitPrice * t.size;
 
-                t.lockedFee = t.lockedFee - cost;
-                t.copyLimit = t.copyLimit - 1;
-                if (t.lockedFee < 0) {
+                if (t.lockedFee < cost) {
                     t.lockedFee = 0;
+                } else {
+                    t.lockedFee = t.lockedFee - cost;
                 }
+                t.copyLimit = t.copyLimit - 1;
+                
                 t._isExisted = (t.lockedFee > 0);
             }
 
@@ -262,10 +265,11 @@ contract SwanPayment is IPaymentMinimal, Initializable {
         return true;
     }
 
+    /// @notice refund existing, EXPIRED cids back to owners
     function refund(string[] memory cidList) public {
         for (uint8 i = 0; i < cidList.length; i++) {
             TxInfo storage t = txCarMap[cidList[i]];
-            if (t._isExisted) {
+            if (t._isExisted && block.timestamp > t.deadline) {
                 t._isExisted = false;
                 if (t.lockedFee > 0) {
                     IERC20(_ERC20_TOKEN).transfer(t.owner, t.lockedFee);

@@ -27,8 +27,7 @@
                         </el-popover>
                     </div>
                     <div class="info-num">
-                        <span v-if="index == 4" style="font-size:12px;color:#4d4d4d">current formula is the deal number</span>
-                        <span v-else>{{item.data}}</span>
+                        <span>{{item.data}}</span>
                     </div>
                 </div>
             </div>
@@ -228,10 +227,33 @@
                     toolbox: {
                         show: true,
                         feature: {
-                            dataZoom: {
-                                yAxisIndex: 'none'
+                            mark: {
+                                show: true
                             },
-                            magicType: { type: ['line', 'bar'] },
+                            // dataZoom: {
+                            //   yAxisIndex: false,
+                            // },
+                            // dataView: {
+                            //     show: true,           
+                            //     readOnly: false,   
+                            //     title:'数据视图'
+                            // },
+                            magicType: {         
+                                show: true,    
+                                type: ['line', 'bar'],
+                                title:{
+                                    line: 'Switch to line graph',
+                                    bar: 'Switch to bar graph'
+                                }
+                            },
+                            restore: {              
+                                show: true,           
+                                title: 'Restore'
+                            },
+                            saveAsImage: {     
+                                show: true,         
+                                title: 'Save'
+                            }
                         }
                     },
                     tooltip: {
@@ -326,22 +348,33 @@
                     that.echartData.max_val = ecosysRes.data.graph.max_val || 0
                     that.echartData.min_file = ecosysRes.data.graph.min_file || 0
                     that.echartData.min_val = ecosysRes.data.graph.min_val || 0
-                    await that.time(ecosysRes.data.graph.time)
+                    await that.dataFilter(ecosysRes.data.graph.time, 1)
+                    await that.dataFilter(ecosysRes.data.graph.sealed_storage)
                     that.echartData.upload = ecosysRes.data.graph.user_uploads || []
-                    that.echartData.achieved = ecosysRes.data.graph.sealed_storage || []
                 }
                 await that.timeout(500)
                 that.loading_ecosystem = false
                 that.getPie()
             },
-            time(data){
+            dataFilter(data, type){
                 let timeData = data || []
+                let num = 0
                 timeData.map((item, index) => {
-                    item = item
-                                ? moment(new Date(parseInt(item * 1000))).format("YYYY-MM-DD HH:mm:ss")
-                                : "-"
-                    that.echartData.time.push(item)
+                    if(type){
+                        item = item
+                                    ? moment(new Date(parseInt(item * 1000))).format("YYYY-MM-DD HH:mm:ss")
+                                    : "-"
+                        that.echartData.time.push(item)
+                    }else{
+                        if(item <= 0) that.echartData.achieved.push(0)
+                        else{
+                            num = (item/( 1024 * 1024 * 1024))  //or 1000
+                            that.echartData.achieved.push(num)
+                        }
+                        
+                    }
                 })
+                return
             },
             dataset(data, i){
                 switch(i){

@@ -27,14 +27,14 @@ task('accounts', 'Prints the list of accounts', async (taskArgs, hre) => {
 module.exports = {
   defaultNetwork: 'hardhat',
   networks: {
-    // polygon: {
-    //   url: 'https://polygon-rpc.com',
-    //   accounts: [process.env.PERSONAL_KEY],
-    // },
-    // mumbai: {
-    //   url: process.env.MUMBAI_RPC,
-    //   accounts: [process.env.ownerPK],
-    // },
+    polygon: {
+      url: 'https://polygon-rpc.com',
+      accounts: [process.env.PERSONAL_KEY],
+    },
+    mumbai: {
+      url: process.env.MUMBAI_RPC,
+      accounts: [process.env.PRIVATE_KEY],
+    },
   },
   solidity: {
     compilers: [
@@ -74,5 +74,5 @@ module.exports = {
     spacing: 2,
     pretty: true,
   },
-  // etherscan: { apiKey: process.env.POLYGONSCAN_API_KEY },
+  etherscan: { apiKey: process.env.POLYGONSCAN_API_KEY },
 }

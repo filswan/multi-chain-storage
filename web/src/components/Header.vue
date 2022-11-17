@@ -640,7 +640,7 @@ export default {
                     _this.$root.USDC_ADDRESS = json.data.data.usdc_address
                     _this.$root.MINT_CONTRACT = json.data.data.mint_contract_address
                     _this.$root.dao_threshold = json.data.data.dao_threshold
-                    _this.$root.filecoin_price = json.data.data.filecoin_price * 0.00000001
+                    _this.$root.filecoin_price = json.data.data.filecoin_price
                 }
             }).catch(error => {
                 console.log(error)

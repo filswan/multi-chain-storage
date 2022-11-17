@@ -21,12 +21,12 @@ describe('FilinkConsumer', function () {
 
   describe('Check Storage Price', function () {
     it('Should request deal info', async () => {
-      try {
-        let tx = await filink.requestDealInfo('123456', 'filecoin_mainnet', {
-          gasLimit: 5000000,
-        })
-        await tx.wait()
-      } catch (err) {}
+      //   try {
+      //     let tx = await filink.requestDealInfo('123456', 'filecoin_mainnet', {
+      //       gasLimit: 5000000,
+      //     })
+      //     await tx.wait()
+      //   } catch (err) {}
 
       let price = await filink.getPrice('123456', 'filecoin_mainnet')
       console.log('storage price:', price.toString())

@@ -6,7 +6,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 
-import "../FilinkConsumer.sol";
+import "./FilinkConsumer.sol";
 
 contract FilswanOracleV2 is OwnableUpgradeable, AccessControlUpgradeable {
     bytes32 public constant DAO_ROLE = keccak256("DAO_ROLE");

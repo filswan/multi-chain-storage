@@ -6,7 +6,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 
-import "../FilinkConsumer.sol";
+import "./FilinkConsumer.sol";
 
 contract FilswanOracleV2 is OwnableUpgradeable, AccessControlUpgradeable {
     bytes32 public constant DAO_ROLE = keccak256("DAO_ROLE");
@@ -42,7 +42,7 @@ contract FilswanOracleV2 is OwnableUpgradeable, AccessControlUpgradeable {
     mapping(string => mapping(address => mapping(string => bool))) cidMap;
 
     mapping(bytes32 => mapping(address => bool)) userVotedMap; // tracks whether a user voted or not
-    mapping(bytes32 => string[]) voteKeyCidListMap;
+    mapping(bytes32 => string[]) voteKeyCidListMap; // tracks the cid list for a given voteKey
 
     event SignTransaction(string cid, string dealId, address recipient);
 
@@ -213,6 +213,8 @@ contract FilswanOracleV2 is OwnableUpgradeable, AccessControlUpgradeable {
         emit PreSign(dealId, network, recipient, batchCount);
     }
 
+    /// @notice signs one batch in the deal
+    /// @dev ideally one DAO user will sign all the batches (to populate the cidList), and the others can vote using signHash
     function sign(string memory dealId, string memory network, string[] memory cidList, uint8 batchNo) public onlyRole(DAO_ROLE) {
 
         string memory key = concatenate(dealId, network);
@@ -258,6 +260,7 @@ contract FilswanOracleV2 is OwnableUpgradeable, AccessControlUpgradeable {
             userVotedMap[voteKey][msg.sender] = true;
             txVoteMap[voteKey] = txVoteMap[voteKey] + 1;
             
+            // check number of votes
             if (txVoteMap[voteKey] >= _threshold 
             && _filinkAddress != address(0) &&
             voteKeyCidListMap[voteKey].length > 0
@@ -270,6 +273,7 @@ contract FilswanOracleV2 is OwnableUpgradeable, AccessControlUpgradeable {
         emit Sign(dealId, network, cidList, batchNo);
     }
 
+    /// @dev a DAO user can call signHash instead of sign to vote (doesn't need to look at cidList this way)
     function signHash(string memory dealId, string memory network, address recipient, bytes32 voteKey) public onlyRole(DAO_ROLE) {
         string memory key = concatenate(dealId, network);
 

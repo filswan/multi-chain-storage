@@ -12,7 +12,6 @@
         >{{generateRegister('register_h1')}} ></a>
         <h1 style="margin:0.65rem 0px 0.4rem">{{generateRegister('register_registermail')}}</h1>
 
-
         <transition name="phoneTypeFade" mode="out-in">
 
           <!-- 邮箱注册 -->
@@ -42,7 +41,6 @@
 
       </div>
 
-
       <div id="captcha"></div>
 
       <!-- 手机注册成功 -->
@@ -65,7 +63,7 @@ import * as myAjax from '@/api/register'
 import { generateRegister } from '@/utils/i18n'
 export default {
   name: 'register',
-  data() {
+  data () {
     return {
       // 注册框加载遮罩
       regLoad: false,
@@ -126,7 +124,7 @@ export default {
           password: '',
           passwordComfirm: '',
           code: '86',
-          inviteCode: '',
+          inviteCode: ''
         },
         mail: {
           email: '',
@@ -159,7 +157,7 @@ export default {
   methods: {
     generateRegister,
     // 邮箱注册
-    mailReg() {
+    mailReg () {
       var _this = this
       // 邮箱
       if (!_this.formData.mail.email) {
@@ -170,13 +168,13 @@ export default {
         _this.verify.mail.tips = _this.generateRegister('register_verify_mail_tips_true')
         _this.verify.mail.tipsbox = true
         return false
-      }else {
+      } else {
         _this.verify.mail.tipsbox = false
       }
       _this.checkPass()
       _this.checkAccountPass()
 
-      if(_this.verify.mailPassword.tipsbox == false && _this.verify.mailPasswordVerify.tipsbox == false){
+      if (_this.verify.mailPassword.tipsbox === false && _this.verify.mailPasswordVerify.tipsbox === false) {
         _this.regLoad = true
         // 注册
         _this.formData.mail.source = 2
@@ -184,10 +182,10 @@ export default {
           .emailRegister(_this.formData.mail)
           .then(response => {
             // console.log(response)
-            if (response.status == "success") {
+            if (response.status === 'success') {
               sessionStorage.oaxRegisterMail = _this.formData.mail.email
               sessionStorage.oaxRegisterMailTime = new Date().getTime()
-              _this.$router.push('/account_activation');
+              _this.$router.push('/account_activation')
               _this.regLoad = false
             } else {
               _this.$message.error(response.message)
@@ -200,10 +198,9 @@ export default {
             // _this.$message.error(error)
           })
       }
-
     },
     // 校验密码格式
-    checkPass(type){
+    checkPass (type) {
       var _this = this
       if (!_this.formData.mail.password) {
         _this.verify.mailPassword.tips = _this.generateRegister('register_verify_pw_tips_empty')
@@ -218,44 +215,44 @@ export default {
       }
     },
     // 校验账号
-    checkAccount(type){
+    checkAccount (type) {
       let _this = this
       if (_this.formData.mail.email === _this.oldAccount.mail) {
-          return false
-        }
-        _this.oldAccount.mail = _this.formData.mail.email
-        if (!_this.formData.mail.email) {
-          _this.verify.mail.tips = _this.generateRegister('register_verify_mail_tips_empty')
-          _this.verify.mail.tipsbox = true
-          return false
-        } else if (!_this.mailRegular.test(_this.formData.mail.email)) {
-          _this.verify.mail.tips = _this.generateRegister('register_verify_mail_tips_true')
-          _this.verify.mail.tipsbox = true
-          return false
-        } else {
-          _this.verify.mail.tipsbox = false
-        }
-    },
-    // 校验密码是否一致
-    checkAccountPass(type){
-      var _this = this
-      if (_this.formData.mail.passwordComfirm !== _this.formData.mail.password) {
-        _this.verify.mailPasswordVerify.tipsbox=true
         return false
-      }else{
-        _this.verify.mailPasswordVerify.tipsbox=false
+      }
+      _this.oldAccount.mail = _this.formData.mail.email
+      if (!_this.formData.mail.email) {
+        _this.verify.mail.tips = _this.generateRegister('register_verify_mail_tips_empty')
+        _this.verify.mail.tipsbox = true
+        return false
+      } else if (!_this.mailRegular.test(_this.formData.mail.email)) {
+        _this.verify.mail.tips = _this.generateRegister('register_verify_mail_tips_true')
+        _this.verify.mail.tipsbox = true
+        return false
+      } else {
+        _this.verify.mail.tipsbox = false
       }
     },
-      menuIndexFun(to,index) {
-        // this.$router.replace(to).catch(err => err);
-        this.$router.push(to);
-        document.documentElement.scrollTop=0;
-      },
+    // 校验密码是否一致
+    checkAccountPass (type) {
+      var _this = this
+      if (_this.formData.mail.passwordComfirm !== _this.formData.mail.password) {
+        _this.verify.mailPasswordVerify.tipsbox = true
+        return false
+      } else {
+        _this.verify.mailPasswordVerify.tipsbox = false
+      }
+    },
+    menuIndexFun (to, index) {
+      // this.$router.replace(to).catch(err => err);
+      this.$router.push(to)
+      document.documentElement.scrollTop = 0
+    }
   },
 
-  mounted() {
+  mounted () {
     var _this = this
-    document.onkeydown = function(e) {
+    document.onkeydown = function (e) {
       if (e.keyCode === 13) {
         if (_this.formType === 'mail') {
           _this.mailReg()
@@ -263,23 +260,22 @@ export default {
       }
     }
   },
-  destroyed() {
+  destroyed () {
     document.onkeydown = function (e) {
       if (e.keyCode === 13) {
-        e.returnValue = false;
-        return false;
+        e.returnValue = false
+        return false
       }
     }
   },
   components: {},
   computed: {
-    languageMcs() {
+    languageMcs () {
       return this.$store.getters.languageMcs
-    },
-  },
+    }
+  }
 }
 </script>
-
 
 <style rel="stylesheet/scss" lang="scss" scopte>
   .border-red{

@@ -49,383 +49,382 @@
 </template>
 
 <script>
-    let that
-    import axios from 'axios'
-    import * as echarts from 'echarts'
-    import { generateState } from '@/utils/i18n'
-    import moment from "moment"
-    export default {
-        name: "Stats",
-        components: { },
-        data() {
-            return {
-                list: [],
-                loading: true,
-                loading_ecosystem: true,
-                logo_img_black: require("@/assets/images/icons/MCSLOGO.png"),
-                collaboratorsData: [
-                    {
-                        img: require("@/assets/images/dashboard/moon/MULTI-CHAIN-01.png"),
-                        img_sunny: require("@/assets/images/dashboard/sunny/MULTI-CHAIN-01-sunny.png"),
-                        link: 'https://protocol.ai/'
-                    },
-                    {
-                        img: require("@/assets/images/dashboard/moon/MULTI-CHAIN-02.png"),
-                        img_sunny: require("@/assets/images/dashboard/sunny/MULTI-CHAIN-02-sunny.png"),
-                        link: 'https://ipfs.tech/'
-                    },
-                    {
-                        img: require("@/assets/images/dashboard/moon/MULTI-CHAIN-03.png"),
-                        img_sunny: require("@/assets/images/dashboard/sunny/MULTI-CHAIN-03-sunny.png"),
-                        link: 'https://filecoin.io/'
-                    },
-                    {
-                        img: require("@/assets/images/dashboard/moon/MULTI-CHAIN-05.png"),
-                        img_sunny: require("@/assets/images/dashboard/sunny/MULTI-CHAIN-05-sunny.png"),
-                        link: 'https://chainlinklabs.com/'
-                    },
-                    {
-                        img: require("@/assets/images/dashboard/moon/MULTI-CHAIN-06.png"),
-                        img_sunny: require("@/assets/images/dashboard/sunny/MULTI-CHAIN-06-sunny.png"),
-                        link: 'https://labs.binance.com/'
-                    },
-                    {
-                        img: require("@/assets/images/dashboard/moon/MULTI-CHAIN-08.png"),
-                        img_sunny: require("@/assets/images/dashboard/sunny/MULTI-CHAIN-08-sunny.png"),
-                        link: 'https://arbitrum.io/'
-                    },
-                    {
-                        img: require("@/assets/images/dashboard/moon/MULTI-CHAIN-07.png"),
-                        img_sunny: require("@/assets/images/dashboard/sunny/MULTI-CHAIN-07-sunny.png"),
-                        link: 'https://opensea.io/'
-                    },
-                    {
-                        img: require("@/assets/images/dashboard/moon/MULTI-CHAIN-09.png"),
-                        img_sunny: require("@/assets/images/dashboard/sunny/MULTI-CHAIN-09-sunny.png"),
-                        link: 'https://akash.network/'
-                    },
-                    {
-                        img: require("@/assets/images/dashboard/moon/MULTI-CHAIN-04.png"),
-                        img_sunny: require("@/assets/images/dashboard/sunny/MULTI-CHAIN-04-sunny.png"),
-                        link: 'https://polygon.technology/'
-                    },
-                    {
-                        img: require("@/assets/images/dashboard/moon/MULTI-CHAIN-10.png"),
-                        img_sunny: require("@/assets/images/dashboard/sunny/MULTI-CHAIN-10-sunny.png"),
-                        link: 'https://aptos.dev/'
-                    },
-                    {
-                        img: require("@/assets/images/dashboard/moon/MULTI-CHAIN-11.png"),
-                        img_sunny: require("@/assets/images/dashboard/sunny/MULTI-CHAIN-11-sunny.png"),
-                        link: 'https://sui.io/'
-                    },
-                    {
-                        img: require("@/assets/images/dashboard/moon/MULTI-CHAIN-13.png"),
-                        img_sunny: require("@/assets/images/dashboard/sunny/MULTI-CHAIN-13-sunny.png"),
-                        link: 'https://en.fogmeta.com/'
-                    },
-                    {
-                        img: require("@/assets/images/dashboard/moon/MULTI-CHAIN-14.png"),
-                        img_sunny: require("@/assets/images/dashboard/sunny/MULTI-CHAIN-14-sunny.png"),
-                        link: 'https://www.web3cloud.tech/'
-                    },
-                    {
-                        img: require("@/assets/images/dashboard/moon/MULTI-CHAIN-15.png"),
-                        img_sunny: require("@/assets/images/dashboard/sunny/MULTI-CHAIN-15-sunny.png"),
-                        link: 'https://github.com/srblabotw69/Afianthack'
-                    },
-                    {
-                        img: require("@/assets/images/dashboard/moon/MULTI-CHAIN-16.png"),
-                        img_sunny: require("@/assets/images/dashboard/sunny/MULTI-CHAIN-16-sunny.png"),
-                        link: 'https://github.com/IKalonji/CooperDB'
-                    },
-                    {
-                        img: require("@/assets/images/dashboard/moon/MULTI-CHAIN-17.png"),
-                        img_sunny: require("@/assets/images/dashboard/sunny/MULTI-CHAIN-17-sunny.png"),
-                        link: 'https://sao.network/#/'
-                    },
-                    {
-                        img: require("@/assets/images/dashboard/moon/MULTI-CHAIN-12.png"),
-                        img_sunny: require("@/assets/images/dashboard/sunny/MULTI-CHAIN-12-sunny.png"),
-                        link: 'https://www.nebulablock.com/'
-                    }
-                ],
-                MCS_Dataset: [
-                    {
-                        data: '-',
-                        desc: 'Total CIDs',
-                        popover: 'The total amount of CIDs'
-                    },
-                    {
-                        data: '-',
-                        desc: 'IPFS Storage',
-                        popover: 'Total data stored on IPFS'
-                    },
-                    {
-                        data: '-',
-                        desc: 'Files Uploaded',
-                        popover: 'The total amount of files uploaded'
-                    },
-                    {
-                        data: '-',
-                        desc: 'Registered users',
-                        popover: 'The number of wallet addresses registered'
-                    },
-                    {
-                        data: '-',
-                        desc: 'Total files archived',
-                        popover: 'The number of files archived on the Filecoin network'
-                    },
-                    {
-                        data: '-',
-                        desc: 'Storage archived',
-                        popover: 'Total storage archived on the Filecoin network'
-                    },
-                    {
-                        data: '-',
-                        desc: 'Storage providers',
-                        popover: 'The number of storage providers offering decentralized storage capacity'
-                    }
-                ],
-                echartData: {
-                    time: [],
-                    upload: [],
-                    achieved: []
-                }
-            }
+import axios from 'axios'
+import * as echarts from 'echarts'
+import { generateState } from '@/utils/i18n'
+import moment from 'moment'
+let that
+export default {
+  name: 'Stats',
+  components: { },
+  data () {
+    return {
+      list: [],
+      loading: true,
+      loading_ecosystem: true,
+      logo_img_black: require('@/assets/images/icons/MCSLOGO.png'),
+      collaboratorsData: [
+        {
+          img: require('@/assets/images/dashboard/moon/MULTI-CHAIN-01.png'),
+          img_sunny: require('@/assets/images/dashboard/sunny/MULTI-CHAIN-01-sunny.png'),
+          link: 'https://protocol.ai/'
         },
-        created() {},
-        mounted() {
-            that = this
-            document.getElementById('content-box').scrollTop = 0
-            that.$store.dispatch('setRouterMenu', 4)
-            that.$store.dispatch('setHeadertitle', that.$t('navbar.Stats'))
-            that.getData()
+        {
+          img: require('@/assets/images/dashboard/moon/MULTI-CHAIN-02.png'),
+          img_sunny: require('@/assets/images/dashboard/sunny/MULTI-CHAIN-02-sunny.png'),
+          link: 'https://ipfs.tech/'
         },
-        methods:{
-            generateState,
-            deepClone(obj) {
-                const _obj = JSON.stringify(obj)
-                return JSON.parse(_obj)
-            },
-            async getRequest(apilink) {
-                try {
-                    const response = await axios.get(apilink, {
-                        headers: {
-                                'Authorization': "Bearer "+ that.$store.getters.mcsjwtToken
-                        }
-                    })
-                    return response.data
-                } catch (err) {
-                    console.error(err, err.response)
-                    return false
-                }
-            },
-            async getPie() {
-                const myChart = echarts.init(document.getElementById('roseChart'))
-                const option = {
-                    toolbox: {
-                        show: true,
-                        feature: {
-                            mark: {
-                                show: true
-                            },
-                            // dataZoom: {
-                            //   yAxisIndex: false,
-                            // },
-                            // dataView: {
-                            //     show: true,           
-                            //     readOnly: false,   
-                            //     title:'数据视图'
-                            // },
-                            magicType: {         
-                                show: true,    
-                                type: ['line', 'bar'],
-                                title:{
-                                    line: 'Switch to line graph',
-                                    bar: 'Switch to bar graph'
-                                }
-                            },
-                            restore: {              
-                                show: true,           
-                                title: 'Restore'
-                            },
-                            saveAsImage: {     
-                                show: true,         
-                                title: 'Save'
-                            }
-                        }
-                    },
-                    tooltip: {
-                        trigger: 'axis',
-                        axisPointer: {
-                            type: 'cross',
-                            label: {
-                                backgroundColor: '#6a7985'
-                            }
-                        }
-                    },
-                    legend: {
-                        bottom: 0,
-                        left: 'center',
-                        textStyle: {
-                            color: '#000',
-                            fontSize: 13
-                        },
-                        data: ['Files uploaded', 'Storage Achieved (GiB)']
-                    },
-                    grid: {
-                        top: '70',
-                        left: '3%',
-                        right: '3%',
-                        bottom: '50',
-                        containLabel: true
-                    },
-                    color: ['#4472c4', '#ed7d31'],
-                    xAxis: {
-                        type: 'category',
-                        boundaryGap: false,
-                        data:   that.echartData.time.map(function (str) {
-                                    return str.replace(' ', '\n');
-                                }),
-                    },
-                    yAxis: [
-                        {
-                            // boundaryGap: [0, '30%'],
-                            name: "File Count",
-                            type: "value",
-                            // min: that.echartData.min_file,
-                            // max: that.echartData.max_file,
-                            scale: true,
-                            splitNumber: 5,
-                            alignTicks: true
-                        },
-                        {
-                            // boundaryGap: [0, '50%'],
-                            name: "GiB",
-                            type: "value",
-                            position: "right",
-                            // min: that.echartData.min_val,
-                            // max: that.echartData.max_val,
-                            scale: true,
-                            splitNumber: 5
-                        }
-                    ],
-                    series: [
-                        {
-                            name: 'Files uploaded',
-                            type: 'line',
-                            data: that.echartData.upload,
-                            yAxisIndex: 0,
-                            // symbolSize: 0
-                        },
-                        {
-                            name: 'Storage Achieved (GiB)',
-                            type: 'line',
-                            data: that.echartData.achieved,
-                            yAxisIndex: 1,
-                            // showSymbol: false
-                        }
-                    ]
-                };
-                myChart.setOption(option)
-                window.onresize = function () {
-                    myChart.resize()
-                }
-            },
-            async getData() {
-                const ecosysRes = await that.getRequest(`${process.env.BASE_ECO_API}ecosys/data`);
-                if(!ecosysRes || ecosysRes.status != 'success') {
-                    that.MCS_Dataset = []
-                    that.loading_ecosystem = false
-                    return false
-                }
-                that.MCS_Dataset.forEach((element, i) => {
-                    element.data = that.dataset(ecosysRes.data, i)
-                });
-                if(ecosysRes.data.graph){
-                    that.echartData.max_file = ecosysRes.data.graph.max_file || 0
-                    that.echartData.max_val = ecosysRes.data.graph.max_val || 0
-                    that.echartData.min_file = ecosysRes.data.graph.min_file || 0
-                    that.echartData.min_val = ecosysRes.data.graph.min_val || 0
-                    await that.dataFilter(ecosysRes.data.graph.time, 1)
-                    await that.dataFilter(ecosysRes.data.graph.sealed_storage)
-                    that.echartData.upload = ecosysRes.data.graph.user_uploads || []
-                }
-                await that.timeout(500)
-                that.loading_ecosystem = false
-                that.getPie()
-            },
-            dataFilter(data, type){
-                let timeData = data || []
-                let num = 0
-                timeData.map((item, index) => {
-                    if(type){
-                        item = item
-                                    ? moment(new Date(parseInt(item * 1000))).format("YYYY-MM-DD HH:mm:ss")
-                                    : "-"
-                        that.echartData.time.push(item)
-                    }else{
-                        if(item <= 0) that.echartData.achieved.push(0)
-                        else{
-                            num = (item/( 1024 * 1024 * 1024))  //or 1000
-                            that.echartData.achieved.push(num)
-                        }
-                        
-                    }
-                })
-                return
-            },
-            dataset(data, i){
-                switch(i){
-                    case 0:
-                        return that.NumFormat(data.source_file_cids)
-                    case 1:
-                        return that.byteChange(data.pinned_ipfs_size)
-                    case 2:
-                        return that.NumFormat(data.user_uploads)
-                    case 3:
-                        return that.NumFormat(data.wallet_count)
-                    case 4:
-                        return that.NumFormat(data.active_deals)
-                    case 5:
-                        return that.byteChange(data.sealed_storage)
-                    case 6:
-                        return that.NumFormat(data.miner_count)
-                    default:
-                        return '-';
-                }
-            },
-            timeout (delay) {
-                return new Promise((res) => setTimeout(res, delay))
-            },
-            byteChange(bytes){
-                if (String(bytes) == '0') return '0 B';
-                if (!bytes) return "-";
-                var k = 1024, // or 1000
-                    sizes = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'],
-                    i = Math.floor(Math.log(bytes) / Math.log(k));
-                if (Math.round((bytes / Math.pow(k, i))).toString().length > 3) {
-                    i += 1
-                }
-                return (bytes / Math.pow(k, i)).toFixed(2) + ' ' + sizes[i];
-            },
-            NumFormat(value) {
-                if (!value) return "-";
-                var intPart = Number(value).toFixed(0); 
-                var intPartFormat = intPart
-                    .toString()
-                    .replace(/(\d)(?=(?:\d{3})+$)/g, "$1,"); //将整数部分逢三一断
-                return intPartFormat;
-            }
+        {
+          img: require('@/assets/images/dashboard/moon/MULTI-CHAIN-03.png'),
+          img_sunny: require('@/assets/images/dashboard/sunny/MULTI-CHAIN-03-sunny.png'),
+          link: 'https://filecoin.io/'
         },
-        filters: {
-            NumStatsFormat(value) {
-                if (!value) return "0";
-                return value;
-            },
+        {
+          img: require('@/assets/images/dashboard/moon/MULTI-CHAIN-05.png'),
+          img_sunny: require('@/assets/images/dashboard/sunny/MULTI-CHAIN-05-sunny.png'),
+          link: 'https://chainlinklabs.com/'
+        },
+        {
+          img: require('@/assets/images/dashboard/moon/MULTI-CHAIN-06.png'),
+          img_sunny: require('@/assets/images/dashboard/sunny/MULTI-CHAIN-06-sunny.png'),
+          link: 'https://labs.binance.com/'
+        },
+        {
+          img: require('@/assets/images/dashboard/moon/MULTI-CHAIN-08.png'),
+          img_sunny: require('@/assets/images/dashboard/sunny/MULTI-CHAIN-08-sunny.png'),
+          link: 'https://arbitrum.io/'
+        },
+        {
+          img: require('@/assets/images/dashboard/moon/MULTI-CHAIN-07.png'),
+          img_sunny: require('@/assets/images/dashboard/sunny/MULTI-CHAIN-07-sunny.png'),
+          link: 'https://opensea.io/'
+        },
+        {
+          img: require('@/assets/images/dashboard/moon/MULTI-CHAIN-09.png'),
+          img_sunny: require('@/assets/images/dashboard/sunny/MULTI-CHAIN-09-sunny.png'),
+          link: 'https://akash.network/'
+        },
+        {
+          img: require('@/assets/images/dashboard/moon/MULTI-CHAIN-04.png'),
+          img_sunny: require('@/assets/images/dashboard/sunny/MULTI-CHAIN-04-sunny.png'),
+          link: 'https://polygon.technology/'
+        },
+        {
+          img: require('@/assets/images/dashboard/moon/MULTI-CHAIN-10.png'),
+          img_sunny: require('@/assets/images/dashboard/sunny/MULTI-CHAIN-10-sunny.png'),
+          link: 'https://aptos.dev/'
+        },
+        {
+          img: require('@/assets/images/dashboard/moon/MULTI-CHAIN-11.png'),
+          img_sunny: require('@/assets/images/dashboard/sunny/MULTI-CHAIN-11-sunny.png'),
+          link: 'https://sui.io/'
+        },
+        {
+          img: require('@/assets/images/dashboard/moon/MULTI-CHAIN-13.png'),
+          img_sunny: require('@/assets/images/dashboard/sunny/MULTI-CHAIN-13-sunny.png'),
+          link: 'https://en.fogmeta.com/'
+        },
+        {
+          img: require('@/assets/images/dashboard/moon/MULTI-CHAIN-14.png'),
+          img_sunny: require('@/assets/images/dashboard/sunny/MULTI-CHAIN-14-sunny.png'),
+          link: 'https://www.web3cloud.tech/'
+        },
+        {
+          img: require('@/assets/images/dashboard/moon/MULTI-CHAIN-15.png'),
+          img_sunny: require('@/assets/images/dashboard/sunny/MULTI-CHAIN-15-sunny.png'),
+          link: 'https://github.com/srblabotw69/Afianthack'
+        },
+        {
+          img: require('@/assets/images/dashboard/moon/MULTI-CHAIN-16.png'),
+          img_sunny: require('@/assets/images/dashboard/sunny/MULTI-CHAIN-16-sunny.png'),
+          link: 'https://github.com/IKalonji/CooperDB'
+        },
+        {
+          img: require('@/assets/images/dashboard/moon/MULTI-CHAIN-17.png'),
+          img_sunny: require('@/assets/images/dashboard/sunny/MULTI-CHAIN-17-sunny.png'),
+          link: 'https://sao.network/#/'
+        },
+        {
+          img: require('@/assets/images/dashboard/moon/MULTI-CHAIN-12.png'),
+          img_sunny: require('@/assets/images/dashboard/sunny/MULTI-CHAIN-12-sunny.png'),
+          link: 'https://www.nebulablock.com/'
         }
+      ],
+      MCS_Dataset: [
+        {
+          data: '-',
+          desc: 'Total CIDs',
+          popover: 'The total amount of CIDs'
+        },
+        {
+          data: '-',
+          desc: 'IPFS Storage',
+          popover: 'Total data stored on IPFS'
+        },
+        {
+          data: '-',
+          desc: 'Files Uploaded',
+          popover: 'The total amount of files uploaded'
+        },
+        {
+          data: '-',
+          desc: 'Registered users',
+          popover: 'The number of wallet addresses registered'
+        },
+        {
+          data: '-',
+          desc: 'Total files archived',
+          popover: 'The number of files archived on the Filecoin network'
+        },
+        {
+          data: '-',
+          desc: 'Storage archived',
+          popover: 'Total storage archived on the Filecoin network'
+        },
+        {
+          data: '-',
+          desc: 'Storage providers',
+          popover: 'The number of storage providers offering decentralized storage capacity'
+        }
+      ],
+      echartData: {
+        time: [],
+        upload: [],
+        achieved: []
+      }
     }
+  },
+  created () {},
+  mounted () {
+    that = this
+    document.getElementById('content-box').scrollTop = 0
+    that.$store.dispatch('setRouterMenu', 4)
+    that.$store.dispatch('setHeadertitle', that.$t('navbar.Stats'))
+    that.getData()
+  },
+  methods: {
+    generateState,
+    deepClone (obj) {
+      const _obj = JSON.stringify(obj)
+      return JSON.parse(_obj)
+    },
+    async getRequest (apilink) {
+      try {
+        const response = await axios.get(apilink, {
+          headers: {
+            'Authorization': 'Bearer ' + that.$store.getters.mcsjwtToken
+          }
+        })
+        return response.data
+      } catch (err) {
+        console.error(err, err.response)
+        return false
+      }
+    },
+    async getPie () {
+      const myChart = echarts.init(document.getElementById('roseChart'))
+      const option = {
+        toolbox: {
+          show: true,
+          feature: {
+            mark: {
+              show: true
+            },
+            // dataZoom: {
+            //   yAxisIndex: false,
+            // },
+            // dataView: {
+            //     show: true,
+            //     readOnly: false,
+            //     title:'数据视图'
+            // },
+            magicType: {
+              show: true,
+              type: ['line', 'bar'],
+              title: {
+                line: 'Switch to line graph',
+                bar: 'Switch to bar graph'
+              }
+            },
+            restore: {
+              show: true,
+              title: 'Restore'
+            },
+            saveAsImage: {
+              show: true,
+              title: 'Save'
+            }
+          }
+        },
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+            type: 'cross',
+            label: {
+              backgroundColor: '#6a7985'
+            }
+          }
+        },
+        legend: {
+          bottom: 0,
+          left: 'center',
+          textStyle: {
+            color: '#000',
+            fontSize: 13
+          },
+          data: ['Files uploaded', 'Storage Achieved (GiB)']
+        },
+        grid: {
+          top: '70',
+          left: '3%',
+          right: '3%',
+          bottom: '50',
+          containLabel: true
+        },
+        color: ['#4472c4', '#ed7d31'],
+        xAxis: {
+          type: 'category',
+          boundaryGap: false,
+          data: that.echartData.time.map(function (str) {
+            return str.replace(' ', '\n')
+          })
+        },
+        yAxis: [
+          {
+            // boundaryGap: [0, '30%'],
+            name: 'File Count',
+            type: 'value',
+            // min: that.echartData.min_file,
+            // max: that.echartData.max_file,
+            scale: true,
+            splitNumber: 5,
+            alignTicks: true
+          },
+          {
+            // boundaryGap: [0, '50%'],
+            name: 'GiB',
+            type: 'value',
+            position: 'right',
+            // min: that.echartData.min_val,
+            // max: that.echartData.max_val,
+            scale: true,
+            splitNumber: 5
+          }
+        ],
+        series: [
+          {
+            name: 'Files uploaded',
+            type: 'line',
+            data: that.echartData.upload,
+            yAxisIndex: 0
+            // symbolSize: 0
+          },
+          {
+            name: 'Storage Achieved (GiB)',
+            type: 'line',
+            data: that.echartData.achieved,
+            yAxisIndex: 1
+            // showSymbol: false
+          }
+        ]
+      }
+      myChart.setOption(option)
+      window.onresize = function () {
+        myChart.resize()
+      }
+    },
+    async getData () {
+      const ecosysRes = await that.getRequest(`${process.env.BASE_ECO_API}ecosys/data`)
+      if (!ecosysRes || ecosysRes.status !== 'success') {
+        that.MCS_Dataset = []
+        that.loading_ecosystem = false
+        return false
+      }
+      that.MCS_Dataset.forEach((element, i) => {
+        element.data = that.dataset(ecosysRes.data, i)
+      })
+      if (ecosysRes.data.graph) {
+        that.echartData.max_file = ecosysRes.data.graph.max_file || 0
+        that.echartData.max_val = ecosysRes.data.graph.max_val || 0
+        that.echartData.min_file = ecosysRes.data.graph.min_file || 0
+        that.echartData.min_val = ecosysRes.data.graph.min_val || 0
+        await that.dataFilter(ecosysRes.data.graph.time, 1)
+        await that.dataFilter(ecosysRes.data.graph.sealed_storage)
+        that.echartData.upload = ecosysRes.data.graph.user_uploads || []
+      }
+      await that.timeout(500)
+      that.loading_ecosystem = false
+      that.getPie()
+    },
+    dataFilter (data, type) {
+      let timeData = data || []
+      let num = 0
+      timeData.map((item, index) => {
+        if (type) {
+          item = item
+            ? moment(new Date(parseInt(item * 1000))).format('YYYY-MM-DD')
+            : '-'
+          that.echartData.time.push(item)
+        } else {
+          if (item <= 0) that.echartData.achieved.push(0)
+          else {
+            num = (item / (1024 * 1024 * 1024)) // or 1000
+            that.echartData.achieved.push(num)
+          }
+        }
+      })
+    },
+    dataset (data, i) {
+      switch (i) {
+        case 0:
+          return that.NumFormat(data.source_file_cids)
+        case 1:
+          return that.byteChange(data.pinned_ipfs_size)
+        case 2:
+          return that.NumFormat(data.user_uploads)
+        case 3:
+          return that.NumFormat(data.wallet_count)
+        case 4:
+          return that.NumFormat(data.active_deals)
+        case 5:
+          return that.byteChange(data.sealed_storage)
+        case 6:
+          return that.NumFormat(data.miner_count)
+        default:
+          return '-'
+      }
+    },
+    timeout (delay) {
+      return new Promise((resolve) => setTimeout(resolve, delay))
+    },
+    byteChange (bytes) {
+      if (String(bytes) === '0') return '0 B'
+      if (!bytes) return '-'
+      var k = 1024 // or 1000
+      var sizes = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB']
+      var i = Math.floor(Math.log(bytes) / Math.log(k))
+      if (Math.round((bytes / Math.pow(k, i))).toString().length > 3) {
+        i += 1
+      }
+      return (bytes / Math.pow(k, i)).toFixed(2) + ' ' + sizes[i]
+    },
+    NumFormat (value) {
+      if (String(value) === '0') return '0'
+      else if (!value) return '-'
+      var intPartArr = String(value).split('.')
+      var intPartFormat = intPartArr[0]
+        .toString()
+        .replace(/(\d)(?=(?:\d{3})+$)/g, '$1,')
+      return intPartArr[1] ? `${intPartFormat}.${intPartArr[1]}` : intPartFormat
+    }
+  },
+  filters: {
+    NumStatsFormat (value) {
+      if (!value) return '0'
+      return value
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -435,8 +434,8 @@
     padding: 0.3rem 0.2rem;
     margin: 0.3rem;
     background-color: #fff;
-    // background-image: 
-    //     url(../../assets/images/dashboard/bg_top.png), 
+    // background-image:
+    //     url(../../assets/images/dashboard/bg_top.png),
     //     url(../../assets/images/dashboard/bg_bottom.png);
     // background-position: left top, right bottom;
     // background-repeat: no-repeat, no-repeat;
@@ -542,7 +541,7 @@
             font-weight: 500;
             margin-bottom: 0.2rem;
             display: flex;
-            align-items: center;    
+            align-items: center;
             justify-content: center;
             img, svg{
                 display: block;

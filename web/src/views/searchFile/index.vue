@@ -85,62 +85,62 @@
                         <template slot-scope="scope">
                             <div class="statusStyle"
                                  v-if="scope.row.status == 'Created'"
-                                 :style="$status_color.Deal_color('Created')">
+                                 :style="$statusColor.Deal_color('Created')">
                                 {{ languageMcs == 'en' ? 'Created' : '已创建' }}
                             </div>
                             <div class="statusStyle"
                                  v-if="scope.row.status == 'DealActive'"
-                                 :style="$status_color.Deal_color('DealActive')">
+                                 :style="$statusColor.Deal_color('DealActive')">
                                 {{ languageMcs == 'en' ? 'DealActive' : '有效交易' }}
                             </div>
                             <div class="statusStyle"
                                  v-else-if="scope.row.status == 'Waiting'"
-                                 :style="$status_color.Deal_color('Waiting')">
+                                 :style="$statusColor.Deal_color('Waiting')">
                                 {{ languageMcs == 'en' ? 'Waiting' : '等待中' }}
                             </div>
                             <div class="statusStyle"
                                  v-else-if="scope.row.status == 'ReadyForImport'"
-                                 :style="$status_color.Deal_color('ReadyForImport')">
+                                 :style="$statusColor.Deal_color('ReadyForImport')">
                                 {{ languageMcs == 'en' ? 'ReadyForImport' : '准备导入' }}
                             </div>
                             <div class="statusStyle"
                                  v-else-if="scope.row.status == 'FileImporting'"
-                                 :style="$status_color.Deal_color('FileImporting')">
+                                 :style="$statusColor.Deal_color('FileImporting')">
                                 {{ languageMcs == 'en' ? 'FileImporting' : '文件导入中' }}
                             </div>
                             <div class="statusStyle"
                                  v-else-if="scope.row.status == 'FileImported'"
-                                 :style="$status_color.Deal_color('FileImported')">
+                                 :style="$statusColor.Deal_color('FileImported')">
                                 {{ languageMcs == 'en' ? 'FileImported' : '文件已导入' }}
                             </div>
                             <div class="statusStyle"
                                  v-else-if="scope.row.status == 'ImportFailed'"
-                                 :style="$status_color.Deal_color('ImportFailed')">
+                                 :style="$statusColor.Deal_color('ImportFailed')">
                                 {{ languageMcs == 'en' ? 'ImportFailed' : '导入失败' }}
                             </div>
                             <div class="statusStyle"
                                  v-else-if="scope.row.status == 'Downloading'"
-                                 :style="$status_color.Deal_color('Downloading')">
+                                 :style="$statusColor.Deal_color('Downloading')">
                                 {{ languageMcs == 'en' ? 'Downloading' : '下载中' }}
                             </div>
                             <div class="statusStyle"
                                  v-else-if="scope.row.status == 'Downloaded'"
-                                 :style="$status_color.Deal_color('Downloaded')">
+                                 :style="$statusColor.Deal_color('Downloaded')">
                                 {{ languageMcs == 'en' ? 'Downloaded' : '已下载' }}
                             </div>
                             <div class="statusStyle"
                                  v-else-if="scope.row.status == 'DownloadFailed'"
-                                 :style="$status_color.Deal_color('DownloadFailed')">
+                                 :style="$statusColor.Deal_color('DownloadFailed')">
                                 {{ languageMcs == 'en' ? 'DownloadFailed' : '下载失败' }}
                             </div>
                             <div class="statusStyle"
                                  v-else-if="scope.row.status == 'Completed'"
-                                 :style="$status_color.Deal_color('Completed')">
+                                 :style="$statusColor.Deal_color('Completed')">
                                 {{ languageMcs == 'en' ? 'Completed' : '已完成' }}
                             </div>
                             <div class="statusStyle"
                                  v-else-if="scope.row.status == 'Failed'"
-                                 :style="$status_color.Deal_color('Failed')">
+                                 :style="$statusColor.Deal_color('Failed')">
                                 {{ languageMcs == 'en' ? 'Failed' : '已失败' }}
                             </div>
                             <div class="statusStyle" v-else style="display:none;color: rgb(255, 184, 34)">
@@ -160,8 +160,6 @@
                     <el-table-column prop="created_at" width="100" :label="$t('deal.detailTable07')"></el-table-column>
                 </el-table>
             </div>
-
-
 
             <div class="form_pagination" v-if="1==2">
                 <!-- <div class="pagination">
@@ -189,205 +187,199 @@
 </template>
 
 <script>
-    import bus from '@/components/bus';
-    import * as myAjax from '@/api/uploadFile'
-    import moment from "moment"
+// import bus from '@/components/bus'
+import * as myAjax from '@/api/uploadFile'
+import moment from 'moment'
 
-    export default {
-        name: 'SearchFile',
-        data() {
-            return {
-                tableData: [],
-                tableDataAll: [],
-                searchValue: '',
-                parma: {
-                    task_id:'',
-                    limit: 20,
-                    offset: 0,
-                    total: 0
-                },
-                loading: false,
-                downCsv: localStorage.getItem("addressYM")?localStorage.getItem("addressYM"):'',
-                bodyWidth: document.documentElement.clientWidth<1024?true:false,
-                max_time_str: null,
-            };
-        },
-        computed: {
-            languageMcs() {
-                return this.$store.state.app.languageMcs
-            }
-        },
-        components: {},
-        methods: {
-            handleCurrentChange(val) {
-                this.parma.offset = val
-                this.getData()
-            },
-            getData(){
-                let _this = this
-                _this.loading = true
+export default {
+  name: 'SearchFile',
+  data () {
+    return {
+      tableData: [],
+      tableDataAll: [],
+      searchValue: '',
+      parma: {
+        task_id: '',
+        limit: 20,
+        offset: 0,
+        total: 0
+      },
+      loading: false,
+      downCsv: localStorage.getItem('addressYM') ? localStorage.getItem('addressYM') : '',
+      bodyWidth: document.documentElement.clientWidth < 1024,
+      max_time_str: null
+    }
+  },
+  computed: {
+    languageMcs () {
+      return this.$store.state.app.languageMcs
+    }
+  },
+  components: {},
+  methods: {
+    handleCurrentChange (val) {
+      this.parma.offset = val
+      this.getData()
+    },
+    getData () {
+      let _this = this
+      _this.loading = true
 
-                myAjax.getTasksSearch(_this.searchValue).then(response => {
-                    if(response.status == "success" || response.status == 'Success'){
-                        const data = response.data
-                        // _this.tableData = Array.from(new Set(response.data.task));
-                        
-                        _this.tableData = []
-                        _this.tableData = JSON.parse(JSON.stringify(response.data.deal))
-                        _this.parma.total = response.data.total_deal_count
+      myAjax.getTasksSearch(_this.searchValue).then(response => {
+        if (response.status === 'success' || response.status === 'Success') {
+          // _this.tableData = Array.from(new Set(response.data.task));
 
-                        
-                        _this.max_time_str = null
-                        _this.tableData.map(item => {
-                            item.visible = false
-                            item.visibleurl = false
-                            item.payload = false
-                            _this.max_time_str = Math.max(_this.max_time_str, item.updated_at)
-                            item.start_epoch_time =
-                                item.start_epoch?
-                                    moment(new Date(parseInt((parseInt(item.start_epoch)*30 + parseInt(1598306471)) * 1000))).format("YYYY-MM-DD HH:mm:ss")
-                                    :
-                                    '-'
-                            item.created_at =
-                                item.created_at?
-                                    item.created_at.length<13 ?
-                                        moment(new Date(parseInt(item.created_at * 1000))).format("YYYY-MM-DD HH:mm:ss") :
-                                        moment(new Date(parseInt(item.created_at))).format("YYYY-MM-DD HH:mm:ss")
-                                    :
-                                    '-'
-                            item.updated_at =
-                                item.updated_at?
-                                    item.updated_at.length<13 ?
-                                        moment(new Date(parseInt(item.updated_at * 1000))).format("YYYY-MM-DD HH:mm:ss") :
-                                        moment(new Date(parseInt(item.updated_at))).format("YYYY-MM-DD HH:mm:ss")
-                                    :
-                                    '-'
-                            item.act = false
-                        })
-                        _this.tableDataAll = JSON.parse(JSON.stringify(_this.tableData))
+          _this.tableData = []
+          _this.tableData = JSON.parse(JSON.stringify(response.data.deal))
+          _this.parma.total = response.data.total_deal_count
 
-                        document.getElementById('content-box').scrollTop = 0
-                        _this.loading = false
-                    } else {
-                        _this.$message.error(response.message)
-                        _this.loading = false
-                    }
-                })
-                .catch(error => {
-                    console.log(error)
-                    _this.loading = false
-                })
-            },
-            number(data, n){
-                var numbers = '';
-                // 保留几位小数后面添加几个0
-                for (var i = 0; i < n; i++) {
-                    numbers += '0';
-                }
-                var s = 1 + numbers;
-                // 如果是整数需要添加后面的0
-                var spot = "." + numbers;
-                // Math.round四舍五入  
-                //  parseFloat() 函数可解析一个字符串，并返回一个浮点数。
-                var value = Math.round(parseFloat(data) * s) / s;
-                // 从小数点后面进行分割
-                if(!value){
-                    return value
-                }else if(value.toString().indexOf('.') < 0){
-                    return value.toFixed(18)
-                }
-                var d = value.toString().split(".");
-                if (d.length == 1) {
-                    value = value.toString() + spot;
-                    return value;
-                }
-                if (d.length > 1) {
-                    if (d[1].length < n) {
-                        for (var tj = d[1].length; tj < n; tj++) {
-                            value = value.toString() + "0";
-                        }
-                    }
-                    return value;
-                }
-            },
-            copyTextToClipboard(text) {
-                let _this = this
-                let saveLang = localStorage.getItem('languageMcs') == 'cn'?"复制成功":"success";
-                var txtArea = document.createElement("textarea");
-                txtArea.id = 'txt';
-                txtArea.style.position = 'fixed';
-                txtArea.style.top = '0';
-                txtArea.style.left = '0';
-                txtArea.style.opacity = '0';
-                txtArea.value = text;
-                document.body.appendChild(txtArea);
-                txtArea.select();
+          _this.max_time_str = null
+          _this.tableData.map(item => {
+            item.visible = false
+            item.visibleurl = false
+            item.payload = false
+            _this.max_time_str = Math.max(_this.max_time_str, item.updated_at)
+            item.start_epoch_time =
+                                item.start_epoch
+                                  ? moment(new Date(parseInt((parseInt(item.start_epoch) * 30 + parseInt(1598306471)) * 1000))).format('YYYY-MM-DD HH:mm:ss')
+                                  : '-'
+            item.created_at =
+                                item.created_at
+                                  ? item.created_at.length < 13
+                                    ? moment(new Date(parseInt(item.created_at * 1000))).format('YYYY-MM-DD HH:mm:ss')
+                                    : moment(new Date(parseInt(item.created_at))).format('YYYY-MM-DD HH:mm:ss')
+                                  : '-'
+            item.updated_at =
+                                item.updated_at
+                                  ? item.updated_at.length < 13
+                                    ? moment(new Date(parseInt(item.updated_at * 1000))).format('YYYY-MM-DD HH:mm:ss')
+                                    : moment(new Date(parseInt(item.updated_at))).format('YYYY-MM-DD HH:mm:ss')
+                                  : '-'
+            item.act = false
+          })
+          _this.tableDataAll = JSON.parse(JSON.stringify(_this.tableData))
 
-                try {
-                    var successful = document.execCommand('copy');
-                    var msg = successful ? 'successful' : 'unsuccessful';
-                    console.log('Copying text command was ' + msg);
-                    if (successful) {
-                        _this.$message({
-                            message: saveLang,
-                            type: 'success'
-                        });
-                        return true;
-                    }
-                } catch (err) {
-                    console.log('Oops, unable to copy');
-                } finally {
-                    document.body.removeChild(txtArea);
-                }
-                return false;
-            },
-            //查询
-            search() {
-                let _this = this
-                _this.parma.limit = 4
-                _this.parma.offset = 0
-                _this.getData();
-            },
-            clearAll() {
-                let _this = this
-                _this.searchValue = ""
-                _this.parma.limit = 4
-                _this.parma.offset = 0
-                _this.tableData = []
-            },
-        },
-        mounted() {
-            let _this = this
-            document.getElementById('content-box').scrollTop = 0
-            _this.$store.dispatch('setRouterMenu', 2)
-            _this.$store.dispatch('setHeadertitle', _this.$t('route.Search_file'))
-            // _this.getData()
+          document.getElementById('content-box').scrollTop = 0
+          _this.loading = false
+        } else {
+          _this.$message.error(response.message)
+          _this.loading = false
+        }
+      })
+        .catch(error => {
+          console.log(error)
+          _this.loading = false
+        })
+    },
+    number (data, n) {
+      var numbers = ''
+      // 保留几位小数后面添加几个0
+      for (var i = 0; i < n; i++) {
+        numbers += '0'
+      }
+      var s = 1 + numbers
+      // 如果是整数需要添加后面的0
+      var spot = '.' + numbers
+      // Math.round四舍五入
+      //  parseFloat() 函数可解析一个字符串，并返回一个浮点数。
+      var value = Math.round(parseFloat(data) * s) / s
+      // 从小数点后面进行分割
+      if (!value) {
+        return value
+      } else if (value.toString().indexOf('.') < 0) {
+        return value.toFixed(18)
+      }
+      var d = value.toString().split('.')
+      if (d.length === 1) {
+        value = value.toString() + spot
+        return value
+      }
+      if (d.length > 1) {
+        if (d[1].length < n) {
+          for (var tj = d[1].length; tj < n; tj++) {
+            value = value.toString() + '0'
+          }
+        }
+        return value
+      }
+    },
+    copyTextToClipboard (text) {
+      let _this = this
+      let saveLang = localStorage.getItem('languageMcs') === 'cn' ? '复制成功' : 'success'
+      var txtArea = document.createElement('textarea')
+      txtArea.id = 'txt'
+      txtArea.style.position = 'fixed'
+      txtArea.style.top = '0'
+      txtArea.style.left = '0'
+      txtArea.style.opacity = '0'
+      txtArea.value = text
+      document.body.appendChild(txtArea)
+      txtArea.select()
 
-            document.onkeydown = function(e) {
-                if (e.keyCode === 13) {
-                    
-                }
-            }
-        },
-        filters: {
-            priceFilter(value) {
-                let realVal = "";
-                if (!isNaN(value) && value !== "") {
-                    let tempVal = parseFloat(value).toFixed(19);
-                    realVal = tempVal.substring(0, tempVal.length - 1);
-                } else {
-                    realVal = "-";
-                }
-                return realVal;
-            },
-            NumFormat (value) {
-                if(!value) return '-';
-                return value
-            }
-        },
-    };
+      try {
+        var successful = document.execCommand('copy')
+        var msg = successful ? 'successful' : 'unsuccessful'
+        console.log('Copying text command was ' + msg)
+        if (successful) {
+          _this.$message({
+            message: saveLang,
+            type: 'success'
+          })
+          return true
+        }
+      } catch (err) {
+        console.log('Oops, unable to copy')
+      } finally {
+        document.body.removeChild(txtArea)
+      }
+      return false
+    },
+    // 查询
+    search () {
+      let _this = this
+      _this.parma.limit = 4
+      _this.parma.offset = 0
+      _this.getData()
+    },
+    clearAll () {
+      let _this = this
+      _this.searchValue = ''
+      _this.parma.limit = 4
+      _this.parma.offset = 0
+      _this.tableData = []
+    }
+  },
+  mounted () {
+    let _this = this
+    document.getElementById('content-box').scrollTop = 0
+    _this.$store.dispatch('setRouterMenu', 2)
+    _this.$store.dispatch('setHeadertitle', _this.$t('route.Search_file'))
+    // _this.getData()
+
+    document.onkeydown = function (e) {
+      if (e.keyCode === 13) {
+
+      }
+    }
+  },
+  filters: {
+    priceFilter (value) {
+      let realVal = ''
+      if (!isNaN(value) && value !== '') {
+        let tempVal = parseFloat(value).toFixed(19)
+        realVal = tempVal.substring(0, tempVal.length - 1)
+      } else {
+        realVal = '-'
+      }
+      return realVal
+    },
+    NumFormat (value) {
+      if (!value) return '-'
+      return value
+    }
+  }
+}
 </script>
-
 
 <style scoped lang="scss">
     #dealManagement{
@@ -545,7 +537,7 @@
                     }
                 }
                 .minerStyle{
-                    display: flex;    
+                    display: flex;
                     align-items: center;
                     width: 100%;
                     margin: 0;

@@ -27,8 +27,8 @@
                             </div>
                         </div>
                         <div class="form_table">
-                            <el-table 
-                            v-loading="loading" :data="tableData" style="width: 100%" 
+                            <el-table
+                            v-loading="loading" :data="tableData" style="width: 100%"
                             :empty-text="$t('deal.formNotData')" max-height="580" @sort-change="sortChange"
                             :default-sort = "{prop: 'date', order: 'descending'}">
                                 <el-table-column prop="pay_tx_hash" :label="$t('billing.TRANSACTION')" min-width="190">
@@ -47,25 +47,19 @@
                                                 </el-button>
                                             </el-popover>
                                         </div>
-                                    </template>                    
+                                    </template>
                                 </el-table-column>
                                 <el-table-column prop="pay_amount" :label="$t('billing.AMOUNT')" min-width="150" sortable="custom">
                                     <template slot-scope="scope">
-                                        <div class="hot-cold-box" v-if="networkID == 137">
+                                        <div class="hot-cold-box">
                                             {{scope.row.pay_amount | balanceMweiFilter}}
-                                        </div>
-                                        <div class="hot-cold-box" v-else>
-                                            {{scope.row.pay_amount | balanceFilter}}
                                         </div>
                                     </template>
                                 </el-table-column>
                                 <el-table-column prop="unlock_amount" :label="$t('billing.UNLOCKAMOUNT')" min-width="150" sortable="custom">
                                     <template slot-scope="scope">
-                                        <div class="hot-cold-box" v-if="networkID == 137">
+                                        <div class="hot-cold-box">
                                             {{scope.row.unlock_amount | balanceMweiFilter}}
-                                        </div>
-                                        <div class="hot-cold-box" v-else>
-                                            {{scope.row.unlock_amount | balanceFilter}}
                                         </div>
                                     </template>
                                 </el-table-column>
@@ -87,7 +81,7 @@
                                                 </el-button>
                                             </el-popover>
                                         </div>
-                                    </template>                    
+                                    </template>
                                 </el-table-column>
                                 <!-- <el-table-column prop="address_from" :label="$t('billing.WALLET')" min-width="140">
                                     <template slot-scope="scope">
@@ -105,7 +99,7 @@
                                                 </el-button>
                                             </el-popover>
                                         </div>
-                                    </template>                    
+                                    </template>
                                 </el-table-column> -->
                                 <el-table-column prop="network_name" :label="$t('billing.NETWORK')" min-width="120"></el-table-column>
                                 <el-table-column prop="pay_at" :label="$t('billing.PAYMENTDATE')" min-width="140" sortable="custom"></el-table-column>
@@ -156,361 +150,350 @@
 </template>
 
 <script>
-    // import bus from '@/components/bus';
-    import axios from 'axios'
-    import QS from 'qs';
-    import moment from "moment"
-    import NCWeb3 from "@/utils/web3";
-    import download from "@/components/download"
-    export default {
-        name: 'Billing',
-        data() {
-            return {
-                tableData: [],
-                searchValue: '',
-                selectInput: '1',
-                parma: {
-                    limit: 10,
-                    offset: 1,
-                    total: 0,
-                    jumperOffset: 1,
-                    order_by: '',
-                    is_ascend: ''
-                },
-                loading: false,
-                downCsv: localStorage.getItem("addressYM")?localStorage.getItem("addressYM"):'',
-                bodyWidth: document.documentElement.clientWidth<1024?true:false,
-                width: document.body.clientWidth>600?'400px':'95%',
-                center_fail: false,
-                network: {
-                    name: '',
-                    unit: ''
-                },
-                modelClose: false,
-                centerDialogVisible: false,
-                downVisible: false,
-            };
-        },
-        components: {
-            download
-        },
-        computed: {
-            languageMcs() {
-                return this.$store.state.app.languageMcs
-            },
-            metaAddress() {
-                return this.$store.getters.metaAddress
-            },
-            networkID() {
-                return this.$store.getters.networkID
-            }
-        },
-        watch: {
-            'metaAddress': function(){
-                if(!this.metaAddress) {
-                    this.centerDialogVisible = true
-                    this.center_fail = false
-                    this.modelClose = false
-                    return false
-                }
-                this.getData()
-            }
-        },
-        methods: {
-            networkLink(hash, network) {
-                if(network && network.toLowerCase().indexOf('polygon') > -1){
-                    window.open(`${this.baseAddressURL}tx/${hash}`)
-                }
-            },
-            getDownload(dialog, rows){
-                this.downVisible = dialog
-            },
-            handleCurrentChange(val) {
-                this.parma.offset = Number(val);
-                this.parma.jumperOffset = String(val)
-                this.getData();
-            },
-            handleSizeChange (val){
-                this.parma.limit = Number(val);
-                this.parma.offset = 1;
-                this.parma.jumperOffset = 1;
-                this.getData();
-            },
-            pageSizeChange(recordPage=parseInt(this.parma.jumperOffset), MaxPagenumber=Math.ceil(this.parma.total/this.parma.limit)) {
-                if((recordPage > MaxPagenumber) && (MaxPagenumber > 0)){ 
-                    recordPage = MaxPagenumber; 
-                }else if(MaxPagenumber<=0){
-                    recordPage = 1;  
-                }else if(recordPage < 1){ 
-                    recordPage = 1;           
-                }else if(this.parma.jumperOffset==NaN || this.parma.jumperOffset==""){  
-                    recordPage = 1;
-                }
-                this.parma.offset = Number(recordPage);
-                this.parma.jumperOffset = recordPage;
-                this.getData(); 
-            },
-            async sortOrderBy(sort) {
-                switch(sort) {
-                    case 'pay_tx_hash':
-                        return 1;
-                    case 'pay_amount':
-                        return 2;
-                    case 'unlock_amount':
-                        return 7;
-                    case 'token_name':
-                        return 3;
-                    case 'file_name':
-                        return 4;
-                    case 'payload_cid':
-                        return 5;
-                    case 'address_from':
-                        return 6;
-                    case 'network_name':
-                        return 9;
-                    case 'pay_at':
-                        return 10;
-                    case 'unlock_at':
-                        return 8;
-                    case 'deadline':
-                        return 11;
-                    default:
-                        return ;
-                }
-            },
-            async sortChange(column) {
-                // console.log(column);
-                // this.parma.order_by = await this.sortOrderBy(column.prop)
-                this.parma.order_by = column.prop
-                this.parma.is_ascend = column.order == "ascending" ? 'y' : column.order == "descending" ? 'n' : ''
-                this.loading = true
-                this.getData()
-            },
-            getData(){
-                let _this = this
-                _this.loading = true
-                let obj = {
-                    "file_name": _this.selectInput === '1'?_this.searchValue:'', 
-                    "tx_hash": _this.selectInput === '2'?_this.searchValue:'', 
-                    "wallet_address": _this.metaAddress,    
-                    "page_number": _this.parma.offset,    
-                    "page_size": _this.parma.limit,
-                    "order_by": _this.parma.is_ascend?_this.parma.order_by:'',
-                    "is_ascend": _this.parma.is_ascend
-                }
-                let upload_api = `${_this.baseAPIURL}api/v1/billing?${QS.stringify(obj)}`
-                // let upload_api = `./static/response-billing.json?${QS.stringify(obj)}`;
+// import bus from '@/components/bus';
+import axios from 'axios'
+import QS from 'qs'
+import moment from 'moment'
+import download from '@/components/download'
+export default {
+  name: 'Billing',
+  data () {
+    return {
+      tableData: [],
+      searchValue: '',
+      selectInput: '1',
+      parma: {
+        limit: 10,
+        offset: 1,
+        total: 0,
+        jumperOffset: 1,
+        order_by: '',
+        is_ascend: ''
+      },
+      loading: false,
+      downCsv: localStorage.getItem('addressYM') ? localStorage.getItem('addressYM') : '',
+      bodyWidth: document.documentElement.clientWidth < 1024,
+      width: document.body.clientWidth > 600 ? '400px' : '95%',
+      center_fail: false,
+      network: {
+        name: '',
+        unit: ''
+      },
+      modelClose: false,
+      centerDialogVisible: false,
+      downVisible: false
+    }
+  },
+  components: {
+    download
+  },
+  computed: {
+    languageMcs () {
+      return this.$store.state.app.languageMcs
+    },
+    metaAddress () {
+      return this.$store.getters.metaAddress
+    },
+    networkID () {
+      return Number(this.$store.getters.networkID)
+    }
+  },
+  watch: {
+    'metaAddress': function () {
+      if (!this.metaAddress) {
+        this.centerDialogVisible = true
+        this.center_fail = false
+        this.modelClose = false
+        return false
+      }
+      this.getData()
+    }
+  },
+  methods: {
+    networkLink (hash, network) {
+      if (network && network.toLowerCase().indexOf('polygon') > -1) {
+        window.open(`${this.baseAddressURL}tx/${hash}`)
+      }
+    },
+    getDownload (dialog, rows) {
+      this.downVisible = dialog
+    },
+    handleCurrentChange (val) {
+      this.parma.offset = Number(val)
+      this.parma.jumperOffset = String(val)
+      this.getData()
+    },
+    handleSizeChange (val) {
+      this.parma.limit = Number(val)
+      this.parma.offset = 1
+      this.parma.jumperOffset = 1
+      this.getData()
+    },
+    pageSizeChange (recordPage = parseInt(this.parma.jumperOffset), MaxPagenumber = Math.ceil(this.parma.total / this.parma.limit)) {
+      if ((recordPage > MaxPagenumber) && (MaxPagenumber > 0)) {
+        recordPage = MaxPagenumber
+      } else if (MaxPagenumber <= 0) {
+        recordPage = 1
+      } else if (recordPage < 1) {
+        recordPage = 1
+      } else if (isNaN(this.parma.jumperOffset) || this.parma.jumperOffset === '') {
+        recordPage = 1
+      }
+      this.parma.offset = Number(recordPage)
+      this.parma.jumperOffset = recordPage
+      this.getData()
+    },
+    async sortOrderBy (sort) {
+      switch (sort) {
+        case 'pay_tx_hash':
+          return 1
+        case 'pay_amount':
+          return 2
+        case 'unlock_amount':
+          return 7
+        case 'token_name':
+          return 3
+        case 'file_name':
+          return 4
+        case 'payload_cid':
+          return 5
+        case 'address_from':
+          return 6
+        case 'network_name':
+          return 9
+        case 'pay_at':
+          return 10
+        case 'unlock_at':
+          return 8
+        case 'deadline':
+          return 11
+        default:
+      }
+    },
+    async sortChange (column) {
+      // console.log(column);
+      // this.parma.order_by = await this.sortOrderBy(column.prop)
+      this.parma.order_by = column.prop
+      this.parma.is_ascend = column.order === 'ascending' ? 'y' : column.order === 'descending' ? 'n' : ''
+      this.loading = true
+      this.getData()
+    },
+    getData () {
+      let _this = this
+      _this.loading = true
+      let obj = {
+        'file_name': _this.selectInput === '1' ? _this.searchValue : '',
+        'tx_hash': _this.selectInput === '2' ? _this.searchValue : '',
+        'wallet_address': _this.metaAddress,
+        'page_number': _this.parma.offset,
+        'page_size': _this.parma.limit,
+        'order_by': _this.parma.is_ascend ? _this.parma.order_by : '',
+        'is_ascend': _this.parma.is_ascend
+      }
+      let uploadApi = `${_this.baseAPIURL}api/v1/billing?${QS.stringify(obj)}`
+      // let uploadApi = `./static/response-billing.json?${QS.stringify(obj)}`;
 
-                axios.get(upload_api, {
-                    headers: {
-                            'Authorization': "Bearer "+ _this.$store.getters.mcsjwtToken
-                    }	
-                })
-                .then((json) => {
-                    if(json.data.status == 'success'){
-                        _this.tableData = json.data.data.billing || [];
-                        _this.tableData.map(item => {
-                            item.txHashVis = false
-                            item.payloadVis = false
-                            item.walletVis = false
-                            item.pay_at =
-                                item.pay_at?
-                                    String(item.pay_at).length<13?
-                                        moment(new Date(parseInt(item.pay_at * 1000))).format("YYYY-MM-DD HH:mm:ss")
-                                        :
-                                        moment(new Date(parseInt(item.pay_at))).format("YYYY-MM-DD HH:mm:ss")
-                                    :
-                                    '-'
-                            item.unlock_at =
-                                item.unlock_at?
-                                    String(item.unlock_at).length<13?
-                                        moment(new Date(parseInt(item.unlock_at * 1000))).format("YYYY-MM-DD HH:mm:ss")
-                                        :
-                                        moment(new Date(parseInt(item.unlock_at))).format("YYYY-MM-DD HH:mm:ss")
-                                    :
-                                    '-'
-                            item.deadline =
-                                item.deadline?
-                                    String(item.deadline).length<13?
-                                        moment(new Date(parseInt(item.deadline * 1000))).format("YYYY-MM-DD HH:mm:ss")
-                                        :
-                                        moment(new Date(parseInt(item.deadline))).format("YYYY-MM-DD HH:mm:ss")
-                                    :
-                                    '-'
-                            // item.locked_fee = web3.utils.fromWei(item.locked_fee, 'ether')
-                            // item.locked_fee = 0.000000000000000001 * item.locked_fee
-                        })
-                        _this.parma.total = Number(json.data.data.total_record_count)
-                    }else{
-                        _this.$message.error(json.data.message)
-                    }
-                    _this.loading = false
-                }).catch(error => {
-                    _this.loading = false
-                    console.log(error)
-                })
-            },
-            number(data, n){
-                var numbers = '';
-                // 保留几位小数后面添加几个0
-                for (var i = 0; i < n; i++) {
-                    numbers += '0';
-                }
-                var s = 1 + numbers;
-                // 如果是整数需要添加后面的0
-                var spot = "." + numbers;
-                // Math.round四舍五入  
-                //  parseFloat() 函数可解析一个字符串，并返回一个浮点数。
-                var value = Math.round(parseFloat(data) * s) / s;
-                // 从小数点后面进行分割
-                if(!value){
-                    return value
-                }else if(value.toString().indexOf('.') < 0){
-                    return value.toFixed(18)
-                }
-                var d = value.toString().split(".");
-                if (d.length == 1) {
-                    value = value.toString() + spot;
-                    return value;
-                }
-                if (d.length > 1) {
-                    if (d[1].length < n) {
-                        for (var tj = d[1].length; tj < n; tj++) {
-                            value = value.toString() + "0";
-                        }
-                    }
-                    return value;
-                }
-            },
-            copyTextToClipboard(text) {
-                let _this = this
-                let saveLang = localStorage.getItem('languageMcs') == 'cn'?"复制成功":"success";
-                var txtArea = document.createElement("textarea");
-                txtArea.id = 'txt';
-                txtArea.style.position = 'fixed';
-                txtArea.style.top = '0';
-                txtArea.style.left = '0';
-                txtArea.style.opacity = '0';
-                txtArea.value = text;
-                document.body.appendChild(txtArea);
-                txtArea.select();
+      axios.get(uploadApi, {
+        headers: {
+          'Authorization': 'Bearer ' + _this.$store.getters.mcsjwtToken
+        }
+      })
+        .then((json) => {
+          if (json.data.status === 'success') {
+            _this.tableData = json.data.data.billing || []
+            _this.tableData.map(item => {
+              item.txHashVis = false
+              item.payloadVis = false
+              item.walletVis = false
+              item.pay_at =
+                                item.pay_at
+                                  ? String(item.pay_at).length < 13
+                                    ? moment(new Date(parseInt(item.pay_at * 1000))).format('YYYY-MM-DD HH:mm:ss')
+                                    : moment(new Date(parseInt(item.pay_at))).format('YYYY-MM-DD HH:mm:ss')
+                                  : '-'
+              item.unlock_at =
+                                item.unlock_at
+                                  ? String(item.unlock_at).length < 13
+                                    ? moment(new Date(parseInt(item.unlock_at * 1000))).format('YYYY-MM-DD HH:mm:ss')
+                                    : moment(new Date(parseInt(item.unlock_at))).format('YYYY-MM-DD HH:mm:ss')
+                                  : '-'
+              item.deadline =
+                                item.deadline
+                                  ? String(item.deadline).length < 13
+                                    ? moment(new Date(parseInt(item.deadline * 1000))).format('YYYY-MM-DD HH:mm:ss')
+                                    : moment(new Date(parseInt(item.deadline))).format('YYYY-MM-DD HH:mm:ss')
+                                  : '-'
+              // item.locked_fee = web3.utils.fromWei(item.locked_fee, 'ether')
+              // item.locked_fee = 0.000000000000000001 * item.locked_fee
+            })
+            _this.parma.total = Number(json.data.data.total_record_count)
+          } else {
+            _this.$message.error(json.data.message)
+          }
+          _this.loading = false
+        }).catch(error => {
+          _this.loading = false
+          console.log(error)
+        })
+    },
+    number (data, n) {
+      var numbers = ''
+      // 保留几位小数后面添加几个0
+      for (var i = 0; i < n; i++) {
+        numbers += '0'
+      }
+      var s = 1 + numbers
+      // 如果是整数需要添加后面的0
+      var spot = '.' + numbers
+      // Math.round四舍五入
+      //  parseFloat() 函数可解析一个字符串，并返回一个浮点数。
+      var value = Math.round(parseFloat(data) * s) / s
+      // 从小数点后面进行分割
+      if (!value) {
+        return value
+      } else if (value.toString().indexOf('.') < 0) {
+        return value.toFixed(18)
+      }
+      var d = value.toString().split('.')
+      if (d.length === 1) {
+        value = value.toString() + spot
+        return value
+      }
+      if (d.length > 1) {
+        if (d[1].length < n) {
+          for (var tj = d[1].length; tj < n; tj++) {
+            value = value.toString() + '0'
+          }
+        }
+        return value
+      }
+    },
+    copyTextToClipboard (text) {
+      let _this = this
+      let saveLang = localStorage.getItem('languageMcs') === 'cn' ? '复制成功' : 'success'
+      var txtArea = document.createElement('textarea')
+      txtArea.id = 'txt'
+      txtArea.style.position = 'fixed'
+      txtArea.style.top = '0'
+      txtArea.style.left = '0'
+      txtArea.style.opacity = '0'
+      txtArea.value = text
+      document.body.appendChild(txtArea)
+      txtArea.select()
 
-                try {
-                    var successful = document.execCommand('copy');
-                    var msg = successful ? 'successful' : 'unsuccessful';
-                    console.log('Copying text command was ' + msg);
-                    if (successful) {
-                        _this.$message({
-                            message: saveLang,
-                            type: 'success'
-                        });
-                        return true;
-                    }
-                } catch (err) {
-                    console.log('Oops, unable to copy');
-                } finally {
-                    document.body.removeChild(txtArea);
-                }
-                return false;
-            },
-            //查询
-            search() {
-                this.parma.limit = 10
-                this.parma.offset = 1
-                this.parma.jumperOffset = 1
-                this.parma.order_by = ''
-                this.parma.is_ascend = ''
-                this.getData();
-            },
-            clearAll() {
-                this.searchValue = ""
-                this.search();
-            },
-            searchValueChange() {
-                if(this.searchValue == '') this.clearAll()
-            }
-        },
-        mounted() {
-            let _this = this
-            _this.getData()
-            this.$store.dispatch('setRouterMenu', 5)
-            this.$store.dispatch('setHeadertitle', this.$t('navbar.BillingHistory'))
+      try {
+        var successful = document.execCommand('copy')
+        var msg = successful ? 'successful' : 'unsuccessful'
+        console.log('Copying text command was ' + msg)
+        if (successful) {
+          _this.$message({
+            message: saveLang,
+            type: 'success'
+          })
+          return true
+        }
+      } catch (err) {
+        console.log('Oops, unable to copy')
+      } finally {
+        document.body.removeChild(txtArea)
+      }
+      return false
+    },
+    // 查询
+    search () {
+      this.parma.limit = 10
+      this.parma.offset = 1
+      this.parma.jumperOffset = 1
+      this.parma.order_by = ''
+      this.parma.is_ascend = ''
+      this.getData()
+    },
+    clearAll () {
+      this.searchValue = ''
+      this.search()
+    },
+    searchValueChange () {
+      if (this.searchValue === '') this.clearAll()
+    }
+  },
+  mounted () {
+    let _this = this
+    _this.getData()
+    this.$store.dispatch('setRouterMenu', 5)
+    this.$store.dispatch('setHeadertitle', this.$t('navbar.BillingHistory'))
 
-            document.onkeydown = function(e) {
-                if (e.keyCode === 13) {
-                    
-                }
-            }
-        },
-        filters: {
-            priceFilter(value) {
-                let realVal = "";
-                if (!isNaN(value) && value !== "") {
-                    let tempVal = parseFloat(value).toFixed(19);
-                    realVal = tempVal.substring(0, tempVal.length - 1);
-                } else {
-                    realVal = "-";
-                }
-                return realVal;
-            },
-            NumFormat (value) {
-                if(!value) return '-';
-                return value
-            },
-            balanceFilter (value) {
-                if (String(value) === '0') return 0;
-                if (!value) return '-';
-                // if (!Number(value)) return 0;
-                // if (isNaN(value)) return value;
-                // 18 - 单位换算需要 / 1000000000000000000，浮点运算显示有bug
-                // value = Number(value)
-                if(String(value).length > 18){
-                    let v1 = String(value).substring(0, String(value).length - 18)
-                    let v2 = String(value).substring(String(value).length - 18)
-                    let v3 = String(v2).replace(/(0+)\b/gi,"")
-                    if(v3){
-                        return v1 + '.' + v3
-                    }else{
-                        return v1
-                    }
-                    return parseFloat(v1.replace(/(\d)(?=(?:\d{3})+$)/g, "$1,") + '.' + v2)
-                }else{
-                    let v3 = ''
-                    for(let i = 0; i < 18 - String(value).length; i++){
-                        v3 += '0'
-                    }
-                    return '0.' + String(v3 + value).replace(/(0+)\b/gi,"")
-                }
-            },
-            balanceMweiFilter (value) {
-                if (String(value) === '0') return 0;
-                if (!value) return '-';
-                // if (!Number(value)) return 0;
-                // if (isNaN(value)) return value;
-                // 18 - 单位换算需要 / 1000000000000000000，浮点运算显示有bug
-                // value = Number(value)
-                if(String(value).length > 6){
-                    let v1 = String(value).substring(0, String(value).length - 6)
-                    let v2 = String(value).substring(String(value).length - 6)
-                    let v3 = String(v2).replace(/(0+)\b/gi,"")
-                    if(v3){
-                        return v1 + '.' + v3
-                    }else{
-                        return v1
-                    }
-                    return parseFloat(v1.replace(/(\d)(?=(?:\d{3})+$)/g, "$1,") + '.' + v2)
-                }else{
-                    let v3 = ''
-                    for(let i = 0; i < 6 - String(value).length; i++){
-                        v3 += '0'
-                    }
-                    return '0.' + String(v3 + value).replace(/(0+)\b/gi,"")
-                }
-            },
-        },
-    };
+    document.onkeydown = function (e) {
+      if (e.keyCode === 13) {
+
+      }
+    }
+  },
+  filters: {
+    priceFilter (value) {
+      let realVal = ''
+      if (!isNaN(value) && value !== '') {
+        let tempVal = parseFloat(value).toFixed(19)
+        realVal = tempVal.substring(0, tempVal.length - 1)
+      } else {
+        realVal = '-'
+      }
+      return realVal
+    },
+    NumFormat (value) {
+      if (!value) return '-'
+      return value
+    },
+    balanceFilter (value) {
+      if (String(value) === '0') return 0
+      if (!value) return '-'
+      // if (!Number(value)) return 0;
+      // if (isNaN(value)) return value;
+      // 18 - 单位换算需要 / 1000000000000000000，浮点运算显示有bug
+      // value = Number(value)
+      if (String(value).length > 18) {
+        let v1 = String(value).substring(0, String(value).length - 18)
+        let v2 = String(value).substring(String(value).length - 18)
+        let v3 = String(v2).replace(/(0+)\b/gi, '')
+        if (v3) {
+          return v1 + '.' + v3
+        } else {
+          return v1
+        }
+      } else {
+        let v3 = ''
+        for (let i = 0; i < 18 - String(value).length; i++) {
+          v3 += '0'
+        }
+        return '0.' + String(v3 + value).replace(/(0+)\b/gi, '')
+      }
+    },
+    balanceMweiFilter (value) {
+      if (String(value) === '0') return 0
+      if (!value) return '-'
+      // if (!Number(value)) return 0;
+      // if (isNaN(value)) return value;
+      // 18 - 单位换算需要 / 1000000000000000000，浮点运算显示有bug
+      // value = Number(value)
+      if (String(value).length > 6) {
+        let v1 = String(value).substring(0, String(value).length - 6)
+        let v2 = String(value).substring(String(value).length - 6)
+        let v3 = String(v2).replace(/(0+)\b/gi, '')
+        if (v3) {
+          return v1 + '.' + v3
+        } else {
+          return v1
+        }
+      } else {
+        let v3 = ''
+        for (let i = 0; i < 6 - String(value).length; i++) {
+          v3 += '0'
+        }
+        return '0.' + String(v3 + value).replace(/(0+)\b/gi, '')
+      }
+    }
+  }
+}
 </script>
-
 
 <style scoped lang="scss">
 #dealManagement{

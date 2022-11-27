@@ -29,6 +29,8 @@ const getters = {
   reverse: state => state.app.reverse,
   free_usage: state => state.app.free_usage,
   free_quota_per_month: state => state.app.free_quota_per_month,
+  free_bucket: state => state.app.free_bucket,
+  free_bucketAll: state => state.app.free_bucketAll,
   mcsjwtToken: state => state.app.mcsjwtToken
 }
 export default getters

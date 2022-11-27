@@ -12,7 +12,7 @@
                         <img :alt="netItem.name" :src="netItem.img">
                       </div>
                       <div id="chain_list_name_1" class="cMfoPw">
-                        <div class="dXIEwo"> 
+                        <div class="dXIEwo">
                           <div class="feVFfA" v-if="networkID == netItem.id">
                             <div class="bmDlFW"><div></div></div>
                           </div>
@@ -43,55 +43,54 @@
 </template>
 
 <script>
-let that;
+let that
 export default {
-  name: "networkChange",
-  data() {
+  name: 'networkChange',
+  data () {
     return {
-      widthDia: document.body.clientWidth <= 600 ? "95%" : document.body.clientWidth <= 1600 ? "520px" : "640px",
+      widthDia: document.body.clientWidth <= 600 ? '95%' : document.body.clientWidth <= 1600 ? '520px' : '640px',
       loading: false,
       listData: [
-        // {
-        //   img: require('@/assets/images/network_logo/polygon.png'),
-        //   name: 'Mumbai Testnet',
-        //   id: 80001
-        // },
-        // {
-        //   img: require('@/assets/images/network_logo/bsc.png'),
-        //   name: 'BSC TestNet',
-        //   id: 97
-        // },
+        {
+          img: require('@/assets/images/network_logo/polygon.png'),
+          name: 'Mumbai Testnet',
+          id: 80001
+        },
+        {
+          img: require('@/assets/images/network_logo/bsc.png'),
+          name: 'BSC TestNet',
+          id: 97
+        },
         {
           img: require('@/assets/images/network_logo/polygon.png'),
           name: 'Polygon Mainnet',
           id: 137
         }
       ]
-    };
-  },
-  props: ["networkC"],
-  computed: {
-      metaAddress() {
-          return this.$store.getters.metaAddress
-      },
-      networkID() {
-          return this.$store.getters.networkID
-      }
-  },
-  methods: {
-    closeDia() {
-      that.$emit("getNetworkC", false);
-    },
-    mainnetChange(id) {
-      that.$emit("getNetworkC", false, id);
     }
   },
-  mounted() {
+  props: ['networkC'],
+  computed: {
+    metaAddress () {
+      return this.$store.getters.metaAddress
+    },
+    networkID () {
+      return Number(this.$store.getters.networkID)
+    }
+  },
+  methods: {
+    closeDia () {
+      that.$emit('getNetworkC', false)
+    },
+    mainnetChange (id) {
+      that.$emit('getNetworkC', false, id)
+    }
+  },
+  mounted () {
     that = this
   }
-};
+}
 </script>
-
 
 <style scoped lang="scss">
 .el-dialog__wrapper /deep/ {

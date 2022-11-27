@@ -18,6 +18,13 @@ module.exports = {
         pathRewrite: {
           '^/api': ''
         }
+      },
+      '/test': {
+        target: 'http://192.168.88.41:5212',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/test': ''
+        }
       }
     },
 

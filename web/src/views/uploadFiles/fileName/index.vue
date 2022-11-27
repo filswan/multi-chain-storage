@@ -36,120 +36,116 @@
 
 <script>
 import axios from 'axios'
-import QS from 'qs';
-import moment from "moment";
+import moment from 'moment'
 export default {
-    name: 'my_files',
-    data() {
-      return {
-            loading: false,
-            bodyWidth: document.documentElement.clientWidth<1024?true:false,
-            source_file: {
-                file_name: '',
-                payload_cid: ''
-            },
-            dealsData: [],
-            dealCont: {
-                deal: {},
-                found: {}
-            },
-            dealID: NaN,
-      };
+  name: 'my_files',
+  data () {
+    return {
+      loading: false,
+      bodyWidth: document.documentElement.clientWidth < 1024,
+      source_file: {
+        file_name: '',
+        payload_cid: ''
+      },
+      dealsData: [],
+      dealCont: {
+        deal: {},
+        found: {}
+      },
+      dealID: NaN
+    }
+  },
+  computed: {},
+  watch: {
+    $route: function (to, from) {
+      this.dealID = to.params.id
+      // this.getData()
+    }
+  },
+  methods: {
+    toDetail (id) {
+      this.$router.push({name: 'my_files_detail', params: {id: id, cid: this.source_file.payload_cid}})
     },
-    computed: {},
-    watch: {
-        $route: function (to, from) {
-            this.dealID = to.params.id
-            // this.getData()
-        },
+    back () {
+      this.$router.go(-1)// 返回上一层
     },
-    methods: {
-        toDetail(id){
-            this.$router.push({name: 'my_files_detail', params: {id: id, cid: this.source_file.payload_cid}})
-        },
-        back(){
-            this.$router.go(-1);//返回上一层
-        },
-        getData() {
-            let _this = this
-            _this.loading = true
-            
-            axios.get(`${_this.baseAPIURL}api/v1/storage/deal/file/${_this.dealID}`, {
-            // axios.get(`./static/pay-filename-response.json`, {
-                headers: {
-                        'Authorization': "Bearer "+ _this.$store.getters.mcsjwtToken
-                }	
+    getData () {
+      let _this = this
+      _this.loading = true
+
+      axios.get(`${_this.baseAPIURL}api/v1/storage/deal/file/${_this.dealID}`, {
+        // axios.get(`./static/pay-filename-response.json`, {
+        headers: {
+          'Authorization': 'Bearer ' + _this.$store.getters.mcsjwtToken
+        }
+      })
+        .then((response) => {
+          let json = response.data
+          _this.loading = false
+          if (json.status === 'success') {
+            if (!json.data) return false
+            _this.source_file = json.data.source_file
+            _this.dealsData = json.data.deals
+            _this.dealsData.map(item => {
+              item.update_at = item.update_at
+                ? item.update_at.length < 13
+                  ? moment(new Date(parseInt(item.update_at * 1000))).format(
+                    'YYYY-MM-DD HH:mm:ss'
+                  )
+                  : moment(new Date(parseInt(item.update_at))).format(
+                    'YYYY-MM-DD HH:mm:ss'
+                  )
+                : '-'
             })
-            .then((response) => {
-                let json = response.data
-                _this.loading = false
-                if (json.status == 'success') {
-                    if(!json.data) return false
-                    _this.source_file = json.data.source_file
-                    _this.dealsData = json.data.deals
-                    _this.dealsData.map(item => {
-                        item.update_at = item.update_at
-                        ? item.update_at.length < 13
-                        ? moment(new Date(parseInt(item.update_at * 1000))).format(
-                            "YYYY-MM-DD HH:mm:ss"
-                            )
-                        : moment(new Date(parseInt(item.update_at))).format(
-                            "YYYY-MM-DD HH:mm:ss"
-                            )
-                        : "-";
-                    })
-                }else{
-                    _this.$message.error(json.message);
-                    return false
-                }
-            }).catch(function (error) {
-                console.log(error);
-                _this.loading = false
-            });
-
+          } else {
+            _this.$message.error(json.message)
+            return false
+          }
+        }).catch(function (error) {
+          console.log(error)
+          _this.loading = false
+        })
+    }
+  },
+  mounted () {
+    let _this = this
+    _this.dealID = _this.$route.params.id
+    _this.getData()
+    document.getElementById('content-box').scrollTop = 0
+    _this.$store.dispatch('setRouterMenu', 1)
+    _this.$store.dispatch('setHeadertitle', _this.$t('navbar.swan_share'))
+  },
+  filters: {
+    NumFormat (value) {
+      if (String(value) === '0') return 0
+      if (!value) return '-'
+      return value
+    },
+    NumFormatPrice (value) {
+      if (String(value) === '0') return 0
+      if (!value) return '-'
+      // 18 - 单位换算需要 / 1000000000000000000，浮点运算显示有bug
+      let valueNum = String(value)
+      if (value.length > 18) {
+        let v1 = valueNum.substring(0, valueNum.length - 18)
+        let v2 = valueNum.substring(valueNum.length - 18)
+        let v3 = String(v2).replace(/(0+)\b/gi, '')
+        if (v3) {
+          return v1 + '.' + v3
+        } else {
+          return v1
         }
-    },
-    mounted() {
-        let _this = this
-        _this.dealID = _this.$route.params.id
-        _this.getData()
-        document.getElementById("content-box").scrollTop = 0;
-        _this.$store.dispatch("setRouterMenu", 1);
-        _this.$store.dispatch("setHeadertitle", _this.$t('navbar.swan_share'));
-    },
-    filters: {
-        NumFormat (value) {
-            if (String(value) === '0') return 0;
-            if (!value) return '-';
-            return value
-        },
-        NumFormatPrice (value) {
-            if (String(value) === '0') return 0;
-            if (!value) return '-';
-            // 18 - 单位换算需要 / 1000000000000000000，浮点运算显示有bug
-            let valueNum = String(value)
-            if(value.length > 18){
-                let v1 = valueNum.substring(0, valueNum.length - 18)
-                let v2 = valueNum.substring(valueNum.length - 18)
-                let v3 = String(v2).replace(/(0+)\b/gi,"")
-                if(v3){
-                    return v1 + '.' + v3
-                }else{
-                    return v1
-                }
-                return parseFloat(v1.replace(/(\d)(?=(?:\d{3})+$)/g, "$1,") + '.' + v2)
-            }else{
-                let v3 = ''
-                for(let i = 0; i < 18 - valueNum.length; i++){
-                    v3 += '0'
-                }
-                return '0.' + String(v3 + valueNum).replace(/(0+)\b/gi,"")
-            }
+      } else {
+        let v3 = ''
+        for (let i = 0; i < 18 - valueNum.length; i++) {
+          v3 += '0'
         }
-    },
-};
+        return '0.' + String(v3 + valueNum).replace(/(0+)\b/gi, '')
+      }
+    }
+  }
+}
 </script>
-
 
 <style scoped lang="scss">
 #dealManagement{
@@ -252,7 +248,6 @@ export default {
     }
 }
 
-
 @media screen and (max-width:999px){
     #dealManagement{
         padding: 0.15rem 0.1rem 0.2rem;
@@ -262,7 +257,7 @@ export default {
         .upload{
             padding: 0.1rem;
         }
-        
+
     }
 }
 

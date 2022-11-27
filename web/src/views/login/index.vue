@@ -16,7 +16,6 @@
           >{{generateLogin('login_h1')}} ></a>
           <h1>{{generateLogin('login_h2')}}</h1>
 
-
           <transition name="phoneTypeFade" mode="out-in">
 
             <!-- 邮箱登录 -->
@@ -46,7 +45,6 @@
 
         </div>
 
-
       </transition>
 
     </div>
@@ -55,224 +53,224 @@
 </template>
 
 <script>
-import bus from '@/components/bus';
-  import * as myAjax from '@/api/login'
-  import { generateLogin } from '@/utils/i18n'
+// import bus from '@/components/bus'
+import * as myAjax from '@/api/login'
+import { generateLogin } from '@/utils/i18n'
 
-  export default {
-    name: 'login',
-    data() {
-      return {
-        // 登录框加载遮罩
-        loginLoad: false,
-        // 登录类型，手机：phone，邮箱：mail
-        formType: 'mail',
-        // 区号弹框是否显示
-        dialogZonenumShow: false,
-        // 区号弹框加载遮罩
-        zonenumLoad: false,
-        // 滑块验证弹框是否显示
-        dialogVerifyShow: false,
-        // 表单验证
-        verify: {
-          phone: {
-            tipsbox: false,
-            tips: this.generateLogin('login_verify_phone_tips_true'),
-            checkAccount: true,
-            checked:false
-          },
-          phonePassword: {
-            tipsbox: false,
-            tips: this.generateLogin('login_verify_phonePassword_tips_true')
-          },
-          mail: {
-            tipsbox: false,
-            tips: this.generateLogin('login_verify_mail_tips_true'),
-            checkAccount: true,
-            checked:false
-          },
-          mailPassword: {
-            tipsbox: false,
-            tips: this.generateLogin('login_verify_mailPassword_tips_true')
-          }
+export default {
+  name: 'login',
+  data () {
+    return {
+      // 登录框加载遮罩
+      loginLoad: false,
+      // 登录类型，手机：phone，邮箱：mail
+      formType: 'mail',
+      // 区号弹框是否显示
+      dialogZonenumShow: false,
+      // 区号弹框加载遮罩
+      zonenumLoad: false,
+      // 滑块验证弹框是否显示
+      dialogVerifyShow: false,
+      // 表单验证
+      verify: {
+        phone: {
+          tipsbox: false,
+          tips: this.generateLogin('login_verify_phone_tips_true'),
+          checkAccount: true,
+          checked: false
         },
-        // 表单数据
-        formData: {
-          mail: {
-            email: '',
-            password: ''
-          }
+        phonePassword: {
+          tipsbox: false,
+          tips: this.generateLogin('login_verify_phonePassword_tips_true')
         },
-        // 手机号验证正则
-        phoneRegular: /^\s*\+?\s*(\(\s*\d+\s*\)|\d+)(\s*-?\s*(\(\s*\d+\s*\)|\s*\d+\s*))*\s*$/,
-        // 邮箱验证正则
-        mailRegular: /^\w+([-.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/,
-        // 密码验证正则
-        // passwordRegular: /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,16}$/,
-        passwordRegular: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[^]{8,16}$/,
-        // 区号列表
-        zonenumList: [],
-        // 验证框加载遮罩
-        validateLoad: false,
-        // 安全验证类型，手机：phone，，谷歌：google
-        validateType: 'phone',
-        // 安全验证账号
-        validateData: {
-          phone: '',
-          secretPhone: '',
-          loginType: 1,
-          secretMail: '',
-          mail: ''
+        mail: {
+          tipsbox: false,
+          tips: this.generateLogin('login_verify_mail_tips_true'),
+          checkAccount: true,
+          checked: false
         },
-        // 安全验证验证码
-        validateCode: {
-          phoneCode: {
-            code: '',
-            tipsbox: false,
-            tipsboxError: false,
-          },
-          googleCode: {
-            code: '',
-            tipsbox: false,
-            tipsboxError: false,
-          },
-          mailCode: {
-            code: '',
-            tipsbox: false,
-            tipsboxError: false,
-          }
+        mailPassword: {
+          tipsbox: false,
+          tips: this.generateLogin('login_verify_mailPassword_tips_true')
+        }
+      },
+      // 表单数据
+      formData: {
+        mail: {
+          email: '',
+          password: ''
+        }
+      },
+      // 手机号验证正则
+      phoneRegular: /^\s*\+?\s*(\(\s*\d+\s*\)|\d+)(\s*-?\s*(\(\s*\d+\s*\)|\s*\d+\s*))*\s*$/,
+      // 邮箱验证正则
+      mailRegular: /^\w+([-.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/,
+      // 密码验证正则
+      // passwordRegular: /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,16}$/,
+      passwordRegular: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[^]{8,16}$/,
+      // 区号列表
+      zonenumList: [],
+      // 验证框加载遮罩
+      validateLoad: false,
+      // 安全验证类型，手机：phone，，谷歌：google
+      validateType: 'phone',
+      // 安全验证账号
+      validateData: {
+        phone: '',
+        secretPhone: '',
+        loginType: 1,
+        secretMail: '',
+        mail: ''
+      },
+      // 安全验证验证码
+      validateCode: {
+        phoneCode: {
+          code: '',
+          tipsbox: false,
+          tipsboxError: false
         },
-        // 是否在获取手机验证码
-        isGetPhoneVerifyCode: false,
-        // 是否在获取谷歌验证码
-        isGetGoogleVerifyCode: false,
-        // 是否在获取邮箱验证码
-        isGetMailVerifyCode: false,
-        // 获取手机验证码按钮文字
-        getPhoneVerifyCodeWord: this.generateLogin('login_getVerifyCodeWord'),
-        // 获取谷歌验证码按钮文字
-        getGoogleVerifyCodeWord: this.generateLogin('login_getVerifyCodeWord'),
-        // 获取邮箱验证码按钮文字
-        getMailVerifyCodeWord: this.generateLogin('login_getVerifyCodeWord'),
-        // 验证完成登录请求数据
-        verifyLoginRegData: {},
-        // 失焦判断账号变化
-        oldAccount: {
-          phone: '',
-          mail: ''
+        googleCode: {
+          code: '',
+          tipsbox: false,
+          tipsboxError: false
         },
-        // 記錄從那個頁面進入
-        fromEnter: ''
+        mailCode: {
+          code: '',
+          tipsbox: false,
+          tipsboxError: false
+        }
+      },
+      // 是否在获取手机验证码
+      isGetPhoneVerifyCode: false,
+      // 是否在获取谷歌验证码
+      isGetGoogleVerifyCode: false,
+      // 是否在获取邮箱验证码
+      isGetMailVerifyCode: false,
+      // 获取手机验证码按钮文字
+      getPhoneVerifyCodeWord: this.generateLogin('login_getVerifyCodeWord'),
+      // 获取谷歌验证码按钮文字
+      getGoogleVerifyCodeWord: this.generateLogin('login_getVerifyCodeWord'),
+      // 获取邮箱验证码按钮文字
+      getMailVerifyCodeWord: this.generateLogin('login_getVerifyCodeWord'),
+      // 验证完成登录请求数据
+      verifyLoginRegData: {},
+      // 失焦判断账号变化
+      oldAccount: {
+        phone: '',
+        mail: ''
+      },
+      // 記錄從那個頁面進入
+      fromEnter: ''
+    }
+  },
+  methods: {
+    generateLogin,
+    // 校验账号
+    checkAccount (type) {
+      let _this = this
+      if (_this.formData.mail.email === _this.oldAccount.mail) {
+        return false
+      }
+      _this.oldAccount.mail = _this.formData.mail.email
+      if (!_this.formData.mail.email) {
+        _this.verify.mail.tips = _this.generateLogin('login_verify_mail_tips_empty')
+        _this.verify.mail.tipsbox = true
+        return false
+      } else if (!_this.mailRegular.test(_this.formData.mail.email)) {
+        _this.verify.mail.tips = _this.generateLogin('login_verify_mail_tips_true')
+        _this.verify.mail.tipsbox = true
+        return false
+      } else {
+        _this.verify.mail.tipsbox = false
       }
     },
-    methods: {
-      generateLogin,
-      // 校验账号
-      checkAccount(type){
-        let _this = this
-        if (_this.formData.mail.email === _this.oldAccount.mail) {
-            return false
-          }
-          _this.oldAccount.mail = _this.formData.mail.email
-          if (!_this.formData.mail.email) {
-            _this.verify.mail.tips = _this.generateLogin('login_verify_mail_tips_empty')
-            _this.verify.mail.tipsbox = true
-            return false
-          } else if (!_this.mailRegular.test(_this.formData.mail.email)) {
-            _this.verify.mail.tips = _this.generateLogin('login_verify_mail_tips_true')
-            _this.verify.mail.tipsbox = true
-            return false
-          } else {
-            _this.verify.mail.tipsbox = false
-          }
-      },
-      // 邮箱登录
-      mailLogin(data) {
-          var _this = this
-        if (!_this.formData.mail.email) {
-          _this.verify.mail.tips = _this.generateLogin('login_verify_mail_tips_empty')
-          _this.verify.mail.tipsbox = true
-          return false
-        } else if (!_this.mailRegular.test(_this.formData.mail.email)) {
-          _this.verify.mail.tips = _this.generateLogin('login_verify_mail_tips_true')
-          _this.verify.mail.tipsbox = true
-          return false
-        } else {
-          _this.verify.mail.tipsbox = false
-        }
-        _this.loginLoad = true
-
-        myAjax
-          .login(_this.formData.mail)
-          .then(response => {
-            // console.log(response)
-            if (response.status == "success") {
-              localStorage.setItem('mcsLoginAccessToken',response.auth_token)
-              localStorage.setItem('mcsLoginEmail',_this.formData.mail.email)
-              sessionStorage.oaxLoginpassword = _this.formData.mail.password
-              _this.$store.state.user.accessToken = response.auth_token
-              _this.$store.state.user.email = _this.formData.mail.email
-
-              if(_this.fromEnter && _this.fromEnter != '/supplierAllBack'){
-                // 防止登录后需要跳转到指定页面
-                _this.$router.push({ path: _this.fromEnter })
-              }else{
-                // this.$router.go(-1)
-                _this.$router.push({ path: '/my_files' })
-              }
-              _this.loginLoad = false
-            } else {
-              _this.$message.error(response.message)
-              _this.loginLoad = false
-            }
-          })
-          .catch(error => {
-            console.log(error)
-            _this.loginLoad = false
-          })
-      },
-      // 是否已登录
-      isLogin() {
-        var _this = this
-        if (localStorage.getItem("mcsLoginAccessToken")) {
-          _this.$router.push({ path: '/my_files' })
-        }
-      },
-      menuIndexFun(to,index) {
-        // this.$router.replace(to).catch(err => err);
-        this.$router.push(to);
-        document.documentElement.scrollTop=0;
-      },
-    },
-    computed: {
-      languageMcs() {
-        return this.$store.getters.languageMcs
-      },
-    },
-    mounted() {
-      // console.log(this.$route.query.redirect)
-      this.isLogin()
+    // 邮箱登录
+    mailLogin (data) {
       var _this = this
-      _this.fromEnter = this.$route.query.redirect
-      document.onkeydown = function(e) {
-        if (e.keyCode === 13) {
-          _this.mailLogin(_this.formData.mail)
-        }
+      if (!_this.formData.mail.email) {
+        _this.verify.mail.tips = _this.generateLogin('login_verify_mail_tips_empty')
+        _this.verify.mail.tipsbox = true
+        return false
+      } else if (!_this.mailRegular.test(_this.formData.mail.email)) {
+        _this.verify.mail.tips = _this.generateLogin('login_verify_mail_tips_true')
+        _this.verify.mail.tipsbox = true
+        return false
+      } else {
+        _this.verify.mail.tipsbox = false
       }
-      if (sessionStorage.oaxLoginType === 'mail') {
-        _this.formType = 'mail'
-        sessionStorage.removeItem('oaxLoginType')
+      _this.loginLoad = true
+
+      myAjax
+        .login(_this.formData.mail)
+        .then(response => {
+          // console.log(response)
+          if (response.status === 'success') {
+            localStorage.setItem('mcsLoginAccessToken', response.auth_token)
+            localStorage.setItem('mcsLoginEmail', _this.formData.mail.email)
+            sessionStorage.oaxLoginpassword = _this.formData.mail.password
+            _this.$store.state.user.accessToken = response.auth_token
+            _this.$store.state.user.email = _this.formData.mail.email
+
+            if (_this.fromEnter && _this.fromEnter !== '/supplierAllBack') {
+              // 防止登录后需要跳转到指定页面
+              _this.$router.push({ path: _this.fromEnter })
+            } else {
+              // this.$router.go(-1)
+              _this.$router.push({ path: '/my_files' })
+            }
+            _this.loginLoad = false
+          } else {
+            _this.$message.error(response.message)
+            _this.loginLoad = false
+          }
+        })
+        .catch(error => {
+          console.log(error)
+          _this.loginLoad = false
+        })
+    },
+    // 是否已登录
+    isLogin () {
+      var _this = this
+      if (localStorage.getItem('mcsLoginAccessToken')) {
+        _this.$router.push({ path: '/my_files' })
       }
     },
-    destroyed() {
-      document.onkeydown = function(e) {
-        if (e.keyCode === 13) {
-          e.returnValue = false
-          return false
-        }
+    menuIndexFun (to, index) {
+      // this.$router.replace(to).catch(err => err);
+      this.$router.push(to)
+      document.documentElement.scrollTop = 0
+    }
+  },
+  computed: {
+    languageMcs () {
+      return this.$store.getters.languageMcs
+    }
+  },
+  mounted () {
+    // console.log(this.$route.query.redirect)
+    this.isLogin()
+    var _this = this
+    _this.fromEnter = this.$route.query.redirect
+    document.onkeydown = function (e) {
+      if (e.keyCode === 13) {
+        _this.mailLogin(_this.formData.mail)
+      }
+    }
+    if (sessionStorage.oaxLoginType === 'mail') {
+      _this.formType = 'mail'
+      sessionStorage.removeItem('oaxLoginType')
+    }
+  },
+  destroyed () {
+    document.onkeydown = function (e) {
+      if (e.keyCode === 13) {
+        e.returnValue = false
+        return false
       }
     }
   }
+}
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scopte>

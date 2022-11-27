@@ -40,10 +40,10 @@
 
 <script>
 import * as myAjax from '@/api/forgetPassword'
-import { generateForgetPassword,generateLogin } from '@/utils/i18n'
+import { generateForgetPassword, generateLogin } from '@/utils/i18n'
 export default {
   name: 'forgetPassword',
-  data() {
+  data () {
     return {
       // 找回框加载遮罩
       forgetLoad: false,
@@ -114,29 +114,30 @@ export default {
     }
   },
   methods: {
-    generateForgetPassword,generateLogin,
+    generateForgetPassword,
+    generateLogin,
     // 校验账号
-    checkAccount(type){
+    checkAccount (type) {
       let _this = this
       if (_this.formData.mail.email === _this.oldAccount.mail) {
-          return false
-        }
-        _this.oldAccount.mail = _this.formData.mail.email
-        if (!_this.formData.mail.email) {
-          _this.verify.mail.tips = _this.generateLogin('login_verify_mail_tips_empty')
-          _this.verify.mail.tipsbox = true
-          return false
-        } else if (!_this.mailRegular.test(_this.formData.mail.email)) {
-          _this.verify.mail.tips = _this.generateLogin('login_verify_mail_tips_true')
-          _this.verify.mail.tipsbox = true
-          return false
-        } else {
-          _this.verify.mail.tipsbox = false
-        }
+        return false
+      }
+      _this.oldAccount.mail = _this.formData.mail.email
+      if (!_this.formData.mail.email) {
+        _this.verify.mail.tips = _this.generateLogin('login_verify_mail_tips_empty')
+        _this.verify.mail.tipsbox = true
+        return false
+      } else if (!_this.mailRegular.test(_this.formData.mail.email)) {
+        _this.verify.mail.tips = _this.generateLogin('login_verify_mail_tips_true')
+        _this.verify.mail.tipsbox = true
+        return false
+      } else {
+        _this.verify.mail.tipsbox = false
+      }
     },
-    
+
     // 发送找回邮件
-    mailSend() {
+    mailSend () {
       var _this = this
       // 邮箱
       if (!_this.formData.mail.email) {
@@ -153,24 +154,24 @@ export default {
       _this.forgetLoad = true
       var checkData = {
         email: _this.formData.mail.email,
-        source: 2 
+        source: 2
       }
       myAjax
         .sendForgetPasswordUrl(checkData)
         .then(response => {
           // _this.forgetLoad = false
           // console.log(response)
-          if (response.status == "success") {
+          if (response.status === 'success') {
             // 用户已存在
             _this.verify.mail.tipsbox = false
             _this.verify.mail.checkAccount = false
             _this.forgetLoad = true
-            
+
             // 发送邮箱找回邮件
             sessionStorage.oaxForgetMail = _this.formData.mail.email
             // console.log(sessionStorage.oaxForgetMail, _this.formData.mail.email)
             _this.$router.push({path: '/mail_forget'})
-          } 
+          }
           // else {
           //   // 用户不存在
           //   _this.verify.mail.tips = _this.generateForgetPassword('forgetPassword_verify_account_tips_no')
@@ -183,32 +184,31 @@ export default {
           console.log(error)
           _this.forgetLoad = false
         })
-
     },
-      menuIndexFun(to,index) {
-        // this.$router.replace(to).catch(err => err);
-        this.$router.push(to);
-        document.documentElement.scrollTop=0;
-      },
+    menuIndexFun (to, index) {
+      // this.$router.replace(to).catch(err => err);
+      this.$router.push(to)
+      document.documentElement.scrollTop = 0
+    }
   },
   computed: {
-    languageMcs() {
+    languageMcs () {
       return this.$store.getters.languageMcs
-    },
+    }
   },
-  mounted() {
+  mounted () {
     var _this = this
-    document.onkeydown = function(e) {
+    document.onkeydown = function (e) {
       if (e.keyCode === 13) {
-          _this.mailSend()
+        _this.mailSend()
       }
     }
   },
-  destroyed() {
+  destroyed () {
     document.onkeydown = function (e) {
       if (e.keyCode === 13) {
-        e.returnValue = false;
-        return false;
+        e.returnValue = false
+        return false
       }
     }
   },

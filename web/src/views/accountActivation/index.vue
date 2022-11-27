@@ -24,7 +24,7 @@ import * as myAjax from '@/api/accountActivation'
 import { generateAccountActivation } from '@/utils/i18n'
 export default {
   name: 'accountActivation',
-  data() {
+  data () {
     return {
       // 滑块验证弹框是否显示
       dialogVerifyShow: false,
@@ -37,13 +37,13 @@ export default {
       // 是否在发送激活邮件
       isGetVerifyCode: false,
       // 发送激活邮件按钮文字
-      getVerifyCodeWord: this.generateAccountActivation('accountActivation_resend'),
+      getVerifyCodeWord: this.generateAccountActivation('accountActivation_resend')
     }
   },
   methods: {
     generateAccountActivation,
     // 判断是否有邮箱对象
-    haveMail() {
+    haveMail () {
       var _this = this
       if (!sessionStorage.oaxRegisterMail) {
         _this.$router.push({ path: '/register' })
@@ -52,7 +52,7 @@ export default {
       }
     },
     // 重新发送邮件
-    sendAgain() {
+    sendAgain () {
       var _this = this
       if (_this.isGetVerifyCode === true) {
         return false
@@ -67,7 +67,7 @@ export default {
         .then(response => {
           console.log(response)
           _this.activationLoad = false
-          if (response.status == 'success') {
+          if (response.status === 'success') {
             _this.$message({
               message: response.message,
               type: 'success'
@@ -84,31 +84,31 @@ export default {
         })
     },
     // 重新发送邮件按钮倒计时
-    reSendTimer() {
+    reSendTimer () {
       var _this = this
       _this.isGetVerifyCode = true
-      var get_code_time = 30 - Math.floor((new Date().getTime() - _this.lastTime) / 1000)
-      _this.getVerifyCodeWord = get_code_time + _this.generateAccountActivation('getVerifyCodeWord_time')
-      var code_times = setInterval(function() {
-        if (get_code_time <= 0) {
-          clearInterval(code_times)
+      var getCodeTime = 30 - Math.floor((new Date().getTime() - _this.lastTime) / 1000)
+      _this.getVerifyCodeWord = getCodeTime + _this.generateAccountActivation('getVerifyCodeWord_time')
+      var codeTimes = setInterval(function () {
+        if (getCodeTime <= 0) {
+          clearInterval(codeTimes)
           _this.isGetVerifyCode = false
           _this.getVerifyCodeWord = _this.generateAccountActivation('accountActivation_resend')
         } else {
-          get_code_time -= 1
-          _this.getVerifyCodeWord = get_code_time + _this.generateAccountActivation('getVerifyCodeWord_time')
+          getCodeTime -= 1
+          _this.getVerifyCodeWord = getCodeTime + _this.generateAccountActivation('getVerifyCodeWord_time')
         }
       }, 1000)
     }
   },
 
-  mounted() {
+  mounted () {
     var _this = this
     _this.haveMail()
-    if (sessionStorage.oaxRegisterMailTime && (new Date().getTime() - parseInt(sessionStorage.oaxRegisterMailTime)  >= 0) && (new Date().getTime() - parseInt(sessionStorage.oaxRegisterMailTime)  <= 30000)) {
+    if (sessionStorage.oaxRegisterMailTime && (new Date().getTime() - parseInt(sessionStorage.oaxRegisterMailTime) >= 0) && (new Date().getTime() - parseInt(sessionStorage.oaxRegisterMailTime) <= 30000)) {
       _this.lastTime = parseInt(sessionStorage.oaxRegisterMailTime)
       _this.sendAgain()
-    } else if ((new Date().getTime() - parseInt(sessionStorage.oaxRegisterMailTime)  < 0) || (new Date().getTime() - parseInt(sessionStorage.oaxRegisterMailTime)  > 30000)) {
+    } else if ((new Date().getTime() - parseInt(sessionStorage.oaxRegisterMailTime) < 0) || (new Date().getTime() - parseInt(sessionStorage.oaxRegisterMailTime) > 30000)) {
       sessionStorage.removeItem('oaxRegisterMailTime')
       _this.lastTime = -1
     }
@@ -132,7 +132,7 @@ export default {
   .activation-wrapper{
     margin: 0;
     width: 90%;
-    height: 90%;    
+    height: 90%;
     border-radius: 0.08rem;
     display: flex;
     align-items: center;

@@ -8,7 +8,7 @@
             <div v-loading="loading">
                 <div class="files_title">
                     <div class="flex_left">
-                        {{$t('uploadFile.Deal_Detail')}} 
+                        {{$t('uploadFile.Deal_Detail')}}
 
                         <b v-if="dealCont.source_file_upload_deal.deal_id || dealCont.source_file_upload_deal.deal_id==0 || (dealId&&dealId!=0)" @click="mainnetLink(dealId)" class="golink">#{{dealId}}</b>
                         <b v-else style="margin: 0 0 0 5px;">#</b>
@@ -29,11 +29,11 @@
                         </span>
                         <span v-else-if="dealCont.dao_signature.length >= dealCont.dao_threshold">
                             <img src="@/assets/images/dao_waiting.png" class="resno" />
-                            <span>{{dealCont.dao_signatureAll == dealCont.dao_signature.length?$t('uploadFile.Successfully_signed_all')+$t('uploadFile.Successfully_signed'):$t('uploadFile.Successfully_signed')}} {{dealCont.dao_signatureAll}}/{{dealCont.dao_signature.length}} </span>
+                            <span>{{dealCont.daoSignatureAll == dealCont.dao_signature.length?$t('uploadFile.Successfully_signed_all')+$t('uploadFile.Successfully_signed'):$t('uploadFile.Successfully_signed')}} {{dealCont.daoSignatureAll}}/{{dealCont.dao_signature.length}} </span>
                         </span>
                         <span v-else>
                             <img src="@/assets/images/dao_waiting.png" class="resno" />
-                            <span>{{$t('uploadFile.Waiting_for_signature')}} {{dealCont.dao_signatureAll}}/{{dealCont.dao_signature.length}} </span>
+                            <span>{{$t('uploadFile.Waiting_for_signature')}} {{dealCont.daoSignatureAll}}/{{dealCont.dao_signature.length}} </span>
                         </span>
                     </div>
                     <el-button type="primary" size="small" @click="getDealLogsData">{{$t('uploadFile.view_deal_logs')}}</el-button>
@@ -73,8 +73,7 @@
                 <div class="upload">
                     <el-row :class="{'elColLeftEn': languageMcs === 'en', 'elColLeftZh': languageMcs === 'cn'}">
                         <el-col :span="8">{{$t('uploadFile.detail_Locked_funds')}}:</el-col>
-                        <el-col :span="16" v-if="networkID == 137">{{dealCont.source_file_upload_deal.locked_fee | NumFormatMweiPrice}} USDC</el-col>
-                        <el-col :span="16" v-else>{{dealCont.source_file_upload_deal.locked_fee | NumFormatPrice}} USDC</el-col>
+                        <el-col :span="16">{{dealCont.source_file_upload_deal.locked_fee | NumFormatPrice}} USDC</el-col>
                         <el-col :span="8">{{$t('uploadFile.w3ss_id')}}:</el-col>
                         <el-col :span="16" v-if="dealId == 0">-</el-col>
                         <el-col :span="16" v-else>{{dealCont.source_file_upload_deal.provider | NumFormat}}</el-col>
@@ -117,7 +116,7 @@
                             {{copy_filename}}
                         </el-col>
                     </el-row>
-                        
+
                     <div class="title" v-if="isFree != 1">
                         {{$t('uploadFile.detail_DAO_Signatures')}}
                         <el-tooltip effect="dark" :content="$t('uploadFile.detail_DAO_Signatures_tooltip')" placement="top">
@@ -179,7 +178,7 @@
                 </div>
             </div>
         </div>
-        
+
         <el-dialog
             :visible.sync="dialogVisible"
             :width="width" custom-class="dealLogs">
@@ -214,272 +213,257 @@
 
 <script>
 import axios from 'axios'
-import QS from 'qs';
-import moment from "moment";
+import QS from 'qs'
+import moment from 'moment'
 export default {
-    name: 'my_files',
-    data() {
-      return {
-            loading: false,
-            tabPosition: 'top',
-            bodyWidth: document.documentElement.clientWidth<1024?true:false,
-            dealId: '',
-            logId: null,
-            isFree: 0,
-            dealCont: {
-                dao_signatureAll: 0,
-                source_file_upload_deal: {}
-            },
-            daoCont: [],
-            copy_filename: '',
-            activeName: localStorage.getItem('offlineDealsIndex')?localStorage.getItem('offlineDealsIndex'):'0',
-            offline_deals_data: [],
-            dialogVisible: false,
-            width: document.body.clientWidth>600?'550px':'95%',
-            loadlogs: true,
-            dealLogsData: [],
-            webLink: 'https://docs.filecoin.io/get-started/store-and-retrieve/store-data/#deal-states'
-      };
+  name: 'my_files',
+  data () {
+    return {
+      loading: false,
+      tabPosition: 'top',
+      bodyWidth: document.documentElement.clientWidth < 1024,
+      dealId: '',
+      logId: null,
+      isFree: 0,
+      dealCont: {
+        daoSignatureAll: 0,
+        source_file_upload_deal: {}
+      },
+      daoCont: [],
+      copy_filename: '',
+      activeName: localStorage.getItem('offlineDealsIndex') ? localStorage.getItem('offlineDealsIndex') : '0',
+      offline_deals_data: [],
+      dialogVisible: false,
+      width: document.body.clientWidth > 600 ? '550px' : '95%',
+      loadlogs: true,
+      dealLogsData: [],
+      webLink: 'https://docs.filecoin.io/get-started/store-and-retrieve/store-data/#deal-states'
+    }
+  },
+  computed: {
+    languageMcs () {
+      return this.$store.getters.languageMcs
     },
-    computed: {
-        languageMcs() {
-            return this.$store.getters.languageMcs
-        },
-        networkID() {
-            return this.$store.getters.networkID
+    networkID () {
+      return Number(this.$store.getters.networkID)
+    }
+  },
+  watch: {
+    $route: function (to, from) {
+      this.dealId = to.params.deal_id
+      this.getData()
+    }
+  },
+  methods: {
+    handleClick (tab, event) {
+      localStorage.setItem('offlineDealsIndex', tab.index)
+      this.logId = this.offline_deals_data[tab.index].id
+      this.$router.push({
+        name: 'my_files_detail',
+        params: {
+          id: this.offline_deals_data[tab.index].id,
+          deal_id: this.offline_deals_data[tab.index].deal_id,
+          // cid: this.$route.params.cid,
+          source_file_upload_id: this.$route.params.source_file_upload_id,
+          isFree: this.$route.params.isFree
         }
+      })
     },
-    watch: {
-        $route: function (to, from) {
-            this.dealId = to.params.deal_id
-            this.getData()
-        },
+    networkLink (link) {
+      window.open(link)
     },
-    methods: {
-        handleClick(tab, event) {
-            localStorage.setItem('offlineDealsIndex', tab.index)
-            this.logId = this.offline_deals_data[tab.index].id
-            this.$router.push({
-                name: 'my_files_detail', 
-                params: {
-                    id: this.offline_deals_data[tab.index].id,
-                    deal_id: this.offline_deals_data[tab.index].deal_id,
-                    // cid: this.$route.params.cid,
-                    source_file_upload_id: this.$route.params.source_file_upload_id,
-                    isFree: this.$route.params.isFree
-                }
+    mainnetLink (dealId) {
+      const networkName = this.dealCont.source_file_upload_deal.network_name
+      switch (networkName) {
+        case 'filecoin_calibration':
+          window.open(`${process.env.BASE_CALIBRATION_ADDRESS}?dealid=${dealId}`)
+          break
+        case 'filecoin_mainnet':
+          window.open(`${process.env.BASE_MAINNET_ADDRESS}?dealid=${dealId}`)
+          break
+        default:
+          if (networkName && networkName.indexOf('calibration') > -1) window.open(`${process.env.BASE_CALIBRATION_ADDRESS}?dealid=${dealId}`)
+          else window.open(`${process.env.BASE_MAINNET_ADDRESS}?dealid=${dealId}`)
+          break
+      }
+    },
+    copyTextToClipboard (text) {
+      let _this = this
+      let saveLang = localStorage.getItem('languageMcs') === 'cn' ? '复制成功' : 'success'
+      var txtArea = document.createElement('textarea')
+      txtArea.id = 'txt'
+      txtArea.style.position = 'fixed'
+      txtArea.style.top = '0'
+      txtArea.style.left = '0'
+      txtArea.style.opacity = '0'
+      txtArea.value = text
+      document.body.appendChild(txtArea)
+      txtArea.select()
+
+      try {
+        var successful = document.execCommand('copy')
+        var msg = successful ? 'successful' : 'unsuccessful'
+        console.log('Copying text command was ' + msg)
+        if (successful) {
+          _this.$message({
+            message: saveLang,
+            type: 'success'
+          })
+          return true
+        }
+      } catch (err) {
+        console.log('Oops, unable to copy')
+      } finally {
+        document.body.removeChild(txtArea)
+      }
+      return false
+    },
+    back () {
+      // this.$router.go(-1);//返回上一层
+      this.$router.push({name: 'my_files'})
+    },
+    getData () {
+      let _this = this
+      _this.loading = true
+
+      let dataCid = {
+        source_file_upload_id: _this.$route.params.source_file_upload_id,
+        // payload_cid: _this.$route.params.cid,
+        wallet_address: _this.$store.getters.metaAddress
+      }
+      axios.get(`${_this.baseAPIURL}api/v1/storage/deal/detail/${_this.dealId}?${QS.stringify(dataCid)}`, {
+        // axios.get(`./static/detail_page_response.json`, {
+        headers: {
+          'Authorization': 'Bearer ' + _this.$store.getters.mcsjwtToken
+        }
+      }).then((response) => {
+        let json = response.data
+        let daoSignatureAll = 0
+        _this.loading = false
+        if (json.status === 'success') {
+          if (!json.data) return false
+          if (json.data.dao_signature) {
+            _this.daoCont = json.data.dao_signature
+            _this.daoCont.map(item => {
+              if (item.create_at) daoSignatureAll += 1
+              item.daoAddressVis = false
+              item.txHashVis = false
+              item.create_at =
+                                item.create_at
+                                  ? moment(new Date(parseInt(item.create_at * 1000))).format(
+                                    'YYYY-MM-DD HH:mm:ss'
+                                  )
+                                  : '-'
             })
-        },
-        networkLink(link) {
-            window.open(link)
-        },
-        mainnetLink(dealId) {
-            window.open(`${process.env.BASE_MAINNET_ADDRESS}?dealid=${dealId}`)
-        },
-        copyTextToClipboard(text) {
-            let _this = this
-            let saveLang = localStorage.getItem('languageMcs') == 'cn'?"复制成功":"success";
-            var txtArea = document.createElement("textarea");
-            txtArea.id = 'txt';
-            txtArea.style.position = 'fixed';
-            txtArea.style.top = '0';
-            txtArea.style.left = '0';
-            txtArea.style.opacity = '0';
-            txtArea.value = text;
-            document.body.appendChild(txtArea);
-            txtArea.select();
+          }
 
-            try {
-                var successful = document.execCommand('copy');
-                var msg = successful ? 'successful' : 'unsuccessful';
-                console.log('Copying text command was ' + msg);
-                if (successful) {
-                    _this.$message({
-                        message: saveLang,
-                        type: 'success'
-                    });
-                    return true;
-                }
-            } catch (err) {
-                console.log('Oops, unable to copy');
-            } finally {
-                document.body.removeChild(txtArea);
-            }
-            return false;
-        },
-        back(){
-            // this.$router.go(-1);//返回上一层
-            this.$router.push({name: 'my_files'})
-        },
-        getData() {
-            let _this = this
-            _this.loading = true
+          _this.dealCont = json.data
+          _this.dealCont.daoSignatureAll = daoSignatureAll
+          _this.dealCont.source_file_upload_deal.created_at =
+                        _this.dealCont.source_file_upload_deal.created_at && _this.dealCont.source_file_upload_deal.created_at !== 0
+                          ? moment(new Date(parseInt(String(_this.dealCont.source_file_upload_deal.created_at).length < 13 ? _this.dealCont.source_file_upload_deal.created_at * 1000 : _this.dealCont.source_file_upload_deal.created_at))).format(
+                            'YYYY-MM-DD HH:mm:ss'
+                          )
+                          : '-'
 
-            let dataCid = {
-                source_file_upload_id: _this.$route.params.source_file_upload_id,
-                // payload_cid: _this.$route.params.cid,
-                wallet_address: _this.$store.getters.metaAddress
-            }
-            axios.get(`${_this.baseAPIURL}api/v1/storage/deal/detail/${_this.dealId}?${QS.stringify(dataCid)}`, {
-            // axios.get(`./static/detail_page_response.json`, {
-                headers: {
-                        'Authorization': "Bearer "+ _this.$store.getters.mcsjwtToken
-                }	
-            }).then((response) => {
-                let json = response.data
-                let dao_signatureAll = 0
-                _this.loading = false
-                if (json.status == 'success') {
-                    if(!json.data) return false
-                    if(json.data.dao_signature){
-                        _this.daoCont = json.data.dao_signature
-                        _this.daoCont.map(item => {
-                            if(item.create_at) dao_signatureAll += 1
-                            item.daoAddressVis = false
-                            item.txHashVis = false
-                            item.create_at =  
-                                item.create_at? 
-                                    moment(new Date(parseInt(item.create_at * 1000))).format(
-                                        "YYYY-MM-DD HH:mm:ss"
-                                    )
-                                    : "-";
-                        })
-                    }
-                    
-                    _this.dealCont = json.data
-                    _this.dealCont.dao_signatureAll = dao_signatureAll
-                    _this.dealCont.source_file_upload_deal.created_at = 
-                        _this.dealCont.source_file_upload_deal.created_at && _this.dealCont.source_file_upload_deal.created_at != 0? 
-                            moment(new Date(parseInt(String(_this.dealCont.source_file_upload_deal.created_at).length<13?_this.dealCont.source_file_upload_deal.created_at*1000:_this.dealCont.source_file_upload_deal.created_at))).format(
-                                "YYYY-MM-DD HH:mm:ss"
-                            )
-                            : "-";
-
-                    if(json.data.source_file_upload_deal.provider && json.data.source_file_upload_deal.car_file_payload_cid && json.data.source_file_upload_deal.deal_id != 0){
-                        _this.copy_filename = 'lotus client retrieve --miner '+json.data.source_file_upload_deal.provider+' '+json.data.source_file_upload_deal.car_file_payload_cid+' ~/output-file';
-                    }else{
-                        _this.copy_filename = localStorage.getItem('languageMcs') == 'cn'?"还不可用。":"It's not available yet.";
-                    }
-                }else{
-                    _this.$message.error(json.message);
-                    return false
-                }
-            }).catch(function (error) {
-                console.log(error);
-                _this.loading = false
-            });
-
-
-        },
-        getDealLogsData() {
-            let _this = this
-            _this.dialogVisible = true
-            _this.loadlogs = true
-            let obj = {
-                wallet_address: _this.$store.getters.metaAddress
-            }
-            axios.get(`${_this.baseAPIURL}api/v1/storage/deal/log/${_this.logId}?${QS.stringify(obj)}`, {
-            // axios.get(`./static/deal_logs.json`, {
-                headers: {
-                        'Authorization': "Bearer "+ _this.$store.getters.mcsjwtToken
-                }	
-            }).then((response) => {
-                let json = response.data
-                _this.loadlogs = false
-                if (json.status == 'success') {
-                    if(!json.data) return false
-                    if(json.data.offline_deal_log){
-                        _this.dealLogsData = json.data.offline_deal_log
-                        _this.dealLogsData.map(item => {
-                            item.create_at =  
-                                item.create_at? 
-                                    moment(new Date(parseInt(item.create_at*1000))).format(
-                                        "YYYY-MM-DD HH:mm:ss"
-                                    )
-                                    : "-";
-                        })
-                    }
-                }else{
-                    _this.$message.error(json.message);
-                    return false
-                }
-            }).catch(function (error) {
-                console.log(error);
-                _this.loadlogs = false
-            });
+          if (json.data.source_file_upload_deal.provider && json.data.source_file_upload_deal.car_file_payload_cid && json.data.source_file_upload_deal.deal_id !== 0) {
+            _this.copy_filename = 'lotus client retrieve --miner ' + json.data.source_file_upload_deal.provider + ' ' + json.data.source_file_upload_deal.car_file_payload_cid + ' ~/output-file'
+          } else {
+            _this.copy_filename = localStorage.getItem('languageMcs') === 'cn' ? '还不可用。' : "It's not available yet."
+          }
+        } else {
+          _this.$message.error(json.message)
+          return false
         }
+      }).catch(function (error) {
+        console.log(error)
+        _this.loading = false
+      })
     },
-    mounted() {
-        let _this = this
-        _this.dealId = _this.$route.params.deal_id
-        _this.logId = _this.$route.params.id
-        _this.isFree = _this.$route.params.isFree
-        if(localStorage.getItem('offlineDeals')) _this.offline_deals_data = JSON.parse(localStorage.getItem('offlineDeals'))
-        _this.getData()
-        document.getElementById("content-box").scrollTop = 0;
-        _this.$store.dispatch("setRouterMenu", 1);
-        _this.$store.dispatch("setHeadertitle", _this.$t('navbar.deal'));
-    },
-    filters: {
-        NumFormat (value) {
-            if (String(value) === '0') return 0;
-            if (!value) return '-';
-            return value
-        },
-        NumFormatPrice (value) {
-            if (String(value) === '0') return 0;
-            if (!value) return '-';
-            // 18 - 单位换算需要 / 1000000000000000000，浮点运算显示有bug
-            let valueNum = String(value)
-            if(value.length > 18){
-                let v1 = valueNum.substring(0, valueNum.length - 18)
-                let v2 = valueNum.substring(valueNum.length - 18)
-                let v3 = String(v2).replace(/(0+)\b/gi,"")
-                if(v3){
-                    return v1 + '.' + v3
-                }else{
-                    return v1
-                }
-                return parseFloat(v1.replace(/(\d)(?=(?:\d{3})+$)/g, "$1,") + '.' + v2)
-            }else{
-                let v3 = ''
-                for(let i = 0; i < 18 - valueNum.length; i++){
-                    v3 += '0'
-                }
-                return '0.' + String(v3 + valueNum).replace(/(0+)\b/gi,"")
-            }
-        },
-        NumFormatMweiPrice (value) {
-            if (String(value) === '0') return 0;
-            if (!value) return '-';
-            // 18 - 单位换算需要 / 1000000000000000000，浮点运算显示有bug
-            let valueNum = String(value)
-            if(value.length > 6){
-                let v1 = valueNum.substring(0, valueNum.length - 6)
-                let v2 = valueNum.substring(valueNum.length - 6)
-                let v3 = String(v2).replace(/(0+)\b/gi,"")
-                if(v3){
-                    return v1 + '.' + v3
-                }else{
-                    return v1
-                }
-                return parseFloat(v1.replace(/(\d)(?=(?:\d{3})+$)/g, "$1,") + '.' + v2)
-            }else{
-                let v3 = ''
-                for(let i = 0; i < 6 - valueNum.length; i++){
-                    v3 += '0'
-                }
-                return '0.' + String(v3 + valueNum).replace(/(0+)\b/gi,"")
-            }
+    getDealLogsData () {
+      let _this = this
+      _this.dialogVisible = true
+      _this.loadlogs = true
+      let obj = {
+        wallet_address: _this.$store.getters.metaAddress
+      }
+      axios.get(`${_this.baseAPIURL}api/v1/storage/deal/log/${_this.logId}?${QS.stringify(obj)}`, {
+        // axios.get(`./static/deal_logs.json`, {
+        headers: {
+          'Authorization': 'Bearer ' + _this.$store.getters.mcsjwtToken
         }
+      }).then((response) => {
+        let json = response.data
+        _this.loadlogs = false
+        if (json.status === 'success') {
+          if (!json.data) return false
+          if (json.data.offline_deal_log) {
+            _this.dealLogsData = json.data.offline_deal_log
+            _this.dealLogsData.map(item => {
+              item.create_at =
+                                item.create_at
+                                  ? moment(new Date(parseInt(item.create_at * 1000))).format(
+                                    'YYYY-MM-DD HH:mm:ss'
+                                  )
+                                  : '-'
+            })
+          }
+        } else {
+          _this.$message.error(json.message)
+          return false
+        }
+      }).catch(function (error) {
+        console.log(error)
+        _this.loadlogs = false
+      })
+    }
+  },
+  mounted () {
+    let _this = this
+    _this.dealId = _this.$route.params.deal_id
+    _this.logId = _this.$route.params.id
+    _this.isFree = _this.$route.params.isFree
+    if (localStorage.getItem('offlineDeals')) _this.offline_deals_data = JSON.parse(localStorage.getItem('offlineDeals'))
+    _this.getData()
+    document.getElementById('content-box').scrollTop = 0
+    _this.$store.dispatch('setRouterMenu', 1)
+    _this.$store.dispatch('setHeadertitle', _this.$t('navbar.deal'))
+  },
+  filters: {
+    NumFormat (value) {
+      if (String(value) === '0') return 0
+      if (!value) return '-'
+      return value
     },
-};
+    NumFormatPrice (value) {
+      if (String(value) === '0') return 0
+      if (!value) return '-'
+      // 18 - 单位换算需要 / 1000000000000000000，浮点运算显示有bug
+      let valueNum = String(value)
+      if (value.length > 6) {
+        let v1 = valueNum.substring(0, valueNum.length - 6)
+        let v2 = valueNum.substring(valueNum.length - 6)
+        let v3 = String(v2).replace(/(0+)\b/gi, '')
+        if (v3) {
+          return v1 + '.' + v3
+        } else {
+          return v1
+        }
+      } else {
+        let v3 = ''
+        for (let i = 0; i < 6 - valueNum.length; i++) {
+          v3 += '0'
+        }
+        return '0.' + String(v3 + valueNum).replace(/(0+)\b/gi, '')
+      }
+    }
+  }
+}
 </script>
-
 
 <style scoped lang="scss">
 .weblinkStyle{
-    color: #fff; 
+    color: #fff;
     &:hover{
         text-decoration: underline;
     }
@@ -572,7 +556,7 @@ export default {
                             color: #555;
                         }
                     }
-                }  
+                }
                 .noLogs{
                     font-size: 16px;
                     text-align: center;
@@ -669,7 +653,7 @@ export default {
                             font-size: 16px;
                             color: #67c23a;
                         }
-                        &:before{    
+                        &:before{
                             content: '';
                             position: absolute;
                             top: 0;
@@ -691,7 +675,7 @@ export default {
                         position: relative;
                         border-right: 0;
                         color: #fff;
-                        &:before{   
+                        &:before{
                             background: #2D43E7;
                         }
                         i, img{
@@ -791,7 +775,7 @@ export default {
                 }
             }
         }
-        .el-button {    
+        .el-button {
             padding: 0.1rem 0.2rem;
             font-size: 0.18rem;
             font-family: inherit;
@@ -833,7 +817,7 @@ export default {
                     color: #2d43e7;
                     text-decoration: underline;
                 }
-                .imgCopy { 
+                .imgCopy {
                     width: 18px;
                     height: 18px;
                     margin: 0 0 0 5px;
@@ -865,7 +849,7 @@ export default {
                         width: auto;
                     }
                 }
-                img { 
+                img {
                     width: 18px;
                     height: 18px;
                     margin: 0;
@@ -1086,11 +1070,11 @@ export default {
                     }
                 }
             }
-        } 
+        }
         .module{
             display: flex;
             align-items: center;
-            .imgCopy { 
+            .imgCopy {
                 width: 18px;
                 height: 18px;
                 margin: 0 0 0 5px;
@@ -1112,7 +1096,6 @@ export default {
     }
 }
 
-
 @media screen and (max-width:999px){
     #dealManagement{
         padding: 0.15rem 0.1rem 0.2rem;
@@ -1122,17 +1105,17 @@ export default {
         .upload{
             padding: 0.1rem;
             .el-row /deep/{
-                
+
             }
         }
-        
+
     }
 }
 @media screen and (max-width:640px){
     #dealManagement{
         .upload{
             .el-row /deep/ {
-                
+
             }
         }
     }

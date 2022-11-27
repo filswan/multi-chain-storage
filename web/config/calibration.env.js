@@ -10,5 +10,7 @@ module.exports = {
   BASE_MUMBAI_ADDRESS: '"https://mumbai.polygonscan.com/"',
   BASE_BSC_ADDRESS: '"https://testnet.bscscan.com/"',
   BASE_POLYGON_ADDRESS: '"https://polygonscan.com/"',
-  BASE_ECO_API: '"https://calibration-eco-api.filswan.com/"'
+  BASE_ECO_API: '"https://calibration-eco-api.filswan.com/"',
+  BASE_METASPACE: '"https://calibration-mybucket-api.filswan.com/"',
+  BASE_ENV: 'false'
 }

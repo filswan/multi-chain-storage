@@ -6,7 +6,7 @@ import { Message } from 'element-ui'
 
 
 const service = axios.create({
-	baseURL: process.env.NBFS_API === 'production' ? process.env.NBFS_API : '/',
+	baseURL: process.env.NODE_ENV === 'production' ? process.env.NBFS_API : '/',
 	timeout: 15000
 })
 

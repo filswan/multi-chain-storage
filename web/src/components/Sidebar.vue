@@ -34,17 +34,33 @@
                         </div>
                     </div>
                     <div class="fes-icon">
+                        <div class="comment" v-if="false">
+                            <div class="title">
+                                <i class="icon"></i> {{$t('comment.Rate_Product')}}
+                            </div>
+                            <div class="rate">
+                                <img src="@/assets/images/space/icon_20.png" class="img" />
+                                <el-rate v-model="rateValue" :icon-classes="iconClasses" void-icon-class="icon-rate-face-off" void-color="#fff" :colors="colors"></el-rate>
+                            </div>
+                            <el-button round>{{$t('comment.Tell_Comment')}}</el-button>
+                        </div>
+                        <div class="need">Need help? Join our <a href="https://discord.gg/pGDTxtgB" target="_blank">Discord</a>.</div>
+                        <div class="progress">
+                            <el-progress :percentage="(free_bucket/free_bucketAll)*100 || 0"></el-progress>
+                            <span v-if="languageMcs === 'en'" class="tip">{{free_bucket | byteStorage}}GB of {{free_bucketAll | byteStorage}}GB  for Buckets free storage</span>
+                            <span v-else class="tip">目前使用量：{{free_bucket | byteStorage}}GB（Buckets免费储存空间配额：{{free_bucketAll | byteStorage}}GB）</span>
+                        </div>
                         <div class="progress">
                             <el-progress :percentage="(free_usage/free_quota_per_month)*100 || 0"></el-progress>
-                            <span v-if="languageMcs === 'en'" class="tip">{{free_usage | byteStorage}}GB of {{free_quota_per_month | byteStorage}}GB used (free storage)</span>
-                            <span v-else class="tip">目前使用量：{{free_usage | byteStorage}}GB（免费储存空间配额：{{free_quota_per_month | byteStorage}}GB）</span>
+                            <span v-if="languageMcs === 'en'" class="tip">{{free_usage | byteStorage}}GB of {{free_quota_per_month | byteStorage}}GB for My Files free storage</span>
+                            <span v-else class="tip">目前使用量：{{free_usage | byteStorage}}GB（My Files免费储存空间配额：{{free_quota_per_month | byteStorage}}GB）</span>
                         </div>
                         <div class="fes-icon-logo">
-                            <a href="https://filswan.medium.com/" target="_blank"><img :src="share_img1" alt=""></a>
-                            <a href="https://discord.com/invite/KKGhy8ZqzK" target="_blank"><img :src="share_img10" alt=""></a>
-                            <a href="https://twitter.com/0xfilswan" target="_blank"><img :src="share_img2" alt=""></a>
-                            <a href="https://github.com/filswan" target="_blank"><img :src="share_img3" alt=""></a>
-                            <a href="https://t.me/filswan" target="_blank"><img :src="share_img9" alt=""></a>
+                            <a href="https://filswan.medium.com/" target="_blank"><img :src="share_medium" alt=""></a>
+                            <a href="https://discord.com/invite/KKGhy8ZqzK" target="_blank"><img :src="share_discord" alt=""></a>
+                            <a href="https://twitter.com/0xfilswan" target="_blank"><img :src="share_twitter" alt=""></a>
+                            <a href="https://github.com/filswan" target="_blank"><img :src="share_github" alt=""></a>
+                            <a href="https://t.me/filswan" target="_blank"><img :src="share_telegram" alt=""></a>
                         </div>
                         <!-- market data white badge -->
                         <div class="fes-market">
@@ -62,192 +78,193 @@
 <script>
 // import bus from './bus';
 import axios from 'axios'
+import commonFun from '@/utils/common'
 export default {
-    data() {
-        return {
-            git_version:null,
-            collapseLocal: this.$store.getters.collapseL == 'true'||this.$store.getters.collapseL==true?true: false,
-            lanShow: false,
-            bodyWidth: document.body.clientWidth<999?true:false,
-            items: [
-                {
-                    icon: 'el-icon-s-deal',
-                    index: '1',
-                    title: this.$t('route.Deal'),
-                    name: 'my_files',
-                    type: ''
-                },
-                {
-                    icon: 'el-icon-s-billing',
-                    index: '5',
-                    title: this.$t('navbar.BillingHistory'),
-                    name: 'billing',
-                    type: ''
-                },
-                {
-                    icon: 'el-icon-s-Stats',
-                    index: '4',
-                    title: this.$t('route.Stats'),
-                    name: 'Stats',
-                    type: ''
-                },
-            ],
-            share_img1: require('@/assets/images/landing/medium.png'),
-            share_img2: require('@/assets/images/landing/twitter.png'),
-            share_img3: require('@/assets/images/landing/github-fill.png'),
-            share_img5: require('@/assets/images/landing/facebook-fill.png'),
-            share_img7: require('@/assets/images/landing/slack.png'),
-            share_img8: require('@/assets/images/landing/youtube.png'),
-            share_img9: require('@/assets/images/landing/telegram.png'),
-            share_img10: require('@/assets/images/landing/discord.png'),
-        };
-    },
-    computed: {
-        routerMenu() {
-          return this.$store.getters.routerMenu.toString()
+  data () {
+    return {
+      git_version: null,
+      collapseLocal: !!(this.$store.getters.collapseL === 'true' || this.$store.getters.collapseL === true),
+      lanShow: false,
+      bodyWidth: document.body.clientWidth < 999,
+      items: [
+        {
+          icon: 'el-icon-s-deal',
+          index: '1',
+          title: this.$t('route.Deal'),
+          name: 'my_files',
+          type: ''
         },
-        languageMcs() {
-            return this.$store.getters.languageMcs
+        {
+          icon: 'el-icon-s-metaSpace',
+          index: '20',
+          title: this.$t('route.metaSpace'),
+          name: 'Space',
+          type: ''
         },
-        email() {
-            return this.$store.state.user.email
+        {
+          icon: 'el-icon-s-billing',
+          index: '5',
+          title: this.$t('navbar.BillingHistory'),
+          name: 'billing',
+          type: ''
         },
-        collapseL() {
-            return this.$store.getters.collapseL
-        },
-        metaAddress() {
-            return this.$store.getters.metaAddress
-        },
-        free_usage() {
-            return this.$store.getters.free_usage
-        },
-        free_quota_per_month() {
-            return this.$store.getters.free_quota_per_month
+        {
+          icon: 'el-icon-s-Stats',
+          index: '4',
+          title: this.$t('route.Stats'),
+          name: 'Stats',
+          type: ''
         }
-    },
-    watch: {
-        'collapseL': function(){
-            this.collapseLocal = this.$store.getters.collapseL == 'true'||this.$store.getters.collapseL==true?true: false
-            this.bodyWidth = document.body.clientWidth<992?true:false
-        }
-    },
-    created() {
-        if(process.env.COMMITHASH){
-          this.git_version = process.env.COMMITHASH.slice(0,8)
-        }
-        // 通过 Event Bus 进行组件间通信，来折叠侧边栏
-        // bus.$on('collapse', msg => {
-        //     this.collapseChild = msg;
-        //     bus.$emit('collapse-content', msg);
-        //     this.$emit('collapseVisit', this.collapseChild);
-        //     this.$store.dispatch('setCollapse', this.collapseChild)
-        // });
-    },
-    methods: {
-        documentLink() {
-            window.open('https://docs.filswan.com/multi-chain-storage/overview', "_blank")
-        },
-        sidebarLiIndex(nameNow, index, typeNow) {
-            let _this = this
-            let head_title = ''
-            let indexNow = Number(index)
-            sessionStorage.removeItem('dealsPaginationIndex')
-            switch (indexNow) {
-                case 2:
-                    localStorage.removeItem('tabTask_name')
-                    localStorage.removeItem('tabTask_search')
-                    localStorage.removeItem('tabTaskMiner_search')
-                    break;
-                case 4:
-                    localStorage.removeItem('myProfileActive')
-                    break;
-                default:
-            }
-            _this.$store.dispatch("setRouterMenu", Number(index));
-            if(typeNow){
-                _this.$router.push({ name: nameNow, params:{type:typeNow} })
-                return false
-            }else{
-                _this.$router.push({ name: nameNow })
-            }
-        },
-        collapseChage() {
-            this.collapseLocal = !this.collapseLocal;
-            this.$store.dispatch('setCollapse', this.collapseLocal)
-            // bus.$emit('collapse', this.collapseLocal);
-            // this.$emit('collapseVisit', this.collapseLocal);
-        },
-        logout() {
-            var _this = this;
-
-            let params = {};
-            axios.post(_this.data_api+'auth/logout', params, {
-                headers: {
-                        'Authorization': "Bearer "+ _this.$store.getters.mcsjwtToken
-                }	
-            }).then((response) => {
-                  if(response.data.status == 'success'){
-                    _this.$store.dispatch("FedLogOut").then(() => {
-                        _this.$router.push("/supplierAllBack");
-                        _this.loginShow = localStorage.getItem("mcsLoginAccessToken") ? false : true
-                    });
-                  }else{
-                      console.log(response.data.message);
-                      _this.$message.error(response.data.message)
-                  }
-            }).catch(function (error) {
-                  if (error.response) {
-                    console.log(error.response.headers);
-                  } 
-                  else if (error.request) {
-                      console.log(error.request);
-                  } 
-                  else {
-                    console.log(error.message);
-                  }
-                  console.log(error.config);
-                
-                    _this.$store.dispatch("FedLogOut").then(() => {
-                        _this.$router.push("/login");
-                        _this.loginShow = localStorage.getItem("mcsLoginAccessToken") ? false : true
-                    });
-            });
-
-        },
-        handleSetLanguage(lang){
-            let _this = this
-            _this.$i18n.locale = lang;
-            _this.$store.dispatch("setLanguage", lang);
-            window.location.reload();
-        },
-        signOutFun() {
-            this.$store.dispatch('setMetaAddress', '')
-            this.$store.dispatch('setMCSjwtToken', '')
-            this.$store.dispatch('setMetaNetworkId', 0)
-            this.$store.dispatch('setMetaNetworkInfo', JSON.stringify({}))
-            this.$router.push("/supplierAllBack");
-        },
-    },
-    filters: {
-        byteStorage(limit) {
-            // 只转换成GB
-            if(limit <= 0){
-                return '0'
-            }else{
-                // return (limit/( 1024 * 1024 * 1024)).toPrecision(2)  //or 1000
-                let value = limit/( 1024 * 1024 * 1024)
-                let v1 = String(value).split(".")
-                let v2 = v1[1] || ''
-                let v3 = String(v2).replace(/(0+)\b/gi,"")
-                if(v3){
-                    return v1[0] + '.' + v3.slice(0,2)
-                }else{
-                    return v1[0]
-                }
-            }
-        }
+      ],
+      share_medium: require('@/assets/images/landing/medium.png'),
+      share_twitter: require('@/assets/images/landing/twitter.png'),
+      share_github: require('@/assets/images/landing/github-fill.png'),
+      share_telegram: require('@/assets/images/landing/telegram.png'),
+      share_discord: require('@/assets/images/landing/discord.png'),
+      rateValue: null,
+      colors: { 5: '#e92721' },
+      iconClasses: ['icon-rate-face']
     }
-};
+  },
+  computed: {
+    routerMenu () {
+      return this.$store.getters.routerMenu.toString()
+    },
+    languageMcs () {
+      return this.$store.getters.languageMcs
+    },
+    collapseL () {
+      return this.$store.getters.collapseL
+    },
+    metaAddress () {
+      return this.$store.getters.metaAddress
+    },
+    free_usage () {
+      return this.$store.getters.free_usage
+    },
+    free_quota_per_month () {
+      return this.$store.getters.free_quota_per_month
+    },
+    free_bucket () {
+      return this.$store.getters.free_bucket
+    },
+    free_bucketAll () {
+      return this.$store.getters.free_bucketAll
+    }
+  },
+  watch: {
+    'collapseL': function () {
+      this.collapseLocal = !!(this.$store.getters.collapseL === 'true' || this.$store.getters.collapseL === true)
+      this.bodyWidth = document.body.clientWidth < 992
+    }
+  },
+  created () {
+    if (process.env.COMMITHASH) {
+      this.git_version = process.env.COMMITHASH.slice(0, 8)
+    }
+    this.getListBuckets()
+    // 通过 Event Bus 进行组件间通信，来折叠侧边栏
+    // bus.$on('collapse', msg => {
+    //     this.collapseChild = msg;
+    //     bus.$emit('collapse-content', msg);
+    //     this.$emit('collapseVisit', this.collapseChild);
+    //     this.$store.dispatch('setCollapse', this.collapseChild)
+    // });
+  },
+  methods: {
+    documentLink () {
+      window.open('https://docs.filswan.com/multi-chain-storage/overview', '_blank')
+    },
+    sidebarLiIndex (nameNow, index, typeNow) {
+      let _this = this
+      let indexNow = Number(index)
+      sessionStorage.removeItem('dealsPaginationIndexDev')
+      switch (indexNow) {
+        case 2:
+          localStorage.removeItem('tabTask_name')
+          localStorage.removeItem('tabTask_search')
+          localStorage.removeItem('tabTaskMiner_search')
+          break
+        case 4:
+          localStorage.removeItem('myProfileActive')
+          break
+        default:
+      }
+      _this.$store.dispatch('setRouterMenu', Number(index))
+      if (typeNow) {
+        _this.$router.push({ name: nameNow, params: {type: typeNow} })
+        return false
+      } else {
+        _this.$router.push({ name: nameNow })
+      }
+    },
+    collapseChage () {
+      this.collapseLocal = !this.collapseLocal
+      this.$store.dispatch('setCollapse', this.collapseLocal)
+      // bus.$emit('collapse', this.collapseLocal);
+      // this.$emit('collapseVisit', this.collapseLocal);
+    },
+    handleSetLanguage (lang) {
+      let _this = this
+      _this.$i18n.locale = lang
+      _this.$store.dispatch('setLanguage', lang)
+      window.location.reload()
+    },
+    signOutFun () {
+      let _this = this
+      let params = {}
+      axios.post(`${_this.baseAPIURL}api/v1/user/logout_for_metamask_signature`, params, {
+        headers: {
+          'Authorization': 'Bearer ' + _this.$store.getters.mcsjwtToken
+        }
+      }).then((response) => {
+        if (response.data.status !== 'success') _this.$message.error(response.data.message || 'Fail')
+        _this.$store.dispatch('setMetaAddress', '')
+        _this.$store.dispatch('setMCSjwtToken', '')
+        _this.$store.dispatch('setMetaNetworkId', 0)
+        _this.$store.dispatch('setMetaNetworkInfo', JSON.stringify({}))
+        sessionStorage.removeItem('login_path')
+        // _this.$router.push('/home')
+        setTimeout(function () { window.location.reload() }, 200)
+      }).catch(function (error) {
+        console.log(error.config)
+      })
+    },
+    async getListBuckets (name) {
+      let _this = this
+      let size = 0
+      const directoryRes = await commonFun.sendRequest(`${process.env.BASE_METASPACE}api/v3/directory/`, 'get')
+      if (!directoryRes || directoryRes.status !== 'success') {
+        return false
+      }
+      directoryRes.data.objects.forEach(element => {
+        size += element.size
+      })
+      await commonFun.timeout(500)
+      _this.$store.dispatch('setFreeBucket', size || 0)
+      _this.$store.dispatch('setFreeBucketAll', directoryRes.data.policy.max_size || 0)
+    }
+  },
+  filters: {
+    byteStorage (limit) {
+      // 只转换成GB
+      if (limit <= 0) {
+        return '0'
+      } else {
+        // return (limit/( 1024 * 1024 * 1024)).toPrecision(2)  //or 1000
+        let value = limit / (1024 * 1024 * 1024)
+        let v1 = String(value).split('.')
+        let v2 = v1[1] || ''
+        let v3 = String(v2).replace(/(0+)\b/gi, '')
+        if (v3) {
+          return v1[0] + '.' + v3.slice(0, 2)
+        } else {
+          return v1[0]
+        }
+      }
+    }
+  }
+}
 </script>
 
 <style scoped lang="scss">
@@ -302,7 +319,6 @@ export default {
         &::-webkit-scrollbar-thumb {
             background: #ccc;
         }
-
 
     }
     .header_logo{
@@ -402,10 +418,16 @@ export default {
         }
     }
     .fes-menu{
-        height: calc(100% - 135px);
+        // rate 150px
+        height: calc(100% - 210px);
         overflow-y: scroll;
         @media screen and (min-width: 1800px) {
-            height: calc(100% - 145px);
+            // height: calc(100% - 285px); // rate 140px
+            height: calc(100% - 225px);
+        }
+        @media screen and (max-width: 1366px) {
+            // height: calc(100% - 290px); // rate 140px
+            height: calc(100% - 230px);
         }
         &::-webkit-scrollbar-track {
             background: transparent;
@@ -424,8 +446,118 @@ export default {
         right: 0;
         bottom: 0;
         padding: 5px 0;
+        .comment{
+            padding: 10px 17px;
+            margin: 0 0.28rem 10px 0.2rem;
+            background: linear-gradient(45deg, #4f8aff, #4b5eff);
+            border-radius: 0.06rem;
+            color: #fff;
+            .title{
+                display: flex;
+                align-items: center;
+                flex-wrap: wrap;
+                width: 100%;
+                font-size: 0.15rem;
+                font-weight: normal;
+                color: #fff;
+                line-height: 15px;
+                @media screen and (min-width:1800px){
+                    font-size: 15px;
+                }
+                @media screen and (max-width:441px){
+                    font-size: 13px;
+                }
+                .icon{
+                    width: 13px;
+                    height: 13px;
+                    margin: 0 5px 0 0;
+                    background: url(../assets/images/space/icon_19.png) no-repeat center;
+                    background-size: 100%;
+                }
+            }
+            .rate{
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                align-items: center;
+                padding: 10px 0;
+                .img{
+                    display: block;
+                    height: 40px;
+                    margin: 0 15px 0 0;
+                    @media screen and (max-width: 1600px) {
+                        margin: 0 5px;
+                    }
+                }
+                .el-rate /deep/{
+                    display: flex;
+                    flex-wrap: wrap;
+                    .el-rate__item{
+                        .el-rate__icon, .icon-rate-face, .hover{
+                            width: 22px;
+                            height: 22px;
+                            margin: 0 5px;
+                            background: url(../assets/images/space/start_on.png) no-repeat center;
+                            background-size: 100%;
+                            @media screen and (max-width: 1600px) {
+                                width: 18px;
+                                height: 18px;
+                                margin: 0 3px;
+                            }
+                        }
+                        .icon-rate-face-off{
+                            width: 22px;
+                            height: 22px;
+                            background: url(../assets/images/space/start.png) no-repeat center;
+                            background-size: 100%;
+                            @media screen and (max-width: 1600px) {
+                                width: 18px;
+                                height: 18px;
+                                margin: 0 3px;
+                            }
+                        }
+                    }
+                }
+            }
+            .el-button{
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 100%;
+                height: 35px;
+                padding: 0;
+                background-color: #fff;
+                color: #4e80ff;
+                font-family: inherit;
+                font-size: 0.15rem;
+                font-weight: normal;
+                line-height: 1.2;
+                @media screen and (min-width: 1800px) {
+                    height: 40px;
+                }
+                @media screen and (max-width:441px){
+                    height: 30px;
+                    font-size: 13px;
+                }
+            }
+        }
+        .need{
+            min-height: 24px;
+            padding: 0 0.28rem;
+            font-size: 12px;
+            color: #fff;
+            text-align: center;
+            line-height: 1;
+            @media screen and (min-width: 1800px) {
+                font-size: 14px;
+            }
+            a{
+                color: inherit;
+                text-decoration: underline;
+            }
+        }
         .progress{
-            margin: 0 0.28rem 15px;
+            margin: 0 0.28rem 10px;
             .el-progress /deep/{
                 font-size: 12px;
                 .el-progress-bar{
@@ -562,6 +694,11 @@ export default {
                 background: url(../assets/images/menuIcon/icon_documentation@2x.png) no-repeat center;
             }
         }
+        .el-icon-s-metaSpace{
+            &::before{
+                background: url(../assets/images/menuIcon/metaSpace.png) no-repeat center;
+            }
+        }
         .el-icon-language{
             &::before{
                 background: url(../assets/images/menuIcon/language.png) no-repeat center;
@@ -637,6 +774,11 @@ export default {
         .el-icon-s-documentation{
             &::before{
                 background: url(../assets/images/menuIcon/icon_documentation@2x-1.png) no-repeat center;
+            }
+        }
+        .el-icon-s-metaSpace{
+            &::before{
+                background: url(../assets/images/menuIcon/metaSpace-1.png) no-repeat center;
             }
         }
         .el-icon-language{

@@ -43,152 +43,151 @@ import { generateMailResetPassword } from '@/utils/i18n'
 import axios from 'axios'
 
 export default {
-    name: 'Settings',
-    data() {
-      return {
-            loading: false,
-            activeName: 'User_Profile',
-            bodyWidth: document.documentElement.clientWidth<1024?true:false,
-            resetPass: {
-                Old_password: '',
-                New_password: '',
-                Confirm_password: ''
-            },
-            menuTabShow: 0,
-            verify: {
-                mailPassword: {
-                tipsbox: false,
-                    tips: this.generateMailResetPassword('mailResetPassword_verify_pw_tips_true')
-                },
-                mailPasswordVerify: {
-                    tipsbox: false,
-                    tips: this.generateMailResetPassword('mailResetPassword_verify_pwconfirm_tips_true')
-                },
-                newPasswordVerify: {
-                    tipsbox: false,
-                    tips: this.generateMailResetPassword('mailResetPassword_verify_pwconfirm_tips_true')
-                }
-            },
-            // 表单数据
-            formData: {
-                mail: {
-                    password: '', //sessionStorage.getItem("oaxLoginpassword")
-                    passwordNew: '',
-                    passwordComfirm: ''
-                }
-            },
-            passwordRegular: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[^]{8,16}$/,
-            passwordWrong: false,
-      };
-    },
-    components: {},
-    computed: {
-        email() {
-            return this.$store.state.user.email
+  name: 'Settings',
+  data () {
+    return {
+      loading: false,
+      activeName: 'User_Profile',
+      bodyWidth: document.documentElement.clientWidth < 1024,
+      resetPass: {
+        Old_password: '',
+        New_password: '',
+        Confirm_password: ''
+      },
+      menuTabShow: 0,
+      verify: {
+        mailPassword: {
+          tipsbox: false,
+          tips: this.generateMailResetPassword('mailResetPassword_verify_pw_tips_true')
         },
-        assetNow() {
-            return this.$store.state.app.assetNow
+        mailPasswordVerify: {
+          tipsbox: false,
+          tips: this.generateMailResetPassword('mailResetPassword_verify_pwconfirm_tips_true')
         },
-        languageMcs() {
-            return this.$store.getters.languageMcs
-        },
-        avater() {
-            return this.$store.getters.avater
-        },
-        metaAddress() {
-            return this.$store.getters.metaAddress
+        newPasswordVerify: {
+          tipsbox: false,
+          tips: this.generateMailResetPassword('mailResetPassword_verify_pwconfirm_tips_true')
         }
-    },
-    watch: {
-        'formData.mail.password': function(){
-            this.passwordWrong = false
-        },
-    },
-    methods: {
-        generateMailResetPassword,
-        menuToggle(data){
-            this.menuTabShow = data
-            localStorage.setItem('myProfile_type',data)
-        },
-        // 邮箱找回
-        mailResetSub() {
-            var _this = this
-            // 邮箱密码确认
-            if (!_this.formData.mail.passwordNew) {
-                _this.verify.newPasswordVerify.tips = _this.generateMailResetPassword('mailResetPassword_verify_pw_tips_true')
-                _this.verify.newPasswordVerify.tipsbox = true
-                return false
-            } else if (!_this.passwordRegular.test(_this.formData.mail.passwordNew)) {
-                _this.verify.newPasswordVerify.tips = _this.generateMailResetPassword('mailResetPassword_verify_pw_tips_rule')
-                _this.verify.newPasswordVerify.tipsbox = true
-                return false
-            } else if (_this.formData.mail.passwordNew !== _this.formData.mail.passwordComfirm) {
-                _this.verify.mailPasswordVerify.tips = _this.generateMailResetPassword('mailResetPassword_verify_pw_tips_same')
-                _this.verify.mailPasswordVerify.tipsbox = true
-                _this.verify.newPasswordVerify.tips = _this.generateMailResetPassword('mailResetPassword_verify_pw_tips_same')
-                _this.verify.newPasswordVerify.tipsbox = true
-                return false
-            } else {
-                _this.verify.mailPasswordVerify.tipsbox = false
-                _this.verify.newPasswordVerify.tipsbox = false
-            }
-            var reqData = {
-                email: _this.$store.state.user.email,
-                currentPassword: _this.formData.mail.password,
-                password: _this.formData.mail.passwordNew,
-                repeatPassword: _this.formData.mail.passwordComfirm,
-                wallet_address: _this.metaAddress
-            }
-            _this.loading = true
-            axios.post(process.env.BASE_API+'user/update_login_password', reqData, {
-                headers: {
-                        'Authorization': "Bearer "+ _this.$store.getters.mcsjwtToken
-                }	
-            }).then((response) => {
-                _this.loading = false
-                if (response.data.status == 'success') {
-                    _this.$store.dispatch("FedLogOut").then(() => {
-                        _this.$message({
-                            message: response.data.status,
-                            type: 'success'
-                        });
-                        _this.$router.push("/login");
-                    });
-                } else {
-                    _this.$message.error(response.data.message);
-                }
-            }).catch(function (error) {
-                console.log(error);
-                _this.passwordWrong = true
-                _this.loading = false
-            });
-        },
-    },
-    mounted() {
-        let _this = this
-        document.getElementById('content-box').scrollTop = 0
-        _this.$store.dispatch('setRouterMenu', 3)
-        _this.$store.dispatch('setHeadertitle', _this.$t('route.myAccount'))
-    },
-    filters: {
-        priceFilter(value) {
-            let realVal = "";
-            if (!isNaN(value) && value !== "") {
-                let tempVal = parseFloat(value).toFixed(19);
-                realVal = tempVal.substring(0, tempVal.length - 1) + " FIL";
-            } else {
-                realVal = "-";
-            }
-            return realVal;
-        },
-        NumFormat (value) {
-            if(!value) return '-';
-            return value
+      },
+      // 表单数据
+      formData: {
+        mail: {
+          password: '', // sessionStorage.getItem("oaxLoginpassword")
+          passwordNew: '',
+          passwordComfirm: ''
         }
+      },
+      passwordRegular: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[^]{8,16}$/,
+      passwordWrong: false
+    }
+  },
+  components: {},
+  computed: {
+    email () {
+      return this.$store.state.user.email
     },
-};
+    assetNow () {
+      return this.$store.state.app.assetNow
+    },
+    languageMcs () {
+      return this.$store.getters.languageMcs
+    },
+    avater () {
+      return this.$store.getters.avater
+    },
+    metaAddress () {
+      return this.$store.getters.metaAddress
+    }
+  },
+  watch: {
+    'formData.mail.password': function () {
+      this.passwordWrong = false
+    }
+  },
+  methods: {
+    generateMailResetPassword,
+    menuToggle (data) {
+      this.menuTabShow = data
+      localStorage.setItem('myProfile_type', data)
+    },
+    // 邮箱找回
+    mailResetSub () {
+      var _this = this
+      // 邮箱密码确认
+      if (!_this.formData.mail.passwordNew) {
+        _this.verify.newPasswordVerify.tips = _this.generateMailResetPassword('mailResetPassword_verify_pw_tips_true')
+        _this.verify.newPasswordVerify.tipsbox = true
+        return false
+      } else if (!_this.passwordRegular.test(_this.formData.mail.passwordNew)) {
+        _this.verify.newPasswordVerify.tips = _this.generateMailResetPassword('mailResetPassword_verify_pw_tips_rule')
+        _this.verify.newPasswordVerify.tipsbox = true
+        return false
+      } else if (_this.formData.mail.passwordNew !== _this.formData.mail.passwordComfirm) {
+        _this.verify.mailPasswordVerify.tips = _this.generateMailResetPassword('mailResetPassword_verify_pw_tips_same')
+        _this.verify.mailPasswordVerify.tipsbox = true
+        _this.verify.newPasswordVerify.tips = _this.generateMailResetPassword('mailResetPassword_verify_pw_tips_same')
+        _this.verify.newPasswordVerify.tipsbox = true
+        return false
+      } else {
+        _this.verify.mailPasswordVerify.tipsbox = false
+        _this.verify.newPasswordVerify.tipsbox = false
+      }
+      var reqData = {
+        email: _this.$store.state.user.email,
+        currentPassword: _this.formData.mail.password,
+        password: _this.formData.mail.passwordNew,
+        repeatPassword: _this.formData.mail.passwordComfirm,
+        wallet_address: _this.metaAddress
+      }
+      _this.loading = true
+      axios.post(process.env.BASE_API + 'user/update_login_password', reqData, {
+        headers: {
+          'Authorization': 'Bearer ' + _this.$store.getters.mcsjwtToken
+        }
+      }).then((response) => {
+        _this.loading = false
+        if (response.data.status === 'success') {
+          _this.$store.dispatch('FedLogOut').then(() => {
+            _this.$message({
+              message: response.data.status,
+              type: 'success'
+            })
+            _this.$router.push('/login')
+          })
+        } else {
+          _this.$message.error(response.data.message)
+        }
+      }).catch(function (error) {
+        console.log(error)
+        _this.passwordWrong = true
+        _this.loading = false
+      })
+    }
+  },
+  mounted () {
+    let _this = this
+    document.getElementById('content-box').scrollTop = 0
+    _this.$store.dispatch('setRouterMenu', 3)
+    _this.$store.dispatch('setHeadertitle', _this.$t('route.myAccount'))
+  },
+  filters: {
+    priceFilter (value) {
+      let realVal = ''
+      if (!isNaN(value) && value !== '') {
+        let tempVal = parseFloat(value).toFixed(19)
+        realVal = tempVal.substring(0, tempVal.length - 1) + ' FIL'
+      } else {
+        realVal = '-'
+      }
+      return realVal
+    },
+    NumFormat (value) {
+      if (!value) return '-'
+      return value
+    }
+  }
+}
 </script>
-
 
 <style scoped lang="scss">
 #dealManagement{
@@ -1279,7 +1278,6 @@ export default {
         }
     }
 }
-
 
 @media screen and (max-width:999px){
     #dealManagement{

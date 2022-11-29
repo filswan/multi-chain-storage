@@ -30,14 +30,15 @@
         <el-backtop target=".content"></el-backtop>
       </div>
     </el-col>
+    <pop-ups v-if="dialogFormVisible" :dialogFormVisible="dialogFormVisible" :typeModule="typeName" @getPopUps="getPopUps"></pop-ups>
   </div>
 </template>
 
 <script>
 import vHead from './Header.vue'
 import vSidebar from './Sidebar.vue'
+import popUps from './popups.vue'
 import networkAlert from '@/components/networkAlert.vue'
-import metaLogin from '@/utils/login'
 let that
 export default {
   data () {
@@ -58,12 +59,15 @@ export default {
       share_logo: require('@/assets/images/landing/logo_small.png'),
       meta: false,
       netId: 0,
-      networkTip: false
+      networkTip: false,
+      dialogFormVisible: false,
+      typeName: 'emailLogin'
     }
   },
   components: {
     vHead,
     vSidebar,
+    popUps,
     networkAlert
   },
   computed: {
@@ -102,6 +106,9 @@ export default {
     }
   },
   methods: {
+    async getPopUps (dialog, rows, bucketName) {
+      that.dialogFormVisible = dialog
+    },
     getNetwork (dis) {
       that.networkTip = dis
     },
@@ -112,7 +119,8 @@ export default {
       that.meta = meta
     },
     async init () {
-      let status = await metaLogin.netStatus(that.networkID)
+      that.dialogFormVisible = !!that.metaAddress && sessionStorage.getItem('emailPop') === '1'
+      let status = await that.$metaLogin.netStatus(that.networkID)
       that.networkTip = !status
       if (that.reverse) document.body.classList.add('reverse_phase')
       else document.body.classList.remove('reverse_phase')
@@ -121,7 +129,6 @@ export default {
   mounted () {
     that = this
     that.init()
-    console.log('update time: 2022-11-24')
   }
 }
 </script>

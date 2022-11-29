@@ -95,8 +95,6 @@
 </template>
 
 <script>
-import NCWeb3 from '@/utils/web3'
-import metaLogin from '@/utils/login'
 import CarouselContainer from '@/components/CarouselContainer.vue'
 let that
 const ethereum = window.ethereum
@@ -212,7 +210,7 @@ export default {
   methods: {
     signFun () {
       if (!that.metaAddress || that.metaAddress === undefined) {
-        NCWeb3.Init(async addr => {
+        that.$commonFun.Init(async addr => {
           that.$store.dispatch('setMetaAddress', addr)
           sessionStorage.setItem('login_path', addr)
           if (that.networkID !== 80001 || that.networkID !== 97) {
@@ -232,7 +230,7 @@ export default {
     },
     async signIn () {
       if (that.networkID === 97 || that.networkID === 80001) {
-        const lStatus = await metaLogin.login()
+        const lStatus = await that.$metaLogin.login()
         if (lStatus) {
           that.$router.push({ path: '/my_files' })
           setTimeout(function () { window.location.reload() }, 200)
@@ -567,9 +565,6 @@ export default {
               @media screen and (max-width: 600px) {
                 font-size: 14px;
               }
-            }
-            &:hover {
-              // background: #eee;
             }
           }
         }

@@ -1,5 +1,5 @@
 <template>
-  <div :class="{'slideScroll slideAdd': true, 'slideAddBg': dialogFormVisible&&(typeName !== 'add'), 'slideComSoon': fixed}" v-if="dialogFormVisible">
+  <div :class="{'slideScroll slideAdd': true, 'slideAddBg': dialogFormVisible&&(typeName !== 'add'), 'slideComSoon': fixed, slideEmail: dialogFormVisible&&(typeName === 'emailLogin'||typeName === 'emailCheck')}" v-if="dialogFormVisible">
     <div class="fe-none" v-if="typeName === 'add' || typeName === 'rename' || typeName === 'addSub'">
       <div class="addBucket" v-loading="createLoad">
         <i class="el-icon-circle-close close" @click="closeDia()"></i>
@@ -97,9 +97,6 @@
             <span class="color">{{areaBody.size | formatbytes}}</span>
           </el-form-item>
           <el-form-item :label="$t('metaSpace.ob_detail_ObjectIPFSLink')">
-            <!-- <a class="color"
-                          :href="areaBody.ipfs_url" target="_blank" :download="areaBody.name"
-                        >{{areaBody.ipfs_url}}</a> -->
             <a class="color ipfsStyle" @click="xhrequest(areaBody.ipfs_url, areaBody.name)">
               {{areaBody.ipfs_url}}
             </a>
@@ -205,21 +202,70 @@
         <div class="soonImg"></div>
       </div>
     </div>
+    <div class="fe-none" v-else-if="typeName === 'emailLogin'">
+      <div class="addBucket loginEmail">
+        <div class="titleCont">
+          <div class="address">
+            <div class="address_left">
+              <img src="@/assets/images/metamask.png" class="resno" alt=""> {{ metaAddress | hiddAddress}}
+            </div>
+            <div class="address_right">
+              <div class="flex-shrink-0 w-2 h-2 rounded-full bg-primary"></div>
+              <div>{{$t('fs3Login.Connected')}}</div>
+            </div>
+          </div>
+        </div>
+        <div v-loading="emailLoad" class="ruleForm">
+          <div class="form_title">{{$t('fs3Login.Connect_form_label')}}</div>
+          <el-form :model="form" status-icon :rules="rulesEmail" ref="form">
+            <el-form-item prop="email">
+              <el-input v-model="form.email" placeholder="you@domain.com" ref="bucketEmailRef"></el-input>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" @click="submitEmail('form')">{{$t('fs3Login.Connect_form_btn')}}</el-button>
+            </el-form-item>
+          </el-form>
+          <a href="javascript:;" @click="signInSkip" class="skip">{{$t('fs3Login.Skip')}}</a>
+        </div>
+      </div>
+    </div>
+    <div class="fe-none" v-else-if="typeName === 'emailCheck'">
+      <div class="addBucket checkEmail">
+        <div class="check_email">
+          <div class="check_left">
+            <h3>{{$t('fs3Login.Connect_email_title')}}
+              <i class="el-icon-circle-check"></i>
+            </h3>
+            <h4>{{$t('fs3Login.Connect_email_desc')}}</h4>
+            <u @click="typeName = 'emailLogin'">{{$t('fs3Login.Connect_email_again')}}</u>
+            <u @click="closeDia()">{{$t('fs3Login.Connect_email_jump')}}</u>
+          </div>
+          <div class="check_right">
+            <img src="@/assets/images/login/icon_01.png" class="resno" alt="">
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import moment from 'moment'
-import commonFun from '@/utils/common'
 let that
 export default {
   data () {
     return {
       form: {
-        name: ''
+        name: '',
+        email: ''
       },
       rules: {
         name: [{ required: true, message: '', trigger: 'blur' }]
+      },
+      rulesEmail: {
+        email: [
+          { required: true, message: 'Please enter the email address.', trigger: 'blur' },
+          { type: 'email', message: 'Please enter the correct email address.', trigger: ['blur', 'change'] }]
       },
       loading: false,
       ruleForm: {
@@ -242,7 +288,8 @@ export default {
       payLoad: false,
       ipfsUploadLoad: false,
       typeName: this.typeModule,
-      uploadPrecent: 0
+      uploadPrecent: 0,
+      emailLoad: false
     }
   },
   props: ['dialogFormVisible', 'typeModule', 'areaBody', 'createLoad', 'listTableLoad', 'dataCont', 'currentBucket', 'fixed', 'backupLoad'],
@@ -288,11 +335,16 @@ export default {
           else window.open(link)
           that.ipfsUploadLoad = false
         })
+        .catch(function (e) {
+          console.log('Download error: ' + e.message)
+          that.$message.error(e.message)
+          that.ipfsUploadLoad = false
+        })
       return data
     },
     async payClick () {
       that.payLoad = true
-      await commonFun.timeout(2000)
+      await that.$commonFun.timeout(2000)
       that.typeName = 'success'
     },
     payhandChange (value) {
@@ -305,11 +357,7 @@ export default {
     getDialogClose (formName, type) {
       that.$refs[formName].validate(async valid => {
         if (valid) {
-          if (that.typeName === 'rename') {
-            that.closeDia()
-            return false
-          }
-          that.$emit('getPopUps', false, formName, that.form.name)
+          that.$emit('getPopUps', false, that.typeName === 'rename' ? 'rename' : formName, that.form.name)
         } else {
           console.log('error submit!!')
           return false
@@ -409,8 +457,19 @@ export default {
       // return Number(size).toFixed(3);
     },
     async handleChange (file, fileList) {
+      let regexp = /[#\\?]/
+      let reg = new RegExp(' ', 'g')
+      if (regexp.test(file.name)) {
+        that.$message.error('The filename cannot contain any of the following characters # ? \\')
+        that.ruleForm.fileList = []
+        return false
+      } else if (file.name.indexOf(' ') > -1) {
+        file.name = file.name.replace(reg, '_')
+        file.raw = new File([file.raw], file.name)
+      }
+
       if (fileList.length > 0) {
-        that.ruleForm.fileList = [fileList[fileList.length - 1]] // 这一步，是 展示最后一次选择的csv文件
+        that.ruleForm.fileList = [fileList[fileList.length - 1]]
 
         that.loading = true
         try {
@@ -421,7 +480,7 @@ export default {
             'policy_id': that.dataCont.policy.id,
             'last_modified': new Date().getTime()
           }
-          const directoryRes = await commonFun.sendRequest(`${process.env.BASE_METASPACE}api/v3/file/upload`, 'put', params)
+          const directoryRes = await that.$commonFun.sendRequest(`${process.env.BASE_METASPACE}api/v3/file/upload`, 'put', params)
           if (!directoryRes || directoryRes.status !== 'success') {
             that.$message({
               showClose: true,
@@ -438,7 +497,7 @@ export default {
               that.onPross(progressEvent)
             }
           }
-          const uploadRes = await commonFun.sendRequest(`${process.env.BASE_METASPACE}api/v3/file/upload/${session}/0`, 'post', file.raw, config)
+          const uploadRes = await that.$commonFun.sendRequest(`${process.env.BASE_METASPACE}api/v3/file/upload/${session}/0`, 'post', file.raw, config)
           console.log('upload:', uploadRes)
           if (!uploadRes || uploadRes.status !== 'success') {
             that.$message.error(uploadRes ? uploadRes.message : 'Fail')
@@ -451,7 +510,7 @@ export default {
         } catch (e) {
           console.log(e)
         }
-        await commonFun.timeout(500)
+        await that.$commonFun.timeout(500)
         that.$emit('getUploadDialog', false, 1)
         that.loading = false
       }
@@ -466,14 +525,59 @@ export default {
       const { loaded, total } = e
       const uploadPrecent = ((loaded / total) * 100) | 0
       that.uploadPrecent = loaded < total && uploadPrecent === 100 ? 99 : uploadPrecent
+    },
+    submitEmail (formName) {
+      that.$refs[formName].validate(async valid => {
+        if (valid) {
+          that.emailLoad = true
+          try {
+            const params = {
+              'email': that.form.email
+            }
+            const emailRes = await that.$commonFun.sendRequest(`${process.env.BASE_METASPACE}api/v3/email`, 'post', params)
+            if (!emailRes || emailRes.status !== 'success') {
+              that.$message({
+                showClose: true,
+                message: emailRes ? emailRes.message : 'Fail',
+                type: 'error',
+                duration: 10000
+              })
+            } else {
+              that.$message({
+                showClose: true,
+                message: emailRes ? emailRes.data : 'Success',
+                type: 'success',
+                duration: 10000
+              })
+              that.typeName = 'emailCheck'
+              sessionStorage.setItem('emailPop', '2')
+            }
+          } catch (e) {
+            console.log(e)
+          }
+          that.emailLoad = false
+        } else {
+          console.log('error submit!!')
+          return false
+        }
+      })
+    },
+    async signInSkip () {
+      sessionStorage.setItem('emailPop', '2')
+      that.closeDia()
     }
   },
   mounted () {
     that = this
     document.onkeydown = function (e) {
       if (e.keyCode === 13) {
-        if (that.typeName === 'add' || that.typeName === 'addSub') that.getDialogClose('form')
+        if (that.typeName === 'add' || that.typeName === 'rename' || that.typeName === 'addSub') that.getDialogClose('form')
       }
+    }
+  },
+  computed: {
+    metaAddress () {
+      return this.$store.getters.metaAddress
     }
   },
   filters: {
@@ -490,12 +594,25 @@ export default {
       }
       return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
       // return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i]
+    },
+    hiddAddress: function (val) {
+      if (val) {
+        return `${val.substring(0, 6)}...${val.substring(val.length - 4)}`
+      } else {
+        return '-'
+      }
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
+@font-face {
+  font-family: "gilroy-regular";
+  src: url(../assets/font/gilroy-regular-3.otf);
+  font-style: normal;
+  font-display: block;
+}
 .slideScroll {
   height: calc(100% - 0.6rem);
   min-height: 350px;
@@ -948,6 +1065,7 @@ export default {
             color: #000002;
             line-height: 1.5;
             text-align: left;
+            word-break: break-word;
             @media screen and (max-width: 768px) {
               font-size: 14px;
             }
@@ -1037,6 +1155,157 @@ export default {
         @media screen and (max-width: 441px) {
           font-size: 14px;
           line-height: 1.2;
+        }
+      }
+      .titleCont {
+        padding: 0.2rem 0;
+        font-weight: 600;
+        font-size: 0.286rem;
+        font-weight: 600;
+        color: #fff;
+        line-height: 1.3;
+        border-bottom: 1px solid #dde0e2;
+        @media screen and (max-width: 600px) {
+          font-size: 16px;
+        }
+        p {
+          text-align: center;
+        }
+        .address {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          font-size: 0.223rem;
+          font-weight: normal;
+          color: #fff;
+          line-height: 1.2;
+          @media screen and (max-width: 600px) {
+            font-size: 13px;
+          }
+          .address_left {
+            display: flex;
+            align-items: center;
+            img {
+              height: 30px;
+              margin: 0 0.25rem 0 0;
+              @media screen and (max-width: 600px) {
+                height: 24px;
+              }
+            }
+          }
+          .address_right {
+            position: relative;
+            display: inline-block;
+            padding: 0.1rem 0.2rem 0.1rem 0.32rem;
+            background-color: rgba(85, 128, 233, 0.3);
+            font-size: 0.148rem;
+            border-radius: 0.5rem;
+            @media screen and (max-width: 1600px) {
+              font-size: 14px;
+            }
+            @media screen and (max-width: 1440px) {
+              font-size: 13px;
+            }
+            &::before {
+              position: absolute;
+              left: 0.16rem;
+              top: 50%;
+              content: "";
+              width: 0.08rem;
+              height: 0.08rem;
+              margin-top: -0.04rem;
+              background-color: #4d73ff;
+              border-radius: 0.5rem;
+            }
+          }
+        }
+      }
+      .ruleForm /deep/ {
+        padding: 0.3rem 0;
+        .form_title {
+          font-size: 0.223rem;
+          font-weight: normal;
+          color: #fff;
+          line-height: 1.2;
+          @media screen and (max-width: 600px) {
+            font-size: 13px;
+          }
+        }
+        .el-form {
+          padding: 0.1rem 0 0;
+          .el-form-item {
+            display: block;
+            height: auto;
+            max-width: 4.5rem;
+            text-align: left;
+            .el-form-item__content {
+              height: auto;
+              width: 100%;
+              margin: 0 0 0.3rem;
+              font-size: 0.223rem;
+              font-weight: normal;
+              color: #fff;
+              line-height: 1.2;
+              @media screen and (max-width: 600px) {
+                font-size: 13px;
+              }
+              .el-input {
+                margin: 0 auto;
+                .el-input__inner {
+                  height: auto;
+                  padding: 0.2rem 0.15rem;
+                  border-radius: 0.1rem;
+                  border-color: #3d6ddb;
+                  color: #041417;
+                  line-height: 1.2;
+                  font-size: inherit;
+                }
+              }
+              .el-form-item__error {
+                display: flex;
+              }
+              .el-button {
+                display: block;
+                width: 80%;
+                max-width: 4rem;
+                font-family: inherit;
+                font-size: 0.25rem;
+                font-weight: 600;
+                height: auto;
+                padding: 0.2rem;
+                margin: 0;
+                background: linear-gradient(45deg, #0353fe, #7cebfe);
+                color: #fff;
+                border: 0;
+                border-radius: 0.5rem;
+                line-height: 1;
+                letter-spacing: 1px;
+                @media screen and (max-width: 600px) {
+                  font-size: 14px;
+                }
+                span {
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                }
+                &:hover {
+                  background: linear-gradient(45deg, #021cad, #3e70fe);
+                }
+              }
+            }
+          }
+        }
+        .skip {
+          float: right;
+          color: #fff;
+          text-decoration: underline;
+          font-size: 14px;
+          @media screen and (max-width: 1600px) {
+            font-size: 12px;
+          }
+        }
+        .el-loading-mask {
+          background-color: rgba(46, 77, 91, 0.75);
         }
       }
     }
@@ -1470,6 +1739,90 @@ export default {
         }
       }
     }
+    .loginEmail {
+      max-width: 10rem;
+      padding: 0.2rem 0.5rem 0.35rem;
+      margin: auto;
+      background: rgba(4, 20, 23, 1);
+      border: 1px solid #4e7cff;
+      border-radius: 0.2rem;
+      font-family: "gilroy-regular";
+    }
+    .checkEmail {
+      max-width: 5.5rem;
+      padding: 0.5rem;
+      background: rgba(4, 20, 23, 1);
+      border: 1px solid #4e7cff;
+      border-radius: 0.2rem;
+      font-family: "gilroy-regular";
+      @media screen and (min-width: 768px) {
+        min-width: 400px;
+      }
+      .check_email {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        @media screen and (max-width: 441px) {
+          flex-wrap: wrap;
+        }
+        .check_left {
+          padding-right: 0.1rem;
+          color: #fff;
+          text-align: left;
+          h3 {
+            font-size: 0.298rem;
+            line-height: 1.5;
+            @media screen and (max-width: 1600px) {
+              font-size: 22px;
+            }
+            @media screen and (max-width: 600px) {
+              font-size: 16px;
+            }
+          }
+          h4,
+          u,
+          a {
+            padding: 0.1rem 0;
+            font-size: 0.18rem;
+            font-weight: normal;
+            line-height: 1.5;
+            opacity: 0.9;
+            color: inherit;
+            @media screen and (max-width: 1600px) {
+              font-size: 15px;
+            }
+            @media screen and (max-width: 1440px) {
+              font-size: 14px;
+            }
+            @media screen and (max-width: 600px) {
+              font-size: 13px;
+            }
+            u {
+              opacity: 1;
+            }
+          }
+          u {
+            cursor: pointer;
+            display: block;
+            padding: 0;
+          }
+        }
+        .check_right {
+          display: flex;
+          justify-content: flex-end;
+          align-items: center;
+          width: 50%;
+          @media screen and (max-width: 441px) {
+            width: 100%;
+          }
+          img {
+            width: 95%;
+            max-width: 1.8rem;
+            margin: auto;
+          }
+        }
+      }
+    }
     /deep/ .el-list-enter-active,
     /deep/ .el-list-leave-active {
       transition: none;
@@ -1892,6 +2245,9 @@ export default {
 }
 .slideComSoon {
   position: fixed;
+}
+.slideEmail {
+  z-index: 2999;
 }
 .reverse_phase {
   .slideScroll {

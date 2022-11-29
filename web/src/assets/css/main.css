@@ -30,12 +30,14 @@ a {
   text-decoration: none
 }
 
-.pcShow{
+.pcShow {
   display: block;
 }
-.mobileShow{
+
+.mobileShow {
   display: none;
 }
+
 .content-box {
   bottom: 0;
   -webkit-transition: left .3s ease-in-out;
@@ -43,21 +45,26 @@ a {
   background: #f0f0f0;
   overflow-y: scroll;
 }
-.content-login{
-top: 0;
+
+.content-login {
+  top: 0;
 }
+
 .content-box::-webkit-scrollbar-track {
   background: transparent;
 }
+
 .content-box::-webkit-scrollbar {
   width: 6px;
   background: transparent;
 }
+
 .content-box::-webkit-scrollbar-thumb {
   background: #ccc;
 }
+
 .content-box .el-loading-spinner {
-top: 1.5rem;
+  top: 1.5rem;
 }
 
 .content {
@@ -65,7 +72,7 @@ top: 1.5rem;
   box-sizing: border-box;
 }
 
-#footer{
+#footer {
   width: calc(100% - 0.6rem);
   height: 0.6rem;
   line-height: 0.6rem;
@@ -74,44 +81,49 @@ top: 1.5rem;
   bottom: 0;
   overflow: hidden;
 }
-#footer .footer_left{
+
+#footer .footer_left {
   float: left;
   width: auto;
   font-size: 0.12rem;
   font-weight: 400;
   color: #a9a9aa;
 }
-#footer .footer_right{
+
+#footer .footer_right {
   float: right;
   font-size: 0.12rem;
   font-weight: 400;
   overflow: hidden;
 }
-#footer .footer_right a{
+
+#footer .footer_right a {
   padding: 0 0.12rem;
   color: #5867dd;
   outline: none;
 }
 
-#headerMb{
-background-color: #fff;
-/* padding: 0 0 0.03rem; */
+#headerMb {
+  background-color: #fff;
+  /* padding: 0 0 0.03rem; */
 }
-.headerMb{
-display: flex;
-flex-wrap: wrap;
-justify-content: space-between;
-align-items: center;
-padding: 0 0.2rem;
-font-size: 0.26rem;
-line-height: 0.6rem;
-border-bottom: 1px solid #f5f5f5;
-color: #0b318f;
+
+.headerMb {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 0.2rem;
+  font-size: 0.26rem;
+  line-height: 0.6rem;
+  border-bottom: 1px solid #f5f5f5;
+  color: #0b318f;
 }
-.headerMb .el-button{
-padding: 0.08rem 0.2rem;
-background-color: #0b318f;
-border: 0;
+
+.headerMb .el-button {
+  padding: 0.08rem 0.2rem;
+  background-color: #0b318f;
+  border: 0;
 }
 
 .content-collapse {
@@ -147,7 +159,7 @@ border: 0;
   margin-left: 0.1rem;
 }
 
-.el-tooltip__popper{
+.el-tooltip__popper {
   width: 200px;
   word-break: break-word;
 }
@@ -254,20 +266,19 @@ border: 0;
   min-height: 5rem;
 }
 
-
-.el-message /deep/ .el-message__icon{
+.el-message /deep/ .el-message__icon {
   font-size: 20px;
 }
+
 #profile .el-loading-mask .el-loading-spinner {
   top: 1.5rem;
 }
 
-
-.mask.vue-img-cutter /deep/ .dialogBoxModal .tool-title{
+.mask.vue-img-cutter /deep/ .dialogBoxModal .tool-title {
   color: #fff;
 }
 
-.login{
+.login {
   position: absolute;
   left: 0;
   top: 0;
@@ -282,7 +293,8 @@ border: 0;
   align-items: center;
   z-index: 1;
 }
-.login .loginArea{
+
+.login .loginArea {
   width: 3.28rem;
   /* height: 4.08rem; */
   padding: 0 0 0.2rem;
@@ -291,7 +303,8 @@ border: 0;
   min-height: 200px;
   background: #fff;
 }
-.login .loginArea .loginAreaLeft{
+
+.login .loginArea .loginAreaLeft {
   float: left;
   display: flex;
   width: 52.7%;
@@ -302,16 +315,19 @@ border: 0;
   align-items: center;
   display: none;
 }
-.login .loginArea .loginAreaLeft img{
+
+.login .loginArea .loginAreaLeft img {
   width: 50%;
 }
-.login .loginArea .loginAreaRight{
+
+.login .loginArea .loginAreaRight {
   position: relative;
   float: left;
   width: 100%;
-  padding:0 0 0.3rem;
+  padding: 0 0 0.3rem;
 }
-.loginAreaRight .login_register{
+
+.loginAreaRight .login_register {
   display: block;
   width: calc(100% - 0.18rem);
   margin: 0.14rem 0 0;
@@ -321,7 +337,8 @@ border: 0;
   color: #0099ff;
   text-align: right;
 }
-.loginAreaRight h1{
+
+.loginAreaRight h1 {
   width: 100%;
   margin: 0.55rem 0 0.42rem;
   text-align: center;
@@ -332,28 +349,34 @@ border: 0;
   color: #333;
   /* letter-spacing: 0.02rem; */
 }
-.login .el-form.demo-dynamic{
+
+.login .el-form.demo-dynamic {
   float: left;
   clear: both;
   width: 100%;
 }
-.login .el-form-item{
-    height: 0.34rem;
-    margin-bottom: 0.2rem;
-    line-height: 0.34rem;
-    font-size: 0.105rem;
-    text-align: center;
+
+.login .el-form-item {
+  height: 0.34rem;
+  margin-bottom: 0.2rem;
+  line-height: 0.34rem;
+  font-size: 0.105rem;
+  text-align: center;
 }
-.login .el-form-item:nth-child(3),.login .el-form-item:nth-child(4){
+
+.login .el-form-item:nth-child(3),
+.login .el-form-item:nth-child(4) {
   margin-bottom: 0;
 }
-.login .el-form-item__content{
-    height: 0.34rem;
-    line-height: 0.34rem;
-    font-size: 0.105rem;
-    width: 81%;
-    margin: auto !important;
+
+.login .el-form-item__content {
+  height: 0.34rem;
+  line-height: 0.34rem;
+  font-size: 0.105rem;
+  width: 81%;
+  margin: auto !important;
 }
+
 .login .el-input__inner {
   border-radius: 0;
   border: 0.01rem solid #e0e0e0;
@@ -365,15 +388,18 @@ border: 0;
   width: 100%;
   font-size: 0.105rem;
 }
+
 .login .el-checkbox-group {
   text-align: left;
 }
+
 .login .el-checkbox__label {
   padding-left: 0.06rem;
   line-height: 0.25rem;
   font-size: 0.105rem;
   color: #303137;
 }
+
 .login .el-checkbox__inner {
   float: left;
   width: 0.11rem;
@@ -383,13 +409,15 @@ border: 0;
   border: 0.01rem solid #ccd3db;
   border-radius: 0;
 }
+
 .login .el-checkbox__inner::after {
   height: 0.07rem;
   left: 0.03rem;
   top: 0;
   width: 0.04rem;
 }
-.login .el-button{
+
+.login .el-button {
   width: 100%;
   padding: 0;
   margin: 0 auto 0;
@@ -399,22 +427,26 @@ border: 0;
   border: 0;
   border-radius: 0;
 }
+
 .login .el-button--primary {
   background-color: #009ffd;
   border-color: #009ffd;
 }
-.login .login_forgetPass{
+
+.login .login_forgetPass {
   float: right;
   display: block;
   margin: 0.07rem 9.5% 0.07rem 0;
   font-size: 0.12rem;
   color: #98989b;
 }
-.login .el-form-item__error{
+
+.login .el-form-item__error {
   padding-top: 0;
   font-size: 0.105rem;
 }
-.login .login_register1{
+
+.login .login_register1 {
   position: absolute;
   top: -0.33rem;
   right: 0.04rem;
@@ -422,7 +454,8 @@ border: 0;
   font-size: 0.12rem;
   color: #fff;
 }
-.login .title{
+
+.login .title {
   display: flex;
   margin: 0.45rem 0 0.1rem;
   justify-content: center;
@@ -430,23 +463,28 @@ border: 0;
   font-size: 0.165rem;
   color: #333;
 }
-.login .title div{
+
+.login .title div {
   display: inline;
   padding: 0 0.08rem;
   line-height: 0.3rem;
   cursor: pointer;
 }
-.login .title .active{
+
+.login .title .active {
   font-weight: bold;
 }
-.login.register .el-input__inner{
+
+.login.register .el-input__inner {
   height: 0.29rem;
   line-height: 0.29rem;
 }
-.login.register .el-form-item{
+
+.login.register .el-form-item {
   margin-bottom: 0.14rem;
 }
-.login .identCode{
+
+.login .identCode {
   position: relative;
   float: left;
   width: 38%;
@@ -456,10 +494,12 @@ border: 0;
   cursor: pointer;
   font-size: 0.12rem;
 }
-.login .identCode.active{
+
+.login .identCode.active {
   opacity: 0.5;
 }
-.login .identCode::after{
+
+.login .identCode::after {
   content: '';
   position: absolute;
   left: 0;
@@ -469,47 +509,54 @@ border: 0;
   margin-top: -0.085rem;
   background-color: #e0e0e0;
 }
-.login .loginFormDiv{
+
+.login .loginFormDiv {
   width: 81%;
   height: 0.29rem;
   margin: 0 auto 0.16rem;
-  border:0.01rem solid #e0e0e0;
+  border: 0.01rem solid #e0e0e0;
   font-size: 0.0105rem;
   line-height: 0.29rem;
   overflow: hidden;
 }
-.login.register .loginFormDiv .noborder{
+
+.login.register .loginFormDiv .noborder {
   float: left;
   width: calc(66% - 0.2rem);
-  border:0;
-}
-.login.register .loginFormDiv .noborder .el-input__inner{
-  border:0;
-}
-.login .loginFormDiv .form-input{
   border: 0;
-    border-radius: 0;
-    color: #606266;
-    height: 0.29rem;
-    line-height: 0.29rem;
-    outline: none;
-    padding: 0 0.1rem;
-    width: calc(100% - 0.2rem);
-    font-size: 0.12rem;
 }
-.login .loginFormDiv+.form-tips{
-    width: 81%;
-    min-height: 0.16rem;
-    margin: -0.16rem auto 0;
-    font-size: 11px;
-    color: #ff5656;
+
+.login.register .loginFormDiv .noborder .el-input__inner {
+  border: 0;
 }
-.login.register .loginFormDiv .el-select{
+
+.login .loginFormDiv .form-input {
+  border: 0;
+  border-radius: 0;
+  color: #606266;
+  height: 0.29rem;
+  line-height: 0.29rem;
+  outline: none;
+  padding: 0 0.1rem;
+  width: calc(100% - 0.2rem);
+  font-size: 0.12rem;
+}
+
+.login .loginFormDiv+.form-tips {
+  width: 81%;
+  min-height: 0.16rem;
+  margin: -0.16rem auto 0;
+  font-size: 11px;
+  color: #ff5656;
+}
+
+.login.register .loginFormDiv .el-select {
   position: relative;
   float: left;
   width: 29.5%;
 }
-.login.register .loginFormDiv .el-select::after{
+
+.login.register .loginFormDiv .el-select::after {
   content: '';
   position: absolute;
   right: 0;
@@ -519,156 +566,170 @@ border: 0;
   margin-top: -0.085rem;
   background-color: #e0e0e0;
 }
-.login.register .loginFormDiv .el-input--suffix .el-input__inner{
+
+.login.register .loginFormDiv .el-input--suffix .el-input__inner {
   padding-right: 0.3rem;
 }
-.login.register .loginFormDiv .el-input .el-input__inner{
+
+.login.register .loginFormDiv .el-input .el-input__inner {
   border: 0;
 }
-.login.register .loginFormDiv .el-input__icon{
+
+.login.register .loginFormDiv .el-input__icon {
   width: 0.25rem;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.el-message-box__wrapper .el-message-box{
+.el-message-box__wrapper .el-message-box {
   background: #fff url(../images/tip_bg.png) no-repeat;
   background-size: 1.45rem;
   background-position: -0.2rem -0.3rem;
 }
-.el-message-box__wrapper .el-message-box .el-message-box__header{
+
+.el-message-box__wrapper .el-message-box .el-message-box__header {
   padding-top: 0.15rem;
 }
-.el-message-box__wrapper .el-message-box .el-message-box__message p{
+
+.el-message-box__wrapper .el-message-box .el-message-box__message p {
   line-height: 0.6rem;
   text-align: center;
 }
-.el-message-box__wrapper .el-message-box .el-message-box__btns{
+
+.el-message-box__wrapper .el-message-box .el-message-box__btns {
   padding-top: 0.25rem;
 }
-.el-message-box__wrapper .el-message-box .el-message-box__btns button{
+
+.el-message-box__wrapper .el-message-box .el-message-box__btns button {
   padding: 0.07rem 0.2rem;
   border-radius: 0.08rem;
   font-size: 0.1372rem;
 }
-.el-message-box__wrapper .el-message-box .el-message-box__btns button:nth-child(1){
+
+.el-message-box__wrapper .el-message-box .el-message-box__btns button:nth-child(1) {
   background-color: #fff;
   border-color: #0b318f;
-  color:  #0b318f;
+  color: #0b318f;
 }
-.el-message-box__wrapper .el-message-box .el-message-box__btns button:nth-child(2){
+
+.el-message-box__wrapper .el-message-box .el-message-box__btns button:nth-child(2) {
   background-color: #0b318f;
   border-color: #0b318f;
 }
 
-.el-message .el-icon-success,.el-message .el-icon-error, .el-message--warning{
+.el-message {
+  z-index: 3001 !important;
+}
+
+.el-message .el-icon-success,
+.el-message .el-icon-error,
+.el-message--warning {
   font-size: 35px;
 }
 
-.el-table-filter__bottom{
+.el-table-filter__bottom {
   display: flex;
 }
 
-
-.elPopMiner{
+.elPopMiner {
   text-align: center;
 }
-.elPopTitle{
+
+.elPopTitle {
   word-break: break-word;
   text-align: left;
 }
-.el-popover.el-popper{
+
+.el-popover.el-popper {
   max-width: 400px;
 }
 
-@media screen and (max-width:1600px){
-html,
-body,
-#app,
-.wrapper {
-    font-size: 75px;
-}
-}
-
-@media screen and (max-width:1440px){
-html,
-body,
-#app,
-.wrapper {
-    font-size: 70px;
-}
-}
-
-@media screen and (max-width:1366px){
-html,
-body,
-#app,
-.wrapper {
-    font-size: 65px;
-}
-}
-
-@media screen and (max-width:1280px){
-html,
-body,
-#app,
-.wrapper {
-    font-size: 60px;
-}
-}
-
-@media screen and (max-width:1152px){
-html,
-body,
-#app,
-.wrapper {
-    font-size: 55px;
-}
-}
-
-@media screen and (max-width:1024px){
-html,
-body,
-#app,
-.wrapper {
-    font-size: 50px;
-}
-
-}
-
-@media screen and (max-width:999px){
+@media screen and (max-width:1600px) {
   html,
   body,
   #app,
   .wrapper {
-      font-size: 58px;
+    font-size: 75px;
   }
+}
 
-  .login .loginArea{
+@media screen and (max-width:1440px) {
+  html,
+  body,
+  #app,
+  .wrapper {
+    font-size: 70px;
+  }
+}
+
+@media screen and (max-width:1366px) {
+  html,
+  body,
+  #app,
+  .wrapper {
+    font-size: 65px;
+  }
+}
+
+@media screen and (max-width:1280px) {
+  html,
+  body,
+  #app,
+  .wrapper {
+    font-size: 60px;
+  }
+}
+
+@media screen and (max-width:1152px) {
+  html,
+  body,
+  #app,
+  .wrapper {
+    font-size: 55px;
+  }
+}
+
+@media screen and (max-width:1024px) {
+  html,
+  body,
+  #app,
+  .wrapper {
+    font-size: 50px;
+  }
+}
+
+@media screen and (max-width:999px) {
+  html,
+  body,
+  #app,
+  .wrapper {
+    font-size: 58px;
+  }
+  .login .loginArea {
     width: 90%;
     max-width: 400px;
     height: auto;
     min-width: auto;
   }
-  .login .loginArea .loginAreaLeft{
+  .login .loginArea .loginAreaLeft {
     display: none;
     float: none;
     width: 100%;
     height: auto;
     padding: 0.2rem 0;
   }
-  .login .loginArea .loginAreaLeft img{
+  .login .loginArea .loginAreaLeft img {
     width: 40%;
   }
-  .login .loginArea .loginAreaRight{
+  .login .loginArea .loginAreaRight {
     width: 100%;
     float: none;
   }
   /* .loginAreaRight h1{
     margin: 0.1rem 0 0.2rem !important;
   } */
-  .login .login_register1{
+  .login .login_register1 {
     display: block;
     width: calc(100% - 0.18rem);
     margin: 0.14rem 0 0;
@@ -681,41 +742,41 @@ body,
     top: auto;
     right: auto;
   }
-
-  .content-box{
+  .content-box {
     overflow-x: hidden
   }
 }
-@media screen and (max-width:768px){
-.el-message-box__wrapper .el-message-box{
-  width: 90%;
-}
-/* .login{
+
+@media screen and (max-width:768px) {
+  .el-message-box__wrapper .el-message-box {
+    width: 90%;
+  }
+  /* .login{
   position: relative;
   margin-top: -10px;
 } */
-.login .loginArea{
-  margin: 0 auto;
-  padding: 0 0 0.05rem;
-}
+  .login .loginArea {
+    margin: 0 auto;
+    padding: 0 0 0.05rem;
+  }
 }
 
-@media screen and (max-width:441px){
-.elPopDate{
-  width: 100%;
-  left: 0;
-  overflow: scroll;
-}
-/* .elPopDate .el-picker-panel__body{
+@media screen and (max-width:441px) {
+  .elPopDate {
+    width: 100%;
+    left: 0;
+    overflow: scroll;
+  }
+  /* .elPopDate .el-picker-panel__body{
   min-width: auto;
   width:  100%;
 } */
-/* .elPopDate .el-date-range-picker__content{
+  /* .elPopDate .el-date-range-picker__content{
   width:  100%;
   clear: both;
   padding: 0;
 } */
-/* .elPopDate .el-date-range-picker__content.is-left{
+  /* .elPopDate .el-date-range-picker__content.is-left{
   border: 0;
 } */
 }

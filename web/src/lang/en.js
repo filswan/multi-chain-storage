@@ -459,14 +459,16 @@ export default {
     Connect_text_desc: 'Easily upload individual files or buckets in one spot to both IPFS and Filecoin. Get your CID and then mint to OpenSea in just one click.',
     Connect_text_btn: 'Enjoy your journey with multichain.storage',
     Connected: 'Connected',
-    Connect_form_label: 'Enter your email address to claim a free 30 GB bucket',
+    Connect_form_label: 'Enter your email address to claim a sign-up reward',
     Connect_form_btn: 'Submit',
     Connect_email_title: 'Success!',
-    Connect_email_desc: 'Check your email and follow the link to activate your account and set up your free 30GB bucket.',
+    Connect_email_desc: 'Check your email and follow the link to activate your account reward.',
     Connect_email_again: 'Didn’t recieve any email? Try again.',
+    Connect_email_jump: 'Click here to jump to the page.',
     Connect_StartFree: 'Get Started',
     Connect_TutorialVideo: 'Tutorial Video',
-    back_home: 'Back to Home Page'
+    back_home: 'Back to Home Page',
+    Skip: 'Skip'
   },
   uploadFile: {
     title: 'Files List',

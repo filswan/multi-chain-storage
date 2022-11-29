@@ -90,8 +90,6 @@ import vHead from '@/components/headHome.vue'
 import vFoot from '@/components/footHome.vue'
 import networkAlert from '@/components/networkAlert.vue'
 import CarouselContainer from '@/components/CarouselContainer.vue'
-import NCWeb3 from '@/utils/web3'
-import metaLogin from '@/utils/login'
 let that
 const ethereum = window.ethereum
 export default {
@@ -207,9 +205,10 @@ export default {
     },
     // 是否已登录
     async isLogin () {
-      let status = await metaLogin.netStatus(that.networkID)
+      let status = await that.$metaLogin.netStatus(that.networkID)
       if (that.mcsjwtToken && that.metaAddress && status) {
         that.$router.push({ path: '/my_files' })
+        sessionStorage.setItem('emailPop', '1')
       } else that.$store.dispatch('setMetaAddress', '')
     },
     async changeNet (rows) {
@@ -267,31 +266,30 @@ export default {
       }
     },
     signFun () {
-      if (!that.metaAddress || that.metaAddress === undefined) {
-        NCWeb3.Init(async addr => {
-          that.$store.dispatch('setMetaAddress', addr)
-          sessionStorage.setItem('login_path', addr)
-          that.loginLoad = true
-          that.signIn()
-        })
-      }
-      const networkCont = {
-        name: that.networkID === 137 ? 'Polygon' : that.networkID === 80001 ? 'Mumbai' : that.networkID === 97 ? 'BSC' : 'Custom',
-        unit: 'USDC',
-        center_fail: false
-      }
-      that.$store.dispatch('setMetaNetworkInfo', networkCont)
+      that.$commonFun.Init(async addr => {
+        that.$store.dispatch('setMetaAddress', addr)
+        sessionStorage.setItem('login_path', addr)
+        const networkCont = {
+          name: that.networkID === 137 ? 'Polygon' : that.networkID === 80001 ? 'Mumbai' : that.networkID === 97 ? 'BSC' : 'Custom',
+          unit: 'USDC',
+          center_fail: false
+        }
+        that.$store.dispatch('setMetaNetworkInfo', networkCont)
+        that.loginLoad = true
+        that.signIn()
+      })
     },
     async signIn () {
-      let status = await metaLogin.netStatus(that.networkID)
+      let status = await that.$metaLogin.netStatus(that.networkID)
       that.networkTip = !status
       if (!status) return false
-      const lStatus = await metaLogin.login()
+      const lStatus = await that.$metaLogin.login()
       if (lStatus) setTimeout(function () { window.location.reload() }, 200)
       else that.loginLoad = false
     },
     getNetwork (dis) {
       that.networkTip = dis
+      that.loginLoad = dis
     },
     fn () {
       document.addEventListener('visibilitychange', function () {
@@ -303,7 +301,7 @@ export default {
         let chainID = parseInt(accounts, 16)
         that.$store.dispatch('setMetaNetworkId', chainID)
         that.signFun()
-        let status = await metaLogin.netStatus(chainID)
+        let status = await that.$metaLogin.netStatus(chainID)
         if (status) that.changeNet(chainID)
       })
     }

@@ -18,8 +18,8 @@ import './assets/css/main.css'
 
 import Meta from 'vue-meta'
 import * as statusColor from './utils/status_color'
-
-import './utils/web3.min.js'
+import commonFun from './utils/common'
+import * as metaLogin from './utils/login'
 import Web3 from 'web3'
 
 Vue.use(Router)
@@ -29,11 +29,12 @@ let langNew = store.getters.languageMcs === 'en' ? {
   localeCN
 }
 Vue.use(ElementUI, langNew)
-// Vue.use(ElementUI);
 Vue.use(Vuex)
-// 使用vue-meta
 Vue.use(Meta)
 Vue.prototype.$statusColor = statusColor
+Vue.prototype.$commonFun = commonFun
+Vue.prototype.$metaLogin = metaLogin
+Vue.prototype.$web3Init = commonFun.web3Init
 
 Vue.config.productionTip = false
 let netData = Number(sessionStorage.getItem('networkID')) || 0
@@ -41,7 +42,7 @@ Vue.prototype.baseAPIURL = netData === 97 ? process.env.BASE_PAYMENT_GATEWAY_BSC
 Vue.prototype.baseAddressURL = netData === 97 ? process.env.BASE_BSC_ADDRESS : netData === 80001 ? process.env.BASE_MUMBAI_ADDRESS : process.env.BASE_POLYGON_ADDRESS
 Vue.prototype.Web3 = Web3
 Vue.prototype.baseNetwork = process.env.BASE_ENV === true
-console.log('env:', process.env.BASE_ENV, process.env.BASE_ENV === true ? 'Main' : 'Cali')
+console.log('update time: 2022-11-29', 'env:', process.env.BASE_ENV === true ? 'Main' : 'Cali', process.env.BASE_ENV)
 router.beforeEach((to, from, next) => {
   if (to.matched.some(record => record.meta.requiresAuth)) {
     if (!sessionStorage.getItem('metaAddress')) {

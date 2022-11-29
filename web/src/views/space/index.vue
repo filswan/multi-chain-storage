@@ -49,7 +49,7 @@
           <el-table-column prop="" :label="$t('metaSpace.table_action')" min-width="120">
             <template slot-scope="scope">
               <div class="hot-cold-box">
-                <i class="icon icon_rename" @click="dialogFun('comingSoon')"></i>
+                <i class="icon icon_rename" @click="dialogFun('rename', scope.row)"></i>
                 <i class="icon icon_details" @click="getDetail(scope.row)"></i>
                 <i class="icon icon_delete" @click="dialogFun('delete', scope.row)"></i>
               </div>
@@ -85,7 +85,6 @@
 </template>
 <script>
 import moment from 'moment'
-import commonFun from '@/utils/common'
 import popUps from '@/components/popups'
 import QS from 'qs'
 // import * as myAjax from '@/api/space'
@@ -119,7 +118,7 @@ export default {
       that.backupLoad = true
       that.dialogFun('detail', row)
       let bucketDetail = row
-      const backupRes = await commonFun.sendRequest(`${process.env.BASE_METASPACE}api/v3/backup/stat/${row.id}`, 'get')
+      const backupRes = await that.$commonFun.sendRequest(`${process.env.BASE_METASPACE}api/v3/backup/stat/${row.id}`, 'get')
       if (!backupRes || backupRes.status !== 'success') that.$message.error(backupRes.message || 'Fail')
       else {
         bucketDetail.miner_list = backupRes.data.miner_list.split(',') || ''
@@ -137,6 +136,9 @@ export default {
         case 'delete':
           that.deleteFun()
           break
+        case 'rename':
+          that.renameFun(bucketName)
+          break
         default:
           if (rows) that.getDialogClose(rows, bucketName)
           else that.dialogFormVisible = dialog
@@ -148,17 +150,37 @@ export default {
       if (row) that.areaBody = row
       that.dialogFormVisible = true
     },
+    async renameFun (newName) {
+      that.createLoad = true
+      const params =
+        {
+          'action': 'rename',
+          'src': {
+            'dirs': [that.areaBody.id],
+            'items': []
+          },
+          'new_name': newName
+        }
+      const renameRes = await that.$commonFun.sendRequest(`${process.env.BASE_METASPACE}api/v3/object/rename`, 'post', params)
+      if (!renameRes || renameRes.status !== 'success') {
+        that.$message.error(renameRes ? renameRes.message : 'Fail')
+      }
+      await that.$commonFun.timeout(500)
+      that.createLoad = false
+      that.dialogFormVisible = false
+      that.getListBuckets()
+    },
     async deleteFun () {
       that.listTableLoad = true
       const params = {
         'items': [], // 文件名
         'dirs': [that.areaBody.id] // 文件夹
       }
-      const deleteRes = await commonFun.sendRequest(`${process.env.BASE_METASPACE}api/v3/object`, 'delete', params)
+      const deleteRes = await that.$commonFun.sendRequest(`${process.env.BASE_METASPACE}api/v3/object`, 'delete', params)
       if (!deleteRes || deleteRes.status !== 'success') {
         that.$message.error(deleteRes ? deleteRes.status : 'Fail')
       }
-      await commonFun.timeout(500)
+      await that.$commonFun.timeout(500)
       that.listTableLoad = false
       that.dialogFormVisible = false
       that.getListBuckets()
@@ -171,11 +193,11 @@ export default {
       const params = {
         'path': `/${name.trim()}`
       }
-      const directoryRes = await commonFun.sendRequest(`${process.env.BASE_METASPACE}api/v3/directory`, 'put', params)
+      const directoryRes = await that.$commonFun.sendRequest(`${process.env.BASE_METASPACE}api/v3/directory`, 'put', params)
       if (!directoryRes || directoryRes.status !== 'success') {
         that.$message.error(directoryRes ? directoryRes.message : 'Fail')
       }
-      await commonFun.timeout(500)
+      await that.$commonFun.timeout(500)
       that.createLoad = false
       that.dialogFormVisible = false
       that.getListBuckets()
@@ -185,8 +207,8 @@ export default {
       const params = {
         file_name: `${that.search.trim()}` || ''
       }
-      const directoryRes = await commonFun.sendRequest(`${process.env.BASE_METASPACE}api/v3/directory/?${QS.stringify(params)}`, 'get')
-      // const directoryRes = await commonFun.sendRequest(`./static/json/list.json`, 'get')
+      const directoryRes = await that.$commonFun.sendRequest(`${process.env.BASE_METASPACE}api/v3/directory/?${QS.stringify(params)}`, 'get')
+      // const directoryRes = await that.$commonFun.sendRequest(`./static/json/list.json`, 'get')
       // const directoryRes = await myAjax.getBucketsList()
       if (!directoryRes || directoryRes.status !== 'success') {
         that.$message.error(directoryRes.message)

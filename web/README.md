@@ -42,6 +42,9 @@ Run `npm run dev` for a dev server. Navigate to `http://localhost:8080/`. The ap
 # Build test projects
 $ npm run build:test
 
+# Build prod test projects
+$ npm run build:test_prod
+
 # Build calibration projects
 $ npm run build:calibration
 

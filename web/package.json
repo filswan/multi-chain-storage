@@ -9,7 +9,7 @@
     "start": "npm run dev",
     "lint": "eslint --ext .js,.vue src",
     "build:test": "cross-env NODE_ENV=test env_config=test node buildVue/build.js",
-    "build:qa": "cross-env NODE_ENV=test env_config=test node buildVue/build.js",
+    "build:test_prod": "cross-env NODE_ENV=test env_config=test_prod node buildVue/build.js",
     "build:calibration": "cross-env NODE_ENV=production env_config=calibration node buildVue/build.js",
     "build:semi_prod": "cross-env NODE_ENV=production env_config=prod node buildVue/build.js"
   },
@@ -29,7 +29,7 @@
     "vue-meta": "^2.4.0",
     "vue-router": "^3.0.1",
     "vuex": "^3.6.2",
-    "web3": "^0.20.6"
+    "web3": "^1.7.0"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",

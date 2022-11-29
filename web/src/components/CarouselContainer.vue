@@ -1,9 +1,9 @@
 <template>
   <div class="CarouselContainer" @mouseenter="stopAutoPlay" @mouseleave="startAutoPlay">
-    <div ref="mySwiper" class="swiper-container" :id="currentIndex"  >
+    <div ref="mySwiper" class="swiper-container" :id="currentIndex">
       <div class="swiper-wrapper">
         <div class="swiper-slide my-swiper-slide" v-for="(item,index) of slideList" :key="index">
-            <a :href="item.link" target="_blank"><img :src="item.img" alt="logo" /></a>
+          <a :href="item.link" target="_blank"><img :src="item.img" alt="logo" /></a>
         </div>
       </div>
       <!-- 分页器 -->
@@ -30,7 +30,7 @@ export default {
     slideList: {
       deep: true,
       // eslint-disable-next-line
-      handler(nv,ov){
+      handler (nv, ov) {
         // console.log("数据更新了")
         this.updateSwiper()
       }
@@ -50,7 +50,7 @@ export default {
     },
     initSwiper () {
       // eslint-disable-next-line
-      let vueComponent=this
+      let vueComponent = this
       this.currentSwiper = new Swiper('#' + this.currentIndex, {
         loop: true,
         autoHeight: 'true',
@@ -121,65 +121,67 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-  .CarouselContainer{
-    width: 97%;
-    margin: auto;
-    .swiper-container  /deep/{
-        padding: 20px 0;
-        .my-swiper-slide{
-            height: 100px;
-            @media screen and (max-width: 1600px) {
-                height: 85px;
-            }
-            @media screen and (max-width: 1440px) {
-                height: 75px;
-            }
-            a{
-                img{
-                    display: block;
-                    height: 45px;
-                    margin: 20px auto;
-                    cursor: pointer;
-                    @media screen and (max-width: 1600px) {
-                        height: 40px;
-                    }
-                    @media screen and (max-width: 1440px) {
-                        margin: 15px auto;
-                    }
-                }
-                .height{
-                    height: 80px;
-                    margin: 10px auto;
-                    @media screen and (max-width: 1600px) {
-                        height: 65px;
-                    }
-                    @media screen and (max-width: 1440px) {
-                        margin: 5px auto;
-                    }
-                }
-            }
+.CarouselContainer {
+  width: 97%;
+  margin: auto;
+  .swiper-container /deep/ {
+    padding: 20px 0;
+    .my-swiper-slide {
+      height: 100px;
+      @media screen and (max-width: 1600px) {
+        height: 85px;
+      }
+      @media screen and (max-width: 1440px) {
+        height: 75px;
+      }
+      a {
+        img {
+          display: block;
+          height: 45px;
+          margin: 20px auto;
+          cursor: pointer;
+          @media screen and (max-width: 1600px) {
+            height: 40px;
+          }
+          @media screen and (max-width: 1440px) {
+            margin: 15px auto;
+          }
         }
-        .swiper-pagination{
-            opacity: 0;
-            display: flex;
-            justify-content: center;
-            bottom: 5px;
-            .swiper-pagination-bullet, .swiper-pagination-bullet-active{
-                background: #fff;
-            }
+        .height {
+          height: 80px;
+          margin: 10px auto;
+          @media screen and (max-width: 1600px) {
+            height: 65px;
+          }
+          @media screen and (max-width: 1440px) {
+            margin: 5px auto;
+          }
         }
-        .swiper-button-prev{
-            left: 0;
-        }
-        .swiper-button-next{
-            right: 0;
-        }
-        .swiper-button-next, .swiper-button-prev{
-            color: #fff;
-            &::after{
-                font-size: 20px;
-            }
-        }
+      }
+    }
+    .swiper-pagination {
+      opacity: 0;
+      display: flex;
+      justify-content: center;
+      bottom: 5px;
+      .swiper-pagination-bullet,
+      .swiper-pagination-bullet-active {
+        background: #fff;
+      }
+    }
+    .swiper-button-prev {
+      left: 0;
+    }
+    .swiper-button-next {
+      right: 0;
+    }
+    .swiper-button-next,
+    .swiper-button-prev {
+      color: #fff;
+      &::after {
+        font-size: 20px;
+      }
     }
   }
+}
 </style>

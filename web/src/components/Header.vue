@@ -1,117 +1,115 @@
 <template>
-    <div class="header" :class="{'content-collapse': collapseLocal}">
-        <div class="header_arera">
-            <div class="header-right">
-                <div class="network_mainnet" v-if="addrChild" :class="{'error': networkTip}" @click="networkC=true">
-                    <div class="BSC_mainnet" v-if="networkID == 97" title="BSC TestNet mainnet">
-                        <img src="@/assets/images/network_logo/bsc.png" /> {{bodyWidth?'BSC':'BSC TestNet'}}
-                    </div>
-                    <div class="Polygon_mainnet" v-else-if="networkID == 137" title="Polygon mainnet">
-                        <img src="@/assets/images/network_logo/polygon.png" /> {{bodyWidth?'Polygon':'Polygon Mainnet'}}
-                    </div>
-                    <div class="Mumbai_mainnet" v-else-if="networkID == 80001" title="Mumbai Testnet mainnet">
-                        <img src="@/assets/images/network_logo/polygon.png" /> {{bodyWidth?'Mumbai':'Mumbai Testnet'}}
-                    </div>
-                    <div class="Mumbai_mainnet" v-else :title="metaNetworkInfo.name+' mainnet'">
-                        <span></span>
-                        {{metaNetworkInfo.name}}
-                    </div>
-                </div>
-                <div :class="{'online': addrChild, 'feh-metamask': 1==1}">
-                    <div v-if="!addrChild" class="logged_in filter_status">
-                        <el-tooltip class="item" effect="dark" :content="$t('fs3Login.toptip_03')" placement="bottom">
-                            <img src="@/assets/images/metamask.png" @click="metamaskLogin" />
-                        </el-tooltip>
-                        <span class="text" @click="metamaskLogin">{{$t('fs3.Connect_Wallet')}}</span>
-                    </div>
-
-                    <div v-else class="logged_in">
-                        <!-- <span class="text textTrue">{{metaNetworkInfo.name}}</span> -->
-                        <div class="info">
-                            <h5>{{priceAccound}} {{ metaNetworkInfo.unit}}</h5>
-                            <h4 @click="wrongVisible=true">{{addrChild | hiddAddress}}</h4>
-                        </div>
-                        <el-button class="text textTrue pcShow" @click="signOutFun">{{$t('fs3.Disconnect')}}</el-button>
-                    </div>
-                </div>
-                <div class="lang_style">
-                    <span v-if="languageMcs === 'en'" @click="handleSetLanguage('cn')">EN</span>
-                    <span v-else @click="handleSetLanguage('en')">中</span>
-                </div>
-                <div class="switch">
-                    <div class="swithUI" v-if="reverse" @click="reverseChange(false)">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" class="css-sunny">
-                            <path fill-rule="evenodd" clip-rule="evenodd" d="M10.5 2h3v3h-3V2zM16 12a4 4 0 11-8 0 4 4 0 018 0zM5.99 3.869L3.867 5.99 5.99 8.112 8.111 5.99 5.989 3.87zM2 13.5v-3h3v3H2zm1.868 4.51l2.121 2.12 2.122-2.12-2.122-2.122-2.121 2.121zM13.5 19v3h-3v-3h3zm4.51-3.112l-2.121 2.122 2.121 2.121 2.121-2.121-2.121-2.122zM19 10.5h3v3h-3v-3zm-3.11-4.51l2.12 2.121 2.122-2.121-2.121-2.121-2.122 2.121z"
-                                fill="currentColor"></path>
-                        </svg>
-                    </div>
-                    <div class="swithUI" v-else @click="reverseChange(true)">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" class="css-moon">
-                            <path d="M20.968 12.768a7 7 0 01-9.735-9.735 9 9 0 109.735 9.735z" fill="currentColor"></path>
-                        </svg>
-                    </div>
-                </div>
-                <!-- mobile显示 -->
-                <div class="mobileShow">
-                    <div class="collapse-btn-cont" @click="collapseChage">
-                        <div class="header_btn" :class="{'el-icon-s-unfold': !collapseLocal, 'el-icon-s-fold': collapseLocal}">
-                            <!-- <span></span> -->
-                        </div>
-                    </div>
-                </div>
-            </div>
+  <div class="header" :class="{'content-collapse': collapseLocal}">
+    <div class="header_arera">
+      <div class="header-right">
+        <div class="network_mainnet" v-if="addrChild" :class="{'error': networkTip}" @click="networkC=true">
+          <div class="BSC_mainnet" v-if="networkID == 97" title="BSC TestNet mainnet">
+            <img src="@/assets/images/network_logo/bsc.png" /> {{bodyWidth?'BSC':'BSC TestNet'}}
+          </div>
+          <div class="Polygon_mainnet" v-else-if="networkID == 137" title="Polygon mainnet">
+            <img src="@/assets/images/network_logo/polygon.png" /> {{bodyWidth?'Polygon':'Polygon Mainnet'}}
+          </div>
+          <div class="Mumbai_mainnet" v-else-if="networkID == 80001" title="Mumbai Testnet mainnet">
+            <img src="@/assets/images/network_logo/polygon.png" /> {{bodyWidth?'Mumbai':'Mumbai Testnet'}}
+          </div>
+          <div class="Mumbai_mainnet" v-else :title="metaNetworkInfo.name+' mainnet'">
+            <span></span>
+            {{metaNetworkInfo.name}}
+          </div>
         </div>
+        <div :class="{'online': addrChild, 'feh-metamask': 1==1}">
+          <div v-if="!addrChild" class="logged_in filter_status">
+            <el-tooltip class="item" effect="dark" :content="$t('fs3Login.toptip_03')" placement="bottom">
+              <img src="@/assets/images/metamask.png" @click="metamaskLogin" />
+            </el-tooltip>
+            <span class="text" @click="metamaskLogin">{{$t('fs3.Connect_Wallet')}}</span>
+          </div>
 
-        <el-dialog :title="$t('fs3Login.Account')" :visible.sync="wrongVisible" :width="width" custom-class="wrongNet">
-            <label>{{$t('fs3Login.Connected_MetaMask')}}</label>
-            <div class="address">{{addrChild | hiddAddress}}</div>
-            <div class="share">
-                <el-button @click="shareTo">
-                    <svg t="1640937862402" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3723" width="32" height="32">
-                        <path d="M852.77 889.05H171.23A36.27 36.27 0 0 1 135 852.78V171.22A36.27 36.27 0 0 1 171.23 135H375a36.28 36.28 0 0 1 0 72.55H207.5v609h609V649a36.28 36.28 0 1 1 72.55 0v203.78a36.27 36.27 0 0 1-36.28 36.27z" fill="#0b318f" p-id="3724"></path>
-                        <path d="M407.15 653.13a36.28 36.28 0 0 1-25.66-61.93L747.66 225A36.28 36.28 0 1 1 799 276.34L432.8 642.51a36.17 36.17 0 0 1-25.65 10.62z" fill="#0b318f" p-id="3725"></path>
-                        <path d="M852.78 414.94V171.23H609.06l140.42 103.29 103.3 140.42z" fill="#0b318f" p-id="3726"></path>
-                        <path d="M852.78 451.22a36.29 36.29 0 0 1-29.23-14.78l-100-136-136-100a36.28 36.28 0 0 1 21.5-65.5h243.72a36.28 36.28 0 0 1 36.28 36.28V415a36.28 36.28 0 0 1-36.27 36.27zM719.6 207.5l51.4 37.8a36.23 36.23 0 0 1 7.7 7.7l37.8 51.38V207.5z" fill="#0b318f"
-                            p-id="3727"></path>
-                    </svg>
-                    {{$t('fs3Login.View_explorer')}}
-                </el-button>
-
-                <el-button v-if="copyClick" @click="copyTextToClipboard(addrChild)">
-                    <svg t="1640938541398" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4760" width="32" height="32">
-                        <path d="M746.932 698.108" p-id="4761" fill="#0b318f"></path>
-                        <path d="M925.731 288.698c-1.261-1.18-3.607-3.272-6.902-6.343-5.486-5.112-11.615-10.758-18.236-16.891-18.921-17.526-38.003-35.028-56.046-51.397-2.038-1.848-2.038-1.835-4.077-3.682-24.075-21.795-44.156-39.556-58.996-52.076-8.682-7.325-15.517-12.807-20.539-16.426-3.333-2.402-6.043-4.13-8.715-5.396-3.365-1.595-6.48-2.566-10.905-2.483C729.478 134.227 720 143.77 720 155.734l0 42.475 0 42.475 0 84.95L720 347l21.205 0L890 347l0 595L358.689 942C323.429 942 295 913.132 295 877.922L295 177l361.205 0c11.736 0 21.25-9.771 21.25-21.5s-9.514-21.5-21.25-21.5l-382.5 0L252 134l0 21.734L252 813l-52.421 0C166.646 813 140 786.928 140 754.678L140 72l566.286 0C739.29 72 766 98.154 766 130.404L766 134l40 0 0-3.596C806 76.596 761.271 33 706.286 33L119.958 33 100 33l0 19.506 0 702.172C100 808.463 144.642 852 199.579 852L252 852l0 25.922C252 936.612 299.979 984 358.689 984l552.515 0L932 984l0-21.237L932 325.635 932 304l0.433 0C932.432 299 930.196 292.878 925.731 288.698zM762 304l0-63.315L762 198.21l0-0.273c14 11.479 30.3 26.369 49.711 43.942 2.022 1.832 2.136 1.832 4.157 3.665 17.923 16.259 36.957 33.492 55.779 50.926 2.878 2.666 5.713 5.531 8.391 7.531L762 304.001z"
-                            p-id="4762" fill="#0b318f"></path>
-                        <path d="M816.936 436 407.295 436c-10.996 0-19.91 8.727-19.91 19.5 0 10.77 8.914 19.5 19.91 19.5l409.641 0c11 0 19.914-8.73 19.914-19.5C836.85 444.727 827.936 436 816.936 436z" p-id="4763" fill="#0b318f"></path>
-                        <path d="M816.936 553 407.295 553c-10.996 0-19.91 8.727-19.91 19.5 0 10.774 8.914 19.5 19.91 19.5l409.641 0c11 0 19.914-8.726 19.914-19.5C836.85 561.727 827.936 553 816.936 553z" p-id="4764" fill="#0b318f"></path>
-                        <path d="M816.936 689 407.295 689c-10.996 0-19.91 8.729-19.91 19.503 0 10.769 8.914 19.497 19.91 19.497l409.641 0c11 0 19.914-8.729 19.914-19.497C836.85 697.729 827.936 689 816.936 689z" p-id="4765" fill="#0b318f"></path>
-                    </svg>
-                    {{$t('fs3Login.Copy_Address')}}
-                </el-button>
-
-                <el-button v-else>
-                    <svg t="1640939105223" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5619" width="32" height="32">
-                        <path d="M512 998.4c-268.288 0-486.4-218.112-486.4-486.4S243.712 25.6 512 25.6s486.4 218.112 486.4 486.4-218.112 486.4-486.4 486.4z m0-896c-225.792 0-409.6 183.808-409.6 409.6s183.808 409.6 409.6 409.6 409.6-183.808 409.6-409.6-183.808-409.6-409.6-409.6z"
-                            p-id="5620" fill="#0b318f"></path>
-                        <path d="M457.728 680.448c-9.728 0-19.456-3.584-27.136-11.264l-150.528-150.016c-14.848-14.848-14.848-39.424 0-54.272 14.848-14.848 39.424-14.848 54.272 0l123.392 122.88 231.936-230.912c14.848-14.848 39.424-14.848 54.272 0 14.848 14.848 14.848 39.424 0 54.272l-259.072 258.048c-7.68 7.168-17.408 11.264-27.136 11.264z"
-                            p-id="5621" fill="#0b318f"></path>
-                    </svg>
-                    {{$t('fs3Login.Copied')}}
-                </el-button>
-
+          <div v-else class="logged_in">
+            <!-- <span class="text textTrue">{{metaNetworkInfo.name}}</span> -->
+            <div class="info">
+              <h5>{{priceAccound}} {{ metaNetworkInfo.unit}}</h5>
+              <h4 @click="wrongVisible=true">{{addrChild | hiddAddress}}</h4>
             </div>
-        </el-dialog>
-
-        <div class="loadIndexStyle" v-show="loadIndexing" v-loading="loadIndexing"></div>
-
-        <network-change v-if="networkC" :networkC="networkC" @getNetworkC="getNetworkC"></network-change>
+            <el-button class="text textTrue pcShow" @click="signOutFun">{{$t('fs3.Disconnect')}}</el-button>
+          </div>
+        </div>
+        <div class="lang_style">
+          <span v-if="languageMcs === 'en'" @click="handleSetLanguage('cn')">EN</span>
+          <span v-else @click="handleSetLanguage('en')">中</span>
+        </div>
+        <div class="switch">
+          <div class="swithUI" v-if="reverse" @click="reverseChange(false)">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" class="css-sunny">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M10.5 2h3v3h-3V2zM16 12a4 4 0 11-8 0 4 4 0 018 0zM5.99 3.869L3.867 5.99 5.99 8.112 8.111 5.99 5.989 3.87zM2 13.5v-3h3v3H2zm1.868 4.51l2.121 2.12 2.122-2.12-2.122-2.122-2.121 2.121zM13.5 19v3h-3v-3h3zm4.51-3.112l-2.121 2.122 2.121 2.121 2.121-2.121-2.121-2.122zM19 10.5h3v3h-3v-3zm-3.11-4.51l2.12 2.121 2.122-2.121-2.121-2.121-2.122 2.121z"
+                fill="currentColor"></path>
+            </svg>
+          </div>
+          <div class="swithUI" v-else @click="reverseChange(true)">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" class="css-moon">
+              <path d="M20.968 12.768a7 7 0 01-9.735-9.735 9 9 0 109.735 9.735z" fill="currentColor"></path>
+            </svg>
+          </div>
+        </div>
+        <!-- mobile显示 -->
+        <div class="mobileShow">
+          <div class="collapse-btn-cont" @click="collapseChage">
+            <div class="header_btn" :class="{'el-icon-s-unfold': !collapseLocal, 'el-icon-s-fold': collapseLocal}">
+              <!-- <span></span> -->
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+
+    <el-dialog :title="$t('fs3Login.Account')" :visible.sync="wrongVisible" :width="width" custom-class="wrongNet">
+      <label>{{$t('fs3Login.Connected_MetaMask')}}</label>
+      <div class="address">{{addrChild | hiddAddress}}</div>
+      <div class="share">
+        <el-button @click="shareTo">
+          <svg t="1640937862402" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3723" width="32" height="32">
+            <path d="M852.77 889.05H171.23A36.27 36.27 0 0 1 135 852.78V171.22A36.27 36.27 0 0 1 171.23 135H375a36.28 36.28 0 0 1 0 72.55H207.5v609h609V649a36.28 36.28 0 1 1 72.55 0v203.78a36.27 36.27 0 0 1-36.28 36.27z" fill="#0b318f" p-id="3724"></path>
+            <path d="M407.15 653.13a36.28 36.28 0 0 1-25.66-61.93L747.66 225A36.28 36.28 0 1 1 799 276.34L432.8 642.51a36.17 36.17 0 0 1-25.65 10.62z" fill="#0b318f" p-id="3725"></path>
+            <path d="M852.78 414.94V171.23H609.06l140.42 103.29 103.3 140.42z" fill="#0b318f" p-id="3726"></path>
+            <path d="M852.78 451.22a36.29 36.29 0 0 1-29.23-14.78l-100-136-136-100a36.28 36.28 0 0 1 21.5-65.5h243.72a36.28 36.28 0 0 1 36.28 36.28V415a36.28 36.28 0 0 1-36.27 36.27zM719.6 207.5l51.4 37.8a36.23 36.23 0 0 1 7.7 7.7l37.8 51.38V207.5z" fill="#0b318f"
+              p-id="3727"></path>
+          </svg>
+          {{$t('fs3Login.View_explorer')}}
+        </el-button>
+
+        <el-button v-if="copyClick" @click="copyTextToClipboard(addrChild)">
+          <svg t="1640938541398" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4760" width="32" height="32">
+            <path d="M746.932 698.108" p-id="4761" fill="#0b318f"></path>
+            <path d="M925.731 288.698c-1.261-1.18-3.607-3.272-6.902-6.343-5.486-5.112-11.615-10.758-18.236-16.891-18.921-17.526-38.003-35.028-56.046-51.397-2.038-1.848-2.038-1.835-4.077-3.682-24.075-21.795-44.156-39.556-58.996-52.076-8.682-7.325-15.517-12.807-20.539-16.426-3.333-2.402-6.043-4.13-8.715-5.396-3.365-1.595-6.48-2.566-10.905-2.483C729.478 134.227 720 143.77 720 155.734l0 42.475 0 42.475 0 84.95L720 347l21.205 0L890 347l0 595L358.689 942C323.429 942 295 913.132 295 877.922L295 177l361.205 0c11.736 0 21.25-9.771 21.25-21.5s-9.514-21.5-21.25-21.5l-382.5 0L252 134l0 21.734L252 813l-52.421 0C166.646 813 140 786.928 140 754.678L140 72l566.286 0C739.29 72 766 98.154 766 130.404L766 134l40 0 0-3.596C806 76.596 761.271 33 706.286 33L119.958 33 100 33l0 19.506 0 702.172C100 808.463 144.642 852 199.579 852L252 852l0 25.922C252 936.612 299.979 984 358.689 984l552.515 0L932 984l0-21.237L932 325.635 932 304l0.433 0C932.432 299 930.196 292.878 925.731 288.698zM762 304l0-63.315L762 198.21l0-0.273c14 11.479 30.3 26.369 49.711 43.942 2.022 1.832 2.136 1.832 4.157 3.665 17.923 16.259 36.957 33.492 55.779 50.926 2.878 2.666 5.713 5.531 8.391 7.531L762 304.001z"
+              p-id="4762" fill="#0b318f"></path>
+            <path d="M816.936 436 407.295 436c-10.996 0-19.91 8.727-19.91 19.5 0 10.77 8.914 19.5 19.91 19.5l409.641 0c11 0 19.914-8.73 19.914-19.5C836.85 444.727 827.936 436 816.936 436z" p-id="4763" fill="#0b318f"></path>
+            <path d="M816.936 553 407.295 553c-10.996 0-19.91 8.727-19.91 19.5 0 10.774 8.914 19.5 19.91 19.5l409.641 0c11 0 19.914-8.726 19.914-19.5C836.85 561.727 827.936 553 816.936 553z" p-id="4764" fill="#0b318f"></path>
+            <path d="M816.936 689 407.295 689c-10.996 0-19.91 8.729-19.91 19.503 0 10.769 8.914 19.497 19.91 19.497l409.641 0c11 0 19.914-8.729 19.914-19.497C836.85 697.729 827.936 689 816.936 689z" p-id="4765" fill="#0b318f"></path>
+          </svg>
+          {{$t('fs3Login.Copy_Address')}}
+        </el-button>
+
+        <el-button v-else>
+          <svg t="1640939105223" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5619" width="32" height="32">
+            <path d="M512 998.4c-268.288 0-486.4-218.112-486.4-486.4S243.712 25.6 512 25.6s486.4 218.112 486.4 486.4-218.112 486.4-486.4 486.4z m0-896c-225.792 0-409.6 183.808-409.6 409.6s183.808 409.6 409.6 409.6 409.6-183.808 409.6-409.6-183.808-409.6-409.6-409.6z"
+              p-id="5620" fill="#0b318f"></path>
+            <path d="M457.728 680.448c-9.728 0-19.456-3.584-27.136-11.264l-150.528-150.016c-14.848-14.848-14.848-39.424 0-54.272 14.848-14.848 39.424-14.848 54.272 0l123.392 122.88 231.936-230.912c14.848-14.848 39.424-14.848 54.272 0 14.848 14.848 14.848 39.424 0 54.272l-259.072 258.048c-7.68 7.168-17.408 11.264-27.136 11.264z"
+              p-id="5621" fill="#0b318f"></path>
+          </svg>
+          {{$t('fs3Login.Copied')}}
+        </el-button>
+
+      </div>
+    </el-dialog>
+
+    <div class="loadIndexStyle" v-show="loadIndexing" v-loading="loadIndexing"></div>
+
+    <network-change v-if="networkC" :networkC="networkC" @getNetworkC="getNetworkC"></network-change>
+  </div>
 </template>
 <script>
 // import bus from './bus';
 import networkChange from '@/components/networkChange'
-import NCWeb3 from '@/utils/web3'
-import metaLogin from '@/utils/login'
 import axios from 'axios'
 import erc20ContractJson from '@/utils/ERC20.json'
 const ethereum = window.ethereum
@@ -122,7 +120,7 @@ export default {
   },
   data () {
     return {
-      collapseLocal: !!(this.$store.getters.collapseL == 'true' || this.$store.getters.collapseL == true),
+      collapseLocal: !!(this.$store.getters.collapseL === 'true' || this.$store.getters.collapseL === true),
       collapse: document.body.clientWidth < 1024,
       fullscreen: false,
       name: 'linxin',
@@ -169,7 +167,7 @@ export default {
       return this.$store.getters.metaNetworkInfo ? JSON.parse(JSON.stringify(this.$store.getters.metaNetworkInfo)) : {}
     },
     reverse () {
-      return this.$store.getters.reverse == '1'
+      return String(this.$store.getters.reverse) === '1'
     },
     free_usage () {
       return this.$store.getters.free_usage
@@ -190,7 +188,7 @@ export default {
       }
     },
     'collapseL': function () {
-      this.collapseLocal = !!(this.$store.getters.collapseL == 'true' || this.$store.getters.collapseL == true)
+      this.collapseLocal = !!(this.$store.getters.collapseL === 'true' || this.$store.getters.collapseL === true)
     },
     metaAddress: function () {
       this.addrChild = this.metaAddress
@@ -201,7 +199,7 @@ export default {
       this.walletInfo()
     },
     netId: function () {
-      if (this.netId == 137 || this.netId == 97 || this.netId == 80001) this.getNetworkC(false, this.netId)
+      if (this.netId === 137 || this.netId === 97 || this.netId === 80001) this.getNetworkC(false, this.netId)
     }
   },
   methods: {
@@ -213,7 +211,7 @@ export default {
         switch (rows) {
           case 80001:
             text = {
-              chainId: web3.utils.numberToHex(80001),
+              chainId: _this.$web3Init.utils.numberToHex(80001),
               chainName: 'Mumbai Testnet',
               nativeCurrency: {
                 name: 'MATIC',
@@ -226,7 +224,7 @@ export default {
             break
           case 97:
             text = {
-              chainId: web3.utils.numberToHex(97),
+              chainId: _this.$web3Init.utils.numberToHex(97),
               chainName: 'BSC TestNet',
               nativeCurrency: {
                 name: 'tBNB',
@@ -239,7 +237,7 @@ export default {
             break
           case 137:
             text = {
-              chainId: web3.utils.numberToHex(137),
+              chainId: _this.$web3Init.utils.numberToHex(137),
               chainName: 'Polygon Mainnet',
               nativeCurrency: {
                 name: 'tBNB',
@@ -269,8 +267,14 @@ export default {
     async changeChaid (rows) {
       let _this = this
       _this.$store.dispatch('setMetaNetworkId', rows)
-      if (_this.networkID === 137 || _this.networkID === 97 || _this.networkID === 80001) {
-        const lStatus = await metaLogin.login()
+      let status = await _this.$metaLogin.netStatus(rows)
+      if (!status) {
+        let link = _this.baseNetwork ? 'https://calibration-mcs.filswan.com' : 'https://www.multichain.storage'
+        window.open(link)
+        _this.signOutFun()
+        return false
+      } else {
+        const lStatus = await _this.$metaLogin.login()
         if (lStatus) setTimeout(function () { window.location.reload() }, 200)
       }
       if (_this.$route.name === 'my_files_detail') {
@@ -371,13 +375,13 @@ export default {
     metamaskLogin () {
       let _this = this
       if (!_this.metaAddress || _this.metaAddress === undefined) {
-        NCWeb3.Init(addr => {
+        _this.$commonFun.Init(addr => {
           _this.$nextTick(async () => {
             _this.$store.dispatch('setMetaAddress', addr)
-            let status = await metaLogin.netStatus(_this.networkID)
+            let status = await _this.$metaLogin.netStatus(_this.networkID)
             _this.$emit('getNetwork', !status)
             if (!status) return false
-            const lStatus = await metaLogin.login()
+            const lStatus = await _this.$metaLogin.login()
             if (lStatus) _this.$emit('getMetamaskLogin', true)
           })
         })
@@ -414,25 +418,11 @@ export default {
     },
     walletInfo () {
       let _this = this
-      if (!_this.addrChild || _this.addrChild == 'undefined') {
+      if (!_this.addrChild || _this.addrChild === 'undefined') {
         return false
       }
 
       const ethereum = window.ethereum
-      if (window.ethereum) {
-        web3 = new Web3(ethereum)
-        web3.setProvider(ethereum)
-      } else if (window.web3) {
-        web3 = window.web3
-        console.log('Injected web3 detected.')
-      } else {
-        var currentProvider = web3.currentProvider
-        // var Web3 = web3js.getWeb3();
-        web3 = new Web3(currentProvider)
-        web3.setProvider(currentProvider)
-        console.log('No web3 instance injected, using Local web3.')
-      }
-
       ethereum
         .request({ method: 'eth_chainId' })
         .then(async (chainId) => {
@@ -486,7 +476,7 @@ export default {
               _this.network.center_fail = false
               _this.$store.dispatch('setMetaNetworkInfo', _this.network)
               if (_this.meta) {
-                if (_this.$route.query.redirect && _this.$route.query.redirect != '/supplierAllBack') {
+                if (_this.$route.query.redirect && _this.$route.query.redirect !== '/supplierAllBack') {
                   // 防止登录后需要跳转到指定页面
                   _this.$router.push({ path: _this.$route.query.redirect })
                 } else {
@@ -502,7 +492,7 @@ export default {
               _this.network.center_fail = true
               _this.$store.dispatch('setMetaNetworkInfo', _this.network)
               if (_this.meta) {
-                if (_this.$route.query.redirect && _this.$route.query.redirect != '/supplierAllBack') {
+                if (_this.$route.query.redirect && _this.$route.query.redirect !== '/supplierAllBack') {
                   // 防止登录后需要跳转到指定页面
                   _this.$router.push({ path: _this.$route.query.redirect })
                 } else {
@@ -524,7 +514,7 @@ export default {
               _this.network.center_fail = false
               _this.$store.dispatch('setMetaNetworkInfo', _this.network)
               if (_this.meta) {
-                if (_this.$route.query.redirect && _this.$route.query.redirect != '/supplierAllBack') {
+                if (_this.$route.query.redirect && _this.$route.query.redirect !== '/supplierAllBack') {
                   // 防止登录后需要跳转到指定页面
                   _this.$router.push({ path: _this.$route.query.redirect })
                 } else {
@@ -542,7 +532,7 @@ export default {
               break
           }
 
-          let status = await metaLogin.netStatus(_this.networkID)
+          let status = await _this.$metaLogin.netStatus(_this.networkID)
           _this.$emit('getNetwork', !status)
         })
         .catch((error) => {
@@ -557,7 +547,6 @@ export default {
       })
       // networkChanged
       ethereum.on('chainChanged', function (accounts) {
-        // if (!_this.prevType || !_this.$store.getters.mcsjwtToken) return false
         if (!_this.prevType) return false
         _this.$store.dispatch('setMCSjwtToken', '')
         _this.$store.dispatch('setMetaNetworkId', parseInt(accounts, 16))
@@ -634,7 +623,7 @@ export default {
               }
             )
             .then((balance) => {
-              let balanceAll = web3.utils.fromWei(balance, 'ether')
+              let balanceAll = _this.$web3Init.utils.fromWei(balance, 'ether')
               // console.log('balance', balanceAll)
               _this.priceAccound = Number(balanceAll).toFixed(0)
             })
@@ -645,12 +634,12 @@ export default {
         } else {
           if (_this.$root.SWAN_PAYMENT_CONTRACT_ADDRESS) {
             // 授权代币
-            contractErc20 = new web3.eth.Contract(erc20ContractJson)
+            contractErc20 = new _this.$web3Init.eth.Contract(erc20ContractJson)
             contractErc20.options.address = _this.$root.USDC_ADDRESS
             // 查询剩余代币余额为：
             contractErc20.methods.balanceOf(_this.metaAddress).call()
               .then(balance => {
-                let usdcAvailable = web3.utils.fromWei(balance, 'mwei')
+                let usdcAvailable = _this.$web3Init.utils.fromWei(balance, 'mwei')
                 console.log('Available balance:', usdcAvailable, balance)
                 // _this.priceAccound = _this.formatDecimal(usdcAvailable, 3)
                 // _this.priceAccound = Number(usdcAvailable).toFixed(0)
@@ -1327,10 +1316,6 @@ export default {
           font-size: 12px;
         }
       }
-      .textTrue {
-        // background: #4326ab;
-        // display: none;
-      }
       .el-button {
         padding: 0.08rem 0.15rem;
         margin: 0 0 0 0.2rem;
@@ -1542,20 +1527,6 @@ export default {
         }
       }
     }
-  }
-  .language {
-    //     .background{
-    //         padding: 0.05rem 0.1rem;
-    //         font-size: 14px;
-    //         background: #4326ab;
-    //         color: #fff;
-    //         border-radius: 0.08rem;
-    //         line-height: 1.5;
-    //         cursor: pointer;
-    //         @media screen and (max-width:600px) {
-    //             font-size: 12px;
-    //         }
-    //     }
   }
 }
 .sighChild {

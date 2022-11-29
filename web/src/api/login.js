@@ -1,7 +1,7 @@
-import  request  from  '../utils/request';
-import  QS  from  'qs';
+import request from '../utils/request'
+import QS from 'qs'
 // 用户登录
-export function login(data) {
+export function login (data) {
   return request({
     url: `/auth/login`,
     method: 'POST',
@@ -9,18 +9,17 @@ export function login(data) {
   })
 }
 
-
 // 注销
-export function logout(data) {
+export function logout (data) {
   return request({
     url: `/auth/logout`,
     method: 'POST',
-    data:QS.stringify(data)
+    data: QS.stringify(data)
   })
 }
 
 // 验证码
-export function sendLoginCode(data) {
+export function sendLoginCode (data) {
   return request({
     url: `/sendLoginCode`,
     method: 'POST',

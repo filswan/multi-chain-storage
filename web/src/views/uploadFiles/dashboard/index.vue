@@ -139,58 +139,58 @@
                 <div class="elTips">
                   <el-popover v-for="(miner, i) in scope.row.offline_deal" :key="i" placement="top" trigger="hover" popper-class="elPopMiner" v-model="scope.row.payloadAct">
                     <div class="upload_form_right">
-                      <div class="statusStyle" v-if="miner.on_chain_status == 'Created'" :style="$statusColor.Task_color('Created')">
+                      <div class="statusStyle" v-if="miner.on_chain_status == 'Created'" :style="$statusColor.TaskColor('Created')">
                         {{ languageMcs == "en" ? "Created" : "已创建" }}
                       </div>
-                      <div class="statusStyle" v-else-if="miner.on_chain_status == 'Assigned'" :style="$statusColor.Task_color('Assigned')">
+                      <div class="statusStyle" v-else-if="miner.on_chain_status == 'Assigned'" :style="$statusColor.TaskColor('Assigned')">
                         {{ languageMcs == "en" ? "Assigned" : "已分配" }}
                       </div>
-                      <div class="statusStyle" v-else-if="miner.on_chain_status == 'Accepted'" :style="$statusColor.Task_color('Accepted')">
+                      <div class="statusStyle" v-else-if="miner.on_chain_status == 'Accepted'" :style="$statusColor.TaskColor('Accepted')">
                         {{ languageMcs == "en" ? "Accepted" : "已接受" }}
                       </div>
-                      <div class="statusStyle" v-else-if="miner.on_chain_status == 'Completed'" :style="$statusColor.Task_color('Completed')">
+                      <div class="statusStyle" v-else-if="miner.on_chain_status == 'Completed'" :style="$statusColor.TaskColor('Completed')">
                         {{ languageMcs == "en" ? "Completed" : "已完成" }}
                       </div>
-                      <div class="statusStyle" v-else-if="miner.on_chain_status == 'Failed'" :style="$statusColor.Task_color('Failed')">
+                      <div class="statusStyle" v-else-if="miner.on_chain_status == 'Failed'" :style="$statusColor.TaskColor('Failed')">
                         {{ languageMcs == "en" ? "Failed" : "已失败" }}
                       </div>
-                      <div class="statusStyle" v-else-if="miner.on_chain_status == 'Cancelled'" :style="$statusColor.Task_color('Cancelled')">
+                      <div class="statusStyle" v-else-if="miner.on_chain_status == 'Cancelled'" :style="$statusColor.TaskColor('Cancelled')">
                         {{ languageMcs == "en" ? "Cancelled" : "已取消" }}
                       </div>
-                      <div class="statusStyle" v-else-if="miner.on_chain_status == 'Closed'" :style="$statusColor.Task_color('Closed')">
+                      <div class="statusStyle" v-else-if="miner.on_chain_status == 'Closed'" :style="$statusColor.TaskColor('Closed')">
                         {{ languageMcs == "en" ? "Closed" : "已关闭" }}
                       </div>
-                      <div class="statusStyle" v-else-if="miner.on_chain_status == 'Expired'" :style="$statusColor.Task_color('Expired')">
+                      <div class="statusStyle" v-else-if="miner.on_chain_status == 'Expired'" :style="$statusColor.TaskColor('Expired')">
                         {{ languageMcs == "en" ? "Expired" : "已过期" }}
                       </div>
-                      <div class="statusStyle" v-else-if="miner.on_chain_status == 'ActionRequired'" :style="$statusColor.Task_color('ActionRequired')">
+                      <div class="statusStyle" v-else-if="miner.on_chain_status == 'ActionRequired'" :style="$statusColor.TaskColor('ActionRequired')">
                         {{ languageMcs == 'en' ? 'ActionRequired' : '需要操作' }}
                       </div>
-                      <div class="statusStyle" v-else-if="miner.on_chain_status == 'DealSent'" :style="$statusColor.Task_color('DealSent')">
+                      <div class="statusStyle" v-else-if="miner.on_chain_status == 'DealSent'" :style="$statusColor.TaskColor('DealSent')">
                         {{ languageMcs == 'en' ? 'DealSent' : '交易已发送' }}
                       </div>
-                      <div class="statusStyle" v-else-if="miner.on_chain_status == 'FileImporting'" :style="$statusColor.Task_color('FileImporting')">
+                      <div class="statusStyle" v-else-if="miner.on_chain_status == 'FileImporting'" :style="$statusColor.TaskColor('FileImporting')">
                         {{ languageMcs == 'en' ? 'FileImporting' : '文件导入中' }}
                       </div>
-                      <div class="statusStyle" v-else-if="miner.on_chain_status == 'FileImported'" :style="$statusColor.Task_color('FileImported')">
+                      <div class="statusStyle" v-else-if="miner.on_chain_status == 'FileImported'" :style="$statusColor.TaskColor('FileImported')">
                         {{ languageMcs == 'en' ? 'FileImported' : '文件已导入' }}
                       </div>
-                      <div class="statusStyle" v-else-if="miner.on_chain_status == 'ImportFailed'" :style="$statusColor.Task_color('ImportFailed')">
+                      <div class="statusStyle" v-else-if="miner.on_chain_status == 'ImportFailed'" :style="$statusColor.TaskColor('ImportFailed')">
                         {{ languageMcs == 'en' ? 'ImportFailed' : '导入失败' }}
                       </div>
-                      <div class="statusStyle" v-else-if="miner.on_chain_status == 'Downloading'" :style="$statusColor.Task_color('Downloading')">
+                      <div class="statusStyle" v-else-if="miner.on_chain_status == 'Downloading'" :style="$statusColor.TaskColor('Downloading')">
                         {{ languageMcs == 'en' ? 'Downloading' : '下载中' }}
                       </div>
-                      <div class="statusStyle" v-else-if="miner.on_chain_status == 'DownloadFailed'" :style="$statusColor.Task_color('DownloadFailed')">
+                      <div class="statusStyle" v-else-if="miner.on_chain_status == 'DownloadFailed'" :style="$statusColor.TaskColor('DownloadFailed')">
                         {{ languageMcs == 'en' ? 'DownloadFailed' : '下载失败' }}
                       </div>
-                      <div class="statusStyle" v-else-if="miner.on_chain_status == 'DealActive'" :style="$statusColor.Task_color('DealActive')">
+                      <div class="statusStyle" v-else-if="miner.on_chain_status == 'DealActive'" :style="$statusColor.TaskColor('DealActive')">
                         {{ languageMcs == 'en' ? 'DealActive' : '有效交易' }}
                       </div>
-                      <div class="statusStyle" v-else-if="miner.on_chain_status == 'Waiting'" :style="$statusColor.Task_color('Waiting')">
+                      <div class="statusStyle" v-else-if="miner.on_chain_status == 'Waiting'" :style="$statusColor.TaskColor('Waiting')">
                         {{ languageMcs == 'en' ? 'Waiting' : '等待中' }}
                       </div>
-                      <div class="statusStyle" v-else-if="miner.on_chain_status == 'ReadyForImport'" :style="$statusColor.Task_color('ReadyForImport')">
+                      <div class="statusStyle" v-else-if="miner.on_chain_status == 'ReadyForImport'" :style="$statusColor.TaskColor('ReadyForImport')">
                         {{ languageMcs == 'en' ? 'ReadyForImport' : '准备导入' }}
                       </div>
                       <div class="statusStyle" v-else-if="miner.on_chain_status == ''">
@@ -363,7 +363,6 @@ import payTip from '@/components/payTip'
 import payTips from '@/components/uploadFiles'
 import mintTip from '@/components/mintTip'
 import download from '@/components/download'
-import metaLogin from '@/utils/login'
 import firstContractJson from '@/utils/swanPayment.json'
 import erc20ContractJson from '@/utils/ERC20.json'
 let contractErc20
@@ -514,7 +513,7 @@ export default {
     },
     async payClick (row) {
       let _this = this
-      let status = await metaLogin.netStatus(_this.networkID)
+      let status = await _this.$metaLogin.netStatus(_this.networkID)
       if (_this.metaAddress && !status) {
         _this.metamaskLoginTip = true
         return false
@@ -552,13 +551,13 @@ export default {
     },
     refundClick (row) {
       let _this = this
-      let contractInstance = new web3.eth.Contract(firstContractJson)
+      let contractInstance = new _this.$web3Init.eth.Contract(firstContractJson)
       contractInstance.options.address = _this.gatewayContractAddress
       _this.loading = true
 
       let payObject = {
         from: _this.metaAddress,
-        gas: web3.utils.toHex(_this.$root.PAY_GAS_LIMIT)
+        gas: _this.$web3Init.utils.toHex(_this.$root.PAY_GAS_LIMIT)
       }
 
       let wcidApi = `${_this.baseAPIURL}api/v1/storage/source_file_upload/${row.source_file_upload_id}?wallet_address=${_this.metaAddress}`
@@ -623,12 +622,12 @@ export default {
                 return false
               } else {
                 // 授权代币
-                contractErc20 = new web3.eth.Contract(erc20ContractJson)
+                contractErc20 = new _this.$web3Init.eth.Contract(erc20ContractJson)
                 contractErc20.options.address = _this.usdcAddress
                 // 查询剩余代币余额为：
                 contractErc20.methods.balanceOf(_this.metaAddress).call()
                   .then(balance => {
-                    let usdcAvailable = web3.utils.fromWei(balance, 'mwei')
+                    let usdcAvailable = _this.$web3Init.utils.fromWei(balance, 'mwei')
                     console.log('Available pay:', usdcAvailable, rowAmount)
                     // 判断支付金额是否大于代币余额
                     if (Number(rowAmount) > Number(usdcAvailable)) {
@@ -637,7 +636,7 @@ export default {
                     } else {
                       contractErc20.methods.allowance(_this.gatewayContractAddress, _this.metaAddress).call()
                         .then(resultUSDC => {
-                          let amountPay = web3.utils.toWei(rowAmount, 'mwei')
+                          let amountPay = _this.$web3Init.utils.toWei(rowAmount, 'mwei')
                           console.log('allowance：' + resultUSDC, amountPay)
                           if (resultUSDC < amountPay) {
                             contractErc20.methods.approve(_this.gatewayContractAddress, amountPay).send({ from: _this.metaAddress })
@@ -671,14 +670,12 @@ export default {
     contractSend (cid, payAmount) {
       let _this = this
       // 合约转账
-      let contractInstance = new web3.eth.Contract(firstContractJson)
+      let contractInstance = new _this.$web3Init.eth.Contract(firstContractJson)
       contractInstance.options.address = _this.gatewayContractAddress
 
       let payObject = {
         from: _this.metaAddress,
-        gas: web3.utils.toHex(_this.$root.PAY_GAS_LIMIT)
-        // gasPrice: web3.utils.toHex(web3.utils.toWei(_this.ruleForm.gasprice + '', 'gwei')),
-        // value: web3.utils.toHex(web3.utils.toWei(_this.ruleForm.amount, 'ether')),
+        gas: _this.$web3Init.utils.toHex(_this.$root.PAY_GAS_LIMIT)
       }
 
       let lockObj = {
@@ -720,10 +717,13 @@ export default {
     },
     checkTransaction (txHash, cid, resData, lockObj) {
       let _this = this
-      web3.eth.getTransactionReceipt(txHash).then(
+      _this.$web3Init.eth.getTransactionReceipt(txHash).then(
         async res => {
           console.log('checking ... ')
-          if (!res) { return _this.timer = setTimeout(() => { _this.checkTransaction(txHash, cid, resData, lockObj) }, 2000) } else {
+          if (!res) {
+            _this.timer = setTimeout(() => { _this.checkTransaction(txHash, cid, resData, lockObj) }, 2000)
+            return false
+          } else {
             clearTimeout(_this.timer)
             setTimeout(function () {
               _this.loading = false
@@ -1830,7 +1830,7 @@ export default {
                   .el-button {
                     img {
                       display: inline-block;
-                      float: right;
+                      // float: right;
                       width: 0.17rem;
                       margin-top: 0.03rem;
                     }

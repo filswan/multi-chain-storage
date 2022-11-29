@@ -1,211 +1,209 @@
 <template>
-    <div id="Create">
-        <el-dialog :modal="true" :close-on-click-modal="false" :width="widthDia" :visible.sync="uploadDigShow" custom-class="uploadDig" id="uploadDigBody" :before-close="closeDia">
-            <div class="uploadDigID el-icon-upload" :style="{'z-index': bgStyle ? '99' : '-1'}"></div>
-            <div class="loadMetamaskPay" v-if="loading">
-                <div>
-                    <div class="el-loading-spinner">
-                        <svg viewBox="25 25 50 50" class="circular">
-                            <circle cx="50" cy="50" r="20" fill="none" class="path"></circle>
-                        </svg>
-                        <!---->
-                    </div>
-                    <p v-if="loadMetamaskPay">{{$t('uploadFile.payment_tip')}}</p>
-                </div>
-            </div>
-            <template slot="title">
-                {{$t('uploadFile.upload')}}
+  <div id="Create">
+    <el-dialog :modal="true" :close-on-click-modal="false" :width="widthDia" :visible.sync="uploadDigShow" custom-class="uploadDig" id="uploadDigBody" :before-close="closeDia">
+      <div class="uploadDigID el-icon-upload" :style="{'z-index': bgStyle ? '99' : '-1'}"></div>
+      <div class="loadMetamaskPay" v-if="loading">
+        <div>
+          <div class="el-loading-spinner">
+            <svg viewBox="25 25 50 50" class="circular">
+              <circle cx="50" cy="50" r="20" fill="none" class="path"></circle>
+            </svg>
+            <!---->
+          </div>
+          <p v-if="loadMetamaskPay">{{$t('uploadFile.payment_tip')}}</p>
+        </div>
+      </div>
+      <template slot="title">
+        {{$t('uploadFile.upload')}}
 
-                <el-tooltip effect="dark" :content="$t('uploadFile.uploadFile_title')" placement="top">
-                    <img src="@/assets/images/info.png" />
-                </el-tooltip>
+        <el-tooltip effect="dark" :content="$t('uploadFile.uploadFile_title')" placement="top">
+          <img src="@/assets/images/info.png" />
+        </el-tooltip>
+      </template>
+      <div class="upload_form">
+        <div>
+          <el-upload class="upload-demo" :style="{'border': ruleForm.fileList_tip?'2px dashed #f56c6c':'0'}" drag ref="uploadFileRef" action="customize" :http-request="uploadFile" :file-list="ruleForm.fileList" :on-change="handleChange" :on-remove="handleRemove">
+            <svg t="1666583167832" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="8421" width="128" height="128">
+              <path d="M795.694545 395.636364a289.047273 289.047273 0 0 0-567.38909 0 197.585455 197.585455 0 0 0 18.385454 395.636363h30.952727a23.272727 23.272727 0 0 0 0-46.545454H246.690909a151.272727 151.272727 0 1 1-2.327273-302.545455l23.272728 5.352727 3.025454-25.6a242.269091 242.269091 0 0 1 480.814546 0l4.654545 25.134546 23.272727-4.887273a151.272727 151.272727 0 1 1-2.327272 302.545455h-34.909091a23.272727 23.272727 0 0 0 0 46.545454h35.141818a197.585455 197.585455 0 0 0 18.385454-395.636363z"
+                p-id="8422" fill="#8a8a8a"></path>
+              <path d="M528.523636 480.349091a23.272727 23.272727 0 0 0-33.047272 0l-131.490909 131.490909a23.272727 23.272727 0 0 0 0 33.047273 23.272727 23.272727 0 0 0 32.814545 0L488.727273 552.96V837.818182a23.272727 23.272727 0 0 0 46.545454 0V552.96l93.090909 91.927273a23.272727 23.272727 0 0 0 16.523637 6.749091 23.272727 23.272727 0 0 0 16.290909-39.796364z"
+                p-id="8423" fill="#8a8a8a"></path>
+            </svg>
+            <div class="el-upload__text">
+              <small>{{$t('uploadFile.uploadDray')}}</small>
+            </div>
+            <div class="el-upload__text">
+              <small>{{$t('uploadFile.uploadDray_or')}}</small>
+            </div>
+            <el-button size="small">
+              {{$t('uploadFile.uploadDray_text')}}
+            </el-button>
+          </el-upload>
+          <p v-if="ruleForm.fileList.length>0" style="display: flex;align-items: center;">
+            <svg t="1637031488880" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3310" style="width: 14px;height: 14px;margin: 0 6px 0 5px;">
+              <path d="M512 1024a512 512 0 1 1 512-512 32 32 0 0 1-32 32h-448v448a32 32 0 0 1-32 32zM512 64a448 448 0 0 0-32 896V512a32 32 0 0 1 32-32h448A448 448 0 0 0 512 64z" fill="#999999" p-id="3311"></path>
+              <path d="M858.88 976a32 32 0 0 1-32-32V640a32 32 0 0 1 32-32 32 32 0 0 1 32 32v304a32 32 0 0 1-32 32z" fill="#999999" p-id="3312"></path>
+              <path d="M757.12 773.12a34.56 34.56 0 0 1-22.4-8.96 32 32 0 0 1 0-45.44l101.12-101.12a32 32 0 0 1 45.44 0 30.72 30.72 0 0 1 0 44.8l-101.12 101.76a34.56 34.56 0 0 1-23.04 8.96z" fill="#999999" p-id="3313"></path>
+              <path d="M960 773.12a32 32 0 0 1-22.4-8.96l-101.76-101.76a32 32 0 0 1 0-44.8 32 32 0 0 1 45.44 0l101.12 101.12a32 32 0 0 1-22.4 54.4z" fill="#999999" p-id="3314"></path>
+            </svg>
+            {{ruleForm.file_size}}
+          </p>
+          <p v-if="ruleForm.fileList_tip" style="color: #F56C6C;font-size: 12px;line-height: 1;">{{ruleForm.fileList_tip_text}}</p>
+        </div>
+        <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" class="demo-ruleForm">
+          <!-- <el-form-item prop="fileList" :label="$t('uploadFile.upload')" :style="{'align-items': ruleForm.fileList_tip?'flex-start':'center'}"></el-form-item> -->
+          <el-form-item prop="duration">
+            <template slot="label">
+              {{$t('uploadFile.Duration')}}
+
+              <el-tooltip effect="dark" :content="$t('uploadFile.Duration_tooltip')" placement="top">
+                <img src="@/assets/images/info.png" />
+              </el-tooltip>
             </template>
-            <div class="upload_form">
-                <div>
-                    <el-upload class="upload-demo" :style="{'border': ruleForm.fileList_tip?'2px dashed #f56c6c':'0'}" drag ref="uploadFileRef" action="customize" :http-request="uploadFile" :file-list="ruleForm.fileList" :on-change="handleChange" :on-remove="handleRemove">
-                        <svg t="1666583167832" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="8421" width="128" height="128">
-                            <path d="M795.694545 395.636364a289.047273 289.047273 0 0 0-567.38909 0 197.585455 197.585455 0 0 0 18.385454 395.636363h30.952727a23.272727 23.272727 0 0 0 0-46.545454H246.690909a151.272727 151.272727 0 1 1-2.327273-302.545455l23.272728 5.352727 3.025454-25.6a242.269091 242.269091 0 0 1 480.814546 0l4.654545 25.134546 23.272727-4.887273a151.272727 151.272727 0 1 1-2.327272 302.545455h-34.909091a23.272727 23.272727 0 0 0 0 46.545454h35.141818a197.585455 197.585455 0 0 0 18.385454-395.636363z"
-                                p-id="8422" fill="#8a8a8a"></path>
-                            <path d="M528.523636 480.349091a23.272727 23.272727 0 0 0-33.047272 0l-131.490909 131.490909a23.272727 23.272727 0 0 0 0 33.047273 23.272727 23.272727 0 0 0 32.814545 0L488.727273 552.96V837.818182a23.272727 23.272727 0 0 0 46.545454 0V552.96l93.090909 91.927273a23.272727 23.272727 0 0 0 16.523637 6.749091 23.272727 23.272727 0 0 0 16.290909-39.796364z"
-                                p-id="8423" fill="#8a8a8a"></path>
-                        </svg>
-                        <div class="el-upload__text">
-                            <small>{{$t('uploadFile.uploadDray')}}</small>
-                        </div>
-                        <div class="el-upload__text">
-                            <small>{{$t('uploadFile.uploadDray_or')}}</small>
-                        </div>
-                        <el-button size="small">
-                            {{$t('uploadFile.uploadDray_text')}}
-                        </el-button>
-                    </el-upload>
-                    <p v-if="ruleForm.fileList.length>0" style="display: flex;align-items: center;">
-                        <svg t="1637031488880" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3310" style="width: 14px;height: 14px;margin: 0 6px 0 5px;">
-                            <path d="M512 1024a512 512 0 1 1 512-512 32 32 0 0 1-32 32h-448v448a32 32 0 0 1-32 32zM512 64a448 448 0 0 0-32 896V512a32 32 0 0 1 32-32h448A448 448 0 0 0 512 64z" fill="#999999" p-id="3311"></path>
-                            <path d="M858.88 976a32 32 0 0 1-32-32V640a32 32 0 0 1 32-32 32 32 0 0 1 32 32v304a32 32 0 0 1-32 32z" fill="#999999" p-id="3312"></path>
-                            <path d="M757.12 773.12a34.56 34.56 0 0 1-22.4-8.96 32 32 0 0 1 0-45.44l101.12-101.12a32 32 0 0 1 45.44 0 30.72 30.72 0 0 1 0 44.8l-101.12 101.76a34.56 34.56 0 0 1-23.04 8.96z" fill="#999999" p-id="3313"></path>
-                            <path d="M960 773.12a32 32 0 0 1-22.4-8.96l-101.76-101.76a32 32 0 0 1 0-44.8 32 32 0 0 1 45.44 0l101.12 101.12a32 32 0 0 1-22.4 54.4z" fill="#999999" p-id="3314"></path>
-                        </svg>
-                        {{ruleForm.file_size}}
-                    </p>
-                    <p v-if="ruleForm.fileList_tip" style="color: #F56C6C;font-size: 12px;line-height: 1;">{{ruleForm.fileList_tip_text}}</p>
+            {{ruleForm.duration}} {{$t('components.day')}}
+          </el-form-item>
+          <el-form-item prop="storage_copy">
+            <template slot="label">
+              {{$t('uploadFile.Storage_copy')}}
+
+              <el-tooltip effect="dark" :content="$t('uploadFile.Storage_copy_tooltip')" placement="top">
+                <img src="@/assets/images/info.png" />
+              </el-tooltip>
+            </template>
+            {{ruleForm.storage_copy}}
+          </el-form-item>
+          <el-form-item prop="Free_Storage_Capacity">
+            <template slot="label">
+              {{$t('uploadFile.Free_Storage_Capacity')}}
+
+              <el-tooltip effect="dark" :content="$t('uploadFile.Free_Storage_Capacity_tooltip')" placement="top">
+                <img src="@/assets/images/info.png" />
+              </el-tooltip>
+            </template>
+            <span style="color:#2C7FF8">{{free_quota_per_month-free_usage | byteStorage}} GB</span>
+          </el-form-item>
+          <el-form-item prop="storage_cost">
+            <template slot="label">
+              {{$t('uploadFile.Estimated_Storage_Cost')}}
+
+              <el-tooltip effect="dark" :content="$t('uploadFile.Estimated_Storage_Cost_tooltip')" placement="top">
+                <img src="@/assets/images/info.png" />
+              </el-tooltip>
+            </template>
+            <span v-if="free" style="color:#2C7FF8;text-transform: uppercase;">{{$t('uploadFile.filter_status_Free')}}</span>
+            <span v-else style="color:#2C7FF8">{{ruleForm.storage_cost | NumStorage}} FIL</span>
+          </el-form-item>
+        </el-form>
+        <div class="upload_plan">
+          <div class="title" :style="{'color': ruleForm.lock_plan_tip? '#f67e7e' : '#000'}">
+            {{$t('uploadFile.Select_Lock_Funds_Plan')}}
+            <el-tooltip effect="dark" :content="$t('uploadFile.Select_Lock_Funds_Plan_tooltip')" placement="top">
+              <img src="@/assets/images/info.png" />
+            </el-tooltip>
+          </div>
+          <div class="desc">{{$t('uploadFile.latest_exchange_rate')}} {{biling_price}}.</div>
+          <div class="upload_plan_radio" :class="{'upload_plan_radio_free': free}">
+            <el-radio-group :disabled="free?true:false" v-model="ruleForm.lock_plan" @change="agreeChange">
+              <el-radio label="1" border>
+                <div class="title">{{$t('uploadFile.Low')}}</div>
+                <div class="cont">
+                  {{free?0:storage_cost_low}} USDC
                 </div>
-                <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" class="demo-ruleForm">
-                    <!-- <el-form-item prop="fileList" :label="$t('uploadFile.upload')" :style="{'align-items': ruleForm.fileList_tip?'flex-start':'center'}"></el-form-item> -->
-                    <el-form-item prop="duration">
-                        <template slot="label">
-                            {{$t('uploadFile.Duration')}}
-
-                            <el-tooltip effect="dark" :content="$t('uploadFile.Duration_tooltip')" placement="top">
-                                <img src="@/assets/images/info.png" />
-                            </el-tooltip>
-                        </template>
-                        {{ruleForm.duration}} {{$t('components.day')}}
-                    </el-form-item>
-                    <el-form-item prop="storage_copy">
-                        <template slot="label">
-                            {{$t('uploadFile.Storage_copy')}}
-
-                            <el-tooltip effect="dark" :content="$t('uploadFile.Storage_copy_tooltip')" placement="top">
-                                <img src="@/assets/images/info.png" />
-                            </el-tooltip>
-                        </template>
-                        {{ruleForm.storage_copy}}
-                    </el-form-item>
-                    <el-form-item prop="Free_Storage_Capacity">
-                        <template slot="label">
-                            {{$t('uploadFile.Free_Storage_Capacity')}}
-
-                            <el-tooltip effect="dark" :content="$t('uploadFile.Free_Storage_Capacity_tooltip')" placement="top">
-                                <img src="@/assets/images/info.png" />
-                            </el-tooltip>
-                        </template>
-                        <span style="color:#2C7FF8">{{free_quota_per_month-free_usage | byteStorage}} GB</span>
-                    </el-form-item>
-                    <el-form-item prop="storage_cost">
-                        <template slot="label">
-                            {{$t('uploadFile.Estimated_Storage_Cost')}}
-
-                            <el-tooltip effect="dark" :content="$t('uploadFile.Estimated_Storage_Cost_tooltip')" placement="top">
-                                <img src="@/assets/images/info.png" />
-                            </el-tooltip>
-                        </template>
-                        <span v-if="free" style="color:#2C7FF8;text-transform: uppercase;">{{$t('uploadFile.filter_status_Free')}}</span>
-                        <span v-else style="color:#2C7FF8">{{ruleForm.storage_cost | NumStorage}} FIL</span>
-                    </el-form-item>
-                </el-form>
-                <div class="upload_plan">
-                    <div class="title" :style="{'color': ruleForm.lock_plan_tip? '#f67e7e' : '#000'}">
-                        {{$t('uploadFile.Select_Lock_Funds_Plan')}}
-                        <el-tooltip effect="dark" :content="$t('uploadFile.Select_Lock_Funds_Plan_tooltip')" placement="top">
-                            <img src="@/assets/images/info.png" />
-                        </el-tooltip>
-                    </div>
-                    <div class="desc">{{$t('uploadFile.latest_exchange_rate')}} {{biling_price}}.</div>
-                    <div class="upload_plan_radio" :class="{'upload_plan_radio_free': free}">
-                        <el-radio-group :disabled="free?true:false" v-model="ruleForm.lock_plan" @change="agreeChange">
-                            <el-radio label="1" border>
-                                <div class="title">{{$t('uploadFile.Low')}}</div>
-                                <div class="cont">
-                                    {{free?0:storage_cost_low}} USDC
-                                </div>
-                            </el-radio>
-                            <el-radio label="2" border>
-                                <div class="title">{{$t('uploadFile.Average')}}</div>
-                                <div class="cont">
-                                    {{free?0:storage_cost_average}} USDC
-                                </div>
-                            </el-radio>
-                            <el-radio label="3" border>
-                                <div class="title">{{$t('uploadFile.High')}}</div>
-                                <div class="cont">
-                                    {{free?0:storage_cost_high}} USDC
-                                </div>
-                            </el-radio>
-                        </el-radio-group>
-                    </div>
+              </el-radio>
+              <el-radio label="2" border>
+                <div class="title">{{$t('uploadFile.Average')}}</div>
+                <div class="cont">
+                  {{free?0:storage_cost_average}} USDC
                 </div>
-                <div class="upload_bot">
-                    <div class="found">
-                        <el-button type="primary" class="cancel" @click="closeDia">{{$t('deal.Cancel')}}</el-button>
-                        <el-button type="primary" @click="submitForm('ruleForm')">{{$t('deal.Submit')}}</el-button>
-                    </div>
-                    <a :href="found_link" target="_blank">{{$t('uploadFile.upload_funds')}}</a>
+              </el-radio>
+              <el-radio label="3" border>
+                <div class="title">{{$t('uploadFile.High')}}</div>
+                <div class="cont">
+                  {{free?0:storage_cost_high}} USDC
                 </div>
-            </div>
-        </el-dialog>
+              </el-radio>
+            </el-radio-group>
+          </div>
+        </div>
+        <div class="upload_bot">
+          <div class="found">
+            <el-button type="primary" class="cancel" @click="closeDia">{{$t('deal.Cancel')}}</el-button>
+            <el-button type="primary" @click="submitForm('ruleForm')">{{$t('deal.Submit')}}</el-button>
+          </div>
+          <a :href="found_link" target="_blank">{{$t('uploadFile.upload_funds')}}</a>
+        </div>
+      </div>
+    </el-dialog>
 
-        <el-dialog title="" :visible.sync="finishTransaction" :close-on-click-modal="false" :width="width" custom-class="completeDia">
-            <img src="@/assets/images/alert-icon.png" class="resno" />
-            <h1>{{$t('uploadFile.COMPLETED')}}!</h1>
-            <h3>{{$t('uploadFile.SUCCESS')}}</h3>
-            <a :href="baseAddressURL+'tx/'+txHash" target="_blank">{{txHash}}</a>
-            <a class="a-close" @click="finishClose">{{$t('uploadFile.CLOSE')}}</a>
-        </el-dialog>
+    <el-dialog title="" :visible.sync="finishTransaction" :close-on-click-modal="false" :width="width" custom-class="completeDia">
+      <img src="@/assets/images/alert-icon.png" class="resno" />
+      <h1>{{$t('uploadFile.COMPLETED')}}!</h1>
+      <h3>{{$t('uploadFile.SUCCESS')}}</h3>
+      <a :href="baseAddressURL+'tx/'+txHash" target="_blank">{{txHash}}</a>
+      <a class="a-close" @click="finishClose">{{$t('uploadFile.CLOSE')}}</a>
+    </el-dialog>
 
-        <el-dialog title="" :visible.sync="failTransaction" :width="width" custom-class="completeDia">
-            <img src="@/assets/images/error.png" class="resno" />
-            <h1>{{$t('uploadFile.Fail')}}!</h1>
-            <h3>{{$t('uploadFile.FailTIP')}}</h3>
-            <a :href="baseAddressURL+'tx/'+txHash" target="_blank">{{txHash}}</a>
-            <a class="a-close" @click="failClose">{{$t('uploadFile.CLOSE')}}</a>
-        </el-dialog>
+    <el-dialog title="" :visible.sync="failTransaction" :width="width" custom-class="completeDia">
+      <img src="@/assets/images/error.png" class="resno" />
+      <h1>{{$t('uploadFile.Fail')}}!</h1>
+      <h3>{{$t('uploadFile.FailTIP')}}</h3>
+      <a :href="baseAddressURL+'tx/'+txHash" target="_blank">{{txHash}}</a>
+      <a class="a-close" @click="failClose">{{$t('uploadFile.CLOSE')}}</a>
+    </el-dialog>
 
-        <el-dialog title="" :visible.sync="waitTransaction" :width="width" :before-close="failClose" custom-class="completeDia">
-            <img src="@/assets/images/waiting.png" class="resno" />
-            <h1>{{$t('uploadFile.waiting')}}</h1>
-            <h3>{{$t('uploadFile.waitingTIP')}}</h3>
-            <a :href="baseAddressURL+'tx/'+txHash" target="_blank">{{txHash}}</a>
-            <a class="a-close" @click="failClose">{{$t('uploadFile.CLOSE')}}</a>
-        </el-dialog>
+    <el-dialog title="" :visible.sync="waitTransaction" :width="width" :before-close="failClose" custom-class="completeDia">
+      <img src="@/assets/images/waiting.png" class="resno" />
+      <h1>{{$t('uploadFile.waiting')}}</h1>
+      <h3>{{$t('uploadFile.waitingTIP')}}</h3>
+      <a :href="baseAddressURL+'tx/'+txHash" target="_blank">{{txHash}}</a>
+      <a class="a-close" @click="failClose">{{$t('uploadFile.CLOSE')}}</a>
+    </el-dialog>
 
-        <el-dialog :visible.sync="fileUploadVisible" :show-close="false" :close-on-click-modal="false" :width="widthUpload" custom-class="fileUpload">
-            <span slot="title">{{$t('uploadFile.File_uploading')}}... {{percentIn?'('+percentIn+')':''}}</span>
-            <h3>{{$t('uploadFile.File_uploading_tooltip')}}</h3>
-            <img src="@/assets/images/upload.gif" class="gif_img" alt="">
-        </el-dialog>
+    <el-dialog :visible.sync="fileUploadVisible" :show-close="false" :close-on-click-modal="false" :width="widthUpload" custom-class="fileUpload">
+      <span slot="title">{{$t('uploadFile.File_uploading')}}... {{percentIn?'('+percentIn+')':''}}</span>
+      <h3>{{$t('uploadFile.File_uploading_tooltip')}}</h3>
+      <img src="@/assets/images/upload.gif" class="gif_img" alt="">
+    </el-dialog>
 
-        <el-dialog title="" :visible.sync="paymentPopup" :width="width" custom-class="completeDia">
-            <img src="@/assets/images/box-important.png" class="resno" />
-            <h2>{{$t('uploadFile.file_uploaded')}}</h2>
-            <h4>{{$t('uploadFile.file_uploaded_tip')}}</h4>
-            <h4>{{$t('uploadFile.file_uploaded_tip01')}}</h4>
-            <a class="a-close" @click="paymentPopup=false">{{$t('uploadFile.OK')}}</a>
-        </el-dialog>
+    <el-dialog title="" :visible.sync="paymentPopup" :width="width" custom-class="completeDia">
+      <img src="@/assets/images/box-important.png" class="resno" />
+      <h2>{{$t('uploadFile.file_uploaded')}}</h2>
+      <h4>{{$t('uploadFile.file_uploaded_tip')}}</h4>
+      <h4>{{$t('uploadFile.file_uploaded_tip01')}}</h4>
+      <a class="a-close" @click="paymentPopup=false">{{$t('uploadFile.OK')}}</a>
+    </el-dialog>
 
-        <el-dialog title="" :visible.sync="paymentPopup01" :width="width" custom-class="completeDia">
-            <img src="@/assets/images/box-important.png" class="resno" />
-            <h2>{{$t('uploadFile.file_uploaded')}}</h2>
-            <h4>{{$t('uploadFile.file_uploaded_tip02')}}</h4>
-            <h4>{{$t('uploadFile.file_uploaded_tip01')}}</h4>
-            <a class="a-close" @click="paymentPopup01=false">{{$t('uploadFile.OK')}}</a>
-        </el-dialog>
+    <el-dialog title="" :visible.sync="paymentPopup01" :width="width" custom-class="completeDia">
+      <img src="@/assets/images/box-important.png" class="resno" />
+      <h2>{{$t('uploadFile.file_uploaded')}}</h2>
+      <h4>{{$t('uploadFile.file_uploaded_tip02')}}</h4>
+      <h4>{{$t('uploadFile.file_uploaded_tip01')}}</h4>
+      <a class="a-close" @click="paymentPopup01=false">{{$t('uploadFile.OK')}}</a>
+    </el-dialog>
 
-        <el-dialog title="" :visible.sync="metamaskLoginTip" :width="width" custom-class="completeDia">
-            <img src="@/assets/images/box-important.png" class="resno" />
-            <h4 v-if="baseNetwork">
-                {{$t('fs3Login.toptip_01')}} {{metaNetworkInfo.name}} {{$t('fs3Login.toptip_02')}}
-                <b>Polygon Mainnet</b>.
-            </h4>
-            <h4 v-else>
-                {{$t('fs3Login.toptip_01')}} {{metaNetworkInfo.name}} {{$t('fs3Login.toptip_02')}}
-                <b>Mumbai Testnet</b>
-                {{$t('fs3Login.toptip_Network')}}
-                <b>BSC TestNet</b>.
-            </h4>
-            <a class="a-close" @click="metamaskLoginTip=false">{{$t('uploadFile.OK')}}</a>
-        </el-dialog>
-    </div>
+    <el-dialog title="" :visible.sync="metamaskLoginTip" :width="width" custom-class="completeDia">
+      <img src="@/assets/images/box-important.png" class="resno" />
+      <h4 v-if="baseNetwork">
+        {{$t('fs3Login.toptip_01')}} {{metaNetworkInfo.name}} {{$t('fs3Login.toptip_02')}}
+        <b>Polygon Mainnet</b>.
+      </h4>
+      <h4 v-else>
+        {{$t('fs3Login.toptip_01')}} {{metaNetworkInfo.name}} {{$t('fs3Login.toptip_02')}}
+        <b>Mumbai Testnet</b>
+        {{$t('fs3Login.toptip_Network')}}
+        <b>BSC TestNet</b>.
+      </h4>
+      <a class="a-close" @click="metamaskLoginTip=false">{{$t('uploadFile.OK')}}</a>
+    </el-dialog>
+  </div>
 </template>
 
 <script>
 // import bus from '@/components/bus'
 // import * as myAjax from '@/api/uploadFile'
-// import NCWeb3 from '@/utils/web3'
 import axios from 'axios'
 import firstContractJson from '@/utils/swanPayment.json'
 import erc20ContractJson from '@/utils/ERC20.json'
-import metaLogin from '@/utils/login'
 let contractErc20
 let that
 export default {
@@ -283,7 +281,7 @@ export default {
       loadMetamaskPay: false,
       metamaskLoginTip: false,
       lastTime: 0,
-      found_link: process.env.NODE_ENV == 'production' ? 'https://calibration-faucet.filswan.com/' : 'http://192.168.88.216:8080/faucet/#/dashboard',
+      found_link: process.env.NODE_ENV === 'production' ? 'https://calibration-faucet.filswan.com/' : 'http://192.168.88.216:8080/faucet/#/dashboard',
       free: false,
       bgStyle: false
     }
@@ -337,7 +335,7 @@ export default {
             _this.ruleForm.fileList_tip = true
             return false
           }
-          let status = await metaLogin.netStatus(_this.networkID)
+          let status = await _this.$metaLogin.netStatus(_this.networkID)
           if (_this.metaAddress && !status) {
             _this.metamaskLoginTip = true
             return false
@@ -349,7 +347,7 @@ export default {
           if (_this.ruleForm.fileList_tip || isNaN(_this.ruleForm.amount)) return false
 
           let now = new Date().valueOf()
-          if (_this.lastTime == 0) {
+          if (_this.lastTime === 0) {
             _this.lastTime = now
           } else {
             if ((now - _this.lastTime) > 2000) {
@@ -362,13 +360,13 @@ export default {
 
           if (_this.metaAddress) {
             // 授权代币
-            contractErc20 = new web3.eth.Contract(erc20ContractJson)
+            contractErc20 = new _this.$web3Init.eth.Contract(erc20ContractJson)
             contractErc20.options.address = _this.usdcAddress
             // 查询剩余代币余额为：
             contractErc20.methods.balanceOf(_this.metaAddress).call()
               .then(resultUSDC => {
-                _this.usdcAvailable = web3.utils.fromWei(resultUSDC, 'mwei')
-                console.log('Available upload:', _this.usdcAvailable, _this.ruleForm.amount)
+                _this.usdcAvailable = _this.$web3Init.utils.fromWei(resultUSDC, 'mwei')
+                console.log('Available upload:', resultUSDC, _this.usdcAvailable, _this.ruleForm.amount)
 
                 // 判断支付金额是否大于代币余额
                 if (Number(_this.ruleForm.amount) > Number(_this.usdcAvailable)) {
@@ -413,7 +411,7 @@ export default {
                           } else {
                             contractErc20.methods.allowance(_this.gatewayContractAddress, _this.metaAddress).call()
                               .then(resultUSDC => {
-                                let amountPay = web3.utils.toWei(_this.ruleForm.amount, 'mwei')
+                                let amountPay = _this.$web3Init.utils.toWei(_this.ruleForm.amount, 'mwei')
                                 console.log('allowance：' + resultUSDC, amountPay)
                                 if (resultUSDC < amountPay) {
                                   contractErc20.methods.approve(_this.gatewayContractAddress, amountPay).send({ from: _this.metaAddress })
@@ -449,8 +447,8 @@ export default {
 
                   xhr.upload.addEventListener('progress', event => {
                     if (event.lengthComputable) {
-                      let loaded = event.loaded
-                      let total = event.total
+                      // let loaded = event.loaded
+                      // let total = event.total
                       // console.log('total-loaded', total, loaded)
                       let percentIn = Math.floor(event.loaded / event.total * 100)
                       // 设置进度显示
@@ -466,8 +464,8 @@ export default {
                   if (event.lengthComputable) {
                     let percentIn = Math.floor(event.loaded / event.total * 100)
                     // 设置进度显示
-                    if (percentIn == 100 && event.loaded <= event.total) percentIn = 99
-                    _this.percentIn = percentIn == 100 && event.loaded <= event.total ? '99%' : percentIn + '%'
+                    if (percentIn === 100 && event.loaded <= event.total) percentIn = 99
+                    _this.percentIn = percentIn === 100 && event.loaded <= event.total ? '99%' : percentIn + '%'
                     // console.log(percentIn+'%')
                   }
                 }
@@ -484,16 +482,14 @@ export default {
     contractSend (resData, amountPay) {
       let _this = this
       // 合约转账
-      let contractInstance = new web3.eth.Contract(firstContractJson)
+      let contractInstance = new _this.$web3Init.eth.Contract(firstContractJson)
       contractInstance.options.address = _this.gatewayContractAddress
       // console.log( 'contractInstance合约实例：', contractInstance );
       // console.log(contractInstance.options.jsonInterface)
 
       let payObject = {
         from: _this.metaAddress,
-        gas: web3.utils.toHex(_this.ruleForm.gaslimit)
-        // gasPrice: web3.utils.toHex(web3.utils.toWei(_this.ruleForm.gasprice + '', 'gwei')),
-        // value: web3.utils.toHex(web3.utils.toWei(_this.ruleForm.amount, 'ether')),
+        gas: _this.$web3Init.utils.toHex(_this.ruleForm.gaslimit)
       }
       let lockObj = {
         id: resData.w_cid,
@@ -538,10 +534,13 @@ export default {
     },
     checkTransaction (txHash, resData, lockObj) {
       let _this = this
-      web3.eth.getTransactionReceipt(txHash).then(
+      _this.$web3Init.eth.getTransactionReceipt(txHash).then(
         async res => {
           console.log('checking ... ')
-          if (!res) { return _this.timer = setTimeout(() => { _this.checkTransaction(txHash, resData, lockObj) }, 2000) } else {
+          if (!res) {
+            _this.timer = setTimeout(() => { _this.checkTransaction(txHash, resData, lockObj) }, 2000)
+            return false
+          } else {
             setTimeout(function () {
               _this.loading = false
               _this.loadMetamaskPay = false
@@ -578,9 +577,9 @@ export default {
     sizeChange (bytes) {
       if (bytes === 0) return '0 B'
       if (!bytes) return '-'
-      var k = 1024, // or 1000
-        sizes = ['bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
-        i = Math.floor(Math.log(bytes) / Math.log(k))
+      var k = 1024 // or 1000
+      var sizes = ['bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
+      var i = Math.floor(Math.log(bytes) / Math.log(k))
 
       if (Math.round((bytes / Math.pow(k, i))).toString().length > 3) {
         // 判断大小是999999999左右，解决会显示成1.00e+3科学计数法
@@ -650,7 +649,7 @@ export default {
     dropHandler (e) {
       e.preventDefault()
       const fileList = e.dataTransfer.files
-      if (fileList.length == 0) {
+      if (fileList.length === 0) {
         return
       }
       const uploadFile = {

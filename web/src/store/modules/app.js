@@ -82,21 +82,21 @@ const app = {
       state.reverse = reverse
       localStorage.setItem('reverse', reverse)
     },
-    SET_FREEUSAGE: (state, free_usage) => {
-      state.free_usage = free_usage
-      sessionStorage.setItem('free_usage', free_usage)
+    SET_FREEUSAGE: (state, freeUsage) => {
+      state.free_usage = freeUsage
+      sessionStorage.setItem('free_usage', freeUsage)
     },
-    SET_FREEQUOTE: (state, free_quota_per_month) => {
-      state.free_quota_per_month = free_quota_per_month
-      sessionStorage.setItem('free_quota_per_month', free_quota_per_month)
+    SET_FREEQUOTE: (state, freeQuotaPerMonth) => {
+      state.free_quota_per_month = freeQuotaPerMonth
+      sessionStorage.setItem('free_quota_per_month', freeQuotaPerMonth)
     },
-    SET_FREEBUCKET: (state, free_bucket) => {
-      state.free_bucket = free_bucket
-      sessionStorage.setItem('free_bucket', free_bucket)
+    SET_FREEBUCKET: (state, freeBucket) => {
+      state.free_bucket = freeBucket
+      sessionStorage.setItem('free_bucket', freeBucket)
     },
-    SET_FREEBUCKETALL: (state, free_bucketAll) => {
-      state.free_bucketAll = free_bucketAll
-      sessionStorage.setItem('free_bucketAll', free_bucketAll)
+    SET_FREEBUCKETALL: (state, freeBucketAll) => {
+      state.free_bucketAll = freeBucketAll
+      sessionStorage.setItem('free_bucketAll', freeBucketAll)
     },
     SET_MCSJWTTOKEN: (state, mcsjwtToken) => {
       state.mcsjwtToken = mcsjwtToken
@@ -104,58 +104,94 @@ const app = {
     }
   },
   actions: {
-    toggleSideBar ({commit}) {
+    toggleSideBar ({
+      commit
+    }) {
       commit('TOGGLE_SIDEBAR')
     },
-    setLanguage ({commit}, languageMcs) {
+    setLanguage ({
+      commit
+    }, languageMcs) {
       commit('SET_LANGUAGE', languageMcs)
     },
-    setRouterMenu ({commit}, routerMenu) {
+    setRouterMenu ({
+      commit
+    }, routerMenu) {
       commit('SET_ROUTERMENU', routerMenu)
     },
-    setHeadertitle ({commit}, headertitle) {
+    setHeadertitle ({
+      commit
+    }, headertitle) {
       commit('SET_HEADERTITLE', headertitle)
     },
-    setAssetNow ({commit}, assetNow) {
+    setAssetNow ({
+      commit
+    }, assetNow) {
       commit('SET_ASSETNOW', assetNow)
     },
-    setMetaInfo ({commit}, metaInfo) {
+    setMetaInfo ({
+      commit
+    }, metaInfo) {
       commit('SET_METAINFO', metaInfo)
     },
-    setAvater ({commit}, avater) {
+    setAvater ({
+      commit
+    }, avater) {
       commit('SET_AVATER', avater)
     },
-    isHtmlGo ({commit}, avater) {
+    isHtmlGo ({
+      commit
+    }, avater) {
       commit('IS_HTML_GO', avater)
     },
-    setCollapse ({commit}, collapseL) {
+    setCollapse ({
+      commit
+    }, collapseL) {
       commit('SET_COLLAPSE', collapseL)
     },
-    setMetaAddress ({commit}, metaAddress) {
+    setMetaAddress ({
+      commit
+    }, metaAddress) {
       commit('SET_METAADDRESS', metaAddress)
     },
-    setMetaNetworkId ({commit}, networkID) {
+    setMetaNetworkId ({
+      commit
+    }, networkID) {
       commit('SET_METANETWORKID', networkID)
     },
-    setMetaNetworkInfo ({commit}, metaNetworkInfo) {
+    setMetaNetworkInfo ({
+      commit
+    }, metaNetworkInfo) {
       commit('SET_METANETWORKINFO', metaNetworkInfo)
     },
-    setReverse ({commit}, reverse) {
+    setReverse ({
+      commit
+    }, reverse) {
       commit('SET_REVERSE', reverse)
     },
-    setFreeUsage ({commit}, free_usage) {
-      commit('SET_FREEUSAGE', free_usage)
+    setFreeUsage ({
+      commit
+    }, freeUsage) {
+      commit('SET_FREEUSAGE', freeUsage)
     },
-    setFreeQuote ({commit}, free_quota_per_month) {
-      commit('SET_FREEQUOTE', free_quota_per_month)
+    setFreeQuote ({
+      commit
+    }, freeQuotaPerMonth) {
+      commit('SET_FREEQUOTE', freeQuotaPerMonth)
     },
-    setFreeBucket ({commit}, free_bucket) {
-      commit('SET_FREEBUCKET', free_bucket)
+    setFreeBucket ({
+      commit
+    }, freeBucket) {
+      commit('SET_FREEBUCKET', freeBucket)
     },
-    setFreeBucketAll ({commit}, free_bucketAll) {
-      commit('SET_FREEBUCKETALL', free_bucketAll)
+    setFreeBucketAll ({
+      commit
+    }, freeBucketAll) {
+      commit('SET_FREEBUCKETALL', freeBucketAll)
     },
-    setMCSjwtToken ({commit}, mcsjwtToken) {
+    setMCSjwtToken ({
+      commit
+    }, mcsjwtToken) {
       commit('SET_MCSJWTTOKEN', mcsjwtToken)
     }
   }

@@ -1,14 +1,16 @@
 import axios from 'axios' // axios  npm install axios
 import store from '../store'
 import router from '../router'
-import { Message } from 'element-ui'
+import {
+  Message
+} from 'element-ui'
 
 const service = axios.create({
   baseURL: process.env.NODE_ENV === 'production' ? process.env.BASE_METASPACE : '/test',
   timeout: 60000
 })
 service.interceptors.request.use(function (config) {
-  config.headers['Authorization'] = 'Bearer  ' + store.getters.mcsjwtToken
+  config.headers['Authorization'] = 'Bearer ' + store.getters.mcsjwtToken
   sessionStorage.time = 70
   return config
 }, function (error) {

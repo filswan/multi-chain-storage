@@ -6,7 +6,7 @@ import {
 } from 'element-ui'
 const ethereum = window.ethereum
 let lastTime = 0
-async function login () {
+export async function login () {
   if (!store.getters.metaAddress || store.getters.metaAddress === undefined) {
     const accounts = await ethereum.request({
       method: 'eth_requestAccounts'
@@ -28,7 +28,7 @@ async function login () {
   return !!token
 }
 
-async function throttle () {
+export async function throttle () {
   // Prevent multiple signatures
   let now = new Date().valueOf()
   if (lastTime > 0 && (now - lastTime) <= 2000) return false
@@ -36,7 +36,7 @@ async function throttle () {
   return true
 }
 
-async function sendPostRequest (apilink, jsonObject) {
+export async function sendPostRequest (apilink, jsonObject) {
   try {
     const response = await axios.post(apilink, jsonObject)
     return response.data
@@ -46,7 +46,7 @@ async function sendPostRequest (apilink, jsonObject) {
   }
 }
 
-async function getNonce () {
+export async function getNonce () {
   const reqOpts = {
     'public_key_address': store.getters.metaAddress
   }
@@ -60,7 +60,7 @@ async function getNonce () {
   return [response.message ? response.message : '', '']
 }
 
-async function sign (nonce) {
+export async function sign (nonce) {
   store.dispatch('setMCSjwtToken', '')
   const buff = Buffer.from(nonce, 'utf-8')
   let signature = null
@@ -77,7 +77,7 @@ async function sign (nonce) {
   return signature
 }
 
-async function performSignin (sig, nonce) {
+export async function performSignin (sig, nonce) {
   const netId = Number(store.getters.networkID)
   const reqOpts = {
     public_key_address: store.getters.metaAddress,
@@ -97,7 +97,7 @@ async function performSignin (sig, nonce) {
   return null
 }
 
-function signOutFun () {
+export function signOutFun () {
   store.dispatch('setMetaAddress', '')
   store.dispatch('setMCSjwtToken', '')
   store.dispatch('setMetaNetworkId', 0)
@@ -110,7 +110,7 @@ function signOutFun () {
   router.push('/supplierAllBack')
 }
 
-async function netStatus (id) {
+export async function netStatus (id) {
   let status
   const baseNet = process.env.BASE_ENV === true
   switch (id) {
@@ -130,7 +130,7 @@ async function netStatus (id) {
   return status
 }
 
-async function urlBase (id) {
+export async function urlBase (id) {
   let url = ''
   switch (id) {
     case 80001:
@@ -147,15 +147,4 @@ async function urlBase (id) {
       break
   }
   return url
-}
-
-export default {
-  login,
-  sendPostRequest,
-  getNonce,
-  sign,
-  performSignin,
-  signOutFun,
-  netStatus,
-  urlBase
 }

@@ -1,70 +1,63 @@
 <template>
-    <div class="headerCont">
-      <div class="landing" style="min-height: 0.86rem;">
-        <div class="header width">
-            <img :src="logo" class="logoImg" alt='FilSwan' @click="header_logo" />
-            <!-- 菜单导航 -->
-            <el-menu
-                :default-active="activeIndex"
-                class="el-menu-demo pcShow"
-                mode="horizontal"
-                @select="handleSelect"
-                background-color="transparent"
-                text-color="#333"
-                active-text-color="#5580e9">
-                <el-menu-item index="about">
-                    <router-link to="">
-                        {{ $t('route.About') }}
-                    </router-link>
-                </el-menu-item>
-                <el-menu-item index="pricing" v-if="false">
-                    <router-link to="">
-                        {{ $t('route.Pricing') }}
-                    </router-link>
-                </el-menu-item>
-                <el-menu-item index="resources">
-                    <router-link to="">
-                        {{ $t('route.Resources') }}
-                    </router-link>
-                </el-menu-item>
-                <el-menu-item index="login">
-                    <a href="javascript:;" v-loading="loginLoad" @click="getLogin" class="target">
-                        {{ $t('route.Login') }}
-                    </a>
-                </el-menu-item>
-            </el-menu>
-            <!-- 移动端菜单 -->
-            <div class="mobileShow" @click="mobileMenuFun">
-                <div>
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
-            </div>
+  <div class="headerCont">
+    <div class="landing" style="min-height: 0.86rem;">
+      <div class="header width">
+        <img :src="logo" class="logoImg" alt='FilSwan' @click="header_logo" />
+        <!-- 菜单导航 -->
+        <el-menu :default-active="activeIndex" class="el-menu-demo pcShow" mode="horizontal" @select="handleSelect" background-color="transparent" text-color="#333" active-text-color="#5580e9">
+          <el-menu-item index="about">
+            <router-link to="">
+              {{ $t('route.About') }}
+            </router-link>
+          </el-menu-item>
+          <el-menu-item index="pricing" v-if="false">
+            <router-link to="">
+              {{ $t('route.Pricing') }}
+            </router-link>
+          </el-menu-item>
+          <el-menu-item index="resources">
+            <router-link to="">
+              {{ $t('route.Resources') }}
+            </router-link>
+          </el-menu-item>
+          <el-menu-item index="login">
+            <a href="javascript:;" v-loading="loginLoad" @click="getLogin" class="target">
+              {{ $t('route.Login') }}
+            </a>
+          </el-menu-item>
+        </el-menu>
+        <!-- 移动端菜单 -->
+        <div class="mobileShow" @click="mobileMenuFun">
+          <div>
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
 
-            <!-- 移动端导航 -->
-            <div class="menuBg" v-if="mobileMenuShow" @click="mobileMenuFun"></div>
-            <div :class="{'menuMList': 1==1, 'menuWidth': mobileMenuShow}" v-show="mobileMenuShow">
-                <div class="contentMenu" :class="{'contentMenuX': mobileMenuSecord}">
-                    <div class="first_level_menu">
-                        <div class="menuMListChild" @click="handleMoSelect('about')">
-                            {{ $t('route.About') }}
-                        </div>
-                        <router-link to="" v-if="false" class="menuMListChild" @click="handleMoSelect('pricing')">
-                            {{ $t('route.Pricing') }}
-                        </router-link>
-                        <div class="menuMListChild" @click="handleMoSelect('resources')">
-                            {{ $t('route.Resources') }}
-                        </div>
-                        <a href="javascript:;" v-loading="loginLoad" @click="getLogin" class="menuMListChild">
-                            {{ $t('route.Login') }}
-                        </a>
-                    </div>
-                </div>
+        <!-- 移动端导航 -->
+        <div class="menuBg" v-if="mobileMenuShow" @click="mobileMenuFun"></div>
+        <div :class="{'menuMList': 1==1, 'menuWidth': mobileMenuShow}" v-show="mobileMenuShow">
+          <div class="contentMenu" :class="{'contentMenuX': mobileMenuSecord}">
+            <div class="first_level_menu">
+              <div class="menuMListChild" @click="handleMoSelect('about')">
+                {{ $t('route.About') }}
+              </div>
+              <router-link to="" v-if="false" class="menuMListChild" @click="handleMoSelect('pricing')">
+                {{ $t('route.Pricing') }}
+              </router-link>
+              <div class="menuMListChild" @click="handleMoSelect('resources')">
+                {{ $t('route.Resources') }}
+              </div>
+              <a href="javascript:;" v-loading="loginLoad" @click="getLogin" class="menuMListChild">
+                {{ $t('route.Login') }}
+              </a>
             </div>
+          </div>
         </div>
       </div>
     </div>
+  </div>
 </template>
 <script>
 let that
@@ -130,7 +123,7 @@ export default {
       width: 94%;
     }
   }
-  .header /deep/{
+  .header /deep/ {
     padding: 0.2rem 0;
     display: flex;
     justify-content: space-between;
@@ -187,7 +180,7 @@ export default {
             opacity: 0.85;
           }
         }
-        .el-loading-mask{
+        .el-loading-mask {
           border-radius: 0.05rem;
           z-index: 2;
         }

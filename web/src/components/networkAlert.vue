@@ -5,7 +5,7 @@
       <span @click="changeAlert(137)">Polygon Mainnet</span>.
       <p v-if="networkID == 80001 || networkID == 97">
         {{$t('fs3Login.toptip_04_main')}} {{metaNetworkInfo.name}} {{$t('fs3Login.toptip_04_1')}}
-        <a href="https://calibration-mcs.filswan.com/#/home" target="_blank">calibration-mcs.filswan.com</a>.
+        <a href="https://calibration-mcs.filswan.com" target="_blank">calibration-mcs.filswan.com</a>.
       </p>
     </div>
     <div slot="title" v-else>
@@ -14,7 +14,7 @@
       {{$t('fs3Login.toptip_Network')}}
       <span @click="changeAlert(97)">BSC TestNet</span>.
       <p v-if="networkID == 137">{{$t('fs3Login.toptip_04')}}
-        <a href="https://www.multichain.storage/#/home" target="_blank">multichain.storage</a>.</p>
+        <a href="https://www.multichain.storage" target="_blank">multichain.storage</a>.</p>
     </div>
   </el-alert>
 </template>

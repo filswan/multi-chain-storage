@@ -1,40 +1,36 @@
 <template>
   <div class="login register">
     <div class="loginArea">
-    <div class="loginAreaLeft">
+      <div class="loginAreaLeft">
         <img src="@/assets/images/login/login_logo_en.png" />
-    </div>
-    <div class="loginAreaRight" v-loading="forgetLoad">
-      <a
-        href="javascript:void(0);"
-        @click="menuIndexFun('/login',7)"
-        class="login_register1"
-      >{{generateForgetPassword('forgetPassword_h1')}} ></a>
-      <h1>{{generateForgetPassword('forgetPassword_mail')}}</h1>
+      </div>
+      <div class="loginAreaRight" v-loading="forgetLoad">
+        <a href="javascript:void(0);" @click="menuIndexFun('/login',7)" class="login_register1">{{generateForgetPassword('forgetPassword_h1')}} ></a>
+        <h1>{{generateForgetPassword('forgetPassword_mail')}}</h1>
 
-      <transition name="forgetTypeFade" mode="out-in">
+        <transition name="forgetTypeFade" mode="out-in">
 
-        <!-- 邮箱找回 -->
-        <div class="form-box-forget mail-wrapper" key="mail">
+          <!-- 邮箱找回 -->
+          <div class="form-box-forget mail-wrapper" key="mail">
 
-          <div class="loginFormDiv" :class="verify.mail.tipsbox ? 'border-red' : ''" style="margin-top: 0.4rem">
-            <input class="form-input" :placeholder="generateForgetPassword('forgetPassword_mailnum')" v-model="formData.mail.email" @blur="checkAccount(2)"/>
-          </div>
-          <div class="form-tips" v-show="verify.mail.tipsbox">{{verify.mail.tips}}</div>
+            <div class="loginFormDiv" :class="verify.mail.tipsbox ? 'border-red' : ''" style="margin-top: 0.4rem">
+              <input class="form-input" :placeholder="generateForgetPassword('forgetPassword_mailnum')" v-model="formData.mail.email" @blur="checkAccount(2)" />
+            </div>
+            <div class="form-tips" v-show="verify.mail.tipsbox">{{verify.mail.tips}}</div>
 
-          <div class="loginFormDiv" style="margin-top: 0.2rem;height: 0.37rem;">
-            <el-button type="primary" @click="mailSend">{{generateForgetPassword('forgetPassword_mailbtn')}}</el-button>
+            <div class="loginFormDiv" style="margin-top: 0.2rem;height: 0.37rem;">
+              <el-button type="primary" @click="mailSend">{{generateForgetPassword('forgetPassword_mailbtn')}}</el-button>
+            </div>
+
           </div>
 
-        </div>
+        </transition>
 
-      </transition>
+      </div>
+
+      <div id="captcha"></div>
 
     </div>
-
-    <div id="captcha"></div>
-
-  </div>
   </div>
 </template>
 
@@ -170,7 +166,7 @@ export default {
             // 发送邮箱找回邮件
             sessionStorage.oaxForgetMail = _this.formData.mail.email
             // console.log(sessionStorage.oaxForgetMail, _this.formData.mail.email)
-            _this.$router.push({path: '/mail_forget'})
+            _this.$router.push({ path: '/mail_forget' })
           }
           // else {
           //   // 用户不存在
@@ -196,76 +192,60 @@ export default {
       return this.$store.getters.languageMcs
     }
   },
-  mounted () {
-    var _this = this
-    document.onkeydown = function (e) {
-      if (e.keyCode === 13) {
-        _this.mailSend()
-      }
-    }
-  },
-  destroyed () {
-    document.onkeydown = function (e) {
-      if (e.keyCode === 13) {
-        e.returnValue = false
-        return false
-      }
-    }
-  },
   components: {}
 }
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scopte>
-.forget-page{
+.forget-page {
   $color: #ffb933;
   $color_hover: #e0a32d;
   position: relative;
   width: 100%;
   height: 100%;
-  .forget-wrapper{
+  .forget-wrapper {
     margin: 100px auto;
     width: 540px;
     background-color: #fff;
     padding: 56px 60px;
     box-sizing: border-box;
-    .forget-title{
+    .forget-title {
       width: 100%;
       line-height: 28px;
       text-align: center;
       color: #000;
       font-size: 24px;
     }
-    .form-box-forget{
+    .form-box-forget {
       width: 100%;
       margin-top: 45px;
-      .form-tips{
+      .form-tips {
         font-size: 12px;
         line-height: 18px;
-        color: #FF5656;
+        color: #ff5656;
         text-align: right;
         position: absolute;
         bottom: -18px;
         left: 0;
         right: 0;
       }
-      .form-input-box:not(:first-child){
+      .form-input-box:not(:first-child) {
         margin-top: 30px;
       }
-      .form-input-box{
+      .form-input-box {
         border: 1px solid #eee;
         box-sizing: border-box;
         width: 100%;
         height: 48px;
         position: relative;
-        .form-icon{
+        .form-icon {
           display: block;
           float: left;
           width: 24px;
           height: 24px;
           margin: 11px 0 11px 18px;
         }
-        .form-input{
+        .form-input {
           display: block;
           float: left;
           height: 100%;
@@ -278,28 +258,28 @@ export default {
           color: #333;
         }
       }
-      .form-inputbtn-box{
+      .form-inputbtn-box {
         border: none;
-        .form-inputbtn-bar{
+        .form-inputbtn-bar {
           float: left;
           border: 1px solid #eee;
           box-sizing: border-box;
           width: 280px;
           height: 100%;
-          .form-input{
+          .form-input {
             width: 236px;
           }
         }
-        .form-inputbtn-box-btn.active:hover{
+        .form-inputbtn-box-btn.active:hover {
           background-color: #d8d8d8;
         }
-        .form-inputbtn-box-btn.active{
+        .form-inputbtn-box-btn.active {
           background-color: #d8d8d8;
         }
-        .form-inputbtn-box-btn:hover{
+        .form-inputbtn-box-btn:hover {
           background-color: $color_hover;
         }
-        .form-inputbtn-box-btn{
+        .form-inputbtn-box-btn {
           float: left;
           margin-left: 18px;
           width: 122px;
@@ -310,23 +290,23 @@ export default {
           cursor: pointer;
         }
       }
-      .phone-box{
-        .form-input{
+      .phone-box {
+        .form-input {
           width: 304px;
         }
-        .form-zonenum-btn{
+        .form-zonenum-btn {
           float: left;
           width: 72px;
           height: 100%;
           background-color: #eee;
           line-height: 46px;
           cursor: pointer;
-          .form-zonenum-num{
+          .form-zonenum-num {
             float: left;
             color: #333;
             margin-left: 12px;
           }
-          .form-zonenum-icon{
+          .form-zonenum-icon {
             display: block;
             float: left;
             width: 12px;
@@ -335,10 +315,10 @@ export default {
           }
         }
       }
-      .form-btn:hover{
+      .form-btn:hover {
         background-color: $color_hover;
       }
-      .form-btn{
+      .form-btn {
         line-height: 48px;
         height: 48px;
         background-color: $color;
@@ -348,14 +328,14 @@ export default {
         margin-top: 30px;
         cursor: pointer;
       }
-      .form-other-btnbox{
+      .form-other-btnbox {
         width: 100%;
         margin-top: 30px;
         height: 20px;
-        .form-other-btn:hover{
+        .form-other-btn:hover {
           color: $color;
         }
-        .form-other-btn{
+        .form-other-btn {
           line-height: 20px;
           font-size: 14px;
           color: #999;
@@ -363,14 +343,14 @@ export default {
           text-align: center;
           cursor: pointer;
         }
-        .form-other-btn-left{
+        .form-other-btn-left {
           float: left;
         }
-        .form-other-btn-right{
+        .form-other-btn-right {
           float: right;
         }
       }
-      .form-term-box{
+      .form-term-box {
         width: 100%;
         line-height: 20px;
         color: #999;
@@ -378,46 +358,46 @@ export default {
         margin-top: 30px;
         position: relative;
         cursor: pointer;
-        .form-term-checkbox{
+        .form-term-checkbox {
           display: block;
           float: left;
           width: 12px;
           height: 12px;
           margin-top: 4px;
         }
-        .form-term-word{
+        .form-term-word {
           float: left;
           margin-left: 5px;
-          .form-term-word-link{
+          .form-term-word-link {
             color: $color;
           }
         }
       }
     }
   }
-  .dialog-box{
+  .dialog-box {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     z-index: 99;
-    .dialog-mask{
+    .dialog-mask {
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background-color: rgba($color: #000000, $alpha: .3);
+      background-color: rgba($color: #000000, $alpha: 0.3);
     }
-    .dialog-verify-captcha{
+    .dialog-verify-captcha {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translateX(-50%) translateY(-50%);
       z-index: 9;
     }
-    .dialog-board{
+    .dialog-board {
       position: absolute;
       top: 50%;
       left: 50%;
@@ -425,18 +405,18 @@ export default {
       z-index: 9;
       background-color: #fff;
       width: 480px;
-      .dialog-header{
+      .dialog-header {
         padding: 20px 18px;
         box-sizing: border-box;
         line-height: 20px;
         border-bottom: 1px solid #eee;
-        .dialog-title{
+        .dialog-title {
           float: left;
           line-height: 20px;
           color: #333;
           font-size: 16px;
         }
-        .dialog-close{
+        .dialog-close {
           display: block;
           float: right;
           cursor: pointer;
@@ -445,58 +425,58 @@ export default {
           margin-top: 3px;
         }
       }
-      .dialog-listbox::-webkit-scrollbar{
+      .dialog-listbox::-webkit-scrollbar {
         width: 5px;
       }
-      .dialog-listbox::-webkit-scrollbar-thumb{
-        background-color: #BFBFBF;
+      .dialog-listbox::-webkit-scrollbar-thumb {
+        background-color: #bfbfbf;
       }
-      .dialog-listbox{
+      .dialog-listbox {
         padding: 0 18px;
         box-sizing: border-box;
         max-height: 429px;
         overflow-y: scroll;
         -webkit-overflow-scrolling: touch;
-        .dialog-list.active{
+        .dialog-list.active {
           color: $color;
         }
-        .dialog-list:hover{
+        .dialog-list:hover {
           color: $color_hover;
         }
-        .dialog-list{
+        .dialog-list {
           color: #333;
           cursor: pointer;
           font-size: 14px;
           line-height: 20px;
           padding: 12px 0;
           box-sizing: border-box;
-          .dialog-list-left{
+          .dialog-list-left {
             float: left;
           }
-          .dialog-list-right{
+          .dialog-list-right {
             float: right;
           }
         }
       }
     }
   }
-  .border-red{
-    border-color: #FF5656 !important;
+  .border-red {
+    border-color: #ff5656 !important;
   }
   .forgetTypeFade-enter-active,
-  .forgetTypeFade-leave-active{
-    transition: opacity .3s;
+  .forgetTypeFade-leave-active {
+    transition: opacity 0.3s;
   }
   .forgetTypeFade-enter,
-  .forgetTypeFade-leave-to{
+  .forgetTypeFade-leave-to {
     opacity: 0;
   }
   .dialogVerifyFade-enter-active,
-  .dialogVerifyFade-leave-active{
-    transition: opacity .3s;
+  .dialogVerifyFade-leave-active {
+    transition: opacity 0.3s;
   }
   .dialogVerifyFade-enter,
-  .dialogVerifyFade-leave-to{
+  .dialogVerifyFade-leave-to {
     opacity: 0;
   }
 }

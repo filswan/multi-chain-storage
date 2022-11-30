@@ -1,74 +1,74 @@
 <template>
-    <div id="dealManagement">
-        <div class="upload">
-            <div v-if="metaAddress" style="font-size:12px">
-                <div id="billing">
-                    <div class="form">
-                        <div class="form_top">
-                            <div class="search">
-                                <div style="white-space: nowrap;">{{$t('billing.search_placeholder')}} &nbsp;</div>
-                                <el-input placeholder="" v-model="searchValue" class="input-with-select" @input="searchValueChange">
-                                    <el-select v-model="selectInput" slot="prepend">
-                                        <el-option :label="$t('billing.search_option_filename')" value="1"></el-option>
-                                        <el-option :label="$t('billing.search_option_transaction')" value="2"></el-option>
-                                    </el-select>
-                                </el-input>
-                                <div class="search_right" :style="{'opacity': !searchValue?'0.8':'1'}">
-                                    <el-button @click="search" style="background-color: #ffb822" :disabled="!searchValue">{{$t('billing.search_btn')}}</el-button>
-                                    <el-button type="primary" style="background-color: #2D43E7" @click="clearAll">
-                                        {{$t('billing.clear_btn')}}
-                                    </el-button>
-                                </div>
-                            </div>
+  <div id="dealManagement">
+    <div class="upload">
+      <div v-if="metaAddress" style="font-size:12px">
+        <div id="billing">
+          <div class="form">
+            <div class="form_top">
+              <div class="search">
+                <div style="white-space: nowrap;">{{$t('billing.search_placeholder')}} &nbsp;</div>
+                <el-input placeholder="" v-model="searchValue" class="input-with-select" @input="searchValueChange">
+                  <el-select v-model="selectInput" slot="prepend">
+                    <el-option :label="$t('billing.search_option_filename')" value="1"></el-option>
+                    <el-option :label="$t('billing.search_option_transaction')" value="2"></el-option>
+                  </el-select>
+                </el-input>
+                <div class="search_right" :style="{'opacity': !searchValue?'0.8':'1'}">
+                  <el-button @click="search" style="background-color: #ffb822" :disabled="!searchValue">{{$t('billing.search_btn')}}</el-button>
+                  <el-button type="primary" style="background-color: #2D43E7" @click="clearAll">
+                    {{$t('billing.clear_btn')}}
+                  </el-button>
+                </div>
+              </div>
+            </div>
+            <div class="form_table">
+              <el-table v-loading="loading" :data="tableData" style="width: 100%" :empty-text="$t('deal.formNotData')" max-height="580" @sort-change="sortChange" :default-sort="{prop: 'date', order: 'descending'}">
+                <el-table-column prop="pay_tx_hash" :label="$t('billing.TRANSACTION')" min-width="190">
+                  <template slot-scope="scope">
+                    <div class="hot-cold-box">
+                      <el-popover placement="top" trigger="hover" width="200" v-model="scope.row.txHashVis">
+                        <div class="upload_form_right">
+                          <p>{{scope.row.pay_tx_hash}}</p>
                         </div>
-                        <div class="form_table">
-                            <el-table v-loading="loading" :data="tableData" style="width: 100%" :empty-text="$t('deal.formNotData')" max-height="580" @sort-change="sortChange" :default-sort="{prop: 'date', order: 'descending'}">
-                                <el-table-column prop="pay_tx_hash" :label="$t('billing.TRANSACTION')" min-width="190">
-                                    <template slot-scope="scope">
-                                        <div class="hot-cold-box">
-                                            <el-popover placement="top" trigger="hover" width="200" v-model="scope.row.txHashVis">
-                                                <div class="upload_form_right">
-                                                    <p>{{scope.row.pay_tx_hash}}</p>
-                                                </div>
-                                                <el-button slot="reference" class="resno" @click="networkLink(scope.row.pay_tx_hash, scope.row.network_name)" :class="{'color': scope.row.network_name&&scope.row.network_name.toLowerCase() == 'polygon'}">
-                                                    <!-- <img src="@/assets/images/copy.png" alt=""> -->
-                                                    {{scope.row.pay_tx_hash}}
-                                                </el-button>
-                                            </el-popover>
-                                        </div>
-                                    </template>
-                                </el-table-column>
-                                <el-table-column prop="pay_amount" :label="$t('billing.AMOUNT')" min-width="150" sortable="custom">
-                                    <template slot-scope="scope">
-                                        <div class="hot-cold-box">
-                                            {{scope.row.pay_amount | balanceMweiFilter}}
-                                        </div>
-                                    </template>
-                                </el-table-column>
-                                <el-table-column prop="unlock_amount" :label="$t('billing.UNLOCKAMOUNT')" min-width="150" sortable="custom">
-                                    <template slot-scope="scope">
-                                        <div class="hot-cold-box">
-                                            {{scope.row.unlock_amount | balanceMweiFilter}}
-                                        </div>
-                                    </template>
-                                </el-table-column>
-                                <el-table-column prop="token_name" :label="$t('billing.TOKEN')" min-width="120"></el-table-column>
-                                <el-table-column prop="file_name" :label="$t('billing.FILENAME')" min-width="180" sortable="custom"></el-table-column>
-                                <el-table-column prop="payload_cid" :label="$t('billing.PAYLOADCID')" min-width="140">
-                                    <template slot-scope="scope">
-                                        <div class="hot-cold-box">
-                                            <el-popover placement="top" trigger="hover" width="300" v-model="scope.row.payloadVis">
-                                                <div class="upload_form_right">
-                                                    <p>{{scope.row.payload_cid}}</p>
-                                                </div>
-                                                <el-button slot="reference" class="resno" @click="copyTextToClipboard(scope.row.payload_cid)">
-                                                    <img src="@/assets/images/copy.png" alt=""> {{scope.row.payload_cid}}
-                                                </el-button>
-                                            </el-popover>
-                                        </div>
-                                    </template>
-                                </el-table-column>
-                                <!-- <el-table-column prop="address_from" :label="$t('billing.WALLET')" min-width="140">
+                        <el-button slot="reference" class="resno" @click="networkLink(scope.row.pay_tx_hash, scope.row.network_name)" :class="{'color': scope.row.network_name&&scope.row.network_name.toLowerCase() == 'polygon'}">
+                          <!-- <img src="@/assets/images/copy.png" alt=""> -->
+                          {{scope.row.pay_tx_hash}}
+                        </el-button>
+                      </el-popover>
+                    </div>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="pay_amount" :label="$t('billing.AMOUNT')" min-width="150" sortable="custom">
+                  <template slot-scope="scope">
+                    <div class="hot-cold-box">
+                      {{scope.row.pay_amount | balanceMweiFilter}}
+                    </div>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="unlock_amount" :label="$t('billing.UNLOCKAMOUNT')" min-width="150" sortable="custom">
+                  <template slot-scope="scope">
+                    <div class="hot-cold-box">
+                      {{scope.row.unlock_amount | balanceMweiFilter}}
+                    </div>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="token_name" :label="$t('billing.TOKEN')" min-width="120"></el-table-column>
+                <el-table-column prop="file_name" :label="$t('billing.FILENAME')" min-width="180" sortable="custom"></el-table-column>
+                <el-table-column prop="payload_cid" :label="$t('billing.PAYLOADCID')" min-width="140">
+                  <template slot-scope="scope">
+                    <div class="hot-cold-box">
+                      <el-popover placement="top" trigger="hover" width="300" v-model="scope.row.payloadVis">
+                        <div class="upload_form_right">
+                          <p>{{scope.row.payload_cid}}</p>
+                        </div>
+                        <el-button slot="reference" class="resno" @click="copyTextToClipboard(scope.row.payload_cid)">
+                          <img src="@/assets/images/copy.png" alt=""> {{scope.row.payload_cid}}
+                        </el-button>
+                      </el-popover>
+                    </div>
+                  </template>
+                </el-table-column>
+                <!-- <el-table-column prop="address_from" :label="$t('billing.WALLET')" min-width="140">
                                     <template slot-scope="scope">
                                         <div class="hot-cold-box">
                                             <el-popover
@@ -86,40 +86,40 @@
                                         </div>
                                     </template>
                                 </el-table-column> -->
-                                <el-table-column prop="network_name" :label="$t('billing.NETWORK')" min-width="120"></el-table-column>
-                                <el-table-column prop="pay_at" :label="$t('billing.PAYMENTDATE')" min-width="140" sortable="custom"></el-table-column>
-                                <el-table-column prop="unlock_at" :label="$t('billing.UNLOCKDATE')" min-width="140" sortable="custom"></el-table-column>
-                                <el-table-column prop="deadline" :label="$t('billing.Deadline')" min-width="140" sortable="custom"></el-table-column>
-                            </el-table>
-                        </div>
+                <el-table-column prop="network_name" :label="$t('billing.NETWORK')" min-width="120"></el-table-column>
+                <el-table-column prop="pay_at" :label="$t('billing.PAYMENTDATE')" min-width="140" sortable="custom"></el-table-column>
+                <el-table-column prop="unlock_at" :label="$t('billing.UNLOCKDATE')" min-width="140" sortable="custom"></el-table-column>
+                <el-table-column prop="deadline" :label="$t('billing.Deadline')" min-width="140" sortable="custom"></el-table-column>
+              </el-table>
+            </div>
 
-                        <div class="form_pagination">
-                            <div class="pagination">
-                                <el-pagination :total="parma.total" :page-size="parma.limit" :current-page="parma.offset" :layout="'prev, pager, next'" @current-change="handleCurrentChange" @size-change="handleSizeChange" />
-                                <div class="span" v-if="!bodyWidth">
-                                    <span>{{$t('uploadFile.goTo')}}</span>
-                                    <el-input class="paginaInput" @change="pageSizeChange" v-model.number="parma.jumperOffset" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')" autocomplete="off"></el-input>
-                                    <span>{{$t('uploadFile.goTopage')}}</span>
-                                </div>
-                            </div>
+            <div class="form_pagination">
+              <div class="pagination">
+                <el-pagination :total="parma.total" :page-size="parma.limit" :current-page="parma.offset" :layout="'prev, pager, next'" @current-change="handleCurrentChange" @size-change="handleSizeChange" />
+                <div class="span" v-if="!bodyWidth">
+                  <span>{{$t('uploadFile.goTo')}}</span>
+                  <el-input class="paginaInput" @change="pageSizeChange" v-model.number="parma.jumperOffset" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')" autocomplete="off"></el-input>
+                  <span>{{$t('uploadFile.goTopage')}}</span>
+                </div>
+              </div>
 
-                            <!-- <div class="down" @click="downVisible=true">
+              <!-- <div class="down" @click="downVisible=true">
                                 [ Download <span>xxxx</span> Export ]
                             </div> -->
-                        </div>
-                    </div>
-                </div>
             </div>
-            <div v-else>
-                <el-alert title="" type="warning" :closable="false" description="Please log in to metamask" show-icon>
-                </el-alert>
-            </div>
+          </div>
         </div>
-
-        <download v-if="downVisible" :downVisible="downVisible" :titlePage="$t('billing.download_module_title_billing')" @getDownload="getDownload"></download>
-        <!-- 回到顶部 -->
-        <el-backtop target=".content-box" :bottom="40" :right="20"></el-backtop>
+      </div>
+      <div v-else>
+        <el-alert title="" type="warning" :closable="false" description="Please log in to metamask" show-icon>
+        </el-alert>
+      </div>
     </div>
+
+    <download v-if="downVisible" :downVisible="downVisible" :titlePage="$t('billing.download_module_title_billing')" @getDownload="getDownload"></download>
+    <!-- 回到顶部 -->
+    <el-backtop target=".content-box" :bottom="40" :right="20"></el-backtop>
+  </div>
 </template>
 
 <script>
@@ -279,23 +279,23 @@ export default {
               item.payloadVis = false
               item.walletVis = false
               item.pay_at =
-                                item.pay_at
-                                  ? String(item.pay_at).length < 13
-                                    ? moment(new Date(parseInt(item.pay_at * 1000))).format('YYYY-MM-DD HH:mm:ss')
-                                    : moment(new Date(parseInt(item.pay_at))).format('YYYY-MM-DD HH:mm:ss')
-                                  : '-'
+                item.pay_at
+                  ? String(item.pay_at).length < 13
+                    ? moment(new Date(parseInt(item.pay_at * 1000))).format('YYYY-MM-DD HH:mm:ss')
+                    : moment(new Date(parseInt(item.pay_at))).format('YYYY-MM-DD HH:mm:ss')
+                  : '-'
               item.unlock_at =
-                                item.unlock_at
-                                  ? String(item.unlock_at).length < 13
-                                    ? moment(new Date(parseInt(item.unlock_at * 1000))).format('YYYY-MM-DD HH:mm:ss')
-                                    : moment(new Date(parseInt(item.unlock_at))).format('YYYY-MM-DD HH:mm:ss')
-                                  : '-'
+                item.unlock_at
+                  ? String(item.unlock_at).length < 13
+                    ? moment(new Date(parseInt(item.unlock_at * 1000))).format('YYYY-MM-DD HH:mm:ss')
+                    : moment(new Date(parseInt(item.unlock_at))).format('YYYY-MM-DD HH:mm:ss')
+                  : '-'
               item.deadline =
-                                item.deadline
-                                  ? String(item.deadline).length < 13
-                                    ? moment(new Date(parseInt(item.deadline * 1000))).format('YYYY-MM-DD HH:mm:ss')
-                                    : moment(new Date(parseInt(item.deadline))).format('YYYY-MM-DD HH:mm:ss')
-                                  : '-'
+                item.deadline
+                  ? String(item.deadline).length < 13
+                    ? moment(new Date(parseInt(item.deadline * 1000))).format('YYYY-MM-DD HH:mm:ss')
+                    : moment(new Date(parseInt(item.deadline))).format('YYYY-MM-DD HH:mm:ss')
+                  : '-'
               // item.locked_fee = _this.$web3Init.utils.fromWei(item.locked_fee, 'ether')
               // item.locked_fee = 0.000000000000000001 * item.locked_fee
             })
@@ -394,12 +394,6 @@ export default {
     _this.getData()
     this.$store.dispatch('setRouterMenu', 5)
     this.$store.dispatch('setHeadertitle', this.$t('navbar.BillingHistory'))
-
-    document.onkeydown = function (e) {
-      if (e.keyCode === 13) {
-
-      }
-    }
   },
   filters: {
     priceFilter (value) {

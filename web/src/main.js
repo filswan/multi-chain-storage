@@ -6,13 +6,12 @@ import router from './router'
 import Router from 'vue-router'
 import Vuex from 'vuex'
 import store from './store'
-import i18n from './lang' // 语言包
+import i18n from './lang'
 
 import ElementUI from 'element-ui'
 import locale from 'element-ui/lib/locale/lang/en'
 import localeCN from 'element-ui/lib/locale/lang/zh-CN'
-import 'element-ui/lib/theme-chalk/index.css' // 默认主题
-// import './assets/css/theme-green/index.css'; // 浅绿色主题
+import 'element-ui/lib/theme-chalk/index.css'
 import './assets/css/icon.css'
 import './assets/css/main.css'
 
@@ -42,7 +41,7 @@ Vue.prototype.baseAPIURL = netData === 97 ? process.env.BASE_PAYMENT_GATEWAY_BSC
 Vue.prototype.baseAddressURL = netData === 97 ? process.env.BASE_BSC_ADDRESS : netData === 80001 ? process.env.BASE_MUMBAI_ADDRESS : process.env.BASE_POLYGON_ADDRESS
 Vue.prototype.Web3 = Web3
 Vue.prototype.baseNetwork = process.env.BASE_ENV === true
-console.log('update time: 2022-11-29', 'env:', process.env.BASE_ENV === true ? 'Main' : 'Cali', process.env.BASE_ENV)
+console.log('update time: 2022-11-30', 'env:', process.env.BASE_ENV === true ? 'Main' : 'Cali', process.env.BASE_ENV)
 router.beforeEach((to, from, next) => {
   if (to.matched.some(record => record.meta.requiresAuth)) {
     if (!sessionStorage.getItem('metaAddress')) {
@@ -61,7 +60,7 @@ router.beforeEach((to, from, next) => {
       // console.log(to.meta.metaInfo);
       store.commit('SET_METAINFO', to.meta.metaInfo)
     }
-    next() // 确保一定要调用 next()
+    next()
   }
 
   window.scrollTo(0, 0)
@@ -77,7 +76,7 @@ new Vue({
   router,
   store,
   i18n,
-  metaInfo () {
+  metaInfo() {
     return {
       title: this.$store.getters.metaInfo.title,
       meta: [{

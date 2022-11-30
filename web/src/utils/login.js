@@ -1,6 +1,7 @@
 import store from '../store'
 import router from '../router'
 import axios from 'axios'
+import common from './common'
 import {
   Message
 } from 'element-ui'
@@ -25,6 +26,8 @@ export async function login () {
   const signature = await sign(nonce)
   if (!signature) return false
   const token = await performSignin(signature, nonce)
+  const email = await emailSign()
+  console.log(email)
   return !!token
 }
 
@@ -97,10 +100,26 @@ export async function performSignin (sig, nonce) {
   return null
 }
 
+export async function emailSign (token) {
+  const response = await common.sendRequest(`${process.env.BASE_METASPACE}api/v3/email`, 'get')
+  if (response && response.status === 'success') {
+    const data = response.data
+    data.apiStatus = true // Control pop-up display
+    store.dispatch('setMCSEmail', JSON.stringify(data))
+    return data
+  }
+  Message.error(response ? response.message : 'Failed to get mailbox')
+  store.dispatch('setMCSEmail', JSON.stringify({
+    apiStatus: false
+  }))
+  return null
+}
+
 export function signOutFun () {
   store.dispatch('setMetaAddress', '')
   store.dispatch('setMCSjwtToken', '')
   store.dispatch('setMetaNetworkId', 0)
+  store.dispatch('setMCSEmail', JSON.stringify({}))
   const network = {
     name: '',
     unit: '',

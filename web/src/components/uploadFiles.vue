@@ -688,12 +688,6 @@ export default {
     let _this = this
     that = _this
     _this.stats()
-    // _this.$store.dispatch("setRouterMenu", 0);
-    // _this.$store.dispatch('setHeadertitle', _this.$t('navbar.Upload_files'))
-    // document.onkeydown = function(e) {
-    //     if (e.keyCode === 13) {
-    //     }
-    // }
   },
   filters: {
     NumStorage (value) {

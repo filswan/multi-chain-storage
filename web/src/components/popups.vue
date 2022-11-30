@@ -42,7 +42,7 @@
             <span class="color">{{momentFun(areaBody.create_date)}}</span>
           </el-form-item>
           <el-form-item :label="$t('metaSpace.detail_LastModified')">
-            <span class="color">{{momentFun(areaBody.create_date)}}</span>
+            <span class="color">{{momentFun(areaBody.update_date)}}</span>
           </el-form-item>
           <el-form-item :label="$t('metaSpace.detail_CurrentFiles')">
             {{areaBody.files_count}}
@@ -83,6 +83,7 @@
     </div>
     <div class="fe-none" v-else-if="typeName === 'detail_file'">
       <div class="addBucket" v-loading="ipfsUploadLoad">
+        <i class="el-icon-circle-close closePop" v-if="ipfsUploadLoad" @click="controllerSignal()"></i>
         <div class="head">
           {{$t('metaSpace.ob_detail_title')}}
         </div>
@@ -237,11 +238,11 @@
               <i class="el-icon-circle-check"></i>
             </h3>
             <h4>{{$t('fs3Login.Connect_email_desc')}}</h4>
-            <u @click="typeName = 'emailLogin'">{{$t('fs3Login.Connect_email_again')}}</u>
-            <u @click="closeDia()">{{$t('fs3Login.Connect_email_jump')}}</u>
+            <el-button type="primary" @click="closeDia()">{{$t('fs3Login.Connect_email_jump')}}</el-button>
           </div>
           <div class="check_right">
             <img src="@/assets/images/login/icon_01.png" class="resno" alt="">
+            <u @click="typeName = 'emailLogin'">{{$t('fs3Login.Connect_email_again')}}</u>
           </div>
         </div>
       </div>
@@ -289,7 +290,8 @@ export default {
       ipfsUploadLoad: false,
       typeName: this.typeModule,
       uploadPrecent: 0,
-      emailLoad: false
+      emailLoad: false,
+      controller: new AbortController()
     }
   },
   props: ['dialogFormVisible', 'typeModule', 'areaBody', 'createLoad', 'listTableLoad', 'dataCont', 'currentBucket', 'fixed', 'backupLoad'],
@@ -305,6 +307,10 @@ export default {
     }
   },
   methods: {
+    controllerSignal () {
+      that.controller.abort()
+      that.closeDia()
+    },
     downloadBlob (blob, fileName) {
       try {
         const href = window.URL.createObjectURL(blob)
@@ -326,7 +332,8 @@ export default {
     },
     async xhrequest (link, name) {
       that.ipfsUploadLoad = true
-      let data = await fetch(link)
+      that.controller = new AbortController()
+      let data = await fetch(link, { signal: that.controller.signal })
         .then((response) => response.blob())
         .then((res) => {
           console.log(res)
@@ -459,7 +466,11 @@ export default {
     async handleChange (file, fileList) {
       let regexp = /[#\\?]/
       let reg = new RegExp(' ', 'g')
-      if (regexp.test(file.name)) {
+      if (file.size <= 0) {
+        that.$message.error('Error: Upload file size cannot be 0')
+        that.ruleForm.fileList = []
+        return false
+      } else if (regexp.test(file.name)) {
         that.$message.error('The filename cannot contain any of the following characters # ? \\')
         that.ruleForm.fileList = []
         return false
@@ -550,7 +561,7 @@ export default {
                 duration: 10000
               })
               that.typeName = 'emailCheck'
-              sessionStorage.setItem('emailPop', '2')
+              await that.$metaLogin.emailSign()
             }
           } catch (e) {
             console.log(e)
@@ -563,7 +574,9 @@ export default {
       })
     },
     async signInSkip () {
-      sessionStorage.setItem('emailPop', '2')
+      const data = JSON.parse(that.$store.getters.mcsEmail)
+      data.apiStatus = false
+      that.$store.dispatch('setMCSEmail', JSON.stringify(data))
       that.closeDia()
     }
   },
@@ -572,6 +585,7 @@ export default {
     document.onkeydown = function (e) {
       if (e.keyCode === 13) {
         if (that.typeName === 'add' || that.typeName === 'rename' || that.typeName === 'addSub') that.getDialogClose('form')
+        if (that.typeName === 'emailLogin') that.submitEmail('form')
       }
     }
   },
@@ -810,6 +824,7 @@ export default {
     }
   }
   .fe-none {
+    position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -836,6 +851,26 @@ export default {
       @media screen and (max-width: 441px) {
         max-width: 300px;
         padding: 15px;
+      }
+      .closePop {
+        position: absolute;
+        right: -0.1rem;
+        top: -0.1rem;
+        width: 0.37rem;
+        height: 0.37rem;
+        background: #fff;
+        border-radius: 100%;
+        font-size: 0.37rem;
+        color: #000;
+        cursor: pointer;
+        z-index: 2001;
+        @media screen and (max-width: 768px) {
+          right: -15px;
+          top: -15px;
+          width: 30px;
+          height: 30px;
+          font-size: 30px;
+        }
       }
       .title {
         display: flex;
@@ -1806,11 +1841,48 @@ export default {
             display: block;
             padding: 0;
           }
+          .el-button--primary {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 0.5rem;
+            padding: 0 0.2rem;
+            margin: 0.15rem 0 0;
+            background: linear-gradient(45deg, #4e88ff, #4b5fff);
+            border-radius: 0.14rem;
+            line-height: 0.5rem;
+            text-align: center;
+            color: #fff;
+            font-size: 0.18rem;
+            font-family: inherit;
+            border: 0;
+            outline: none;
+            transition: background-color 0.3s, border-color 0.3s, color 0.3s,
+              box-shadow 0.3s;
+            cursor: pointer;
+            span {
+              display: flex;
+              align-items: center;
+            }
+            img {
+              display: inline-block;
+              height: 20px;
+              margin: 0 0.1rem 0 0;
+              @media screen and (max-width: 1280px) {
+                height: 16px;
+              }
+            }
+            &:hover {
+              opacity: 0.9;
+              box-shadow: 0 12px 12px -12px rgba(12, 22, 44, 0.32);
+            }
+          }
         }
         .check_right {
           display: flex;
           justify-content: flex-end;
           align-items: center;
+          flex-wrap: wrap;
           width: 50%;
           @media screen and (max-width: 441px) {
             width: 100%;
@@ -1818,7 +1890,30 @@ export default {
           img {
             width: 95%;
             max-width: 1.8rem;
-            margin: auto;
+            margin: 0 auto 5px;
+          }
+          u {
+            cursor: pointer;
+            display: block;
+            padding: 0;
+            padding: 0.1rem 0;
+            font-size: 0.18rem;
+            font-weight: normal;
+            line-height: 1.1;
+            opacity: 0.9;
+            color: #fff;
+            @media screen and (max-width: 1600px) {
+              font-size: 15px;
+            }
+            @media screen and (max-width: 1440px) {
+              font-size: 14px;
+            }
+            @media screen and (max-width: 600px) {
+              font-size: 13px;
+            }
+            u {
+              opacity: 1;
+            }
           }
         }
       }

@@ -1,15 +1,11 @@
 <template>
-<div class="login register">
+  <div class="login register">
     <div class="loginArea">
       <div class="loginAreaLeft">
         <img src="@/assets/images/login/login_logo_en.png" />
       </div>
       <div class="loginAreaRight" v-loading="regLoad">
-        <a
-          href="javascript:void(0);"
-          @click="menuIndexFun('/login',7)"
-          class="login_register1"
-        >{{generateRegister('register_h1')}} ></a>
+        <a href="javascript:void(0);" @click="menuIndexFun('/login',7)" class="login_register1">{{generateRegister('register_h1')}} ></a>
         <h1 style="margin:0.65rem 0px 0.4rem">{{generateRegister('register_registermail')}}</h1>
 
         <transition name="phoneTypeFade" mode="out-in">
@@ -18,17 +14,17 @@
           <div key="mail">
 
             <div class="loginFormDiv" :class="verify.mail.tipsbox ? 'border-red' : ''">
-              <input class="form-input" :placeholder="generateRegister('register_mailnum')" v-model="formData.mail.email" @blur="checkAccount(2)"/>
+              <input class="form-input" :placeholder="generateRegister('register_mailnum')" v-model="formData.mail.email" @blur="checkAccount(2)" />
             </div>
             <div class="form-tips" v-show="verify.mail.tipsbox">{{verify.mail.tips}}</div>
 
             <div class="loginFormDiv" :class="verify.mailPassword.tipsbox ? 'border-red' : ''">
-              <input type="password" class="form-input" :placeholder="generateRegister('register_verify_placehold_tips_rule')" v-model="formData.mail.password" @blur="checkPass(2)"/>
+              <input type="password" class="form-input" :placeholder="generateRegister('register_verify_placehold_tips_rule')" v-model="formData.mail.password" @blur="checkPass(2)" />
             </div>
             <div class="form-tips" v-show="verify.mailPassword.tipsbox">{{verify.mailPassword.tips}}</div>
 
             <div class="loginFormDiv" :class="verify.mailPasswordVerify.tipsbox ? 'border-red' : ''">
-              <input type="password" class="form-input" :placeholder="generateRegister('register_verify_pw_tips_reenter')" v-model="formData.mail.passwordComfirm" @blur="checkAccountPass(2)"/>
+              <input type="password" class="form-input" :placeholder="generateRegister('register_verify_pw_tips_reenter')" v-model="formData.mail.passwordComfirm" @blur="checkAccountPass(2)" />
             </div>
             <div class="form-tips" v-show="verify.mailPasswordVerify.tipsbox">{{verify.mailPasswordVerify.tips}}</div>
 
@@ -49,13 +45,16 @@
           <div class="dialog-mask"></div>
           <div class="dialog-RegSuccess-box dialog-board">
             <!-- <img class="dialog-RegSuccess-icon" src="../../assets/images/cn.jpg"/> -->
-            <div class="dialog-RegSuccess-content">{{generateRegister('register_regsuccess')}}<span class="dialog-RegSuccess-content-tips">（<span class="dialog-RegSuccess-content-tipstime">{{jumpTime}}</span>{{generateRegister('register_regsuccess_tips')}}）</span></div>
+            <div class="dialog-RegSuccess-content">{{generateRegister('register_regsuccess')}}
+              <span class="dialog-RegSuccess-content-tips">（
+                <span class="dialog-RegSuccess-content-tipstime">{{jumpTime}}</span>{{generateRegister('register_regsuccess_tips')}}）</span>
+            </div>
           </div>
         </div>
       </transition>
 
     </div>
-</div>
+  </div>
 </template>
 
 <script>
@@ -249,25 +248,6 @@ export default {
       document.documentElement.scrollTop = 0
     }
   },
-
-  mounted () {
-    var _this = this
-    document.onkeydown = function (e) {
-      if (e.keyCode === 13) {
-        if (_this.formType === 'mail') {
-          _this.mailReg()
-        }
-      }
-    }
-  },
-  destroyed () {
-    document.onkeydown = function (e) {
-      if (e.keyCode === 13) {
-        e.returnValue = false
-        return false
-      }
-    }
-  },
   components: {},
   computed: {
     languageMcs () {
@@ -278,35 +258,35 @@ export default {
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scopte>
-  .border-red{
-    border-color: #FF5656 !important;
-  }
-  .phoneTypeFade-enter-active,
-  .phoneTypeFade-leave-active{
-    transition: opacity .3s;
-  }
-  .phoneTypeFade-enter,
-  .phoneTypeFade-leave-to{
-    opacity: 0;
-  }
-  .dialogVerifyFade-enter-active,
-  .dialogVerifyFade-leave-active{
-    transition: opacity .3s;
-  }
-  .dialogVerifyFade-enter,
-  .dialogVerifyFade-leave-to{
-    opacity: 0;
-  }
-  .phoneRegSuccessFade-enter-active,
-  .phoneRegSuccessFade-leave-active{
-    transition: opacity .3s;
-  }
-  .phoneRegSuccessFade-enter,
-  .phoneRegSuccessFade-leave-to{
-    opacity: 0;
-  }
-  .form-term-checkbox{
-    float: left;
-    margin: 0.07rem 0.05rem 0 0;
-  }
+.border-red {
+  border-color: #ff5656 !important;
+}
+.phoneTypeFade-enter-active,
+.phoneTypeFade-leave-active {
+  transition: opacity 0.3s;
+}
+.phoneTypeFade-enter,
+.phoneTypeFade-leave-to {
+  opacity: 0;
+}
+.dialogVerifyFade-enter-active,
+.dialogVerifyFade-leave-active {
+  transition: opacity 0.3s;
+}
+.dialogVerifyFade-enter,
+.dialogVerifyFade-leave-to {
+  opacity: 0;
+}
+.phoneRegSuccessFade-enter-active,
+.phoneRegSuccessFade-leave-active {
+  transition: opacity 0.3s;
+}
+.phoneRegSuccessFade-enter,
+.phoneRegSuccessFade-leave-to {
+  opacity: 0;
+}
+.form-term-checkbox {
+  float: left;
+  margin: 0.07rem 0.05rem 0 0;
+}
 </style>

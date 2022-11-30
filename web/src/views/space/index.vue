@@ -108,11 +108,6 @@ export default {
     }
   },
   components: { popUps },
-  computed: {
-    email () {
-      return this.$store.state.user.email
-    }
-  },
   methods: {
     async getDetail (row) {
       that.backupLoad = true

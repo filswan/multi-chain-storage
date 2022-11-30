@@ -1,134 +1,134 @@
 <template>
-    <div id="dealManagement" v-loading="loading">
-        <div class="form">
-            <div class="form_top">
-                <div class="search">
-                    <el-input placeholder="Search by full Data CID" prefix-icon="el-icon-search" v-model="searchValue">
-                    </el-input>
-                    <div class="search_right" :style="{'opacity': !searchValue?'0.8':'1'}">
-                        <el-button @click="search" style="background-color: #ffb822" :disabled="!searchValue">Search</el-button>
-                        <el-button type="primary" style="background-color: #0b318f" @click="clearAll" :disabled="!searchValue">
-                            {{ $t("deal.Clear_all") }}
-                        </el-button>
-                    </div>
-                </div>
-            </div>
-            <div class="form_table">
-                <el-table :data="tableData" style="width: 100%" :empty-text="$t('deal.formNotData')" header-click="aaa">
-                    <el-table-column prop="deal_cid" :label="$t('deal.detailTable01')">
-                        <template slot-scope="scope">
-                            <div class="hot-cold-box">
-                                <el-popover placement="top" trigger="hover" v-model="scope.row.visible">
-                                    <div class="upload_form_right">
-                                        <p>{{scope.row.deal_cid}}</p>
-                                    </div>
-                                    <el-button slot="reference" @click="copyTextToClipboard(scope.row.deal_cid)">
-                                        <img src="@/assets/images/copy.png" alt=""> {{scope.row.deal_cid}}
-                                    </el-button>
-                                </el-popover>
-                            </div>
-                        </template>
-                    </el-table-column>
-                    <el-table-column prop="payload_cid" :label="$t('deal.detailTable09')">
-                        <template slot-scope="scope">
-                            <div class="hot-cold-box">
-                                <el-popover placement="top" trigger="hover" v-model="scope.row.payload" v-if="scope.row.payload_cid">
-                                    <div class="upload_form_right">
-                                        <p>{{scope.row.payload_cid | NumFormat}}</p>
-                                    </div>
-                                    <el-button slot="reference" @click="copyTextToClipboard(scope.row.payload_cid)">
-                                        <img src="@/assets/images/copy.png" alt=""> {{scope.row.payload_cid | NumFormat}}
-                                    </el-button>
-                                </el-popover>
-                                <div v-else>{{scope.row.payload_cid | NumFormat}}</div>
-                            </div>
-                        </template>
-                    </el-table-column>
-                    <el-table-column prop="file_source_url" :label="$t('deal.detailTable03')">
-                        <template slot-scope="scope">
-                            <div class="hot-cold-box">
-                                <el-popover placement="top" trigger="hover" v-model="scope.row.visibleurl">
-                                    <div class="upload_form_right">
-                                        <p>{{scope.row.file_source_url | NumFormat}}</p>
-                                    </div>
-                                    <el-button slot="reference" @click="copyTextToClipboard(scope.row.file_source_url)">
-                                        <img src="@/assets/images/copy.png" alt=""> {{scope.row.file_source_url | NumFormat}}
-                                    </el-button>
-                                </el-popover>
-                            </div>
-                        </template>
-                    </el-table-column>
-                    <el-table-column prop="status" width="150" :label="$t('deal.detailTable04')">
-                        <template slot-scope="scope">
-                            <div class="statusStyle" v-if="scope.row.status == 'Created'" :style="$statusColor.DealColor('Created')">
-                                {{ languageMcs == 'en' ? 'Created' : '已创建' }}
-                            </div>
-                            <div class="statusStyle" v-if="scope.row.status == 'DealActive'" :style="$statusColor.DealColor('DealActive')">
-                                {{ languageMcs == 'en' ? 'DealActive' : '有效交易' }}
-                            </div>
-                            <div class="statusStyle" v-else-if="scope.row.status == 'Waiting'" :style="$statusColor.DealColor('Waiting')">
-                                {{ languageMcs == 'en' ? 'Waiting' : '等待中' }}
-                            </div>
-                            <div class="statusStyle" v-else-if="scope.row.status == 'ReadyForImport'" :style="$statusColor.DealColor('ReadyForImport')">
-                                {{ languageMcs == 'en' ? 'ReadyForImport' : '准备导入' }}
-                            </div>
-                            <div class="statusStyle" v-else-if="scope.row.status == 'FileImporting'" :style="$statusColor.DealColor('FileImporting')">
-                                {{ languageMcs == 'en' ? 'FileImporting' : '文件导入中' }}
-                            </div>
-                            <div class="statusStyle" v-else-if="scope.row.status == 'FileImported'" :style="$statusColor.DealColor('FileImported')">
-                                {{ languageMcs == 'en' ? 'FileImported' : '文件已导入' }}
-                            </div>
-                            <div class="statusStyle" v-else-if="scope.row.status == 'ImportFailed'" :style="$statusColor.DealColor('ImportFailed')">
-                                {{ languageMcs == 'en' ? 'ImportFailed' : '导入失败' }}
-                            </div>
-                            <div class="statusStyle" v-else-if="scope.row.status == 'Downloading'" :style="$statusColor.DealColor('Downloading')">
-                                {{ languageMcs == 'en' ? 'Downloading' : '下载中' }}
-                            </div>
-                            <div class="statusStyle" v-else-if="scope.row.status == 'Downloaded'" :style="$statusColor.DealColor('Downloaded')">
-                                {{ languageMcs == 'en' ? 'Downloaded' : '已下载' }}
-                            </div>
-                            <div class="statusStyle" v-else-if="scope.row.status == 'DownloadFailed'" :style="$statusColor.DealColor('DownloadFailed')">
-                                {{ languageMcs == 'en' ? 'DownloadFailed' : '下载失败' }}
-                            </div>
-                            <div class="statusStyle" v-else-if="scope.row.status == 'Completed'" :style="$statusColor.DealColor('Completed')">
-                                {{ languageMcs == 'en' ? 'Completed' : '已完成' }}
-                            </div>
-                            <div class="statusStyle" v-else-if="scope.row.status == 'Failed'" :style="$statusColor.DealColor('Failed')">
-                                {{ languageMcs == 'en' ? 'Failed' : '已失败' }}
-                            </div>
-                            <div class="statusStyle" v-else style="display:none;color: rgb(255, 184, 34)">
-                                {{ scope.row.status }}
-                            </div>
-                        </template>
-                    </el-table-column>
-                    <el-table-column prop="md5_origin" width="110" :label="$t('deal.table_th_08')"></el-table-column>
-                    <el-table-column prop="note" :label="$t('deal.detailTable08')"></el-table-column>
-                    <el-table-column prop="start_epoch" width="100" :label="$t('deal.detailTable05')">
-                        <template slot-scope="scope">
-                            {{scope.row.start_epoch}} <br> ({{scope.row.start_epoch_time}})
-                        </template>
-                    </el-table-column>
-                    <el-table-column prop="updated_at" width="100" :label="$t('deal.detailTable06')"></el-table-column>
-                    <el-table-column prop="created_at" width="100" :label="$t('deal.detailTable07')"></el-table-column>
-                </el-table>
-            </div>
+  <div id="dealManagement" v-loading="loading">
+    <div class="form">
+      <div class="form_top">
+        <div class="search">
+          <el-input placeholder="Search by full Data CID" prefix-icon="el-icon-search" v-model="searchValue">
+          </el-input>
+          <div class="search_right" :style="{'opacity': !searchValue?'0.8':'1'}">
+            <el-button @click="search" style="background-color: #ffb822" :disabled="!searchValue">Search</el-button>
+            <el-button type="primary" style="background-color: #0b318f" @click="clearAll" :disabled="!searchValue">
+              {{ $t("deal.Clear_all") }}
+            </el-button>
+          </div>
+        </div>
+      </div>
+      <div class="form_table">
+        <el-table :data="tableData" style="width: 100%" :empty-text="$t('deal.formNotData')" header-click="aaa">
+          <el-table-column prop="deal_cid" :label="$t('deal.detailTable01')">
+            <template slot-scope="scope">
+              <div class="hot-cold-box">
+                <el-popover placement="top" trigger="hover" v-model="scope.row.visible">
+                  <div class="upload_form_right">
+                    <p>{{scope.row.deal_cid}}</p>
+                  </div>
+                  <el-button slot="reference" @click="copyTextToClipboard(scope.row.deal_cid)">
+                    <img src="@/assets/images/copy.png" alt=""> {{scope.row.deal_cid}}
+                  </el-button>
+                </el-popover>
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column prop="payload_cid" :label="$t('deal.detailTable09')">
+            <template slot-scope="scope">
+              <div class="hot-cold-box">
+                <el-popover placement="top" trigger="hover" v-model="scope.row.payload" v-if="scope.row.payload_cid">
+                  <div class="upload_form_right">
+                    <p>{{scope.row.payload_cid | NumFormat}}</p>
+                  </div>
+                  <el-button slot="reference" @click="copyTextToClipboard(scope.row.payload_cid)">
+                    <img src="@/assets/images/copy.png" alt=""> {{scope.row.payload_cid | NumFormat}}
+                  </el-button>
+                </el-popover>
+                <div v-else>{{scope.row.payload_cid | NumFormat}}</div>
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column prop="file_source_url" :label="$t('deal.detailTable03')">
+            <template slot-scope="scope">
+              <div class="hot-cold-box">
+                <el-popover placement="top" trigger="hover" v-model="scope.row.visibleurl">
+                  <div class="upload_form_right">
+                    <p>{{scope.row.file_source_url | NumFormat}}</p>
+                  </div>
+                  <el-button slot="reference" @click="copyTextToClipboard(scope.row.file_source_url)">
+                    <img src="@/assets/images/copy.png" alt=""> {{scope.row.file_source_url | NumFormat}}
+                  </el-button>
+                </el-popover>
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column prop="status" width="150" :label="$t('deal.detailTable04')">
+            <template slot-scope="scope">
+              <div class="statusStyle" v-if="scope.row.status == 'Created'" :style="$statusColor.DealColor('Created')">
+                {{ languageMcs == 'en' ? 'Created' : '已创建' }}
+              </div>
+              <div class="statusStyle" v-if="scope.row.status == 'DealActive'" :style="$statusColor.DealColor('DealActive')">
+                {{ languageMcs == 'en' ? 'DealActive' : '有效交易' }}
+              </div>
+              <div class="statusStyle" v-else-if="scope.row.status == 'Waiting'" :style="$statusColor.DealColor('Waiting')">
+                {{ languageMcs == 'en' ? 'Waiting' : '等待中' }}
+              </div>
+              <div class="statusStyle" v-else-if="scope.row.status == 'ReadyForImport'" :style="$statusColor.DealColor('ReadyForImport')">
+                {{ languageMcs == 'en' ? 'ReadyForImport' : '准备导入' }}
+              </div>
+              <div class="statusStyle" v-else-if="scope.row.status == 'FileImporting'" :style="$statusColor.DealColor('FileImporting')">
+                {{ languageMcs == 'en' ? 'FileImporting' : '文件导入中' }}
+              </div>
+              <div class="statusStyle" v-else-if="scope.row.status == 'FileImported'" :style="$statusColor.DealColor('FileImported')">
+                {{ languageMcs == 'en' ? 'FileImported' : '文件已导入' }}
+              </div>
+              <div class="statusStyle" v-else-if="scope.row.status == 'ImportFailed'" :style="$statusColor.DealColor('ImportFailed')">
+                {{ languageMcs == 'en' ? 'ImportFailed' : '导入失败' }}
+              </div>
+              <div class="statusStyle" v-else-if="scope.row.status == 'Downloading'" :style="$statusColor.DealColor('Downloading')">
+                {{ languageMcs == 'en' ? 'Downloading' : '下载中' }}
+              </div>
+              <div class="statusStyle" v-else-if="scope.row.status == 'Downloaded'" :style="$statusColor.DealColor('Downloaded')">
+                {{ languageMcs == 'en' ? 'Downloaded' : '已下载' }}
+              </div>
+              <div class="statusStyle" v-else-if="scope.row.status == 'DownloadFailed'" :style="$statusColor.DealColor('DownloadFailed')">
+                {{ languageMcs == 'en' ? 'DownloadFailed' : '下载失败' }}
+              </div>
+              <div class="statusStyle" v-else-if="scope.row.status == 'Completed'" :style="$statusColor.DealColor('Completed')">
+                {{ languageMcs == 'en' ? 'Completed' : '已完成' }}
+              </div>
+              <div class="statusStyle" v-else-if="scope.row.status == 'Failed'" :style="$statusColor.DealColor('Failed')">
+                {{ languageMcs == 'en' ? 'Failed' : '已失败' }}
+              </div>
+              <div class="statusStyle" v-else style="display:none;color: rgb(255, 184, 34)">
+                {{ scope.row.status }}
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column prop="md5_origin" width="110" :label="$t('deal.table_th_08')"></el-table-column>
+          <el-table-column prop="note" :label="$t('deal.detailTable08')"></el-table-column>
+          <el-table-column prop="start_epoch" width="100" :label="$t('deal.detailTable05')">
+            <template slot-scope="scope">
+              {{scope.row.start_epoch}} <br> ({{scope.row.start_epoch_time}})
+            </template>
+          </el-table-column>
+          <el-table-column prop="updated_at" width="100" :label="$t('deal.detailTable06')"></el-table-column>
+          <el-table-column prop="created_at" width="100" :label="$t('deal.detailTable07')"></el-table-column>
+        </el-table>
+      </div>
 
-            <div class="form_pagination" v-if="1==2">
-                <!-- <div class="pagination">
+      <div class="form_pagination" v-if="1==2">
+        <!-- <div class="pagination">
                     <div class="pagination_left" @click="prev">&lt;</div>
                     {{ parma.offset }}
                     <div class="pagination_left" @click="next">&gt;</div>
                 </div> -->
-                <div class="pagination">
-                    <el-pagination :total="parma.total" :page-size="parma.limit" :current-page="parma.offset" :pager-count="bodyWidth?5:7" style="padding: 30px 40px 32px 20px;" background :layout="bodyWidth?'prev, pager, next':'total, prev, pager, next, jumper'"
-                        @current-change="handleCurrentChange" />
-                </div>
-            </div>
+        <div class="pagination">
+          <el-pagination :total="parma.total" :page-size="parma.limit" :current-page="parma.offset" :pager-count="bodyWidth?5:7" style="padding: 30px 40px 32px 20px;" background :layout="bodyWidth?'prev, pager, next':'total, prev, pager, next, jumper'"
+            @current-change="handleCurrentChange" />
         </div>
-
-        <!-- 回到顶部 -->
-        <el-backtop target=".content-box" :bottom="40" :right="20"></el-backtop>
+      </div>
     </div>
+
+    <!-- 回到顶部 -->
+    <el-backtop target=".content-box" :bottom="40" :right="20"></el-backtop>
+  </div>
 </template>
 
 <script>
@@ -185,21 +185,21 @@ export default {
             item.payload = false
             _this.max_time_str = Math.max(_this.max_time_str, item.updated_at)
             item.start_epoch_time =
-                            item.start_epoch
-                              ? moment(new Date(parseInt((parseInt(item.start_epoch) * 30 + parseInt(1598306471)) * 1000))).format('YYYY-MM-DD HH:mm:ss')
-                              : '-'
+              item.start_epoch
+                ? moment(new Date(parseInt((parseInt(item.start_epoch) * 30 + parseInt(1598306471)) * 1000))).format('YYYY-MM-DD HH:mm:ss')
+                : '-'
             item.created_at =
-                            item.created_at
-                              ? item.created_at.length < 13
-                                ? moment(new Date(parseInt(item.created_at * 1000))).format('YYYY-MM-DD HH:mm:ss')
-                                : moment(new Date(parseInt(item.created_at))).format('YYYY-MM-DD HH:mm:ss')
-                              : '-'
+              item.created_at
+                ? item.created_at.length < 13
+                  ? moment(new Date(parseInt(item.created_at * 1000))).format('YYYY-MM-DD HH:mm:ss')
+                  : moment(new Date(parseInt(item.created_at))).format('YYYY-MM-DD HH:mm:ss')
+                : '-'
             item.updated_at =
-                            item.updated_at
-                              ? item.updated_at.length < 13
-                                ? moment(new Date(parseInt(item.updated_at * 1000))).format('YYYY-MM-DD HH:mm:ss')
-                                : moment(new Date(parseInt(item.updated_at))).format('YYYY-MM-DD HH:mm:ss')
-                              : '-'
+              item.updated_at
+                ? item.updated_at.length < 13
+                  ? moment(new Date(parseInt(item.updated_at * 1000))).format('YYYY-MM-DD HH:mm:ss')
+                  : moment(new Date(parseInt(item.updated_at))).format('YYYY-MM-DD HH:mm:ss')
+                : '-'
             item.act = false
           })
           _this.tableDataAll = JSON.parse(JSON.stringify(_this.tableData))
@@ -300,12 +300,6 @@ export default {
     _this.$store.dispatch('setRouterMenu', 2)
     _this.$store.dispatch('setHeadertitle', _this.$t('route.Search_file'))
     // _this.getData()
-
-    document.onkeydown = function (e) {
-      if (e.keyCode === 13) {
-
-      }
-    }
   },
   filters: {
     priceFilter (value) {

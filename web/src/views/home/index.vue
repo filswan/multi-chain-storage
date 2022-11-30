@@ -208,7 +208,6 @@ export default {
       let status = await that.$metaLogin.netStatus(that.networkID)
       if (that.mcsjwtToken && that.metaAddress && status) {
         that.$router.push({ path: '/my_files' })
-        sessionStorage.setItem('emailPop', '1')
       } else that.$store.dispatch('setMetaAddress', '')
     },
     async changeNet (rows) {

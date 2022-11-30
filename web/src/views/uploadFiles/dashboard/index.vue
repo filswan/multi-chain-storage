@@ -1115,10 +1115,6 @@ export default {
     if (sessionStorage.getItem('dealsPaginationIndexDev')) _this.parma.offset = Number(sessionStorage.getItem('dealsPaginationIndexDev'))
 
     _this.stats()
-    document.onkeydown = function (e) {
-      if (e.keyCode === 13) {
-      }
-    }
   },
   filters: {
     NumFormat (value) {

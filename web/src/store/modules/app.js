@@ -5,7 +5,6 @@ const app = {
     sidebar: {
       opened: true
     },
-    // languageMcs: 'en',
     languageMcs: localStorage.getItem('languageMcs') || 'en',
     routerMenu: localStorage.getItem('routerMenu') || 0,
     headertitle: localStorage.getItem('headertitle') || 'DASHBOARD',
@@ -23,7 +22,8 @@ const app = {
     free_quota_per_month: sessionStorage.getItem('free_quota_per_month') || 0,
     free_bucket: sessionStorage.getItem('free_bucket') || 0,
     free_bucketAll: sessionStorage.getItem('free_bucketAll') || 0,
-    mcsjwtToken: sessionStorage.getItem('mcs_dev_jwtToken') || ''
+    mcsjwtToken: sessionStorage.getItem('mcs_dev_jwtToken') || '',
+    mcsEmail: sessionStorage.getItem('mcs_bucket_email') || JSON.stringify({})
   },
   mutations: {
     TOGGLE_SIDEBAR: state => {
@@ -101,6 +101,10 @@ const app = {
     SET_MCSJWTTOKEN: (state, mcsjwtToken) => {
       state.mcsjwtToken = mcsjwtToken
       sessionStorage.setItem('mcs_dev_jwtToken', mcsjwtToken)
+    },
+    SET_MCSEMAIL: (state, mcsEmail) => {
+      state.mcsEmail = mcsEmail
+      sessionStorage.setItem('mcs_bucket_email', mcsEmail)
     }
   },
   actions: {
@@ -193,6 +197,11 @@ const app = {
       commit
     }, mcsjwtToken) {
       commit('SET_MCSJWTTOKEN', mcsjwtToken)
+    },
+    setMCSEmail ({
+      commit
+    }, mcsEmail) {
+      commit('SET_MCSEMAIL', mcsEmail)
     }
   }
 }

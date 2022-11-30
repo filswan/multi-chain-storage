@@ -31,6 +31,7 @@ const getters = {
   free_quota_per_month: state => state.app.free_quota_per_month,
   free_bucket: state => state.app.free_bucket,
   free_bucketAll: state => state.app.free_bucketAll,
-  mcsjwtToken: state => state.app.mcsjwtToken
+  mcsjwtToken: state => state.app.mcsjwtToken,
+  mcsEmail: state => state.app.mcsEmail
 }
 export default getters

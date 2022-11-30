@@ -4,7 +4,7 @@
       <v-sidebar></v-sidebar>
     </el-col>
     <el-col :xs="24" :sm="24" :md="19" :lg="20" class="content-box" id="content-box">
-      <v-head :meta="meta" @getMetamaskLogin="getMetamaskLogin" :netId="netId" :networkTip="networkTip" @getNetwork="getNetwork" @getNetId="changeNet"></v-head>
+      <v-head :meta="meta" @getMetamaskLogin="getMetamaskLogin" :netId="netId" :networkTip="networkTip" @getNetwork="getNetwork" @getNetId="changeNet" @getPopUps="getPopUps"></v-head>
       <div id="headerMb" v-if="bodyWidth">
         <div class="headerMb" v-if="email">
           {{headertitle}}
@@ -94,6 +94,14 @@ export default {
     },
     reverse () {
       return String(this.$store.getters.reverse) === '1'
+    },
+    mcsEmail () {
+      const data = this.$store.getters.mcsEmail
+      return data === '{}' ? '' : JSON.parse(data).Email
+    },
+    apiStatus () {
+      const data = this.$store.getters.mcsEmail
+      return data === '{}' ? false : JSON.parse(data).apiStatus
     }
   },
   watch: {
@@ -119,7 +127,7 @@ export default {
       that.meta = meta
     },
     async init () {
-      that.dialogFormVisible = !!that.metaAddress && sessionStorage.getItem('emailPop') === '1'
+      that.dialogFormVisible = !!that.metaAddress && !that.mcsEmail && that.apiStatus
       let status = await that.$metaLogin.netStatus(that.networkID)
       that.networkTip = !status
       if (that.reverse) document.body.classList.add('reverse_phase')

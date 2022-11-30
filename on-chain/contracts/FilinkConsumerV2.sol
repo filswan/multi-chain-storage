@@ -8,7 +8,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 /// @notice get filecoin storage price for deal
-contract FilinkConsumer is ChainlinkClient, Ownable {
+contract FilinkConsumerV2 is ChainlinkClient, Ownable {
     using Chainlink for Chainlink.Request;
   
     mapping(bytes32 => string) private mapRequestDeal;

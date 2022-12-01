@@ -1068,12 +1068,12 @@ export default {
       }
     }
   }
-  .descMain {
+  .descMain /deep/ {
     padding: 0.15rem 0.3rem;
     margin: 0 0 0.1rem;
     background-color: #fff;
     border-radius: 0.1rem;
-    .el-descriptions /deep/ {
+    .el-descriptions {
       .el-descriptions__body {
         .el-descriptions__table {
           .el-descriptions-item__cell {
@@ -1125,6 +1125,12 @@ export default {
           width: 20px;
           height: 20px;
         }
+      }
+    }
+    .el-loading-mask {
+      .el-loading-spinner {
+        top: 0;
+        margin: 0;
       }
     }
   }

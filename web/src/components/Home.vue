@@ -30,7 +30,7 @@
         <el-backtop target=".content"></el-backtop>
       </div>
     </el-col>
-    <pop-ups v-if="dialogFormVisible" :dialogFormVisible="dialogFormVisible" :typeModule="typeName" @getPopUps="getPopUps"></pop-ups>
+    <pop-ups v-if="dialogFormVisible" :dialogFormVisible="dialogFormVisible" :typeModule="typeName" :changeTitle="changeTitle" @getPopUps="getPopUps"></pop-ups>
   </div>
 </template>
 
@@ -61,7 +61,8 @@ export default {
       netId: 0,
       networkTip: false,
       dialogFormVisible: false,
-      typeName: 'emailLogin'
+      typeName: 'emailLogin',
+      changeTitle: ''
     }
   },
   components: {
@@ -116,6 +117,7 @@ export default {
   methods: {
     async getPopUps (dialog, rows, bucketName) {
       that.dialogFormVisible = dialog
+      that.changeTitle = rows || ''
     },
     getNetwork (dis) {
       that.networkTip = dis

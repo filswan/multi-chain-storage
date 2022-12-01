@@ -26,7 +26,7 @@ export async function login () {
   const signature = await sign(nonce)
   if (!signature) return false
   const token = await performSignin(signature, nonce)
-  const email = await emailSign()
+  const email = await emailSign(token)
   console.log(email)
   return !!token
 }
@@ -100,11 +100,13 @@ export async function performSignin (sig, nonce) {
   return null
 }
 
-export async function emailSign (token) {
+export async function emailSign (token, type) {
   const response = await common.sendRequest(`${process.env.BASE_METASPACE}api/v3/email`, 'get')
   if (response && response.status === 'success') {
     const data = response.data
-    data.apiStatus = true // Control pop-up display
+    const dataEmail = data.Email || ''
+    const dataShow = type ? false : !dataEmail
+    data.apiStatus = token && !dataEmail ? await setPopupTime() : dataShow // Control pop-up display
     store.dispatch('setMCSEmail', JSON.stringify(data))
     return data
   }
@@ -113,6 +115,18 @@ export async function emailSign (token) {
     apiStatus: false
   }))
   return null
+}
+
+export async function setPopupTime () {
+  const response = await common.sendRequest(`${process.env.BASE_METASPACE}api/v3/email/set_popup_time`, 'put')
+  if (response && response.status === 'success') return true
+  return false
+}
+
+export async function Disconnect () {
+  const response = await common.sendRequest(`${process.env.BASE_METASPACE}api/v3/email`, 'delete')
+  if (response && response.status === 'success') return true
+  return false
 }
 
 export function signOutFun () {

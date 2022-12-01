@@ -470,7 +470,9 @@ export default {
     Connect_text_btn: 'Enjoy your journey with multichain.storage',
     Connected: 'Connected',
     Connect_form_label: 'Enter your email address to claim a sign-up reward',
+    Connect_form_label_change: 'Enter your new email address here',
     Connect_form_btn: 'Submit',
+    Connect_form_btn_change: 'Change',
     Connect_email_title: 'Success!',
     Connect_email_desc: 'Check your email and follow the link to activate your account reward.',
     Connect_email_again: 'Didn’t recieve any email? Try again.',
@@ -721,7 +723,8 @@ export default {
     pay_body_TotalPayment: 'Total Payment',
     pay_load: 'Please Wait',
     pay_success: 'Successfully Paid!',
-    pay_success_desc: 'Thank you for your payment. Bucket credit added.'
+    pay_success_desc: 'Thank you for your payment. Bucket credit added.',
+    try_again: '再试一次'
   },
   comment: {
     Rate_Product: 'Rate our product',

@@ -82,7 +82,7 @@
       </div>
     </div>
     <div class="fe-none" v-else-if="typeName === 'detail_file'">
-      <div class="addBucket" v-loading="ipfsUploadLoad">
+      <div class="addBucket">
         <i class="el-icon-circle-close closePop" v-if="ipfsUploadLoad" @click="controllerSignal()"></i>
         <div class="head">
           {{$t('metaSpace.ob_detail_title')}}
@@ -109,6 +109,19 @@
             <el-button type="primary" @click="closeDia()">{{$t('metaSpace.Close')}}</el-button>
           </el-form-item>
         </el-form>
+        <div class="loadTryAgain" v-if="ipfsUploadLoad">
+          <div style="width:100%;">
+            <div class="load_svg">
+              <svg viewBox="25 25 50 50" class="circular">
+                <circle cx="50" cy="50" r="20" fill="none" class="path"></circle>
+              </svg>
+              <p>
+                {{$t('uploadFile.payment_tip_deal')}}
+                <span @click="controllerSignal('try_again', areaBody.ipfs_url, areaBody.name)">{{$t('metaSpace.try_again')}}</span>
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     <div class="fe-none" v-else-if="typeName === 'upload'">
@@ -217,13 +230,13 @@
           </div>
         </div>
         <div v-loading="emailLoad" class="ruleForm">
-          <div class="form_title">{{$t('fs3Login.Connect_form_label')}}</div>
+          <div class="form_title">{{changeTitle?$t('fs3Login.Connect_form_label_change'):$t('fs3Login.Connect_form_label')}}</div>
           <el-form :model="form" status-icon :rules="rulesEmail" ref="form">
             <el-form-item prop="email">
               <el-input v-model="form.email" placeholder="you@domain.com" ref="bucketEmailRef"></el-input>
             </el-form-item>
             <el-form-item>
-              <el-button type="primary" @click="submitEmail('form')">{{$t('fs3Login.Connect_form_btn')}}</el-button>
+              <el-button type="primary" @click="submitEmail('form')">{{changeTitle?$t('fs3Login.Connect_form_btn_change'):$t('fs3Login.Connect_form_btn')}}</el-button>
             </el-form-item>
           </el-form>
           <a href="javascript:;" @click="signInSkip" class="skip">{{$t('fs3Login.Skip')}}</a>
@@ -294,7 +307,7 @@ export default {
       controller: new AbortController()
     }
   },
-  props: ['dialogFormVisible', 'typeModule', 'areaBody', 'createLoad', 'listTableLoad', 'dataCont', 'currentBucket', 'fixed', 'backupLoad'],
+  props: ['dialogFormVisible', 'typeModule', 'areaBody', 'createLoad', 'listTableLoad', 'dataCont', 'currentBucket', 'fixed', 'backupLoad', 'changeTitle'],
   watch: {
     dialogFormVisible: function () {
       let _this = this
@@ -307,9 +320,10 @@ export default {
     }
   },
   methods: {
-    controllerSignal () {
+    controllerSignal (type, link, name) {
       that.controller.abort()
-      that.closeDia()
+      if (type) that.xhrequest(link, name)
+      else that.closeDia()
     },
     downloadBlob (blob, fileName) {
       try {
@@ -342,10 +356,9 @@ export default {
           else window.open(link)
           that.ipfsUploadLoad = false
         })
-        .catch(function (e) {
+        .catch((e) => {
           console.log('Download error: ' + e.message)
           that.$message.error(e.message)
-          that.ipfsUploadLoad = false
         })
       return data
     },
@@ -1341,6 +1354,58 @@ export default {
         }
         .el-loading-mask {
           background-color: rgba(46, 77, 91, 0.75);
+        }
+      }
+      .loadTryAgain {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: rgba(255, 255, 255, 0.8);
+        .load_svg {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          flex-wrap: wrap;
+          width: 100%;
+          svg {
+            height: 42px;
+            width: 42px;
+            -webkit-animation: loading-rotate 2s linear infinite;
+            animation: loading-rotate 2s linear infinite;
+            .path {
+              -webkit-animation: loading-dash 1.5s ease-in-out infinite;
+              animation: loading-dash 1.5s ease-in-out infinite;
+              stroke-dasharray: 90, 150;
+              stroke-dashoffset: 0;
+              stroke-width: 2;
+              stroke: #409eff;
+              stroke-linecap: round;
+            }
+          }
+          p {
+            width: 100%;
+            text-align: center;
+            font-size: 16px;
+            color: #333;
+            @media screen and (max-width: 1600px) {
+              font-size: 14px;
+            }
+            @media screen and (max-width: 768px) {
+              font-size: 13px;
+            }
+            @media screen and (max-width: 441px) {
+              font-size: 12px;
+            }
+            span {
+              color: #4b83fb;
+              cursor: pointer;
+            }
+          }
         }
       }
     }

@@ -212,6 +212,7 @@ export default {
       that.dataCont = directoryRes.data || {}
       that.listBuckets = directoryRes.data.objects || []
       that.listBucketIndex = directoryRes.data.objects.length > 0 || !!(that.search)
+      if (!that.listBucketIndex) that.$store.dispatch('setFreeBucket', 0)
       that.listLoad = false
     },
     momentFun (dateItem) {

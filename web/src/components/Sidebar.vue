@@ -236,6 +236,8 @@ export default {
       // 只转换成GB
       if (limit <= 0) {
         return '0'
+      } else if (limit <= 10737419) { // 10737419 ~= 0.01GB
+        return '0.01'
       } else {
         // return (limit/( 1024 * 1024 * 1024)).toPrecision(2)  //or 1000
         let value = limit / (1024 * 1024 * 1024)

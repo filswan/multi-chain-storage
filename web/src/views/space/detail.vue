@@ -30,7 +30,7 @@
         </div>
       </header>
       <div class="fes-search" v-loading="listLoad">
-        <el-table :data="listBuckets" stripe style="width: 100%" max-height="400" empty-text=" ">
+        <el-table :data="listBuckets" ref="tableList" stripe style="width: 100%" max-height="400" empty-text=" ">
           <el-table-column type="index" label="No." width="50"></el-table-column>
           <el-table-column prop="name" :label="$t('metaSpace.table_name')">
             <template slot-scope="scope">
@@ -180,7 +180,7 @@ export default {
     getUploadDialog (dialog, rows) {
       that.dialogFormVisible = dialog
       if (rows) {
-        that.getListObjects()
+        that.getListObjects(1)
       }
     },
     async renameFun (newName) {
@@ -261,7 +261,7 @@ export default {
         document.body.removeChild(txtArea)
       }
     },
-    async getListObjects (folder) {
+    async getListObjects (type) {
       that.listLoad = true
       that.detail.size = 0
       const directoryRes = await that.$commonFun.sendRequest(`${process.env.BASE_METASPACE}api/v3/directory/${that.url}`, 'get')
@@ -273,12 +273,14 @@ export default {
       that.dataCont = directoryRes.data || {}
       that.listBuckets = directoryRes.data.objects || []
       that.listBuckets.forEach((element, i) => {
+        element.index = i
         that.detail.size += element.size
       })
       that.detail.object = directoryRes.data.objects.length || 0
       await that.$commonFun.timeout(500)
       that.listLoad = false
       that.$store.dispatch('setFreeBucket', that.detail.size || 0)
+      if (type === 1) that.$refs.tableList.bodyWrapper.scrollTop = that.$refs.tableList.bodyWrapper.scrollHeight
     },
     momentFun (dateItem) {
       let dateNew = new Date(dateItem).getTime()
@@ -312,7 +314,10 @@ export default {
       }
       that.url = decodeURIComponent(that.$route.query.folder)
       that.currentBucket = that.url.split('/')
-      that.getListObjects(that.$route.query.folder)
+      that.getListObjects()
+    },
+    async sort (data) {
+      return data.sort((a, b) => { return b.index - a.index })
     }
   },
   watch: {

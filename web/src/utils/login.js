@@ -104,7 +104,7 @@ export async function emailSign (token, type) {
   const response = await common.sendRequest(`${process.env.BASE_METASPACE}api/v3/email`, 'get')
   if (response && response.status === 'success') {
     const data = response.data
-    const dataEmail = data.Email || ''
+    const dataEmail = data.EmailPopupAt || ''
     const dataShow = type ? false : !dataEmail
     data.apiStatus = token && !dataEmail ? await setPopupTime() : dataShow // Control pop-up display
     store.dispatch('setMCSEmail', JSON.stringify(data))

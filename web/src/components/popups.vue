@@ -479,6 +479,7 @@ export default {
     async handleChange (file, fileList) {
       let regexp = /[#\\?]/
       let reg = new RegExp(' ', 'g')
+      let uploadStatus = 0
       if (file.size <= 0) {
         that.$message.error('Error: Upload file size cannot be 0')
         that.ruleForm.fileList = []
@@ -531,11 +532,13 @@ export default {
               type: 'success'
             })
           }
+          uploadStatus = 1
         } catch (e) {
           console.log(e)
+          uploadStatus = 0
         }
         await that.$commonFun.timeout(500)
-        that.$emit('getUploadDialog', false, 1)
+        that.$emit('getUploadDialog', false, uploadStatus)
         that.loading = false
       }
     },

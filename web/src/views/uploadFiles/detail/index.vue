@@ -40,7 +40,21 @@
           <el-button type="primary" size="small" @click="getDealLogsData">{{$t('uploadFile.view_deal_logs')}}</el-button>
         </div>
 
-        <div class="descMain" v-loading="ipfsUploadLoad">
+        <div class="descMain">
+          <i class="el-icon-circle-close closePop" v-if="ipfsUploadLoad" @click="controllerSignal()"></i>
+          <div class="loadTryAgain" v-if="ipfsUploadLoad">
+            <div style="width:100%;">
+              <div class="load_svg">
+                <svg viewBox="25 25 50 50" class="circular">
+                  <circle cx="50" cy="50" r="20" fill="none" class="path"></circle>
+                </svg>
+                <p>
+                  {{$t('uploadFile.payment_tip_deal')}}
+                  <span @click="controllerSignal('try_again', dealCont.source_file_upload_deal.ipfs_url, dealCont.source_file_upload_deal.file_name)">{{$t('metaSpace.try_again')}}</span>
+                </p>
+              </div>
+            </div>
+          </div>
           <el-descriptions title="" :column="1">
             <el-descriptions-item :label="$t('uploadFile.file_name')">{{dealCont.source_file_upload_deal.file_name | NumFormat}}</el-descriptions-item>
             <el-descriptions-item :label="$t('uploadFile.detail_IPFSDownload')">
@@ -229,7 +243,8 @@ export default {
       loadlogs: true,
       dealLogsData: [],
       webLink: 'https://docs.filecoin.io/get-started/store-and-retrieve/store-data/#deal-states',
-      ipfsUploadLoad: false
+      ipfsUploadLoad: false,
+      controller: new AbortController()
     }
   },
   computed: {
@@ -425,9 +440,15 @@ export default {
         console.log('ipfs upload err:', e)
       }
     },
+    controllerSignal (type, link, name) {
+      that.controller.abort()
+      if (type) that.xhrequest(link, name)
+      else that.ipfsUploadLoad = false
+    },
     async xhrequest (link, name) {
       that.ipfsUploadLoad = true
-      let data = await fetch(link)
+      that.controller = new AbortController()
+      let data = await fetch(link, { signal: that.controller.signal })
         .then((response) => response.blob())
         .then((res) => {
           console.log(res)
@@ -436,10 +457,9 @@ export default {
           else window.open(link)
           that.ipfsUploadLoad = false
         })
-        .catch(function (e) {
+        .catch((e) => {
           console.log('Download error: ' + e.message)
           that.$message.error(e.message)
-          that.ipfsUploadLoad = false
         })
       return data
     }
@@ -1069,6 +1089,7 @@ export default {
     }
   }
   .descMain /deep/ {
+    position: relative;
     padding: 0.15rem 0.3rem;
     margin: 0 0 0.1rem;
     background-color: #fff;
@@ -1131,6 +1152,78 @@ export default {
       .el-loading-spinner {
         top: 0;
         margin: 0;
+      }
+    }
+    .closePop {
+      position: absolute;
+      right: -0.1rem;
+      top: -0.1rem;
+      width: 0.37rem;
+      height: 0.37rem;
+      background: #fff;
+      border-radius: 100%;
+      font-size: 0.37rem;
+      color: #000;
+      cursor: pointer;
+      z-index: 2001;
+      @media screen and (max-width: 768px) {
+        right: -15px;
+        top: -15px;
+        width: 30px;
+        height: 30px;
+        font-size: 30px;
+      }
+    }
+    .loadTryAgain {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.8);
+      .load_svg {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        width: 100%;
+        svg {
+          height: 42px;
+          width: 42px;
+          -webkit-animation: loading-rotate 2s linear infinite;
+          animation: loading-rotate 2s linear infinite;
+          .path {
+            -webkit-animation: loading-dash 1.5s ease-in-out infinite;
+            animation: loading-dash 1.5s ease-in-out infinite;
+            stroke-dasharray: 90, 150;
+            stroke-dashoffset: 0;
+            stroke-width: 2;
+            stroke: #409eff;
+            stroke-linecap: round;
+          }
+        }
+        p {
+          width: 100%;
+          text-align: center;
+          font-size: 16px;
+          color: #333;
+          @media screen and (max-width: 1600px) {
+            font-size: 14px;
+          }
+          @media screen and (max-width: 768px) {
+            font-size: 13px;
+          }
+          @media screen and (max-width: 441px) {
+            font-size: 12px;
+          }
+          span {
+            color: #4b83fb;
+            cursor: pointer;
+          }
+        }
       }
     }
   }

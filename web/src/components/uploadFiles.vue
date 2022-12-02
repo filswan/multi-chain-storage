@@ -299,99 +299,98 @@ export default {
   },
   methods: {
     calculation (type) {
-      this.ruleForm.storage_cost = this.ruleForm.file_size_byte * this.ruleForm.duration * this.storage
-      let _price = this.ruleForm.storage_cost * this.biling_price
+      that.ruleForm.storage_cost = that.ruleForm.file_size_byte * that.ruleForm.duration * that.storage
+      let _price = that.ruleForm.storage_cost * that.biling_price
       let numberPrice = Number(_price).toFixed(6)
-      this.ruleForm.amount_minprice = numberPrice > 0.000001 ? numberPrice : '0.0000005'
-      this.storage_cost_low = numberPrice > 0 ? Number(_price * 2).toFixed(6) : '0.000002'
-      this.storage_cost_average = numberPrice > 0 ? Number(_price * 3).toFixed(6) : '0.000003'
-      this.storage_cost_high = numberPrice > 0 ? Number(_price * 5).toFixed(6) : '0.000004'
-      this.ruleForm.amount = this.free ? 0 : this.storage_cost_average
+      that.ruleForm.amount_minprice = numberPrice > 0.000001 ? numberPrice : '0.0000005'
+      that.storage_cost_low = numberPrice > 0 ? Number(_price * 2).toFixed(6) : '0.000002'
+      that.storage_cost_average = numberPrice > 0 ? Number(_price * 3).toFixed(6) : '0.000003'
+      that.storage_cost_high = numberPrice > 0 ? Number(_price * 5).toFixed(6) : '0.000004'
+      that.ruleForm.amount = that.free ? 0 : that.storage_cost_average
     },
     agreeChange (val) {
-      this.ruleForm.lock_plan_tip = false
+      that.ruleForm.lock_plan_tip = false
       switch (val) {
         case '1':
-          this.ruleForm.amount = this.storage_cost_low
+          that.ruleForm.amount = that.storage_cost_low
           break
         case '2':
-          this.ruleForm.amount = this.storage_cost_average
+          that.ruleForm.amount = that.storage_cost_average
           break
         case '3':
-          this.ruleForm.amount = this.storage_cost_high
+          that.ruleForm.amount = that.storage_cost_high
           break
         default:
-          this.ruleForm.amount = this.storage_cost_low
+          that.ruleForm.amount = that.storage_cost_low
       }
     },
     closeDia () {
-      this.$emit('getUploadDialog', false)
+      that.$emit('getUploadDialog', false)
     },
     submitForm (formName) {
-      let _this = this
-      _this.$refs[formName].validate(async (valid) => {
+      that.$refs[formName].validate(async (valid) => {
         if (valid) {
-          if (!_this._file) {
-            _this.ruleForm.fileList_tip = true
+          if (!that._file) {
+            that.ruleForm.fileList_tip = true
             return false
           }
-          let status = await _this.$metaLogin.netStatus(_this.networkID)
-          if (_this.metaAddress && !status) {
-            _this.metamaskLoginTip = true
+          let status = await that.$metaLogin.netStatus(that.networkID)
+          if (that.metaAddress && !status) {
+            that.metamaskLoginTip = true
             return false
           }
-          if (!_this.ruleForm.lock_plan || (_this.ruleForm.amount <= 0 && !_this.free)) {
-            _this.ruleForm.lock_plan_tip = true
+          if (!that.ruleForm.lock_plan || (that.ruleForm.amount <= 0 && !that.free)) {
+            that.ruleForm.lock_plan_tip = true
             return false
           }
-          if (_this.ruleForm.fileList_tip || isNaN(_this.ruleForm.amount)) return false
+          if (that.ruleForm.fileList_tip || isNaN(that.ruleForm.amount)) return false
 
           let now = new Date().valueOf()
-          if (_this.lastTime === 0) {
-            _this.lastTime = now
+          if (that.lastTime === 0) {
+            that.lastTime = now
           } else {
-            if ((now - _this.lastTime) > 2000) {
+            if ((now - that.lastTime) > 2000) {
               // 重置上一次点击时间，设置的2秒间隔
-              _this.lastTime = now
+              that.lastTime = now
             } else {
               return false
             }
           }
 
-          if (_this.metaAddress) {
+          if (that.metaAddress) {
             // 授权代币
-            contractErc20 = new _this.$web3Init.eth.Contract(erc20ContractJson)
-            contractErc20.options.address = _this.usdcAddress
+            contractErc20 = new that.$web3Init.eth.Contract(erc20ContractJson)
+            contractErc20.options.address = that.usdcAddress
             // 查询剩余代币余额为：
-            contractErc20.methods.balanceOf(_this.metaAddress).call()
+            contractErc20.methods.balanceOf(that.metaAddress).call()
               .then(resultUSDC => {
-                _this.usdcAvailable = _this.$web3Init.utils.fromWei(resultUSDC, 'mwei')
-                console.log('Available upload:', resultUSDC, _this.usdcAvailable, _this.ruleForm.amount)
+                that.usdcAvailable = that.$web3Init.utils.fromWei(resultUSDC, 'mwei')
+                console.log('Available upload:', resultUSDC, that.usdcAvailable, that.ruleForm.amount)
 
                 // 判断支付金额是否大于代币余额
-                if (Number(_this.ruleForm.amount) > Number(_this.usdcAvailable)) {
-                  _this.$message.error('Insufficient balance')
+                if (Number(that.ruleForm.amount) > Number(that.usdcAvailable)) {
+                  that.$message.error('Insufficient balance')
                   return false
                 }
 
                 // 通过 FormData 对象上传文件
                 var formData = new FormData()
-                formData.append('file', _this._file)
-                formData.append('duration', _this.ruleForm.duration)
-                formData.append('storage_copy', _this.ruleForm.storage_copy)
-                formData.append('wallet_address', _this.metaAddress)
-                // formData.append('task_name', _this.ruleForm.task_name)
-                _this.loading = true
-                _this.fileUploadVisible = true
-
+                formData.append('file', that._file)
+                formData.append('duration', that.ruleForm.duration)
+                formData.append('storage_copy', that.ruleForm.storage_copy)
+                formData.append('wallet_address', that.metaAddress)
+                // formData.append('task_name', that.ruleForm.task_name)
+                that.loading = true
+                that.fileUploadVisible = true
+                console.log(that._file)
                 let xhr = new XMLHttpRequest()
-                xhr.open('POST', `${_this.baseAPIURL}api/v1/storage/ipfs/upload`, true) // 设置xhr得请求方式和url。
+                xhr.open('POST', `${that.baseAPIURL}api/v1/storage/ipfs/upload`, true) // 设置xhr得请求方式和url。
                 xhr.withCredentials = false
-                const token = _this.$store.getters.mcsjwtToken
+                const token = that.$store.getters.mcsjwtToken
                 if (token) {
                   xhr.setRequestHeader(
                     'Authorization',
-                    'Bearer ' + _this.$store.getters.mcsjwtToken
+                    'Bearer ' + that.$store.getters.mcsjwtToken
                   )
                 }
                 let i = 0
@@ -399,50 +398,50 @@ export default {
                 xhr.onreadystatechange = function () { // 等待ajax请求完成。
                   if (xhr.status === 200) {
                     if (xhr.responseText) {
-                      _this.fileUploadVisible = false
+                      that.fileUploadVisible = false
                       let res = JSON.parse(xhr.responseText)
                       i += 1
                       if (i <= 1) {
-                        _this.percentIn = xhr.readyState === 4 ? '100%' : _this.percentIn
+                        that.percentIn = xhr.readyState === 4 ? '100%' : that.percentIn
                         if (res.status === 'success') {
                           if (res.data.status === 'Free') {
-                            _this.finishClose()
+                            that.finishClose()
                             return false
                           } else {
-                            contractErc20.methods.allowance(_this.gatewayContractAddress, _this.metaAddress).call()
+                            contractErc20.methods.allowance(that.gatewayContractAddress, that.metaAddress).call()
                               .then(resultUSDC => {
-                                let amountPay = _this.$web3Init.utils.toWei(_this.ruleForm.amount, 'mwei')
+                                let amountPay = that.$web3Init.utils.toWei(that.ruleForm.amount, 'mwei')
                                 console.log('allowance：' + resultUSDC, amountPay)
                                 if (resultUSDC < amountPay) {
-                                  contractErc20.methods.approve(_this.gatewayContractAddress, amountPay).send({ from: _this.metaAddress })
+                                  contractErc20.methods.approve(that.gatewayContractAddress, amountPay).send({ from: that.metaAddress })
                                     .then(receipt => {
                                       // console.log('approve receipt:', receipt)
-                                      _this.contractSend(res.data, amountPay)
+                                      that.contractSend(res.data, amountPay)
                                     })
                                     .catch(() => {
                                       // console.log('errorerrorerror', error)
-                                      _this.finishClose()
+                                      that.finishClose()
                                     })
                                 } else {
-                                  _this.contractSend(res.data, amountPay)
+                                  that.contractSend(res.data, amountPay)
                                 }
                               })
                           }
                         } else {
-                          _this.$message.error(_this.$t('uploadFile.xhr_tip'))
+                          that.$message.error(that.$t('uploadFile.xhr_tip'))
                         }
                       }
                     }
                   } else {
                     i += 1
                     if (i <= 1) {
-                      if (xhr.status === 500) _this.$message.error(_this.$t('uploadFile.xhr_error500'))
+                      if (xhr.status === 500) that.$message.error(that.$t('uploadFile.xhr_error500'))
                     }
-                    _this.loading = false
-                    _this.fileUploadVisible = false
+                    that.loading = false
+                    that.fileUploadVisible = false
                   }
                   xhr.upload.addEventListener('error', event => {
-                    _this.$message.error(_this.$t('uploadFile.xhr_tip'))
+                    that.$message.error(that.$t('uploadFile.xhr_tip'))
                   })
 
                   xhr.upload.addEventListener('progress', event => {
@@ -452,7 +451,7 @@ export default {
                       // console.log('total-loaded', total, loaded)
                       let percentIn = Math.floor(event.loaded / event.total * 100)
                       // 设置进度显示
-                      _this.percentIn = percentIn + '%'
+                      that.percentIn = percentIn + '%'
                       // console.log(percentIn+'%-')
                     }
                   })
@@ -465,7 +464,7 @@ export default {
                     let percentIn = Math.floor(event.loaded / event.total * 100)
                     // 设置进度显示
                     if (percentIn === 100 && event.loaded <= event.total) percentIn = 99
-                    _this.percentIn = percentIn === 100 && event.loaded <= event.total ? '99%' : percentIn + '%'
+                    that.percentIn = percentIn === 100 && event.loaded <= event.total ? '99%' : percentIn + '%'
                     // console.log(percentIn+'%')
                   }
                 }
@@ -480,33 +479,32 @@ export default {
       })
     },
     contractSend (resData, amountPay) {
-      let _this = this
       // 合约转账
-      let contractInstance = new _this.$web3Init.eth.Contract(firstContractJson)
-      contractInstance.options.address = _this.gatewayContractAddress
+      let contractInstance = new that.$web3Init.eth.Contract(firstContractJson)
+      contractInstance.options.address = that.gatewayContractAddress
       // console.log( 'contractInstance合约实例：', contractInstance );
       // console.log(contractInstance.options.jsonInterface)
 
       let payObject = {
-        from: _this.metaAddress,
-        gas: _this.$web3Init.utils.toHex(_this.ruleForm.gaslimit)
+        from: that.metaAddress,
+        gas: that.$web3Init.utils.toHex(that.ruleForm.gaslimit)
       }
       let lockObj = {
         id: resData.w_cid,
         minPayment: String(Math.floor(amountPay / 2)),
         amount: amountPay,
-        lockTime: 86400 * Number(_this.$root.LOCK_TIME), // one day
-        recipient: _this.recipientAddress, // todo:
+        lockTime: 86400 * Number(that.$root.LOCK_TIME), // one day
+        recipient: that.recipientAddress, // todo:
         size: resData.file_size,
-        copyLimit: Number(_this.ruleForm.storage_copy)
+        copyLimit: Number(that.ruleForm.storage_copy)
       }
       console.log(lockObj)
       contractInstance.methods.lockTokenPayment(lockObj)
         .send(payObject)
         .on('transactionHash', function (hash) {
           // console.log('hash console:', hash);
-          _this.loadMetamaskPay = true
-          _this.txHash = hash
+          that.loadMetamaskPay = true
+          that.txHash = hash
         })
         .on('confirmation', function (confirmationNumber, receipt) {
           // console.log('confirmationNumber console:', confirmationNumber, receipt);
@@ -514,38 +512,37 @@ export default {
         .on('receipt', function (receipt) {
           // receipt example
           console.log('receipt console:', receipt)
-          _this.checkTransaction(receipt.transactionHash, resData, lockObj)
-          _this.txHash = receipt.transactionHash
+          that.checkTransaction(receipt.transactionHash, resData, lockObj)
+          that.txHash = receipt.transactionHash
         })
         .on('error', function (error) {
           console.log('lockTokenPayment error console:', error)
           // console.error
-          _this.loading = false
-          _this.loadMetamaskPay = false
-          if (_this.finishTransaction) return false
-          if (_this.txHash) _this.waitTransaction = true
-          else _this.failTransaction = true
+          that.loading = false
+          that.loadMetamaskPay = false
+          if (that.finishTransaction) return false
+          if (that.txHash) that.waitTransaction = true
+          else that.failTransaction = true
         })
     },
     failClose () {
-      this.failTransaction = false
-      this.waitTransaction = false
-      this.txHash = ''
+      that.failTransaction = false
+      that.waitTransaction = false
+      that.txHash = ''
     },
     checkTransaction (txHash, resData, lockObj) {
-      let _this = this
-      _this.$web3Init.eth.getTransactionReceipt(txHash).then(
+      that.$web3Init.eth.getTransactionReceipt(txHash).then(
         async res => {
           console.log('checking ... ')
           if (!res) {
-            _this.timer = setTimeout(() => { _this.checkTransaction(txHash, resData, lockObj) }, 2000)
+            that.timer = setTimeout(() => { that.checkTransaction(txHash, resData, lockObj) }, 2000)
             return false
           } else {
             setTimeout(function () {
-              _this.loading = false
-              _this.loadMetamaskPay = false
-              clearTimeout(_this.timer)
-              _this.finishTransaction = true
+              that.loading = false
+              that.loadMetamaskPay = false
+              clearTimeout(that.timer)
+              that.finishTransaction = true
             }, 2000)
           }
         },
@@ -553,26 +550,27 @@ export default {
       )
     },
     finishClose () {
-      this.finishTransaction = false
-      this.txHash = ''
-      this.$emit('getUploadDialog', false, true)
+      that.finishTransaction = false
+      that.txHash = ''
+      that.$emit('getUploadDialog', false, true)
     },
     // 文件上传
     uploadFile (params) {
-      this._file = params.file
-      const isLt2M = this._file.size / 1024 / 1024 / 1024 <= 25 // or 1000
-      this.ruleForm.file_size = this.sizeChange(this._file.size)
-      this.ruleForm.file_size_byte = this.byteChange(this._file.size)
-      this.free = (this.free_quota_per_month - this.free_usage) >= this._file.size
-      // console.log('bytes', this._file.size, this.free_quota_per_month-this.free_usage, this.free)
-      if (!isLt2M) {
-        // this.$message.error(this.$t('deal.upload_form_file_tip'))
-        this.ruleForm.fileList_tip = true
-        this.ruleForm.fileList_tip_text = this.$t('deal.upload_form_file_tip')
-        return false
-      } else {
-        this.ruleForm.fileList_tip = false
+      let reg = new RegExp(' ', 'g')
+      that._file = params.file
+      if (that._file.name.indexOf(' ') > -1) {
+        let name = that._file.name.replace(reg, '_')
+        that._file = new File([params.file], name, params.file)
       }
+      const isLt2M = params.file.size / 1024 / 1024 / 1024 <= 25 // or 1000
+      that.ruleForm.file_size = that.sizeChange(params.file.size)
+      that.ruleForm.file_size_byte = that.byteChange(params.file.size)
+      that.free = (that.free_quota_per_month - that.free_usage) >= params.file.size
+      if (!isLt2M) {
+        that.ruleForm.fileList_tip = true
+        that.ruleForm.fileList_tip_text = that.$t('deal.upload_form_file_tip')
+        return false
+      } else that.ruleForm.fileList_tip = false
     },
     sizeChange (bytes) {
       if (bytes === 0) return '0 B'
@@ -601,44 +599,40 @@ export default {
       // return Number(size).toFixed(3);
     },
     handleChange (file, fileList) {
-      if (fileList.length > 0) {
-        this.ruleForm.fileList = [fileList[fileList.length - 1]] // 这一步，是 展示最后一次选择的csv文件
-      }
+      if (fileList.length > 0) that.ruleForm.fileList = [fileList[fileList.length - 1]] // 这一步，是 展示最后一次选择的csv文件
     },
     handleRemove (file, fileList) {
       // console.log(file, fileList);
-      this.ruleForm.fileList = []
-      this.ruleForm.file_size = ''
-      this.ruleForm.file_size_byte = ''
+      that.ruleForm.fileList = []
+      that.ruleForm.file_size = ''
+      that.ruleForm.file_size_byte = ''
     },
     async stats () {
-      let _this = this
-      _this.loading = true
-      if (_this.$root.SWAN_PAYMENT_CONTRACT_ADDRESS) {
-        _this.gatewayContractAddress = _this.$root.SWAN_PAYMENT_CONTRACT_ADDRESS
-        _this.usdcAddress = _this.$root.USDC_ADDRESS
-        _this.recipientAddress = _this.$root.RECIPIENT
+      that.loading = true
+      if (that.$root.SWAN_PAYMENT_CONTRACT_ADDRESS) {
+        that.gatewayContractAddress = that.$root.SWAN_PAYMENT_CONTRACT_ADDRESS
+        that.usdcAddress = that.$root.USDC_ADDRESS
+        that.recipientAddress = that.$root.RECIPIENT
 
-        const storageRes = await _this.sendRequest(`${process.env.BASE_API}stats/storage?wallet_address=${_this.metaAddress}`)
+        const storageRes = await that.sendRequest(`${process.env.BASE_API}stats/storage?wallet_address=${that.metaAddress}`)
         let cost = storageRes.data.historical_average_price_verified ? storageRes.data.historical_average_price_verified.split(' ') : []
-        if (cost[0]) _this.storage = cost[0]
+        if (cost[0]) that.storage = cost[0]
 
-        _this.biling_price = _this.$root.filecoin_price
+        that.biling_price = that.$root.filecoin_price
 
-        _this.loading = false
-        // _this.addEvent()
+        that.loading = false
+        // that.addEvent()
       } else {
         setTimeout(function () {
-          _this.stats()
+          that.stats()
         }, 1000)
       }
     },
     async sendRequest (apilink) {
-      let _this = this
       try {
         const response = await axios.get(apilink, {
           headers: {
-            'Authorization': 'Bearer ' + _this.$store.getters.mcsjwtToken
+            'Authorization': 'Bearer ' + that.$store.getters.mcsjwtToken
           }
         })
         return response.data
@@ -685,9 +679,8 @@ export default {
     }
   },
   mounted () {
-    let _this = this
-    that = _this
-    _this.stats()
+    that = this
+    that.stats()
   },
   filters: {
     NumStorage (value) {

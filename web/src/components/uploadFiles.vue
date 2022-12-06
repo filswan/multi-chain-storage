@@ -160,9 +160,10 @@
     </el-dialog>
 
     <el-dialog :visible.sync="fileUploadVisible" :show-close="false" :close-on-click-modal="false" :width="widthUpload" custom-class="fileUpload">
-      <span slot="title">{{$t('uploadFile.File_uploading')}}... {{percentIn?'('+percentIn+')':''}}</span>
+      <span slot="title">{{$t('uploadFile.File_uploading')}}... {{percentIn?'('+percentIn+'%)':''}}</span>
       <h3>{{$t('uploadFile.File_uploading_tooltip')}}</h3>
       <img src="@/assets/images/upload.gif" class="gif_img" alt="">
+      <small>{{speedChange(uploadPrecentSpeed)}}</small>
     </el-dialog>
 
     <el-dialog title="" :visible.sync="paymentPopup" :width="width" custom-class="completeDia">
@@ -283,7 +284,10 @@ export default {
       lastTime: 0,
       found_link: process.env.NODE_ENV === 'production' ? 'https://calibration-faucet.filswan.com/' : 'http://192.168.88.216:8080/faucet/#/dashboard',
       free: false,
-      bgStyle: false
+      bgStyle: false,
+      lastUploadTime: 0,
+      lastUploadSize: 0,
+      uploadPrecentSpeed: 0
     }
   },
   props: ['uploadDigShow'],
@@ -382,7 +386,8 @@ export default {
                 // formData.append('task_name', that.ruleForm.task_name)
                 that.loading = true
                 that.fileUploadVisible = true
-                console.log(that._file)
+                that.lastUploadTime = 0
+                that.lastUploadSize = 0
                 let xhr = new XMLHttpRequest()
                 xhr.open('POST', `${that.baseAPIURL}api/v1/storage/ipfs/upload`, true) // 设置xhr得请求方式和url。
                 xhr.withCredentials = false
@@ -458,15 +463,8 @@ export default {
                 }
                 // 获取上传进度
                 xhr.upload.onprogress = function (event) {
-                  // console.log('event.loaded', event.loaded)
-                  // console.log('event.total', event.total)
-                  if (event.lengthComputable) {
-                    let percentIn = Math.floor(event.loaded / event.total * 100)
-                    // 设置进度显示
-                    if (percentIn === 100 && event.loaded <= event.total) percentIn = 99
-                    that.percentIn = percentIn === 100 && event.loaded <= event.total ? '99%' : percentIn + '%'
-                    // console.log(percentIn+'%')
-                  }
+                  // console.log('event.onprogress', event)
+                  if (event.lengthComputable) that.progressHandle(event)
                 }
                 xhr.send(formData)
                 return false
@@ -477,6 +475,35 @@ export default {
           return false
         }
       })
+    },
+    async progressHandle (e) {
+      const { loaded, total } = e
+      if (that.lastUploadTime === 0) {
+        that.lastUploadTime = new Date().getTime()
+        that.lastUploadSize = loaded
+        return
+      }
+      let nowTime = new Date().getTime()
+      let intervalTime = (nowTime - that.lastUploadTime) / 1000
+      let intervalSize = loaded - that.lastUploadSize
+      that.lastUploadTime = nowTime
+      that.lastUploadSize = loaded
+
+      that.uploadPrecentSpeed = intervalSize / intervalTime // Calculation speed
+      // const leftTime = ((total - loaded) / that.uploadPrecentSpeed) // Calculate remaining time
+      const uploadPrecent = ((loaded / total) * 100) | 0 // Calculation progress
+      that.percentIn = loaded < total && uploadPrecent === 100 ? 99 : uploadPrecent
+
+      console.log('当前已上传文件大小: ' + loaded, '总文件大小: ', total, 'progress: ', uploadPrecent + '%')
+    },
+    speedChange (bytes) {
+      if (String(bytes) === '0') return '0 b/s'
+      if (!bytes) return '-'
+      var k = 1024 // or 1000
+      var sizes = ['b/s', 'k/s', 'M/s']
+      var i = Math.floor(Math.log(bytes) / Math.log(k))
+      if (Math.round((bytes / Math.pow(k, i))).toString().length > 3) i += 1
+      return (bytes / Math.pow(k, i)).toFixed(1) + ' ' + sizes[i]
     },
     contractSend (resData, amountPay) {
       // 合约转账
@@ -855,7 +882,8 @@ export default {
       text-transform: capitalize;
     }
     .el-dialog__body {
-      padding: 0 0.4rem;
+      position: relative;
+      padding: 0 0.4rem 0.1rem;
       h3 {
         margin: 0 0 0.1rem;
         font-size: 0.2rem;
@@ -869,6 +897,31 @@ export default {
         width: 100%;
         margin: auto;
         display: block;
+      }
+      small {
+        position: absolute;
+        bottom: 0.25rem;
+        left: 0;
+        right: 0;
+        display: block;
+        width: 100%;
+        font-size: 18px;
+        text-align: center;
+        @media screen and (max-width: 1600px) {
+          font-size: 16px;
+        }
+        @media screen and (max-width: 1440px) {
+          font-size: 15px;
+        }
+        @media screen and (max-width: 1024px) {
+          font-size: 14px;
+        }
+        @media screen and (max-width: 768px) {
+          font-size: 13px;
+        }
+        @media screen and (max-width: 441px) {
+          font-size: 12px;
+        }
       }
     }
   }

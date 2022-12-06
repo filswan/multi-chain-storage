@@ -155,7 +155,11 @@
       <div class="uploadDig">
         <div class="upload_progress">
           <img src="@/assets/images/space/load_sunny.gif" class="load" />
-          <div class="progress">{{uploadPrecent}}%</div>
+          <div class="progress">
+            <p>{{uploadPrecent}}%
+              <small>{{speedChange(uploadPrecentSpeed)}}</small>
+            </p>
+          </div>
         </div>
       </div>
     </div>
@@ -304,7 +308,10 @@ export default {
       typeName: this.typeModule,
       uploadPrecent: 0,
       emailLoad: false,
-      controller: new AbortController()
+      controller: new AbortController(),
+      lastUploadTime: 0,
+      lastUploadSize: 0,
+      uploadPrecentSpeed: 0
     }
   },
   props: ['dialogFormVisible', 'typeModule', 'areaBody', 'createLoad', 'listTableLoad', 'dataCont', 'currentBucket', 'fixed', 'backupLoad', 'changeTitle'],
@@ -465,14 +472,20 @@ export default {
       // if(i == 2) return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];
       return Number(bytes / Math.pow(k, i)) + ' ' + sizes[i]
     },
+    speedChange (bytes) {
+      if (String(bytes) === '0') return '0 b/s'
+      if (!bytes) return '-'
+      var k = 1024 // or 1000
+      var sizes = ['b/s', 'k/s', 'M/s']
+      var i = Math.floor(Math.log(bytes) / Math.log(k))
+      if (Math.round((bytes / Math.pow(k, i))).toString().length > 3) i += 1
+      return (bytes / Math.pow(k, i)).toFixed(1) + ' ' + sizes[i]
+    },
     byteChange (limit) {
       var size = ''
       // 只转换成GB
-      if (limit <= 0) {
-        return '-'
-      } else {
-        size = limit / (1024 * 1024 * 1024) // or 1000
-      }
+      if (limit <= 0) return '-'
+      else size = limit / (1024 * 1024 * 1024) // or 1000
       return size
       // return Number(size).toFixed(3);
     },
@@ -517,9 +530,11 @@ export default {
           const session = directoryRes.data.sessionID
 
           that.typeName = 'upload_progress'
+          that.lastUploadTime = 0
+          that.lastUploadSize = 0
           const config = {
             onUploadProgress: progressEvent => {
-              that.onPross(progressEvent)
+              that.progressHandle(progressEvent)
             }
           }
           const uploadRes = await that.$commonFun.sendRequest(`${process.env.BASE_METASPACE}api/v3/file/upload/${session}/0`, 'post', file.raw, config)
@@ -552,6 +567,26 @@ export default {
       const { loaded, total } = e
       const uploadPrecent = ((loaded / total) * 100) | 0
       that.uploadPrecent = loaded < total && uploadPrecent === 100 ? 99 : uploadPrecent
+    },
+    async progressHandle (e) {
+      const { loaded, total } = e
+      if (that.lastUploadTime === 0) {
+        that.lastUploadTime = new Date().getTime()
+        that.lastUploadSize = loaded
+        return
+      }
+      let nowTime = new Date().getTime()
+      let intervalTime = (nowTime - that.lastUploadTime) / 1000
+      let intervalSize = loaded - that.lastUploadSize
+      that.lastUploadTime = nowTime
+      that.lastUploadSize = loaded
+
+      that.uploadPrecentSpeed = intervalSize / intervalTime // Calculation speed
+      // const leftTime = ((total - loaded) / that.uploadPrecentSpeed) // Calculate remaining time
+      const uploadPrecent = ((loaded / total) * 100) | 0 // Calculation progress
+      that.uploadPrecent = loaded < total && uploadPrecent === 100 ? 99 : uploadPrecent
+
+      console.log('loaded: ' + loaded, 'total: ', total, 'progress: ', that.uploadPrecent + '%')
     },
     submitEmail (formName) {
       that.$refs[formName].validate(async valid => {
@@ -1798,8 +1833,10 @@ export default {
           display: flex;
           justify-content: center;
           align-items: center;
+          flex-wrap: wrap;
           font-size: 30px;
           color: #4b83fb;
+          line-height: 1.2;
           @media screen and (max-width: 768px) {
             font-size: 28px;
           }
@@ -1808,6 +1845,27 @@ export default {
           }
           @media screen and (max-width: 441px) {
             font-size: 18px;
+          }
+          small {
+            display: block;
+            width: 100%;
+            font-size: 18px;
+            text-align: center;
+            @media screen and (max-width: 1600px) {
+              font-size: 16px;
+            }
+            @media screen and (max-width: 1440px) {
+              font-size: 15px;
+            }
+            @media screen and (max-width: 1024px) {
+              font-size: 14px;
+            }
+            @media screen and (max-width: 768px) {
+              font-size: 13px;
+            }
+            @media screen and (max-width: 441px) {
+              font-size: 12px;
+            }
           }
         }
         .load_svg {

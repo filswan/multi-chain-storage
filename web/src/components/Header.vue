@@ -145,12 +145,12 @@
   </div>
 </template>
 <script>
-// import bus from './bus';
 import networkChange from '@/components/networkChange'
 import axios from 'axios'
 import erc20ContractJson from '@/utils/ERC20.json'
 const ethereum = window.ethereum
 let contractErc20
+let that
 export default {
   components: {
     networkChange
@@ -250,21 +250,20 @@ export default {
   },
   methods: {
     async wrongInfo (status) {
-      this.wrongLoad = true
-      this.wrongVisible = true
-      if (status === 'disconnect') await this.$metaLogin.Disconnect()
-      await this.$metaLogin.emailSign('', 'detail')
-      this.wrongLoad = false
+      that.wrongLoad = true
+      that.wrongVisible = true
+      if (status === 'disconnect') await that.$metaLogin.Disconnect()
+      await that.$metaLogin.emailSign('', 'detail')
+      that.wrongLoad = false
     },
     getNetworkC (dialog, rows) {
-      let _this = this
-      _this.networkC = dialog
+      that.networkC = dialog
       if (rows) {
         let text = {}
         switch (rows) {
           case 80001:
             text = {
-              chainId: _this.$web3Init.utils.numberToHex(80001),
+              chainId: that.$web3Init.utils.numberToHex(80001),
               chainName: 'Mumbai Testnet',
               nativeCurrency: {
                 name: 'MATIC',
@@ -277,7 +276,7 @@ export default {
             break
           case 97:
             text = {
-              chainId: _this.$web3Init.utils.numberToHex(97),
+              chainId: that.$web3Init.utils.numberToHex(97),
               chainName: 'BSC TestNet',
               nativeCurrency: {
                 name: 'tBNB',
@@ -290,7 +289,7 @@ export default {
             break
           case 137:
             text = {
-              chainId: _this.$web3Init.utils.numberToHex(137),
+              chainId: that.$web3Init.utils.numberToHex(137),
               chainName: 'Polygon Mainnet',
               nativeCurrency: {
                 name: 'tBNB',
@@ -309,40 +308,38 @@ export default {
           ]
         }).then((res) => {
           // 添加成功
-          // _this.changeChaid(rows)
-          _this.$emit('getNetId', 0)
+          // that.changeChaid(rows)
+          that.$emit('getNetId', 0)
         }).catch((err) => {
           console.log(err)
-          _this.$emit('getNetId', 0)
+          that.$emit('getNetId', 0)
         })
       }
     },
     async changeChaid (rows) {
-      let _this = this
-      _this.$store.dispatch('setMetaNetworkId', rows)
-      let status = await _this.$metaLogin.netStatus(rows)
+      that.$store.dispatch('setMetaNetworkId', rows)
+      let status = await that.$metaLogin.netStatus(rows)
       if (!status) {
-        let link = _this.baseNetwork ? 'https://calibration-mcs.filswan.com' : 'https://www.multichain.storage'
+        let link = that.baseNetwork ? 'https://calibration-mcs.filswan.com' : 'https://www.multichain.storage'
         window.open(link)
-        _this.signOutFun()
+        that.signOutFun()
         return false
       } else {
-        const lStatus = await _this.$metaLogin.login()
+        const lStatus = await that.$metaLogin.login()
         if (lStatus) setTimeout(function () { window.location.reload() }, 200)
       }
-      if (_this.$route.name === 'my_files_detail') {
-        _this.$router.push({ path: '/my_files' })
+      if (that.$route.name === 'my_files_detail') {
+        that.$router.push({ path: '/my_files' })
       }
     },
     shareTo () {
-      window.open(`${this.baseAddressURL}address/${this.addrChild}`)
+      window.open(`${that.baseAddressURL}address/${that.addrChild}`)
     },
     closeDia (type) {
-      this.$emit('getPopUps', true, type || '')
-      this.wrongVisible = false
+      that.$emit('getPopUps', true, type || '')
+      that.wrongVisible = false
     },
     copyTextToClipboard (text) {
-      let _this = this
       var txtArea = document.createElement('textarea')
       txtArea.id = 'txt'
       txtArea.style.position = 'fixed'
@@ -358,8 +355,8 @@ export default {
         var msg = successful ? 'successful' : 'unsuccessful'
         console.log('Copying text command was ' + msg)
         if (successful) {
-          _this.copyClick = false
-          setTimeout(function () { _this.copyClick = true }, 600)
+          that.copyClick = false
+          setTimeout(function () { that.copyClick = true }, 600)
           return true
         }
       } catch (err) {
@@ -373,36 +370,34 @@ export default {
       // console.log(key, keyPath);
     },
     pageJump (data) {
-      let _this = this
-      let name = _this.$router.history.current.name
+      let name = that.$router.history.current.name
       if (name === 'login' || name === 'register') {
         if (data === 1) {
-          _this.$router.replace('/login')
+          that.$router.replace('/login')
         } else if (data === 2) {
-          _this.$router.replace('/register')
+          that.$router.replace('/register')
         }
       } else {
         if (data === 1) {
-          _this.$router.push('/login')
+          that.$router.push('/login')
         } else if (data === 2) {
-          _this.$router.push('/register')
+          that.$router.push('/register')
         }
       }
     },
     // 侧边栏折叠
     collapseChage () {
-      this.collapseLocal = !this.collapseLocal
-      this.$store.dispatch('setCollapse', this.collapseLocal)
-      // bus.$emit('collapse', this.collapse);
+      that.collapseLocal = !that.collapseLocal
+      that.$store.dispatch('setCollapse', that.collapseLocal)
+      // bus.$emit('collapse', that.collapse);
     },
     handleSetLanguage (lang) {
-      let _this = this
-      _this.loadIndexing = true
+      that.loadIndexing = true
 
       document.body.style.height = '100vh'
       document.body.style['overflow-y'] = 'hidden'
-      _this.$i18n.locale = lang
-      _this.$store.dispatch('setLanguage', lang)
+      that.$i18n.locale = lang
+      that.$store.dispatch('setLanguage', lang)
 
       window.location.reload()
     },
@@ -430,16 +425,15 @@ export default {
       return null
     },
     metamaskLogin () {
-      let _this = this
-      if (!_this.metaAddress || _this.metaAddress === undefined) {
-        _this.$commonFun.Init(addr => {
-          _this.$nextTick(async () => {
-            _this.$store.dispatch('setMetaAddress', addr)
-            let status = await _this.$metaLogin.netStatus(_this.networkID)
-            _this.$emit('getNetwork', !status)
+      if (!that.metaAddress || that.metaAddress === undefined) {
+        that.$commonFun.Init(addr => {
+          that.$nextTick(async () => {
+            that.$store.dispatch('setMetaAddress', addr)
+            let status = await that.$metaLogin.netStatus(that.networkID)
+            that.$emit('getNetwork', !status)
             if (!status) return false
-            const lStatus = await _this.$metaLogin.login()
-            if (lStatus) _this.$emit('getMetamaskLogin', true)
+            const lStatus = await that.$metaLogin.login()
+            if (lStatus) that.$emit('getMetamaskLogin', true)
           })
         })
         return false
@@ -447,35 +441,33 @@ export default {
     },
     // Wallet address
     signFun (redirect) {
-      let _this = this
-      if (!_this.addrChild) {
+      if (!that.addrChild) {
         ethereum
           .request(
             {
               'jsonrpc': '2.0',
               'method': 'eth_accounts',
-              'params': [_this.metaAddress, 'latest'],
+              'params': [that.metaAddress, 'latest'],
               'id': 19998
             }
           )
           .then((accounts) => {
             if (accounts.length <= 0) {
-              _this.signOutFun()
+              that.signOutFun()
               return false
             }
-            _this.addrChild = _this.metaAddress
-            _this.walletInfo()
+            that.addrChild = that.metaAddress
+            that.walletInfo()
           })
           .catch((error) => {
             console.log(error)
-            _this.signOutFun()
+            that.signOutFun()
           })
         return false
       }
     },
     walletInfo () {
-      let _this = this
-      if (!_this.addrChild || _this.addrChild === 'undefined') {
+      if (!that.addrChild || that.addrChild === 'undefined') {
         return false
       }
 
@@ -486,130 +478,129 @@ export default {
           let netId = parseInt(chainId, 16)
           // console.log('network ID:', netId)
           // console.log(`decimal number: ${parseInt(chainId, 16)}`);
-          _this.$store.dispatch('setMetaNetworkId', netId)
+          that.$store.dispatch('setMetaNetworkId', netId)
 
-          await _this.contractPrice(netId)
+          await that.contractPrice(netId)
 
           switch (netId) {
             case 1:
-              _this.network.name = 'mainnet'
-              _this.network.unit = 'ETH'
-              _this.network.center_fail = true
-              _this.$store.dispatch('setMetaNetworkInfo', _this.network)
+              that.network.name = 'mainnet'
+              that.network.unit = 'ETH'
+              that.network.center_fail = true
+              that.$store.dispatch('setMetaNetworkInfo', that.network)
               break
             case 3:
-              _this.network.name = 'ropsten'
-              _this.network.unit = 'ETH'
-              _this.network.center_fail = true
-              _this.$store.dispatch('setMetaNetworkInfo', _this.network)
+              that.network.name = 'ropsten'
+              that.network.unit = 'ETH'
+              that.network.center_fail = true
+              that.$store.dispatch('setMetaNetworkInfo', that.network)
               break
             case 4:
-              _this.network.name = 'rinkeby'
-              _this.network.unit = 'ETH'
-              _this.network.center_fail = true
-              _this.$store.dispatch('setMetaNetworkInfo', _this.network)
+              that.network.name = 'rinkeby'
+              that.network.unit = 'ETH'
+              that.network.center_fail = true
+              that.$store.dispatch('setMetaNetworkInfo', that.network)
               break
             case 5:
-              _this.network.name = 'goerli'
-              _this.network.unit = 'ETH'
-              _this.network.center_fail = true
-              _this.$store.dispatch('setMetaNetworkInfo', _this.network)
+              that.network.name = 'goerli'
+              that.network.unit = 'ETH'
+              that.network.center_fail = true
+              that.$store.dispatch('setMetaNetworkInfo', that.network)
               break
             case 42:
-              _this.network.name = 'kovan'
-              _this.network.unit = 'ETH'
-              _this.network.center_fail = true
-              _this.$store.dispatch('setMetaNetworkInfo', _this.network)
+              that.network.name = 'kovan'
+              that.network.unit = 'ETH'
+              that.network.center_fail = true
+              that.$store.dispatch('setMetaNetworkInfo', that.network)
               break
             case 56:
-              _this.network.name = 'BSC'
-              _this.network.unit = 'BNB'
-              _this.network.center_fail = true
-              _this.$store.dispatch('setMetaNetworkInfo', _this.network)
+              that.network.name = 'BSC'
+              that.network.unit = 'BNB'
+              that.network.center_fail = true
+              that.$store.dispatch('setMetaNetworkInfo', that.network)
               break
             case 97:
-              _this.network.name = 'BSC'
-              _this.network.unit = 'USDC'
-              _this.network.center_fail = false
-              _this.$store.dispatch('setMetaNetworkInfo', _this.network)
-              if (_this.meta) {
-                if (_this.$route.query.redirect && _this.$route.query.redirect !== '/supplierAllBack') {
+              that.network.name = 'BSC'
+              that.network.unit = 'USDC'
+              that.network.center_fail = false
+              that.$store.dispatch('setMetaNetworkInfo', that.network)
+              if (that.meta) {
+                if (that.$route.query.redirect && that.$route.query.redirect !== '/supplierAllBack') {
                   // 防止登录后需要跳转到指定页面
-                  _this.$router.push({ path: _this.$route.query.redirect })
+                  that.$router.push({ path: that.$route.query.redirect })
                 } else {
-                  _this.$router.push({ path: '/my_files' })
+                  that.$router.push({ path: '/my_files' })
                 }
                 window.location.reload()
-                _this.$emit('getMetamaskLogin', false)
+                that.$emit('getMetamaskLogin', false)
               }
               break
             case 137:
-              _this.network.name = 'Polygon'
-              _this.network.unit = 'USDC'
-              _this.network.center_fail = true
-              _this.$store.dispatch('setMetaNetworkInfo', _this.network)
-              if (_this.meta) {
-                if (_this.$route.query.redirect && _this.$route.query.redirect !== '/supplierAllBack') {
+              that.network.name = 'Polygon'
+              that.network.unit = 'USDC'
+              that.network.center_fail = true
+              that.$store.dispatch('setMetaNetworkInfo', that.network)
+              if (that.meta) {
+                if (that.$route.query.redirect && that.$route.query.redirect !== '/supplierAllBack') {
                   // 防止登录后需要跳转到指定页面
-                  _this.$router.push({ path: _this.$route.query.redirect })
+                  that.$router.push({ path: that.$route.query.redirect })
                 } else {
-                  _this.$router.push({ path: '/my_files' })
+                  that.$router.push({ path: '/my_files' })
                 }
                 window.location.reload()
-                _this.$emit('getMetamaskLogin', false)
+                that.$emit('getMetamaskLogin', false)
               }
               break
             case 999:
-              _this.network.name = 'NBAI'
-              _this.network.unit = 'NBAI'
-              _this.network.center_fail = true
-              _this.$store.dispatch('setMetaNetworkInfo', _this.network)
+              that.network.name = 'NBAI'
+              that.network.unit = 'NBAI'
+              that.network.center_fail = true
+              that.$store.dispatch('setMetaNetworkInfo', that.network)
               break
             case 80001:
-              _this.network.name = 'Mumbai'
-              _this.network.unit = 'USDC'
-              _this.network.center_fail = false
-              _this.$store.dispatch('setMetaNetworkInfo', _this.network)
-              if (_this.meta) {
-                if (_this.$route.query.redirect && _this.$route.query.redirect !== '/supplierAllBack') {
+              that.network.name = 'Mumbai'
+              that.network.unit = 'USDC'
+              that.network.center_fail = false
+              that.$store.dispatch('setMetaNetworkInfo', that.network)
+              if (that.meta) {
+                if (that.$route.query.redirect && that.$route.query.redirect !== '/supplierAllBack') {
                   // 防止登录后需要跳转到指定页面
-                  _this.$router.push({ path: _this.$route.query.redirect })
+                  that.$router.push({ path: that.$route.query.redirect })
                 } else {
-                  _this.$router.push({ path: '/my_files' })
+                  that.$router.push({ path: '/my_files' })
                 }
                 window.location.reload()
-                _this.$emit('getMetamaskLogin', false)
+                that.$emit('getMetamaskLogin', false)
               }
               break
             default:
-              _this.network.name = 'Custom'
-              _this.network.unit = ''
-              _this.network.center_fail = true
-              _this.$store.dispatch('setMetaNetworkInfo', _this.network)
+              that.network.name = 'Custom'
+              that.network.unit = ''
+              that.network.center_fail = true
+              that.$store.dispatch('setMetaNetworkInfo', that.network)
               break
           }
 
-          let status = await _this.$metaLogin.netStatus(_this.networkID)
-          _this.$emit('getNetwork', !status)
+          let status = await that.$metaLogin.netStatus(that.networkID)
+          that.$emit('getNetwork', !status)
         })
         .catch((error) => {
           console.error(`Error fetching chainId: ${error.code}: ${error.message}`)
         })
     },
     fn () {
-      let _this = this
       ethereum.on('accountsChanged', function (account) {
         // console.log('account header:', account[0]);  //Once the account is switched, it will be executed here
-        if (_this.prevType) _this.signOutFun()
+        if (that.prevType) that.signOutFun()
       })
       // networkChanged
       ethereum.on('chainChanged', function (accounts) {
-        if (!_this.prevType) return false
-        _this.$store.dispatch('setMCSjwtToken', '')
-        _this.$store.dispatch('setMetaNetworkId', parseInt(accounts, 16))
-        _this.walletInfo()
-        _this.changeChaid(parseInt(accounts, 16))
-        if (_this.$route.name === 'my_files_detail') _this.$router.push({ path: '/my_files' })
+        if (!that.prevType) return false
+        that.$store.dispatch('setMCSjwtToken', '')
+        that.$store.dispatch('setMetaNetworkId', parseInt(accounts, 16))
+        that.walletInfo()
+        that.changeChaid(parseInt(accounts, 16))
+        if (that.$route.name === 'my_files_detail') that.$router.push({ path: '/my_files' })
       })
       // 监听metamask网络断开
       ethereum.on('disconnect', (code, reason) => {
@@ -617,57 +608,54 @@ export default {
       })
     },
     signOutFun () {
-      let _this = this
       let params = {}
-      axios.post(`${_this.baseAPIURL}api/v1/user/logout_for_metamask_signature`, params, {
+      axios.post(`${that.baseAPIURL}api/v1/user/logout_for_metamask_signature`, params, {
         headers: {
-          'Authorization': 'Bearer ' + _this.$store.getters.mcsjwtToken
+          'Authorization': 'Bearer ' + that.$store.getters.mcsjwtToken
         }
       }).then((response) => {
-        if (response.data.status !== 'success') _this.$message.error(response.data.message || 'Fail')
-        _this.addrChild = ''
-        _this.$store.dispatch('setMetaAddress', '')
-        _this.$store.dispatch('setMCSjwtToken', '')
-        _this.$store.dispatch('setMetaNetworkId', 0)
-        _this.network.name = ''
-        _this.network.unit = ''
-        _this.network.center_fail = false
-        _this.$store.dispatch('setMetaNetworkInfo', JSON.stringify(_this.network))
+        if (response.data.status !== 'success') that.$message.error(response.data.message || 'Fail')
+        that.addrChild = ''
+        that.$store.dispatch('setMetaAddress', '')
+        that.$store.dispatch('setMCSjwtToken', '')
+        that.$store.dispatch('setMetaNetworkId', 0)
+        that.network.name = ''
+        that.network.unit = ''
+        that.network.center_fail = false
+        that.$store.dispatch('setMetaNetworkInfo', JSON.stringify(that.network))
         sessionStorage.removeItem('login_path')
         sessionStorage.removeItem('mcs_dev_jwtToken')
-        // _this.$router.push('/home')
+        // that.$router.push('/home')
         setTimeout(function () { window.location.reload() }, 200)
       }).catch(function (error) {
         console.log(error.config)
       })
     },
     commonParam () {
-      let _this = this
-      let commonApi = `${_this.baseAPIURL}api/v1/common/system/params?limit=20&wallet_address=${_this.metaAddress}`
+      let commonApi = `${that.baseAPIURL}api/v1/common/system/params?limit=20&wallet_address=${that.metaAddress}`
 
       axios.get(commonApi, {
         headers: {
-          'Authorization': 'Bearer ' + _this.$store.getters.mcsjwtToken
+          'Authorization': 'Bearer ' + that.$store.getters.mcsjwtToken
         }
       })
         .then((json) => {
           if (json.data.status === 'success') {
-            _this.$root.LOCK_TIME = json.data.data.lock_time
-            _this.$root.PAY_GAS_LIMIT = json.data.data.gas_limit
-            _this.$root.PAY_WITH_MULTIPLY_FACTOR = json.data.data.pay_multiply_factor
-            _this.$root.RECIPIENT = json.data.data.payment_recipient_address
-            _this.$root.SWAN_PAYMENT_CONTRACT_ADDRESS = json.data.data.payment_contract_address
-            _this.$root.USDC_ADDRESS = json.data.data.usdc_address
-            _this.$root.MINT_CONTRACT = json.data.data.mint_contract_address
-            _this.$root.dao_threshold = json.data.data.dao_threshold
-            _this.$root.filecoin_price = json.data.data.filecoin_price
+            that.$root.LOCK_TIME = json.data.data.lock_time
+            that.$root.PAY_GAS_LIMIT = json.data.data.gas_limit
+            that.$root.PAY_WITH_MULTIPLY_FACTOR = json.data.data.pay_multiply_factor
+            that.$root.RECIPIENT = json.data.data.payment_recipient_address
+            that.$root.SWAN_PAYMENT_CONTRACT_ADDRESS = json.data.data.payment_contract_address
+            that.$root.USDC_ADDRESS = json.data.data.usdc_address
+            that.$root.MINT_CONTRACT = json.data.data.mint_contract_address
+            that.$root.dao_threshold = json.data.data.dao_threshold
+            that.$root.filecoin_price = json.data.data.filecoin_price
           }
         }).catch(error => {
           console.log(error)
         })
     },
     contractPrice (netId) {
-      let _this = this
       try {
         if (netId !== 80001 && netId !== 97 && netId !== 137) {
           ethereum
@@ -675,42 +663,42 @@ export default {
               {
                 'jsonrpc': '2.0',
                 'method': 'eth_getBalance',
-                'params': [_this.addrChild, 'latest'],
+                'params': [that.addrChild, 'latest'],
                 'id': 19999
               }
             )
             .then((balance) => {
-              let balanceAll = _this.$web3Init.utils.fromWei(balance, 'ether')
+              let balanceAll = that.$web3Init.utils.fromWei(balance, 'ether')
               // console.log('balance', balanceAll)
-              _this.priceAccound = Number(balanceAll).toFixed(0)
+              that.priceAccound = Number(balanceAll).toFixed(0)
             })
             .catch((error) => {
               console.error(`Error fetching getBalance: ${error.code}: ${error.message}`)
-              _this.priceAccound = 0
+              that.priceAccound = 0
             })
         } else {
-          if (_this.$root.SWAN_PAYMENT_CONTRACT_ADDRESS) {
+          if (that.$root.SWAN_PAYMENT_CONTRACT_ADDRESS) {
             // 授权代币
-            contractErc20 = new _this.$web3Init.eth.Contract(erc20ContractJson)
-            contractErc20.options.address = _this.$root.USDC_ADDRESS
+            contractErc20 = new that.$web3Init.eth.Contract(erc20ContractJson)
+            contractErc20.options.address = that.$root.USDC_ADDRESS
             // 查询剩余代币余额为：
-            contractErc20.methods.balanceOf(_this.metaAddress).call()
+            contractErc20.methods.balanceOf(that.metaAddress).call()
               .then(balance => {
-                let usdcAvailable = _this.$web3Init.utils.fromWei(balance, 'mwei')
+                let usdcAvailable = that.$web3Init.utils.fromWei(balance, 'mwei')
                 console.log('Available balance:', usdcAvailable, balance)
-                // _this.priceAccound = _this.formatDecimal(usdcAvailable, 3)
-                // _this.priceAccound = Number(usdcAvailable).toFixed(0)
-                _this.priceAccound = parseInt(usdcAvailable)
+                // that.priceAccound = that.formatDecimal(usdcAvailable, 3)
+                // that.priceAccound = Number(usdcAvailable).toFixed(0)
+                that.priceAccound = parseInt(usdcAvailable)
               })
           } else {
             setTimeout(function () {
-              _this.contractPrice(netId)
+              that.contractPrice(netId)
             }, 1000)
           }
         }
       } catch (err) {
         console.error(err)
-        _this.priceAccound = 0
+        that.priceAccound = 0
       }
     },
     formatDecimal (num, decimal) {
@@ -725,31 +713,30 @@ export default {
     },
     reverseChange (val) {
       let reverse = val ? 1 : 0
-      this.$store.dispatch('setReverse', reverse)
+      that.$store.dispatch('setReverse', reverse)
     }
   },
   mounted () {
-    let _this = this
-    _this.reverseSwitch = _this.reverse
+    that = this
+    that.reverseSwitch = that.reverse
 
-    var visProp = _this.getHiddenProp()
+    var visProp = that.getHiddenProp()
     if (visProp) {
       var evtname = visProp.replace(/[H|h]idden/, '') + 'visibilitychange'
       document.addEventListener(evtname, function () {
-        _this.tabOaxLogin = document[_this.getVisibilityState()]
+        that.tabOaxLogin = document[that.getVisibilityState()]
       }, false)
     }
 
-    _this.commonParam()
-    if (_this.metaAddress) {
-      _this.addrChild = _this.metaAddress
-      _this.walletInfo()
-      // _this.signFun()
+    that.commonParam()
+    if (that.metaAddress) {
+      that.addrChild = that.metaAddress
+      that.walletInfo()
     }
-    _this.fn()
+    that.fn()
 
     document.addEventListener('visibilitychange', function () {
-      _this.prevType = !document.hidden
+      that.prevType = !document.hidden
     })
   },
   filters: {

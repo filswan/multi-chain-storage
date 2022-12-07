@@ -48,6 +48,9 @@ $ npm run build:test_prod
 # Build calibration projects
 $ npm run build:calibration
 
+# Build prod projects
+$ npm run build:prod
+
 # Build semi prod projects
 $ npm run build:semi_prod
 ```

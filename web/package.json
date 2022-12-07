@@ -11,7 +11,8 @@
     "build:test": "cross-env NODE_ENV=test env_config=test node buildVue/build.js",
     "build:test_prod": "cross-env NODE_ENV=test env_config=test_prod node buildVue/build.js",
     "build:calibration": "cross-env NODE_ENV=production env_config=calibration node buildVue/build.js",
-    "build:semi_prod": "cross-env NODE_ENV=production env_config=prod node buildVue/build.js"
+    "build:prod": "cross-env NODE_ENV=production env_config=prod node buildVue/build.js",
+    "build:semi_prod": "cross-env NODE_ENV=production env_config=semi_prod node buildVue/build.js"
   },
   "dependencies": {
     "axios": "^0.21.1",

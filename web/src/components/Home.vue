@@ -116,7 +116,8 @@ export default {
   },
   methods: {
     async getPopUps (dialog, rows, bucketName) {
-      that.dialogFormVisible = dialog
+      // that.dialogFormVisible = dialog
+      that.dialogFormVisible = false
       that.changeTitle = rows || ''
     },
     getNetwork (dis) {
@@ -129,7 +130,8 @@ export default {
       that.meta = meta
     },
     async init () {
-      that.dialogFormVisible = !!that.metaAddress && !that.mcsEmail && that.apiStatus
+      // that.dialogFormVisible = !!that.metaAddress && !that.mcsEmail && that.apiStatus
+      that.dialogFormVisible = false
       let status = await that.$metaLogin.netStatus(that.networkID)
       that.networkTip = !status
       if (that.reverse) document.body.classList.add('reverse_phase')

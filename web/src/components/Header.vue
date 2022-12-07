@@ -65,7 +65,7 @@
     <el-dialog :title="$t('fs3Login.Account')" :visible.sync="wrongVisible" :width="width" custom-class="wrongNet">
       <label>{{$t('fs3Login.Connected_MetaMask')}}</label>
       <div class="address">{{addrChild | hiddAddress}}</div>
-      <div v-loading="wrongLoad" v-if="mcsEmail" class="address_email">
+      <div v-loading="wrongLoad" v-if="mcsEmail&&false" class="address_email">
         <label>{{$t('fs3Login.Connected_Email')}}</label>
         <div class="address_body">
           <div class="address">{{mcsEmail | hiddEmail}}</div>
@@ -96,7 +96,7 @@
         </div>
       </div>
       <div class="share">
-        <el-button v-if="!mcsEmail" @click="closeDia()">
+        <el-button v-if="!mcsEmail&&false" @click="closeDia()">
           <svg t="1669803088505" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2608" width="64" height="64">
             <path d="M1024.00144 220.64v574.32c0 5.76-0.736 11.456-1.824 17.072v0.064l-0.224 0.944A84.336 84.336 0 0 1 939.29744 880H101.08944a102.72 102.72 0 0 1-82.512-40.832 95.904 95.904 0 0 1-18.56-57.248V236.256a74.08 74.08 0 0 1 52.064-70.784l0.736-0.208 0.208-0.08A127.648 127.648 0 0 1 89.66544 160h883.424c1.328 0.512 2.64 1.232 4.032 1.44 25.52 4.32 40.592 19.152 45.344 44.496v0.08c0.88 4.816 1.536 9.712 1.536 14.608zM512.00144 591.232l451.152-379.472c-66.272-3.888-888.48-1.728-897.84 2.368L512.00144 591.2v0.064z m133.856-45.152l-114.112 96.144c-13.76 11.52-25.6 11.664-39.2 0.208l-48.272-40.752-63.84-53.936L81.02544 825.28l1.024 2.304h873.328L645.79344 546.08h0.064z m-304.864-31.68L51.79344 270.032v512.48l289.28-268.096h-0.08z m344.352-1.648l287.088 260.96V270.944L685.34544 512.768z"
               p-id="2609" fill="#0b318f"></path>
@@ -250,11 +250,11 @@ export default {
   },
   methods: {
     async wrongInfo (status) {
-      that.wrongLoad = true
+      // that.wrongLoad = true
       that.wrongVisible = true
-      if (status === 'disconnect') await that.$metaLogin.Disconnect()
-      await that.$metaLogin.emailSign('', 'detail')
-      that.wrongLoad = false
+      // if (status === 'disconnect') await that.$metaLogin.Disconnect()
+      // await that.$metaLogin.emailSign('', 'detail')
+      // that.wrongLoad = false
     },
     getNetworkC (dialog, rows) {
       that.networkC = dialog

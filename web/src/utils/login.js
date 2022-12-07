@@ -26,8 +26,8 @@ export async function login () {
   const signature = await sign(nonce)
   if (!signature) return false
   const token = await performSignin(signature, nonce)
-  const email = await emailSign(token)
-  console.log(email)
+  // const email = await emailSign(token)
+  // console.log(email)
   return !!token
 }
 

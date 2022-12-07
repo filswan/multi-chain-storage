@@ -220,7 +220,7 @@
         <div class="soonImg"></div>
       </div>
     </div>
-    <div class="fe-none" v-else-if="typeName === 'emailLogin'">
+    <div class="fe-none" v-else-if="typeName === 'emailLogin' && false">
       <div class="addBucket loginEmail">
         <div class="titleCont">
           <div class="address">
@@ -648,7 +648,7 @@ export default {
     document.onkeydown = function (e) {
       if (e.keyCode === 13) {
         if (that.typeName === 'add' || that.typeName === 'rename' || that.typeName === 'addSub') that.getDialogClose('form')
-        if (that.typeName === 'emailLogin') that.submitEmail('form')
+        // if (that.typeName === 'emailLogin') that.submitEmail('form')
       }
     }
   },

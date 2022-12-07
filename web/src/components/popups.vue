@@ -239,6 +239,14 @@
             <el-form-item prop="email">
               <el-input v-model="form.email" placeholder="you@domain.com" ref="bucketEmailRef"></el-input>
             </el-form-item>
+            <el-form-item prop="checkType" class="type">
+              <el-checkbox-group v-model="form.checkType">
+                <el-checkbox label="agreement" name="checkType">
+                  {{$t('fs3Login.Connect_checkbox')}}
+                  <a>{{$t('fs3Login.Connect_checkbox_1')}}</a>{{$t('fs3Login.Connect_checkbox_2')}}
+                </el-checkbox>
+              </el-checkbox-group>
+            </el-form-item>
             <el-form-item>
               <el-button type="primary" @click="submitEmail('form')">{{changeTitle?$t('fs3Login.Connect_form_btn_change'):$t('fs3Login.Connect_form_btn')}}</el-button>
             </el-form-item>
@@ -275,7 +283,8 @@ export default {
     return {
       form: {
         name: '',
-        email: ''
+        email: '',
+        checkType: ['agreement']
       },
       rules: {
         name: [{ required: true, message: '', trigger: 'blur' }]
@@ -283,7 +292,10 @@ export default {
       rulesEmail: {
         email: [
           { required: true, message: 'Please enter the email address.', trigger: 'blur' },
-          { type: 'email', message: 'Please enter the correct email address.', trigger: ['blur', 'change'] }]
+          { type: 'email', message: 'Please enter the correct email address.', trigger: ['blur', 'change'] }],
+        checkType: [
+          { type: 'array', required: true, message: ' ', trigger: 'change' }
+        ]
       },
       loading: false,
       ruleForm: {
@@ -1327,13 +1339,29 @@ export default {
             .el-form-item__content {
               height: auto;
               width: 100%;
-              margin: 0 0 0.3rem;
+              margin: 0 0 0.1rem;
               font-size: 0.223rem;
               font-weight: normal;
               color: #fff;
               line-height: 1.2;
               @media screen and (max-width: 600px) {
                 font-size: 13px;
+              }
+              .el-checkbox-group {
+                .el-checkbox {
+                  display: flex;
+                  align-items: center;
+                  .el-checkbox__label {
+                    word-break: break-word;
+                    white-space: normal;
+                    text-align: left;
+                    color: #fff;
+                    a {
+                      color: inherit;
+                      text-decoration: underline;
+                    }
+                  }
+                }
               }
               .el-input {
                 margin: 0 auto;
@@ -1377,6 +1405,23 @@ export default {
                 &:hover {
                   background: linear-gradient(45deg, #021cad, #3e70fe);
                 }
+              }
+            }
+            &.is-error {
+              .el-form-item__content {
+                margin: 0 0 0.3rem;
+                .el-checkbox-group {
+                  .el-checkbox {
+                    .el-checkbox__label {
+                      color: #f56c6c;
+                    }
+                  }
+                }
+              }
+            }
+            &.type {
+              .el-form-item__content {
+                margin: 0 0 0.1rem !important;
               }
             }
           }

@@ -1,31 +1,31 @@
 <template>
-    <div>
-        <el-dialog :title="$t('uploadFile.nft_title')+'NFT'" :close-on-click-modal="false" :width="widthDia" :visible.sync="mineVisible" :before-close="closeDia">
-            <div v-loading="hashload" :element-loading-text="isload?isloadText:''">
-                <el-form :model="ruleForm" :rules="rules" ref="ruleForm">
-                    <el-form-item :label="'NFT '+$t('uploadFile.nft_Name')" prop="name">
-                        <el-input v-model="ruleForm.name" placeholder=""></el-input>
-                    </el-form-item>
-                    <el-form-item :label="'NFT '+$t('uploadFile.nft_Description')" prop="description">
-                        <el-input v-model="ruleForm.description" type="textarea" :rows="2"></el-input>
-                    </el-form-item>
-                    <el-form-item :label="$t('uploadFile.nft_IPFSURL')" prop="image">
-                        <el-input v-model="ruleForm.image" readOnly></el-input>
-                    </el-form-item>
-                    <el-form-item :label="$t('uploadFile.Payment_Transaction_Hash')" prop="tx_hash">
-                        <el-input v-model="ruleForm.tx_hash" readOnly></el-input>
-                    </el-form-item>
-                    <el-form-item :label="$t('uploadFile.file_size')" prop="attributes">
-                        <el-input v-model="ruleForm.attributes[0].value" readOnly></el-input>
-                    </el-form-item>
-                </el-form>
-                <div slot="footer" class="dialog-footer">
-                    <el-button class="cancel" type="info" @click="closeDia">{{$t('uploadFile.Back')}}</el-button>
-                    <el-button type="primary" @click="submitForm('ruleForm')">{{isload ? $t('uploadFile.Minting') : $t('uploadFile.Mint_NFT')}}</el-button>
-                </div>
-            </div>
-        </el-dialog>
-    </div>
+  <div>
+    <el-dialog :title="$t('uploadFile.nft_title')+'NFT'" :close-on-click-modal="false" :width="widthDia" :visible.sync="mineVisible" :before-close="closeDia">
+      <div v-loading="hashload" :element-loading-text="isload?isloadText:''">
+        <el-form :model="ruleForm" :rules="rules" ref="ruleForm">
+          <el-form-item :label="'NFT '+$t('uploadFile.nft_Name')" prop="name">
+            <el-input v-model="ruleForm.name" placeholder=""></el-input>
+          </el-form-item>
+          <el-form-item :label="'NFT '+$t('uploadFile.nft_Description')" prop="description">
+            <el-input v-model="ruleForm.description" type="textarea" :rows="2"></el-input>
+          </el-form-item>
+          <el-form-item :label="$t('uploadFile.nft_IPFSURL')" prop="image">
+            <el-input v-model="ruleForm.image" readOnly></el-input>
+          </el-form-item>
+          <el-form-item :label="$t('uploadFile.Payment_Transaction_Hash')" prop="tx_hash">
+            <el-input v-model="ruleForm.tx_hash" readOnly></el-input>
+          </el-form-item>
+          <el-form-item :label="$t('uploadFile.file_size')" prop="attributes">
+            <el-input v-model="ruleForm.attributes[0].value" readOnly></el-input>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button class="cancel" type="info" @click="closeDia">{{$t('uploadFile.Back')}}</el-button>
+          <el-button type="primary" @click="submitForm('ruleForm')">{{isload ? $t('uploadFile.Minting') : $t('uploadFile.Mint_NFT')}}</el-button>
+        </div>
+      </div>
+    </el-dialog>
+  </div>
 </template>
 
 <script>
@@ -116,9 +116,12 @@ export default {
     async mintContract (nftContract, nftUrl) {
       try {
         console.log('start mint contract')
+        let payObject = {
+          gasPrice: await that.$web3Init.eth.getGasPrice()
+        }
         const transaction = await nftContract.methods
           .mintUnique(that.metaAddress, nftUrl)
-          .send()
+          .send(payObject)
           .on('transactionHash', function (hash) {
             that.nftHash = hash
             that.isloadText = that.$t('uploadFile.payment_tip_deal02')
@@ -139,8 +142,8 @@ export default {
         that.tokenId = transaction.events.TransferSingle.returnValues.id
         console.log('mintUnique success')
       } catch (err) {
-        console.log('err.response', err)
-        if (err.includes('not mined within 50 blocks')) {
+        console.log('err.response', err, err.message)
+        if (err.message.includes('not mined within 50 blocks')) {
           const handle = setInterval(() => {
             that.$web3Init.eth.getTransactionReceipt(err.response.transactionHash).then((resp) => {
               console.log('checking ... ')

@@ -635,11 +635,16 @@ export default {
                       return false
                     } else {
                       contractErc20.methods.allowance(_this.gatewayContractAddress, _this.metaAddress).call()
-                        .then(resultUSDC => {
+                        .then(async resultUSDC => {
                           let amountPay = _this.$web3Init.utils.toWei(rowAmount, 'mwei')
                           console.log('allowance：' + resultUSDC, amountPay)
                           if (resultUSDC < amountPay) {
-                            contractErc20.methods.approve(_this.gatewayContractAddress, amountPay).send({ from: _this.metaAddress })
+                            let payObject = {
+                              from: _this.metaAddress,
+                              gas: _this.$web3Init.utils.toHex(_this.$root.PAY_GAS_LIMIT),
+                              gasPrice: await _this.$web3Init.eth.getGasPrice()
+                            }
+                            contractErc20.methods.approve(_this.gatewayContractAddress, amountPay).send(payObject)
                               .then(receipt => {
                                 // console.log('approve receipt:', receipt)
                                 _this.contractSend(res.data.data.w_cid, amountPay)
@@ -667,7 +672,7 @@ export default {
         return false
       }
     },
-    contractSend (cid, payAmount) {
+    async contractSend (cid, payAmount) {
       let _this = this
       // 合约转账
       let contractInstance = new _this.$web3Init.eth.Contract(firstContractJson)
@@ -675,7 +680,8 @@ export default {
 
       let payObject = {
         from: _this.metaAddress,
-        gas: _this.$web3Init.utils.toHex(_this.$root.PAY_GAS_LIMIT)
+        gas: _this.$web3Init.utils.toHex(_this.$root.PAY_GAS_LIMIT),
+        gasPrice: await _this.$web3Init.eth.getGasPrice()
       }
 
       let lockObj = {

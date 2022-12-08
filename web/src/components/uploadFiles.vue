@@ -414,11 +414,16 @@ export default {
                             return false
                           } else {
                             contractErc20.methods.allowance(that.gatewayContractAddress, that.metaAddress).call()
-                              .then(resultUSDC => {
+                              .then(async resultUSDC => {
                                 let amountPay = that.$web3Init.utils.toWei(that.ruleForm.amount, 'mwei')
                                 console.log('allowance：' + resultUSDC, amountPay)
                                 if (resultUSDC < amountPay) {
-                                  contractErc20.methods.approve(that.gatewayContractAddress, amountPay).send({ from: that.metaAddress })
+                                  let payObject = {
+                                    from: that.metaAddress,
+                                    gas: that.$web3Init.utils.toHex(that.ruleForm.gaslimit),
+                                    gasPrice: await that.$web3Init.eth.getGasPrice()
+                                  }
+                                  contractErc20.methods.approve(that.gatewayContractAddress, amountPay).send(payObject)
                                     .then(receipt => {
                                       // console.log('approve receipt:', receipt)
                                       that.contractSend(res.data, amountPay)
@@ -505,7 +510,7 @@ export default {
       if (Math.round((bytes / Math.pow(k, i))).toString().length > 3) i += 1
       return (bytes / Math.pow(k, i)).toFixed(1) + ' ' + sizes[i]
     },
-    contractSend (resData, amountPay) {
+    async contractSend (resData, amountPay) {
       // 合约转账
       let contractInstance = new that.$web3Init.eth.Contract(firstContractJson)
       contractInstance.options.address = that.gatewayContractAddress
@@ -514,7 +519,8 @@ export default {
 
       let payObject = {
         from: that.metaAddress,
-        gas: that.$web3Init.utils.toHex(that.ruleForm.gaslimit)
+        gas: that.$web3Init.utils.toHex(that.ruleForm.gaslimit),
+        gasPrice: await that.$web3Init.eth.getGasPrice()
       }
       let lockObj = {
         id: resData.w_cid,

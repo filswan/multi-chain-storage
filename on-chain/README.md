@@ -50,8 +50,7 @@ Chain ID: **137**
 | ------------------ | ------------------------------------------ |
 | USDC               | 0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174 |
 | ChainlinkPriceFeed | 0xFC8B846fEd57579F91973F0561a08a235A39a8dA |
-| FilinkConsumer     | 0x2Bf5dBde4Fdd30de18b36405CF587044172ffD33 |
-| FilinkConsumerV2   | 0x549960EA2eDB22233970A68D0E64959B46b81AB7 |
+| FilinkConsumer     | 0x322525D2496Dd0145Ec8697E4D18931Fdc311802 |
 | FilswanOracle      | 0x2621BB3140D8914806E977F7e6035B468675304D |
 | SwanPayment        | 0xA1f32c758c4324cC3070A3AA107C4dC7DdFe1a6f |
 | SwanNFT            | 0xA6787587159c017AD83fe28e746FCFAE0DD91383 |

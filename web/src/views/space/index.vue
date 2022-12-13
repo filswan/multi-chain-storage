@@ -1,14 +1,14 @@
 <template>
   <div class="spaceStyle" v-loading="listLoad">
     <div class="slideScroll" v-if="listBucketIndex">
-      <div class="form_top" v-if="false">
+      <div class="form_top">
         <div class="search_file">
           <div class="search_right">
-            <el-input :placeholder="$t('metaSpace.search_bucket')" prefix-icon="el-icon-search" v-model="search" clearable @input="getListBuckets">
+            <el-input v-if="false" :placeholder="$t('metaSpace.search_bucket')" prefix-icon="el-icon-search" v-model="search" clearable @input="getListBuckets">
             </el-input>
           </div>
           <div class="createTask">
-            <a @click="dialogFun('comingSoon')">
+            <a @click="dialogFun('pay')">
               <img src="@/assets/images/space/icon_01.png" alt="">
               <span>{{$t('metaSpace.add_bucket')}}</span>
             </a>
@@ -25,30 +25,35 @@
         </div>
         <el-table :data="listBuckets" stripe style="width: 100%" max-height="580" :empty-text="$t('deal.formNotData')">
           <el-table-column type="index" label="No." width="50"></el-table-column>
-          <el-table-column prop="name" :label="$t('metaSpace.table_name')">
+          <el-table-column prop="BucketName" :label="$t('metaSpace.table_name')">
             <template slot-scope="scope">
-              <div class="hot-cold-box" @click="getListBucketDetail(scope.row.name)">
-                <span style="text-decoration: underline;">{{ scope.row.name }}</span>
+              <div class="" v-if="!scope.row.IsActive">
+                <span style="opacity: 0.7;">{{ scope.row.BucketName }}</span>
+              </div>
+              <div class="hot-cold-box" v-else @click="getListBucketDetail(scope.row.BucketName, scope.row.BucketUid)">
+                <span style="text-decoration: underline;">{{ scope.row.BucketName }}</span>
               </div>
             </template>
           </el-table-column>
           <el-table-column prop="size" :label="$t('metaSpace.table_space')">
             <template slot-scope="scope">
               <div class="hot-cold-box">
-                <span>{{ scope.row.size | formatbytes }}/{{dataCont.policy.max_size | formatbytes}}</span>
+                <span>{{ scope.row.Size | formatbytes }}/{{scope.row.MaxSize | formatbytes}}</span>
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="create_date" :label="$t('metaSpace.table_createon')">
+          <el-table-column prop="CreatedAt" :label="$t('metaSpace.table_createon')">
             <template slot-scope="scope">
               <div class="hot-cold-box">
-                <span>{{ momentFun(scope.row.create_date) }}</span>
+                <span>{{ momentFun(scope.row.CreatedAt) }}</span>
               </div>
             </template>
           </el-table-column>
           <el-table-column prop="" :label="$t('metaSpace.table_action')" min-width="120">
             <template slot-scope="scope">
               <div class="hot-cold-box">
+                <i class="icon icon_pay" v-if="!scope.row.IsActive" @click="dialogFun('pay', scope.row)"></i>
+                <i class="icon icon_pay icon_pay_disable" v-else></i>
                 <i class="icon icon_rename" @click="dialogFun('rename', scope.row)"></i>
                 <i class="icon icon_details" @click="getDetail(scope.row)"></i>
                 <i class="icon icon_delete" @click="dialogFun('delete', scope.row)"></i>
@@ -76,7 +81,7 @@
         </div>
       </div>
       <div class="fe-none">
-        <p>{{$t('metaSpace.empty_prompt')}}</p>
+        <p class="p_label">{{$t('metaSpace.empty_prompt')}}</p>
       </div>
     </div>
 
@@ -87,7 +92,6 @@
 import moment from 'moment'
 import popUps from '@/components/popups'
 import QS from 'qs'
-// import * as myAjax from '@/api/space'
 let that
 export default {
   data () {
@@ -102,7 +106,6 @@ export default {
       listBucketsAll: [],
       listBucketIndex: false,
       dialogFormVisible: false,
-      dataCont: {},
       areaBody: {},
       typeName: 'add'
     }
@@ -113,7 +116,7 @@ export default {
       that.backupLoad = true
       that.dialogFun('detail', row)
       let bucketDetail = row
-      const backupRes = await that.$commonFun.sendRequest(`${process.env.BASE_METASPACE}api/v3/backup/stat/${row.id}`, 'get')
+      const backupRes = await that.$commonFun.sendRequest(`${process.env.BASE_METASPACE}api/v3/backup/stat/${row.ID}`, 'get')
       if (!backupRes || backupRes.status !== 'success') that.$message.error(backupRes.message || 'Fail')
       else {
         bucketDetail.miner_list = backupRes.data.miner_list.split(',') || ''
@@ -127,12 +130,17 @@ export default {
       that.backupLoad = false
     },
     async getPopUps (dialog, rows, bucketName) {
+      console.log('rows', rows)
       switch (rows) {
         case 'delete':
           that.deleteFun()
           break
         case 'rename':
           that.renameFun(bucketName)
+          break
+        case 'pay':
+          that.dialogFormVisible = dialog
+          that.getListBuckets()
           break
         default:
           if (rows) that.getDialogClose(rows, bucketName)
@@ -156,7 +164,7 @@ export default {
           },
           'new_name': newName
         }
-      const renameRes = await that.$commonFun.sendRequest(`${process.env.BASE_METASPACE}api/v3/object/rename`, 'post', params)
+      const renameRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v3/object/rename`, 'post', params)
       if (!renameRes || renameRes.status !== 'success') {
         that.$message.error(renameRes ? renameRes.message : 'Fail')
       }
@@ -168,10 +176,9 @@ export default {
     async deleteFun () {
       that.listTableLoad = true
       const params = {
-        'items': [], // 文件名
-        'dirs': [that.areaBody.id] // 文件夹
+        'bucket_uid': that.areaBody.BucketUid
       }
-      const deleteRes = await that.$commonFun.sendRequest(`${process.env.BASE_METASPACE}api/v3/object`, 'delete', params)
+      const deleteRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/bucket/delete?${QS.stringify(params)}`, 'get')
       if (!deleteRes || deleteRes.status !== 'success') {
         that.$message.error(deleteRes ? deleteRes.status : 'Fail')
       }
@@ -180,15 +187,15 @@ export default {
       that.dialogFormVisible = false
       that.getListBuckets()
     },
-    getListBucketDetail (name, allDeal) {
-      that.$router.push({ name: 'Space_detail', query: { folder: encodeURIComponent(name) } })
+    getListBucketDetail (name, uuid) {
+      that.$router.push({ name: 'Space_detail', query: { folder: encodeURIComponent(name), bucket_uuid: uuid } })
     },
     async getDialogClose (formName, name) {
       that.createLoad = true
       const params = {
-        'path': `/${name.trim()}`
+        'bucket_name': `${name.trim()}`
       }
-      const directoryRes = await that.$commonFun.sendRequest(`${process.env.BASE_METASPACE}api/v3/directory`, 'put', params)
+      const directoryRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/bucket/create`, 'post', params)
       if (!directoryRes || directoryRes.status !== 'success') {
         that.$message.error(directoryRes ? directoryRes.message : 'Fail')
       }
@@ -199,19 +206,17 @@ export default {
     },
     async getListBuckets (name) {
       that.listLoad = true
-      const params = {
-        file_name: `${that.search.trim()}` || ''
-      }
-      const directoryRes = await that.$commonFun.sendRequest(`${process.env.BASE_METASPACE}api/v3/directory/?${QS.stringify(params)}`, 'get')
+      // const params = {
+      //   file_name: `${that.search.trim()}` || ''
+      // }
+      const directoryRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/bucket/get_bucket_list`, 'get')
       // const directoryRes = await that.$commonFun.sendRequest(`./static/json/list.json`, 'get')
-      // const directoryRes = await myAjax.getBucketsList()
       if (!directoryRes || directoryRes.status !== 'success') {
         that.$message.error(directoryRes.message)
         return false
       }
-      that.dataCont = directoryRes.data || {}
-      that.listBuckets = directoryRes.data.objects || []
-      that.listBucketIndex = directoryRes.data.objects.length > 0 || !!(that.search)
+      that.listBuckets = directoryRes.data || []
+      that.listBucketIndex = directoryRes.data.length > 0 || !!(that.search)
       if (!that.listBucketIndex) that.$store.dispatch('setFreeBucket', 0)
       that.listLoad = false
     },
@@ -605,7 +610,7 @@ export default {
       align-items: center;
       height: 100%;
       padding: 0 5%;
-      p {
+      .p_label {
         padding: 0.15rem 0.3rem;
         font-size: 0.27rem;
         color: #4f87ff;
@@ -896,6 +901,16 @@ export default {
                   }
                   &:hover {
                     opacity: 0.7;
+                  }
+                }
+                .icon_pay {
+                  width: 25px;
+                  height: 25px;
+                  background: url(../../assets/images/space/pay.png) no-repeat
+                    center;
+                  background-size: 100% 100%;
+                  &.icon_pay_disable {
+                    opacity: 0.2;
                   }
                 }
                 .icon_rename {

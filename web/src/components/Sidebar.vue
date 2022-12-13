@@ -219,16 +219,16 @@ export default {
     async getListBuckets (name) {
       let _this = this
       let size = 0
-      const directoryRes = await _this.$commonFun.sendRequest(`${process.env.BASE_METASPACE}api/v3/directory/`, 'get')
-      if (!directoryRes || directoryRes.status !== 'success') {
-        return false
-      }
-      directoryRes.data.objects.forEach(element => {
-        size += element.size
+      let maxSize = 0
+      const directoryRes = await _this.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/bucket/get_bucket_list`, 'get')
+      if (!directoryRes || directoryRes.status !== 'success') return false
+      directoryRes.data.forEach(element => {
+        size += element.Size
+        maxSize += element.MaxSize
       })
       await _this.$commonFun.timeout(500)
       _this.$store.dispatch('setFreeBucket', size || 0)
-      _this.$store.dispatch('setFreeBucketAll', directoryRes.data.policy.max_size || 0)
+      _this.$store.dispatch('setFreeBucketAll', maxSize || 0)
     }
   },
   filters: {

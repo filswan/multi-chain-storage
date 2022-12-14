@@ -85,7 +85,7 @@
       </div>
     </div>
 
-    <pop-ups v-if="dialogFormVisible" :dialogFormVisible="dialogFormVisible" :typeModule="typeName" :areaBody="areaBody" :createLoad="createLoad" :listTableLoad="listTableLoad" :backupLoad="backupLoad" @getPopUps="getPopUps"></pop-ups>
+    <pop-ups v-if="dialogFormVisible" :dialogFormVisible="dialogFormVisible" :typeModule="typeName" :areaBody="areaBody" :createLoad="createLoad" :listTableLoad="listTableLoad" :backupLoad="backupLoad" :payLoad="payLoad" @getPopUps="getPopUps"></pop-ups>
   </div>
 </template>
 <script>
@@ -99,6 +99,7 @@ export default {
       width: document.body.clientWidth > 600 ? '450px' : '95%',
       listLoad: true,
       createLoad: false,
+      payLoad: false,
       listTableLoad: false,
       backupLoad: false,
       search: '',
@@ -130,7 +131,7 @@ export default {
       that.backupLoad = false
     },
     async getPopUps (dialog, rows, bucketName) {
-      console.log('rows', rows)
+      // console.log('rows', rows)
       switch (rows) {
         case 'delete':
           that.deleteFun()
@@ -138,7 +139,7 @@ export default {
         case 'rename':
           that.renameFun(bucketName)
           break
-        case 'pay':
+        case 'payClose':
           that.dialogFormVisible = dialog
           that.getListBuckets()
           break
@@ -191,7 +192,8 @@ export default {
       that.$router.push({ name: 'Space_detail', query: { folder: encodeURIComponent(name), bucket_uuid: uuid } })
     },
     async getDialogClose (formName, name) {
-      that.createLoad = true
+      if (formName === 'pay') that.payLoad = true
+      else that.createLoad = true
       const params = {
         'bucket_name': `${name.trim()}`
       }
@@ -200,9 +202,14 @@ export default {
         that.$message.error(directoryRes ? directoryRes.message : 'Fail')
       }
       await that.$commonFun.timeout(500)
-      that.createLoad = false
       that.dialogFormVisible = false
-      that.getListBuckets()
+      if (formName === 'pay') {
+        that.payLoad = false
+        that.dialogFun('success')
+      } else {
+        that.createLoad = false
+        that.getListBuckets()
+      }
     },
     async getListBuckets (name) {
       that.listLoad = true

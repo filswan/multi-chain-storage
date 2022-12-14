@@ -499,7 +499,7 @@ export default {
       const uploadPrecent = ((loaded / total) * 100) | 0 // Calculation progress
       that.percentIn = loaded < total && uploadPrecent === 100 ? 99 : uploadPrecent
 
-      console.log('当前已上传文件大小: ' + loaded, '总文件大小: ', total, 'progress: ', uploadPrecent + '%')
+      // console.log('当前已上传文件大小: ' + loaded, '总文件大小: ', total, 'progress: ', uploadPrecent + '%')
     },
     speedChange (bytes) {
       if (String(bytes) === '0') return '0 b/s'

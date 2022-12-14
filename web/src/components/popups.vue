@@ -3,10 +3,10 @@
     <div class="fe-none" v-if="typeName === 'add' || typeName === 'rename' || typeName === 'addSub'">
       <div class="addBucket" v-loading="createLoad">
         <i class="el-icon-circle-close close" @click="closeDia()"></i>
-        <div class="title">{{typeName == 'addSub'?$t('metaSpace.bucket_subname'):$t('metaSpace.bucket_name')}}</div>
+        <div class="title">{{typeName === 'addSub'?$t('metaSpace.folder_name'):$t('metaSpace.bucket_name')}}</div>
         <el-form :model="form" status-icon :rules="rules" ref="form">
           <el-form-item prop="name">
-            <el-input v-model="form.name" maxlength="256" placeholder="Bucket Name" ref="bucketNameRef"></el-input>
+            <el-input v-model="form.name" maxlength="256" :placeholder="typeName === 'addSub'?'Folder Name':'Bucket Name'" ref="bucketNameRef"></el-input>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="getDialogClose('form')">{{$t('metaSpace.Submit')}}</el-button>
@@ -169,10 +169,17 @@
         <div class="head">
           {{$t('metaSpace.pay_title')}}
         </div>
-        <div class="pay_tip">
-          {{$t('metaSpace.pay_tip')}} <br />{{$t('metaSpace.pay_tip1')}}
-        </div>
         <el-row class="pay_body">
+          <el-col :span="24">
+            <div class="pay_body_top">
+              <label>{{$t('metaSpace.pay_body_BucketName')}}</label>
+              <el-form :model="form" status-icon :rules="rules" ref="payForm">
+                <el-form-item prop="name">
+                  <el-input v-model="form.name" maxlength="256" :placeholder="'Bucket Name'" ref="bucketNameRef"></el-input>
+                </el-form-item>
+              </el-form>
+            </div>
+          </el-col>
           <el-col :span="24">
             <div class="pay_body_top">
               <label>{{$t('metaSpace.pay_body_Bucket')}}</label>
@@ -194,10 +201,15 @@
               {{pay.total}} USDC
             </div>
           </el-col>
+          <el-col :span="24">
+            <div class="pay_tip">
+              {{$t('metaSpace.pay_tip')}} <br />{{$t('metaSpace.pay_tip1')}}
+            </div>
+          </el-col>
         </el-row>
         <el-form ref="form">
           <el-form-item>
-            <el-button type="primary" @click="payClick">{{$t('metaSpace.Pay')}}</el-button>
+            <el-button type="primary" @click="getDialogClose('payForm')">{{$t('metaSpace.Pay')}}</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -210,7 +222,7 @@
         <div class="cont">{{$t('metaSpace.pay_success_desc')}}</div>
         <el-form ref="form">
           <el-form-item>
-            <el-button type="primary" @click="closeDia('pay')">{{$t('metaSpace.Close')}}</el-button>
+            <el-button type="primary" @click="closeDia('payClose')">{{$t('metaSpace.Close')}}</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -327,7 +339,6 @@ export default {
         price: 7.2,
         total: 7.2
       },
-      payLoad: false,
       ipfsUploadLoad: false,
       typeName: this.typeModule,
       uploadPrecent: 0,
@@ -335,10 +346,11 @@ export default {
       controller: new AbortController(),
       lastUploadTime: 0,
       lastUploadSize: 0,
-      uploadPrecentSpeed: 0
+      uploadPrecentSpeed: 0,
+      progressEvent: {}
     }
   },
-  props: ['dialogFormVisible', 'typeModule', 'areaBody', 'createLoad', 'listTableLoad', 'currentBucket', 'fixed', 'backupLoad', 'changeTitle'],
+  props: ['dialogFormVisible', 'typeModule', 'areaBody', 'createLoad', 'listTableLoad', 'currentBucket', 'fixed', 'backupLoad', 'changeTitle', 'payLoad'],
   watch: {
     dialogFormVisible: function () {
       let _this = this
@@ -348,6 +360,9 @@ export default {
           _this.$refs.bucketNameRef.$el.querySelector('input').focus()
         })
       }
+    },
+    typeModule: function () {
+      that.typeName = that.typeModule
     }
   },
   methods: {
@@ -393,21 +408,6 @@ export default {
         })
       return data
     },
-    async payClick () {
-      that.payLoad = true
-      const params = {
-        'bucket_name': String(new Date().getTime())
-      }
-      const payRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/bucket/create`, 'post', params)
-      if (!payRes || payRes.status !== 'success') {
-        that.$message.error(payRes ? payRes.message : 'Fail')
-        that.payLoad = false
-        that.closeDia('pay')
-        return false
-      }
-      await that.$commonFun.timeout(500)
-      that.typeName = 'success'
-    },
     payhandChange (value) {
       // console.log(value);
       that.pay.total = value * that.pay.price
@@ -418,7 +418,7 @@ export default {
     getDialogClose (formName, type) {
       that.$refs[formName].validate(async valid => {
         if (valid) {
-          that.$emit('getPopUps', false, that.typeName === 'rename' ? 'rename' : formName, that.form.name)
+          that.$emit('getPopUps', false, that.typeName, that.form.name)
         } else {
           console.log('error submit!!')
           return false
@@ -507,10 +507,10 @@ export default {
       return Number(bytes / Math.pow(k, i)) + ' ' + sizes[i]
     },
     speedChange (bytes) {
-      if (String(bytes) === '0') return '0 b/s'
+      if (String(bytes) === '0') return '0 byte/s'
       if (!bytes) return '-'
       var k = 1024 // or 1000
-      var sizes = ['b/s', 'k/s', 'M/s']
+      var sizes = ['byte/s', 'kb/s', 'mb/s', 'gb/s']
       var i = Math.floor(Math.log(bytes) / Math.log(k))
       if (Math.round((bytes / Math.pow(k, i))).toString().length > 3) i += 1
       return (bytes / Math.pow(k, i)).toFixed(1) + ' ' + sizes[i]
@@ -524,6 +524,7 @@ export default {
       // return Number(size).toFixed(3);
     },
     async handleChange (file, fileList) {
+      console.log(file)
       let regexp = /[#\\?]/
       let reg = new RegExp(' ', 'g')
       if (file.size <= 0) {
@@ -554,14 +555,14 @@ export default {
             return false
           }
 
-          let max = 0.5 * 1024 * 1024
+          let max = 10 * 1024 * 1024
           let count = Math.ceil(file.size / max)
           let index = 0
           let chunks = []
           while (index < count) {
             chunks.push({
               file: file.raw.slice(index * max, (index + 1) * max),
-              filename: `${hash}_${index + 1}.${suffix}`
+              filename: `${hash}_${index + 1}${suffix ? '.' + suffix : ''}`
             })
             index++
           }
@@ -572,8 +573,15 @@ export default {
                 type: 'application/json'
               })
               uploadData.append('file', fileBlob, chunk.filename)
+              uploadData.append('file_name', chunk.filename)
               uploadData.append('hash', hash)
-              let data = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/upload`, 'post', uploadData)
+              const config = {
+                onUploadProgress: progressEvent => {
+                  that.progressEvent = progressEvent
+                  // that.progressHandle(progressEvent)
+                }
+              }
+              let data = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/upload`, 'post', uploadData, config)
               // console.log('data', data.data)
               if (!data) {
                 that.$emit('getUploadDialog', false, 0)
@@ -585,11 +593,6 @@ export default {
                 that.manageProgress(hash, file, data.data.length, count)
                 resolve(data.data)
                 return
-              }
-              const config = {
-                onUploadProgress: progressEvent => {
-                  that.manageProgress(hash, file, data.data.length, count, progressEvent)
-                }
               }
               const uploadRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/upload`, 'post', uploadData, config)
               if (!uploadRes || uploadRes.status !== 'success') reject(uploadRes ? uploadRes.message : 'Fail')
@@ -604,10 +607,11 @@ export default {
       }
     },
     async fileCheck (hash, file) {
+      const current = that.currentBucket.split('/').slice(1).join('/')
       let paramCheck = {
         'file_hash': hash,
         'file_name': file.name,
-        'prefix': that.areaBody.Prefix || '',
+        'prefix': that.areaBody.Prefix || current || '',
         'bucket_uid': that.areaBody
       }
       let checkRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/check`, 'post', paramCheck)
@@ -628,14 +632,14 @@ export default {
       return true
     },
     async fileMerge (hash, file) {
+      const current = that.currentBucket.split('/').slice(1).join('/')
       let paramMerge = {
         'file_hash': hash,
         'file_name': file.name,
-        'prefix': that.areaBody.Prefix || '',
+        'prefix': that.areaBody.Prefix || current || '',
         'bucket_uid': that.areaBody
       }
       let mergeRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/merge`, 'post', paramMerge)
-      console.log(mergeRes)
       if (!mergeRes || mergeRes.status !== 'success') {
         that.$message.error(mergeRes ? mergeRes.message : 'Fail')
       }
@@ -644,7 +648,9 @@ export default {
       that.loading = false
     },
     async manageProgress (hash, file, index, count, progressEvent) {
-      // console.log(hash, file, index, count, progressEvent)
+      // console.log(index, count)
+      // console.log(that.progressEvent)
+      // that.typeName = 'upload_progress'
       that.uploadPrecent = `${index / count * 100}`
       if (index < count) return
       that.uploadPrecent = `100`
@@ -662,7 +668,7 @@ export default {
           spark.append(buffer)
           hash = spark.end()
           let reg = /\.([a-zA-Z0-9]+)$/
-          suffix = reg.exec(file.name)[1]
+          suffix = reg.exec(file.name) ? reg.exec(file.name)[1] : ''
           resolve({
             buffer,
             hash,
@@ -698,10 +704,10 @@ export default {
 
       that.uploadPrecentSpeed = intervalSize / intervalTime // Calculation speed
       // const leftTime = ((total - loaded) / that.uploadPrecentSpeed) // Calculate remaining time
-      const uploadPrecent = ((loaded / total) * 100) | 0 // Calculation progress
-      that.uploadPrecent = loaded < total && uploadPrecent === 100 ? 99 : uploadPrecent
+      // const uploadPrecent = ((loaded / total) * 100) | 0 // Calculation progress
+      // that.uploadPrecent = loaded < total && uploadPrecent === 100 ? 99 : uploadPrecent
 
-      console.log('loaded: ' + loaded, 'total: ', total, 'progress: ', that.uploadPrecent + '%')
+      console.log('loaded: ' + loaded, 'total: ', total, 'speed: ', that.uploadPrecentSpeed)
     },
     submitEmail (formName) {
       that.$refs[formName].validate(async valid => {
@@ -748,6 +754,7 @@ export default {
   },
   mounted () {
     that = this
+    // that.$refs.uploadFileRef.$children[0].$refs.input.webkitdirectory = true
     document.onkeydown = function (e) {
       if (e.keyCode === 13) {
         if (that.typeName === 'add' || that.typeName === 'rename' || that.typeName === 'addSub') that.getDialogClose('form')
@@ -1073,7 +1080,8 @@ export default {
         }
       }
       .pay_tip {
-        padding: 0.1rem 0;
+        padding: 0;
+        margin: 0;
         font-size: 0.14rem;
         text-align: left;
         @media screen and (min-width: 1800px) {
@@ -1089,6 +1097,7 @@ export default {
       .pay_body /deep/ {
         max-width: 750px;
         padding: 0.15rem 0.2rem;
+        margin: 0.3rem auto 0;
         background-color: #f7f7f7;
         border-radius: 0.1rem;
         @media screen and (max-width: 441px) {
@@ -1102,6 +1111,27 @@ export default {
           @media screen and (max-width: 768px) {
             font-size: 13px;
           }
+          .el-form {
+            padding: 0;
+            .el-form-item {
+              margin: 0;
+              .el-form-item__content {
+                .el-input {
+                  margin: 0;
+                  .el-input__inner {
+                    font-size: 0.17rem;
+                    border: 1px solid #999;
+                    @media screen and (max-width: 768px) {
+                      font-size: 13px;
+                    }
+                  }
+                }
+                .el-form-item__error {
+                  top: 90%;
+                }
+              }
+            }
+          }
           .pay_body_top {
             display: flex;
             align-items: center;
@@ -1112,6 +1142,7 @@ export default {
               text-align: left;
               color: #000;
               font-weight: 600;
+              text-transform: capitalize;
             }
             .el-input {
               .el-input__inner {

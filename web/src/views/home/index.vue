@@ -244,8 +244,8 @@ export default {
             chainId: '0x89',
             chainName: 'Polygon Mainnet',
             nativeCurrency: {
-              name: 'tBNB',
-              symbol: 'tBNB', // 2-6 characters long
+              name: 'MATIC',
+              symbol: 'MATIC', // 2-6 characters long
               decimals: 18
             },
             rpcUrls: ['https://polygon-rpc.com'],

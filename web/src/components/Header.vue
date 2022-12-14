@@ -292,8 +292,8 @@ export default {
               chainId: that.$web3Init.utils.numberToHex(137),
               chainName: 'Polygon Mainnet',
               nativeCurrency: {
-                name: 'tBNB',
-                symbol: 'tBNB', // 2-6 characters long
+                name: 'MATIC',
+                symbol: 'MATIC', // 2-6 characters long
                 decimals: 18
               },
               rpcUrls: ['https://polygon-rpc.com'],

@@ -10,6 +10,8 @@
             <a href="javascript:;" style="word-break: break-word;" @click="getListBucketMain(item, true, index)">{{item}}</a>
           </span>
         </h2>
+      </header>
+      <div class="fes-search" v-loading="listLoad">
         <div class="form_top">
           <div class="search_file">
             <div class="search_left">
@@ -17,9 +19,9 @@
               <div class="icon">{{detail.object}} Object</div>
             </div>
             <div class="createTask">
-              <a @click="dialogFun('comingSoon')" v-if="false">
+              <a @click="dialogFun('addSub')">
                 <img src="@/assets/images/space/icon_01.png" alt="">
-                <span>{{$t('metaSpace.add_subbucket')}}</span>
+                <span>{{$t('metaSpace.create_folder')}}</span>
               </a>
               <a @click="dialogFun('upload', $route.query.bucket_uuid)">
                 <img src="@/assets/images/space/icon_08.png" alt="">
@@ -28,14 +30,12 @@
             </div>
           </div>
         </div>
-      </header>
-      <div class="fes-search" v-loading="listLoad">
         <el-table :data="listBuckets" ref="tableList" stripe style="width: 100%" max-height="400" empty-text=" ">
           <el-table-column type="index" label="No." width="50"></el-table-column>
           <el-table-column prop="Name" :label="$t('metaSpace.table_name')">
             <template slot-scope="scope">
               <div class="hot-cold-box">
-                <span v-if="scope.row.type == 'dir'" style="text-decoration: underline;" @click="getListBucketMain(scope.row.Name)">{{ scope.row.Name }}</span>
+                <span v-if="scope.row.IsFolder" style="text-decoration: underline;" @click="getListBucketMain(scope.row.Name)">{{ scope.row.Name }}</span>
                 <span v-else @click="dialogFun('detail_file', scope.row)">{{ scope.row.Name }}</span>
               </div>
             </template>
@@ -174,7 +174,7 @@ export default {
       else if (type && index === 0) fold = that.currentBucket[0]
       else fold = `${that.url}/${fileName}`
 
-      if (fileName) that.$router.push({ name: 'Space_detail', query: { folder: encodeURIComponent(fold), bucket_uid: that.$route.query.bucket_uuid } })
+      if (fileName) that.$router.push({ name: 'Space_detail', query: { folder: encodeURIComponent(fold), bucket_uuid: that.$route.query.bucket_uuid } })
       else that.$router.push({ name: 'Space' })
     },
     async getPopUps (dialog, rows, bucketName) {
@@ -193,11 +193,13 @@ export default {
     },
     async getDialogClose (formName, name) {
       that.createLoad = true
-      const current = that.currentBucket.join('/')
+      const current = that.currentBucket.slice(1).join('/')
       const params = {
-        'path': `/${current}/${name.trim()}`
+        'file_name': `${name.trim()}`,
+        'prefix': current || '',
+        'bucket_uid': that.$route.query.bucket_uuid
       }
-      const directoryRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v3/directory`, 'put', params)
+      const directoryRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/create_folder`, 'post', params)
       if (!directoryRes || directoryRes.status !== 'success') {
         that.$message.error(directoryRes ? directoryRes.message : 'Fail')
       }
@@ -297,8 +299,9 @@ export default {
     async getListObjects (type) {
       that.listLoad = true
       that.detail.size = 0
+      const current = that.currentBucket.slice(1).join('/')
       let params = {
-        prefix: '',
+        prefix: current || '',
         bucket_uid: that.$route.query.bucket_uuid,
         limit: 10,
         offset: 0
@@ -317,6 +320,7 @@ export default {
       await that.$commonFun.timeout(500)
       that.listLoad = false
       that.$store.dispatch('setFreeBucket', that.detail.size || 0)
+      if (type === 1) that.$refs.tableList.bodyWrapper.scrollTop = 0
       // if (type === 1) that.$refs.tableList.bodyWrapper.scrollTop = that.$refs.tableList.bodyWrapper.scrollHeight
     },
     momentFun (dateItem) {
@@ -411,15 +415,64 @@ export default {
   .slideScroll {
     .fe-header {
       position: relative;
-      padding: 0.2rem 0 0.4rem;
+      padding: 0.2rem 0 0;
       @media screen and (max-width: 441px) {
-        padding: 0.2rem 0;
+        padding: 0.2rem 0 0;
       }
+      h2 {
+        width: calc(100% - 0.6rem);
+        font-size: 16px;
+        font-weight: 400;
+        margin: 0 auto 0.35rem;
+        display: flex;
+        align-items: center;
+        @media screen and (max-width: 1440px) {
+          font-size: 14px;
+        }
+        a {
+          margin-right: 5px;
+          cursor: pointer;
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+        span {
+          display: flex;
+          align-items: center;
+          margin-left: 5px;
+          color: #4f84ff;
+          font-size: inherit;
+        }
+        .fe-edit {
+          font-size: 0.2rem;
+          color: #46a5e0;
+          margin-left: 4px;
+          i {
+            font-size: 0.2rem;
+          }
+        }
+        .el-input /deep/ {
+          .el-input__inner {
+            padding: 0;
+            color: #46a5e0;
+            font-size: 0.15rem;
+            border: 0;
+            border-bottom: 1px solid #dcdfe6;
+            border-radius: 0;
+          }
+        }
+      }
+    }
+    .fes-search {
+      // height: calc(100% - 1.7rem);
       .form_top {
         display: flex;
         align-items: center;
         flex-wrap: wrap;
-        margin: 0 auto 0.3rem;
+        margin: 0 auto 0.7rem;
+        @media screen and (max-width: 441px) {
+          margin: 0 auto 0.5rem;
+        }
         .title {
           width: 100%;
           margin: 0;
@@ -586,52 +639,6 @@ export default {
           }
         }
       }
-      h2 {
-        width: calc(100% - 0.6rem);
-        font-size: 16px;
-        font-weight: 400;
-        margin: 0 auto 0.35rem;
-        display: flex;
-        align-items: center;
-        @media screen and (max-width: 1440px) {
-          font-size: 14px;
-        }
-        a {
-          margin-right: 5px;
-          cursor: pointer;
-          &:hover {
-            text-decoration: underline;
-          }
-        }
-        span {
-          display: flex;
-          align-items: center;
-          margin-left: 5px;
-          color: #4f84ff;
-          font-size: inherit;
-        }
-        .fe-edit {
-          font-size: 0.2rem;
-          color: #46a5e0;
-          margin-left: 4px;
-          i {
-            font-size: 0.2rem;
-          }
-        }
-        .el-input /deep/ {
-          .el-input__inner {
-            padding: 0;
-            color: #46a5e0;
-            font-size: 0.15rem;
-            border: 0;
-            border-bottom: 1px solid #dcdfe6;
-            border-radius: 0;
-          }
-        }
-      }
-    }
-    .fes-search {
-      // height: calc(100% - 1.7rem);
       .title {
         display: flex;
         align-items: center;

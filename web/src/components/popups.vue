@@ -36,19 +36,19 @@
         </div>
         <el-form ref="form" class="demo-ruleForm">
           <el-form-item :label="$t('metaSpace.detail_BucketName')">
-            {{areaBody.name}}
+            {{areaBody.BucketName}}
           </el-form-item>
           <el-form-item :label="$t('metaSpace.detail_DateCreated')">
-            <span class="color">{{momentFun(areaBody.create_date)}}</span>
+            <span class="color">{{momentFun(areaBody.CreatedAt)}}</span>
           </el-form-item>
           <el-form-item :label="$t('metaSpace.detail_LastModified')">
-            <span class="color">{{momentFun(areaBody.update_date)}}</span>
+            <span class="color">{{momentFun(areaBody.UpdatedAt)}}</span>
           </el-form-item>
           <el-form-item :label="$t('metaSpace.detail_CurrentFiles')">
-            {{areaBody.files_count}}
+            {{areaBody.FileNumber}}
           </el-form-item>
           <el-form-item :label="$t('metaSpace.detail_CurrentSize')">
-            {{areaBody.size | formatbytes}}
+            {{areaBody.Size | formatbytes}}
           </el-form-item>
           <el-form-item></el-form-item>
           <el-form-item :label="$t('metaSpace.detail_BackupInfo')">
@@ -82,28 +82,28 @@
       </div>
     </div>
     <div class="fe-none" v-else-if="typeName === 'detail_file'">
-      <div class="addBucket">
+      <div class="addBucket" v-loading="backupLoad">
         <i class="el-icon-circle-close closePop" v-if="ipfsUploadLoad" @click="controllerSignal()"></i>
         <div class="head">
           {{$t('metaSpace.ob_detail_title')}}
         </div>
         <el-form ref="form" class="demo-ruleForm">
           <el-form-item :label="$t('metaSpace.ob_detail_ObjectName')">
-            <span class="color">{{areaBody.name}}</span>
+            <span class="color">{{areaBody.Name}}</span>
           </el-form-item>
           <el-form-item :label="$t('metaSpace.ob_detail_DateUploaded')">
-            <span class="color">{{momentFun(areaBody.create_date)}}</span>
+            <span class="color">{{momentFun(areaBody.CreatedAt)}}</span>
           </el-form-item>
           <el-form-item :label="$t('metaSpace.ob_detail_ObjectSize')">
-            <span class="color">{{areaBody.size | formatbytes}}</span>
+            <span class="color">{{areaBody.Size | formatbytes}}</span>
           </el-form-item>
           <el-form-item :label="$t('metaSpace.ob_detail_ObjectIPFSLink')">
-            <a class="color ipfsStyle" @click="xhrequest(areaBody.ipfs_url, areaBody.name)">
-              {{areaBody.ipfs_url}}
+            <a class="color ipfsStyle" @click="xhrequest(areaBody.IpfsUrl, areaBody.Name)">
+              {{areaBody.IpfsUrl}}
             </a>
           </el-form-item>
           <el-form-item :label="$t('metaSpace.ob_detail_ObjectCID')">
-            <span class="color">{{areaBody.payload_cid}}</span>
+            <span class="color">{{areaBody.PayloadCid}}</span>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="closeDia()">{{$t('metaSpace.Close')}}</el-button>
@@ -117,7 +117,7 @@
               </svg>
               <p>
                 {{$t('uploadFile.payment_tip_deal')}}
-                <span @click="controllerSignal('try_again', areaBody.ipfs_url, areaBody.name)">{{$t('metaSpace.try_again')}}</span>
+                <span @click="controllerSignal('try_again', areaBody.IpfsUrl, areaBody.Name)">{{$t('metaSpace.try_again')}}</span>
               </p>
             </div>
           </div>
@@ -176,7 +176,8 @@
           <el-col :span="24">
             <div class="pay_body_top">
               <label>{{$t('metaSpace.pay_body_Bucket')}}</label>
-              <el-input-number v-model="pay.num" controls-position="right" @change="payhandChange" :min="1"></el-input-number>
+              <!-- <el-input-number v-model="pay.num" controls-position="right" @change="payhandChange" :min="1"></el-input-number> -->
+              <el-input v-model="pay.num" disabled controls-position="right" @change="payhandChange" :min="1"></el-input>
             </div>
             <p>{{$t('metaSpace.pay_body_Bucket_desc')}}</p>
           </el-col>
@@ -209,7 +210,7 @@
         <div class="cont">{{$t('metaSpace.pay_success_desc')}}</div>
         <el-form ref="form">
           <el-form-item>
-            <el-button type="primary" @click="closeDia()">{{$t('metaSpace.Close')}}</el-button>
+            <el-button type="primary" @click="closeDia('pay')">{{$t('metaSpace.Close')}}</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -280,6 +281,17 @@ import moment from 'moment'
 let that
 export default {
   data () {
+    let validateName = (rule, value, callback) => {
+      let regexp = /[/:*?"<>'|\\]/gi
+      if (regexp.test(value)) {
+        callback(new Error("The folder name cannot contain any of the following characters /:*?\"<>'|\\"))
+      }
+      if (value.trim() === '') {
+        callback(new Error('Folder name cannot be empty'))
+      } else {
+        callback()
+      }
+    }
     return {
       form: {
         name: '',
@@ -287,7 +299,7 @@ export default {
         checkType: ['agreement']
       },
       rules: {
-        name: [{ required: true, message: '', trigger: 'blur' }]
+        name: [{ validator: validateName, trigger: 'blur' }]
       },
       rulesEmail: {
         email: [
@@ -326,7 +338,7 @@ export default {
       uploadPrecentSpeed: 0
     }
   },
-  props: ['dialogFormVisible', 'typeModule', 'areaBody', 'createLoad', 'listTableLoad', 'dataCont', 'currentBucket', 'fixed', 'backupLoad', 'changeTitle'],
+  props: ['dialogFormVisible', 'typeModule', 'areaBody', 'createLoad', 'listTableLoad', 'currentBucket', 'fixed', 'backupLoad', 'changeTitle'],
   watch: {
     dialogFormVisible: function () {
       let _this = this
@@ -383,7 +395,17 @@ export default {
     },
     async payClick () {
       that.payLoad = true
-      await that.$commonFun.timeout(2000)
+      const params = {
+        'bucket_name': String(new Date().getTime())
+      }
+      const payRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/bucket/create`, 'post', params)
+      if (!payRes || payRes.status !== 'success') {
+        that.$message.error(payRes ? payRes.message : 'Fail')
+        that.payLoad = false
+        that.closeDia('pay')
+        return false
+      }
+      await that.$commonFun.timeout(500)
       that.typeName = 'success'
     },
     payhandChange (value) {
@@ -504,7 +526,6 @@ export default {
     async handleChange (file, fileList) {
       let regexp = /[#\\?]/
       let reg = new RegExp(' ', 'g')
-      let uploadStatus = 0
       if (file.size <= 0) {
         that.$message.error('Error: Upload file size cannot be 0')
         that.ruleForm.fileList = []
@@ -523,51 +544,133 @@ export default {
 
         that.loading = true
         try {
-          const params = {
-            'path': `/${that.currentBucket}`,
-            'size': that.ruleForm.fileList[0].size,
-            'name': that.ruleForm.fileList[0].name,
-            'policy_id': that.dataCont.policy.id,
-            'last_modified': new Date().getTime()
+          let alreadyUploadChunks = []
+          let { hash, suffix } = await that.fileMd5(file)
+          // console.log(hash, suffix)
+          let fileCheckRes = await that.fileCheck(hash, file)
+          if (!fileCheckRes) {
+            that.$emit('getUploadDialog', false, 0)
+            that.loading = false
+            return false
           }
-          const directoryRes = await that.$commonFun.sendRequest(`${process.env.BASE_METASPACE}api/v3/file/upload`, 'put', params)
-          if (!directoryRes || directoryRes.status !== 'success') {
-            that.$message({
-              showClose: true,
-              message: directoryRes ? directoryRes.message : 'Fail',
-              type: 'error',
-              duration: 10000
-            })
-          }
-          const session = directoryRes.data.sessionID
 
-          that.typeName = 'upload_progress'
-          that.lastUploadTime = 0
-          that.lastUploadSize = 0
-          const config = {
-            onUploadProgress: progressEvent => {
-              that.progressHandle(progressEvent)
-            }
-          }
-          const uploadRes = await that.$commonFun.sendRequest(`${process.env.BASE_METASPACE}api/v3/file/upload/${session}/0`, 'post', file.raw, config)
-          console.log('upload:', uploadRes)
-          if (!uploadRes || uploadRes.status !== 'success') {
-            that.$message.error(uploadRes ? uploadRes.message : 'Fail')
-          } else {
-            that.$message({
-              message: uploadRes.status ? uploadRes.status : 'Success',
-              type: 'success'
+          let max = 0.5 * 1024 * 1024
+          let count = Math.ceil(file.size / max)
+          let index = 0
+          let chunks = []
+          while (index < count) {
+            chunks.push({
+              file: file.raw.slice(index * max, (index + 1) * max),
+              filename: `${hash}_${index + 1}.${suffix}`
             })
+            index++
           }
-          uploadStatus = 1
+          chunks.forEach(async chunk => {
+            return new Promise(async (resolve, reject) => {
+              let uploadData = new FormData()
+              const fileBlob = new Blob([chunk.file], {
+                type: 'application/json'
+              })
+              uploadData.append('file', fileBlob, chunk.filename)
+              uploadData.append('hash', hash)
+              let data = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/upload`, 'post', uploadData)
+              // console.log('data', data.data)
+              if (!data) {
+                that.$emit('getUploadDialog', false, 0)
+                that.loading = false
+                return false
+              }
+              alreadyUploadChunks = data.data
+              if (alreadyUploadChunks.length > 0 && alreadyUploadChunks.includes(chunk.filename)) {
+                that.manageProgress(hash, file, data.data.length, count)
+                resolve(data.data)
+                return
+              }
+              const config = {
+                onUploadProgress: progressEvent => {
+                  that.manageProgress(hash, file, data.data.length, count, progressEvent)
+                }
+              }
+              const uploadRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/upload`, 'post', uploadData, config)
+              if (!uploadRes || uploadRes.status !== 'success') reject(uploadRes ? uploadRes.message : 'Fail')
+            })
+          })
         } catch (e) {
           console.log(e)
-          uploadStatus = 0
+          await that.$commonFun.timeout(500)
+          that.$emit('getUploadDialog', false, 0)
+          that.loading = false
         }
-        await that.$commonFun.timeout(500)
-        that.$emit('getUploadDialog', false, uploadStatus)
-        that.loading = false
       }
+    },
+    async fileCheck (hash, file) {
+      let paramCheck = {
+        'file_hash': hash,
+        'file_name': file.name,
+        'prefix': that.areaBody.Prefix || '',
+        'bucket_uid': that.areaBody
+      }
+      let checkRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/check`, 'post', paramCheck)
+      if (!checkRes || checkRes.status !== 'success') {
+        that.$message.error(checkRes ? checkRes.message : 'Fail')
+        return false
+      }
+      if (checkRes.data.file_is_exist) {
+        that.$message.error('You have uploaded this file!')
+        return false
+      }
+      if (checkRes.data.ipfs_is_exist) {
+        await that.$commonFun.timeout(500)
+        that.$emit('getUploadDialog', false, 1)
+        that.loading = false
+        return false
+      }
+      return true
+    },
+    async fileMerge (hash, file) {
+      let paramMerge = {
+        'file_hash': hash,
+        'file_name': file.name,
+        'prefix': that.areaBody.Prefix || '',
+        'bucket_uid': that.areaBody
+      }
+      let mergeRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/merge`, 'post', paramMerge)
+      console.log(mergeRes)
+      if (!mergeRes || mergeRes.status !== 'success') {
+        that.$message.error(mergeRes ? mergeRes.message : 'Fail')
+      }
+      await that.$commonFun.timeout(500)
+      that.$emit('getUploadDialog', false, 1)
+      that.loading = false
+    },
+    async manageProgress (hash, file, index, count, progressEvent) {
+      // console.log(hash, file, index, count, progressEvent)
+      that.uploadPrecent = `${index / count * 100}`
+      if (index < count) return
+      that.uploadPrecent = `100`
+      await that.fileMerge(hash, file)
+    },
+    async fileMd5 (file) {
+      return new Promise(resolve => {
+        let fileReader = new FileReader()
+        fileReader.readAsArrayBuffer(file.raw)
+        fileReader.onload = ev => {
+          let buffer = ev.target.result
+          let spark = new that.$SparkMD5.ArrayBuffer()
+          let hash
+          let suffix
+          spark.append(buffer)
+          hash = spark.end()
+          let reg = /\.([a-zA-Z0-9]+)$/
+          suffix = reg.exec(file.name)[1]
+          resolve({
+            buffer,
+            hash,
+            suffix,
+            filename: `${hash}.${suffix}`
+          })
+        }
+      })
     },
     handleRemove (file, fileList) {
       // console.log(file, fileList);
@@ -608,7 +711,7 @@ export default {
             const params = {
               'email': that.form.email
             }
-            const emailRes = await that.$commonFun.sendRequest(`${process.env.BASE_METASPACE}api/v3/email`, 'post', params)
+            const emailRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v3/email`, 'post', params)
             if (!emailRes || emailRes.status !== 'success') {
               that.$message({
                 showClose: true,
@@ -1010,6 +1113,15 @@ export default {
               color: #000;
               font-weight: 600;
             }
+            .el-input {
+              .el-input__inner {
+                height: auto;
+                background-color: transparent;
+                border: 0;
+                line-height: 1;
+                color: #333;
+              }
+            }
             .el-input-number {
               width: auto;
               line-height: inherit;
@@ -1064,6 +1176,8 @@ export default {
             font-size: 0.14rem;
             text-align: left;
             color: #999999;
+            padding: 0;
+            border: 0;
             @media screen and (min-width: 1800px) {
               font-size: 14px;
             }
@@ -1091,6 +1205,7 @@ export default {
         .el-form-item {
           margin: 0;
           .el-form-item__content {
+            position: relative;
             display: flex;
             align-items: center;
             flex-wrap: wrap;
@@ -1110,7 +1225,9 @@ export default {
               }
             }
             .el-form-item__error {
-              display: none;
+              position: absolute;
+              top: 0.65rem;
+              text-align: left;
             }
             .el-button {
               width: 45%;

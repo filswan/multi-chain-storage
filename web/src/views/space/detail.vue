@@ -21,7 +21,7 @@
                 <img src="@/assets/images/space/icon_01.png" alt="">
                 <span>{{$t('metaSpace.add_subbucket')}}</span>
               </a>
-              <a @click="dialogFun('upload')">
+              <a @click="dialogFun('upload', $route.query.bucket_uuid)">
                 <img src="@/assets/images/space/icon_08.png" alt="">
                 <span>{{$t('metaSpace.Upload_File')}}</span>
               </a>
@@ -32,15 +32,15 @@
       <div class="fes-search" v-loading="listLoad">
         <el-table :data="listBuckets" ref="tableList" stripe style="width: 100%" max-height="400" empty-text=" ">
           <el-table-column type="index" label="No." width="50"></el-table-column>
-          <el-table-column prop="name" :label="$t('metaSpace.table_name')">
+          <el-table-column prop="Name" :label="$t('metaSpace.table_name')">
             <template slot-scope="scope">
               <div class="hot-cold-box">
-                <span v-if="scope.row.type == 'dir'" style="text-decoration: underline;" @click="getListBucketMain(scope.row.name)">{{ scope.row.name }}</span>
-                <span v-else @click="dialogFun('detail_file', scope.row)">{{ scope.row.name }}</span>
+                <span v-if="scope.row.type == 'dir'" style="text-decoration: underline;" @click="getListBucketMain(scope.row.Name)">{{ scope.row.Name }}</span>
+                <span v-else @click="dialogFun('detail_file', scope.row)">{{ scope.row.Name }}</span>
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="payload_cid" min-width="120">
+          <el-table-column prop="PayloadCid" min-width="120">
             <template slot="header" slot-scope="scope">
               <div class="tips" style="white-space: nowrap;">
                 {{$t('metaSpace.table_cid')}}
@@ -53,61 +53,62 @@
             <template slot-scope="scope">
               <div class="hot-cold-box">
                 <span class="copyText">
-                  {{ scope.row.payload_cid }}
-                  <img class="imgCopy" src="@/assets/images/space/icon_10.png" @click="copyLink(scope.row.payload_cid)" v-if="scope.row.payload_cid" alt="">
+                  {{ scope.row.PayloadCid||'-' }}
+                  <img class="imgCopy" src="@/assets/images/space/icon_10.png" @click="copyLink(scope.row.PayloadCid)" v-if="scope.row.PayloadCid" alt="">
                 </span>
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="pin_status" :label="$t('metaSpace.table_status')">
+          <el-table-column prop="PinStatus" :label="$t('metaSpace.table_status')">
             <template slot-scope="scope">
               <div class="hot-cold-box">
-                <span>{{ scope.row.pin_status }}</span>
+                <span>{{ scope.row.PinStatus||'-' }}</span>
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="date" :label="$t('metaSpace.table_LastModified')">
+          <el-table-column prop="UpdatedAt" :label="$t('metaSpace.table_LastModified')">
             <template slot-scope="scope">
               <div class="hot-cold-box">
-                <span>{{ momentFun(scope.row.date) }}</span>
+                <span>{{ momentFun(scope.row.UpdatedAt) }}</span>
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="size" :label="$t('metaSpace.table_size')">
+          <el-table-column prop="Size" :label="$t('metaSpace.table_size')">
             <template slot-scope="scope">
               <div class="hot-cold-box">
-                <span>{{ scope.row.size | formatbytes }}</span>
+                <span>{{ scope.row.Size | formatbytes }}</span>
               </div>
             </template>
           </el-table-column>
           <el-table-column prop="" :label="$t('metaSpace.table_action')" min-width="120">
             <template slot-scope="scope">
-              <div class="hot-cold-box" v-if="scope.row.type == 'dir'">
+              <div class="hot-cold-box" v-if="scope.row.IsFolder">
                 <i class="icon icon_rename" @click="dialogFun('rename', scope.row)"></i>
-                <i class="icon icon_details" @click="dialogFun('detail', scope.row)"></i>
+                <i class="icon icon_details" @click="getDetail('detail', scope.row)"></i>
                 <i class="icon icon_delete" @click="dialogFun('delete', scope.row)"></i>
               </div>
               <div class="hot-cold-box" v-else>
-                <i class="icon icon_share" @click="copyLink(scope.row.ipfs_url, 1)"></i>
-                <i class="icon icon_details" @click="dialogFun('detail_file', scope.row)"></i>
+                <i class="icon icon_share" @click="copyLink(scope.row.IpfsUrl, 1)"></i>
+                <i class="icon icon_details" @click="getDetail('detail_file', scope.row)"></i>
                 <i class="icon icon_delete" @click="dialogFun('delete', scope.row)"></i>
               </div>
             </template>
           </el-table-column>
         </el-table>
         <div class="fe-none" v-if="listBuckets&&listBuckets.length<=0">
-          <p>{{$t('metaSpace.empty_prompt_detail')}}</p>
+          <p class="p_label">{{$t('metaSpace.empty_prompt_detail')}}</p>
         </div>
       </div>
     </div>
 
-    <pop-ups v-if="dialogFormVisible" :dialogFormVisible="dialogFormVisible" :typeModule="typeName" :areaBody="areaBody" :createLoad="createLoad" :listTableLoad="listTableLoad" :dataCont="dataCont" :currentBucket="url" @getPopUps="getPopUps" @getUploadDialog="getUploadDialog"></pop-ups>
+    <pop-ups v-if="dialogFormVisible" :dialogFormVisible="dialogFormVisible" :typeModule="typeName" :areaBody="areaBody" :createLoad="createLoad" :listTableLoad="listTableLoad" :currentBucket="url" @getPopUps="getPopUps" @getUploadDialog="getUploadDialog"></pop-ups>
   </div>
 
 </template>
 
 <script>
 import moment from 'moment'
+import QS from 'qs'
 import popUps from '@/components/popups'
 let that
 export default {
@@ -120,7 +121,6 @@ export default {
       currentBucket: [],
       dialogFormVisible: false,
       createLoad: false,
-      dataCont: {},
       listBuckets: [],
       areaBody: {},
       typeName: 'delete',
@@ -134,13 +134,47 @@ export default {
     popUps
   },
   methods: {
+    async getDetail (type, row) {
+      that.backupLoad = true
+      that.dialogFun(type, row)
+      if (type === 'detail') {
+        let bucketDetail = row
+        const backupRes = await that.$commonFun.sendRequest(`${process.env.BASE_METASPACE}api/v3/backup/stat/${row.ID}`, 'get')
+        if (!backupRes || backupRes.status !== 'success') that.$message.error(backupRes.message || 'Fail')
+        else {
+          bucketDetail.miner_list = backupRes.data.miner_list.split(',') || ''
+          bucketDetail.miner_url_prefix = backupRes.data.miner_url_prefix || ''
+          bucketDetail.miner_count = backupRes.data.miner_count || 0
+          bucketDetail.piece_cid = backupRes.data.piece_cid || ''
+          bucketDetail.payload_cid = backupRes.data.payload_cid || ''
+          bucketDetail.remaining_service_days = backupRes.data.remaining_service_days || 0
+        }
+        that.dialogFun('detail', bucketDetail)
+      } else {
+        let bucketDetail = row
+        let params = {
+          file_id: row.ID
+        }
+        const infoRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/get_file_info?${QS.stringify(params)}`, 'get')
+        if (!infoRes || infoRes.status !== 'success') that.$message.error(infoRes.message || 'Fail')
+        else {
+          bucketDetail.Name = infoRes.data.Name
+          bucketDetail.CreatedAt = infoRes.data.CreatedAt
+          bucketDetail.Size = infoRes.data.Size
+          bucketDetail.IpfsUrl = infoRes.data.IpfsUrl
+          bucketDetail.PayloadCid = infoRes.data.PayloadCid
+        }
+        that.dialogFun('detail', bucketDetail)
+      }
+      that.backupLoad = false
+    },
     getListBucketMain (fileName, type, index) {
       let fold = ''
       if (type && index) fold = (that.currentBucket.slice(0, index + 1)).join('/')
       else if (type && index === 0) fold = that.currentBucket[0]
       else fold = `${that.url}/${fileName}`
 
-      if (fileName) that.$router.push({ name: 'Space_detail', query: { folder: encodeURIComponent(fold) } })
+      if (fileName) that.$router.push({ name: 'Space_detail', query: { folder: encodeURIComponent(fold), bucket_uid: that.$route.query.bucket_uuid } })
       else that.$router.push({ name: 'Space' })
     },
     async getPopUps (dialog, rows, bucketName) {
@@ -163,7 +197,7 @@ export default {
       const params = {
         'path': `/${current}/${name.trim()}`
       }
-      const directoryRes = await that.$commonFun.sendRequest(`${process.env.BASE_METASPACE}api/v3/directory`, 'put', params)
+      const directoryRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v3/directory`, 'put', params)
       if (!directoryRes || directoryRes.status !== 'success') {
         that.$message.error(directoryRes ? directoryRes.message : 'Fail')
       }
@@ -194,7 +228,7 @@ export default {
           },
           'new_name': newName
         }
-      const renameRes = await that.$commonFun.sendRequest(`${process.env.BASE_METASPACE}api/v3/object/rename`, 'post', params)
+      const renameRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v3/object/rename`, 'post', params)
       if (!renameRes || renameRes.status !== 'success') {
         that.$message.error(renameRes ? renameRes.message : 'Fail')
       }
@@ -206,10 +240,9 @@ export default {
     async deleteFun () {
       that.listTableLoad = true
       const params = {
-        'items': that.areaBody.type === 'dir' ? [] : [that.areaBody.id],
-        'dirs': that.areaBody.type === 'dir' ? [that.areaBody.id] : []
+        'file_id': that.areaBody.ID
       }
-      const deleteRes = await that.$commonFun.sendRequest(`${process.env.BASE_METASPACE}api/v3/object`, 'delete', params)
+      const deleteRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/delete?${QS.stringify(params)}`, 'get')
       if (!deleteRes || deleteRes.status !== 'success') {
         that.$message.error(deleteRes ? deleteRes.status : 'Fail')
       }
@@ -264,23 +297,27 @@ export default {
     async getListObjects (type) {
       that.listLoad = true
       that.detail.size = 0
-      const directoryRes = await that.$commonFun.sendRequest(`${process.env.BASE_METASPACE}api/v3/directory/${that.url}`, 'get')
-      // const directoryRes = await that.$commonFun.sendRequest(`./static/json/list.json`, 'get')
+      let params = {
+        prefix: '',
+        bucket_uid: that.$route.query.bucket_uuid,
+        limit: 10,
+        offset: 0
+      }
+      const directoryRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/get_file_list?${QS.stringify(params)}`, 'get')
       if (!directoryRes || directoryRes.status !== 'success') {
         that.$message.error(directoryRes ? directoryRes.message : 'Fail')
         return false
       }
-      that.dataCont = directoryRes.data || {}
-      that.listBuckets = directoryRes.data.objects || []
+      that.listBuckets = directoryRes.data || []
       that.listBuckets.forEach((element, i) => {
         element.index = i
-        that.detail.size += element.size
+        that.detail.size += element.Size
       })
-      that.detail.object = directoryRes.data.objects.length || 0
+      that.detail.object = directoryRes.data.length || 0
       await that.$commonFun.timeout(500)
       that.listLoad = false
       that.$store.dispatch('setFreeBucket', that.detail.size || 0)
-      if (type === 1) that.$refs.tableList.bodyWrapper.scrollTop = that.$refs.tableList.bodyWrapper.scrollHeight
+      // if (type === 1) that.$refs.tableList.bodyWrapper.scrollTop = that.$refs.tableList.bodyWrapper.scrollHeight
     },
     momentFun (dateItem) {
       let dateNew = new Date(dateItem).getTime()
@@ -835,7 +872,7 @@ export default {
       justify-content: center;
       align-items: center;
       padding: 0 5%;
-      p {
+      .p_label {
         padding: 0.15rem 0.3rem;
         font-size: 0.27rem;
         color: #4f87ff;

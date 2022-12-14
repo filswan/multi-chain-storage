@@ -555,7 +555,7 @@ export default {
             return false
           }
 
-          let max = 0.5 * 1024 * 1024
+          let max = 10 * 1024 * 1024
           let count = Math.ceil(file.size / max)
           let index = 0
           let chunks = []

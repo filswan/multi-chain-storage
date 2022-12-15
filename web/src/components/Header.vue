@@ -471,7 +471,6 @@ export default {
         return false
       }
 
-      const ethereum = window.ethereum
       ethereum
         .request({ method: 'eth_chainId' })
         .then(async (chainId) => {

@@ -81,6 +81,30 @@
         </el-form>
       </div>
     </div>
+    <div class="fe-none" v-else-if="typeName === 'detail_folder'">
+      <div class="addBucket" v-loading="backupLoad">
+        <div class="head">
+          {{$t('metaSpace.detail_folder_title')}}
+        </div>
+        <el-form ref="form" class="demo-ruleForm">
+          <el-form-item :label="$t('metaSpace.detail_folderName')">
+            {{areaBody.Name}}
+          </el-form-item>
+          <el-form-item :label="$t('metaSpace.detail_DateCreated')">
+            <span class="color">{{momentFun(areaBody.CreatedAt)}}</span>
+          </el-form-item>
+          <el-form-item :label="$t('metaSpace.detail_LastModified')">
+            <span class="color">{{momentFun(areaBody.UpdatedAt)}}</span>
+          </el-form-item>
+          <el-form-item :label="$t('metaSpace.detail_CurrentSize')">
+            {{areaBody.Size | formatbytes}}
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="closeDia()">{{$t('metaSpace.Close')}}</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+    </div>
     <div class="fe-none" v-else-if="typeName === 'detail_file'">
       <div class="addBucket" v-loading="backupLoad">
         <i class="el-icon-circle-close closePop" v-if="ipfsUploadLoad" @click="controllerSignal()"></i>
@@ -546,7 +570,7 @@ export default {
         that.loading = true
         try {
           let alreadyUploadChunks = []
-          let { hash, suffix } = await that.fileMd5(file)
+          let { hash } = await that.fileMd5(file)
           // console.log(hash, suffix)
           let fileCheckRes = await that.fileCheck(hash, file)
           if (!fileCheckRes) {
@@ -559,44 +583,52 @@ export default {
           let count = Math.ceil(file.size / max)
           let index = 0
           let chunks = []
+          let concurrent = 3 // 并发数
           while (index < count) {
             chunks.push({
               file: file.raw.slice(index * max, (index + 1) * max),
-              filename: `${hash}_${index + 1}${suffix ? '.' + suffix : ''}`
+              filename: `${index + 1}_${file.name}`
             })
             index++
           }
-          chunks.forEach(async chunk => {
+
+          that.concurrentExecution(chunks, concurrent, (chunk) => {
             return new Promise(async (resolve, reject) => {
-              let uploadData = new FormData()
-              const fileBlob = new Blob([chunk.file], {
-                type: 'application/json'
-              })
-              uploadData.append('file', fileBlob, chunk.filename)
-              uploadData.append('file_name', chunk.filename)
-              uploadData.append('hash', hash)
-              const config = {
-                onUploadProgress: progressEvent => {
-                  that.progressEvent = progressEvent
-                  // that.progressHandle(progressEvent)
+              let inde = chunk + 1
+              if (alreadyUploadChunks.indexOf(inde + '') === -1) {
+                let uploadData = new FormData()
+                const fileBlob = new Blob([chunk.file], {
+                  type: 'application/json'
+                })
+                uploadData.append('file', fileBlob, chunk.filename)
+                uploadData.append('hash', hash)
+                const config = {
+                  onUploadProgress: progressEvent => {
+                    that.progressEvent = progressEvent
+                    // that.progressHandle(progressEvent)
+                  }
                 }
+                let data = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/upload`, 'post', uploadData, config)
+                // console.log('data', data.data)
+                if (!data) {
+                  that.$emit('getUploadDialog', false, 0)
+                  that.loading = false
+                  return false
+                }
+                alreadyUploadChunks = data.data
+                if (alreadyUploadChunks.length > 0 && alreadyUploadChunks.includes(chunk.filename)) {
+                  that.manageProgress(hash, file, data.data.length, count)
+                  resolve(data.data)
+                  return
+                }
+                const uploadRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/upload`, 'post', uploadData, config)
+                if (!uploadRes || uploadRes.status !== 'success') reject(uploadRes ? uploadRes.message : 'Fail')
+              } else {
+                resolve()
               }
-              let data = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/upload`, 'post', uploadData, config)
-              // console.log('data', data.data)
-              if (!data) {
-                that.$emit('getUploadDialog', false, 0)
-                that.loading = false
-                return false
-              }
-              alreadyUploadChunks = data.data
-              if (alreadyUploadChunks.length > 0 && alreadyUploadChunks.includes(chunk.filename)) {
-                that.manageProgress(hash, file, data.data.length, count)
-                resolve(data.data)
-                return
-              }
-              const uploadRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/upload`, 'post', uploadData, config)
-              if (!uploadRes || uploadRes.status !== 'success') reject(uploadRes ? uploadRes.message : 'Fail')
             })
+          }).then(res => {
+            console.log('finish', res)
           })
         } catch (e) {
           console.log(e)
@@ -605,6 +637,24 @@ export default {
           that.loading = false
         }
       }
+    },
+    async concurrentExecution (list, limit, asyncHandle) {
+      let recursion = (arr) => {
+        return asyncHandle(arr.shift()).then(() => {
+          if (arr.length !== 0) {
+            return recursion(arr)
+          } else {
+            return 'finish'
+          }
+        })
+      }
+      let listCopy = [].concat(list)
+      let asyncList = []
+      limit = limit > listCopy.length ? listCopy.length : limit
+      while (limit--) {
+        asyncList.push(recursion(listCopy))
+      }
+      return Promise.all(asyncList)
     },
     async fileCheck (hash, file) {
       const current = that.currentBucket.split('/').slice(1).join('/')

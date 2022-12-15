@@ -422,7 +422,7 @@ export default {
       background: transparent;
     }
     &::-webkit-scrollbar-thumb {
-      background: #ccc;
+      background: #080b29;
     }
   }
   .fes-icon {

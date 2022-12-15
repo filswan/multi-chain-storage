@@ -30,78 +30,112 @@
             </div>
           </div>
         </div>
-        <el-table :data="listBuckets" ref="tableList" stripe style="width: 100%" max-height="400" empty-text=" ">
-          <el-table-column type="index" label="No." width="50"></el-table-column>
-          <el-table-column prop="Name" :label="$t('metaSpace.table_name')">
-            <template slot-scope="scope">
-              <div class="hot-cold-box">
-                <span v-if="scope.row.IsFolder" style="text-decoration: underline;" @click="getListBucketMain(scope.row.Name)">{{ scope.row.Name }}</span>
-                <span v-else @click="dialogFun('detail_file', scope.row)">{{ scope.row.Name }}</span>
-              </div>
-            </template>
-          </el-table-column>
-          <el-table-column prop="PayloadCid" min-width="120">
-            <template slot="header" slot-scope="scope">
-              <div class="tips" style="white-space: nowrap;">
-                {{$t('metaSpace.table_cid')}}
+        <el-row :gutter="15" class="table_body">
+          <el-col :xs="24" :sm="24" :md="24" :lg="14" class="left">
+            <el-table :data="listData.listBucketFile" ref="tableList" stripe style="width: 100%" max-height="400" empty-text=" ">
+              <el-table-column type="index" label="No." width="50"></el-table-column>
+              <el-table-column prop="Name" :label="$t('metaSpace.table_name')">
+                <template slot-scope="scope">
+                  <div class="hot-cold-box">
+                    <span @click="dialogFun('detail_file', scope.row)">{{ scope.row.Name }}</span>
+                  </div>
+                </template>
+              </el-table-column>
+              <el-table-column prop="PayloadCid" min-width="120">
+                <template slot="header" slot-scope="scope">
+                  <div class="tips" style="white-space: nowrap;">
+                    {{$t('metaSpace.table_cid')}}
 
-                <el-popover placement="top" popper-class="elPopTitle" width="200" trigger="hover" :content="$t('metaSpace.table_cid_tip')">
-                  <img slot="reference" src="@/assets/images/info.png" />
-                </el-popover>
-              </div>
-            </template>
-            <template slot-scope="scope">
-              <div class="hot-cold-box">
-                <span class="copyText">
-                  {{ scope.row.PayloadCid||'-' }}
-                  <img class="imgCopy" src="@/assets/images/space/icon_10.png" @click="copyLink(scope.row.PayloadCid)" v-if="scope.row.PayloadCid" alt="">
-                </span>
-              </div>
-            </template>
-          </el-table-column>
-          <el-table-column prop="PinStatus" :label="$t('metaSpace.table_status')">
-            <template slot-scope="scope">
-              <div class="hot-cold-box">
-                <span>{{ scope.row.PinStatus||'-' }}</span>
-              </div>
-            </template>
-          </el-table-column>
-          <el-table-column prop="UpdatedAt" :label="$t('metaSpace.table_LastModified')">
-            <template slot-scope="scope">
-              <div class="hot-cold-box">
-                <span>{{ momentFun(scope.row.UpdatedAt) }}</span>
-              </div>
-            </template>
-          </el-table-column>
-          <el-table-column prop="Size" :label="$t('metaSpace.table_size')">
-            <template slot-scope="scope">
-              <div class="hot-cold-box">
-                <span>{{ scope.row.Size | formatbytes }}</span>
-              </div>
-            </template>
-          </el-table-column>
-          <el-table-column prop="" :label="$t('metaSpace.table_action')" min-width="120">
-            <template slot-scope="scope">
-              <div class="hot-cold-box" v-if="scope.row.IsFolder">
-                <i class="icon icon_rename" @click="dialogFun('rename', scope.row)"></i>
-                <i class="icon icon_details" @click="getDetail('detail', scope.row)"></i>
-                <i class="icon icon_delete" @click="dialogFun('delete', scope.row)"></i>
-              </div>
-              <div class="hot-cold-box" v-else>
-                <i class="icon icon_share" @click="copyLink(scope.row.IpfsUrl, 1)"></i>
-                <i class="icon icon_details" @click="getDetail('detail_file', scope.row)"></i>
-                <i class="icon icon_delete" @click="dialogFun('delete', scope.row)"></i>
-              </div>
-            </template>
-          </el-table-column>
-        </el-table>
-        <div class="fe-none" v-if="listBuckets&&listBuckets.length<=0">
+                    <el-popover placement="top" popper-class="elPopTitle" width="200" trigger="hover" :content="$t('metaSpace.table_cid_tip')">
+                      <img slot="reference" src="@/assets/images/info.png" />
+                    </el-popover>
+                  </div>
+                </template>
+                <template slot-scope="scope">
+                  <div class="hot-cold-box">
+                    <div class="copyText">
+                      <span>{{ scope.row.PayloadCid||'-' }}</span>
+                      <img class="imgCopy" src="@/assets/images/space/icon_10.png" @click="copyLink(scope.row.PayloadCid)" v-if="scope.row.PayloadCid" alt="">
+                    </div>
+                  </div>
+                </template>
+              </el-table-column>
+              <el-table-column prop="PinStatus" :label="$t('metaSpace.table_status')">
+                <template slot-scope="scope">
+                  <div class="hot-cold-box">
+                    <span>{{ scope.row.PinStatus||'-' }}</span>
+                  </div>
+                </template>
+              </el-table-column>
+              <el-table-column prop="UpdatedAt" :label="$t('metaSpace.table_LastModified')">
+                <template slot-scope="scope">
+                  <div class="hot-cold-box">
+                    <p>{{ momentFun(scope.row.UpdatedAt) }}</p>
+                  </div>
+                </template>
+              </el-table-column>
+              <el-table-column prop="Size" :label="$t('metaSpace.table_size')">
+                <template slot-scope="scope">
+                  <div class="hot-cold-box">
+                    <p>{{ scope.row.Size | formatbytes }}</p>
+                  </div>
+                </template>
+              </el-table-column>
+              <el-table-column prop="" :label="$t('metaSpace.table_action')" min-width="120">
+                <template slot-scope="scope">
+                  <div class="hot-cold-box">
+                    <i class="icon icon_share" @click="copyLink(`${scope.row.IpfsUrl}?filename=${scope.row.Name}`, 1)"></i>
+                    <i class="icon icon_details" @click="getDetail('detail_file', scope.row)"></i>
+                    <i class="icon icon_delete" @click="dialogFun('delete', scope.row)"></i>
+                  </div>
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-col>
+          <el-col :xs="24" :sm="24" :md="24" :lg="10" class="left">
+            <el-table :data="listData.listBucketFolder" ref="tableList" stripe style="width: 100%" max-height="400" empty-text=" ">
+              <el-table-column type="index" label="No." width="50"></el-table-column>
+              <el-table-column prop="Name" :label="$t('metaSpace.table_name')">
+                <template slot-scope="scope">
+                  <div class="hot-cold-box">
+                    <span style="text-decoration: underline;" @click="getListBucketMain(scope.row.Name)">{{ scope.row.Name }}</span>
+                  </div>
+                </template>
+              </el-table-column>
+              <el-table-column prop="UpdatedAt" :label="$t('metaSpace.table_LastModified')" width="100">
+                <template slot-scope="scope">
+                  <div class="hot-cold-box">
+                    <p>{{ momentFun(scope.row.UpdatedAt) }}</p>
+                  </div>
+                </template>
+              </el-table-column>
+              <el-table-column prop="Size" :label="$t('metaSpace.table_size')">
+                <template slot-scope="scope">
+                  <div class="hot-cold-box">
+                    <p>{{ scope.row.Size | formatbytes }}</p>
+                  </div>
+                </template>
+              </el-table-column>
+              <el-table-column prop="" :label="$t('metaSpace.table_action')" width="120">
+                <template slot-scope="scope">
+                  <div class="hot-cold-box">
+                    <i class="icon icon_rename" @click="dialogFun('rename', scope.row)"></i>
+                    <i class="icon icon_details" @click="getDetail('detail_folder', scope.row)"></i>
+                    <i class="icon icon_delete" @click="dialogFun('delete', scope.row)"></i>
+                  </div>
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-col>
+        </el-row>
+        <div class="fe-none" v-if="listData.listBuckets&&listData.listBuckets.length<=0">
           <p class="p_label">{{$t('metaSpace.empty_prompt_detail')}}</p>
         </div>
       </div>
     </div>
 
-    <pop-ups v-if="dialogFormVisible" :dialogFormVisible="dialogFormVisible" :typeModule="typeName" :areaBody="areaBody" :createLoad="createLoad" :listTableLoad="listTableLoad" :currentBucket="url" @getPopUps="getPopUps" @getUploadDialog="getUploadDialog"></pop-ups>
+    <pop-ups v-if="dialogFormVisible" :dialogFormVisible="dialogFormVisible" :typeModule="typeName" :areaBody="areaBody" :createLoad="createLoad" :listTableLoad="listTableLoad" :currentBucket="url" :backupLoad="backupLoad" @getPopUps="getPopUps"
+      @getUploadDialog="getUploadDialog"></pop-ups>
   </div>
 
 </template>
@@ -117,11 +151,16 @@ export default {
     return {
       listLoad: true,
       listTableLoad: false,
+      backupLoad: false,
       url: '',
       currentBucket: [],
       dialogFormVisible: false,
       createLoad: false,
-      listBuckets: [],
+      listData: {
+        listBuckets: [],
+        listBucketFile: [],
+        listBucketFolder: []
+      },
       areaBody: {},
       typeName: 'delete',
       detail: {
@@ -137,35 +176,20 @@ export default {
     async getDetail (type, row) {
       that.backupLoad = true
       that.dialogFun(type, row)
-      if (type === 'detail') {
-        let bucketDetail = row
-        const backupRes = await that.$commonFun.sendRequest(`${process.env.BASE_METASPACE}api/v3/backup/stat/${row.ID}`, 'get')
-        if (!backupRes || backupRes.status !== 'success') that.$message.error(backupRes.message || 'Fail')
-        else {
-          bucketDetail.miner_list = backupRes.data.miner_list.split(',') || ''
-          bucketDetail.miner_url_prefix = backupRes.data.miner_url_prefix || ''
-          bucketDetail.miner_count = backupRes.data.miner_count || 0
-          bucketDetail.piece_cid = backupRes.data.piece_cid || ''
-          bucketDetail.payload_cid = backupRes.data.payload_cid || ''
-          bucketDetail.remaining_service_days = backupRes.data.remaining_service_days || 0
-        }
-        that.dialogFun('detail', bucketDetail)
-      } else {
-        let bucketDetail = row
-        let params = {
-          file_id: row.ID
-        }
-        const infoRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/get_file_info?${QS.stringify(params)}`, 'get')
-        if (!infoRes || infoRes.status !== 'success') that.$message.error(infoRes.message || 'Fail')
-        else {
-          bucketDetail.Name = infoRes.data.Name
-          bucketDetail.CreatedAt = infoRes.data.CreatedAt
-          bucketDetail.Size = infoRes.data.Size
-          bucketDetail.IpfsUrl = infoRes.data.IpfsUrl
-          bucketDetail.PayloadCid = infoRes.data.PayloadCid
-        }
-        that.dialogFun('detail', bucketDetail)
+      let bucketDetail = row
+      let params = {
+        file_id: row.ID
       }
+      const infoRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/get_file_info?${QS.stringify(params)}`, 'get')
+      if (!infoRes || infoRes.status !== 'success') that.$message.error(infoRes.message || 'Fail')
+      else {
+        bucketDetail.Name = infoRes.data.Name
+        bucketDetail.CreatedAt = infoRes.data.CreatedAt
+        bucketDetail.Size = infoRes.data.Size
+        bucketDetail.IpfsUrl = `${infoRes.data.IpfsUrl}?filename=${infoRes.data.Name}`
+        bucketDetail.PayloadCid = infoRes.data.PayloadCid
+      }
+      that.dialogFun(type, bucketDetail)
       that.backupLoad = false
     },
     getListBucketMain (fileName, type, index) {
@@ -253,22 +277,6 @@ export default {
       that.dialogFormVisible = false
       that.getListObjects()
     },
-    searchBucketFun () {
-      if (that.search) {
-        that.listBucketsAll = []
-        if (that.minioListBuckets) {
-          that.listBuckets.map(item => {
-            if (item.name.indexOf(that.search) >= 0) {
-              that.listBucketsAll.push(item)
-            }
-          })
-        }
-      } else {
-        that.listBucketsAll = JSON.parse(
-          JSON.stringify(that.listBuckets)
-        )
-      }
-    },
     copyLink (text, tip) {
       var txtArea = document.createElement('textarea')
       txtArea.id = 'txt'
@@ -311,16 +319,22 @@ export default {
         that.$message.error(directoryRes ? directoryRes.message : 'Fail')
         return false
       }
-      that.listBuckets = directoryRes.data || []
-      that.listBuckets.forEach((element, i) => {
+      that.listData = {
+        listBuckets: directoryRes.data || [],
+        listBucketFile: [],
+        listBucketFolder: []
+      }
+      that.listData.listBuckets.forEach((element, i) => {
         element.index = i
         that.detail.size += element.Size
+        if (element.IsFolder) that.listData.listBucketFolder.push(element)
+        else that.listData.listBucketFile.push(element)
       })
       that.detail.object = directoryRes.data.length || 0
       await that.$commonFun.timeout(500)
       that.listLoad = false
       that.$store.dispatch('setFreeBucket', that.detail.size || 0)
-      if (type === 1) that.$refs.tableList.bodyWrapper.scrollTop = 0
+      that.$refs.tableList.bodyWrapper.scrollTop = 0
       // if (type === 1) that.$refs.tableList.bodyWrapper.scrollTop = that.$refs.tableList.bodyWrapper.scrollHeight
     },
     momentFun (dateItem) {
@@ -521,7 +535,7 @@ export default {
               line-height: 1.5;
               text-align: center;
               color: #fff;
-              font-size: 0.19rem;
+              font-size: 0.18rem;
               border: 0;
               outline: none;
               transition: background-color 0.3s, border-color 0.3s, color 0.3s,
@@ -591,7 +605,7 @@ export default {
             .el-input__inner {
               width: 100%;
               color: #555;
-              font-size: 0.19rem;
+              font-size: 0.18rem;
               font-weight: 500;
               height: 0.54rem;
               line-height: 0.3rem;
@@ -662,216 +676,232 @@ export default {
           }
         }
       }
-      .el-table /deep/ {
-        overflow: visible;
-        font-size: 0.18rem;
-        .el-loading-mask {
-          .el-loading-spinner {
-            top: 50%;
+      .table_body /deep/ {
+        .el-table {
+          overflow: visible;
+          font-size: 0.18rem;
+          .el-loading-mask {
+            .el-loading-spinner {
+              top: 50%;
+            }
           }
-        }
-        .el-table__body-wrapper,
-        .el-table__header-wrapper {
-          border-radius: 0.2rem;
-        }
+          .el-table__body-wrapper,
+          .el-table__header-wrapper {
+            border-radius: 0.2rem;
+          }
 
-        tr {
-          cursor: pointer;
-          th {
-            height: 0.7rem;
-            padding: 0;
-            background-color: #e5eeff !important;
-            text-align: center;
+          tr {
+            cursor: pointer;
+            th {
+              height: 0.7rem;
+              padding: 0;
+              background-color: #e5eeff !important;
+              text-align: center;
 
-            .cell {
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              word-break: break-word;
-              font-size: 0.19rem;
-              font-weight: 500;
-              color: #555;
-              text-transform: capitalize;
-              line-height: 1.3;
-              .caret-wrapper {
-                // display: none;
-                width: 10px;
-                margin-left: 5px;
-                .sort-caret {
-                  left: 0;
-                }
-              }
-              .tips {
+              .cell {
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                img {
-                  display: block;
-                  width: 20px;
-                  height: 20px;
-                  margin: 0 0 0 5px;
-                  cursor: pointer;
-                  @media screen and (max-width: 1440px) {
-                    width: 17px;
-                    height: 17px;
+                word-break: break-word;
+                font-size: 0.17rem;
+                font-weight: 500;
+                color: #555;
+                text-transform: capitalize;
+                line-height: 1.3;
+                @media screen and (max-width: 768px) {
+                  font-size: 13px;
+                }
+                .caret-wrapper {
+                  // display: none;
+                  width: 10px;
+                  margin-left: 5px;
+                  .sort-caret {
+                    left: 0;
                   }
                 }
-              }
-              .tipsWidth {
-                width: 110px;
-                @media screen and (max-width: 1600px) {
-                  width: 95px;
+                .tips {
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  img {
+                    display: block;
+                    width: 20px;
+                    height: 20px;
+                    margin: 0 0 0 5px;
+                    cursor: pointer;
+                    @media screen and (max-width: 1440px) {
+                      width: 17px;
+                      height: 17px;
+                    }
+                  }
                 }
-                @media screen and (max-width: 1440px) {
-                  width: 90px;
+                .tipsWidth {
+                  width: 110px;
+                  @media screen and (max-width: 1600px) {
+                    width: 95px;
+                  }
+                  @media screen and (max-width: 1440px) {
+                    width: 90px;
+                  }
+                  @media screen and (max-width: 1280px) {
+                    width: 80px;
+                  }
                 }
-                @media screen and (max-width: 1280px) {
-                  width: 80px;
-                }
-              }
-              .el-table__column-filter-trigger {
-                i {
-                  font-size: 13px;
-                  font-weight: 600;
-                  margin-left: 4px;
-                  transform: scale(1);
+                .el-table__column-filter-trigger {
+                  i {
+                    font-size: 13px;
+                    font-weight: 600;
+                    margin-left: 4px;
+                    transform: scale(1);
+                  }
                 }
               }
             }
-          }
 
-          th.is-leaf {
-            border-bottom: 0;
-          }
+            th.is-leaf {
+              border-bottom: 0;
+            }
 
-          td {
-            padding: 0.25rem 0.05rem;
-            border-bottom: 1px solid #dfdfdf;
+            td {
+              padding: 0.25rem 0.05rem;
+              border-bottom: 1px solid #dfdfdf;
 
-            .cell {
-              padding: 0;
-              font-size: 0.18rem;
-              word-break: break-word;
-              color: #000;
-              text-align: center;
-              line-height: 0.25rem;
-              overflow: visible;
+              .cell {
+                padding: 0;
+                font-size: 0.165rem;
+                word-break: break-word;
+                color: #000;
+                text-align: center;
+                line-height: 0.25rem;
+                overflow: visible;
+                @media screen and (max-width: 768px) {
+                  font-size: 13px;
+                }
+                .el-rate__icon {
+                  font-size: 0.16rem;
+                  margin-right: 0;
+                }
+                .el-icon-arrow-right {
+                  font-weight: bold;
+                  font-size: 0.13rem;
+                }
+                .rightClick {
+                  color: #0c3090;
+                  cursor: pointer;
+                }
 
-              .el-rate__icon {
-                font-size: 0.16rem;
-                margin-right: 0;
-              }
-              .el-icon-arrow-right {
-                font-weight: bold;
-                font-size: 0.13rem;
-              }
-              .rightClick {
-                color: #0c3090;
-                cursor: pointer;
-              }
-
-              .hot-cold-box {
-                position: relative;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                flex-wrap: wrap;
-                .icon {
-                  display: block;
-                  width: 22px;
-                  height: 22px;
-                  margin: 0 0.15rem;
-                  font-size: 0.24rem;
-                  @media screen and (max-width: 1600px) {
-                    width: 18px;
-                    height: 18px;
-                  }
-                  @media screen and (max-width: 768px) {
-                    width: 15px;
-                    height: 15px;
-                  }
-                  &:hover {
-                    opacity: 0.7;
-                  }
-                }
-                .icon_rename {
-                  background: url(../../assets/images/space/icon_02.png)
-                    no-repeat center;
-                  background-size: 100% 100%;
-                }
-                .icon_details {
-                  background: url(../../assets/images/space/icon_03.png)
-                    no-repeat center;
-                  background-size: 100% 100%;
-                }
-                .icon_delete {
-                  background: url(../../assets/images/space/icon_04.png)
-                    no-repeat center;
-                  background-size: 100% 100%;
-                }
-                .icon_share {
-                  background: url(../../assets/images/space/icon_09.png)
-                    no-repeat center;
-                  background-size: 100% 100%;
-                }
-                .copyText {
+                .hot-cold-box {
+                  position: relative;
                   display: flex;
                   align-items: center;
-                  .imgCopy {
-                    width: 15px;
-                    height: 15px;
-                    margin: 0 0 0 5px;
-                    cursor: pointer;
-                    @media screen and (min-width: 1800px) {
+                  justify-content: center;
+                  flex-wrap: wrap;
+                  .icon {
+                    display: block;
+                    width: 20px;
+                    height: 20px;
+                    margin: 0 5px;
+                    font-size: 0.24rem;
+                    @media screen and (max-width: 1600px) {
                       width: 18px;
                       height: 18px;
+                    }
+                    @media screen and (max-width: 768px) {
+                      width: 15px;
+                      height: 15px;
+                    }
+                    &:hover {
+                      opacity: 0.7;
+                    }
+                  }
+                  .icon_rename {
+                    background: url(../../assets/images/space/icon_02.png)
+                      no-repeat center;
+                    background-size: 100% 100%;
+                  }
+                  .icon_details {
+                    background: url(../../assets/images/space/icon_03.png)
+                      no-repeat center;
+                    background-size: 100% 100%;
+                  }
+                  .icon_delete {
+                    background: url(../../assets/images/space/icon_04.png)
+                      no-repeat center;
+                    background-size: 100% 100%;
+                  }
+                  .icon_share {
+                    background: url(../../assets/images/space/icon_09.png)
+                      no-repeat center;
+                    background-size: 100% 100%;
+                  }
+                  .copyText {
+                    display: flex;
+                    align-items: center;
+                    .imgCopy {
+                      width: 15px;
+                      height: 15px;
+                      margin: 0 0 0 5px;
+                      cursor: pointer;
+                      @media screen and (min-width: 1800px) {
+                        width: 18px;
+                        height: 18px;
+                      }
+                    }
+                  }
+                  span {
+                    max-height: 0.5rem;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: normal;
+                    display: -webkit-box;
+                    -webkit-line-clamp: 2;
+                    -webkit-box-orient: vertical;
+                  }
+                }
+                .hot-miner {
+                  .el-button {
+                    span {
+                      white-space: nowrap;
+                    }
+                  }
+                }
+
+                .el-button.el-icon-upload {
+                  padding: 0 0.03rem;
+                  line-height: 0.25rem;
+                  font-size: 0.1372rem;
+                }
+
+                .scoreStyle {
+                  width: 100%;
+                  clear: both;
+                  text-align: center;
+                  color: #ffb822;
+                  cursor: pointer;
+                }
+
+                .scoreStyle:hover {
+                  text-decoration: underline;
+                }
+              }
+            }
+
+            &:hover {
+              td {
+                .cell {
+                  .hot-cold-box {
+                    .cidMore {
+                      background-color: #f5f7fa;
                     }
                   }
                 }
               }
-              .hot-miner {
-                .el-button {
-                  span {
-                    white-space: nowrap;
-                  }
-                }
-              }
-
-              .el-button.el-icon-upload {
-                padding: 0 0.03rem;
-                line-height: 0.25rem;
-                font-size: 0.1372rem;
-              }
-
-              .scoreStyle {
-                width: 100%;
-                clear: both;
-                text-align: center;
-                color: #ffb822;
-                cursor: pointer;
-              }
-
-              .scoreStyle:hover {
-                text-decoration: underline;
-              }
-            }
-          }
-
-          &:hover {
-            td {
-              .cell {
-                .hot-cold-box {
-                  .cidMore {
-                    background-color: #f5f7fa;
-                  }
-                }
-              }
             }
           }
         }
-      }
-      .el-table::before {
-        display: none;
+        .el-table::before {
+          display: none;
+        }
       }
     }
     .fe-none {

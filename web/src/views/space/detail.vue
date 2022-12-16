@@ -27,6 +27,10 @@
                 <img src="@/assets/images/space/icon_08.png" alt="">
                 <span>{{$t('metaSpace.Upload_File')}}</span>
               </a>
+              <a @click="dialogFun('upload_folder', $route.query.bucket_uuid)">
+                <img src="@/assets/images/space/icon_08.png" alt="">
+                <span>Upload Folder</span>
+              </a>
             </div>
           </div>
         </div>
@@ -91,6 +95,16 @@
                 </template>
               </el-table-column>
             </el-table>
+            <div class="form_pagination" v-if="parma.total != 0">
+              <div class="pagination">
+                <el-pagination :total="parma.total" :page-size="parma.limit" :current-page="parma.offset" :layout="'prev, pager, next'" @current-change="handleCurrentChange" @size-change="handleSizeChange" />
+                <div class="span" v-if="!bodyWidth">
+                  <span>{{$t('uploadFile.goTo')}}</span>
+                  <el-input class="paginaInput" @change="pageSizeChange" v-model.number="parma.jumperOffset" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')" autocomplete="off"></el-input>
+                  <span>{{$t('uploadFile.goTopage')}}</span>
+                </div>
+              </div>
+            </div>
           </el-col>
           <el-col :xs="24" :sm="24" :md="24" :lg="10" class="left">
             <el-table :data="listData.listBucketFolder" ref="tableList" stripe style="width: 100%" max-height="400" empty-text=" ">
@@ -134,8 +148,8 @@
       </div>
     </div>
 
-    <pop-ups v-if="dialogFormVisible" :dialogFormVisible="dialogFormVisible" :typeModule="typeName" :areaBody="areaBody" :createLoad="createLoad" :listTableLoad="listTableLoad" :currentBucket="url" :backupLoad="backupLoad" @getPopUps="getPopUps"
-      @getUploadDialog="getUploadDialog"></pop-ups>
+    <pop-ups v-if="dialogFormVisible" :dialogFormVisible="dialogFormVisible" :typeModule="typeName" :areaBody="areaBody" :createLoad="createLoad" :listTableLoad="listTableLoad" :currentBucket="url" :backupLoad="backupLoad" :listBucketFolder="listData.listBucketFolder"
+      @getUploadDialog="getUploadDialog" @getPopUps="getPopUps"></pop-ups>
   </div>
 
 </template>
@@ -166,7 +180,14 @@ export default {
       detail: {
         object: 0,
         size: 0
-      }
+      },
+      parma: {
+        limit: 10,
+        offset: 1,
+        total: 0,
+        jumperOffset: 1
+      },
+      bodyWidth: document.documentElement.clientWidth < 1024
     }
   },
   components: {
@@ -308,11 +329,12 @@ export default {
       that.listLoad = true
       that.detail.size = 0
       const current = that.currentBucket.slice(1).join('/')
+      const offset = that.parma.offset ? (that.parma.offset - 1) * that.parma.limit : 0
       let params = {
         prefix: current || '',
         bucket_uid: that.$route.query.bucket_uuid,
-        limit: 10,
-        offset: 0
+        limit: that.parma.limit,
+        offset: offset
       }
       const directoryRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/get_file_list?${QS.stringify(params)}`, 'get')
       if (!directoryRes || directoryRes.status !== 'success') {
@@ -336,6 +358,33 @@ export default {
       that.$store.dispatch('setFreeBucket', that.detail.size || 0)
       that.$refs.tableList.bodyWrapper.scrollTop = 0
       // if (type === 1) that.$refs.tableList.bodyWrapper.scrollTop = that.$refs.tableList.bodyWrapper.scrollHeight
+    },
+    handleCurrentChange (val) {
+      console.log('hand current:', val)
+      that.parma.offset = Number(val)
+      that.parma.jumperOffset = String(val)
+      that.getListObjects()
+    },
+    handleSizeChange (val) {
+      console.log('hand size:', val)
+      that.parma.limit = Number(val)
+      that.parma.offset = 1
+      that.parma.jumperOffset = 1
+      that.getListObjects()
+    },
+    pageSizeChange (recordPage = parseInt(that.parma.jumperOffset), MaxPagenumber = Math.ceil(that.parma.total / that.parma.limit)) {
+      if ((recordPage > MaxPagenumber) && (MaxPagenumber > 0)) {
+        recordPage = MaxPagenumber
+      } else if (MaxPagenumber <= 0) {
+        recordPage = 1
+      } else if (recordPage < 1) {
+        recordPage = 1
+      } else if (isNaN(that.parma.jumperOffset) || that.parma.jumperOffset === '') {
+        recordPage = 1
+      }
+      that.parma.offset = Number(recordPage)
+      that.parma.jumperOffset = recordPage
+      that.getListObjects()
     },
     momentFun (dateItem) {
       let dateNew = new Date(dateItem).getTime()
@@ -901,6 +950,104 @@ export default {
         }
         .el-table::before {
           display: none;
+        }
+        .form_pagination {
+          position: relative;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          text-align: center;
+          margin: 0.5rem 0 0.06rem;
+          padding: 0;
+          @media screen and (max-width: 1024px) {
+            padding: 0;
+          }
+          @media screen and (max-width: 600px) {
+            flex-wrap: wrap;
+          }
+          .pagination {
+            display: flex;
+            align-items: center;
+            margin: 0;
+            font-size: 0.18rem;
+            color: #000;
+            .el-pagination {
+              .el-icon {
+                font-size: 0.18rem;
+              }
+              .el-pager {
+                li {
+                  min-width: 30px;
+                  height: 30px;
+                  font-size: 0.18rem;
+                  font-weight: normal;
+                  line-height: 30px;
+                }
+                .active {
+                  border: 1px solid #6798f5;
+                  border-radius: 5px;
+                  color: #000;
+                }
+              }
+            }
+            .el-select {
+              max-width: 100px;
+              margin-right: 0.15rem;
+              .el-input__inner,
+              .el-input__icon {
+                height: 30px;
+                line-height: 30px;
+              }
+            }
+            .span {
+              margin: 0 0 0 10px;
+              font-size: 13px;
+              font-weight: 400;
+              color: #606266;
+              white-space: nowrap;
+            }
+            .paginaInput {
+              max-width: 50px;
+              .el-input__inner,
+              .el-input__icon {
+                padding: 0 3px;
+                height: 30px;
+                line-height: 30px;
+                text-align: center;
+              }
+            }
+
+            .pagination_left {
+              width: 0.24rem;
+              height: 0.24rem;
+              margin: 0 0.2rem;
+              border: 1px solid #f8f8f8;
+              border-radius: 0.04rem;
+              text-align: center;
+              line-height: 0.24rem;
+              font-size: 0.16rem;
+              color: #959494;
+              cursor: pointer;
+            }
+          }
+          .down {
+            position: absolute;
+            right: 0;
+            font-size: 0.18rem;
+            color: #888;
+            cursor: pointer;
+            @media screen and (max-width: 600px) {
+              position: relative;
+              width: 100%;
+              text-align: center;
+            }
+            span {
+              color: #2c7ff8;
+            }
+            &:hover {
+              text-decoration: underline;
+            }
+          }
         }
       }
     }

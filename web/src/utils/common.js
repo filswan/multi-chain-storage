@@ -50,8 +50,12 @@ const web3Init = web3
 
 export async function Init (callback) {
   if (typeof window.ethereum === 'undefined') {
+    if (/Mobi|Android|iPhone/i.test(navigator.userAgent)) {
+      alert('Please use MetaMask\'s built-in browser if you are using a cell phone')
+      return
+    }
+    alert('Consider installing MetaMask! ')
     window.open('https://metamask.io/download.html')
-    alert('Consider installing MetaMask!')
   } else {
     ethereum
       .request({

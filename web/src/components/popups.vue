@@ -175,6 +175,34 @@
         </div>
       </div>
     </div>
+    <div class="fe-none" v-else-if="typeName === 'upload_folder'">
+      <div class="uploadDig" v-loading="loading">
+        <i class="el-icon-circle-close close" @click="closeDia()"></i>
+        <div class="upload_form">
+          <el-upload class="upload-demo" :multiple="true" :style="{'border': ruleForm.fileList_tip?'2px dashed #f56c6c':'0'}" drag ref="uploadFolderRef" action="customize" :http-request="uploadFile" :file-list="ruleForm.fileList" :on-change="handleChange"
+            :on-remove="handleRemove">
+            <img src="@/assets/images/space/icon_11.png" alt="">
+            <div class="el-upload__text">{{$t('metaSpace.upload_desc')}}</div>
+            <div class="el-upload__text">
+              <small>{{$t('metaSpace.uploadDray_or')}}</small>
+            </div>
+            <el-button type="primary">
+              {{$t('metaSpace.uploadDray_text')}}
+            </el-button>
+          </el-upload>
+          <p v-if="ruleForm.fileList.length>0" style="display: flex;align-items: center;">
+            <svg t="1637031488880" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3310" style="width: 14px;height: 14px;margin: 0 6px 0 5px;">
+              <path d="M512 1024a512 512 0 1 1 512-512 32 32 0 0 1-32 32h-448v448a32 32 0 0 1-32 32zM512 64a448 448 0 0 0-32 896V512a32 32 0 0 1 32-32h448A448 448 0 0 0 512 64z" fill="#999999" p-id="3311"></path>
+              <path d="M858.88 976a32 32 0 0 1-32-32V640a32 32 0 0 1 32-32 32 32 0 0 1 32 32v304a32 32 0 0 1-32 32z" fill="#999999" p-id="3312"></path>
+              <path d="M757.12 773.12a34.56 34.56 0 0 1-22.4-8.96 32 32 0 0 1 0-45.44l101.12-101.12a32 32 0 0 1 45.44 0 30.72 30.72 0 0 1 0 44.8l-101.12 101.76a34.56 34.56 0 0 1-23.04 8.96z" fill="#999999" p-id="3313"></path>
+              <path d="M960 773.12a32 32 0 0 1-22.4-8.96l-101.76-101.76a32 32 0 0 1 0-44.8 32 32 0 0 1 45.44 0l101.12 101.12a32 32 0 0 1-22.4 54.4z" fill="#999999" p-id="3314"></path>
+            </svg>
+            {{ruleForm.file_size}}
+          </p>
+          <p v-if="ruleForm.fileList_tip" style="color: #F56C6C;font-size: 12px;line-height: 1;">{{ruleForm.fileList_tip_text}}</p>
+        </div>
+      </div>
+    </div>
     <div class="fe-none" v-else-if="typeName === 'upload_progress'">
       <div class="uploadDig">
         <div class="upload_progress">
@@ -579,7 +607,7 @@ export default {
             return false
           }
 
-          let max = 10 * 1024 * 1024
+          let max = 0.5 * 1024 * 1024
           let count = Math.ceil(file.size / max)
           let index = 0
           let chunks = []
@@ -804,7 +832,8 @@ export default {
   },
   mounted () {
     that = this
-    // that.$refs.uploadFileRef.$children[0].$refs.input.webkitdirectory = true
+    console.log(that.typeName)
+    if (that.typeName === 'upload_folder') that.$refs.uploadFolderRef.$children[0].$refs.input.webkitdirectory = true
     document.onkeydown = function (e) {
       if (e.keyCode === 13) {
         if (that.typeName === 'add' || that.typeName === 'rename' || that.typeName === 'addSub') that.getDialogClose('form')

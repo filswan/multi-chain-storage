@@ -27,6 +27,10 @@
                 <img src="@/assets/images/space/icon_08.png" alt="">
                 <span>{{$t('metaSpace.Upload_File')}}</span>
               </a>
+              <a @click="dialogFun('upload_folder', $route.query.bucket_uuid)">
+                <img src="@/assets/images/space/icon_08.png" alt="">
+                <span>Upload Folder</span>
+              </a>
             </div>
           </div>
         </div>

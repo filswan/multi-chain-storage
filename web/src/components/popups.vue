@@ -703,7 +703,8 @@ export default {
     async fileCheck (hash, file, currentFold, fold) {
       const reg = new RegExp('/' + '$')
       const current = that.currentBucket.split('/').slice(1).join('/')
-      const pre = `${that.areaBody.Prefix || current || ''}/${currentFold}`
+      const parentAddress = that.areaBody.Prefix || current || ''
+      const pre = `${parentAddress ? parentAddress + '/' : ''}${currentFold}`
       let paramCheck = {
         'file_hash': hash,
         'file_name': file.name,
@@ -735,7 +736,8 @@ export default {
     async fileMerge (hash, file, currentFold, fold) {
       const reg = new RegExp('/' + '$')
       const current = that.currentBucket.split('/').slice(1).join('/')
-      const pre = `${that.areaBody.Prefix || current || ''}/${currentFold}`
+      const parentAddress = that.areaBody.Prefix || current || ''
+      const pre = `${parentAddress ? parentAddress + '/' : ''}${currentFold}`
       let paramMerge = {
         'file_hash': hash,
         'file_name': file.name,

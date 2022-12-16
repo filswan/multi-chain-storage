@@ -7,7 +7,6 @@
 
         <div class="mailforget-content">{{generateMailForget('mailForget_tips_1')}}<span>{{mail}}</span>{{generateMailForget('mailForget_tips_2')}}</div>
 
-
         <div class="form-btn" @click="sendAgain" :class="isGetPhoneVerifyCode === true ? 'active' : ''">{{getPhoneVerifyCodeWord}}</div>
       </div>
     </div>
@@ -22,7 +21,7 @@ import * as myAjax from '@/api/forgetPassword'
 import { generateMailForget } from '@/utils/i18n'
 export default {
   name: 'mailForget',
-  data() {
+  data () {
     return {
       // 滑块验证弹框是否显示
       dialogVerifyShow: false,
@@ -32,13 +31,13 @@ export default {
       mail: '',
       isGetPhoneVerifyCode: true,
       // 获取按钮文字
-      getPhoneVerifyCodeWord: this.generateMailForget('getVerifyCodeWord'),
+      getPhoneVerifyCodeWord: this.generateMailForget('getVerifyCodeWord')
     }
   },
   methods: {
     generateMailForget,
     // 判断是否有邮箱对象
-    haveMail() {
+    haveMail () {
       let _this = this
       if (!sessionStorage.oaxForgetMail) {
         _this.$router.push({ path: '/forget' })
@@ -46,25 +45,25 @@ export default {
         _this.mail = sessionStorage.oaxForgetMail
 
         _this.isGetPhoneVerifyCode = true
-        let get_code_time = 60
-        _this.getPhoneVerifyCodeWord = get_code_time + _this.generateMailForget('getVerifyCodeWord_time')
-        let code_times = setInterval(function() {
-          if (get_code_time <= 0) {
-            clearInterval(code_times)
+        let getCodeTime = 60
+        _this.getPhoneVerifyCodeWord = getCodeTime + _this.generateMailForget('getVerifyCodeWord_time')
+        let codeTimes = setInterval(function () {
+          if (getCodeTime <= 0) {
+            clearInterval(codeTimes)
             _this.isGetPhoneVerifyCode = false
             _this.getPhoneVerifyCodeWord = _this.generateMailForget('getVerifyCodeWord')
           } else {
-            get_code_time -= 1
-            _this.getPhoneVerifyCodeWord = get_code_time + _this.generateMailForget('getVerifyCodeWord_time')
+            getCodeTime -= 1
+            _this.getPhoneVerifyCodeWord = getCodeTime + _this.generateMailForget('getVerifyCodeWord_time')
           }
         }, 1000)
       }
     },
     // 重新发送邮件
-    sendAgain() {
+    sendAgain () {
       var _this = this
       if (_this.isGetPhoneVerifyCode) {
-          return false
+        return false
       }
 
       _this.mailforgetLoad = true
@@ -78,23 +77,23 @@ export default {
         .then(response => {
           console.log(response)
           _this.mailforgetLoad = false
-          if (response.status == "success") {
+          if (response.status === 'success') {
             _this.$message({
               message: response.message,
               type: 'success'
             })
-            
+
             _this.isGetPhoneVerifyCode = true
-            let get_code_time = 60
-            _this.getPhoneVerifyCodeWord = get_code_time + _this.generateMailForget('getVerifyCodeWord_time')
-            let code_times = setInterval(function() {
-              if (get_code_time <= 0) {
-                clearInterval(code_times)
+            let getCodeTime = 60
+            _this.getPhoneVerifyCodeWord = getCodeTime + _this.generateMailForget('getVerifyCodeWord_time')
+            let codeTimes = setInterval(function () {
+              if (getCodeTime <= 0) {
+                clearInterval(codeTimes)
                 _this.isGetPhoneVerifyCode = false
                 _this.getPhoneVerifyCodeWord = _this.generateMailForget('getVerifyCodeWord')
               } else {
-                get_code_time -= 1
-                _this.getPhoneVerifyCodeWord = get_code_time + _this.generateMailForget('getVerifyCodeWord_time')
+                getCodeTime -= 1
+                _this.getPhoneVerifyCodeWord = getCodeTime + _this.generateMailForget('getVerifyCodeWord_time')
               }
             }, 1000)
           } else {
@@ -104,12 +103,11 @@ export default {
         .catch(error => {
           console.log(error)
           _this.mailforgetLoad = false
-          _this.$message.error(response.message)
         })
     }
   },
 
-  mounted() {
+  mounted () {
     this.haveMail()
   },
   components: {
@@ -134,7 +132,7 @@ export default {
   .mailforget-wrapper{
     margin: 0;
     width: 90%;
-    height: 90%;    
+    height: 90%;
     border-radius: 0.08rem;
   display: flex;
   align-items: center;

@@ -10,7 +10,7 @@
       <!-- 验证失败 -->
       <div v-else-if="activationResult === 2">
         <img class="activation-success-icon" src="../../assets/images/icon_failure.png"/>
-        <div class="activation-success-content">{{generateActivationSuccess('activationSuccess_fail_title')}}</div>        
+        <div class="activation-success-content">{{generateActivationSuccess('activationSuccess_fail_title')}}</div>
         <div class="activation-success-tips" @click="againCode">{{generateActivationSuccess('activationSuccess_fail_tips01')}}</div>
       </div>
 
@@ -23,7 +23,7 @@ import * as myAjax from '@/api/accountActivation'
 import { generateActivationSuccess } from '@/utils/i18n'
 export default {
   name: 'activationSuccess',
-  data() {
+  data () {
     return {
       // 激活框加载遮罩
       activationSuccessLoad: true,
@@ -38,7 +38,7 @@ export default {
   methods: {
     generateActivationSuccess,
     // 判断是否有地址栏验证参数
-    haveCode() {
+    haveCode () {
       var _this = this
       if (_this.getUrlVars().activateCode && _this.getUrlVars().email) {
         _this.checkCode(_this.getUrlVars().activateCode, _this.getUrlVars().email)
@@ -47,7 +47,7 @@ export default {
       }
     },
     // 验证邮箱验证码
-    checkCode(code, email) {
+    checkCode (code, email) {
       var _this = this
       let param = {
         activateCode: code,
@@ -58,17 +58,17 @@ export default {
         .checkCode(param)
         .then(response => {
           console.log(response)
-          if (response.status == "success") {
+          if (response.status === 'success') {
             _this.activationSuccessLoad = false
             _this.activationResult = 1
-            var jump_time = 3
-            _this.jumpTime = jump_time + _this.generateActivationSuccess('activationSuccess_success_jumptime_unit')
-            var jump_time_inter = setInterval(function() {
-              if (jump_time > 0) {
-                jump_time -= 1
-                _this.jumpTime = jump_time + _this.generateActivationSuccess('activationSuccess_success_jumptime_unit')
+            var jumpTime = 3
+            _this.jumpTime = jumpTime + _this.generateActivationSuccess('activationSuccess_success_jumptime_unit')
+            var jumpTimeInter = setInterval(function () {
+              if (jumpTime > 0) {
+                jumpTime -= 1
+                _this.jumpTime = jumpTime + _this.generateActivationSuccess('activationSuccess_success_jumptime_unit')
               } else {
-                clearInterval(jump_time_inter)
+                clearInterval(jumpTimeInter)
                 sessionStorage.oaxLoginType = 'mail'
                 _this.$router.push({ path: '/login' })
               }
@@ -83,7 +83,7 @@ export default {
         })
     },
     // 获取地址栏参数
-    getUrlVars() {
+    getUrlVars () {
       var vars = []
       var hash
       var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&')
@@ -95,14 +95,14 @@ export default {
       return vars
     },
     // 再次获取激活链接
-    againCode() {
+    againCode () {
       sessionStorage.oaxRegisterMail = this.getUrlVars().email
       sessionStorage.oaxRegisterMailTime = new Date().getTime()
-      this.$router.push('/account_activation');
+      this.$router.push('/account_activation')
     }
   },
 
-  mounted() {
+  mounted () {
     this.haveCode()
   },
   components: {
@@ -127,7 +127,7 @@ export default {
   .activation-success-wrapper{
     margin: 0;
     width: 90%;
-    height: 90%;    
+    height: 90%;
     border-radius: 0.08rem;
     display: flex;
     align-items: center;

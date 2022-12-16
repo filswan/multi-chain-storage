@@ -1,17 +1,12 @@
 <template>
-<div class="login register">
+  <div class="login register">
     <div class="loginArea">
       <div class="loginAreaLeft">
         <img src="@/assets/images/login/login_logo_en.png" />
       </div>
       <div class="loginAreaRight" v-loading="regLoad">
-        <a
-          href="javascript:void(0);"
-          @click="menuIndexFun('/login',7)"
-          class="login_register1"
-        >{{generateRegister('register_h1')}} ></a>
+        <a href="javascript:void(0);" @click="menuIndexFun('/login',7)" class="login_register1">{{generateRegister('register_h1')}} ></a>
         <h1 style="margin:0.65rem 0px 0.4rem">{{generateRegister('register_registermail')}}</h1>
-
 
         <transition name="phoneTypeFade" mode="out-in">
 
@@ -19,17 +14,17 @@
           <div key="mail">
 
             <div class="loginFormDiv" :class="verify.mail.tipsbox ? 'border-red' : ''">
-              <input class="form-input" :placeholder="generateRegister('register_mailnum')" v-model="formData.mail.email" @blur="checkAccount(2)"/>
+              <input class="form-input" :placeholder="generateRegister('register_mailnum')" v-model="formData.mail.email" @blur="checkAccount(2)" />
             </div>
             <div class="form-tips" v-show="verify.mail.tipsbox">{{verify.mail.tips}}</div>
 
             <div class="loginFormDiv" :class="verify.mailPassword.tipsbox ? 'border-red' : ''">
-              <input type="password" class="form-input" :placeholder="generateRegister('register_verify_placehold_tips_rule')" v-model="formData.mail.password" @blur="checkPass(2)"/>
+              <input type="password" class="form-input" :placeholder="generateRegister('register_verify_placehold_tips_rule')" v-model="formData.mail.password" @blur="checkPass(2)" />
             </div>
             <div class="form-tips" v-show="verify.mailPassword.tipsbox">{{verify.mailPassword.tips}}</div>
 
             <div class="loginFormDiv" :class="verify.mailPasswordVerify.tipsbox ? 'border-red' : ''">
-              <input type="password" class="form-input" :placeholder="generateRegister('register_verify_pw_tips_reenter')" v-model="formData.mail.passwordComfirm" @blur="checkAccountPass(2)"/>
+              <input type="password" class="form-input" :placeholder="generateRegister('register_verify_pw_tips_reenter')" v-model="formData.mail.passwordComfirm" @blur="checkAccountPass(2)" />
             </div>
             <div class="form-tips" v-show="verify.mailPasswordVerify.tipsbox">{{verify.mailPasswordVerify.tips}}</div>
 
@@ -42,7 +37,6 @@
 
       </div>
 
-
       <div id="captcha"></div>
 
       <!-- 手机注册成功 -->
@@ -51,13 +45,16 @@
           <div class="dialog-mask"></div>
           <div class="dialog-RegSuccess-box dialog-board">
             <!-- <img class="dialog-RegSuccess-icon" src="../../assets/images/cn.jpg"/> -->
-            <div class="dialog-RegSuccess-content">{{generateRegister('register_regsuccess')}}<span class="dialog-RegSuccess-content-tips">（<span class="dialog-RegSuccess-content-tipstime">{{jumpTime}}</span>{{generateRegister('register_regsuccess_tips')}}）</span></div>
+            <div class="dialog-RegSuccess-content">{{generateRegister('register_regsuccess')}}
+              <span class="dialog-RegSuccess-content-tips">（
+                <span class="dialog-RegSuccess-content-tipstime">{{jumpTime}}</span>{{generateRegister('register_regsuccess_tips')}}）</span>
+            </div>
           </div>
         </div>
       </transition>
 
     </div>
-</div>
+  </div>
 </template>
 
 <script>
@@ -65,7 +62,7 @@ import * as myAjax from '@/api/register'
 import { generateRegister } from '@/utils/i18n'
 export default {
   name: 'register',
-  data() {
+  data () {
     return {
       // 注册框加载遮罩
       regLoad: false,
@@ -126,7 +123,7 @@ export default {
           password: '',
           passwordComfirm: '',
           code: '86',
-          inviteCode: '',
+          inviteCode: ''
         },
         mail: {
           email: '',
@@ -159,7 +156,7 @@ export default {
   methods: {
     generateRegister,
     // 邮箱注册
-    mailReg() {
+    mailReg () {
       var _this = this
       // 邮箱
       if (!_this.formData.mail.email) {
@@ -170,13 +167,13 @@ export default {
         _this.verify.mail.tips = _this.generateRegister('register_verify_mail_tips_true')
         _this.verify.mail.tipsbox = true
         return false
-      }else {
+      } else {
         _this.verify.mail.tipsbox = false
       }
       _this.checkPass()
       _this.checkAccountPass()
 
-      if(_this.verify.mailPassword.tipsbox == false && _this.verify.mailPasswordVerify.tipsbox == false){
+      if (_this.verify.mailPassword.tipsbox === false && _this.verify.mailPasswordVerify.tipsbox === false) {
         _this.regLoad = true
         // 注册
         _this.formData.mail.source = 2
@@ -184,10 +181,10 @@ export default {
           .emailRegister(_this.formData.mail)
           .then(response => {
             // console.log(response)
-            if (response.status == "success") {
+            if (response.status === 'success') {
               sessionStorage.oaxRegisterMail = _this.formData.mail.email
               sessionStorage.oaxRegisterMailTime = new Date().getTime()
-              _this.$router.push('/account_activation');
+              _this.$router.push('/account_activation')
               _this.regLoad = false
             } else {
               _this.$message.error(response.message)
@@ -200,10 +197,9 @@ export default {
             // _this.$message.error(error)
           })
       }
-
     },
     // 校验密码格式
-    checkPass(type){
+    checkPass (type) {
       var _this = this
       if (!_this.formData.mail.password) {
         _this.verify.mailPassword.tips = _this.generateRegister('register_verify_pw_tips_empty')
@@ -218,99 +214,79 @@ export default {
       }
     },
     // 校验账号
-    checkAccount(type){
+    checkAccount (type) {
       let _this = this
       if (_this.formData.mail.email === _this.oldAccount.mail) {
-          return false
-        }
-        _this.oldAccount.mail = _this.formData.mail.email
-        if (!_this.formData.mail.email) {
-          _this.verify.mail.tips = _this.generateRegister('register_verify_mail_tips_empty')
-          _this.verify.mail.tipsbox = true
-          return false
-        } else if (!_this.mailRegular.test(_this.formData.mail.email)) {
-          _this.verify.mail.tips = _this.generateRegister('register_verify_mail_tips_true')
-          _this.verify.mail.tipsbox = true
-          return false
-        } else {
-          _this.verify.mail.tipsbox = false
-        }
+        return false
+      }
+      _this.oldAccount.mail = _this.formData.mail.email
+      if (!_this.formData.mail.email) {
+        _this.verify.mail.tips = _this.generateRegister('register_verify_mail_tips_empty')
+        _this.verify.mail.tipsbox = true
+        return false
+      } else if (!_this.mailRegular.test(_this.formData.mail.email)) {
+        _this.verify.mail.tips = _this.generateRegister('register_verify_mail_tips_true')
+        _this.verify.mail.tipsbox = true
+        return false
+      } else {
+        _this.verify.mail.tipsbox = false
+      }
     },
     // 校验密码是否一致
-    checkAccountPass(type){
+    checkAccountPass (type) {
       var _this = this
       if (_this.formData.mail.passwordComfirm !== _this.formData.mail.password) {
-        _this.verify.mailPasswordVerify.tipsbox=true
+        _this.verify.mailPasswordVerify.tipsbox = true
         return false
-      }else{
-        _this.verify.mailPasswordVerify.tipsbox=false
+      } else {
+        _this.verify.mailPasswordVerify.tipsbox = false
       }
     },
-      menuIndexFun(to,index) {
-        // this.$router.replace(to).catch(err => err);
-        this.$router.push(to);
-        document.documentElement.scrollTop=0;
-      },
-  },
-
-  mounted() {
-    var _this = this
-    document.onkeydown = function(e) {
-      if (e.keyCode === 13) {
-        if (_this.formType === 'mail') {
-          _this.mailReg()
-        }
-      }
-    }
-  },
-  destroyed() {
-    document.onkeydown = function (e) {
-      if (e.keyCode === 13) {
-        e.returnValue = false;
-        return false;
-      }
+    menuIndexFun (to, index) {
+      // this.$router.replace(to).catch(err => err);
+      this.$router.push(to)
+      document.documentElement.scrollTop = 0
     }
   },
   components: {},
   computed: {
-    languageMcs() {
+    languageMcs () {
       return this.$store.getters.languageMcs
-    },
-  },
+    }
+  }
 }
 </script>
 
-
 <style rel="stylesheet/scss" lang="scss" scopte>
-  .border-red{
-    border-color: #FF5656 !important;
-  }
-  .phoneTypeFade-enter-active,
-  .phoneTypeFade-leave-active{
-    transition: opacity .3s;
-  }
-  .phoneTypeFade-enter,
-  .phoneTypeFade-leave-to{
-    opacity: 0;
-  }
-  .dialogVerifyFade-enter-active,
-  .dialogVerifyFade-leave-active{
-    transition: opacity .3s;
-  }
-  .dialogVerifyFade-enter,
-  .dialogVerifyFade-leave-to{
-    opacity: 0;
-  }
-  .phoneRegSuccessFade-enter-active,
-  .phoneRegSuccessFade-leave-active{
-    transition: opacity .3s;
-  }
-  .phoneRegSuccessFade-enter,
-  .phoneRegSuccessFade-leave-to{
-    opacity: 0;
-  }
-  .form-term-checkbox{
-    float: left;
-    margin: 0.07rem 0.05rem 0 0;
-  }
+.border-red {
+  border-color: #ff5656 !important;
+}
+.phoneTypeFade-enter-active,
+.phoneTypeFade-leave-active {
+  transition: opacity 0.3s;
+}
+.phoneTypeFade-enter,
+.phoneTypeFade-leave-to {
+  opacity: 0;
+}
+.dialogVerifyFade-enter-active,
+.dialogVerifyFade-leave-active {
+  transition: opacity 0.3s;
+}
+.dialogVerifyFade-enter,
+.dialogVerifyFade-leave-to {
+  opacity: 0;
+}
+.phoneRegSuccessFade-enter-active,
+.phoneRegSuccessFade-leave-active {
+  transition: opacity 0.3s;
+}
+.phoneRegSuccessFade-enter,
+.phoneRegSuccessFade-leave-to {
+  opacity: 0;
+}
+.form-term-checkbox {
+  float: left;
+  margin: 0.07rem 0.05rem 0 0;
+}
 </style>

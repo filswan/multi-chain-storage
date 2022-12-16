@@ -15,7 +15,7 @@
 import { generateMailForgetSuccess } from '@/utils/i18n'
 export default {
   name: 'mailForgetSuccess',
-  data() {
+  data () {
     return {
       // 激活框加载遮罩
       mailforgetSuccessLoad: true,
@@ -28,7 +28,7 @@ export default {
   methods: {
     generateMailForgetSuccess,
     // 判断是否有重置邮箱
-    haveCode() {
+    haveCode () {
       var _this = this
       if (sessionStorage.oaxResetMail) {
         _this.checkCode()
@@ -37,24 +37,24 @@ export default {
       }
     },
     // 验证邮箱验证码
-    checkCode(data) {
+    checkCode (data) {
       var _this = this
       _this.mailforgetSuccessLoad = false
-      var jump_time = 3
-      _this.jumpTime = jump_time + _this.generateMailForgetSuccess('mailForgetSuccess_jumptime_unit')
-      var jump_time_inter = setInterval(function() {
-        if (jump_time > 0) {
-          jump_time -= 1
-          _this.jumpTime = jump_time + _this.generateMailForgetSuccess('mailForgetSuccess_jumptime_unit')
+      var jumpTime = 3
+      _this.jumpTime = jumpTime + _this.generateMailForgetSuccess('mailForgetSuccess_jumptime_unit')
+      var jumpTimeInter = setInterval(function () {
+        if (jumpTime > 0) {
+          jumpTime -= 1
+          _this.jumpTime = jumpTime + _this.generateMailForgetSuccess('mailForgetSuccess_jumptime_unit')
         } else {
-          clearInterval(jump_time_inter)
+          clearInterval(jumpTimeInter)
           _this.$router.push({ path: '/login' })
         }
       }, 1000)
     }
   },
 
-  mounted() {
+  mounted () {
     this.haveCode()
   },
   components: {
@@ -74,10 +74,10 @@ export default {
   align-items: center;
   justify-content: center;
   .mailforget-success-wrapper{
-  
+
     margin: 0;
     width: 90%;
-    height: 90%;    
+    height: 90%;
     border-radius: 0.08rem;
   display: flex;
   align-items: center;

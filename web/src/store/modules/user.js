@@ -1,5 +1,10 @@
-import { login, logout } from '@/api/login'
-import { Message } from 'element-ui'
+import {
+  login,
+  logout
+} from '@/api/login'
+import {
+  Message
+} from 'element-ui'
 
 const user = {
   state: {
@@ -67,7 +72,9 @@ const user = {
 
   actions: {
     // 登录
-    Login({ commit }, userInfo) {
+    Login ({
+      commit
+    }, userInfo) {
       var _this = this
       return new Promise((resolve, reject) => {
         login(userInfo)
@@ -79,7 +86,7 @@ const user = {
                 duration: 5 * 1000
               })
               sessionStorage.oaxRegisterMail = userInfo.username
-              _this.$router.push("/asset_management")
+              _this.$router.push('/asset_management')
               return false
             }
             _this.loginLoad = false
@@ -129,13 +136,18 @@ const user = {
     },
 
     // 获取用户信息
-    SetTime({ commit }, time) {
+    SetTime ({
+      commit
+    }, time) {
       return new Promise((resolve, reject) => {
         commit('SET_LINKTIME', time)
       })
     },
     // 登出
-    LogOut({ commit, state }) {
+    LogOut ({
+      commit,
+      state
+    }) {
       // var _this = this
       return new Promise((resolve, reject) => {
         logout(state.enable)
@@ -172,7 +184,9 @@ const user = {
     },
 
     // 前端 登出
-    FedLogOut({ commit }) {
+    FedLogOut ({
+      commit
+    }) {
       // var _this = this
       return new Promise(resolve => {
         sessionStorage.removeItem('oaxLoginUserId')
@@ -205,7 +219,7 @@ const user = {
 }
 
 export default user
-function newFunction(data) {
+
+function newFunction (data) {
   console.log(data.name)
 }
-

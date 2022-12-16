@@ -4,38 +4,37 @@
 
       <!-- <div class="forget-title">{{generateForgetPassword('forgetPassword_title')}}</div> -->
 
-    <div class="loginAreaLeft">
+      <div class="loginAreaLeft">
         <img src="@/assets/images/login/login_logo_en.png" />
-    </div>
-    <!-- 邮箱密码重置 -->
-    <div class="loginAreaRight" v-loading="mailresetLoad">
+      </div>
+      <!-- 邮箱密码重置 -->
+      <div class="loginAreaRight" v-loading="mailresetLoad">
 
-      <h1>{{generateMailResetPassword('mailResetPassword_title')}}</h1>
+        <h1>{{generateMailResetPassword('mailResetPassword_title')}}</h1>
 
-      <div class="form-box mail-wrapper">
+        <div class="form-box mail-wrapper">
 
-        <div class="loginFormDiv" :class="verify.mailPassword.tipsbox ? 'border-red' : ''">
-          <input type="password" class="form-input" :placeholder="generateMailResetPassword('mailResetPassword_new_pw')" v-model="formData.mail.password"/>
-        </div>
-        <div class="form-tips" v-show="verify.mailPassword.tipsbox">{{verify.mailPassword.tips}}</div>
+          <div class="loginFormDiv" :class="verify.mailPassword.tipsbox ? 'border-red' : ''">
+            <input type="password" class="form-input" :placeholder="generateMailResetPassword('mailResetPassword_new_pw')" v-model="formData.mail.password" />
+          </div>
+          <div class="form-tips" v-show="verify.mailPassword.tipsbox">{{verify.mailPassword.tips}}</div>
 
-        <div class="loginFormDiv" :class="verify.mailPasswordVerify.tipsbox ? 'border-red' : ''">
-          <input type="password" class="form-input" :placeholder="generateMailResetPassword('mailResetPassword_pwconfirm')" v-model="formData.mail.passwordComfirm"/>
-        </div>
-        <div class="form-tips" v-show="verify.mailPasswordVerify.tipsbox">{{verify.mailPasswordVerify.tips}}</div>
+          <div class="loginFormDiv" :class="verify.mailPasswordVerify.tipsbox ? 'border-red' : ''">
+            <input type="password" class="form-input" :placeholder="generateMailResetPassword('mailResetPassword_pwconfirm')" v-model="formData.mail.passwordComfirm" />
+          </div>
+          <div class="form-tips" v-show="verify.mailPasswordVerify.tipsbox">{{verify.mailPasswordVerify.tips}}</div>
 
-        <div class="loginFormDiv" style="margin-top: 0.4rem;height:0.37rem">
-          <el-button type="primary" @click="mailReset">{{generateMailResetPassword('mailResetPassword_btn')}}</el-button>
+          <div class="loginFormDiv" style="margin-top: 0.4rem;height:0.37rem">
+            <el-button type="primary" @click="mailReset">{{generateMailResetPassword('mailResetPassword_btn')}}</el-button>
+          </div>
+
         </div>
 
       </div>
 
+      <div id="captcha"></div>
+
     </div>
-
-
-    <div id="captcha"></div>
-
-  </div>
   </div>
 </template>
 
@@ -44,7 +43,7 @@ import * as myAjax from '@/api/forgetPassword'
 import { generateMailResetPassword } from '@/utils/i18n'
 export default {
   name: 'mailResetPassword',
-  data() {
+  data () {
     return {
       // 密码验证正则
       // passwordRegular: /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,16}$/,
@@ -83,7 +82,7 @@ export default {
   methods: {
     generateMailResetPassword,
     // 判断是否有邮箱对象
-    haveMail() {
+    haveMail () {
       var _this = this
       if (_this.getUrlVars().email && _this.getUrlVars().checkCode) {
         _this.linkData = {
@@ -97,7 +96,7 @@ export default {
       }
     },
     // 邮箱找回
-    mailReset() {
+    mailReset () {
       var _this = this
       // 邮箱密码
       if (!_this.formData.mail.password) {
@@ -125,10 +124,10 @@ export default {
       }
 
       var reqData = {
-        "password": _this.formData.mail.password,
-        "repeatPassword": _this.formData.mail.passwordComfirm,
-        "email": _this.linkData.email,
-        "emailCode": _this.linkData.checkCode,
+        'password': _this.formData.mail.password,
+        'repeatPassword': _this.formData.mail.passwordComfirm,
+        'email': _this.linkData.email,
+        'emailCode': _this.linkData.checkCode,
         source: 2
       }
       _this.mailresetLoad = true
@@ -137,7 +136,7 @@ export default {
         .then(response => {
           console.log(response)
           _this.mailresetLoad = false
-          if (response.status == "success") {
+          if (response.status === 'success') {
             sessionStorage.oaxResetMail = reqData.email
             _this.$router.push({ path: '/mail_forget_success' })
           } else {
@@ -147,11 +146,10 @@ export default {
         .catch(error => {
           console.log(error)
           _this.mailresetLoad = false
-          _this.$message.error(response.message)
         })
     },
     // 获取地址栏参数
-    getUrlVars() {
+    getUrlVars () {
       var vars = []
       var hash
       var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&')
@@ -164,22 +162,8 @@ export default {
     }
   },
 
-  mounted() {
+  mounted () {
     this.haveMail()
-    var _this = this
-    document.onkeydown = function(e) {
-      if (e.keyCode === 13) {
-        _this.mailReset()
-      }
-    }
-  },
-  destroyed() {
-    document.onkeydown = function (e) {
-      if (e.keyCode === 13) {
-        e.returnValue = false;
-        return false;
-      }
-    }
   },
   components: {
   }
@@ -187,8 +171,8 @@ export default {
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scopte>
-.loginAreaRight{
-  .form-box{
+.loginAreaRight {
+  .form-box {
     width: 100%;
   }
 }

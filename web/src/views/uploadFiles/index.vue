@@ -7,11 +7,11 @@
 </template>
 <script>
 export default {
-    data () {
-        return {
+  data () {
+    return {
 
-        }
     }
+  }
 }
 </script>
 <style lang="scss" scoped>
@@ -20,7 +20,7 @@ export default {
     padding: 0;
     font-size: 0.2rem;
 }
-    
+
 .appFade-enter-active,
 .appFade-leave-active {
   transition: opacity 0.3s;
@@ -30,6 +30,6 @@ export default {
   opacity: 0;
 }
 @media screen and (max-width:999px){
-    
+
 }
 </style>

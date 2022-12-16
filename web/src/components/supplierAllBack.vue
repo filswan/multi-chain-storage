@@ -5,23 +5,21 @@
 
 <script>
 export default {
-  name: "supplierAllBack",
-  data() {
+  name: 'supplierAllBack',
+  data () {
     return {
-    };
+    }
   },
   components: {},
   watch: {},
   methods: {},
-  mounted() {
-    let _this = this
-    _this.$router.go(-1)
+  mounted () {
+    this.$router.go(-1)
   },
   filters: {},
-  computed: {},
-};
+  computed: {}
+}
 </script>
-
 
 <style scoped lang="scss">
 </style>

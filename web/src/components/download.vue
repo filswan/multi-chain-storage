@@ -1,130 +1,124 @@
 <template>
-        <el-dialog :modal="true" :width="widthDia" :visible.sync="downVisible" :before-close="closeDia">
-            <div slot="title" class="dialog-title">
-                {{$t('billing.download_module_title')+titlePage+$t('billing.download_module_title_kh')}}
-                <el-tooltip effect="dark" placement="top">
-                    <div slot="content">
-                        {{$t('billing.download_module_title_tooltip')}}
-                    </div>
-                    <img src="@/assets/images/info.png"/>
-                </el-tooltip>
-            </div>
-            <div class="upload_form" v-loading="loading">
-                <el-date-picker popper-class="elPopDate"
-                    v-model="downloadTime"
-                    type="daterange"
-                    :range-separator="$t('billing.time_to')"
-                    :start-placeholder="$t('billing.start_date')"
-                    :end-placeholder="$t('billing.end_date')">
-                </el-date-picker>
-                <div class="drag_container">
-                    <span style="white-space: nowrap;margin-right: 0.15rem;">{{$t('billing.verify')}}</span>
-                    <JcRange status="statusAll" :successFun="onMpanelSuccess" :errorFun="onMpanelError"></JcRange>
-                </div>
-                <div class="upload_bot">
-                    <el-button type="primary" @click="downloadClick" :disabled="!downloadTime || !sliderValidator">
-                      {{$t('billing.download_module_btn')}}
-                    </el-button>
-                </div>
-            </div>
-        </el-dialog>
+  <el-dialog :modal="true" :width="widthDia" :visible.sync="downVisible" :before-close="closeDia">
+    <div slot="title" class="dialog-title">
+      {{$t('billing.download_module_title')+titlePage+$t('billing.download_module_title_kh')}}
+      <el-tooltip effect="dark" placement="top">
+        <div slot="content">
+          {{$t('billing.download_module_title_tooltip')}}
+        </div>
+        <img src="@/assets/images/info.png" />
+      </el-tooltip>
+    </div>
+    <div class="upload_form" v-loading="loading">
+      <el-date-picker popper-class="elPopDate" v-model="downloadTime" type="daterange" :range-separator="$t('billing.time_to')" :start-placeholder="$t('billing.start_date')" :end-placeholder="$t('billing.end_date')">
+      </el-date-picker>
+      <div class="drag_container">
+        <span style="white-space: nowrap;margin-right: 0.15rem;">{{$t('billing.verify')}}</span>
+        <JcRange status="statusAll" :successFun="onMpanelSuccess" :errorFun="onMpanelError"></JcRange>
+      </div>
+      <div class="upload_bot">
+        <el-button type="primary" @click="downloadClick" :disabled="!downloadTime || !sliderValidator">
+          {{$t('billing.download_module_btn')}}
+        </el-button>
+      </div>
+    </div>
+  </el-dialog>
 </template>
 
 <script>
-let that;
-import JcRange from "@/components/JcRange";
-import Moment from "moment-timezone";
+import JcRange from '@/components/JcRange'
+import Moment from 'moment-timezone'
 import axios from 'axios'
 import QS from 'qs'
+let that
 export default {
-  name: "download",
-  data() {
+  name: 'download',
+  data () {
     var checkStatus = (rule, value, callback) => {
-      console.log(value);
+      console.log(value)
       if (!value) {
-        return callback(new Error(that.$t("billing.verify_tip")));
+        return callback(new Error(that.$t('billing.verify_tip')))
       } else {
-        callback();
+        callback()
       }
-    };
+    }
     return {
-      widthDia: document.body.clientWidth <= 600 ? "95%" : document.body.clientWidth <= 1600 ? "520px" : "640px",
+      widthDia: document.body.clientWidth <= 600 ? '95%' : document.body.clientWidth <= 1600 ? '520px' : '640px',
       downloadTime: [
-        new Date(new Date(new Date().toLocaleDateString()).getTime() - 3600 * 1000 * 24 * 7), 
+        new Date(new Date(new Date().toLocaleDateString()).getTime() - 3600 * 1000 * 24 * 7),
         new Date(new Date(new Date().toLocaleDateString()).getTime() + 24 * 60 * 60 * 1000 - 1)
       ],
-      statusAll: [{ validator: checkStatus, trigger: "change" }],
+      statusAll: [{ validator: checkStatus, trigger: 'change' }],
       sliderValidator: false,
       loading: false
-    };
+    }
   },
-  props: ["downVisible", 'titlePage'],
+  props: ['downVisible', 'titlePage'],
   components: {
     JcRange
   },
   computed: {
-      metaAddress() {
-          return this.$store.getters.metaAddress
-      }
+    metaAddress () {
+      return this.$store.getters.metaAddress
+    }
   },
   methods: {
-    onMpanelSuccess() {
+    onMpanelSuccess () {
       this.sliderValidator = true
     },
-    onMpanelError() {
+    onMpanelError () {
       this.sliderValidator = false
     },
-    closeDia() {
-      that.$emit("getDownload", false);
+    closeDia () {
+      that.$emit('getDownload', false)
     },
-    async downloadClick() {
-      if(!that.downloadTime || !that.sliderValidator) return false
+    async downloadClick () {
+      if (!that.downloadTime || !that.sliderValidator) return false
 
       that.loading = true
-      let end = new Date(that.downloadTime[1].toLocaleDateString()).getTime() + 24 * 60 * 60 * 1000 - 1 //设置为选中end日期的23:59:59, 默认为00:00:00
+      let end = new Date(that.downloadTime[1].toLocaleDateString()).getTime() + 24 * 60 * 60 * 1000 - 1 // 设置为选中end日期的23:59:59, 默认为00:00:00
       let params = {
         location: Moment.tz.guess(),
         wallet_address: that.metaAddress,
-        upload_at_start: Date.parse(that.downloadTime[0])/1000, // 标准时间转时间戳（毫秒）
-        upload_at_end: Date.parse(new Date(end))/1000
+        upload_at_start: Date.parse(that.downloadTime[0]) / 1000, // 标准时间转时间戳（毫秒）
+        upload_at_end: Date.parse(new Date(end)) / 1000
       }
       const dataRes = await that.getRequest(`${that.baseAPIURL}api/v1/storage/tasks/deals/download?${QS.stringify(params)}`)
-      let url = that.genUrl(dataRes, {});
-      let a = document.createElement('a');
-      a.href = url;
-      a.download = that.titlePage + ".csv";
-      a.click();
-      window.URL.revokeObjectURL(url);
+      let url = that.genUrl(dataRes, {})
+      let a = document.createElement('a')
+      a.href = url
+      a.download = that.titlePage + '.csv'
+      a.click()
+      window.URL.revokeObjectURL(url)
 
       await that.timeout(1000)
       that.closeDia()
     },
-    genUrl(encoded, options) {
-        const dataBlob = new Blob([`\ufeff${encoded}`], { type: 'text/plain;charset=utf-8' });//返回的格式
-        return window.URL.createObjectURL(dataBlob);
+    genUrl (encoded, options) {
+      const dataBlob = new Blob([`\ufeff${encoded}`], { type: 'text/plain;charset=utf-8' })// 返回的格式
+      return window.URL.createObjectURL(dataBlob)
     },
     timeout (delay) {
-        return new Promise((res) => setTimeout(res, delay))
+      return new Promise((resolve) => setTimeout(resolve, delay))
     },
-    async getRequest(apilink) {
-        try {
-            const response = await axios.get(apilink, {
-                headers: {
-                        'Authorization': "Bearer "+ that.$store.getters.mcsjwtToken
-                }	
-            })
-            return response.data
-        } catch (err) {
-            console.error(err)
-        }
+    async getRequest (apilink) {
+      try {
+        const response = await axios.get(apilink, {
+          headers: {
+            'Authorization': 'Bearer ' + that.$store.getters.mcsjwtToken
+          }
+        })
+        return response.data
+      } catch (err) {
+        console.error(err)
+      }
     }
   },
-  mounted() {
+  mounted () {
     that = this
   }
-};
+}
 </script>
-
 
 <style scoped lang="scss">
 .el-dialog__wrapper /deep/ {
@@ -140,31 +134,31 @@ export default {
       padding: 0.3rem 0.4rem;
       display: flex;
       border-bottom: 1px solid #dfdfdf;
-      .dialog-title{
-          display: flex;
-          align-items: center;
-          color: #333;
-          font-size: 0.22rem;
-          font-weight: 500;
-          line-height: 1;
-          text-transform: capitalize;
-          .el-tooltip{
-              width: 20px;
-              height: 20px;
-              margin: 0 0 0 5px;
-              @media screen and (min-width:1800px){
-                  width: 22px;
-                  height: 22px;
-              }
-              @media screen and (max-width:1440px){
-                  width: 17px;
-                  height: 17px;
-              }
-              @media screen and (max-width: 1280px){
-                  width: 16px;
-                  height: 16px;
-              }
+      .dialog-title {
+        display: flex;
+        align-items: center;
+        color: #333;
+        font-size: 0.22rem;
+        font-weight: 500;
+        line-height: 1;
+        text-transform: capitalize;
+        .el-tooltip {
+          width: 20px;
+          height: 20px;
+          margin: 0 0 0 5px;
+          @media screen and (min-width: 1800px) {
+            width: 22px;
+            height: 22px;
           }
+          @media screen and (max-width: 1440px) {
+            width: 17px;
+            height: 17px;
+          }
+          @media screen and (max-width: 1280px) {
+            width: 16px;
+            height: 16px;
+          }
+        }
       }
       .el-dialog__headerbtn {
         display: none;
@@ -187,7 +181,8 @@ export default {
         i {
           display: none;
         }
-        .el-icon-date, .el-icon-time {
+        .el-icon-date,
+        .el-icon-time {
           display: block;
           position: absolute;
           top: 0;
@@ -270,10 +265,13 @@ export default {
           border: 0;
           background: linear-gradient(45deg, #4f8aff, #4b5eff);
           border-radius: 14px;
-          &.is-disabled, &.is-disabled:active, &.is-disabled:focus, &.is-disabled:hover {
-              color: #FFF;
-              background: #a0cfff;
-              border-color: #a0cfff;
+          &.is-disabled,
+          &.is-disabled:active,
+          &.is-disabled:focus,
+          &.is-disabled:hover {
+            color: #fff;
+            background: #a0cfff;
+            border-color: #a0cfff;
           }
         }
       }

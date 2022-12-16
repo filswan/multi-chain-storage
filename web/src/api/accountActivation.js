@@ -1,8 +1,8 @@
 import request from '@/utils/request'
-import QS from 'qs';
+import QS from 'qs'
 
 // 重新发送邮件
-export function sendActivateLink(data) {
+export function sendActivateLink (data) {
   return request({
     url: '/send_activate_link',
     method: 'POST',
@@ -11,7 +11,7 @@ export function sendActivateLink(data) {
 }
 
 // 检查
-export function checkCode(data) {
+export function checkCode (data) {
   return request({
     url: `/activate_user?${QS.stringify(data)}`,
     method: 'get'
@@ -19,7 +19,7 @@ export function checkCode(data) {
 }
 
 // 网易云易盾二次验证
-export function secondVerify(data) {
+export function secondVerify (data) {
   return request({
     url: `/thirdApi/wyy/secondVerify`,
     method: 'POST',

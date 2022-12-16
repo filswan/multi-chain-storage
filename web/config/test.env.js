@@ -10,5 +10,7 @@ module.exports = {
   BASE_MUMBAI_ADDRESS: '"https://mumbai.polygonscan.com/"',
   BASE_BSC_ADDRESS: '"https://testnet.bscscan.com/"',
   BASE_POLYGON_ADDRESS: '"https://polygonscan.com/"',
-  BASE_ECO_API: '"http://192.168.88.216:5005/"'
+  BASE_ECO_API: '"http://192.168.88.216:5005/"',
+  BASE_METASPACE: '"http://192.168.88.41:5212/"',
+  BASE_ENV: 'false'
 }

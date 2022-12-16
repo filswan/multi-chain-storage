@@ -40,7 +40,7 @@ if (window.ethereum) {
 } else if (window.web3) {
   web3 = window.web3
   console.log('Injected web3 detected.')
-} else {
+} else if (typeof web3 !== 'undefined') {
   var currentProvider = web3.currentProvider
   web3 = new Web3(currentProvider)
   web3.setProvider(currentProvider)

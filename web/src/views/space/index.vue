@@ -30,7 +30,7 @@
               <div class="" v-if="!scope.row.IsActive">
                 <span style="opacity: 0.7;">{{ scope.row.BucketName }}</span>
               </div>
-              <div class="hot-cold-box" v-else @click="getListBucketDetail(scope.row.BucketName, scope.row.BucketUid)">
+              <div class="hot-cold-box" v-else @click="getListBucketDetail(scope.row)">
                 <span style="text-decoration: underline;">{{ scope.row.BucketName }}</span>
               </div>
             </template>
@@ -188,8 +188,8 @@ export default {
       that.dialogFormVisible = false
       that.getListBuckets()
     },
-    getListBucketDetail (name, uuid) {
-      that.$router.push({ name: 'Space_detail', query: { folder: encodeURIComponent(name), bucket_uuid: uuid } })
+    getListBucketDetail (row) {
+      that.$router.push({ name: 'Space_detail', query: { folder: encodeURIComponent(row.BucketName), bucket_uuid: row.BucketUid, bucket_size: row.Size } })
     },
     async getDialogClose (formName, name) {
       if (formName === 'pay') that.payLoad = true

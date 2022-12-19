@@ -179,10 +179,12 @@
       <div class="uploadDig uploadDigFolder" v-loading="loading">
         <i class="el-icon-circle-close close" @click="closeDia()"></i>
         <div class="upload_form">
-          <el-upload class="upload-demo" :multiple="true" :style="{'border': ruleForm.fileList_tip?'2px dashed #f56c6c':'0'}" drag ref="uploadFolderRef" action="customize" :http-request="uploadFile" :file-list="ruleForm.fileList" :on-change="handleChange"
+          <el-upload class="upload-demo upload-file" :multiple="true" :style="{'border': ruleForm.fileList_tip?'2px dashed #f56c6c':'0'}" drag ref="uploadFolderRef" action="customize" :http-request="uploadFile" :file-list="ruleForm.fileList" :on-change="handleChange"
             :on-remove="handleRemove">
+            <img src="@/assets/images/space/icon_11.png" alt="">
+            <div class="el-upload__text"></div>
             <el-button type="primary">
-              {{$t('metaSpace.uploadDray_text')}}
+              Browse Folders
             </el-button>
           </el-upload>
           <p v-if="ruleForm.fileList.length>0" style="display: flex;align-items: center;">
@@ -287,7 +289,7 @@
         <div class="soonImg"></div>
       </div>
     </div>
-    <div class="fe-none" v-else-if="typeName === 'emailLogin' && false">
+    <div class="fe-none" v-else-if="typeName === 'emailLogin'">
       <div class="addBucket loginEmail">
         <div class="titleCont">
           <div class="address">
@@ -404,7 +406,13 @@ export default {
       progressEvent: {},
       uploadFileName: '',
       uploadFileSize: 0,
-      createFold: true
+      createFold: true,
+      uploadBody: {
+        uploadList: [],
+        uploadListAll: [],
+        addNum: 0,
+        allNum: 0
+      }
     }
   },
   props: ['dialogFormVisible', 'typeModule', 'areaBody', 'createLoad', 'listTableLoad', 'currentBucket', 'fixed', 'backupLoad', 'changeTitle', 'payLoad', 'listBucketFolder'],
@@ -591,6 +599,13 @@ export default {
       const folderCurrent = file.raw.webkitRelativePath.split('/') || ''
       const currentFold = folderCurrent.slice(0, -1).join('/') || ''
       const fold = currentFold !== '' ? await that.listFold(currentFold) : false
+
+      that.uploadBody.uploadList.push(currentFold)
+      that.uploadBody.uploadList = that.uploadBody.uploadList.filter((item, index) => {
+        return that.uploadBody.uploadList.indexOf(item) === index
+      })
+      that.uploadBody.addNum += 1
+
       let regexp = /[#\\?]/
       let reg = new RegExp(' ', 'g')
       if (file.size <= 0) {
@@ -618,8 +633,10 @@ export default {
           // console.log(hash, suffix)
           let fileCheckRes = await that.fileCheck(hash, file, currentFold, fold)
           if (!fileCheckRes) {
-            that.$emit('getUploadDialog', false, 0)
-            that.loading = false
+            if (that.uploadBody.allNum === that.uploadBody.addNum) {
+              that.$emit('getUploadDialog', false, 0)
+              that.loading = false
+            }
             return false
           }
 
@@ -635,11 +652,11 @@ export default {
             })
             index++
           }
-          that.typeName = 'upload_progress'
+          if (that.typeName !== 'upload_folder') that.typeName = 'upload_progress'
           that.concurrentExecution(chunks, concurrent, (chunk) => {
             return new Promise(async (resolve, reject) => {
               let inde = chunk + 1
-              if (alreadyUpload.indexOf(inde + '') === -1) {
+              if (alreadyUploadChunks.indexOf(inde + '') === -1) {
                 let uploadData = new FormData()
                 const fileBlob = new Blob([chunk.file], {
                   type: 'application/json'
@@ -671,7 +688,7 @@ export default {
                 resolve()
               }
             })
-          }).then(res => {
+          }).then(async res => {
             console.log('finish', res)
           })
         } catch (e) {
@@ -716,22 +733,52 @@ export default {
         that.$message.error(checkRes ? checkRes.message : 'Fail')
         return false
       }
+      if (that.typeName === 'upload_folder' && (that.uploadBody.uploadList !== that.uploadBody.uploadListAll)) await that.getUploadFolderFun(that.uploadBody.uploadList)
       if (checkRes.data.file_is_exist) {
         that.$message.error('You have uploaded this file!')
         return false
       }
       if (checkRes.data.ipfs_is_exist) {
-        const createFold = that.createFold !== fold
-        if (createFold && currentFold) {
-          that.createFold = fold
-          await that.$emit('getPopUps', true, that.typeName, currentFold)
+        // const createFold = that.createFold !== fold
+        // console.log('title', createFold, that.createFold, fold)
+        // if (createFold && currentFold) {
+        //   that.createFold = fold
+        //   await that.$emit('getPopUps', true, that.typeName, currentFold)
+        // }
+
+        that.uploadBody.allNum += 1
+        // console.log('check:', that.uploadBody.allNum, that.uploadBody.addNum)
+        // console.log(that.uploadBody.uploadList)
+        if (that.uploadBody.allNum === that.uploadBody.addNum) {
+          await that.$commonFun.timeout(500)
+          that.$emit('getUploadDialog', false, 1)
+          that.loading = false
         }
-        await that.$commonFun.timeout(500)
-        that.$emit('getUploadDialog', false, 1)
-        that.loading = false
         return false
       }
       return true
+    },
+    async getUploadFolderFun (list) {
+      const reg = new RegExp('/' + '$')
+      that.uploadBody.uploadListAll = that.uploadBody.uploadList
+      list.forEach(async element => {
+        let arr = element.split('/')
+        let arrLeng = arr.length > 1
+        let name = `${arrLeng ? element.split('/').slice(-1) : element}`
+        if (arrLeng) arr.pop()
+        const current = that.currentBucket.split('/').slice(1).join('/')
+        const parentAddress = that.areaBody.Prefix || current || ''
+        const pre = `${parentAddress ? parentAddress + '/' : ''}${arrLeng ? arr.join('/') : ''}`
+        const params = {
+          'file_name': name,
+          'prefix': reg.test(pre) ? pre.slice(0, -1) : pre,
+          'bucket_uid': `${that.$route.query.bucket_uuid}`
+        }
+        const directoryRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/create_folder`, 'post', params)
+        if (!directoryRes || directoryRes.status !== 'success') {
+          that.$message.error(directoryRes ? directoryRes.message : 'Fail')
+        }
+      })
     },
     async fileMerge (hash, file, currentFold, fold) {
       const reg = new RegExp('/' + '$')
@@ -748,17 +795,23 @@ export default {
       if (!mergeRes || mergeRes.status !== 'success') {
         that.$message.error(mergeRes ? mergeRes.message : 'Fail')
       }
-      const createFold = that.createFold !== fold
-      if (createFold && currentFold) {
-        that.createFold = fold
-        await that.$emit('getPopUps', true, that.typeName, currentFold)
+      // const createFold = that.createFold !== fold
+      // if (createFold && currentFold) {
+      //   that.createFold = fold
+      //   await that.$emit('getPopUps', true, that.typeName, currentFold, that.uploadBody.uploadList)
+      // }
+
+      that.uploadBody.allNum += 1
+      console.log('merge:', that.uploadBody.allNum, that.uploadBody.addNum)
+      console.log(that.uploadBody.uploadList)
+      if (that.uploadBody.allNum === that.uploadBody.addNum) {
+        await that.$commonFun.timeout(500)
+        that.$emit('getUploadDialog', false, 1)
+        that.loading = false
       }
-      await that.$commonFun.timeout(500)
-      that.$emit('getUploadDialog', false, 1)
-      that.loading = false
     },
     async manageProgress (hash, file, index, count, max, currentFold, fold) {
-      // console.log(index, count, max, file.size)
+      console.log(index, count, max, file.size)
       // console.log(that.progressEvent)
       // that.typeName = 'upload_progress'
       that.uploadPrecent = ((index / count) * 100) | 0
@@ -795,6 +848,10 @@ export default {
       that.ruleForm.fileList = []
       that.ruleForm.file_size = ''
       that.ruleForm.file_size_byte = ''
+      that.uploadBody.uploadList = []
+      that.uploadBody.uploadListAll = []
+      that.uploadBody.addNum = 0
+      that.uploadBody.allNum = 0
     },
     onPross (e) {
       const { loaded, total } = e
@@ -912,11 +969,12 @@ export default {
     if (that.typeName === 'upload_folder') {
       // that.addEvent()
       that.$refs.uploadFolderRef.$children[0].$refs.input.webkitdirectory = true
+      that.$refs.uploadFolderRef.$refs['upload-inner'].handleClick()
     }
     document.onkeydown = function (e) {
       if (e.keyCode === 13) {
         if (that.typeName === 'add' || that.typeName === 'rename' || that.typeName === 'addSub') that.getDialogClose('form')
-        // if (that.typeName === 'emailLogin') that.submitEmail('form')
+        if (that.typeName === 'emailLogin') that.submitEmail('form')
       }
     }
   },

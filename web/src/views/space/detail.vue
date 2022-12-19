@@ -15,8 +15,8 @@
         <div class="form_top">
           <div class="search_file">
             <div class="search_left">
-              <div class="icon">{{detail.size | formatbytes}}</div>
-              <div class="icon">{{detail.object}} Object</div>
+              <div class="icon">{{$route.query.bucket_size | formatbytes}}</div>
+              <div class="icon">{{parma.total}} Object</div>
             </div>
             <div class="createTask">
               <a @click="dialogFun('addSub')">
@@ -35,7 +35,15 @@
           </div>
         </div>
         <el-row :gutter="15" class="table_body">
-          <el-col :xs="24" :sm="24" :md="24" :lg="14" class="left">
+          <el-col :xs="24" :sm="24" :md="6" :lg="4" class="left">
+            <el-tree :data="listData.listBucketFolder" :props="defaultProps" @node-click="handleNodeClick" node-key="ID" :expand-on-click-node="false">
+              <span class="custom-tree-node" slot-scope="{ node, data }">
+                <b class="span" :title="node.label">{{ node.label }}</b>
+                <i class="icon icon_delete" @click.stop="dialogFun('delete', data)"></i>
+              </span>
+            </el-tree>
+          </el-col>
+          <el-col :xs="24" :sm="24" :md="18" :lg="20" class="left">
             <el-table :data="listData.listBucketFile" ref="tableList" stripe style="width: 100%" max-height="400" empty-text=" ">
               <el-table-column type="index" label="No." width="50"></el-table-column>
               <el-table-column prop="Name" :label="$t('metaSpace.table_name')">
@@ -106,41 +114,6 @@
               </div>
             </div>
           </el-col>
-          <el-col :xs="24" :sm="24" :md="24" :lg="10" class="left">
-            <el-table :data="listData.listBucketFolder" ref="tableList" stripe style="width: 100%" max-height="400" empty-text=" ">
-              <el-table-column type="index" label="No." width="50"></el-table-column>
-              <el-table-column prop="Name" :label="$t('metaSpace.table_name')">
-                <template slot-scope="scope">
-                  <div class="hot-cold-box">
-                    <span style="text-decoration: underline;" @click="getListBucketMain(scope.row.Name)">{{ scope.row.Name }}</span>
-                  </div>
-                </template>
-              </el-table-column>
-              <el-table-column prop="UpdatedAt" :label="$t('metaSpace.table_LastModified')" width="100">
-                <template slot-scope="scope">
-                  <div class="hot-cold-box">
-                    <p>{{ momentFun(scope.row.UpdatedAt) }}</p>
-                  </div>
-                </template>
-              </el-table-column>
-              <el-table-column prop="Size" :label="$t('metaSpace.table_size')">
-                <template slot-scope="scope">
-                  <div class="hot-cold-box">
-                    <p>{{ scope.row.Size | formatbytes }}</p>
-                  </div>
-                </template>
-              </el-table-column>
-              <el-table-column prop="" :label="$t('metaSpace.table_action')" width="120">
-                <template slot-scope="scope">
-                  <div class="hot-cold-box">
-                    <i class="icon icon_rename" @click="dialogFun('rename', scope.row)"></i>
-                    <i class="icon icon_details" @click="getDetail('detail_folder', scope.row)"></i>
-                    <i class="icon icon_delete" @click="dialogFun('delete', scope.row)"></i>
-                  </div>
-                </template>
-              </el-table-column>
-            </el-table>
-          </el-col>
         </el-row>
         <div class="fe-none" v-if="listData.listBuckets&&listData.listBuckets.length<=0">
           <p class="p_label">{{$t('metaSpace.empty_prompt_detail')}}</p>
@@ -174,6 +147,10 @@ export default {
         listBuckets: [],
         listBucketFile: [],
         listBucketFolder: []
+      },
+      defaultProps: {
+        children: 'children',
+        label: 'Name'
       },
       areaBody: {},
       typeName: 'delete',
@@ -219,7 +196,7 @@ export default {
       else if (type && index === 0) fold = that.currentBucket[0]
       else fold = `${that.url}/${fileName}`
 
-      if (fileName) that.$router.push({ name: 'Space_detail', query: { folder: encodeURIComponent(fold), bucket_uuid: that.$route.query.bucket_uuid } })
+      if (fileName) that.$router.push({ name: 'Space_detail', query: { folder: encodeURIComponent(fold), bucket_uuid: that.$route.query.bucket_uuid, bucket_size: that.$route.query.bucket_size } })
       else that.$router.push({ name: 'Space' })
     },
     async getPopUps (dialog, rows, bucketName) {
@@ -231,12 +208,12 @@ export default {
           that.renameFun(bucketName)
           break
         default:
-          if (rows) that.getDialogClose(rows, bucketName)
+          if (rows) that.getDialogClose(dialog, rows, bucketName)
           else that.dialogFormVisible = dialog
           break
       }
     },
-    async getDialogClose (formName, name) {
+    async getDialogClose (dialog, formName, name) {
       that.createLoad = true
       const current = that.currentBucket.slice(1).join('/')
       const params = {
@@ -250,7 +227,7 @@ export default {
       }
       await that.$commonFun.timeout(500)
       that.createLoad = false
-      that.dialogFormVisible = false
+      that.dialogFormVisible = dialog
       that.getListObjects()
     },
     async dialogFun (name, row) {
@@ -328,6 +305,7 @@ export default {
     async getListObjects (type) {
       that.listLoad = true
       that.detail.size = 0
+      that.parma.total = 0
       const current = that.currentBucket.slice(1).join('/')
       const offset = that.parma.offset ? (that.parma.offset - 1) * that.parma.limit : 0
       let params = {
@@ -341,8 +319,9 @@ export default {
         that.$message.error(directoryRes ? directoryRes.message : 'Fail')
         return false
       }
+      that.parma.total = directoryRes.data.Count
       that.listData = {
-        listBuckets: directoryRes.data || [],
+        listBuckets: directoryRes.data.FileList || [],
         listBucketFile: [],
         listBucketFolder: []
       }
@@ -359,14 +338,16 @@ export default {
       that.$refs.tableList.bodyWrapper.scrollTop = 0
       // if (type === 1) that.$refs.tableList.bodyWrapper.scrollTop = that.$refs.tableList.bodyWrapper.scrollHeight
     },
+    handleNodeClick (data) {
+      // console.log(data)
+      that.getListBucketMain(data.Name)
+    },
     handleCurrentChange (val) {
-      console.log('hand current:', val)
       that.parma.offset = Number(val)
       that.parma.jumperOffset = String(val)
       that.getListObjects()
     },
     handleSizeChange (val) {
-      console.log('hand size:', val)
       that.parma.limit = Number(val)
       that.parma.offset = 1
       that.parma.jumperOffset = 1
@@ -432,7 +413,7 @@ export default {
   },
   filters: {
     formatbytes: function (bytes) {
-      if (bytes === 0) return '0 B'
+      if (String(bytes) === '0') return '0 B'
       if (!bytes) return '-'
       let k = 1024 // or 1000
       let sizes = ['bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
@@ -1046,6 +1027,62 @@ export default {
             }
             &:hover {
               text-decoration: underline;
+            }
+          }
+        }
+        .el-tree {
+          .el-tree-node__content {
+            .el-tree-node__expand-icon {
+              color: #000;
+            }
+            .el-tree-node__label,
+            .custom-tree-node {
+              height: 24px;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: normal;
+              // display: -webkit-box;
+              -webkit-line-clamp: 1;
+              -webkit-box-orient: vertical;
+              line-height: 24px;
+              font-size: 14px;
+            }
+            .custom-tree-node {
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              width: calc(100% - 24px);
+              .span {
+                width: calc(100% - 23px);
+                height: 24px;
+                font-weight: normal;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: normal;
+              }
+            }
+            .icon {
+              display: block;
+              width: 18px;
+              height: 18px;
+              margin: 0 5px;
+              font-size: 0.24rem;
+              @media screen and (max-width: 1600px) {
+                width: 16px;
+                height: 16px;
+              }
+              @media screen and (max-width: 768px) {
+                width: 14px;
+                height: 14px;
+              }
+              &:hover {
+                opacity: 0.7;
+              }
+            }
+            .icon_delete {
+              background: url(../../assets/images/space/icon_04.png) no-repeat
+                center;
+              background-size: 100% 100%;
             }
           }
         }

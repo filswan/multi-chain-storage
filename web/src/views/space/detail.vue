@@ -23,20 +23,22 @@
                 <img src="@/assets/images/space/icon_01.png" alt="">
                 <span>{{$t('metaSpace.create_folder')}}</span>
               </a>
-              <a @click="dialogFun('upload', $route.query.bucket_uuid)">
-                <img src="@/assets/images/space/icon_08.png" alt="">
-                <span>{{$t('metaSpace.Upload_File')}}</span>
-              </a>
-              <a @click="dialogFun('upload_folder', $route.query.bucket_uuid)">
-                <img src="@/assets/images/space/icon_08.png" alt="">
-                <span>Upload Folder</span>
-              </a>
+              <div class="upload_body">
+                <a @click="dialogFun('upload', $route.query.bucket_uuid)">
+                  <img src="@/assets/images/space/icon_08.png" alt="">
+                  <span>{{$t('metaSpace.Upload_File')}}</span>
+                </a>
+                <div class="upload_absoltu">
+                  <p @click="dialogFun('upload', $route.query.bucket_uuid)">{{$t('metaSpace.Upload_File')}}</p>
+                  <p @click="dialogFun('upload_folder', $route.query.bucket_uuid)">Upload Folder</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
         <el-row :gutter="15" class="table_body">
           <el-col :xs="24" :sm="24" :md="6" :lg="4" class="left">
-            <el-tree :data="listData.listBucketFolder" :props="defaultProps" @node-click="handleNodeClick" node-key="ID" :expand-on-click-node="false">
+            <el-tree :data="listData.listBucketFolder" :props="defaultProps" @node-click="handleNodeClick" node-key="ID" :expand-on-click-node="false" empty-text='No more subfolders'>
               <span class="custom-tree-node" slot-scope="{ node, data }">
                 <b class="span" :title="node.label">{{ node.label }}</b>
                 <i class="icon icon_delete" @click.stop="dialogFun('delete', data)"></i>
@@ -470,6 +472,7 @@ export default {
         margin: 0 auto 0.35rem;
         display: flex;
         align-items: center;
+        flex-wrap: wrap;
         @media screen and (max-width: 1440px) {
           font-size: 14px;
         }
@@ -583,6 +586,31 @@ export default {
               &:hover {
                 opacity: 0.9;
                 box-shadow: 0 12px 12px -12px rgba(12, 22, 44, 0.32);
+              }
+            }
+            .upload_body {
+              position: relative;
+              .upload_absoltu {
+                display: none;
+                position: absolute;
+                left: 0.2rem;
+                right: 0;
+                padding: 0.1rem 0;
+                background-color: #fff;
+                box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+                z-index: 9;
+                border-radius: 5px;
+                p {
+                  padding: 0.05rem 0.15rem;
+                  &:hover {
+                    background-color: rgba(0, 137, 246, 0.07);
+                  }
+                }
+              }
+              &:hover {
+                .upload_absoltu {
+                  display: block;
+                }
               }
             }
           }

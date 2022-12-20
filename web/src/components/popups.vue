@@ -666,7 +666,7 @@ export default {
                 const config = {
                   onUploadProgress: progressEvent => {
                     that.progressEvent = progressEvent
-                    console.log('progressEvent', progressEvent)
+                    // console.log('progressEvent', progressEvent)
                     // that.progressHandle(progressEvent)
                   }
                 }
@@ -733,7 +733,13 @@ export default {
         that.$message.error(checkRes ? checkRes.message : 'Fail')
         return false
       }
-      if (that.typeName === 'upload_folder' && (that.uploadBody.uploadList !== that.uploadBody.uploadListAll)) await that.getUploadFolderFun(that.uploadBody.uploadList)
+      if (that.typeName === 'upload_folder' && (that.uploadBody.uploadList !== that.uploadBody.uploadListAll)) {
+        that.uploadBody.uploadList = await that.getArray(that.uploadBody.uploadList)
+        that.uploadBody.uploadList = that.uploadBody.uploadList.filter((item, index) => {
+          return that.uploadBody.uploadList.indexOf(item) === index
+        })
+        await that.getUploadFolderFun(that.uploadBody.uploadList)
+      }
       if (checkRes.data.file_is_exist) {
         that.$message.error('You have uploaded this file!')
         return false
@@ -757,6 +763,18 @@ export default {
         return false
       }
       return true
+    },
+    async getArray (list) {
+      let b = []
+      list.forEach(element => {
+        let arr = element.split('/')
+        arr.forEach((child, i) => {
+          let listChild = arr.slice(0, i + 1).join('/')
+          b.push(listChild)
+        })
+      })
+      list = list.concat(b)
+      return list
     },
     async getUploadFolderFun (list) {
       const reg = new RegExp('/' + '$')

@@ -104,8 +104,16 @@
           {{$t('fs3Login.Connected_Email_Address')}}
         </el-button>
 
+        <el-button @click="createKey">
+          <svg t="1671505226678" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2949" width="64" height="64">
+            <path d="M443.25546667 486.74133333c-29.35466667-47.104-41.09653333-99.9424-41.09653334-158.72A291.0208 291.0208 0 0 1 695.97866667 34.13333333 291.0208 291.0208 0 0 1 989.86666667 328.02133333a291.0208 291.0208 0 0 1-293.888 293.81973334c-64.64853333 0-117.48693333-17.6128-170.3936-52.90666667l-135.168 135.168 64.64853333 64.7168-82.3296 82.26133333-64.64853333-64.64853333-41.09653334 41.1648 64.64853334 64.64853333-82.3296 82.26133334L102.4 827.5968l340.85546667-340.92373333z m252.7232-335.0528c-99.87413333 0-176.26453333 76.45866667-176.26453334 176.3328s76.3904 176.26453333 176.26453334 176.26453334c99.9424 0 176.3328-76.3904 176.3328-176.26453334 0-99.9424-82.26133333-176.3328-176.3328-176.3328z"
+              fill="#3c5aa5" p-id="2950"></path>
+          </svg>
+          Create an API key
+        </el-button>
+
         <el-button @click="shareTo">
-          <svg t="1669800457857" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="6207" width="64" height="64">
+          <svg t="1669800457857" class="icon icon_big" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="6207" width="64" height="64">
             <path d="M923.648 1015.442H100.206a91.648 91.648 0 0 1-91.721-91.72V101.01a91.502 91.502 0 0 1 91.72-91.501H649.29a30.72 30.72 0 0 1 0 61.44H130.487a60.855 60.855 0 0 0-60.928 60.854v762.003a60.855 60.855 0 0 0 60.928 60.928h762.441a60.855 60.855 0 0 0 60.928-60.928V345.088a30.72 30.72 0 1 1 61.44 0v579.291a91.21 91.21 0 0 1-91.648 91.063z m-497.81-403.675a30.574 30.574 0 1 1-43.228-43.228L930.816 17.92a30.574 30.574 0 1 1 43.154 43.3L425.91 611.768z"
               p-id="6208" fill="#0b318f"></path>
             <path d="M923.648 1023.854H100.206A100.206 100.206 0 0 1 0.073 923.72v-822.71C0.22 45.86 44.91 1.096 100.206 1.096h549.083a39.131 39.131 0 1 1 0 78.263H130.414a52.443 52.443 0 0 0-52.444 52.443v762.003c0 28.964 23.48 52.443 52.517 52.516H893a52.368 52.368 0 0 0 37.084-15.36 52.81 52.81 0 0 0 15.36-37.156V345.088a39.131 39.131 0 0 1 78.262 0v579.291a99.913 99.913 0 0 1-100.059 99.475zM100.059 17.92c-45.787 0-82.944 37.23-83.017 83.09v822.784c0.073 46.007 37.303 83.237 83.31 83.31h823.37a83.09 83.09 0 0 0 83.163-82.798V345.015a22.309 22.309 0 0 0-44.544 0v548.864c0 18.359-7.315 35.986-20.188 49.006a68.754 68.754 0 0 1-49.079 20.333H130.487a69.486 69.486 0 0 1-69.34-69.34V131.804a69.266 69.266 0 0 1 69.267-69.339h518.948a22.309 22.309 0 1 0-0.146-44.544h-549.01z m304.202 611.328a39.058 39.058 0 0 1-27.575-66.706L924.818 11.995a38.985 38.985 0 1 1 55.077 55.223l-548.06 550.473c-7.314 7.315-17.261 11.484-27.574 11.557zM952.32 17.335a22.162 22.162 0 0 0-15.58 6.583L388.536 574.39a22.162 22.162 0 1 0 31.378 31.451L968.046 55.296a21.943 21.943 0 0 0 6.583-15.726 22.382 22.382 0 0 0-22.236-22.235z"
@@ -136,6 +144,20 @@
           {{$t('fs3Login.Copied')}}
         </el-button>
 
+      </div>
+      <div class="loadStyle" v-show="loadAccount" v-loading="loadAccount"></div>
+    </el-dialog>
+
+    <el-dialog :title="$t('my_profile.create_api_title01')" :visible.sync="apiTips" :width="width" custom-class="wrongNet">
+      <div class="apiTipCont">
+        <label>{{$t('my_profile.create_api_tips03')}}</label>
+        <p>{{apiCont.apiKey}}</p>
+
+        <label>{{$t('my_profile.create_api_tips04')}}</label>
+        <p>
+          {{apiCont.access}}
+          <span class="el-icon-document-copy" @click="copyTextToClipboard(apiCont.access, 1)"></span>
+        </p>
       </div>
     </el-dialog>
 
@@ -187,7 +209,13 @@ export default {
       switchWidth: 56,
       reverseSwitch: false,
       networkC: false,
-      prevType: true
+      prevType: true,
+      loadAccount: false,
+      apiTips: false,
+      apiCont: {
+        apiKey: '',
+        access: ''
+      }
     }
   },
   props: ['meta', 'netId', 'networkTip'],
@@ -255,6 +283,22 @@ export default {
       if (status === 'disconnect') await that.$metaLogin.Disconnect()
       await that.$metaLogin.emailSign('', 'detail')
       that.wrongLoad = false
+    },
+    async createKey () {
+      that.loadAccount = true
+      const apiKeyRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/user/generate_api_key`, 'post')
+      if (!apiKeyRes || apiKeyRes.status !== 'success') {
+        that.$message.error(apiKeyRes.message ? apiKeyRes.message : 'Fail')
+        that.loadAccount = false
+        return false
+      }
+      that.apiTips = true
+      that.apiCont = {
+        apiKey: apiKeyRes.data.apikey || '',
+        access: apiKeyRes.data.access_token || ''
+      }
+      await that.$commonFun.timeout(500)
+      that.loadAccount = false
     },
     getNetworkC (dialog, rows) {
       that.networkC = dialog
@@ -339,7 +383,7 @@ export default {
       that.$emit('getPopUps', true, type || '')
       that.wrongVisible = false
     },
-    copyTextToClipboard (text) {
+    copyTextToClipboard (text, type) {
       var txtArea = document.createElement('textarea')
       txtArea.id = 'txt'
       txtArea.style.position = 'fixed'
@@ -355,8 +399,11 @@ export default {
         var msg = successful ? 'successful' : 'unsuccessful'
         console.log('Copying text command was ' + msg)
         if (successful) {
-          that.copyClick = false
-          setTimeout(function () { that.copyClick = true }, 600)
+          if (type) that.$message({ message: msg, type: 'success' })
+          else {
+            that.copyClick = false
+            setTimeout(function () { that.copyClick = true }, 600)
+          }
           return true
         }
       } catch (err) {
@@ -778,7 +825,7 @@ export default {
     box-shadow: 0 0 13px rgba(128, 128, 128, 0.8);
     border-radius: 0.2rem;
     .el-dialog__header {
-      padding: 0.3rem 0.4rem;
+      padding: 0.2rem 0.4rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -808,6 +855,7 @@ export default {
       }
     }
     .el-dialog__body {
+      position: relative;
       padding: 0.3rem 0.4rem 0.4rem;
       font-size: 0.2rem;
       @media screen and (max-width: 479px) {
@@ -914,10 +962,39 @@ export default {
               height: 15px;
               margin: 0 3px 0 0;
             }
+            .icon_big {
+              width: 13px;
+              height: 13px;
+            }
           }
           &:hover {
             background: transparent;
             opacity: 1;
+          }
+        }
+      }
+      .loadStyle {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 2000;
+        background: rgba(255, 255, 255, 1);
+        border-radius: 0.2rem;
+      }
+      .apiTipCont {
+        p {
+          display: flex;
+          align-items: center;
+          text-indent: 0.1rem;
+          margin: 0.1rem;
+          color: #7e7e7e;
+          font-size: 0.18rem;
+          .el-icon-document-copy {
+            display: block;
+            font-size: 17px;
+            cursor: pointer;
           }
         }
       }

@@ -210,7 +210,7 @@
             </p>
           </div> -->
           <div class="load_svg">
-            <el-progress type="circle" :stroke-width="10" :color="'#4d75ff'" :percentage="uploadPrecent"></el-progress>
+            <el-progress type="circle" :stroke-width="10" :width="110" :color="'#4d75ff'" :percentage="uploadPrecent"></el-progress>
             <div class="load_cont">
               <p>{{uploadFileName}}</p>
               <p>{{uploadFileSize | formatbytes}}</p>
@@ -627,7 +627,6 @@ export default {
         that.loading = true
         that.uploadFileName = file.name
         try {
-          let alreadyUpload = []
           let alreadyUploadChunks = []
           let { hash } = await that.fileMd5(file)
           // console.log(hash, suffix)
@@ -652,16 +651,24 @@ export default {
             })
             index++
           }
+          let uploadListData = new FormData()
+          const fileBlob = new Blob([chunks[0].file], {
+            type: 'application/json'
+          })
+          uploadListData.append('file', fileBlob, chunks[0].filename)
+          uploadListData.append('hash', hash)
+          let uploadListRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/upload`, 'post', uploadListData)
+          alreadyUploadChunks = uploadListRes.data || []
           if (that.typeName !== 'upload_folder') that.typeName = 'upload_progress'
           that.concurrentExecution(chunks, concurrent, (chunk) => {
             return new Promise(async (resolve, reject) => {
-              let inde = chunk + 1
-              if (alreadyUploadChunks.indexOf(inde + '') === -1) {
+              if (alreadyUploadChunks.indexOf(chunk.filename) === -1) {
                 let uploadData = new FormData()
                 const fileBlob = new Blob([chunk.file], {
                   type: 'application/json'
                 })
                 uploadData.append('file', fileBlob, chunk.filename)
+                uploadData.append('file_name', chunk.filename)
                 uploadData.append('hash', hash)
                 const config = {
                   onUploadProgress: progressEvent => {
@@ -678,7 +685,6 @@ export default {
                   reject(uploadRes ? uploadRes.message : 'Fail')
                   return false
                 }
-                alreadyUpload.push(chunk + 1)
                 alreadyUploadChunks = uploadRes.data
                 if (alreadyUploadChunks.length > 0 && alreadyUploadChunks.includes(chunk.filename)) {
                   that.manageProgress(hash, file, uploadRes.data.length, count, max, currentFold, fold)
@@ -745,16 +751,7 @@ export default {
         return false
       }
       if (checkRes.data.ipfs_is_exist) {
-        // const createFold = that.createFold !== fold
-        // console.log('title', createFold, that.createFold, fold)
-        // if (createFold && currentFold) {
-        //   that.createFold = fold
-        //   await that.$emit('getPopUps', true, that.typeName, currentFold)
-        // }
-
         that.uploadBody.allNum += 1
-        // console.log('check:', that.uploadBody.allNum, that.uploadBody.addNum)
-        // console.log(that.uploadBody.uploadList)
         if (that.uploadBody.allNum === that.uploadBody.addNum) {
           await that.$commonFun.timeout(500)
           that.$emit('getUploadDialog', false, 1)
@@ -813,15 +810,7 @@ export default {
       if (!mergeRes || mergeRes.status !== 'success') {
         that.$message.error(mergeRes ? mergeRes.message : 'Fail')
       }
-      // const createFold = that.createFold !== fold
-      // if (createFold && currentFold) {
-      //   that.createFold = fold
-      //   await that.$emit('getPopUps', true, that.typeName, currentFold, that.uploadBody.uploadList)
-      // }
-
       that.uploadBody.allNum += 1
-      console.log('merge:', that.uploadBody.allNum, that.uploadBody.addNum)
-      console.log(that.uploadBody.uploadList)
       if (that.uploadBody.allNum === that.uploadBody.addNum) {
         await that.$commonFun.timeout(500)
         that.$emit('getUploadDialog', false, 1)
@@ -829,7 +818,7 @@ export default {
       }
     },
     async manageProgress (hash, file, index, count, max, currentFold, fold) {
-      console.log(index, count, max, file.size)
+      // console.log(index, count, max, file.size)
       // console.log(that.progressEvent)
       // that.typeName = 'upload_progress'
       that.uploadPrecent = ((index / count) * 100) | 0

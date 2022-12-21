@@ -17,7 +17,7 @@
       </div>
       <div class="fes-search">
         <div class="title">
-          {{$t('metaSpace.list_bucket')}} (1/1)
+          {{$t('metaSpace.list_bucket')}} ({{listBuckets.length}}/{{listBuckets.length>0?listBuckets.length:1}})
 
           <el-popover placement="top" popper-class="elPopTitle" width="200" trigger="hover" :content="$t('metaSpace.list_bucket_tip')">
             <img slot="reference" src="@/assets/images/info.png" />
@@ -212,6 +212,8 @@ export default {
       }
     },
     async getListBuckets (name) {
+      let size = 0
+      let maxSize = 0
       that.listLoad = true
       // const params = {
       //   file_name: `${that.search.trim()}` || ''
@@ -224,6 +226,12 @@ export default {
       }
       that.listBuckets = directoryRes.data || []
       that.listBucketIndex = directoryRes.data.length > 0 || !!(that.search)
+      that.listBuckets.forEach(element => {
+        size += element.Size
+        maxSize += element.MaxSize
+      })
+      that.$store.dispatch('setFreeBucket', size || 0)
+      that.$store.dispatch('setFreeBucketAll', maxSize || 0)
       if (!that.listBucketIndex) that.$store.dispatch('setFreeBucket', 0)
       that.listLoad = false
     },

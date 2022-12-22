@@ -15,8 +15,8 @@
         <div class="form_top">
           <div class="search_file">
             <div class="search_left">
-              <div class="icon">{{$route.query.bucket_size | formatbytes}}</div>
-              <div class="icon">{{parma.total}} Object</div>
+              <!-- <div class="icon">{{$route.query.bucket_size | formatbytes}}</div>
+              <div class="icon">{{parma.total}} Object</div> -->
             </div>
             <div class="createTask">
               <a @click="dialogFun('addSub')">
@@ -24,7 +24,7 @@
                 <span>{{$t('metaSpace.create_folder')}}</span>
               </a>
               <div class="upload_body">
-                <a @click="dialogFun('upload', $route.query.bucket_uuid)">
+                <a>
                   <img src="@/assets/images/space/icon_08.png" alt="">
                   <span>{{$t('metaSpace.Upload_File')}}</span>
                 </a>
@@ -38,7 +38,7 @@
         </div>
         <el-row :gutter="15" class="table_body">
           <el-col :xs="24" :sm="24" :md="6" :lg="4" class="left">
-            <el-tree :data="listData.listBucketFolder" :props="defaultProps" @node-click="handleNodeClick" node-key="ID" :expand-on-click-node="false" empty-text='No more subfolders'>
+            <el-tree :data="listData.listBucketFolder" :props="defaultProps" @node-click="handleNodeClick" node-key="ID" icon-class="el-icon-folder" :expand-on-click-node="false" empty-text='No more subfolders'>
               <span class="custom-tree-node" slot-scope="{ node, data }">
                 <b class="span" :title="node.label">{{ node.label }}</b>
                 <i class="icon icon_delete" @click.stop="dialogFun('delete', data)"></i>
@@ -105,9 +105,9 @@
                 </template>
               </el-table-column>
             </el-table>
-            <div class="form_pagination" v-if="parma.total != 0">
+            <div class="form_pagination" v-if="parma.total != 0 && listData.listBucketFile.length>0">
               <div class="pagination">
-                <el-pagination :total="parma.total" :page-size="parma.limit" :current-page="parma.offset" :layout="'prev, pager, next'" @current-change="handleCurrentChange" @size-change="handleSizeChange" />
+                <el-pagination :hide-on-single-page="true" :total="parma.total" :page-size="parma.limit" :current-page="parma.offset" :layout="'prev, pager, next'" @current-change="handleCurrentChange" @size-change="handleSizeChange" />
                 <div class="span" v-if="!bodyWidth">
                   <span>{{$t('uploadFile.goTo')}}</span>
                   <el-input class="paginaInput" @change="pageSizeChange" v-model.number="parma.jumperOffset" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')" autocomplete="off"></el-input>
@@ -115,11 +115,11 @@
                 </div>
               </div>
             </div>
+            <div class="fe-none" v-if="listData.listBucketFile&&listData.listBucketFile.length<=0">
+              <p class="p_label">{{$t('metaSpace.empty_prompt_detail')}}</p>
+            </div>
           </el-col>
         </el-row>
-        <div class="fe-none" v-if="listData.listBuckets&&listData.listBuckets.length<=0">
-          <p class="p_label">{{$t('metaSpace.empty_prompt_detail')}}</p>
-        </div>
       </div>
     </div>
 
@@ -336,7 +336,6 @@ export default {
       that.detail.object = directoryRes.data.length || 0
       await that.$commonFun.timeout(500)
       that.listLoad = false
-      that.$store.dispatch('setFreeBucket', that.detail.size || 0)
       that.$refs.tableList.bodyWrapper.scrollTop = 0
       // if (type === 1) that.$refs.tableList.bodyWrapper.scrollTop = that.$refs.tableList.bodyWrapper.scrollHeight
     },
@@ -469,12 +468,15 @@ export default {
         width: calc(100% - 0.6rem);
         font-size: 16px;
         font-weight: 400;
-        margin: 0 auto 0.35rem;
+        margin: 0 auto 0.2rem;
         display: flex;
         align-items: center;
         flex-wrap: wrap;
         @media screen and (max-width: 1440px) {
           font-size: 14px;
+        }
+        @media screen and (max-width: 768px) {
+          width: 100%;
         }
         a {
           margin-right: 5px;
@@ -516,9 +518,9 @@ export default {
         display: flex;
         align-items: center;
         flex-wrap: wrap;
-        margin: 0 auto 0.7rem;
+        margin: 0 auto 0.5rem;
         @media screen and (max-width: 441px) {
-          margin: 0 auto 0.5rem;
+          margin: 0 auto 0.4rem;
         }
         .title {
           width: 100%;
@@ -600,8 +602,15 @@ export default {
                 box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
                 z-index: 9;
                 border-radius: 5px;
+                @media screen and (max-width: 768px) {
+                  left: 0;
+                }
                 p {
                   padding: 0.05rem 0.15rem;
+                  font-size: 0.17rem;
+                  @media screen and (max-width: 992px) {
+                    font-size: 14px;
+                  }
                   &:hover {
                     background-color: rgba(0, 137, 246, 0.07);
                   }
@@ -1059,9 +1068,13 @@ export default {
           }
         }
         .el-tree {
+          @media screen and (max-width: 768px) {
+            margin-bottom: 0.2rem;
+          }
           .el-tree-node__content {
             .el-tree-node__expand-icon {
               color: #000;
+              font-weight: 600;
             }
             .el-tree-node__label,
             .custom-tree-node {
@@ -1091,13 +1104,13 @@ export default {
             }
             .icon {
               display: block;
-              width: 18px;
-              height: 18px;
+              width: 17px;
+              height: 17px;
               margin: 0 5px;
               font-size: 0.24rem;
               @media screen and (max-width: 1600px) {
-                width: 16px;
-                height: 16px;
+                width: 15px;
+                height: 15px;
               }
               @media screen and (max-width: 768px) {
                 width: 14px;

@@ -1,5 +1,6 @@
 <template>
-  <div :class="{'slideScroll slideAdd': true, 'slideAddBg': dialogFormVisible&&(typeName !== 'add'), 'slideComSoon': fixed, slideEmail: dialogFormVisible&&(typeName === 'emailLogin'||typeName === 'emailCheck')}" v-if="dialogFormVisible">
+  <div :class="{'slideScroll slideAdd': true, 'slideAddBg': dialogFormVisible&&(typeName !== 'add'), 'slideComSoon': fixed, slideEmail: dialogFormVisible&&(typeName === 'emailLogin'||typeName === 'emailCheck'||typeName === 'upload_folder_list')}"
+    v-if="dialogFormVisible">
     <div class="fe-none" v-if="typeName === 'add' || typeName === 'rename' || typeName === 'addSub'">
       <div class="addBucket" v-loading="createLoad">
         <i class="el-icon-circle-close close" @click="closeDia()"></i>
@@ -122,7 +123,8 @@
             <span class="color">{{areaBody.Size | formatbytes}}</span>
           </el-form-item>
           <el-form-item :label="$t('metaSpace.ob_detail_ObjectIPFSLink')">
-            <a class="color ipfsStyle" @click="xhrequest(areaBody.IpfsUrl, areaBody.Name)">
+            <!-- <a class="color ipfsStyle" @click="xhrequest(areaBody.IpfsUrl, areaBody.Name)"> -->
+            <a class="color ipfsStyle" :href="areaBody.IpfsUrl" target="_blank">
               {{areaBody.IpfsUrl}}
             </a>
           </el-form-item>
@@ -179,24 +181,37 @@
       <div class="uploadDig uploadDigFolder" v-loading="loading">
         <i class="el-icon-circle-close close" @click="closeDia()"></i>
         <div class="upload_form">
-          <el-upload class="upload-demo upload-file" :multiple="true" :style="{'border': ruleForm.fileList_tip?'2px dashed #f56c6c':'0'}" drag ref="uploadFolderRef" action="customize" :http-request="uploadFile" :file-list="ruleForm.fileList" :on-change="handleChange"
-            :on-remove="handleRemove">
+          <el-upload class="upload-demo upload-file" :multiple="true" :style="{'border': ruleForm.fileList_tip?'2px dashed #f56c6c':'0'}" drag ref="uploadFolderRef" action="customize" :http-request="uploadFile" :file-list="ruleForm.fileListFolder" :show-file-list="false"
+            :on-change="handleChange" :on-remove="handleRemove">
             <img src="@/assets/images/space/icon_11.png" alt="">
             <div class="el-upload__text"></div>
             <el-button type="primary">
               Browse Folders
             </el-button>
           </el-upload>
-          <p v-if="ruleForm.fileList.length>0" style="display: flex;align-items: center;">
-            <svg t="1637031488880" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3310" style="width: 14px;height: 14px;margin: 0 6px 0 5px;">
-              <path d="M512 1024a512 512 0 1 1 512-512 32 32 0 0 1-32 32h-448v448a32 32 0 0 1-32 32zM512 64a448 448 0 0 0-32 896V512a32 32 0 0 1 32-32h448A448 448 0 0 0 512 64z" fill="#999999" p-id="3311"></path>
-              <path d="M858.88 976a32 32 0 0 1-32-32V640a32 32 0 0 1 32-32 32 32 0 0 1 32 32v304a32 32 0 0 1-32 32z" fill="#999999" p-id="3312"></path>
-              <path d="M757.12 773.12a34.56 34.56 0 0 1-22.4-8.96 32 32 0 0 1 0-45.44l101.12-101.12a32 32 0 0 1 45.44 0 30.72 30.72 0 0 1 0 44.8l-101.12 101.76a34.56 34.56 0 0 1-23.04 8.96z" fill="#999999" p-id="3313"></path>
-              <path d="M960 773.12a32 32 0 0 1-22.4-8.96l-101.76-101.76a32 32 0 0 1 0-44.8 32 32 0 0 1 45.44 0l101.12 101.12a32 32 0 0 1-22.4 54.4z" fill="#999999" p-id="3314"></path>
-            </svg>
-            {{ruleForm.file_size}}
-          </p>
-          <p v-if="ruleForm.fileList_tip" style="color: #F56C6C;font-size: 12px;line-height: 1;">{{ruleForm.fileList_tip_text}}</p>
+        </div>
+      </div>
+    </div>
+    <div class="fe-none" v-else-if="typeName === 'upload_folder_list'">
+      <div class="uploadDig">
+        <i class="el-icon-circle-close close" @click="closeDia()"></i>
+        <div class="upload_progress upload_folder_list">
+          <div class="title">
+            <i class="el-icon-upload2"></i>Upload completed
+          </div>
+          <div class="folder">
+            <div class="folder_style" v-for="(list, l) in ruleForm.fileListFolder" :key="l">
+              <div class="load_cont">
+                <p>{{list.name}}
+                  <small>({{list.size | formatbytes}})</small>
+                </p>
+                <p style="color:#999">
+                  <small>path: /{{list.path}}</small>
+                </p>
+              </div>
+              <el-progress :color="'#4d75ff'" :percentage="list.uploadPrecent"></el-progress>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -383,7 +398,8 @@ export default {
         fileList_tip: false,
         fileList_tip_text: '',
         file_size: '',
-        file_size_byte: ''
+        file_size_byte: '',
+        fileListFolder: []
       },
       bodyWidth: document.documentElement.clientWidth < 1024,
       fileListTip: false,
@@ -605,6 +621,7 @@ export default {
         return that.uploadBody.uploadList.indexOf(item) === index
       })
       that.uploadBody.addNum += 1
+      let indexFile = that.uploadBody.addNum
 
       let regexp = /[#\\?]/
       let reg = new RegExp(' ', 'g')
@@ -623,17 +640,23 @@ export default {
 
       if (fileList.length > 0) {
         that.ruleForm.fileList = [fileList[fileList.length - 1]]
-
+        file.uploadPrecent = 0
+        that.ruleForm.fileListFolder.push(file)
+        that.ruleForm.fileListFolder[that.uploadBody.addNum - 1].path = `${that.currentBucket}/${currentFold}`
         that.loading = true
         that.uploadFileName = file.name
+        if (that.typeName === 'upload_folder') that.typeName = 'upload_folder_list'
         try {
           let alreadyUploadChunks = []
           let { hash } = await that.fileMd5(file)
           // console.log(hash, suffix)
           let fileCheckRes = await that.fileCheck(hash, file, currentFold, fold)
           if (!fileCheckRes) {
+            that.ruleForm.fileListFolder[indexFile - 1].uploadPrecent = 100
+            that.ruleForm.fileListFolder[indexFile - 1].name = file.name + ' '
+            // console.log('index', indexFile - 1, that.ruleForm.fileListFolder[indexFile - 1].uploadPrecent, that.ruleForm.fileListFolder[indexFile - 1])
             if (that.uploadBody.allNum === that.uploadBody.addNum) {
-              that.$emit('getUploadDialog', false, 0)
+              that.$emit('getUploadDialog', that.typeName === 'upload_folder_list', 0)
               that.loading = false
             }
             return false
@@ -657,9 +680,19 @@ export default {
           })
           uploadListData.append('file', fileBlob, chunks[0].filename)
           uploadListData.append('hash', hash)
-          let uploadListRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/upload`, 'post', uploadListData)
+          const uploadListConfig = {
+            onUploadProgress: progressEvent => {
+              that.progressEvent = progressEvent
+              that.ruleForm.fileListFolder[indexFile - 1].name = file.name + ' '
+              that.ruleForm.fileListFolder[indexFile - 1].uploadPrecent = index < count ? (((index / count) * 100) | 0) : 100
+              // console.log('progressEvent' + indexFile, that.ruleForm.fileListFolder[indexFile - 1])
+              // that.progressHandle(progressEvent)
+            }
+          }
+          let uploadListRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/upload`, 'post', uploadListData, uploadListConfig)
           alreadyUploadChunks = uploadListRes.data || []
-          if (that.typeName !== 'upload_folder') that.typeName = 'upload_progress'
+          if (count <= 1) await that.fileMerge(hash, file, currentFold, fold)
+          if (that.typeName !== 'upload_folder_list') that.typeName = 'upload_progress'
           that.concurrentExecution(chunks, concurrent, (chunk) => {
             return new Promise(async (resolve, reject) => {
               if (alreadyUploadChunks.indexOf(chunk.filename) === -1) {
@@ -673,14 +706,16 @@ export default {
                 const config = {
                   onUploadProgress: progressEvent => {
                     that.progressEvent = progressEvent
-                    // console.log('progressEvent', progressEvent)
+                    that.ruleForm.fileListFolder[indexFile - 1].name = file.name + ' '
+                    that.ruleForm.fileListFolder[indexFile - 1].uploadPrecent = index < count ? (((index / count) * 100) | 0) : 100
+                    // console.log('progressEvent' + indexFile, that.ruleForm.fileListFolder[indexFile - 1])
                     // that.progressHandle(progressEvent)
                   }
                 }
                 let uploadRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/upload`, 'post', uploadData, config)
                 // console.log('data', uploadRes.data)
                 if (!uploadRes || uploadRes.status !== 'success') {
-                  that.$emit('getUploadDialog', false, 0)
+                  that.$emit('getUploadDialog', that.typeName === 'upload_folder_list', 0)
                   that.loading = false
                   reject(uploadRes ? uploadRes.message : 'Fail')
                   return false
@@ -700,7 +735,7 @@ export default {
         } catch (e) {
           console.log(e)
           await that.$commonFun.timeout(500)
-          that.$emit('getUploadDialog', false, 0)
+          that.$emit('getUploadDialog', that.typeName === 'upload_folder_list', 0)
           that.loading = false
         }
       }
@@ -739,7 +774,7 @@ export default {
         that.$message.error(checkRes ? checkRes.message : 'Fail')
         return false
       }
-      if (that.typeName === 'upload_folder' && (that.uploadBody.uploadList !== that.uploadBody.uploadListAll)) {
+      if (that.typeName === 'upload_folder_list' && (that.uploadBody.uploadList !== that.uploadBody.uploadListAll)) {
         that.uploadBody.uploadList = await that.getArray(that.uploadBody.uploadList)
         that.uploadBody.uploadList = that.uploadBody.uploadList.filter((item, index) => {
           return that.uploadBody.uploadList.indexOf(item) === index
@@ -754,7 +789,7 @@ export default {
         that.uploadBody.allNum += 1
         if (that.uploadBody.allNum === that.uploadBody.addNum) {
           await that.$commonFun.timeout(500)
-          that.$emit('getUploadDialog', false, 1)
+          that.$emit('getUploadDialog', that.typeName === 'upload_folder_list', 1)
           that.loading = false
         }
         return false
@@ -813,7 +848,7 @@ export default {
       that.uploadBody.allNum += 1
       if (that.uploadBody.allNum === that.uploadBody.addNum) {
         await that.$commonFun.timeout(500)
-        that.$emit('getUploadDialog', false, 1)
+        that.$emit('getUploadDialog', that.typeName === 'upload_folder_list', 1)
         that.loading = false
       }
     },
@@ -856,6 +891,7 @@ export default {
       that.ruleForm.file_size = ''
       that.ruleForm.file_size_byte = ''
       that.uploadBody.uploadList = []
+      that.ruleForm.fileListFolder = []
       that.uploadBody.uploadListAll = []
       that.uploadBody.addNum = 0
       that.uploadBody.allNum = 0
@@ -973,7 +1009,7 @@ export default {
   },
   mounted () {
     that = this
-    if (that.typeName === 'upload_folder') {
+    if (that.typeName === 'upload_folder' || that.typeName === 'upload_folder_list') {
       // that.addEvent()
       that.$refs.uploadFolderRef.$children[0].$refs.input.webkitdirectory = true
       that.$refs.uploadFolderRef.$refs['upload-inner'].handleClick()
@@ -2224,6 +2260,66 @@ export default {
         flex-wrap: wrap;
         justify-content: center;
         align-items: center;
+        .folder {
+          width: 100%;
+          max-height: 300px;
+          overflow-y: scroll;
+          .folder_style {
+            padding: 0.1rem 5%;
+            .load_cont {
+              width: 100%;
+              p {
+                width: 100%;
+                text-align: left;
+                color: #000;
+                line-height: 20px;
+                max-height: none;
+                white-space: normal;
+                display: block;
+                small {
+                  line-height: 1;
+                }
+              }
+            }
+            .el-progress /deep/ {
+              margin: 0.1rem 0 0;
+              .el-progress__text {
+                font-size: 12px !important;
+              }
+            }
+          }
+          &::-webkit-scrollbar-track {
+            background: #fff;
+          }
+          &::-webkit-scrollbar {
+            width: 5px;
+            background: #fff;
+          }
+          &::-webkit-scrollbar-thumb {
+            background: #4f8aff;
+          }
+        }
+        .title {
+          display: flex;
+          align-items: center;
+          width: 90%;
+          padding: 0.25rem 5%;
+          text-align: left;
+          font-size: 0.22rem;
+          color: #000;
+          line-height: 1;
+          @media screen and (max-width: 768px) {
+            font-size: 16px;
+          }
+          i {
+            display: block;
+            width: 20px;
+            height: 20px;
+            margin: 0 5px 0 0;
+            font-size: 20px;
+            color: #666;
+          }
+        }
         .load {
           display: block;
           width: 100%;
@@ -2311,9 +2407,6 @@ export default {
             text-align: center;
           }
         }
-        .el-progress {
-          margin: 0.3rem;
-        }
         .load_cont {
           width: calc(100% - 126px - 0.6rem);
           p {
@@ -2329,6 +2422,16 @@ export default {
             -webkit-box-orient: vertical;
           }
         }
+        .el-progress {
+          margin: 0.3rem;
+          .el-progress__text {
+            font-size: 12px !important;
+          }
+        }
+      }
+      .upload_folder_list {
+        padding: 0 0 0.25rem;
+        align-items: flex-start;
       }
     }
     .loginEmail {

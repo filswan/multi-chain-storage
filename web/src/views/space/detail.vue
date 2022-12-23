@@ -51,7 +51,7 @@
               <el-table-column prop="Name" :label="$t('metaSpace.table_name')">
                 <template slot-scope="scope">
                   <div class="hot-cold-box">
-                    <span @click="dialogFun('detail_file', scope.row)">{{ scope.row.Name }}</span>
+                    <span @click="getDetail('detail_file', scope.row)">{{ scope.row.Name }}</span>
                   </div>
                 </template>
               </el-table-column>

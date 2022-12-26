@@ -158,16 +158,12 @@ export default {
       that.createLoad = true
       const params =
         {
-          'action': 'rename',
-          'src': {
-            'dirs': [that.areaBody.id],
-            'items': []
-          },
-          'new_name': newName
+          'bucketsid': that.areaBody.BucketUid,
+          'new-name': newName
         }
-      const renameRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v3/object/rename`, 'post', params)
+      const renameRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}buckets/rename`, 'post', params)
       if (!renameRes || renameRes.status !== 'success') {
-        that.$message.error(renameRes ? renameRes.message : 'Fail')
+        that.$message.error(renameRes.message || 'Fail')
       }
       await that.$commonFun.timeout(500)
       that.createLoad = false
@@ -181,7 +177,7 @@ export default {
       }
       const deleteRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/bucket/delete?${QS.stringify(params)}`, 'get')
       if (!deleteRes || deleteRes.status !== 'success') {
-        that.$message.error(deleteRes ? deleteRes.status : 'Fail')
+        that.$message.error(deleteRes.status || 'Fail')
       }
       await that.$commonFun.timeout(500)
       that.listTableLoad = false
@@ -199,7 +195,7 @@ export default {
       }
       const directoryRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/bucket/create`, 'post', params)
       if (!directoryRes || directoryRes.status !== 'success') {
-        that.$message.error(directoryRes ? directoryRes.message : 'Fail')
+        that.$message.error(directoryRes.message || 'Fail')
       }
       await that.$commonFun.timeout(500)
       that.dialogFormVisible = false
@@ -221,7 +217,7 @@ export default {
       const directoryRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/bucket/get_bucket_list`, 'get')
       // const directoryRes = await that.$commonFun.sendRequest(`./static/json/list.json`, 'get')
       if (!directoryRes || directoryRes.status !== 'success') {
-        that.$message.error(directoryRes.message)
+        that.$message.error(directoryRes.message || 'Fail')
         return false
       }
       that.listBuckets = directoryRes.data || []

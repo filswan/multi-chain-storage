@@ -177,6 +177,19 @@
         </div>
       </div>
     </div>
+    <div class="fe-none" v-else-if="typeName === 'upload_progress'">
+      <div class="uploadDig">
+        <div class="upload_progress">
+          <div class="load_svg">
+            <el-progress type="circle" :stroke-width="10" :width="110" :color="'#4d75ff'" :percentage="uploadPrecent"></el-progress>
+            <div class="load_cont">
+              <p>{{uploadFileName}}</p>
+              <p>{{uploadFileSize | formatbytes}}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="fe-none" v-else-if="typeName === 'upload_folder'">
       <div class="uploadDig uploadDigFolder" v-loading="loading">
         <i class="el-icon-circle-close close" @click="closeDia()"></i>
@@ -210,25 +223,6 @@
                 </p>
               </div>
               <el-progress :color="'#4d75ff'" :percentage="list.uploadPrecent"></el-progress>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="fe-none" v-else-if="typeName === 'upload_progress'">
-      <div class="uploadDig">
-        <div class="upload_progress">
-          <!-- <img src="@/assets/images/space/load_sunny.gif" class="load" />
-          <div class="progress">
-            <p>{{uploadPrecent}}%
-              <small>{{speedChange(uploadPrecentSpeed)}}</small>
-            </p>
-          </div> -->
-          <div class="load_svg">
-            <el-progress type="circle" :stroke-width="10" :width="110" :color="'#4d75ff'" :percentage="uploadPrecent"></el-progress>
-            <div class="load_cont">
-              <p>{{uploadFileName}}</p>
-              <p>{{uploadFileSize | formatbytes}}</p>
             </div>
           </div>
         </div>
@@ -611,6 +605,24 @@ export default {
       })
       return resultRes
     },
+    async concurrentExecution (list, limit, asyncHandle) {
+      let recursion = (arr) => {
+        return asyncHandle(arr.shift()).then(() => {
+          if (arr.length !== 0) {
+            return recursion(arr)
+          } else {
+            return 'finish'
+          }
+        })
+      }
+      let listCopy = [].concat(list)
+      let asyncList = []
+      limit = limit > listCopy.length ? listCopy.length : limit
+      while (limit--) {
+        asyncList.push(recursion(listCopy))
+      }
+      return Promise.all(asyncList)
+    },
     async handleChange (file, fileList) {
       const folderCurrent = file.raw.webkitRelativePath.split('/') || ''
       const currentFold = folderCurrent.slice(0, -1).join('/') || ''
@@ -647,14 +659,11 @@ export default {
         that.uploadFileName = file.name
         if (that.typeName === 'upload_folder') that.typeName = 'upload_folder_list'
         try {
-          let alreadyUploadChunks = []
           let { hash } = await that.fileMd5(file)
-          // console.log(hash, suffix)
           let fileCheckRes = await that.fileCheck(hash, file, currentFold, fold)
           if (!fileCheckRes) {
             that.ruleForm.fileListFolder[indexFile - 1].uploadPrecent = 100
             that.ruleForm.fileListFolder[indexFile - 1].name = file.name + ' '
-            // console.log('index', indexFile - 1, that.ruleForm.fileListFolder[indexFile - 1].uploadPrecent, that.ruleForm.fileListFolder[indexFile - 1])
             if (that.uploadBody.allNum === that.uploadBody.addNum) {
               that.$emit('getUploadDialog', that.typeName === 'upload_folder_list', 0)
               that.loading = false
@@ -662,11 +671,12 @@ export default {
             return false
           }
 
+          let alreadyUploadChunks = []
           let max = 10 * 1024 * 1024
           let count = Math.ceil(file.size / max)
           let index = 0
           let chunks = []
-          let concurrent = 3 // 并发数
+          let concurrent = 3
           while (index < count) {
             chunks.push({
               file: file.raw.slice(index * max, (index + 1) * max),
@@ -685,7 +695,6 @@ export default {
               that.progressEvent = progressEvent
               that.ruleForm.fileListFolder[indexFile - 1].name = file.name + ' '
               that.ruleForm.fileListFolder[indexFile - 1].uploadPrecent = index < count ? (((index / count) * 100) | 0) : 100
-              // console.log('progressEvent' + indexFile, that.ruleForm.fileListFolder[indexFile - 1])
               // that.progressHandle(progressEvent)
             }
           }
@@ -708,16 +717,14 @@ export default {
                     that.progressEvent = progressEvent
                     that.ruleForm.fileListFolder[indexFile - 1].name = file.name + ' '
                     that.ruleForm.fileListFolder[indexFile - 1].uploadPrecent = index < count ? (((index / count) * 100) | 0) : 100
-                    // console.log('progressEvent' + indexFile, that.ruleForm.fileListFolder[indexFile - 1])
                     // that.progressHandle(progressEvent)
                   }
                 }
                 let uploadRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/upload`, 'post', uploadData, config)
-                // console.log('data', uploadRes.data)
                 if (!uploadRes || uploadRes.status !== 'success') {
                   that.$emit('getUploadDialog', that.typeName === 'upload_folder_list', 0)
                   that.loading = false
-                  reject(uploadRes ? uploadRes.message : 'Fail')
+                  reject(uploadRes.message || 'Fail')
                   return false
                 }
                 alreadyUploadChunks = uploadRes.data
@@ -740,23 +747,13 @@ export default {
         }
       }
     },
-    async concurrentExecution (list, limit, asyncHandle) {
-      let recursion = (arr) => {
-        return asyncHandle(arr.shift()).then(() => {
-          if (arr.length !== 0) {
-            return recursion(arr)
-          } else {
-            return 'finish'
-          }
-        })
-      }
-      let listCopy = [].concat(list)
-      let asyncList = []
-      limit = limit > listCopy.length ? listCopy.length : limit
-      while (limit--) {
-        asyncList.push(recursion(listCopy))
-      }
-      return Promise.all(asyncList)
+    async manageProgress (hash, file, index, count, max, currentFold, fold) {
+      that.uploadPrecent = ((index / count) * 100) | 0
+      that.uploadFileSize = `${index * max}`
+      if (index < count) return
+      that.uploadPrecent = 100
+      that.uploadFileSize = file.size
+      await that.fileMerge(hash, file, currentFold, fold)
     },
     async fileCheck (hash, file, currentFold, fold) {
       const reg = new RegExp('/' + '$')
@@ -771,7 +768,7 @@ export default {
       }
       let checkRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/check`, 'post', paramCheck)
       if (!checkRes || checkRes.status !== 'success') {
-        that.$message.error(checkRes ? checkRes.message : 'Fail')
+        that.$message.error(checkRes.message || 'Fail')
         return false
       }
       if (that.typeName === 'upload_folder_list' && (that.uploadBody.uploadList !== that.uploadBody.uploadListAll)) {
@@ -782,7 +779,7 @@ export default {
         await that.getUploadFolderFun(that.uploadBody.uploadList)
       }
       if (checkRes.data.file_is_exist) {
-        that.$message.error('You have uploaded this file!')
+        if (that.typeName !== 'upload_folder_list') that.$message.error('You have uploaded this file!')
         return false
       }
       if (checkRes.data.ipfs_is_exist) {
@@ -826,7 +823,7 @@ export default {
         }
         const directoryRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/create_folder`, 'post', params)
         if (!directoryRes || directoryRes.status !== 'success') {
-          that.$message.error(directoryRes ? directoryRes.message : 'Fail')
+          that.$message.error(directoryRes.message || 'Fail')
         }
       })
     },
@@ -843,7 +840,7 @@ export default {
       }
       let mergeRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/merge`, 'post', paramMerge)
       if (!mergeRes || mergeRes.status !== 'success') {
-        that.$message.error(mergeRes ? mergeRes.message : 'Fail')
+        that.$message.error(mergeRes.message || 'Fail')
       }
       that.uploadBody.allNum += 1
       if (that.uploadBody.allNum === that.uploadBody.addNum) {
@@ -851,17 +848,6 @@ export default {
         that.$emit('getUploadDialog', that.typeName === 'upload_folder_list', 1)
         that.loading = false
       }
-    },
-    async manageProgress (hash, file, index, count, max, currentFold, fold) {
-      // console.log(index, count, max, file.size)
-      // console.log(that.progressEvent)
-      // that.typeName = 'upload_progress'
-      that.uploadPrecent = ((index / count) * 100) | 0
-      that.uploadFileSize = `${index * max}`
-      if (index < count) return
-      that.uploadPrecent = 100
-      that.uploadFileSize = file.size
-      await that.fileMerge(hash, file, currentFold, fold)
     },
     async fileMd5 (file) {
       return new Promise(resolve => {
@@ -933,14 +919,14 @@ export default {
             if (!emailRes || emailRes.status !== 'success') {
               that.$message({
                 showClose: true,
-                message: emailRes ? emailRes.message : 'Fail',
+                message: emailRes.message || 'Fail',
                 type: 'error',
                 duration: 10000
               })
             } else {
               that.$message({
                 showClose: true,
-                message: emailRes ? emailRes.data : 'Success',
+                message: emailRes.data || 'Success',
                 type: 'success',
                 duration: 10000
               })

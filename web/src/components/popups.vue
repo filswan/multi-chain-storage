@@ -1,16 +1,18 @@
 <template>
   <div :class="{'slideScroll slideAdd': true, 'slideAddBg': dialogFormVisible&&(typeName !== 'add'), 'slideComSoon': fixed, slideEmail: dialogFormVisible&&(typeName === 'emailLogin'||typeName === 'emailCheck'||typeName === 'upload_folder_list')}"
     v-if="dialogFormVisible">
-    <div class="fe-none" v-if="typeName === 'add' || typeName === 'rename' || typeName === 'addSub'">
+    <div class="fe-none" v-if="typeName === 'add' || typeName === 'addNewBucket' || typeName === 'rename' || typeName === 'addSub'">
       <div class="addBucket" v-loading="createLoad">
         <i class="el-icon-circle-close close" @click="closeDia()"></i>
-        <div class="title">{{typeName === 'addSub'?$t('metaSpace.folder_name'):$t('metaSpace.bucket_name')}}</div>
+        <div class="title" v-if="typeName === 'addSub'">{{$t('metaSpace.folder_name')}}</div>
+        <div class="title" v-else-if="typeName === 'addNewBucket'">Name this bucket</div>
+        <div class="title" v-else>{{$t('metaSpace.bucket_name')}}</div>
         <el-form :model="form" status-icon :rules="rules" ref="form">
           <el-form-item prop="name">
             <el-input v-model="form.name" maxlength="256" :placeholder="typeName === 'addSub'?'Folder Name':'Bucket Name'" ref="bucketNameRef"></el-input>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="getDialogClose('form')">{{$t('metaSpace.Submit')}}</el-button>
+            <el-button type="primary" @click="getDialogClose('form')">{{typeName === 'addNewBucket'?'Add this bucket':$t('metaSpace.Submit')}}</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -207,10 +209,22 @@
     </div>
     <div class="fe-none" v-else-if="typeName === 'upload_folder_list'">
       <div class="uploadDig">
-        <i class="el-icon-circle-close close" @click="closeDia()"></i>
+        <i class="el-icon-circle-close close" @click="closeDia('folderClose')"></i>
         <div class="upload_progress upload_folder_list">
           <div class="title">
-            <i class="el-icon-upload2"></i>Upload completed
+            <i class="el-icon-upload2"></i>Uploading... ({{uploadBody.allNum}}/{{uploadBody.addNum}})
+          </div>
+          <div class="folder_plan" v-if="ruleForm.fileListFolderErr.length>0">
+            Upload failed:
+            <el-popover placement="bottom-start" width="300" trigger="click" popper-class="folderErr">
+              <div>
+                <p v-for="(errItem, errIndex) in ruleForm.fileListFolderErr" :key="errIndex" style="color: #f56c6c">
+                  <i class="el-icon-upload2"></i>
+                  {{errItem}}
+                </p>
+              </div>
+              <el-button slot="reference" type="text" round>view</el-button>
+            </el-popover>
           </div>
           <div class="folder">
             <div class="folder_style" v-for="(list, l) in ruleForm.fileListFolder" :key="l">
@@ -222,7 +236,7 @@
                   <small>path: /{{list.path}}</small>
                 </p>
               </div>
-              <el-progress :color="'#4d75ff'" :percentage="list.uploadPrecent"></el-progress>
+              <el-progress :color="list.err?'#f56c6c':'#4d75ff'" :percentage="list.uploadPrecent"></el-progress>
             </div>
           </div>
         </div>
@@ -240,7 +254,8 @@
               <label>{{$t('metaSpace.pay_body_BucketName')}}</label>
               <el-form :model="form" status-icon :rules="rules" ref="payForm">
                 <el-form-item prop="name">
-                  <el-input v-model="form.name" maxlength="256" :placeholder="'Bucket Name'" ref="bucketNameRef"></el-input>
+                  <div v-if="areaBody.BucketName" style="color:#333">{{areaBody.BucketName}}</div>
+                  <el-input v-else v-model="form.name" maxlength="256" :placeholder="'Bucket Name'" ref="bucketNameRef"></el-input>
                 </el-form-item>
               </el-form>
             </div>
@@ -274,7 +289,7 @@
         </el-row>
         <el-form ref="form">
           <el-form-item>
-            <el-button type="primary" @click="getDialogClose('payForm')">{{$t('metaSpace.Pay')}}</el-button>
+            <el-button type="primary" @click="getDialogClose('payForm', areaBody.BucketName)">{{$t('metaSpace.Pay')}}</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -393,7 +408,8 @@ export default {
         fileList_tip_text: '',
         file_size: '',
         file_size_byte: '',
-        fileListFolder: []
+        fileListFolder: [],
+        fileListFolderErr: []
       },
       bodyWidth: document.documentElement.clientWidth < 1024,
       fileListTip: false,
@@ -491,6 +507,10 @@ export default {
       that.$emit('getPopUps', false, type || '')
     },
     getDialogClose (formName, type) {
+      if (type) {
+        that.$emit('getPopUps', false, that.typeName, type)
+        return false
+      }
       that.$refs[formName].validate(async valid => {
         if (valid) {
           that.$emit('getPopUps', false, that.typeName, that.form.name)
@@ -689,16 +709,22 @@ export default {
             type: 'application/json'
           })
           uploadListData.append('file', fileBlob, chunks[0].filename)
+          uploadListData.append('file_name', chunks[0].filename)
           uploadListData.append('hash', hash)
           const uploadListConfig = {
             onUploadProgress: progressEvent => {
               that.progressEvent = progressEvent
               that.ruleForm.fileListFolder[indexFile - 1].name = file.name + ' '
-              that.ruleForm.fileListFolder[indexFile - 1].uploadPrecent = index < count ? (((index / count) * 100) | 0) : 100
+              if (count > 1) that.ruleForm.fileListFolder[indexFile - 1].uploadPrecent = index < count ? (((index / count) * 100) | 0) : 100
+              else that.ruleForm.fileListFolder[indexFile - 1].uploadPrecent = that.onPross(progressEvent)
               // that.progressHandle(progressEvent)
             }
           }
           let uploadListRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/upload`, 'post', uploadListData, uploadListConfig)
+          if (!uploadListRes || uploadListRes.status !== 'success') {
+            that.ruleForm.fileListFolder[indexFile - 1].err = true
+            if (that.ruleForm.fileListFolderErr.indexOf(file.name) === -1) that.ruleForm.fileListFolderErr.push(file.name)
+          }
           alreadyUploadChunks = uploadListRes.data || []
           if (count <= 1) await that.fileMerge(hash, file, currentFold, fold)
           if (that.typeName !== 'upload_folder_list') that.typeName = 'upload_progress'
@@ -722,6 +748,8 @@ export default {
                 }
                 let uploadRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/upload`, 'post', uploadData, config)
                 if (!uploadRes || uploadRes.status !== 'success') {
+                  that.ruleForm.fileListFolder[indexFile - 1].err = true
+                  if (that.ruleForm.fileListFolderErr.indexOf(file.name) === -1) that.ruleForm.fileListFolderErr.push(file.name)
                   that.$emit('getUploadDialog', that.typeName === 'upload_folder_list', 0)
                   that.loading = false
                   reject(uploadRes.message || 'Fail')
@@ -778,14 +806,10 @@ export default {
         })
         await that.getUploadFolderFun(that.uploadBody.uploadList)
       }
-      if (checkRes.data.file_is_exist) {
-        if (that.typeName !== 'upload_folder_list') that.$message.error('You have uploaded this file!')
-        return false
-      }
-      if (checkRes.data.ipfs_is_exist) {
+      if (checkRes.data.file_is_exist || checkRes.data.ipfs_is_exist) {
         that.uploadBody.allNum += 1
+        if (checkRes.data.file_is_exist && that.typeName !== 'upload_folder_list') that.$message.error('You have uploaded this file!')
         if (that.uploadBody.allNum === that.uploadBody.addNum) {
-          await that.$commonFun.timeout(500)
           that.$emit('getUploadDialog', that.typeName === 'upload_folder_list', 1)
           that.loading = false
         }
@@ -839,12 +863,12 @@ export default {
         'bucket_uid': that.areaBody
       }
       let mergeRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/merge`, 'post', paramMerge)
-      if (!mergeRes || mergeRes.status !== 'success') {
-        that.$message.error(mergeRes.message || 'Fail')
+      if (!mergeRes || mergeRes.status !== 'success') that.$message.error(mergeRes.message || 'Fail')
+      else {
+        that.uploadBody.allNum += 1
+        if (that.ruleForm.fileListFolderErr.indexOf(file.name) === -1) that.ruleForm.fileListFolderErr.push(file.name)
       }
-      that.uploadBody.allNum += 1
       if (that.uploadBody.allNum === that.uploadBody.addNum) {
-        await that.$commonFun.timeout(500)
         that.$emit('getUploadDialog', that.typeName === 'upload_folder_list', 1)
         that.loading = false
       }
@@ -878,6 +902,7 @@ export default {
       that.ruleForm.file_size_byte = ''
       that.uploadBody.uploadList = []
       that.ruleForm.fileListFolder = []
+      that.ruleForm.fileListFolderErr = []
       that.uploadBody.uploadListAll = []
       that.uploadBody.addNum = 0
       that.uploadBody.allNum = 0
@@ -885,7 +910,8 @@ export default {
     onPross (e) {
       const { loaded, total } = e
       const uploadPrecent = ((loaded / total) * 100) | 0
-      that.uploadPrecent = loaded < total && uploadPrecent === 100 ? 99 : uploadPrecent
+      return loaded < total && uploadPrecent === 100 ? 99 : uploadPrecent
+      // that.uploadPrecent = loaded < total && uploadPrecent === 100 ? 99 : uploadPrecent
     },
     async progressHandle (e) {
       const { loaded, total } = e
@@ -1002,7 +1028,7 @@ export default {
     }
     document.onkeydown = function (e) {
       if (e.keyCode === 13) {
-        if (that.typeName === 'add' || that.typeName === 'rename' || that.typeName === 'addSub') that.getDialogClose('form')
+        if (that.typeName === 'add' || that.typeName === 'addNewBucket' || that.typeName === 'rename' || that.typeName === 'addSub') that.getDialogClose('form')
         if (that.typeName === 'emailLogin') that.submitEmail('form')
       }
     }
@@ -2246,6 +2272,20 @@ export default {
         flex-wrap: wrap;
         justify-content: center;
         align-items: center;
+        .folder_plan {
+          width: 90%;
+          padding: 0.05rem 5%;
+          margin: 0;
+          background-color: #fef0f0;
+          color: #f56c6c;
+          .el-button /deep/ {
+            margin: 0.05rem 0;
+            padding: 5px;
+            color: inherit;
+            text-decoration: underline;
+            font-family: inherit;
+          }
+        }
         .folder {
           width: 100%;
           max-height: 300px;

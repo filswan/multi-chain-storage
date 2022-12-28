@@ -8,7 +8,7 @@
             </el-input>
           </div>
           <div class="createTask">
-            <a @click="dialogFun('pay')">
+            <a @click="dialogFun('addNewBucket')">
               <img src="@/assets/images/space/icon_01.png" alt="">
               <span>{{$t('metaSpace.add_bucket')}}</span>
             </a>
@@ -17,7 +17,7 @@
       </div>
       <div class="fes-search">
         <div class="title">
-          {{$t('metaSpace.list_bucket')}} ({{listBuckets.length}}/{{listBuckets.length>0?listBuckets.length:1}})
+          {{$t('metaSpace.list_bucket')}} ({{listBucketActive}}/{{listBuckets.length>0?listBuckets.length:1}})
 
           <el-popover placement="top" popper-class="elPopTitle" width="200" trigger="hover" :content="$t('metaSpace.list_bucket_tip')">
             <img slot="reference" src="@/assets/images/info.png" />
@@ -105,6 +105,7 @@ export default {
       search: '',
       listBuckets: [],
       listBucketsAll: [],
+      listBucketActive: 0,
       listBucketIndex: false,
       dialogFormVisible: false,
       areaBody: {},
@@ -151,7 +152,7 @@ export default {
     },
     async dialogFun (name, row) {
       that.typeName = name
-      if (row) that.areaBody = row
+      that.areaBody = row || {}
       that.dialogFormVisible = true
     },
     async renameFun (newName) {
@@ -210,6 +211,7 @@ export default {
     async getListBuckets (name) {
       let size = 0
       let maxSize = 0
+      that.listBucketActive = 0
       that.listLoad = true
       // const params = {
       //   file_name: `${that.search.trim()}` || ''
@@ -224,7 +226,10 @@ export default {
       that.listBucketIndex = directoryRes.data.length > 0 || !!(that.search)
       that.listBuckets.forEach(element => {
         size += element.Size
-        maxSize += element.MaxSize
+        if (element.IsActive) {
+          maxSize += element.MaxSize
+          that.listBucketActive += 1
+        }
       })
       that.$store.dispatch('setFreeBucket', size || 0)
       that.$store.dispatch('setFreeBucketAll', maxSize || 0)

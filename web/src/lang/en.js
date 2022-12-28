@@ -679,7 +679,7 @@ export default {
     Delete: 'Delete',
     Close: 'Close',
     list_bucket: 'Bucket List',
-    list_bucket_tip: 'Current buckets count/Total buckets allowed',
+    list_bucket_tip: 'Total active buckets / Buckets created',
     table_name: 'Name',
     table_space: 'Space',
     table_size: 'Size',

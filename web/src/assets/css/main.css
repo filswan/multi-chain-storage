@@ -38,6 +38,13 @@ a {
   display: none;
 }
 
+.folderErr {
+  max-height: 300px;
+  margin: 0 !important;
+  z-index: 3000 !important;
+  overflow-y: scroll;
+}
+
 .content-box {
   bottom: 0;
   -webkit-transition: left .3s ease-in-out;
@@ -50,16 +57,19 @@ a {
   top: 0;
 }
 
-.content-box::-webkit-scrollbar-track {
+.content-box::-webkit-scrollbar-track,
+.folderErr::-webkit-scrollbar-track {
   background: transparent;
 }
 
-.content-box::-webkit-scrollbar {
+.content-box::-webkit-scrollbar,
+.folderErr::-webkit-scrollbar {
   width: 6px;
   background: transparent;
 }
 
-.content-box::-webkit-scrollbar-thumb {
+.content-box::-webkit-scrollbar-thumb,
+.folderErr::-webkit-scrollbar-thumb {
   background: #ccc;
 }
 

@@ -105,7 +105,7 @@
                 </template>
               </el-table-column>
             </el-table>
-            <div class="form_pagination" v-if="parma.total != 0 && listData.listBucketFile.length>0">
+            <div class="form_pagination" v-if="listData.listBucketFile.length>0">
               <div class="pagination">
                 <el-pagination :hide-on-single-page="true" :total="parma.total" :page-size="parma.limit" :current-page="parma.offset" :layout="'prev, pager, next'" @current-change="handleCurrentChange" @size-change="handleSizeChange" />
                 <div class="span" v-if="!bodyWidth">
@@ -208,6 +208,9 @@ export default {
           break
         case 'rename':
           that.renameFun(bucketName)
+          break
+        case 'folderClose':
+          that.getUploadDialog(dialog, 1)
           break
         default:
           if (rows) that.getDialogClose(dialog, rows, bucketName)

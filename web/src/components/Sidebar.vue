@@ -39,8 +39,8 @@
               <a href="https://discord.gg/9QP4TAEwtn" target="_blank">Discord</a>.</div>
             <div class="progress">
               <el-progress :percentage="(free_bucket/free_bucketAll)*100 || 0"></el-progress>
-              <span v-if="languageMcs === 'en'" class="tip">{{free_bucket | byteStorage}}GB of {{free_bucketAll | byteStorage}}GB for Buckets free storage</span>
-              <span v-else class="tip">目前使用量：{{free_bucket | byteStorage}}GB（Buckets免费储存空间配额：{{free_bucketAll | byteStorage}}GB）</span>
+              <span v-if="languageMcs === 'en'" class="tip">{{free_bucket | byteStorage}}GB of {{free_bucketAll | byteStorage}}GB for storage</span>
+              <span v-else class="tip">目前使用量：{{free_bucket | byteStorage}}GB（储存空间配额：{{free_bucketAll | byteStorage}}GB）</span>
             </div>
             <!-- <div class="progress">
               <el-progress :percentage="(free_usage/free_quota_per_month)*100 || 0"></el-progress>
@@ -224,7 +224,7 @@ export default {
       if (!directoryRes || directoryRes.status !== 'success') return false
       directoryRes.data.forEach(element => {
         size += element.Size
-        maxSize += element.MaxSize
+        if (element.IsActive) maxSize += element.MaxSize
       })
       await _this.$commonFun.timeout(500)
       _this.$store.dispatch('setFreeBucket', size || 0)

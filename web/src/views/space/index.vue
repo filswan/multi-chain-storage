@@ -162,7 +162,7 @@ export default {
           'bucket_uid': that.areaBody.BucketUid,
           'bucket_name': newName
         }
-      const renameRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/buckets/rename`, 'post', params)
+      const renameRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/bucket/rename`, 'post', params)
       if (!renameRes || renameRes.status !== 'success') {
         that.$message.error(renameRes.message || 'Fail')
       }

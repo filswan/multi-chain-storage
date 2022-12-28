@@ -723,7 +723,7 @@ export default {
           let uploadListRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/upload`, 'post', uploadListData, uploadListConfig)
           if (!uploadListRes || uploadListRes.status !== 'success') {
             that.ruleForm.fileListFolder[indexFile - 1].err = true
-            that.ruleForm.fileListFolderErr.push(file.name)
+            if (that.ruleForm.fileListFolderErr.indexOf(file.name) === -1) that.ruleForm.fileListFolderErr.push(file.name)
           }
           alreadyUploadChunks = uploadListRes.data || []
           if (count <= 1) await that.fileMerge(hash, file, currentFold, fold)
@@ -749,7 +749,7 @@ export default {
                 let uploadRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/upload`, 'post', uploadData, config)
                 if (!uploadRes || uploadRes.status !== 'success') {
                   that.ruleForm.fileListFolder[indexFile - 1].err = true
-                  if (that.ruleForm.fileListFolderErr.indexOf(chunk.filename) === -1) that.ruleForm.fileListFolderErr.push(file.name)
+                  if (that.ruleForm.fileListFolderErr.indexOf(file.name) === -1) that.ruleForm.fileListFolderErr.push(file.name)
                   that.$emit('getUploadDialog', that.typeName === 'upload_folder_list', 0)
                   that.loading = false
                   reject(uploadRes.message || 'Fail')

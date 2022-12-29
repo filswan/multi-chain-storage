@@ -24,6 +24,8 @@ const space = () =>
   import('@/views/space/index')
 const spaceDetail = () =>
   import('@/views/space/detail')
+const apiKey = () =>
+  import('@/views/apiKey/index')
 
 const login = () =>
   import('@/views/login/index')
@@ -236,6 +238,29 @@ export default new Router({
       path: '/my_buckets_detail',
       name: 'Space_detail',
       component: spaceDetail,
+      beforeEnter: (to, from, next) => {
+        if (!sessionStorage.getItem('metaAddress')) {
+          next({
+            path: '/home',
+            query: {
+              redirect: to.fullPath
+            }
+          })
+        } else {
+          next()
+        }
+      },
+      meta: {
+        metaInfo: {
+          title: 'Buckets',
+          description: 'Multi-Chain storage (MCS) is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks.'
+        }
+      }
+    },
+    {
+      path: '/api_key',
+      name: 'ApiKey',
+      component: apiKey,
       beforeEnter: (to, from, next) => {
         if (!sessionStorage.getItem('metaAddress')) {
           next({

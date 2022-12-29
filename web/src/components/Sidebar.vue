@@ -39,8 +39,8 @@
               <a href="https://discord.gg/9QP4TAEwtn" target="_blank">Discord</a>.</div>
             <div class="progress">
               <el-progress :percentage="(free_bucket/free_bucketAll)*100 || 0"></el-progress>
-              <span v-if="languageMcs === 'en'" class="tip">{{free_bucket | byteStorage}}GB of {{free_bucketAll | byteStorage}}GB for storage</span>
-              <span v-else class="tip">目前使用量：{{free_bucket | byteStorage}}GB（储存空间配额：{{free_bucketAll | byteStorage}}GB）</span>
+              <span v-if="languageMcs === 'en'" class="tip">{{free_bucket | byteStorage}}GB of {{free_bucketAll | byteStorage}}GB for Bucket storage</span>
+              <span v-else class="tip">目前使用量：{{free_bucket | byteStorage}}GB（Bucket储存空间配额：{{free_bucketAll | byteStorage}}GB）</span>
             </div>
             <!-- <div class="progress">
               <el-progress :percentage="(free_usage/free_quota_per_month)*100 || 0"></el-progress>
@@ -104,6 +104,13 @@ export default {
           index: '4',
           title: this.$t('route.Stats'),
           name: 'Stats',
+          type: ''
+        },
+        {
+          icon: 'el-icon-s-ApiKey',
+          index: '21',
+          title: this.$t('route.ApiKey'),
+          name: 'ApiKey',
           type: ''
         }
       ],
@@ -682,6 +689,12 @@ export default {
           no-repeat center;
       }
     }
+    .el-icon-s-ApiKey {
+      &::before {
+        background: url(../assets/images/menuIcon/icon_ApiKey.png) no-repeat
+          center;
+      }
+    }
     .el-icon-s-documentation {
       &::before {
         background: url(../assets/images/menuIcon/icon_documentation@2x.png)
@@ -774,6 +787,12 @@ export default {
       &::before {
         background: url(../assets/images/menuIcon/icon_Statistics@2x-1.png)
           no-repeat center;
+      }
+    }
+    .el-icon-s-ApiKey {
+      &::before {
+        background: url(../assets/images/menuIcon/icon_ApiKey-1.png) no-repeat
+          center;
       }
     }
     .el-icon-s-documentation {

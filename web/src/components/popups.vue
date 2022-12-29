@@ -767,7 +767,7 @@ export default {
                 const config = {
                   onUploadProgress: progressEvent => {
                     that.progressEvent = progressEvent
-                    that.ruleForm.fileListFolder[indexFile - 1].name = file.name
+                    that.ruleForm.fileListFolder[indexFile - 1].name = file.name + ' '
                     that.ruleForm.fileListFolder[indexFile - 1].uploadPrecent = index < count ? (((index / count) * 100) | 0) : 100
                     // that.progressHandle(progressEvent)
                   }

@@ -104,14 +104,6 @@
           {{$t('fs3Login.Connected_Email_Address')}}
         </el-button>
 
-        <el-button @click="createKey">
-          <svg t="1671505226678" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2949" width="64" height="64">
-            <path d="M443.25546667 486.74133333c-29.35466667-47.104-41.09653333-99.9424-41.09653334-158.72A291.0208 291.0208 0 0 1 695.97866667 34.13333333 291.0208 291.0208 0 0 1 989.86666667 328.02133333a291.0208 291.0208 0 0 1-293.888 293.81973334c-64.64853333 0-117.48693333-17.6128-170.3936-52.90666667l-135.168 135.168 64.64853333 64.7168-82.3296 82.26133333-64.64853333-64.64853333-41.09653334 41.1648 64.64853334 64.64853333-82.3296 82.26133334L102.4 827.5968l340.85546667-340.92373333z m252.7232-335.0528c-99.87413333 0-176.26453333 76.45866667-176.26453334 176.3328s76.3904 176.26453333 176.26453334 176.26453334c99.9424 0 176.3328-76.3904 176.3328-176.26453334 0-99.9424-82.26133333-176.3328-176.3328-176.3328z"
-              fill="#3c5aa5" p-id="2950"></path>
-          </svg>
-          Create an API key
-        </el-button>
-
         <el-button @click="shareTo">
           <svg t="1669800457857" class="icon icon_big" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="6207" width="64" height="64">
             <path d="M923.648 1015.442H100.206a91.648 91.648 0 0 1-91.721-91.72V101.01a91.502 91.502 0 0 1 91.72-91.501H649.29a30.72 30.72 0 0 1 0 61.44H130.487a60.855 60.855 0 0 0-60.928 60.854v762.003a60.855 60.855 0 0 0 60.928 60.928h762.441a60.855 60.855 0 0 0 60.928-60.928V345.088a30.72 30.72 0 1 1 61.44 0v579.291a91.21 91.21 0 0 1-91.648 91.063z m-497.81-403.675a30.574 30.574 0 1 1-43.228-43.228L930.816 17.92a30.574 30.574 0 1 1 43.154 43.3L425.91 611.768z"
@@ -146,19 +138,6 @@
 
       </div>
       <div class="loadStyle" v-show="loadAccount" v-loading="loadAccount"></div>
-    </el-dialog>
-
-    <el-dialog :title="$t('my_profile.create_api_title01')" :visible.sync="apiTips" :width="width" custom-class="wrongNet">
-      <div class="apiTipCont">
-        <label>{{$t('my_profile.create_api_tips03')}}</label>
-        <p>{{apiCont.apiKey}}</p>
-
-        <label>{{$t('my_profile.create_api_tips04')}}</label>
-        <p>
-          {{apiCont.access}}
-          <span class="el-icon-document-copy" @click="copyTextToClipboard(apiCont.access, 1)"></span>
-        </p>
-      </div>
     </el-dialog>
 
     <div class="loadIndexStyle" v-show="loadIndexing" v-loading="loadIndexing"></div>
@@ -210,12 +189,7 @@ export default {
       reverseSwitch: false,
       networkC: false,
       prevType: true,
-      loadAccount: false,
-      apiTips: false,
-      apiCont: {
-        apiKey: '',
-        access: ''
-      }
+      loadAccount: false
     }
   },
   props: ['meta', 'netId', 'networkTip'],
@@ -283,22 +257,6 @@ export default {
       if (status === 'disconnect') await that.$metaLogin.Disconnect()
       await that.$metaLogin.emailSign('', 'detail')
       that.wrongLoad = false
-    },
-    async createKey () {
-      that.loadAccount = true
-      const apiKeyRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/user/generate_api_key`, 'post')
-      if (!apiKeyRes || apiKeyRes.status !== 'success') {
-        that.$message.error(apiKeyRes.message ? apiKeyRes.message : 'Fail')
-        that.loadAccount = false
-        return false
-      }
-      that.apiTips = true
-      that.apiCont = {
-        apiKey: apiKeyRes.data.apikey || '',
-        access: apiKeyRes.data.access_token || ''
-      }
-      await that.$commonFun.timeout(500)
-      that.loadAccount = false
     },
     getNetworkC (dialog, rows) {
       that.networkC = dialog
@@ -731,7 +689,7 @@ export default {
             contractErc20.methods.balanceOf(that.metaAddress).call()
               .then(balance => {
                 let usdcAvailable = that.$web3Init.utils.fromWei(balance, 'mwei')
-                console.log('Available balance:', usdcAvailable, balance)
+                // console.log('Available balance:', usdcAvailable, balance)
                 // that.priceAccound = that.formatDecimal(usdcAvailable, 3)
                 // that.priceAccound = Number(usdcAvailable).toFixed(0)
                 that.priceAccound = parseInt(usdcAvailable)

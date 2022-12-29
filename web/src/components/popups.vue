@@ -17,13 +17,35 @@
         </el-form>
       </div>
     </div>
+    <div class="fe-none" v-if="typeName === 'add_apikey'">
+      <div class="addBucket" v-loading="createLoad">
+        <i class="el-icon-circle-close close" @click="closeDia()"></i>
+        <div class="title">{{$t('my_profile.create_api_title')}}</div>
+        <el-form :model="form" status-icon :rules="rulesDay" label-position="top" ref="form">
+          <el-form-item prop="name" label="Expiration (day)">
+            <el-input v-model="form.day" maxlength="256" :placeholder="'30 days'" ref="bucketNameRef"></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="getDialogClose('form')">{{typeName === 'addNewBucket'?'Add this bucket':$t('metaSpace.Submit')}}</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+    </div>
     <div class="fe-none" v-else-if="typeName === 'delete'">
       <div class="addBucket" v-loading="listTableLoad">
-        <div class="title">
+        <div class="title" v-if="$route.name == 'Space'">
           <i class="el-icon-warning-outline"></i>
-          {{$route.name == 'Space'?$t('metaSpace.delete_title'):$t('metaSpace.delete_title_detail')}}
+          {{$t('metaSpace.delete_title')}}
         </div>
-        <div class="cont">{{$t('metaSpace.delete_desc')}}</div>
+        <div class="title" v-if="$route.name == 'ApiKey'">
+          <i class="el-icon-warning-outline"></i>
+          {{$t('my_profile.module_tips04')}}
+        </div>
+        <div class="title" v-else>
+          <i class="el-icon-warning-outline"></i>
+          {{$t('metaSpace.delete_title_detail')}}
+        </div>
+        <div class="cont">{{$route.name == 'ApiKey'?'APIKey will be permanently deleted. This action cannot be undone.':$t('metaSpace.delete_desc')}}</div>
         <el-form ref="form">
           <el-form-item>
             <el-button type="info" @click="closeDia()">{{$t('metaSpace.Cancel')}}</el-button>
@@ -388,10 +410,14 @@ export default {
       form: {
         name: '',
         email: '',
+        day: '30',
         checkType: ['agreement']
       },
       rules: {
         name: [{ validator: validateName, trigger: 'blur' }]
+      },
+      rulesDay: {
+        day: [{ required: true, message: 'Please fill in the expiration date.', trigger: 'blur' }]
       },
       rulesEmail: {
         email: [
@@ -513,7 +539,7 @@ export default {
       }
       that.$refs[formName].validate(async valid => {
         if (valid) {
-          that.$emit('getPopUps', false, that.typeName, that.form.name)
+          that.$emit('getPopUps', false, that.typeName, that.typeName === 'add_apikey' ? that.form.day : that.form.name)
         } else {
           console.log('error submit!!')
           return false
@@ -1028,7 +1054,7 @@ export default {
     }
     document.onkeydown = function (e) {
       if (e.keyCode === 13) {
-        if (that.typeName === 'add' || that.typeName === 'addNewBucket' || that.typeName === 'rename' || that.typeName === 'addSub') that.getDialogClose('form')
+        if (that.typeName === 'add' || that.typeName === 'add_apikey' || that.typeName === 'addNewBucket' || that.typeName === 'rename' || that.typeName === 'addSub') that.getDialogClose('form')
         if (that.typeName === 'emailLogin') that.submitEmail('form')
       }
     }
@@ -1274,6 +1300,9 @@ export default {
     align-items: center;
     height: 100%;
     padding: 0 5%;
+    @media screen and (max-width: 441px) {
+      padding: 0;
+    }
     .p {
       padding: 0.15rem 0.3rem;
       font-size: 0.27rem;
@@ -1293,6 +1322,7 @@ export default {
       border-radius: 0.2rem;
       text-align: left;
       @media screen and (max-width: 441px) {
+        width: 100%;
         max-width: 300px;
         padding: 15px;
       }
@@ -1506,6 +1536,10 @@ export default {
         }
         .el-form-item {
           margin: 0;
+          .el-form-item__label {
+            display: flex;
+            padding: 0;
+          }
           .el-form-item__content {
             position: relative;
             display: flex;

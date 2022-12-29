@@ -15,7 +15,8 @@ export default {
     About: 'About',
     Pricing: 'Pricing',
     Resources: 'Resources',
-    Login: 'Login'
+    Login: 'Login',
+    ApiKey: 'API Key'
   },
   navbar: {
     sidebar_header: 'Multi-Chain Storage',
@@ -190,7 +191,7 @@ export default {
     apiKey_tips_01: 'API密钥提供对您的swan帐户的完全访问，因此请确保它们的安全。',
     apiKey_tips_02: '如何使用api密钥。',
     apiKey_tips_03: '保持API密钥安全的技巧。',
-    apiKey_btn_01: '添加API密钥',
+    apiKey_btn_01: '创建API密钥',
     apiKey_btn_02: '撤销',
     table_apiKey_th_01: '名称',
     table_apiKey_th_02: '密钥',
@@ -684,7 +685,7 @@ export default {
     Delete: 'Delete',
     Close: 'Close',
     list_bucket: 'Bucket List',
-    list_bucket_tip: 'Total active buckets / Buckets created',
+    list_bucket_tip: 'Total active buckets / Total Buckets created',
     table_name: 'Name',
     table_space: 'Space',
     table_size: 'Size',

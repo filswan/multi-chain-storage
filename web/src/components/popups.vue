@@ -706,10 +706,10 @@ export default {
         if (that.typeName === 'upload_folder') that.typeName = 'upload_folder_list'
         try {
           let { hash } = await that.fileMd5(file)
-          let fileCheckRes = await that.fileCheck(hash, file, currentFold, fold)
+          let fileCheckRes = await that.fileCheck(hash, file, currentFold, fold, indexFile)
           if (!fileCheckRes) {
             that.ruleForm.fileListFolder[indexFile - 1].uploadPrecent = 100
-            that.ruleForm.fileListFolder[indexFile - 1].name = file.name + ' '
+            that.ruleForm.fileListFolder[indexFile - 1].name = `${file.name.trim()}` + ' '
             if (that.uploadBody.allNum === that.uploadBody.addNum) {
               that.$emit('getUploadDialog', that.typeName === 'upload_folder_list', 0)
               that.loading = false
@@ -740,8 +740,8 @@ export default {
           const uploadListConfig = {
             onUploadProgress: progressEvent => {
               that.progressEvent = progressEvent
-              that.ruleForm.fileListFolder[indexFile - 1].name = file.name + ' '
-              if (count > 1) that.ruleForm.fileListFolder[indexFile - 1].uploadPrecent = index < count ? (((index / count) * 100) | 0) : 100
+              that.ruleForm.fileListFolder[indexFile - 1].name = `${file.name.trim()}` + ' '
+              if (count > 1) that.ruleForm.fileListFolder[indexFile - 1].uploadPrecent = index < count ? (((index / count) * 100) | 0) : 99
               else that.ruleForm.fileListFolder[indexFile - 1].uploadPrecent = that.onPross(progressEvent)
               // that.progressHandle(progressEvent)
             }
@@ -752,7 +752,7 @@ export default {
             if (that.ruleForm.fileListFolderErr.indexOf(file.name) === -1) that.ruleForm.fileListFolderErr.push(file.name)
           }
           alreadyUploadChunks = uploadListRes.data || []
-          if (count <= 1) await that.fileMerge(hash, file, currentFold, fold)
+          if (count <= 1) await that.fileMerge(hash, file, currentFold, fold, indexFile)
           if (that.typeName !== 'upload_folder_list') that.typeName = 'upload_progress'
           that.concurrentExecution(chunks, concurrent, (chunk) => {
             return new Promise(async (resolve, reject) => {
@@ -767,8 +767,8 @@ export default {
                 const config = {
                   onUploadProgress: progressEvent => {
                     that.progressEvent = progressEvent
-                    that.ruleForm.fileListFolder[indexFile - 1].name = file.name + ' '
-                    that.ruleForm.fileListFolder[indexFile - 1].uploadPrecent = index < count ? (((index / count) * 100) | 0) : 100
+                    that.ruleForm.fileListFolder[indexFile - 1].name = `${file.name.trim()}` + ' '
+                    that.ruleForm.fileListFolder[indexFile - 1].uploadPrecent = index < count ? (((index / count) * 100) | 0) : 99
                     // that.progressHandle(progressEvent)
                   }
                 }
@@ -783,7 +783,7 @@ export default {
                 }
                 alreadyUploadChunks = uploadRes.data
                 if (alreadyUploadChunks.length > 0 && alreadyUploadChunks.includes(chunk.filename)) {
-                  that.manageProgress(hash, file, uploadRes.data.length, count, max, currentFold, fold)
+                  that.manageProgress(hash, file, uploadRes.data.length, count, max, currentFold, fold, indexFile)
                   resolve(uploadRes.data)
                 }
               } else {
@@ -801,22 +801,22 @@ export default {
         }
       }
     },
-    async manageProgress (hash, file, index, count, max, currentFold, fold) {
+    async manageProgress (hash, file, index, count, max, currentFold, fold, indexFile) {
       that.uploadPrecent = ((index / count) * 100) | 0
       that.uploadFileSize = `${index * max}`
       if (index < count) return
-      that.uploadPrecent = 100
+      that.uploadPrecent = 99
       that.uploadFileSize = file.size
-      await that.fileMerge(hash, file, currentFold, fold)
+      await that.fileMerge(hash, file, currentFold, fold, indexFile)
     },
-    async fileCheck (hash, file, currentFold, fold) {
+    async fileCheck (hash, file, currentFold, fold, indexFile) {
       const reg = new RegExp('/' + '$')
       const current = that.currentBucket.split('/').slice(1).join('/')
       const parentAddress = that.areaBody.Prefix || current || ''
       const pre = `${parentAddress ? parentAddress + '/' : ''}${currentFold}`
       let paramCheck = {
         'file_hash': hash,
-        'file_name': file.name,
+        'file_name': `${file.name.trim()}`,
         'prefix': reg.test(pre) ? pre.slice(0, -1) : pre,
         'bucket_uid': that.areaBody
       }
@@ -867,7 +867,7 @@ export default {
         const parentAddress = that.areaBody.Prefix || current || ''
         const pre = `${parentAddress ? parentAddress + '/' : ''}${arrLeng ? arr.join('/') : ''}`
         const params = {
-          'file_name': name,
+          'file_name': `${name.trim()}`,
           'prefix': reg.test(pre) ? pre.slice(0, -1) : pre,
           'bucket_uid': `${that.$route.query.bucket_uuid}`
         }
@@ -877,22 +877,33 @@ export default {
         }
       })
     },
-    async fileMerge (hash, file, currentFold, fold) {
+    async fileMerge (hash, file, currentFold, fold, indexFile) {
       const reg = new RegExp('/' + '$')
       const current = that.currentBucket.split('/').slice(1).join('/')
       const parentAddress = that.areaBody.Prefix || current || ''
       const pre = `${parentAddress ? parentAddress + '/' : ''}${currentFold}`
       let paramMerge = {
         'file_hash': hash,
-        'file_name': file.name,
+        'file_name': `${file.name.trim()}`,
         'prefix': reg.test(pre) ? pre.slice(0, -1) : pre,
         'bucket_uid': that.areaBody
       }
       let mergeRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/merge`, 'post', paramMerge)
-      if (!mergeRes || mergeRes.status !== 'success') that.$message.error(mergeRes.message || 'Fail')
-      else {
+      if (!mergeRes || mergeRes.status !== 'success') {
+        that.$message.error(mergeRes.message || 'Fail')
+        if (that.typeName === 'upload_folder_list') {
+          that.ruleForm.fileListFolder[indexFile - 1].err = true
+          if (that.ruleForm.fileListFolderErr.indexOf(file.name) === -1) that.ruleForm.fileListFolderErr.push(file.name)
+        } else {
+          that.$emit('getUploadDialog', that.typeName === 'upload_folder_list', 0)
+          that.loading = false
+        }
+      } else {
         that.uploadBody.allNum += 1
-        if (that.ruleForm.fileListFolderErr.indexOf(file.name) === -1) that.ruleForm.fileListFolderErr.push(file.name)
+        if (that.typeName === 'upload_folder_list') {
+          that.ruleForm.fileListFolder[indexFile - 1].uploadPrecent = 100
+          that.ruleForm.fileListFolder[indexFile - 1].name = `${file.name.trim()}` + ' '
+        }
       }
       if (that.uploadBody.allNum === that.uploadBody.addNum) {
         that.$emit('getUploadDialog', that.typeName === 'upload_folder_list', 1)
@@ -936,7 +947,7 @@ export default {
     onPross (e) {
       const { loaded, total } = e
       const uploadPrecent = ((loaded / total) * 100) | 0
-      return loaded < total && uploadPrecent === 100 ? 99 : uploadPrecent
+      return uploadPrecent === 100 ? 99 : uploadPrecent
       // that.uploadPrecent = loaded < total && uploadPrecent === 100 ? 99 : uploadPrecent
     },
     async progressHandle (e) {

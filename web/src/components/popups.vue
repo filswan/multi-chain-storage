@@ -978,7 +978,7 @@ export default {
             const params = {
               'email': that.form.email
             }
-            const emailRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v3/email`, 'post', params)
+            const emailRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/email`, 'post', params)
             if (!emailRes || emailRes.status !== 'success') {
               that.$message({
                 showClose: true,

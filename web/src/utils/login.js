@@ -101,10 +101,10 @@ export async function performSignin (sig, nonce) {
 }
 
 export async function emailSign (token, type) {
-  const response = await common.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/email`, 'get')
+  const response = await common.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/user/wallet`, 'get')
   if (response && response.status === 'success') {
     const data = response.data
-    const dataEmail = data.EmailPopupAt || ''
+    const dataEmail = data.email_popup_at || ''
     const dataShow = type ? false : !dataEmail
     data.apiStatus = token && !dataEmail ? await setPopupTime() : dataShow // Control pop-up display
     store.dispatch('setMCSEmail', JSON.stringify(data))
@@ -118,7 +118,7 @@ export async function emailSign (token, type) {
 }
 
 export async function setPopupTime () {
-  const response = await common.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/email/set_popup_time`, 'put')
+  const response = await common.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/user/wallet/set_popup_time`, 'put')
   if (response && response.status === 'success') return true
   return false
 }

@@ -124,7 +124,7 @@ export async function setPopupTime () {
 }
 
 export async function Disconnect () {
-  const response = await common.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v3/email`, 'delete')
+  const response = await common.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/email`, 'delete')
   if (response && response.status === 'success') return true
   return false
 }

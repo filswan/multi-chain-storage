@@ -438,7 +438,8 @@ export default {
                               })
                           }
                         } else {
-                          that.$message.error(that.$t('uploadFile.xhr_tip'))
+                          that.$message.error(res.message || that.$t('uploadFile.xhr_tip'))
+                          that.finishClose()
                         }
                       }
                     }

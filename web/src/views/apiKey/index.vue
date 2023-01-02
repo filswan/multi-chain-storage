@@ -16,19 +16,18 @@
       <h6>{{$t('my_profile.apiKey_tips_01')}}</h6>
       <div class="fes-search">
         <el-table :data="toolData" stripe style="width: 100%" max-height="580" :empty-text="$t('deal.formNotData')" class="table_cell">
-          <el-table-column prop="apikey" :label="$t('my_profile.table_apiKey_th_02')"></el-table-column>
+          <el-table-column prop="api_key" :label="$t('my_profile.table_apiKey_th_02')"></el-table-column>
           <el-table-column prop="token" :label="$t('my_profile.table_apiKey_th_03')" max-width="150">
             <template>*******</template>
           </el-table-column>
-          <el-table-column prop="expiration" :label="'Expiration (day)'"></el-table-column>
-          <el-table-column prop="created_on" :label="$t('my_profile.table_apiKey_th_04')">
+          <el-table-column prop="valid_days" :label="'Expiration (day)'"></el-table-column>
+          <el-table-column prop="create_at" :label="$t('my_profile.table_apiKey_th_04')">
             <template slot-scope="scope">
               <div style="">
-                {{momentFun(scope.row.created_on)}}
+                {{momentFun(scope.row.create_at)}}
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="status" :label="$t('my_profile.table_apiKey_th_05')"></el-table-column>
           <el-table-column prop="qr_code" label="" width="120">
             <template slot-scope="scope">
               <div class="revoke">
@@ -99,13 +98,6 @@ export default {
         'valid_days': day
       }
       const apiKeyRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/user/generate_api_key?${QS.stringify(params)}`, 'post')
-      // const apiKeyRes = {
-      //   'status': 'success',
-      //   'data': {
-      //     'access_token': '85ESIhNbx7ZPBIECTZGZxF07tVLtfcJK',
-      //     'apikey': 'W4e17GrQnj26wVjIH062rj'
-      //   }
-      // }
       if (!apiKeyRes || apiKeyRes.status !== 'success') {
         that.$message.error(apiKeyRes.message ? apiKeyRes.message : 'Fail')
         that.createLoad = false
@@ -119,8 +111,7 @@ export default {
         access: apiKeyRes.data.access_token || ''
       }
       that.apiTips = true
-
-      that.toolData.push(apiKeyRes.data)
+      that.getListBuckets()
     },
     async dialogFun (name, row) {
       that.typeName = name
@@ -130,7 +121,7 @@ export default {
     async deleteApiKey () {
       that.listTableLoad = true
       const params = {
-        'apikey': that.areaBody.apikey
+        'apikey': that.areaBody.api_key
       }
       const deleteRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/user/delete_api_key?${QS.stringify(params)}`, 'delete')
       if (!deleteRes || deleteRes.status !== 'success') {
@@ -142,17 +133,17 @@ export default {
       that.getListBuckets()
     },
     async getListBuckets (name) {
-      // that.listLoad = true
-      // const directoryRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/bucket/get_bucket_list`, 'get')
-      // if (!directoryRes || directoryRes.status !== 'success') {
-      //   that.$message.error(directoryRes.message || 'Fail')
-      //   return false
-      // }
-      // that.toolData = directoryRes.data || []
+      that.listLoad = true
+      const directoryRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/user/apikey`, 'get')
+      if (!directoryRes || directoryRes.status !== 'success') {
+        that.$message.error(directoryRes.message || 'Fail')
+        return false
+      }
+      that.toolData = directoryRes.data.apikey || []
       that.listLoad = false
     },
     momentFun (dateItem) {
-      let dateNew = new Date(dateItem).getTime()
+      let dateNew = new Date(dateItem * 1000).getTime()
       let dataUnit = ''
       let dataTime = new Date(dateNew) + ''
       let dataUnitIndex = dataTime.indexOf('GMT')

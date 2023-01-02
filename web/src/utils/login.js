@@ -101,7 +101,7 @@ export async function performSignin (sig, nonce) {
 }
 
 export async function emailSign (token, type) {
-  const response = await common.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v3/email`, 'get')
+  const response = await common.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/email`, 'get')
   if (response && response.status === 'success') {
     const data = response.data
     const dataEmail = data.EmailPopupAt || ''
@@ -118,13 +118,13 @@ export async function emailSign (token, type) {
 }
 
 export async function setPopupTime () {
-  const response = await common.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v3/email/set_popup_time`, 'put')
+  const response = await common.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/email/set_popup_time`, 'put')
   if (response && response.status === 'success') return true
   return false
 }
 
 export async function Disconnect () {
-  const response = await common.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v3/email`, 'delete')
+  const response = await common.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/email`, 'delete')
   if (response && response.status === 'success') return true
   return false
 }

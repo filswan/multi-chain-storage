@@ -97,7 +97,7 @@ export default {
       const params = {
         'valid_days': day
       }
-      const apiKeyRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/user/generate_api_key?${QS.stringify(params)}`, 'post')
+      const apiKeyRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/user/generate_api_key?${QS.stringify(params)}`, 'get')
       if (!apiKeyRes || apiKeyRes.status !== 'success') {
         that.$message.error(apiKeyRes.message ? apiKeyRes.message : 'Fail')
         that.createLoad = false

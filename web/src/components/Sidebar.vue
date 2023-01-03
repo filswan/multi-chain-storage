@@ -149,7 +149,7 @@ export default {
       return freeBucket
     },
     free_bucketAll () {
-      return this.$store.getters.free_bucketAll === 0 ? this.$store.getters.free_bucketAll = 34359738368 : this.$store.getters.free_bucketAll
+      return this.$store.getters.free_bucketAll === 0 ? this.free_bucketAll = 34359738368 : this.$store.getters.free_bucketAll
     }
   },
   watch: {

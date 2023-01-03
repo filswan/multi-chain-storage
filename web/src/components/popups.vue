@@ -47,7 +47,7 @@
           {{ $t('metaSpace.delete_desc') }}
         </div>
 <!--        <div class="cont">{{$route.name == 'ApiKey'?'APIKey will be permanently deleted. This action cannot be undone.':$t('metaSpace.delete_desc')}}</div>-->
-        <div class="cont">{{'APIKey will be permanently deleted. This action cannot be undone.'}}</div>
+        <div class="cont">{{$route.name == 'ApiKey'?'APIKey will be permanently deleted.This operation cannot be reversed.':""}}</div>
         <el-form ref="form">
           <el-form-item>
             <el-button type="info" @click="closeDia()">{{$t('metaSpace.Cancel')}}</el-button>

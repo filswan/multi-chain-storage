@@ -44,9 +44,10 @@
         <div class="title" v-else>
           <i class="el-icon-warning-outline"></i>
 <!--          {{$t('metaSpace.delete_title_detail')}}-->
-          <div class="cont">{{$route.name == 'ApiKey'?'APIKey will be permanently deleted. This action cannot be undone.':$t('metaSpace.delete_desc')}}</div>
+          {{ $t('metaSpace.delete_desc') }}
         </div>
-
+<!--        <div class="cont">{{$route.name == 'ApiKey'?'APIKey will be permanently deleted. This action cannot be undone.':$t('metaSpace.delete_desc')}}</div>-->
+        <div class="cont">{{'APIKey will be permanently deleted. This action cannot be undone.'}}</div>
         <el-form ref="form">
           <el-form-item>
             <el-button type="info" @click="closeDia()">{{$t('metaSpace.Cancel')}}</el-button>

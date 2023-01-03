@@ -692,7 +692,7 @@ export default {
     table_action: 'Actions',
     delete_title: 'Delete Bucket',
     delete_title_detail: 'Delete permanently?',
-    delete_desc: 'Items will be permanently deleted. This action cannot be undone.',
+    delete_desc: 'This Bucket item will be permanently deleted. This operation cannot be reversed.',
     Upload_File: 'Upload File',
     upload_desc: 'Drag&Drop Files Here',
     uploadDray_or: 'or',

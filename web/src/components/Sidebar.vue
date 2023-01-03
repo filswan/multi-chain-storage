@@ -44,8 +44,8 @@
             </div>
             <!-- <div class="progress">
               <el-progress :percentage="(free_usage/free_quota_per_month)*100 || 0"></el-progress>
-              <span v-if="languageMcs === 'en'" class="tip">{{free_usage | byteStorage}}GB of {{free_quota_per_month | byteStorage}}GB for My Files free storage</span>
-              <span v-else class="tip">目前使用量：{{free_usage | byteStorage}}GB（My Files免费储存空间配额：{{free_quota_per_month | byteStorage}}GB）</span>
+              <span v-if="languageMcs === 'en'" class="tip">{{free_usage | byteStorage}}GB of {{free_quota_per_month | byteStorage}}GB for Onchain Storage free storage</span>
+              <span v-else class="tip">目前使用量：{{free_usage | byteStorage}}GB（Onchain Storage免费储存空间配额：{{free_quota_per_month | byteStorage}}GB）</span>
             </div> -->
             <div class="fes-icon-logo">
               <a href="https://filswan.medium.com/" target="_blank"><img :src="share_medium" alt=""></a>

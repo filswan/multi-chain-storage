@@ -7,7 +7,7 @@
         <div class="title" v-if="typeName === 'addSub'">{{$t('metaSpace.folder_name')}}</div>
         <div class="title" v-else-if="typeName === 'addNewBucket'">Name this bucket</div>
         <div class="title" v-else>{{$t('metaSpace.bucket_name')}}</div>
-        <el-form :model="form" status-icon :rules="rules" ref="form">
+        <el-form :model="form" status-icon :rules="rules" ref="form" @submit.native.prevent>
           <el-form-item prop="name">
             <el-input v-model="form.name" maxlength="256" :placeholder="typeName === 'addSub'?'Folder Name':'Bucket Name'" ref="bucketNameRef"></el-input>
           </el-form-item>
@@ -21,7 +21,7 @@
       <div class="addBucket" v-loading="createLoad">
         <i class="el-icon-circle-close close" @click="closeDia()"></i>
         <div class="title">{{$t('my_profile.create_api_title')}}</div>
-        <el-form :model="form" status-icon :rules="rulesDay" label-position="top" ref="form">
+        <el-form :model="form" status-icon :rules="rulesDay" label-position="top" ref="form" @submit.native.prevent>
           <el-form-item prop="name" label="Expiration (day)">
             <el-input v-model="form.day" maxlength="256" :placeholder="'30 days'" ref="bucketNameRef"></el-input>
           </el-form-item>
@@ -274,7 +274,7 @@
           <el-col :span="24">
             <div class="pay_body_top">
               <label>{{$t('metaSpace.pay_body_BucketName')}}</label>
-              <el-form :model="form" status-icon :rules="rules" ref="payForm">
+              <el-form :model="form" status-icon :rules="rules" ref="payForm" @submit.native.prevent>
                 <el-form-item prop="name">
                   <div v-if="areaBody.BucketName" style="color:#333">{{areaBody.BucketName}}</div>
                   <el-input v-else v-model="form.name" maxlength="256" :placeholder="'Bucket Name'" ref="bucketNameRef"></el-input>
@@ -350,7 +350,7 @@
         </div>
         <div v-loading="emailLoad" class="ruleForm">
           <div class="form_title">{{changeTitle?$t('fs3Login.Connect_form_label_change'):$t('fs3Login.Connect_form_label')}}</div>
-          <el-form :model="form" status-icon :rules="rulesEmail" ref="form">
+          <el-form :model="form" status-icon :rules="rulesEmail" ref="form" @submit.native.prevent>
             <el-form-item prop="email">
               <el-input v-model="form.email" placeholder="you@domain.com" ref="bucketEmailRef"></el-input>
             </el-form-item>

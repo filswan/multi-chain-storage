@@ -62,7 +62,7 @@
           </el-table-column>
         </el-table>
         <p class="detailMore">
-          Want more buckets? Click
+          Want more Bucket storage? Click
           <a href="https://docs.filswan.com/multichain.storage/faq" target="_blank">here</a> for more details.
         </p>
       </div>

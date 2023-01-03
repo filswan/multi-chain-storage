@@ -71,7 +71,7 @@
             <p>USDC 7.2 for each added bucket each year
               <span>(30GB storage for each bucket)</span>
             </p>
-            <p>33 buckets for each wallet</p>
+            <p>33 Bucket storage for each wallet</p>
             <p>Pin to IPFS</p>
             <p>Weekly backup to decentralize storage network (5 copies)</p>
             <p>SDK/API technical support</p>

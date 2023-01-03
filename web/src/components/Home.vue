@@ -98,7 +98,7 @@ export default {
     },
     mcsEmail () {
       const data = this.$store.getters.mcsEmail
-      return data === '{}' ? '' : JSON.parse(data).Email
+      return data === '{}' ? '' : JSON.parse(data).email
     },
     apiStatus () {
       const data = this.$store.getters.mcsEmail

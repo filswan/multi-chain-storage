@@ -103,7 +103,7 @@ export async function performSignin (sig, nonce) {
 export async function emailSign (token, type) {
   const response = await common.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/user/wallet`, 'get')
   if (response && response.status === 'success') {
-    const data = response.data
+    const data = response.data.wallet
     const dataEmail = data.email_popup_at || ''
     const dataShow = type ? false : !dataEmail
     data.apiStatus = token && !dataEmail ? await setPopupTime() : dataShow // Control pop-up display

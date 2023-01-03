@@ -220,11 +220,11 @@ export default {
     },
     mcsEmail () {
       const data = this.$store.getters.mcsEmail
-      return data === '{}' ? '' : JSON.parse(data).Email
+      return data === '{}' ? '' : JSON.parse(data).email
     },
     mcsEmailStatus () {
       const data = this.$store.getters.mcsEmail
-      return data === '{}' ? 0 : JSON.parse(data).Status
+      return data === '{}' ? 0 : JSON.parse(data).email_status
     }
   },
   watch: {

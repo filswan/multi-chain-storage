@@ -45,11 +45,11 @@ export default {
           name: 'Mumbai Testnet',
           id: 80001
         },
-        {
-          img: require('@/assets/images/network_logo/bsc.png'),
-          name: 'BSC TestNet',
-          id: 97
-        },
+        // {
+        //   img: require('@/assets/images/network_logo/bsc.png'),
+        //   name: 'BSC TestNet',
+        //   id: 97
+        // },
         {
           img: require('@/assets/images/network_logo/polygon.png'),
           name: 'Polygon Mainnet',

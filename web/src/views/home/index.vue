@@ -226,19 +226,19 @@ export default {
             blockExplorerUrls: ['https://mumbai.polygonscan.com/']
           }
           break
-        case 97:
-          text = {
-            chainId: '0x61',
-            chainName: 'BSC TestNet',
-            nativeCurrency: {
-              name: 'tBNB',
-              symbol: 'tBNB', // 2-6 characters long
-              decimals: 18
-            },
-            rpcUrls: ['https://data-seed-prebsc-1-s1.binance.org:8545'],
-            blockExplorerUrls: ['https://testnet.bscscan.com']
-          }
-          break
+        // case 97:
+        //   text = {
+        //     chainId: '0x61',
+        //     chainName: 'BSC TestNet',
+        //     nativeCurrency: {
+        //       name: 'tBNB',
+        //       symbol: 'tBNB', // 2-6 characters long
+        //       decimals: 18
+        //     },
+        //     rpcUrls: ['https://data-seed-prebsc-1-s1.binance.org:8545'],
+        //     blockExplorerUrls: ['https://testnet.bscscan.com']
+        //   }
+        //   break
         case 137:
           text = {
             chainId: '0x89',

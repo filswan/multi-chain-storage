@@ -82,11 +82,12 @@ export async function sign (nonce) {
 
 export async function performSignin (sig, nonce) {
   const netId = Number(store.getters.networkID)
+  // netId === 97 ? 'bsc.testnet' :
   const reqOpts = {
     public_key_address: store.getters.metaAddress,
     nonce: nonce,
     signature: sig,
-    network: netId === 97 ? 'bsc.testnet' : netId === 80001 ? 'polygon.mumbai' : 'polygon.mainnet'
+    network: netId === 80001 ? 'polygon.mumbai' : 'polygon.mainnet'
   }
   const baseAPIURL = await urlBase(netId)
   const response = await sendPostRequest(`${baseAPIURL}api/v1/user/login_by_metamask_signature`, reqOpts)
@@ -150,9 +151,9 @@ export async function netStatus (id) {
     case 80001:
       status = !baseNet
       break
-    case 97:
-      status = !baseNet
-      break
+      // case 97:
+      //   status = !baseNet
+      //   break
     case 137:
       status = !!baseNet
       break
@@ -169,9 +170,9 @@ export async function urlBase (id) {
     case 80001:
       url = process.env.BASE_PAYMENT_GATEWAY_API
       break
-    case 97:
-      url = process.env.BASE_PAYMENT_GATEWAY_BSC_API
-      break
+      // case 97:
+      //   url = process.env.BASE_PAYMENT_GATEWAY_BSC_API
+      //   break
     case 137:
       url = process.env.BASE_PAYMENT_GATEWAY_POLYGON_API
       break

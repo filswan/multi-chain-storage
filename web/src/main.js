@@ -43,11 +43,13 @@ Vue.prototype.$SparkMD5 = SparkMD5
 
 Vue.config.productionTip = false
 let netData = Number(sessionStorage.getItem('networkID')) || 0
-Vue.prototype.baseAPIURL = netData === 97 ? process.env.BASE_PAYMENT_GATEWAY_BSC_API : netData === 80001 ? process.env.BASE_PAYMENT_GATEWAY_API : process.env.BASE_PAYMENT_GATEWAY_POLYGON_API
-Vue.prototype.baseAddressURL = netData === 97 ? process.env.BASE_BSC_ADDRESS : netData === 80001 ? process.env.BASE_MUMBAI_ADDRESS : process.env.BASE_POLYGON_ADDRESS
+// netData === 97 ? process.env.BASE_PAYMENT_GATEWAY_BSC_API :
+// netData === 97 ? process.env.BASE_BSC_ADDRESS :
+Vue.prototype.baseAPIURL = netData === 80001 ? process.env.BASE_PAYMENT_GATEWAY_API : process.env.BASE_PAYMENT_GATEWAY_POLYGON_API
+Vue.prototype.baseAddressURL = netData === 80001 ? process.env.BASE_MUMBAI_ADDRESS : process.env.BASE_POLYGON_ADDRESS
 Vue.prototype.Web3 = Web3
 Vue.prototype.baseNetwork = process.env.BASE_ENV === true
-console.log('update time: 2022-1-3', 'env:', process.env.BASE_ENV === true ? 'Main' : 'Cali', process.env.BASE_ENV)
+console.log('update time: 2022-1-4', 'env:', process.env.BASE_ENV === true ? 'Main' : 'Cali', process.env.BASE_ENV)
 router.beforeEach((to, from, next) => {
   if (to.matched.some(record => record.meta.requiresAuth)) {
     if (!sessionStorage.getItem('metaAddress')) {

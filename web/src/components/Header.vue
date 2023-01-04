@@ -3,10 +3,10 @@
     <div class="header_arera">
       <div class="header-right">
         <div class="network_mainnet" v-if="addrChild" :class="{'error': networkTip}" @click="networkC=true">
-          <div class="BSC_mainnet" v-if="networkID == 97" title="BSC TestNet mainnet">
+          <!-- <div class="BSC_mainnet" v-if="networkID == 97" title="BSC TestNet mainnet">
             <img src="@/assets/images/network_logo/bsc.png" /> {{bodyWidth?'BSC':'BSC TestNet'}}
-          </div>
-          <div class="Polygon_mainnet" v-else-if="networkID == 137" title="Polygon mainnet">
+          </div> -->
+          <div class="Polygon_mainnet" v-if="networkID == 137" title="Polygon mainnet">
             <img src="@/assets/images/network_logo/polygon.png" /> {{bodyWidth?'Polygon':'Polygon Mainnet'}}
           </div>
           <div class="Mumbai_mainnet" v-else-if="networkID == 80001" title="Mumbai Testnet mainnet">
@@ -247,7 +247,8 @@ export default {
       this.walletInfo()
     },
     netId: function () {
-      if (this.netId === 137 || this.netId === 97 || this.netId === 80001) this.getNetworkC(false, this.netId)
+      //  this.netId === 97 ||
+      if (this.netId === 137 || this.netId === 80001) this.getNetworkC(false, this.netId)
     }
   },
   methods: {
@@ -276,19 +277,19 @@ export default {
               blockExplorerUrls: ['https://mumbai.polygonscan.com/']
             }
             break
-          case 97:
-            text = {
-              chainId: that.$web3Init.utils.numberToHex(97),
-              chainName: 'BSC TestNet',
-              nativeCurrency: {
-                name: 'tBNB',
-                symbol: 'tBNB', // 2-6 characters long
-                decimals: 18
-              },
-              rpcUrls: ['https://data-seed-prebsc-1-s1.binance.org:8545'],
-              blockExplorerUrls: ['https://testnet.bscscan.com']
-            }
-            break
+          // case 97:
+          //   text = {
+          //     chainId: that.$web3Init.utils.numberToHex(97),
+          //     chainName: 'BSC TestNet',
+          //     nativeCurrency: {
+          //       name: 'tBNB',
+          //       symbol: 'tBNB', // 2-6 characters long
+          //       decimals: 18
+          //     },
+          //     rpcUrls: ['https://data-seed-prebsc-1-s1.binance.org:8545'],
+          //     blockExplorerUrls: ['https://testnet.bscscan.com']
+          //   }
+          //   break
           case 137:
             text = {
               chainId: that.$web3Init.utils.numberToHex(137),
@@ -323,7 +324,7 @@ export default {
       let status = await that.$metaLogin.netStatus(rows)
       if (!status) {
         let link = that.baseNetwork ? 'https://calibration-mcs.filswan.com' : 'https://www.multichain.storage'
-        window.open(link)
+        if (that.networkID === 80001 || that.networkID === 137) window.open(link)
         that.signOutFun()
         return false
       } else {

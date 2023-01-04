@@ -3,9 +3,9 @@
     <el-alert type="warning" effect="dark" center show-icon v-if="metaAddress&&!(networkID==80001 || networkID == 97)">
       <div slot="title">
         {{$t('fs3Login.toptip_01')}} {{metaNetworkInfo.name}} {{$t('fs3Login.toptip_02')}}
-        <span @click="changeNet(80001)">Mumbai Testnet</span>
-        {{$t('fs3Login.toptip_Network')}}
-        <span @click="changeNet(97)">BSC TestNet</span>.
+        <span @click="changeNet(80001)">Mumbai Testnet</span>.
+        <!-- {{$t('fs3Login.toptip_Network')}}
+        <span @click="changeNet(97)">BSC TestNet</span> -->
         <p v-if="networkID == 137">{{$t('fs3Login.toptip_04')}}
           <a href="https://www.multichain.storage/#/home" target="_blank">multichain.storage</a>.</p>
       </div>
@@ -213,7 +213,8 @@ export default {
         that.$commonFun.Init(async addr => {
           that.$store.dispatch('setMetaAddress', addr)
           sessionStorage.setItem('login_path', addr)
-          if (that.networkID !== 80001 || that.networkID !== 97) {
+          //  || that.networkID !== 97
+          if (that.networkID !== 80001) {
             const networkCont = {
               name: that.networkID === 137 ? 'Polygon' : 'Custom',
               unit: 'USDC',
@@ -229,7 +230,8 @@ export default {
       }
     },
     async signIn () {
-      if (that.networkID === 97 || that.networkID === 80001) {
+      // that.networkID === 97 ||
+      if (that.networkID === 80001) {
         const lStatus = await that.$metaLogin.login()
         if (lStatus) {
           that.$router.push({ path: '/my_files' })
@@ -247,7 +249,8 @@ export default {
     },
     // 是否已登录
     isLogin () {
-      if (that.mcsjwtToken && that.metaAddress && (that.networkID === 97 || that.networkID === 80001)) {
+      // that.networkID === 97 ||
+      if (that.mcsjwtToken && that.metaAddress && (that.networkID === 80001)) {
         that.$router.push({ path: '/my_files' })
         // that.activeIndex = 'connect'
       } else that.$store.dispatch('setMetaAddress', '')
@@ -284,19 +287,19 @@ export default {
             blockExplorerUrls: ['https://mumbai.polygonscan.com/']
           }
           break
-        case 97:
-          text = {
-            chainId: '0x61',
-            chainName: 'BSC TestNet',
-            nativeCurrency: {
-              name: 'tBNB',
-              symbol: 'tBNB', // 2-6 characters long
-              decimals: 18
-            },
-            rpcUrls: ['https://data-seed-prebsc-1-s1.binance.org:8545'],
-            blockExplorerUrls: ['https://testnet.bscscan.com']
-          }
-          break
+        // case 97:
+        //   text = {
+        //     chainId: '0x61',
+        //     chainName: 'BSC TestNet',
+        //     nativeCurrency: {
+        //       name: 'tBNB',
+        //       symbol: 'tBNB', // 2-6 characters long
+        //       decimals: 18
+        //     },
+        //     rpcUrls: ['https://data-seed-prebsc-1-s1.binance.org:8545'],
+        //     blockExplorerUrls: ['https://testnet.bscscan.com']
+        //   }
+        //   break
         case 137:
           text = {
             chainId: '0x89',

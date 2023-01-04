@@ -3,16 +3,17 @@
     <div slot="title" v-if="baseNetwork">
       {{$t('fs3Login.toptip_01')}} {{metaNetworkInfo.name}} {{$t('fs3Login.toptip_02')}}
       <span @click="changeAlert(137)">Polygon Mainnet</span>.
-      <p v-if="networkID == 80001 || networkID == 97">
+      <!-- || networkID == 97 -->
+      <p v-if="networkID == 80001">
         {{$t('fs3Login.toptip_04_main')}} {{metaNetworkInfo.name}} {{$t('fs3Login.toptip_04_1')}}
         <a href="https://calibration-mcs.filswan.com" target="_blank">calibration-mcs.filswan.com</a>.
       </p>
     </div>
     <div slot="title" v-else>
       {{$t('fs3Login.toptip_01')}} {{metaNetworkInfo.name}} {{$t('fs3Login.toptip_02')}}
-      <span @click="changeAlert(80001)">Mumbai Testnet</span>
-      {{$t('fs3Login.toptip_Network')}}
-      <span @click="changeAlert(97)">BSC TestNet</span>.
+      <span @click="changeAlert(80001)">Mumbai Testnet</span>.
+      <!-- {{$t('fs3Login.toptip_Network')}}
+      <span @click="changeAlert(97)">BSC TestNet</span> -->
       <p v-if="networkID == 137">{{$t('fs3Login.toptip_04')}}
         <a href="https://www.multichain.storage" target="_blank">multichain.storage</a>.</p>
     </div>

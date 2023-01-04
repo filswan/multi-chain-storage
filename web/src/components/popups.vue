@@ -683,20 +683,20 @@ export default {
       that.uploadBody.addNum += 1
       let indexFile = that.uploadBody.addNum
 
-      let regexp = /[#\\?]/
-      let reg = new RegExp(' ', 'g')
-      if (file.size <= 0) {
-        that.$message.error('Error: Upload file size cannot be 0')
-        that.ruleForm.fileList = []
-        return false
-      } else if (regexp.test(file.name)) {
-        that.$message.error('The filename cannot contain any of the following characters # ? \\')
-        that.ruleForm.fileList = []
-        return false
-      } else if (file.name.indexOf(' ') > -1) {
-        file.name = file.name.replace(reg, '_')
-        file.raw = new File([file.raw], file.name)
-      }
+      // let regexp = /[#\\?]/
+      // let reg = new RegExp(' ', 'g')
+      // if (file.size <= 0) {
+      //   that.$message.error('Error: Upload file size cannot be 0')
+      //   that.ruleForm.fileList = []
+      //   return false
+      // } else if (regexp.test(file.name)) {
+      //   that.$message.error('The filename cannot contain any of the following characters # ? \\')
+      //   that.ruleForm.fileList = []
+      //   return false
+      // } else if (file.name.indexOf(' ') > -1) {
+      //   file.name = file.name.replace(reg, '_')
+      //   file.raw = new File([file.raw], file.name)
+      // }
 
       if (fileList.length > 0) {
         that.ruleForm.fileList = [fileList[fileList.length - 1]]

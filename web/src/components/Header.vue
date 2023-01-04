@@ -69,8 +69,8 @@
         <label>{{$t('fs3Login.Connected_Email')}}</label>
         <div class="address_body">
           <div class="address">{{mcsEmail | hiddEmail}}</div>
-          <div class="address_right" :class="{'bg-primary':mcsEmailStatus === 0}">
-            <div>{{mcsEmailStatus === 0?'Active':'Not Active'}}</div>
+          <div class="address_right" :class="{'bg-primary':mcsEmailStatus === 1}">
+            <div>{{mcsEmailStatus === 1?'Active':'Not Active'}}</div>
           </div>
         </div>
         <div class="share">

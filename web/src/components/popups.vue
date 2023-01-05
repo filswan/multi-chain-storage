@@ -41,12 +41,12 @@
           <i class="el-icon-warning-outline"></i>
           {{$t('my_profile.module_tips04')}}
         </div>
-        <div class="title" v-else>
+        <div class="title cont" v-else>
           <i class="el-icon-warning-outline"></i>
-<!--          {{$t('metaSpace.delete_title_detail')}}-->
+          <!--          {{$t('metaSpace.delete_title_detail')}}-->
           {{ $t('metaSpace.delete_desc') }}
         </div>
-<!--        <div class="cont">{{$route.name == 'ApiKey'?'APIKey will be permanently deleted. This action cannot be undone.':$t('metaSpace.delete_desc')}}</div>-->
+        <!--        <div class="cont">{{$route.name == 'ApiKey'?'APIKey will be permanently deleted. This action cannot be undone.':$t('metaSpace.delete_desc')}}</div>-->
         <div class="cont">{{$route.name == 'ApiKey'?'APIKey will be permanently deleted.This operation cannot be reversed.':""}}</div>
         <el-form ref="form">
           <el-form-item>
@@ -210,7 +210,7 @@
             <el-progress type="circle" :stroke-width="10" :width="110" :color="'#4d75ff'" :percentage="uploadPrecent"></el-progress>
             <div class="load_cont">
               <p>{{uploadFileName}}</p>
-              <p>{{uploadFileSize | formatbytes}}</p>
+              <p>{{uploadFileSize | formatbytes}}/{{uploadFileSizeAll| formatbytes}}</p>
             </div>
           </div>
         </div>
@@ -235,10 +235,12 @@
       <div class="uploadDig">
         <i class="el-icon-circle-close close" @click="closeDia('folderClose')"></i>
         <div class="upload_progress upload_folder_list">
-          <div class="title">
-            <i class="el-icon-upload2"></i>Uploading... ({{uploadBody.allNum}}/{{uploadBody.addNum}})
+          <div class="title title_upload">
+            <div>
+              <i class="el-icon-upload2"></i>{{uploadStart?'Uploading...':'Upload'}} ({{uploadBody.allNum}}/{{uploadBody.addNum}})</div>
+            <el-button type="primary" v-if="!uploadStart" @click="foldUpload()">Start uploading</el-button>
           </div>
-          <div class="folder_plan" v-if="ruleForm.fileListFolderErr.length>0">
+          <div class="folder_plan" v-if="ruleForm.fileListFolderErr.length>0 && uploadStart">
             Upload failed:
             <el-popover placement="bottom-start" width="300" trigger="click" popper-class="folderErr">
               <div>
@@ -247,14 +249,16 @@
                   {{errItem}}
                 </p>
               </div>
-              <el-button slot="reference" type="text" round>view</el-button>
+              <el-button slot="reference" type="text" round>view
+                <small>({{ruleForm.fileListFolderErr.length}})</small>
+              </el-button>
             </el-popover>
           </div>
           <div class="folder">
             <div class="folder_style" v-for="(list, l) in ruleForm.fileListFolder" :key="l">
               <div class="load_cont">
-                <p>{{list.name}}
-                  <small>({{list.size | formatbytes}})</small>
+                <p :style="{'color':list.err?'#f56c6c':'#4d75ff'}">{{list.name}}
+                  <small>({{list.size | formatbytes}}{{list.errCont?'/'+list.errCont:''}})</small>
                 </p>
                 <p style="color:#999">
                   <small>path: /{{list.path}}</small>
@@ -459,6 +463,7 @@ export default {
       uploadPrecentSpeed: 0,
       progressEvent: {},
       uploadFileName: '',
+      uploadFileSizeAll: 0,
       uploadFileSize: 0,
       createFold: true,
       uploadBody: {
@@ -466,7 +471,8 @@ export default {
         uploadListAll: [],
         addNum: 0,
         allNum: 0
-      }
+      },
+      uploadStart: false
     }
   },
   props: ['dialogFormVisible', 'typeModule', 'areaBody', 'createLoad', 'listTableLoad', 'currentBucket', 'fixed', 'backupLoad', 'changeTitle', 'payLoad', 'listBucketFolder'],
@@ -683,129 +689,168 @@ export default {
       that.uploadBody.addNum += 1
       let indexFile = that.uploadBody.addNum
 
-      // let regexp = /[#\\?]/
-      // let reg = new RegExp(' ', 'g')
-      // if (file.size <= 0) {
-      //   that.$message.error('Error: Upload file size cannot be 0')
-      //   that.ruleForm.fileList = []
-      //   return false
-      // } else if (regexp.test(file.name)) {
-      //   that.$message.error('The filename cannot contain any of the following characters # ? \\')
-      //   that.ruleForm.fileList = []
-      //   return false
-      // } else if (file.name.indexOf(' ') > -1) {
-      //   file.name = file.name.replace(reg, '_')
-      //   file.raw = new File([file.raw], file.name)
-      // }
+      let reg = new RegExp(' ', 'g')
+      if (file.size <= 0) {
+        if (that.typeName !== 'upload_folder' && that.typeName !== 'upload_folder_list') {
+          that.$message.error('Error: Upload file size cannot be 0')
+          that.ruleForm.fileList = []
+          return false
+        }
+      } else if (file.name.indexOf(' ') > -1) {
+        file.name = file.name.replace(reg, '_')
+        file.raw = new File([file.raw], file.name)
+      }
 
       if (fileList.length > 0) {
-        that.ruleForm.fileList = [fileList[fileList.length - 1]]
-        file.uploadPrecent = 0
-        that.ruleForm.fileListFolder.push(file)
-        that.ruleForm.fileListFolder[that.uploadBody.addNum - 1].path = `${that.currentBucket}/${currentFold}`
         that.loading = true
+        that.ruleForm.fileList = [fileList[fileList.length - 1]]
         that.uploadFileName = file.name
-        if (that.typeName === 'upload_folder') that.typeName = 'upload_folder_list'
-        try {
-          let { hash } = await that.fileMd5(file)
-          let fileCheckRes = await that.fileCheck(hash, file, currentFold, fold, indexFile)
-          if (!fileCheckRes) {
+        that.uploadFileSizeAll = file.size
+        if (that.typeName === 'upload_folder' || that.typeName === 'upload_folder_list') {
+          that.typeName = 'upload_folder_list'
+          file.uploadPrecent = 0
+          file.currentFold = currentFold
+          file.fold = fold
+          file.chunkIndex = indexFile
+          that.ruleForm.fileListFolder.push(file)
+          that.ruleForm.fileListFolder[that.uploadBody.addNum - 1].path = `${that.currentBucket}/${currentFold}`
+          // console.log(fileList)
+        } else that.fileUpload(file, currentFold, fold, indexFile)
+      }
+    },
+    async foldUpload () {
+      that.uploadStart = true
+      that.concurrentExecution(that.ruleForm.fileListFolder, 1, (element) => {
+        return new Promise(async (resolve, reject) => {
+          if (element.size <= 0) {
+            element.uploadPrecent = 0
+            element.err = true
+            element.errCont = 'Error: Upload file size cannot be 0'
+            element.path = `${that.currentBucket}/${element.currentFold}`
+            if (that.ruleForm.fileListFolderErr.indexOf(element.name) === -1) that.ruleForm.fileListFolderErr.push(element.name)
+          } else await that.fileUpload(element, element.currentFold, element.fold, element.chunkIndex)
+          await that.$commonFun.timeout(1000)
+          resolve(element)
+        })
+      }).then(async res => {
+        console.log('finish', res)
+      })
+    },
+    async fileUpload (file, currentFold, fold, indexFile) {
+      try {
+        let { hash } = await that.fileMd5(file)
+        let fileCheckRes = await that.fileCheck(hash, file, currentFold, fold, indexFile)
+        if (!fileCheckRes) {
+          if (that.typeName === 'upload_folder' || that.typeName === 'upload_folder_list') {
             that.ruleForm.fileListFolder[indexFile - 1].uploadPrecent = 100
             that.ruleForm.fileListFolder[indexFile - 1].name = `${file.name.trim()}` + ' '
-            if (that.uploadBody.allNum === that.uploadBody.addNum) {
-              that.$emit('getUploadDialog', that.typeName === 'upload_folder_list', 0)
-              that.loading = false
-            }
-            return false
           }
+          if (that.uploadBody.allNum === that.uploadBody.addNum) {
+            that.$emit('getUploadDialog', that.typeName === 'upload_folder_list', 0)
+            that.loading = false
+          }
+          return false
+        }
 
-          let alreadyUploadChunks = []
-          let max = 10 * 1024 * 1024
-          let count = Math.ceil(file.size / max)
-          let index = 0
-          let chunks = []
-          let concurrent = 3
-          while (index < count) {
-            chunks.push({
-              file: file.raw.slice(index * max, (index + 1) * max),
-              filename: `${index + 1}_${file.name}`
-            })
-            index++
-          }
-          let uploadListData = new FormData()
-          const fileBlob = new Blob([chunks[0].file], {
-            type: 'application/json'
+        let alreadyUploadChunks = []
+        let max = 10 * 1024 * 1024
+        let count = Math.ceil(file.size / max)
+        let index = 0
+        let chunks = []
+        let concurrent = 3
+        while (index < count) {
+          chunks.push({
+            file: file.raw.slice(index * max, (index + 1) * max),
+            filename: `${index + 1}_${file.name}`
           })
-          uploadListData.append('file', fileBlob, chunks[0].filename)
-          uploadListData.append('file_name', chunks[0].filename)
-          uploadListData.append('hash', hash)
-          const uploadListConfig = {
-            onUploadProgress: progressEvent => {
-              that.progressEvent = progressEvent
-              that.ruleForm.fileListFolder[indexFile - 1].name = `${file.name.trim()}` + ' '
-              if (count > 1) that.ruleForm.fileListFolder[indexFile - 1].uploadPrecent = index < count ? (((index / count) * 100) | 0) : 99
-              else that.ruleForm.fileListFolder[indexFile - 1].uploadPrecent = that.onPross(progressEvent)
-              // that.progressHandle(progressEvent)
-            }
+          index++
+        }
+        let uploadListData = new FormData()
+        const fileBlob = new Blob([chunks[0].file], {
+          type: 'application/json'
+        })
+        uploadListData.append('file', fileBlob, chunks[0].filename)
+        uploadListData.append('file_name', chunks[0].filename)
+        uploadListData.append('hash', hash)
+        const uploadListConfig = {
+          onUploadProgress: progressEvent => {
+            that.progressEvent = progressEvent
+            // if (that.typeName === 'upload_folder' || that.typeName === 'upload_folder_list') {
+            //   that.ruleForm.fileListFolder[indexFile - 1].name = `${file.name.trim()}` + ' '
+            //   if (count > 1) that.ruleForm.fileListFolder[indexFile - 1].uploadPrecent = index<count?(((index / count) * 100) | 0):99
+            //   else that.ruleForm.fileListFolder[indexFile - 1].uploadPrecent = that.onPross(progressEvent)
+            //   // that.progressHandle(progressEvent)
+            // }
           }
-          let uploadListRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/upload`, 'post', uploadListData, uploadListConfig)
-          if (!uploadListRes || uploadListRes.status !== 'success') {
-            that.ruleForm.fileListFolder[indexFile - 1].err = true
-            if (that.ruleForm.fileListFolderErr.indexOf(file.name) === -1) that.ruleForm.fileListFolderErr.push(file.name)
-          }
-          alreadyUploadChunks = uploadListRes.data || []
-          if (count <= 1) await that.fileMerge(hash, file, currentFold, fold, indexFile)
-          if (that.typeName !== 'upload_folder_list') that.typeName = 'upload_progress'
-          that.concurrentExecution(chunks, concurrent, (chunk) => {
-            return new Promise(async (resolve, reject) => {
-              if (alreadyUploadChunks.indexOf(chunk.filename) === -1) {
-                let uploadData = new FormData()
-                const fileBlob = new Blob([chunk.file], {
-                  type: 'application/json'
-                })
-                uploadData.append('file', fileBlob, chunk.filename)
-                uploadData.append('file_name', chunk.filename)
-                uploadData.append('hash', hash)
-                const config = {
-                  onUploadProgress: progressEvent => {
-                    that.progressEvent = progressEvent
-                    that.ruleForm.fileListFolder[indexFile - 1].name = `${file.name.trim()}` + ' '
-                    that.ruleForm.fileListFolder[indexFile - 1].uploadPrecent = index < count ? (((index / count) * 100) | 0) : 99
-                    // that.progressHandle(progressEvent)
-                  }
+        }
+        let uploadListRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/upload`, 'post', uploadListData, uploadListConfig)
+        if ((!uploadListRes || uploadListRes.status !== 'success') && (that.typeName === 'upload_folder' || that.typeName === 'upload_folder_list')) {
+          that.ruleForm.fileListFolder[indexFile - 1].err = true
+          if (that.ruleForm.fileListFolderErr.indexOf(file.name) === -1) that.ruleForm.fileListFolderErr.push(file.name)
+        }
+        alreadyUploadChunks = uploadListRes.data || []
+        if (count <= 1 || (uploadListRes && uploadListRes.data.length === count)) await that.fileMerge(hash, file, currentFold, fold, indexFile)
+        if (that.typeName !== 'upload_folder_list') that.typeName = 'upload_progress'
+        that.concurrentExecution(chunks, concurrent, (chunk) => {
+          return new Promise(async (resolve, reject) => {
+            if (alreadyUploadChunks.indexOf(chunk.filename) === -1) {
+              let uploadData = new FormData()
+              const fileBlob = new Blob([chunk.file], {
+                type: 'application/json'
+              })
+              uploadData.append('file', fileBlob, chunk.filename)
+              uploadData.append('file_name', chunk.filename)
+              uploadData.append('hash', hash)
+              const config = {
+                onUploadProgress: progressEvent => {
+                  that.progressEvent = progressEvent
+                  // if (that.typeName === 'upload_folder' || that.typeName === 'upload_folder_list') {
+                  //   that.ruleForm.fileListFolder[indexFile - 1].name = `${file.name.trim()}` + ' '
+                  //   that.ruleForm.fileListFolder[indexFile - 1].uploadPrecent = index < count ? (((index / count) * 100) | 0) : 99
+                  //   // that.progressHandle(progressEvent)
+                  // }
                 }
-                let uploadRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/upload`, 'post', uploadData, config)
-                if (!uploadRes || uploadRes.status !== 'success') {
+              }
+              let uploadRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/upload`, 'post', uploadData, config)
+              if (!uploadRes || uploadRes.status !== 'success') {
+                if (that.typeName === 'upload_folder' || that.typeName === 'upload_folder_list') {
                   that.ruleForm.fileListFolder[indexFile - 1].err = true
                   if (that.ruleForm.fileListFolderErr.indexOf(file.name) === -1) that.ruleForm.fileListFolderErr.push(file.name)
-                  that.$emit('getUploadDialog', that.typeName === 'upload_folder_list', 0)
-                  that.loading = false
-                  reject(uploadRes.message || 'Fail')
-                  return false
                 }
-                alreadyUploadChunks = uploadRes.data
-                if (alreadyUploadChunks.length > 0 && alreadyUploadChunks.includes(chunk.filename)) {
-                  that.manageProgress(hash, file, uploadRes.data.length, count, max, currentFold, fold, indexFile)
-                  resolve(uploadRes.data)
-                }
-              } else {
-                resolve()
+                that.$emit('getUploadDialog', that.typeName === 'upload_folder_list', 0)
+                that.loading = false
+                reject(uploadRes.message || 'Fail')
+                return false
               }
-            })
-          }).then(async res => {
-            console.log('finish', res)
+              alreadyUploadChunks = uploadRes.data
+              if (alreadyUploadChunks.length > 0 && alreadyUploadChunks.includes(chunk.filename)) {
+                that.manageProgress(hash, file, uploadRes.data.length, count, max, currentFold, fold, indexFile)
+                resolve(uploadRes.data)
+              }
+            } else {
+              resolve()
+            }
           })
-        } catch (e) {
-          console.log(e)
-          await that.$commonFun.timeout(500)
-          that.$emit('getUploadDialog', that.typeName === 'upload_folder_list', 0)
-          that.loading = false
-        }
+        }).then(async res => {
+          console.log('finish', res)
+        })
+      } catch (e) {
+        console.log(e)
+        await that.$commonFun.timeout(500)
+        that.$emit('getUploadDialog', that.typeName === 'upload_folder_list', 0)
+        that.loading = false
       }
     },
     async manageProgress (hash, file, index, count, max, currentFold, fold, indexFile) {
-      that.uploadPrecent = ((index / count) * 100) | 0
-      that.uploadFileSize = `${index * max}`
+      // console.log(file.name, index, count)
+      if (that.typeName === 'upload_folder' || that.typeName === 'upload_folder_list') {
+        that.ruleForm.fileListFolder[indexFile - 1].name = `${file.name.trim()}` + ' '
+        that.ruleForm.fileListFolder[indexFile - 1].uploadPrecent = index < count ? (((index / count) * 100) | 0) : 99
+        that.ruleForm.fileListFolder[indexFile - 1].name = `${file.name.trim()}` + '  '
+      } else {
+        that.uploadPrecent = ((index / count) * 100) | 0
+        that.uploadFileSize = `${index * max}`
+      }
       if (index < count) return
       that.uploadPrecent = 99
       that.uploadFileSize = file.size
@@ -2375,6 +2420,7 @@ export default {
         .title {
           display: flex;
           align-items: center;
+          flex-wrap: wrap;
           width: 90%;
           padding: 0.25rem 5%;
           text-align: left;
@@ -2391,6 +2437,16 @@ export default {
             margin: 0 5px 0 0;
             font-size: 20px;
             color: #666;
+          }
+        }
+        .title_upload {
+          justify-content: space-between;
+          div {
+            display: flex;
+            align-items: center;
+          }
+          .el-button {
+            padding: 8px;
           }
         }
         .load {

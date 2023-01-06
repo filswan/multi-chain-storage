@@ -914,6 +914,7 @@ export default {
                   @media screen and (max-width: 768px) {
                     width: 15px;
                     height: 15px;
+                    margin: 0 5px;
                   }
                   &:hover {
                     opacity: 0.7;
@@ -925,6 +926,14 @@ export default {
                   background: url(../../assets/images/space/pay.png) no-repeat
                     center;
                   background-size: 100% 100%;
+                  @media screen and (max-width: 1600px) {
+                    width: 22px;
+                    height: 22px;
+                  }
+                  @media screen and (max-width: 768px) {
+                    width: 20px;
+                    height: 20px;
+                  }
                   &.icon_pay_disable {
                     opacity: 0.2;
                   }

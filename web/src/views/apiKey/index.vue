@@ -817,8 +817,12 @@ export default {
           .createTask {
             display: flex;
             align-items: center;
+            flex-wrap: wrap;
             a {
               margin: 0.35rem 0.1rem 0.35rem 0;
+              @media screen and (max-width: 600px) {
+                margin: 0.15rem 0.1rem 0 0;
+              }
             }
           }
         }

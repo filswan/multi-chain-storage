@@ -2732,6 +2732,11 @@ export default {
     /deep/ .el-list-leave-active {
       opacity: 0;
     }
+    /deep/ .el-loading-mask {
+      .el-loading-spinner {
+        top: 30%;
+      }
+    }
   }
   .fes-header {
     display: flex;

@@ -232,7 +232,7 @@
                   {{$t('uploadFile.pay')}}
                 </el-button>
                 <el-button v-else-if="tableData[scope.$index].is_free" :disabled="true" class="uploadBtn grey opacity">{{$t('uploadFile.filter_status_Free')}}</el-button>
-                <el-button class="uploadBtn blue" type="primary" v-else-if="tableData[scope.$index].status.toLowerCase()=='completed' && !tableData[scope.$index].is_free && tableData[scope.$index].refunded_by_self" :disabled="true">
+                <el-button class="uploadBtn grey opacity" type="primary" v-else-if="tableData[scope.$index].status.toLowerCase()=='completed' && !tableData[scope.$index].is_free && tableData[scope.$index].refunded_by_self" :disabled="true">
                   {{$t('uploadFile.refund')}}
                 </el-button>
                 <el-button v-else-if="tableData[scope.$index].status.toLowerCase()=='completed' && !tableData[scope.$index].is_free && !tableData[scope.$index].refunded_by_self" :disabled="true" class="uploadBtn grey opacity">{{$t('uploadFile.paid')}}</el-button>
@@ -1047,16 +1047,16 @@ export default {
                 let dataUnitArray = dataTime.substring(dataUnitIndex, dataUnitIndex + 8)
                 switch (dataUnitArray) {
                   case 'GMT+1000':
-                    item.dataUnit = 'GMT+10'
+                    item.dataUnit = 'UTC+10'
                     break
                   case 'GMT-1000':
-                    item.dataUnit = 'GMT-10'
+                    item.dataUnit = 'UTC-10'
                     break
                   case 'GMT+0000':
-                    item.dataUnit = 'GMT+0'
+                    item.dataUnit = 'UTC+0'
                     break
                   default:
-                    item.dataUnit = dataUnitArray ? dataUnitArray.replace(/0/g, '') : '-'
+                    item.dataUnit = dataUnitArray ? dataUnitArray.replace(/0/g, '').replace('GMT', 'UTC') : '-'
                     break
                 }
 

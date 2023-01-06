@@ -36,7 +36,10 @@
               <el-button round>{{$t('comment.Tell_Comment')}}</el-button>
             </div>
             <div class="need">Need help? Join our
-              <a href="https://discord.gg/9QP4TAEwtn" target="_blank">Discord</a>.</div>
+              <a href="https://discord.com/invite/KKGhy8ZqzK" target="_blank">Discord</a>
+              or send an
+              <a href="mailto:team@filswan.com">Email</a> to us.
+            </div>
             <div class="progress">
               <el-progress :percentage="(free_bucket/free_bucketAll)*100 || 0"></el-progress>
               <span v-if="languageMcs === 'en'" class="tip">{{free_bucket | byteStorage}}GB of {{free_bucketAll | byteStorage}}GB for Bucket storage</span>
@@ -107,9 +110,9 @@ export default {
           type: ''
         },
         {
-          icon: 'el-icon-s-ApiKey',
+          icon: 'el-icon-s-myAccount',
           index: '21',
-          title: this.$t('route.ApiKey'),
+          title: this.$t('route.myAccount'),
           name: 'ApiKey',
           type: ''
         }
@@ -542,7 +545,7 @@ export default {
       font-size: 12px;
       color: #fff;
       text-align: center;
-      line-height: 1;
+      line-height: 1.1;
       @media screen and (min-width: 1800px) {
         font-size: 14px;
       }
@@ -715,8 +718,7 @@ export default {
     }
     .el-icon-s-dataset {
       &::before {
-        background: url(../assets/images/menuIcon/myAccount.png) no-repeat
-          center;
+        background: url(../assets/images/menuIcon/dataset.png) no-repeat center;
       }
     }
     .el-icon-search {

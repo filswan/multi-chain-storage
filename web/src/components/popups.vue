@@ -238,7 +238,7 @@
           <div class="title title_upload">
             <div>
               <i class="el-icon-upload2"></i>{{uploadStart?'Uploading...':'Upload'}} ({{uploadBody.allNum}}/{{uploadBody.addNum}})</div>
-            <el-button type="primary" v-if="!uploadStart" @click="foldUpload()">Start uploading</el-button>
+            <el-button type="primary" v-if="!uploadStart" @click="foldUpload(ruleForm.fileListFolder)">Start uploading</el-button>
           </div>
           <div class="folder_plan" v-if="ruleForm.fileListFolderErr.length>0 && uploadStart">
             Upload failed:
@@ -331,6 +331,17 @@
         <el-form ref="form">
           <el-form-item>
             <el-button type="primary" @click="closeDia('payClose')">{{$t('metaSpace.Close')}}</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+    </div>
+    <div class="fe-none" v-else-if="typeName === 'payActive'">
+      <div class="addBucket">
+        <!-- <i class="el-icon-circle-close close" @click="closeDia()"></i> -->
+        <div class="cont">You have to active your bucket first</div>
+        <el-form ref="form">
+          <el-form-item>
+            <el-button type="primary" @click="closeDia()">{{$t('uploadFile.OK')}}</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -562,16 +573,16 @@ export default {
       let dataUnitArray = dataTime.substring(dataUnitIndex, dataUnitIndex + 8)
       switch (dataUnitArray) {
         case 'GMT+1000':
-          dataUnit = 'GMT+10'
+          dataUnit = 'UTC+10'
           break
         case 'GMT-1000':
-          dataUnit = 'GMT-10'
+          dataUnit = 'UTC-10'
           break
         case 'GMT+0000':
-          dataUnit = 'GMT+0'
+          dataUnit = 'UTC+0'
           break
         default:
-          dataUnit = dataUnitArray ? dataUnitArray.replace(/0/g, '') : '-'
+          dataUnit = dataUnitArray ? dataUnitArray.replace(/0/g, '').replace('GMT', 'UTC') : '-'
           break
       }
       dateNew = dateNew
@@ -715,19 +726,21 @@ export default {
           that.ruleForm.fileListFolder.push(file)
           that.ruleForm.fileListFolder[that.uploadBody.addNum - 1].path = `${that.currentBucket}/${currentFold}`
           // console.log(fileList)
+          if (!that.uploadStart) await that.foldUpload(fileList)
         } else that.fileUpload(file, currentFold, fold, indexFile)
       }
     },
-    async foldUpload () {
+    async foldUpload (listRowData) {
       that.uploadStart = true
-      that.concurrentExecution(that.ruleForm.fileListFolder, 1, (element) => {
+      that.concurrentExecution(listRowData, 1, (element) => {
         return new Promise(async (resolve, reject) => {
           if (element.size <= 0) {
             element.uploadPrecent = 0
             element.err = true
             element.errCont = 'Error: Upload file size cannot be 0'
             element.path = `${that.currentBucket}/${element.currentFold}`
-            if (that.ruleForm.fileListFolderErr.indexOf(element.name) === -1) that.ruleForm.fileListFolderErr.push(element.name)
+            const contErr = `${element.name} (path:/${element.path})`
+            if (that.ruleForm.fileListFolderErr.indexOf(contErr) === -1) that.ruleForm.fileListFolderErr.push(contErr)
           } else await that.fileUpload(element, element.currentFold, element.fold, element.chunkIndex)
           await that.$commonFun.timeout(1000)
           resolve(element)
@@ -786,7 +799,8 @@ export default {
         let uploadListRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/upload`, 'post', uploadListData, uploadListConfig)
         if ((!uploadListRes || uploadListRes.status !== 'success') && (that.typeName === 'upload_folder' || that.typeName === 'upload_folder_list')) {
           that.ruleForm.fileListFolder[indexFile - 1].err = true
-          if (that.ruleForm.fileListFolderErr.indexOf(file.name) === -1) that.ruleForm.fileListFolderErr.push(file.name)
+          let contErr = `${file.name} (path:/${that.currentBucket}/${currentFold})`
+          if (that.ruleForm.fileListFolderErr.indexOf(contErr) === -1) that.ruleForm.fileListFolderErr.push(contErr)
         }
         alreadyUploadChunks = uploadListRes.data || []
         if (count <= 1 || (uploadListRes && uploadListRes.data.length === count)) await that.fileMerge(hash, file, currentFold, fold, indexFile)
@@ -815,7 +829,8 @@ export default {
               if (!uploadRes || uploadRes.status !== 'success') {
                 if (that.typeName === 'upload_folder' || that.typeName === 'upload_folder_list') {
                   that.ruleForm.fileListFolder[indexFile - 1].err = true
-                  if (that.ruleForm.fileListFolderErr.indexOf(file.name) === -1) that.ruleForm.fileListFolderErr.push(file.name)
+                  let contErr = `${file.name} (path:/${that.currentBucket}/${currentFold})`
+                  if (that.ruleForm.fileListFolderErr.indexOf(contErr) === -1) that.ruleForm.fileListFolderErr.push(contErr)
                 }
                 that.$emit('getUploadDialog', that.typeName === 'upload_folder_list', 0)
                 that.loading = false
@@ -940,7 +955,8 @@ export default {
         that.$message.error(mergeRes.message || 'Fail')
         if (that.typeName === 'upload_folder_list') {
           that.ruleForm.fileListFolder[indexFile - 1].err = true
-          if (that.ruleForm.fileListFolderErr.indexOf(file.name) === -1) that.ruleForm.fileListFolderErr.push(file.name)
+          let contErr = `${file.name} (path:/${that.currentBucket}/${currentFold})`
+          if (that.ruleForm.fileListFolderErr.indexOf(contErr) === -1) that.ruleForm.fileListFolderErr.push(contErr)
         } else {
           that.$emit('getUploadDialog', that.typeName === 'upload_folder_list', 0)
           that.loading = false
@@ -990,6 +1006,7 @@ export default {
       that.uploadBody.uploadListAll = []
       that.uploadBody.addNum = 0
       that.uploadBody.allNum = 0
+      that.uploadStart = false
     },
     onPross (e) {
       const { loaded, total } = e
@@ -1724,6 +1741,7 @@ export default {
             }
           }
           .el-form-item__label {
+            padding-top: 0.1rem;
             padding-right: 0.1rem;
             min-width: 120px;
             text-align: left;

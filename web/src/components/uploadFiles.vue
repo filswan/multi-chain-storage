@@ -163,7 +163,7 @@
       <span slot="title">{{$t('uploadFile.File_uploading')}}... {{percentIn?'('+percentIn+'%)':''}}</span>
       <h3>{{$t('uploadFile.File_uploading_tooltip')}}</h3>
       <img src="@/assets/images/upload.gif" class="gif_img" alt="">
-      <small>{{speedChange(uploadPrecentSpeed)}}</small>
+      <small>Current upload speed: {{speedChange(uploadPrecentSpeed)}}</small>
     </el-dialog>
 
     <el-dialog title="" :visible.sync="paymentPopup" :width="width" custom-class="completeDia">
@@ -503,10 +503,10 @@ export default {
       // console.log('当前已上传文件大小: ' + loaded, '总文件大小: ', total, 'progress: ', uploadPrecent + '%')
     },
     speedChange (bytes) {
-      if (String(bytes) === '0') return '0 b/s'
+      if (String(bytes) === '0') return '0 byte/s'
       if (!bytes) return '-'
       var k = 1024 // or 1000
-      var sizes = ['b/s', 'k/s', 'M/s']
+      var sizes = ['byte/s', 'kb/s', 'mb/s', 'gb/s']
       var i = Math.floor(Math.log(bytes) / Math.log(k))
       if (Math.round((bytes / Math.pow(k, i))).toString().length > 3) i += 1
       return (bytes / Math.pow(k, i)).toFixed(1) + ' ' + sizes[i]

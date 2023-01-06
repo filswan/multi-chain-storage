@@ -8,7 +8,7 @@ export default {
     Tools: 'Tools',
     My_FS3: 'FS3',
     Stats: 'Statistics',
-    myAccount: 'Settings',
+    myAccount: 'Setting',
     Upload_files: 'Upload File',
     Search_file: 'Search File',
     documentation: 'Documentation',

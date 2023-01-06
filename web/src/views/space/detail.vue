@@ -90,7 +90,9 @@
               <el-table-column prop="Size" :label="$t('metaSpace.table_size')">
                 <template slot-scope="scope">
                   <div class="hot-cold-box">
-                    <p>{{ scope.row.Size | formatbytes }}</p>
+<!--                    <p>{{ scope.row.Size | formatbytes }}</p>-->
+                    <p v-if="scope.row.Size !== 0">{{ scope.row.Size | formatbytes  }}</p>
+                    <p v-else>{{ '-' }}</p>
                   </div>
                 </template>
               </el-table-column>

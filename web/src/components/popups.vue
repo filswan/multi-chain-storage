@@ -244,9 +244,8 @@
             Upload failed:
             <el-popover placement="bottom-start" width="300" trigger="click" popper-class="folderErr">
               <div>
-                <p v-for="(errItem, errIndex) in ruleForm.fileListFolderErr" :key="errIndex" style="color: #f56c6c">
-                  <i class="el-icon-upload2"></i>
-                  {{errItem}}
+                <p v-for="(errItem, errIndex) in ruleForm.fileListFolderErr" :key="errIndex" style="color: #f56c6c;margin:0.07rem 0;text-align: left;">
+                  <i class="el-icon-upload2"></i> {{errItem.trim()}}
                 </p>
               </div>
               <el-button slot="reference" type="text" round>view
@@ -739,7 +738,7 @@ export default {
             element.err = true
             element.errCont = 'Error: Upload file size cannot be 0'
             element.path = `${that.currentBucket}/${element.currentFold}`
-            const contErr = `${element.name} (path:/${element.path})`
+            const contErr = `${element.name.trim()} (path:/${element.path})`
             if (that.ruleForm.fileListFolderErr.indexOf(contErr) === -1) that.ruleForm.fileListFolderErr.push(contErr)
           } else await that.fileUpload(element, element.currentFold, element.fold, element.chunkIndex)
           await that.$commonFun.timeout(1000)
@@ -799,7 +798,7 @@ export default {
         let uploadListRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/upload`, 'post', uploadListData, uploadListConfig)
         if ((!uploadListRes || uploadListRes.status !== 'success') && (that.typeName === 'upload_folder' || that.typeName === 'upload_folder_list')) {
           that.ruleForm.fileListFolder[indexFile - 1].err = true
-          let contErr = `${file.name} (path:/${that.currentBucket}/${currentFold})`
+          let contErr = `${file.name.trim()} (path:/${that.currentBucket}/${currentFold})`
           if (that.ruleForm.fileListFolderErr.indexOf(contErr) === -1) that.ruleForm.fileListFolderErr.push(contErr)
         }
         alreadyUploadChunks = uploadListRes.data || []
@@ -829,7 +828,7 @@ export default {
               if (!uploadRes || uploadRes.status !== 'success') {
                 if (that.typeName === 'upload_folder' || that.typeName === 'upload_folder_list') {
                   that.ruleForm.fileListFolder[indexFile - 1].err = true
-                  let contErr = `${file.name} (path:/${that.currentBucket}/${currentFold})`
+                  let contErr = `${file.name.trim()} (path:/${that.currentBucket}/${currentFold})`
                   if (that.ruleForm.fileListFolderErr.indexOf(contErr) === -1) that.ruleForm.fileListFolderErr.push(contErr)
                 }
                 that.$emit('getUploadDialog', that.typeName === 'upload_folder_list', 0)
@@ -955,7 +954,7 @@ export default {
         that.$message.error(mergeRes.message || 'Fail')
         if (that.typeName === 'upload_folder_list') {
           that.ruleForm.fileListFolder[indexFile - 1].err = true
-          let contErr = `${file.name} (path:/${that.currentBucket}/${currentFold})`
+          let contErr = `${file.name.trim()} (path:/${that.currentBucket}/${currentFold})`
           if (that.ruleForm.fileListFolderErr.indexOf(contErr) === -1) that.ruleForm.fileListFolderErr.push(contErr)
         } else {
           that.$emit('getUploadDialog', that.typeName === 'upload_folder_list', 0)

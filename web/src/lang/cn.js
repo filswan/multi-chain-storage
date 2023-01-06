@@ -8,6 +8,7 @@ export default {
     Tools: '工具',
     My_FS3: 'FS3',
     Stats: '统计',
+    myAccount: 'Setting',
     Upload_files: '上传文件',
     Search_file: '搜索文件',
     documentation: '文档',

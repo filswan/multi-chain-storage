@@ -27,7 +27,7 @@
           <el-table-column type="index" label="No." width="50"></el-table-column>
           <el-table-column prop="BucketName" :label="$t('metaSpace.table_name')">
             <template slot-scope="scope">
-              <div class="" v-if="!scope.row.IsActive">
+              <div class="" v-if="!scope.row.IsActive" @click="dialogFun('payActive')">
                 <span style="opacity: 0.7;">{{ scope.row.BucketName }}</span>
               </div>
               <div class="hot-cold-box" v-else @click="getListBucketDetail(scope.row)">
@@ -52,8 +52,8 @@
           <el-table-column prop="" :label="$t('metaSpace.table_action')" min-width="120">
             <template slot-scope="scope">
               <div class="hot-cold-box">
-                <i class="icon icon_pay" v-if="!scope.row.IsActive" @click="dialogFun('pay', scope.row)"></i>
-                <i class="icon icon_pay icon_pay_disable" v-else></i>
+                <!-- <i class="icon icon_pay " v-if="!scope.row.IsActive" @click="dialogFun('pay', scope.row)"></i> -->
+                <i class="icon icon_pay icon_pay_disable"></i>
                 <i class="icon icon_rename" @click="dialogFun('rename', scope.row)"></i>
                 <i class="icon icon_details" @click="getDetail(scope.row)"></i>
                 <i class="icon icon_delete" @click="dialogFun('delete', scope.row)"></i>
@@ -244,16 +244,16 @@ export default {
       let dataUnitArray = dataTime.substring(dataUnitIndex, dataUnitIndex + 8)
       switch (dataUnitArray) {
         case 'GMT+1000':
-          dataUnit = 'GMT+10'
+          dataUnit = 'UTC+10'
           break
         case 'GMT-1000':
-          dataUnit = 'GMT-10'
+          dataUnit = 'UTC-10'
           break
         case 'GMT+0000':
-          dataUnit = 'GMT+0'
+          dataUnit = 'UTC+0'
           break
         default:
-          dataUnit = dataUnitArray ? dataUnitArray.replace(/0/g, '') : '-'
+          dataUnit = dataUnitArray ? dataUnitArray.replace(/0/g, '').replace('GMT', 'UTC') : '-'
           break
       }
       dateNew = dateNew
@@ -914,6 +914,7 @@ export default {
                   @media screen and (max-width: 768px) {
                     width: 15px;
                     height: 15px;
+                    margin: 0 5px;
                   }
                   &:hover {
                     opacity: 0.7;
@@ -925,6 +926,14 @@ export default {
                   background: url(../../assets/images/space/pay.png) no-repeat
                     center;
                   background-size: 100% 100%;
+                  @media screen and (max-width: 1600px) {
+                    width: 22px;
+                    height: 22px;
+                  }
+                  @media screen and (max-width: 768px) {
+                    width: 20px;
+                    height: 20px;
+                  }
                   &.icon_pay_disable {
                     opacity: 0.2;
                   }

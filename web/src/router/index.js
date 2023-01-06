@@ -258,7 +258,7 @@ export default new Router({
       }
     },
     {
-      path: '/api_key',
+      path: '/my_account',
       name: 'ApiKey',
       component: apiKey,
       beforeEnter: (to, from, next) => {
@@ -275,7 +275,7 @@ export default new Router({
       },
       meta: {
         metaInfo: {
-          title: 'Bucket Storage',
+          title: 'My Account',
           description: 'Multi-Chain storage (MCS) is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks.'
         }
       }

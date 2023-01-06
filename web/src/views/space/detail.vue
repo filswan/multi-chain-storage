@@ -37,21 +37,20 @@
           </div>
         </div>
         <el-row :gutter="15" class="table_body">
-          <el-col :xs="24" :sm="24" :md="6" :lg="4" class="left">
-            <el-tree :data="listData.listBucketFolder" :props="defaultProps" @node-click="handleNodeClick" node-key="ID" icon-class="el-icon-folder" :expand-on-click-node="false" empty-text='No more subfolders'>
-              <span class="custom-tree-node" slot-scope="{ node, data }">
-                <b class="span" :title="node.label">{{ node.label }}</b>
-                <i class="icon icon_delete" @click.stop="dialogFun('delete', data)"></i>
-              </span>
-            </el-tree>
-          </el-col>
-          <el-col :xs="24" :sm="24" :md="18" :lg="20" class="left">
-            <el-table :data="listData.listBucketFile" ref="tableList" stripe style="width: 100%" max-height="400" empty-text=" ">
+          <el-col :xs="24" :sm="24" :md="24" :lg="24" class="left">
+            <el-table :data="listData.list" ref="tableList" stripe style="width: 100%" max-height="400" empty-text=" ">
               <el-table-column type="index" label="No." width="50"></el-table-column>
               <el-table-column prop="Name" :label="$t('metaSpace.table_name')">
                 <template slot-scope="scope">
                   <div class="hot-cold-box">
-                    <span @click="getDetail('detail_file', scope.row)">{{ scope.row.Name }}</span>
+                    <div v-if="scope.row.IsFolder" @click="getListBucketMain(scope.row.Name)" class="list_style">
+                      <i class="icon el-icon-folder"></i>
+                      <span style="text-decoration: underline;">{{ scope.row.Name }}</span>
+                    </div>
+                    <div v-else @click="getDetail('detail_file', scope.row)" class="list_style">
+                      <i class="icon el-icon-document"></i>
+                      <span>{{ scope.row.Name }}</span>
+                    </div>
                   </div>
                 </template>
               </el-table-column>
@@ -98,16 +97,16 @@
               <el-table-column prop="" :label="$t('metaSpace.table_action')" min-width="120">
                 <template slot-scope="scope">
                   <div class="hot-cold-box">
-                    <i class="icon icon_share" @click="copyLink(`${scope.row.IpfsUrl}?filename=${scope.row.Name}`, 1)"></i>
-                    <i class="icon icon_details" @click="getDetail('detail_file', scope.row)"></i>
+                    <i class="icon icon_share" v-if="!scope.row.IsFolder" @click="copyLink(`${scope.row.IpfsUrl}?filename=${scope.row.Name}`, 1)"></i>
+                    <i class="icon icon_details" v-if="!scope.row.IsFolder" @click="getDetail('detail_file', scope.row)"></i>
                     <i class="icon icon_delete" @click="dialogFun('delete', scope.row)"></i>
                   </div>
                 </template>
               </el-table-column>
             </el-table>
-            <div class="form_pagination" v-if="listData.listBucketFile.length>0">
+            <div class="form_pagination" v-if="listData.list.length>0">
               <div class="pagination">
-                <el-pagination :hide-on-single-page="true" :total="parma.total" :page-size="parma.limit" :current-page="parma.offset" :layout="'prev, pager, next'" @current-change="handleCurrentChange" @size-change="handleSizeChange" />
+                <el-pagination :total="parma.total" :page-size="parma.limit" :current-page="parma.offset" :layout="'total, prev, pager, next'" @current-change="handleCurrentChange" @size-change="handleSizeChange" />
                 <div class="span" v-if="!bodyWidth">
                   <span>{{$t('uploadFile.goTo')}}</span>
                   <el-input class="paginaInput" @change="pageSizeChange" v-model.number="parma.jumperOffset" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')" autocomplete="off"></el-input>
@@ -115,7 +114,7 @@
                 </div>
               </div>
             </div>
-            <div class="fe-none" v-if="listData.listBucketFile&&listData.listBucketFile.length<=0">
+            <div class="fe-none" v-if="listData.list&&listData.list.length<=0">
               <p class="p_label">{{$t('metaSpace.empty_prompt_detail')}}</p>
             </div>
           </el-col>
@@ -148,7 +147,8 @@ export default {
       listData: {
         listBuckets: [],
         listBucketFile: [],
-        listBucketFolder: []
+        listBucketFolder: [],
+        list: []
       },
       defaultProps: {
         children: 'children',
@@ -310,7 +310,6 @@ export default {
     async getListObjects (type) {
       that.listLoad = true
       that.detail.size = 0
-      that.parma.total = 0
       const current = that.currentBucket.slice(1).join('/')
       const offset = that.parma.offset ? (that.parma.offset - 1) * that.parma.limit : 0
       let params = {
@@ -328,7 +327,8 @@ export default {
       that.listData = {
         listBuckets: directoryRes.data.FileList || [],
         listBucketFile: [],
-        listBucketFolder: []
+        listBucketFolder: [],
+        list: []
       }
       that.listData.listBuckets.forEach((element, i) => {
         element.index = i
@@ -337,6 +337,7 @@ export default {
         else that.listData.listBucketFile.push(element)
       })
       that.detail.object = directoryRes.data.length || 0
+      that.listData.list = that.listData.listBucketFolder.concat(that.listData.listBucketFile)
       await that.$commonFun.timeout(500)
       that.listLoad = false
       that.$refs.tableList.bodyWrapper.scrollTop = 0
@@ -379,16 +380,16 @@ export default {
       let dataUnitArray = dataTime.substring(dataUnitIndex, dataUnitIndex + 8)
       switch (dataUnitArray) {
         case 'GMT+1000':
-          dataUnit = 'GMT+10'
+          dataUnit = 'UTC+10'
           break
         case 'GMT-1000':
-          dataUnit = 'GMT-10'
+          dataUnit = 'UTC-10'
           break
         case 'GMT+0000':
-          dataUnit = 'GMT+0'
+          dataUnit = 'UTC+0'
           break
         default:
-          dataUnit = dataUnitArray ? dataUnitArray.replace(/0/g, '') : '-'
+          dataUnit = dataUnitArray ? dataUnitArray.replace(/0/g, '').replace('GMT', 'UTC') : '-'
           break
       }
       dateNew = dateNew
@@ -866,6 +867,30 @@ export default {
                   align-items: center;
                   justify-content: center;
                   flex-wrap: wrap;
+                  .list_style {
+                    display: flex;
+                    align-items: center;
+                    justify-content: flex-start;
+                    width: 100%;
+                    .icon {
+                      width: 18px;
+                      height: 18px;
+                      font-size: 0.2rem;
+                      @media screen and (max-width: 1600px) {
+                        width: 16px;
+                        height: 16px;
+                      }
+                      @media screen and (max-width: 768px) {
+                        width: 14px;
+                        height: 14px;
+                      }
+                    }
+                    span {
+                      white-space: normal;
+                      text-align: left;
+                      line-height: 1.1;
+                    }
+                  }
                   .icon {
                     display: block;
                     width: 20px;

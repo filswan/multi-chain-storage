@@ -201,17 +201,6 @@ export default new Router({
       }
     },
     {
-      path: '/stats',
-      name: 'Stats',
-      component: stats,
-      meta: {
-        metaInfo: {
-          title: 'Stats',
-          description: 'Multi-Chain storage (MCS) is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks.'
-        }
-      }
-    },
-    {
       path: '/my_buckets',
       name: 'Space',
       component: space,
@@ -395,6 +384,17 @@ export default new Router({
     meta: {
       metaInfo: {
         title: 'Home',
+        description: 'Multi-Chain storage (MCS) is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks.'
+      }
+    }
+  },
+  {
+    path: '/stats',
+    name: 'Stats',
+    component: stats,
+    meta: {
+      metaInfo: {
+        title: 'Stats',
         description: 'Multi-Chain storage (MCS) is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks.'
       }
     }

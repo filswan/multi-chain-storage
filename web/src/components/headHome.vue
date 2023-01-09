@@ -20,6 +20,11 @@
               {{ $t('route.Resources') }}
             </router-link>
           </el-menu-item>
+          <el-menu-item index="stats">
+            <router-link to="">
+              {{ $t('route.Stats') }}
+            </router-link>
+          </el-menu-item>
           <el-menu-item index="login">
             <a href="javascript:;" v-loading="loginLoad" @click="getLogin" class="target">
               {{ $t('route.Login') }}
@@ -104,6 +109,7 @@ export default {
 .headerCont {
   width: 100%;
   background-color: #fff;
+  box-shadow: 0 1px 2px rgba(51, 51, 51, 0.2);
   @media screen and (max-width: 999px) {
     position: fixed;
     min-height: 60px;

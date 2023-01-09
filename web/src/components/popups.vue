@@ -177,7 +177,7 @@
       </div>
     </div>
     <div class="fe-none" v-else-if="typeName === 'upload'">
-      <div class="uploadDig" v-loading="loading">
+      <div class="uploadDig" v-loading="loading" :element-loading-text="loadFileText">
         <i class="el-icon-circle-close close" @click="closeDia()"></i>
         <div class="upload_form">
           <el-upload class="upload-demo" :style="{'border': ruleForm.fileList_tip?'2px dashed #f56c6c':'0'}" drag ref="uploadFileRef" action="customize" :http-request="uploadFile" :file-list="ruleForm.fileList" :on-change="handleChange" :on-remove="handleRemove">
@@ -482,7 +482,8 @@ export default {
         addNum: 0,
         allNum: 0
       },
-      uploadStart: false
+      uploadStart: false,
+      loadFileText: ''
     }
   },
   props: ['dialogFormVisible', 'typeModule', 'areaBody', 'createLoad', 'listTableLoad', 'currentBucket', 'fixed', 'backupLoad', 'changeTitle', 'payLoad', 'listBucketFolder'],
@@ -698,7 +699,6 @@ export default {
       })
       that.uploadBody.addNum += 1
       let indexFile = that.uploadBody.addNum
-
       let reg = new RegExp(' ', 'g')
       if (file.size <= 0) {
         if (that.typeName !== 'upload_folder' && that.typeName !== 'upload_folder_list') {
@@ -781,6 +781,7 @@ export default {
         const fileBlob = new Blob([chunks[0].file], {
           type: 'application/json'
         })
+        that.loadFileText = 'Uploading...'
         uploadListData.append('file', fileBlob, chunks[0].filename)
         uploadListData.append('file_name', chunks[0].filename)
         uploadListData.append('hash', hash)
@@ -871,6 +872,7 @@ export default {
       await that.fileMerge(hash, file, currentFold, fold, indexFile)
     },
     async fileCheck (hash, file, currentFold, fold, indexFile) {
+      that.loadFileText = 'Checking file information...'
       const reg = new RegExp('/' + '$')
       const current = that.currentBucket.split('/').slice(1).join('/')
       const parentAddress = that.areaBody.Prefix || current || ''
@@ -939,6 +941,7 @@ export default {
       })
     },
     async fileMerge (hash, file, currentFold, fold, indexFile) {
+      that.loadFileText = 'Merging...'
       const reg = new RegExp('/' + '$')
       const current = that.currentBucket.split('/').slice(1).join('/')
       const parentAddress = that.areaBody.Prefix || current || ''
@@ -973,25 +976,57 @@ export default {
       }
     },
     async fileMd5 (file) {
-      return new Promise(resolve => {
+      return new Promise(async resolve => {
+        let blobSlice = File.prototype.slice || File.prototype.mozSlice || File.prototype.webkitSlice
+        let chunkSize = 2097152 // Read in chunks of 2MB
+        let chunks = Math.ceil(file.size / chunkSize)
+        let currentChunk = 0
+        let time = new Date().getTime()
+        let spark = new that.$SparkMD5.ArrayBuffer()
+
         let fileReader = new FileReader()
-        fileReader.readAsArrayBuffer(file.raw)
-        fileReader.onload = ev => {
-          let buffer = ev.target.result
-          let spark = new that.$SparkMD5.ArrayBuffer()
-          let hash
-          let suffix
-          spark.append(buffer)
-          hash = spark.end()
-          let reg = /\.([a-zA-Z0-9]+)$/
-          suffix = reg.exec(file.name) ? reg.exec(file.name)[1] : ''
-          resolve({
-            buffer,
-            hash,
-            suffix,
-            filename: `${hash}.${suffix}`
-          })
+        fileReader.onload = async ev => {
+          spark.append(ev.target.result)
+          currentChunk++
+
+          if (currentChunk < chunks) {
+            that.loadFileText = 'Generating MD5...'
+            var { start, end } = await that.loadNext(file, currentChunk, chunkSize)
+            fileReader.readAsArrayBuffer(blobSlice.call(file.raw, start, end))
+          } else {
+            let md5 = spark.end()
+            console.log(`Md5 complete: ${file.name} \nMD5: ${md5} \nchunks: ${chunks} size: ${file.size} time: ${new Date().getTime() - time} ms`)
+            spark.destroy() // Free cache
+
+            let buffer = ev.target.result
+            let hash
+            let suffix
+            hash = md5
+            let reg = /\.([a-zA-Z0-9]+)$/
+            suffix = reg.exec(file.name) ? reg.exec(file.name)[1] : ''
+            resolve({
+              buffer,
+              hash,
+              suffix,
+              filename: `${hash}.${suffix}`
+            })
+          }
         }
+        fileReader.onerror = err => {
+          console.log(err)
+        }
+        // fileReader.readAsArrayBuffer(file.raw)
+        var { start, end } = await that.loadNext(file, currentChunk, chunkSize)
+        fileReader.readAsArrayBuffer(blobSlice.call(file.raw, start, end))
+      })
+    },
+    async loadNext (file, currentChunk, chunkSize) {
+      return new Promise(async resolve => {
+        let start = currentChunk * chunkSize
+        let end = ((start + chunkSize) >= file.size) ? file.size : start + chunkSize
+        resolve({
+          start, end
+        })
       })
     },
     handleRemove (file, fileList) {
@@ -1006,6 +1041,7 @@ export default {
       that.uploadBody.addNum = 0
       that.uploadBody.allNum = 0
       that.uploadStart = false
+      that.loadFileText = ''
     },
     onPross (e) {
       const { loaded, total } = e

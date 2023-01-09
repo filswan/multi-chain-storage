@@ -103,13 +103,6 @@ export default {
           type: ''
         },
         {
-          icon: 'el-icon-s-Stats',
-          index: '4',
-          title: this.$t('route.Stats'),
-          name: 'Stats',
-          type: ''
-        },
-        {
           icon: 'el-icon-s-myAccount',
           index: '21',
           title: this.$t('route.myAccount'),
@@ -555,7 +548,7 @@ export default {
       }
     }
     .progress {
-      margin: 0 0.28rem 10px;
+      margin: 2px 0.28rem 10px;
       .el-progress /deep/ {
         font-size: 12px;
         .el-progress-bar {

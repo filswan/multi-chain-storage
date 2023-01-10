@@ -2,8 +2,11 @@
 const path = require('path')
 const utils = require('./utils')
 const config = require('../config')
-const vueLoaderConfig = require('./vue-loader.conf')
-const webpack = require("webpack")
+// const vueLoaderConfig = require('./vue-loader.conf')
+const {
+  VueLoaderPlugin
+} = require('vue-loader')
+const webpack = require('webpack')
 
 function resolve (dir) {
   return path.join(__dirname, '..', dir)
@@ -36,7 +39,7 @@ module.exports = {
     extensions: ['.js', '.vue', '.json'],
     alias: {
       'vue$': 'vue/dist/vue.esm.js',
-      '@': resolve('src'),
+      '@': resolve('src')
     }
   },
   module: {
@@ -44,8 +47,8 @@ module.exports = {
       ...(config.dev.useEslint ? [createLintingRule()] : []),
       {
         test: /\.vue$/,
-        loader: 'vue-loader',
-        options: vueLoaderConfig
+        loader: 'vue-loader'
+        // options: vueLoaderConfig
       },
       {
         test: /\.js$/,
@@ -91,10 +94,11 @@ module.exports = {
     child_process: 'empty'
   },
   plugins: [
-    new webpack.optimize.CommonsChunkPlugin('common.js'),
+    // new webpack.optimize.CommonsChunkPlugin('common.js'),
     new webpack.ProvidePlugin({
-        jQuery: "jquery",
-        $: "jquery"
-    })
+      jQuery: 'jquery',
+      $: 'jquery'
+    }),
+    new VueLoaderPlugin()
   ]
 }

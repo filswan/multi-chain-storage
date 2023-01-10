@@ -631,7 +631,7 @@ export default {
         that.ruleForm.fileList_tip = false
       }
     },
-    sizeChange (bytes) {
+    sizeChange (bytes, type) {
       if (bytes === 0) return '0 B'
       if (!bytes) return '-'
       var k = 1024 // or 1000
@@ -644,7 +644,8 @@ export default {
       }
 
       // if(i == 2) return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];
-      return Number(bytes / Math.pow(k, i)) + ' ' + sizes[i]
+      if (type) return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
+      else return Number(bytes / Math.pow(k, i)) + ' ' + sizes[i]
     },
     speedChange (bytes) {
       if (String(bytes) === '0') return '0 byte/s'
@@ -804,7 +805,8 @@ export default {
         }
         alreadyUploadChunks = uploadListRes.data || []
         if (count <= 1 || (uploadListRes && uploadListRes.data.length === count)) await that.fileMerge(hash, file, currentFold, fold, indexFile)
-        if (that.typeName !== 'upload_folder_list') that.typeName = 'upload_progress'
+        // if (that.typeName !== 'upload_folder_list') that.typeName = 'upload_progress'
+        that.loadFileText = `Uploading... ${that.sizeChange(that.uploadFileSize, 1)}/${that.sizeChange(that.uploadFileSizeAll, 1)} (${that.uploadPrecent}%)`
         that.concurrentExecution(chunks, concurrent, (chunk) => {
           return new Promise(async (resolve, reject) => {
             if (alreadyUploadChunks.indexOf(chunk.filename) === -1) {
@@ -995,7 +997,7 @@ export default {
             fileReader.readAsArrayBuffer(blobSlice.call(file.raw, start, end))
           } else {
             let md5 = spark.end()
-            console.log(`Md5 complete: ${file.name} \nMD5: ${md5} \nchunks: ${chunks} size: ${file.size} time: ${new Date().getTime() - time} ms`)
+            // console.log(`Md5 complete: ${file.name} \nMD5: ${md5} \nchunks: ${chunks} size: ${file.size} time: ${new Date().getTime() - time} ms`)
             spark.destroy() // Free cache
 
             let buffer = ev.target.result
@@ -2127,6 +2129,58 @@ export default {
       }
       @media screen and (max-width: 600px) {
         width: 95%;
+      }
+      .loadTryAgain {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: rgba(255, 255, 255, 0.8);
+        .load_svg {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          flex-wrap: wrap;
+          width: 100%;
+          svg {
+            height: 42px;
+            width: 42px;
+            -webkit-animation: loading-rotate 2s linear infinite;
+            animation: loading-rotate 2s linear infinite;
+            .path {
+              -webkit-animation: loading-dash 1.5s ease-in-out infinite;
+              animation: loading-dash 1.5s ease-in-out infinite;
+              stroke-dasharray: 90, 150;
+              stroke-dashoffset: 0;
+              stroke-width: 2;
+              stroke: #409eff;
+              stroke-linecap: round;
+            }
+          }
+          p {
+            width: 100%;
+            text-align: center;
+            font-size: 16px;
+            color: #333;
+            @media screen and (max-width: 1600px) {
+              font-size: 14px;
+            }
+            @media screen and (max-width: 768px) {
+              font-size: 13px;
+            }
+            @media screen and (max-width: 441px) {
+              font-size: 12px;
+            }
+            span {
+              color: #4b83fb;
+              cursor: pointer;
+            }
+          }
+        }
       }
       .close {
         position: absolute;

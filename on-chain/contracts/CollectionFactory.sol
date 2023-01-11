@@ -2,24 +2,18 @@
 pragma solidity ^0.8.4;
 
 
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 import "./MCSCollection.sol";
 
-contract CollectionFactory is Initializable, OwnableUpgradeable {
+contract CollectionFactory is Ownable {
     address public defaultCollectionAddress;
     mapping(address => address[]) userToCollections;
 
     event CreateCollection(address collectionOwner, address collectionAddress);
 
-    /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor() {
-        _disableInitializers();
-    }
-
-    function initialize(address defaultCollection) public initializer {
+    constructor(address defaultCollection) {
         defaultCollectionAddress = defaultCollection;
-        __Ownable_init();
+        emit CreateCollection(MCSCollection(defaultCollection).owner(), defaultCollection);
     }
 
     function createCollection(string memory contractURI) public returns (address) {

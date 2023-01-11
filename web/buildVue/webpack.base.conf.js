@@ -42,6 +42,14 @@ module.exports = {
       '@': resolve('src')
     }
   },
+  performance: {
+    hints: 'warning',
+    maxAssetSize: 30000000,
+    maxEntrypointSize: 50000000,
+    assetFilter: function (assetFilename) {
+      return assetFilename.endsWith('.css') || assetFilename.endsWith('.js')
+    }
+  },
   module: {
     rules: [
       ...(config.dev.useEslint ? [createLintingRule()] : []),

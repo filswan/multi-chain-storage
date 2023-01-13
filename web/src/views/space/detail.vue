@@ -40,21 +40,21 @@
           <el-col :xs="24" :sm="24" :md="24" :lg="24" class="left">
             <el-table :data="listData.list" ref="tableList" stripe style="width: 100%" max-height="400" empty-text=" ">
               <el-table-column type="index" label="No." width="50"></el-table-column>
-              <el-table-column prop="Name" :label="$t('metaSpace.table_name')">
+              <el-table-column prop="name" :label="$t('metaSpace.table_name')">
                 <template slot-scope="scope">
                   <div class="hot-cold-box">
-                    <div v-if="scope.row.IsFolder" @click="getListBucketMain(scope.row.Name)" class="list_style">
+                    <div v-if="scope.row.is_folder" @click="getListBucketMain(scope.row.name)" class="list_style">
                       <i class="icon el-icon-folder"></i>
-                      <span style="text-decoration: underline;">{{ scope.row.Name }}</span>
+                      <span style="text-decoration: underline;">{{ scope.row.name }}</span>
                     </div>
                     <div v-else @click="getDetail('detail_file', scope.row)" class="list_style">
                       <i class="icon el-icon-document"></i>
-                      <span>{{ scope.row.Name }}</span>
+                      <span>{{ scope.row.name }}</span>
                     </div>
                   </div>
                 </template>
               </el-table-column>
-              <el-table-column prop="PayloadCid" min-width="120">
+              <el-table-column prop="payload_cid" min-width="120">
                 <template slot="header" slot-scope="scope">
                   <div class="tips" style="white-space: nowrap;">
                     {{$t('metaSpace.table_cid')}}
@@ -67,31 +67,31 @@
                 <template slot-scope="scope">
                   <div class="hot-cold-box">
                     <div class="copyText">
-                      <span>{{ scope.row.PayloadCid||'-' }}</span>
-                      <img class="imgCopy" src="@/assets/images/space/icon_10.png" @click="copyLink(scope.row.PayloadCid)" v-if="scope.row.PayloadCid" alt="">
+                      <span>{{ scope.row.payload_cid||'-' }}</span>
+                      <img class="imgCopy" src="@/assets/images/space/icon_10.png" @click="copyLink(scope.row.payload_cid)" v-if="scope.row.payload_cid" alt="">
                     </div>
                   </div>
                 </template>
               </el-table-column>
-              <el-table-column prop="PinStatus" :label="$t('metaSpace.table_status')">
+              <el-table-column prop="pin_status" :label="$t('metaSpace.table_status')">
                 <template slot-scope="scope">
                   <div class="hot-cold-box">
-                    <span>{{ scope.row.PinStatus||'-' }}</span>
+                    <span>{{ scope.row.pin_status||'-' }}</span>
                   </div>
                 </template>
               </el-table-column>
-              <el-table-column prop="UpdatedAt" :label="$t('metaSpace.table_LastModified')">
+              <el-table-column prop="updated_at" :label="$t('metaSpace.table_LastModified')">
                 <template slot-scope="scope">
                   <div class="hot-cold-box">
-                    <p>{{ momentFun(scope.row.UpdatedAt) }}</p>
+                    <p>{{ momentFun(scope.row.updated_at) }}</p>
                   </div>
                 </template>
               </el-table-column>
-              <el-table-column prop="Size" :label="$t('metaSpace.table_size')">
+              <el-table-column prop="size" :label="$t('metaSpace.table_size')">
                 <template slot-scope="scope">
                   <div class="hot-cold-box">
-<!--                    <p>{{ scope.row.Size | formatbytes }}</p>-->
-                    <p v-if="scope.row.Size !== 0">{{ scope.row.Size | formatbytes  }}</p>
+                    <!--                    <p>{{ scope.row.size | formatbytes }}</p>-->
+                    <p v-if="scope.row.size !== 0">{{ scope.row.size | formatbytes }}</p>
                     <p v-else>{{ '-' }}</p>
                   </div>
                 </template>
@@ -99,8 +99,8 @@
               <el-table-column prop="" :label="$t('metaSpace.table_action')" min-width="120">
                 <template slot-scope="scope">
                   <div class="hot-cold-box">
-                    <i class="icon icon_share" v-if="!scope.row.IsFolder" @click="copyLink(`${scope.row.IpfsUrl}?filename=${scope.row.Name}`, 1)"></i>
-                    <i class="icon icon_details" v-if="!scope.row.IsFolder" @click="getDetail('detail_file', scope.row)"></i>
+                    <i class="icon icon_share" v-if="!scope.row.is_folder" @click="copyLink(`${scope.row.ipfs_url}?filename=${scope.row.name}`, 1)"></i>
+                    <i class="icon icon_details" v-if="!scope.row.is_folder" @click="getDetail('detail_file', scope.row)"></i>
                     <i class="icon icon_delete" @click="dialogFun('delete', scope.row)"></i>
                   </div>
                 </template>
@@ -180,16 +180,16 @@ export default {
       that.dialogFun(type, row)
       let bucketDetail = row
       let params = {
-        file_id: row.ID
+        file_id: row.id
       }
       const infoRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/get_file_info?${QS.stringify(params)}`, 'get')
-      if (!infoRes || infoRes.status !== 'success') that.$message.error(infoRes.message || 'Fail')
+      if (!infoRes || infoRes.status !== 'success') that.$message.error(infoRes ? infoRes.message : 'Fail')
       else {
-        bucketDetail.Name = infoRes.data.Name
-        bucketDetail.CreatedAt = infoRes.data.CreatedAt
-        bucketDetail.Size = infoRes.data.Size
-        bucketDetail.IpfsUrl = `${infoRes.data.IpfsUrl}?filename=${infoRes.data.Name}`
-        bucketDetail.PayloadCid = infoRes.data.PayloadCid
+        bucketDetail.name = infoRes.data.name
+        bucketDetail.created_at = infoRes.data.created_at
+        bucketDetail.size = infoRes.data.size
+        bucketDetail.ipfs_url = `${infoRes.data.ipfs_url}?filename=${infoRes.data.name}`
+        bucketDetail.payload_cid = infoRes.data.payload_cid
       }
       that.dialogFun(type, bucketDetail)
       that.backupLoad = false
@@ -271,7 +271,7 @@ export default {
     async deleteFun () {
       that.listTableLoad = true
       const params = {
-        'file_id': that.areaBody.ID
+        'file_id': that.areaBody.id
       }
       const deleteRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/delete?${QS.stringify(params)}`, 'get')
       if (!deleteRes || deleteRes.status !== 'success') {
@@ -325,7 +325,7 @@ export default {
         that.$message.error(directoryRes.message || 'Fail')
         return false
       }
-      that.parma.total = directoryRes.data.Count
+      that.parma.total = directoryRes.data.count
       that.listData = {
         listBuckets: directoryRes.data.FileList || [],
         listBucketFile: [],
@@ -334,8 +334,8 @@ export default {
       }
       that.listData.listBuckets.forEach((element, i) => {
         element.index = i
-        that.detail.size += element.Size
-        if (element.IsFolder) that.listData.listBucketFolder.push(element)
+        that.detail.size += element.size
+        if (element.is_folder) that.listData.listBucketFolder.push(element)
         else that.listData.listBucketFile.push(element)
       })
       that.detail.object = directoryRes.data.length || 0
@@ -347,7 +347,7 @@ export default {
     },
     handleNodeClick (data) {
       // console.log(data)
-      that.getListBucketMain(data.Name)
+      that.getListBucketMain(data.name)
     },
     handleCurrentChange (val) {
       that.parma.offset = Number(val)

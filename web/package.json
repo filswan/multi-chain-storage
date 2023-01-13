@@ -19,6 +19,8 @@
     "build:calibration_t": "set NODE_OPTIONS=\"--openssl-legacy-provider\" & npm run build:calibration\n",
     "build:prod_t": "set NODE_OPTIONS=\"--openssl-legacy-provider\" & npm run build:prod\n",
     "build:semi_prod_t": "set NODE_OPTIONS=\"--openssl-legacy-provider\" & npm run build:semi_prod\n"
+    "build:test_u": "export NODE_OPTIONS=--openssl-legacy-provider && npm run build:test\n"
+    "build:prod_u": "export NODE_OPTIONS=--openssl-legacy-provider && npm run build:prod\n"
   },
   "dependencies": {
     "axios": "^0.21.1",

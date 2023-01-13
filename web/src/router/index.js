@@ -69,10 +69,7 @@ export default new Router({
       beforeEnter: (to, from, next) => {
         if (!sessionStorage.getItem('metaAddress')) {
           next({
-            path: '/home',
-            query: {
-              redirect: to.fullPath
-            }
+            path: '/home'
           })
         } else {
           next()
@@ -92,10 +89,7 @@ export default new Router({
       beforeEnter: (to, from, next) => {
         if (!sessionStorage.getItem('metaAddress')) {
           next({
-            path: '/home',
-            query: {
-              redirect: to.fullPath
-            }
+            path: '/home'
           })
         } else {
           next()
@@ -115,10 +109,7 @@ export default new Router({
       beforeEnter: (to, from, next) => {
         if (!sessionStorage.getItem('metaAddress')) {
           next({
-            path: '/home',
-            query: {
-              redirect: to.fullPath
-            }
+            path: '/home'
           })
         } else {
           next()
@@ -138,10 +129,7 @@ export default new Router({
       beforeEnter: (to, from, next) => {
         if (!sessionStorage.getItem('metaAddress')) {
           next({
-            path: '/home',
-            query: {
-              redirect: to.fullPath
-            }
+            path: '/home'
           })
         } else {
           next()
@@ -161,10 +149,7 @@ export default new Router({
       beforeEnter: (to, from, next) => {
         if (!sessionStorage.getItem('metaAddress')) {
           next({
-            path: '/home',
-            query: {
-              redirect: to.fullPath
-            }
+            path: '/home'
           })
         } else {
           next()
@@ -184,10 +169,7 @@ export default new Router({
       beforeEnter: (to, from, next) => {
         if (!sessionStorage.getItem('metaAddress')) {
           next({
-            path: '/home',
-            query: {
-              redirect: to.fullPath
-            }
+            path: '/home'
           })
         } else {
           next()
@@ -207,10 +189,7 @@ export default new Router({
       beforeEnter: (to, from, next) => {
         if (!sessionStorage.getItem('metaAddress')) {
           next({
-            path: '/home',
-            query: {
-              redirect: to.fullPath
-            }
+            path: '/home'
           })
         } else {
           next()
@@ -230,10 +209,7 @@ export default new Router({
       beforeEnter: (to, from, next) => {
         if (!sessionStorage.getItem('metaAddress')) {
           next({
-            path: '/home',
-            query: {
-              redirect: to.fullPath
-            }
+            path: '/home'
           })
         } else {
           next()
@@ -253,10 +229,7 @@ export default new Router({
       beforeEnter: (to, from, next) => {
         if (!sessionStorage.getItem('metaAddress')) {
           next({
-            path: '/home',
-            query: {
-              redirect: to.fullPath
-            }
+            path: '/home'
           })
         } else {
           next()

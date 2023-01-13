@@ -49,15 +49,12 @@ Vue.prototype.baseAPIURL = netData === 80001 ? process.env.BASE_PAYMENT_GATEWAY_
 Vue.prototype.baseAddressURL = netData === 80001 ? process.env.BASE_MUMBAI_ADDRESS : process.env.BASE_POLYGON_ADDRESS
 Vue.prototype.Web3 = Web3
 Vue.prototype.baseNetwork = process.env.BASE_ENV === true
-console.log('update time: 2022-1-10', 'env:', process.env.BASE_ENV === true ? 'Main' : 'Cali', process.env.BASE_ENV)
+console.log('update time: 2022-1-13', 'env:', process.env.BASE_ENV === true ? 'Main' : 'Cali', process.env.BASE_ENV)
 router.beforeEach((to, from, next) => {
   if (to.matched.some(record => record.meta.requiresAuth)) {
     if (!sessionStorage.getItem('metaAddress')) {
       next({
-        path: '/home',
-        query: {
-          redirect: to.fullPath
-        }
+        path: '/home'
       })
     } else {
       next()

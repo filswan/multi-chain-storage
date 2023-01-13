@@ -63,19 +63,19 @@
         </div>
         <el-form ref="form" class="demo-ruleForm">
           <el-form-item :label="$t('metaSpace.detail_BucketName')">
-            {{areaBody.BucketName}}
+            {{areaBody.bucket_name}}
           </el-form-item>
           <el-form-item :label="$t('metaSpace.detail_DateCreated')">
-            <span class="color">{{momentFun(areaBody.CreatedAt)}}</span>
+            <span class="color">{{momentFun(areaBody.created_at)}}</span>
           </el-form-item>
           <el-form-item :label="$t('metaSpace.detail_LastModified')">
-            <span class="color">{{momentFun(areaBody.UpdatedAt)}}</span>
+            <span class="color">{{momentFun(areaBody.updated_at)}}</span>
           </el-form-item>
           <el-form-item :label="$t('metaSpace.detail_CurrentFiles')">
-            {{areaBody.FileNumber}}
+            {{areaBody.file_number}}
           </el-form-item>
           <el-form-item :label="$t('metaSpace.detail_CurrentSize')">
-            {{areaBody.Size | formatbytes}}
+            {{areaBody.size | formatbytes}}
           </el-form-item>
           <el-form-item></el-form-item>
           <el-form-item :label="$t('metaSpace.detail_BackupInfo')">
@@ -115,16 +115,16 @@
         </div>
         <el-form ref="form" class="demo-ruleForm">
           <el-form-item :label="$t('metaSpace.detail_folderName')">
-            {{areaBody.Name}}
+            {{areaBody.name}}
           </el-form-item>
           <el-form-item :label="$t('metaSpace.detail_DateCreated')">
-            <span class="color">{{momentFun(areaBody.CreatedAt)}}</span>
+            <span class="color">{{momentFun(areaBody.created_at)}}</span>
           </el-form-item>
           <el-form-item :label="$t('metaSpace.detail_LastModified')">
-            <span class="color">{{momentFun(areaBody.UpdatedAt)}}</span>
+            <span class="color">{{momentFun(areaBody.updated_at)}}</span>
           </el-form-item>
           <el-form-item :label="$t('metaSpace.detail_CurrentSize')">
-            {{areaBody.Size | formatbytes}}
+            {{areaBody.size | formatbytes}}
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="closeDia()">{{$t('metaSpace.Close')}}</el-button>
@@ -140,22 +140,22 @@
         </div>
         <el-form ref="form" class="demo-ruleForm">
           <el-form-item :label="$t('metaSpace.ob_detail_ObjectName')">
-            <span class="color">{{areaBody.Name}}</span>
+            <span class="color">{{areaBody.name}}</span>
           </el-form-item>
           <el-form-item :label="$t('metaSpace.ob_detail_DateUploaded')">
-            <span class="color">{{momentFun(areaBody.CreatedAt)}}</span>
+            <span class="color">{{momentFun(areaBody.created_at)}}</span>
           </el-form-item>
           <el-form-item :label="$t('metaSpace.ob_detail_ObjectSize')">
-            <span class="color">{{areaBody.Size | formatbytes}}</span>
+            <span class="color">{{areaBody.size | formatbytes}}</span>
           </el-form-item>
           <el-form-item :label="$t('metaSpace.ob_detail_ObjectIPFSLink')">
-            <!-- <a class="color ipfsStyle" @click="xhrequest(areaBody.IpfsUrl, areaBody.Name)"> -->
-            <a class="color ipfsStyle" :href="areaBody.IpfsUrl" target="_blank">
-              {{areaBody.IpfsUrl}}
+            <!-- <a class="color ipfsStyle" @click="xhrequest(areaBody.ipfs_url, areaBody.name)"> -->
+            <a class="color ipfsStyle" :href="areaBody.ipfs_url" target="_blank">
+              {{areaBody.ipfs_url}}
             </a>
           </el-form-item>
           <el-form-item :label="$t('metaSpace.ob_detail_ObjectCID')">
-            <span class="color">{{areaBody.PayloadCid}}</span>
+            <span class="color">{{areaBody.payload_cid}}</span>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="closeDia()">{{$t('metaSpace.Close')}}</el-button>
@@ -169,7 +169,7 @@
               </svg>
               <p>
                 {{$t('uploadFile.payment_tip_deal')}}
-                <span @click="controllerSignal('try_again', areaBody.IpfsUrl, areaBody.Name)">{{$t('metaSpace.try_again')}}</span>
+                <span @click="controllerSignal('try_again', areaBody.ipfs_url, areaBody.name)">{{$t('metaSpace.try_again')}}</span>
               </p>
             </div>
           </div>
@@ -281,7 +281,7 @@
               <label>{{$t('metaSpace.pay_body_BucketName')}}</label>
               <el-form :model="form" status-icon :rules="rules" ref="payForm" @submit.native.prevent>
                 <el-form-item prop="name">
-                  <div v-if="areaBody.BucketName" style="color:#333">{{areaBody.BucketName}}</div>
+                  <div v-if="areaBody.bucket_name" style="color:#333">{{areaBody.bucket_name}}</div>
                   <el-input v-else v-model="form.name" maxlength="256" :placeholder="'Bucket Name'" ref="bucketNameRef"></el-input>
                 </el-form-item>
               </el-form>
@@ -316,7 +316,7 @@
         </el-row>
         <el-form ref="form">
           <el-form-item>
-            <el-button type="primary" @click="getDialogClose('payForm', areaBody.BucketName)">{{$t('metaSpace.Pay')}}</el-button>
+            <el-button type="primary" @click="getDialogClose('payForm', areaBody.bucket_name)">{{$t('metaSpace.Pay')}}</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -667,7 +667,7 @@ export default {
     async listFold (current) {
       let resultRes = false
       that.listBucketFolder.some((element) => {
-        if (element.Name === current) resultRes = true
+        if (element.name === current) resultRes = true
       })
       return resultRes
     },
@@ -877,7 +877,7 @@ export default {
       that.loadFileText = 'Checking file information...'
       const reg = new RegExp('/' + '$')
       const current = that.currentBucket.split('/').slice(1).join('/')
-      const parentAddress = that.areaBody.Prefix || current || ''
+      const parentAddress = that.areaBody.prefix || current || ''
       const pre = `${parentAddress ? parentAddress + '/' : ''}${currentFold}`
       let paramCheck = {
         'file_hash': hash,
@@ -929,7 +929,7 @@ export default {
         let name = `${arrLeng ? element.split('/').slice(-1) : element}`
         if (arrLeng) arr.pop()
         const current = that.currentBucket.split('/').slice(1).join('/')
-        const parentAddress = that.areaBody.Prefix || current || ''
+        const parentAddress = that.areaBody.prefix || current || ''
         const pre = `${parentAddress ? parentAddress + '/' : ''}${arrLeng ? arr.join('/') : ''}`
         const params = {
           'file_name': `${name.trim()}`,
@@ -946,7 +946,7 @@ export default {
       that.loadFileText = 'Merging...'
       const reg = new RegExp('/' + '$')
       const current = that.currentBucket.split('/').slice(1).join('/')
-      const parentAddress = that.areaBody.Prefix || current || ''
+      const parentAddress = that.areaBody.prefix || current || ''
       const pre = `${parentAddress ? parentAddress + '/' : ''}${currentFold}`
       let paramMerge = {
         'file_hash': hash,
@@ -983,7 +983,7 @@ export default {
         let chunkSize = 2097152 // Read in chunks of 2MB
         let chunks = Math.ceil(file.size / chunkSize)
         let currentChunk = 0
-        let time = new Date().getTime()
+        // let time = new Date().getTime()
         let spark = new that.$SparkMD5.ArrayBuffer()
 
         let fileReader = new FileReader()
@@ -1780,6 +1780,7 @@ export default {
           .el-form-item__label {
             padding-top: 0.1rem;
             padding-right: 0.1rem;
+            padding-bottom: 0.1rem;
             min-width: 120px;
             text-align: left;
           }

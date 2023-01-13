@@ -25,34 +25,34 @@
         </div>
         <el-table :data="listBuckets" stripe style="width: 100%" max-height="580" :empty-text="$t('deal.formNotData')">
           <el-table-column type="index" label="No." width="50"></el-table-column>
-          <el-table-column prop="BucketName" :label="$t('metaSpace.table_name')">
+          <el-table-column prop="bucket_name" :label="$t('metaSpace.table_name')">
             <template slot-scope="scope">
-              <div class="" v-if="!scope.row.IsActive" @click="dialogFun('payActive')">
-                <span style="opacity: 0.7;">{{ scope.row.BucketName }}</span>
+              <div class="" v-if="!scope.row.is_active" @click="dialogFun('payActive')">
+                <span style="opacity: 0.7;">{{ scope.row.bucket_name }}</span>
               </div>
               <div class="hot-cold-box" v-else @click="getListBucketDetail(scope.row)">
-                <span style="text-decoration: underline;">{{ scope.row.BucketName }}</span>
+                <span style="text-decoration: underline;">{{ scope.row.bucket_name }}</span>
               </div>
             </template>
           </el-table-column>
           <el-table-column prop="size" :label="$t('metaSpace.table_space')">
             <template slot-scope="scope">
               <div class="hot-cold-box">
-                <span>{{ scope.row.Size | formatbytes }}/{{scope.row.MaxSize | formatbytes}}</span>
+                <span>{{ scope.row.size | formatbytes }}/{{scope.row.max_size | formatbytes}}</span>
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="CreatedAt" :label="$t('metaSpace.table_createon')">
+          <el-table-column prop="created_at" :label="$t('metaSpace.table_createon')">
             <template slot-scope="scope">
               <div class="hot-cold-box">
-                <span>{{ momentFun(scope.row.CreatedAt) }}</span>
+                <span>{{ momentFun(scope.row.created_at) }}</span>
               </div>
             </template>
           </el-table-column>
           <el-table-column prop="" :label="$t('metaSpace.table_action')" min-width="120">
             <template slot-scope="scope">
               <div class="hot-cold-box">
-                <!-- <i class="icon icon_pay " v-if="!scope.row.IsActive" @click="dialogFun('pay', scope.row)"></i> -->
+                <!-- <i class="icon icon_pay " v-if="!scope.row.is_active" @click="dialogFun('pay', scope.row)"></i> -->
                 <i class="icon icon_pay icon_pay_disable"></i>
                 <i class="icon icon_rename" @click="dialogFun('rename', scope.row)"></i>
                 <i class="icon icon_details" @click="getDetail(scope.row)"></i>
@@ -118,8 +118,8 @@ export default {
       that.backupLoad = true
       that.dialogFun('detail', row)
       let bucketDetail = row
-      const backupRes = await that.$commonFun.sendRequest(`${process.env.BASE_METASPACE}api/v3/backup/stat/${row.ID}`, 'get')
-      if (!backupRes || backupRes.status !== 'success') that.$message.error(backupRes.message || 'Fail')
+      const backupRes = await that.$commonFun.sendRequest(`${process.env.BASE_METASPACE}api/v3/backup/stat/${row.id}`, 'get')
+      if (!backupRes || backupRes.status !== 'success') that.$message.error(backupRes ? backupRes.message : 'Fail')
       else {
         bucketDetail.miner_list = backupRes.data.miner_list.split(',') || ''
         bucketDetail.miner_url_prefix = backupRes.data.miner_url_prefix || ''
@@ -159,7 +159,7 @@ export default {
       that.createLoad = true
       const params =
         {
-          'bucket_uid': that.areaBody.BucketUid,
+          'bucket_uid': that.areaBody.bucket_uid,
           'bucket_name': newName
         }
       const renameRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/bucket/rename`, 'post', params)
@@ -174,7 +174,7 @@ export default {
     async deleteFun () {
       that.listTableLoad = true
       const params = {
-        'bucket_uid': that.areaBody.BucketUid
+        'bucket_uid': that.areaBody.bucket_uid
       }
       const deleteRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/bucket/delete?${QS.stringify(params)}`, 'get')
       if (!deleteRes || deleteRes.status !== 'success') {
@@ -186,7 +186,7 @@ export default {
       that.getListBuckets()
     },
     getListBucketDetail (row) {
-      that.$router.push({ name: 'Space_detail', query: { folder: encodeURIComponent(row.BucketName), bucket_uuid: row.BucketUid, bucket_size: row.Size } })
+      that.$router.push({ name: 'Space_detail', query: { folder: encodeURIComponent(row.bucket_name), bucket_uuid: row.bucket_uid, bucket_size: row.size } })
     },
     async getDialogClose (formName, name) {
       if (formName === 'pay') that.payLoad = true
@@ -225,9 +225,9 @@ export default {
       that.listBuckets = directoryRes.data || []
       that.listBucketIndex = directoryRes.data.length > 0 || !!(that.search)
       that.listBuckets.forEach(element => {
-        size += element.Size
-        if (element.IsActive) {
-          maxSize += element.MaxSize
+        size += element.size
+        if (element.is_active) {
+          maxSize += element.max_size
           that.listBucketActive += 1
         }
       })

@@ -226,8 +226,8 @@ export default {
       const directoryRes = await _this.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/bucket/get_bucket_list`, 'get')
       if (!directoryRes || directoryRes.status !== 'success') return false
       directoryRes.data.forEach(element => {
-        size += element.Size
-        if (element.IsActive) maxSize += element.MaxSize
+        size += element.size
+        if (element.is_active) maxSize += element.max_size
       })
       await _this.$commonFun.timeout(500)
       _this.$store.dispatch('setFreeBucket', size || 0)

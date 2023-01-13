@@ -327,7 +327,7 @@ export default {
       }
       that.parma.total = directoryRes.data.count
       that.listData = {
-        listBuckets: directoryRes.data.FileList || [],
+        listBuckets: directoryRes.data.file_list || [],
         listBucketFile: [],
         listBucketFolder: [],
         list: []

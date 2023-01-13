@@ -164,7 +164,7 @@ export default {
         {
           data: '-',
           desc: 'Total CIDs',
-          popover: 'The total amount of CIDs'
+          popover: 'The total amount of pinned IPFS CIDs'
         },
         {
           data: '-',

@@ -51,7 +51,15 @@ exports.cssLoaders = function (options) {
       //   fallback: 'vue-style-loader',
       //   publicPath: '../../'
       // })
-      return [MiniCssExtractPlugin.loader].concat(loaders)
+      // return [MiniCssExtractPlugin.loader].concat(loaders)
+      return [
+        options.extract ? {
+          loader: MiniCssExtractPlugin.loader,
+          options: {
+            publicPath: '../../'
+          }
+        } : 'vue-style-loader'
+      ].concat(loaders)
     } else {
       return ['vue-style-loader'].concat(loaders)
     }

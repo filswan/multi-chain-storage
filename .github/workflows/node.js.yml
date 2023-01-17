@@ -11,7 +11,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-20.04.2 LTS
+    runs-on: ubuntu-20.04
     strategy:
       matrix:
         node-version: [12.x, 18.x]

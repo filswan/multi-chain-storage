@@ -10,25 +10,7 @@ on:
     branches: [ "*" ]
 
 jobs:
-  eslint:
-      name: Run eslint scanning
-      runs-on: ubuntu-latest
-      permissions:
-        contents: read
-        security-events: write
-      steps:
-        - name: Checkout code
-          uses: actions/checkout@v3
-
-        - name: Install ESLint
-          run: |
-            npm install eslint@8.10.0
-            npm install @microsoft/eslint-formatter-sarif@2.1.7
-        - name: Run ESLint
-          run: npx eslint ./src
-            --ext .ts
-  build:
-    runs-on: ubuntu-20.04.2 LTS
+runs-on: ubuntu-20.04.2 LTS
     strategy:
       matrix:
         node-version: [14.x, 16.x, 18.x]
@@ -40,8 +22,45 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
+    - run: npm run lint
     - run: npm ci
     - run: npm run build:test_u
     - run: npm test
+
+  
+
+#   eslint:
+#       name: Run eslint scanning
+#       runs-on: ubuntu-latest
+#       permissions:
+#         contents: read
+#         security-events: write
+#       steps:
+#         - name: Checkout code
+#           uses: actions/checkout@v3
+
+#         - name: Install ESLint
+#           run: |
+#             npm install eslint@8.10.0
+#             npm install @microsoft/eslint-formatter-sarif@2.1.7
+#         - name: Run ESLint
+#           run: npx eslint ./src
+#             --ext .ts
+#   build:
+#     runs-on: ubuntu-20.04.2 LTS
+#     strategy:
+#       matrix:
+#         node-version: [14.x, 16.x, 18.x]
+#         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+#     steps:
+#     - uses: actions/checkout@v3
+#     - name: Use Node.js ${{ matrix.node-version }}
+#       uses: actions/setup-node@v3
+#       with:
+#         node-version: ${{ matrix.node-version }}
+#         cache: 'npm'
+#     - run: npm ci
+#     - run: npm run build:test_u
+#     - run: npm test
 
   

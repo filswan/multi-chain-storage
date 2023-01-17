@@ -11,6 +11,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
+// const TerserPlugin = require('terser-webpack-plugin')
 
 const env = require('../config/' + process.env.env_config + '.env')
 
@@ -62,10 +63,42 @@ const webpackConfig = merge(baseWebpackConfig, {
           minChunks: Infinity
         }
       }
-    }
+    },
+    minimizer: [
+      new UglifyJsPlugin({
+        uglifyOptions: {
+          compress: {
+            warnings: false,
+            inline: 1,
+            keep_fnames: true
+          }
+        },
+        sourceMap: config.build.productionSourceMap,
+        parallel: true
+      })
+    ]
+    // minimizer: [
+    //   new TerserPlugin({
+    //     terserOptions: {
+    //       ecma: 5,
+    //       warnings: false,
+    //       parse: {},
+    //       compress: {},
+    //       mangle: true, // Note `mangle.properties` is `false` by default.
+    //       module: false,
+    //       output: null,
+    //       toplevel: false,
+    //       nameCache: null,
+    //       ie8: false,
+    //       keep_fnames: false,
+    //       safari10: true
+    //     }
+    //   })
+    // ]
   },
   devtool: config.build.productionSourceMap ? config.build.devtool : false,
   output: {
+    // publicPath: './',
     path: config.build.assetsRoot,
     filename: utils.assetsPath('js/[name].[chunkhash].js'),
     chunkFilename: utils.assetsPath('js/[id].[chunkhash].js')
@@ -75,17 +108,17 @@ const webpackConfig = merge(baseWebpackConfig, {
     new webpack.DefinePlugin({
       'process.env': env
     }),
-    new UglifyJsPlugin({
-      uglifyOptions: {
-        compress: {
-          warnings: false,
-          inline: 1,
-          keep_fnames: true
-        }
-      },
-      sourceMap: config.build.productionSourceMap,
-      parallel: true
-    }),
+    // new UglifyJsPlugin({
+    //   uglifyOptions: {
+    //     compress: {
+    //       warnings: false,
+    //       inline: 1,
+    //       keep_fnames: true
+    //     }
+    //   },
+    //   sourceMap: config.build.productionSourceMap,
+    //   parallel: true
+    // }),
     // extract css into its own file
     // new ExtractTextPlugin({
     //   filename: utils.assetsPath('css/[name].[contenthash].css'),

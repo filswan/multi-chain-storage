@@ -7,7 +7,8 @@
         </div>
         <div class="main">
           <div v-for="(item, index) in MCS_Dataset" :key="index" class="info">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+            <img v-if="index === 7" src="@/assets/images/menuIcon/metaSpace-2.png">
+            <svg v-else xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
               <path v-if="index == 1" stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125"
               />
               <path v-else-if="index == 2" stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m6.75 12l-3-3m0 0l-3 3m3-3v6m-1.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
@@ -164,7 +165,7 @@ export default {
         {
           data: '-',
           desc: 'Total CIDs',
-          popover: 'The total amount of pinned IPFS CIDs'
+          popover: 'The total amount of pined IPFS CIDs'
         },
         {
           data: '-',
@@ -195,12 +196,19 @@ export default {
           data: '-',
           desc: 'Storage providers',
           popover: 'The number of storage providers offering decentralized storage capacity'
+        },
+        {
+          data: '-',
+          desc: 'Bucket',
+          popover: 'Total number of Buckets created'
         }
       ],
       echartData: {
         time: [],
         upload: [],
-        achieved: []
+        achieved: [],
+        bucket_count: [],
+        pinned_size: []
       }
     }
   },
@@ -282,7 +290,7 @@ export default {
             color: '#000',
             fontSize: 13
           },
-          data: ['Files uploaded', 'Storage Achieved (GiB)']
+          data: ['Files uploaded', 'Storage Achieved (GiB)', 'IPFS Storage', 'Buckets']
         },
         grid: {
           top: '70',
@@ -291,7 +299,7 @@ export default {
           bottom: '50',
           containLabel: true
         },
-        color: ['#4472c4', '#ed7d31'],
+        // color: ['#4472c4', '#ed7d31', 'green'],
         xAxis: {
           type: 'category',
           boundaryGap: false,
@@ -335,6 +343,20 @@ export default {
             data: that.echartData.achieved,
             yAxisIndex: 1
             // showSymbol: false
+          },
+          {
+            name: 'IPFS Storage',
+            type: 'line',
+            data: that.echartData.pinned_size,
+            yAxisIndex: 0
+            // showSymbol: false
+          },
+          {
+            name: 'Buckets',
+            type: 'line',
+            data: that.echartData.bucket_count,
+            yAxisIndex: 0
+            // showSymbol: false
           }
         ]
       }
@@ -345,6 +367,7 @@ export default {
     },
     async getData () {
       const ecosysRes = await that.getRequest(`${process.env.BASE_ECO_API}ecosys/data`)
+      // const ecosysRes = await that.getRequest(`./static/json/eco.json`)
       if (!ecosysRes || ecosysRes.status !== 'success') {
         that.MCS_Dataset = []
         that.loading_ecosystem = false
@@ -358,9 +381,11 @@ export default {
         that.echartData.max_val = ecosysRes.data.graph.max_val || 0
         that.echartData.min_file = ecosysRes.data.graph.min_file || 0
         that.echartData.min_val = ecosysRes.data.graph.min_val || 0
-        await that.dataFilter(ecosysRes.data.graph.time, 1)
-        await that.dataFilter(ecosysRes.data.graph.sealed_storage)
+        that.echartData.time = await that.dataFilter(ecosysRes.data.graph.time, 1)
+        that.echartData.achieved = await that.dataFilter(ecosysRes.data.graph.sealed_storage)
         that.echartData.upload = ecosysRes.data.graph.user_uploads || []
+        that.echartData.pinned_size = await that.dataFilter(ecosysRes.data.graph.pinned_size)
+        that.echartData.bucket_count = ecosysRes.data.graph.user_bucket_count || []
       }
       await that.timeout(500)
       that.loading_ecosystem = false
@@ -369,20 +394,22 @@ export default {
     dataFilter (data, type) {
       let timeData = data || []
       let num = 0
-      timeData.map((item, index) => {
+      let list = []
+      timeData.forEach((item, index) => {
         if (type) {
           item = item
             ? moment(new Date(parseInt(item * 1000))).format('YYYY-MM-DD')
             : '-'
-          that.echartData.time.push(item)
+          list.push(item)
         } else {
-          if (item <= 0) that.echartData.achieved.push(0)
+          if (item <= 0) list.push(0)
           else {
             num = (item / (1024 * 1024 * 1024)) // or 1000
-            that.echartData.achieved.push(num)
+            list.push(num)
           }
         }
       })
+      return list
     },
     dataset (data, i) {
       switch (i) {
@@ -400,6 +427,8 @@ export default {
           return that.byteChange(data.sealed_storage)
         case 6:
           return that.NumFormat(data.miner_count)
+        case 7:
+          return that.NumFormat(data.bucket_folder_count)
         default:
           return '-'
       }

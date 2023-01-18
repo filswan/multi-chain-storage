@@ -169,7 +169,7 @@ export default {
           popover: 'The total amount of pinned IPFS CIDs'
         },
         {
-          data: '-',
+          data: '- GB',
           desc: 'IPFS Storage',
           popover: 'Total data pinned on IPFS'
         },
@@ -180,22 +180,22 @@ export default {
         },
         {
           data: '-',
-          desc: 'Registered users',
+          desc: 'Registered Users',
           popover: 'The number of wallet addresses registered'
         },
         {
           data: '-',
-          desc: 'Total files archived',
+          desc: 'Total Files Archived',
           popover: 'The number of files archived on the Filecoin network'
         },
         {
           data: '-',
-          desc: 'Storage archived',
+          desc: 'Storage Archived',
           popover: 'Total storage archived on the Filecoin network'
         },
         {
           data: '-',
-          desc: 'Storage providers',
+          desc: 'Storage Providers',
           popover: 'The number of storage providers offering decentralized storage capacity'
         },
         {
@@ -207,7 +207,7 @@ export default {
       echartData: {
         time: [],
         upload: [],
-        achieved: [],
+        archived: [],
         bucket_count: [],
         pinned_size: []
       }
@@ -243,11 +243,11 @@ export default {
     // E chart
     async getPie () {
       // Init E chart
-      // MyChart for IPFSStorage&StorageAchieved
+      // MyChart for IPFSStorage&StorageArchived
       const myChart = echarts.init(document.getElementById('roseChart'))
       // MyChart1 for FilesUploaded&Buckets
       const myChart1 = echarts.init(document.getElementById('roseChart_1'))
-      // Setting Chart for 'IPFS Storage (GiB)', 'Storage Achieved (GiB)'
+      // Setting Chart for 'IPFS Storage (GiB)', 'Storage Archived (GiB)'
       const option = {
         toolbox: {
           show: true,
@@ -297,7 +297,7 @@ export default {
             color: '#000',
             fontSize: 13
           },
-          data: ['IPFS Storage (GiB)', 'Storage Achieved (GiB)']
+          data: ['IPFS Storage (GiB)', 'Storage Archived (GiB)']
         },
         grid: {
           top: '70',
@@ -326,7 +326,7 @@ export default {
             splitNumber: 5,
             alignTicks: true
           },
-          // Storage Achieved (GiB)
+          // Storage Archived (GiB)
           {
             // boundaryGap: [0, '50%'],
             name: 'GiB',
@@ -347,9 +347,9 @@ export default {
             yAxisIndex: 0
           },
           {
-            name: 'Storage Achieved (GiB)',
+            name: 'Storage Archived (GiB)',
             type: 'line',
-            data: that.echartData.achieved,
+            data: that.echartData.archived,
             yAxisIndex: 1
             // showSymbol: false
           }
@@ -405,7 +405,7 @@ export default {
             color: '#000',
             fontSize: 13
           },
-          data: ['Files Uploaded', 'Buckets']
+          data: ['Files Uploaded']
         },
         grid: {
           top: '70',
@@ -433,17 +433,6 @@ export default {
             scale: true,
             splitNumber: 5,
             alignTicks: true
-          },
-          //'Buckets'
-          {
-            // boundaryGap: [0, '50%'],
-            name: 'File Count',
-            type: 'value',
-            position: 'right',
-            // min: that.echartData.min_val,
-            // max: that.echartData.max_val,
-            scale: true,
-            splitNumber: 5
           }
         ],
         // loading data
@@ -454,13 +443,6 @@ export default {
             data: that.echartData.upload,
             yAxisIndex: 0
 
-          },
-          {
-            name: 'Buckets',
-            type: 'line',
-            data: that.echartData.bucket_count,
-            yAxisIndex: 1
-            // showSymbol: false
           }
         ]
       }
@@ -489,7 +471,7 @@ export default {
         that.echartData.min_file = ecosysRes.data.graph.min_file || 0
         that.echartData.min_val = ecosysRes.data.graph.min_val || 0
         that.echartData.time = await that.dataFilter(ecosysRes.data.graph.time, 1)
-        that.echartData.achieved = await that.dataFilter(ecosysRes.data.graph.sealed_storage)
+        that.echartData.archived = await that.dataFilter(ecosysRes.data.graph.sealed_storage)
         that.echartData.upload = ecosysRes.data.graph.user_uploads || []
         that.echartData.pinned_size = await that.dataFilter(ecosysRes.data.graph.pinned_size)
         that.echartData.bucket_count = ecosysRes.data.graph.user_bucket_count || []
@@ -518,12 +500,13 @@ export default {
       })
       return list
     },
+    // Format data
     dataset (data, i) {
       switch (i) {
         case 0:
           return that.NumFormat(data.source_file_cids)
         case 1:
-          return that.byteChange(data.pinned_ipfs_size)
+          return that.changeToGiB(data.pinned_ipfs_size)
         case 2:
           return that.NumFormat(data.user_uploads)
         case 3:
@@ -553,6 +536,18 @@ export default {
         i += 1
       }
       return (bytes / Math.pow(k, i)).toFixed(2) + ' ' + sizes[i]
+    },
+    changeToGiB (bytes) {
+      var size = ''
+      // 只转换成GB
+      if (bytes <= 0) {
+        return '-'
+      } else {
+        size = bytes / (1024 * 1024 * 1024) // or 1000
+        size = size.toFixed(2)
+      }
+      return size + " GiB"
+      // return Number(size).toFixed(3);
     },
     NumFormat (value) {
       if (String(value) === '0') return '0'

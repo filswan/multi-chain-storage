@@ -339,6 +339,8 @@ export default {
           }
         ],
         // loading data
+
+
         series: [
           {
             name: 'IPFS Storage (GiB)',
@@ -466,15 +468,15 @@ export default {
         element.data = that.dataset(ecosysRes.data, i)
       })
       if (ecosysRes.data.graph) {
-        that.echartData.max_file = ecosysRes.data.graph.max_file || 0
-        that.echartData.max_val = ecosysRes.data.graph.max_val || 0
-        that.echartData.min_file = ecosysRes.data.graph.min_file || 0
-        that.echartData.min_val = ecosysRes.data.graph.min_val || 0
+        // that.echartData.max_file = ecosysRes.data.graph.max_file || 0
+        // that.echartData.max_val = ecosysRes.data.graph.max_val || 0
+        // that.echartData.min_file = ecosysRes.data.graph.min_file || 0
+        // that.echartData.min_val = ecosysRes.data.graph.min_val || 0
         that.echartData.time = await that.dataFilter(ecosysRes.data.graph.time, 1)
         that.echartData.archived = await that.dataFilter(ecosysRes.data.graph.sealed_storage)
         that.echartData.upload = ecosysRes.data.graph.user_uploads || []
         that.echartData.pinned_size = await that.dataFilter(ecosysRes.data.graph.pinned_size)
-        that.echartData.bucket_count = ecosysRes.data.graph.user_bucket_count || []
+        // that.echartData.bucket_count = ecosysRes.data.graph.user_bucket_count || []
       }
       await that.timeout(500)
       that.loading_ecosystem = false
@@ -494,6 +496,7 @@ export default {
           if (item <= 0) list.push(0)
           else {
             num = (item / (1024 * 1024 * 1024)) // or 1000
+            num = num.toFixed(2)
             list.push(num)
           }
         }

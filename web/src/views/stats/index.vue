@@ -42,7 +42,8 @@
           </div>
         </div>
         <div class="roseChart_all">
-          <div id="roseChart"></div>
+          <div class="roseChart" id="roseChart"></div>
+          <div class="roseChart" id="roseChart_1"></div>
         </div>
 
         <div class="title">
@@ -241,6 +242,7 @@ export default {
     },
     async getPie () {
       const myChart = echarts.init(document.getElementById('roseChart'))
+      const myChart1 = echarts.init(document.getElementById('roseChart_1'))
       const option = {
         toolbox: {
           show: true,
@@ -290,7 +292,7 @@ export default {
             color: '#000',
             fontSize: 13
           },
-          data: ['Files uploaded', 'Storage Achieved (GiB)', 'IPFS Storage', 'Buckets']
+          data: ['Files uploaded', 'Storage Achieved (GiB)']
         },
         grid: {
           top: '70',
@@ -343,9 +345,100 @@ export default {
             data: that.echartData.achieved,
             yAxisIndex: 1
             // showSymbol: false
+          }
+        ]
+      }
+      const option1 = {
+        toolbox: {
+          show: true,
+          feature: {
+            mark: {
+              show: true
+            },
+            // dataZoom: {
+            //   yAxisIndex: false,
+            // },
+            // dataView: {
+            //     show: true,
+            //     readOnly: false,
+            //     title:'数据视图'
+            // },
+            magicType: {
+              show: true,
+              type: ['line', 'bar'],
+              title: {
+                line: 'Switch to line graph',
+                bar: 'Switch to bar graph'
+              }
+            },
+            restore: {
+              show: true,
+              title: 'Restore'
+            },
+            saveAsImage: {
+              show: true,
+              title: 'Save'
+            }
+          }
+        },
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+            type: 'cross',
+            label: {
+              backgroundColor: '#6a7985'
+            }
+          }
+        },
+        legend: {
+          bottom: 0,
+          left: 'center',
+          textStyle: {
+            color: '#000',
+            fontSize: 13
+          },
+          data: ['IPFS Storage (GiB)', 'Buckets']
+        },
+        grid: {
+          top: '70',
+          left: '3%',
+          right: '3%',
+          bottom: '50',
+          containLabel: true
+        },
+        // color: ['#4472c4', '#ed7d31', 'green'],
+        xAxis: {
+          type: 'category',
+          boundaryGap: false,
+          data: that.echartData.time.map(function (str) {
+            return str.replace(' ', '\n')
+          })
+        },
+        yAxis: [
+          {
+            // boundaryGap: [0, '30%'],
+            name: 'File Count',
+            type: 'value',
+            // min: that.echartData.min_file,
+            // max: that.echartData.max_file,
+            scale: true,
+            splitNumber: 5,
+            alignTicks: true
           },
           {
-            name: 'IPFS Storage',
+            // boundaryGap: [0, '50%'],
+            name: 'GiB',
+            type: 'value',
+            position: 'right',
+            // min: that.echartData.min_val,
+            // max: that.echartData.max_val,
+            scale: true,
+            splitNumber: 5
+          }
+        ],
+        series: [
+          {
+            name: 'IPFS Storage (GiB)',
             type: 'line',
             data: that.echartData.pinned_size,
             yAxisIndex: 0
@@ -361,8 +454,10 @@ export default {
         ]
       }
       myChart.setOption(option)
+      myChart1.setOption(option1)
       window.onresize = function () {
         myChart.resize()
+        myChart1.resize()
       }
     },
     async getData () {
@@ -534,8 +629,8 @@ export default {
       @media screen and (max-width: 600px) {
         display: block;
       }
-      #roseChart {
-        width: 100%;
+      .roseChart {
+        width: 50%;
         height: 460px;
         margin: 0.2rem 0 0.35rem;
         @media screen and (max-width: 1600px) {
@@ -548,6 +643,7 @@ export default {
           height: 360px;
         }
         @media screen and (max-width: 768px) {
+          width: 100%;
           height: 420px;
         }
         @media screen and (max-width: 441px) {

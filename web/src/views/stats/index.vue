@@ -166,12 +166,12 @@ export default {
         {
           data: '-',
           desc: 'Total CIDs',
-          popover: 'The total amount of pined IPFS CIDs'
+          popover: 'The total amount of pinned IPFS CIDs'
         },
         {
           data: '-',
           desc: 'IPFS Storage',
-          popover: 'Total data stored on IPFS'
+          popover: 'Total data pinned on IPFS'
         },
         {
           data: '-',
@@ -240,9 +240,14 @@ export default {
         return false
       }
     },
+    // E chart
     async getPie () {
+      // Init E chart
+      // MyChart for IPFSStorage&StorageAchieved
       const myChart = echarts.init(document.getElementById('roseChart'))
+      // MyChart1 for FilesUploaded&Buckets
       const myChart1 = echarts.init(document.getElementById('roseChart_1'))
+      // Setting Chart for 'IPFS Storage (GiB)', 'Storage Achieved (GiB)'
       const option = {
         toolbox: {
           show: true,
@@ -292,7 +297,7 @@ export default {
             color: '#000',
             fontSize: 13
           },
-          data: ['Files uploaded', 'Storage Achieved (GiB)']
+          data: ['IPFS Storage (GiB)', 'Storage Achieved (GiB)']
         },
         grid: {
           top: '70',
@@ -310,9 +315,10 @@ export default {
           })
         },
         yAxis: [
+          // IPFS Storage (GiB)
           {
             // boundaryGap: [0, '30%'],
-            name: 'File Count',
+            name: 'GiB',
             type: 'value',
             // min: that.echartData.min_file,
             // max: that.echartData.max_file,
@@ -320,6 +326,7 @@ export default {
             splitNumber: 5,
             alignTicks: true
           },
+          // Storage Achieved (GiB)
           {
             // boundaryGap: [0, '50%'],
             name: 'GiB',
@@ -331,13 +338,13 @@ export default {
             splitNumber: 5
           }
         ],
+        // loading data
         series: [
           {
-            name: 'Files uploaded',
+            name: 'IPFS Storage (GiB)',
             type: 'line',
-            data: that.echartData.upload,
+            data: that.echartData.pinned_size,
             yAxisIndex: 0
-            // symbolSize: 0
           },
           {
             name: 'Storage Achieved (GiB)',
@@ -348,6 +355,7 @@ export default {
           }
         ]
       }
+      // Setting chart for 'Files uploaded', 'Buckets'
       const option1 = {
         toolbox: {
           show: true,
@@ -397,7 +405,7 @@ export default {
             color: '#000',
             fontSize: 13
           },
-          data: ['IPFS Storage (GiB)', 'Buckets']
+          data: ['Files Uploaded', 'Buckets']
         },
         grid: {
           top: '70',
@@ -415,6 +423,7 @@ export default {
           })
         },
         yAxis: [
+          // 'Files uploaded'
           {
             // boundaryGap: [0, '30%'],
             name: 'File Count',
@@ -425,9 +434,10 @@ export default {
             splitNumber: 5,
             alignTicks: true
           },
+          //'Buckets'
           {
             // boundaryGap: [0, '50%'],
-            name: 'GiB',
+            name: 'File Count',
             type: 'value',
             position: 'right',
             // min: that.echartData.min_val,
@@ -436,23 +446,25 @@ export default {
             splitNumber: 5
           }
         ],
+        // loading data
         series: [
           {
-            name: 'IPFS Storage (GiB)',
+            name: 'Files Uploaded',
             type: 'line',
-            data: that.echartData.pinned_size,
+            data: that.echartData.upload,
             yAxisIndex: 0
-            // showSymbol: false
+
           },
           {
             name: 'Buckets',
             type: 'line',
             data: that.echartData.bucket_count,
-            yAxisIndex: 0
+            yAxisIndex: 1
             // showSymbol: false
           }
         ]
       }
+      // put data to chart
       myChart.setOption(option)
       myChart1.setOption(option1)
       window.onresize = function () {
@@ -621,16 +633,16 @@ export default {
       }
     }
     .roseChart_all {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
+      //display: flex;
+      //flex-wrap: wrap;
+      //justify-content: center;
       padding: 0;
       margin: 0.15rem auto;
       @media screen and (max-width: 600px) {
         display: block;
       }
       .roseChart {
-        width: 50%;
+        width: 100%;
         height: 460px;
         margin: 0.2rem 0 0.35rem;
         @media screen and (max-width: 1600px) {

@@ -200,7 +200,7 @@ export default {
         },
         {
           data: '-',
-          desc: 'Bucket',
+          desc: 'Buckets',
           popover: 'Total number of Buckets created'
         }
       ],

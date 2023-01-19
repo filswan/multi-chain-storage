@@ -517,7 +517,7 @@ export default {
         case 4:
           return that.NumFormat(data.active_deals)
         case 5:
-          return that.byteChange(data.sealed_storage)
+          return that.changeToGiB(data.sealed_storage)
         case 6:
           return that.NumFormat(data.miner_count)
         case 7:

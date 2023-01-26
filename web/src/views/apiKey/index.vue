@@ -70,7 +70,14 @@
           <el-table-column prop="token" :label="$t('my_profile.table_apiKey_th_03')" max-width="150">
             <template>*******</template>
           </el-table-column>
-          <el-table-column prop="valid_days" :label="'Expiration (day)'"></el-table-column>
+          <el-table-column prop="valid_days" :label="'Expiration (day)'">
+            <template slot-scope="scope">
+              <div style="">
+                {{calculateDiffTime(scope.row.valid_days, scope.row.create_at)}}
+                <!-- ({{momentFun(scope.row.create_at,scope.row.valid_days)}}) -->
+              </div>
+            </template>
+          </el-table-column>
           <el-table-column prop="create_at" :label="$t('my_profile.table_apiKey_th_04')">
             <template slot-scope="scope">
               <div style="">
@@ -142,6 +149,27 @@ export default {
     }
   },
   methods: {
+    calculateDiffTime (validDays, startTime) {
+      if (String(validDays) === '0') return 'Forever'
+      if (!parseInt(validDays)) return '-'
+      var endTime = Math.round(new Date() / 1000)
+      var timeDiff = (startTime + 24 * 60 * 60 * validDays) - endTime
+      if (timeDiff <= 0) return 'Expired'
+      var day = parseInt(timeDiff / 86400)
+      var hour = parseInt((timeDiff % 86400) / 3600)
+      var minute = parseInt((timeDiff % 3600) / 60)
+      var m = parseInt((timeDiff % 60))
+      if (day > 0) return day + ' days'
+      else if (hour > 0) return hour + ' hours'
+      else if (minute > 0) return minute + ' minutes'
+      else if (m > 0) return m + ' seconds'
+      else return '-'
+      // day = day ? (day + 'Days') : ''
+      // hour = hour ? (hour + 'hours') : ''
+      // minute = minute ? (minute + 'minutes') : ''
+      // m = m ? (m + 'second') : ''
+      // return day + hour + minute + m || '-'
+    },
     async wrongInfo (status) {
       that.wrongLoad = true
       if (status === 'disconnect') await that.$metaLogin.Disconnect()
@@ -211,8 +239,8 @@ export default {
       that.toolData = directoryRes.data.apikey || []
       that.listLoad = false
     },
-    momentFun (dateItem) {
-      let dateNew = new Date(dateItem * 1000).getTime()
+    momentFun (dateItem, type) {
+      let dateNew = type ? new Date(dateItem * 1000 + 24 * 60 * 60 * type * 1000).getTime() : new Date(dateItem * 1000).getTime()
       let dataUnit = ''
       let dataTime = new Date(dateNew) + ''
       let dataUnitIndex = dataTime.indexOf('GMT')

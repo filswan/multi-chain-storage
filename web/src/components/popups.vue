@@ -22,8 +22,12 @@
         <i class="el-icon-circle-close close" @click="closeDia()"></i>
         <div class="title">{{$t('my_profile.create_api_title')}}</div>
         <el-form :model="form" status-icon :rules="rulesDay" label-position="top" ref="form" @submit.native.prevent>
-          <el-form-item prop="name" label="Expiration (day)">
-            <el-input v-model="form.day" maxlength="256" :placeholder="'30 days'" ref="bucketNameRef"></el-input>
+          <el-form-item prop="" label="Expiration (day)">
+            <el-input-number v-model="form.day" controls-position="right" @blur="apiKeyBlur" :controls="false" :min="0" :max="365" maxlength="256" :placeholder="'30 days'" ref="bucketNameRef"></el-input-number>
+          </el-form-item>
+          <el-form-item>
+            <p class="day_tip">* Entering 0 means that the API Key is permanently active</p>
+            <p class="day_tip">* The maximum number is 365</p>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="getDialogClose('form')">{{typeName === 'addNewBucket'?'Add this bucket':$t('metaSpace.Submit')}}</el-button>
@@ -78,7 +82,7 @@
             {{areaBody.size | formatbytes}}
           </el-form-item>
           <el-form-item></el-form-item>
-          <el-form-item :label="$t('metaSpace.detail_BackupInfo')">
+          <!-- <el-form-item :label="$t('metaSpace.detail_BackupInfo')">
             <div class="tip">
               {{$t('metaSpace.detail_StorageProvider')}}({{areaBody.miner_count}})
 
@@ -101,7 +105,7 @@
           </el-form-item>
           <el-form-item :label="$t('metaSpace.detail_RemainingServiceDays')">
             <span class="color">{{areaBody.remaining_service_days}}</span>
-          </el-form-item>
+          </el-form-item> -->
           <el-form-item>
             <el-button type="primary" @click="closeDia()">{{$t('metaSpace.Close')}}</el-button>
           </el-form-item>
@@ -177,7 +181,7 @@
       </div>
     </div>
     <div class="fe-none" v-else-if="typeName === 'upload'">
-      <div class="uploadDig" v-loading="loading" :element-loading-text="loadFileText">
+      <div class="uploadDig" v-loading="loading">
         <i class="el-icon-circle-close close" @click="closeDia()"></i>
         <div class="upload_form">
           <el-upload class="upload-demo" :style="{'border': ruleForm.fileList_tip?'2px dashed #f56c6c':'0'}" drag ref="uploadFileRef" action="customize" :http-request="uploadFile" :file-list="ruleForm.fileList" :on-change="handleChange" :on-remove="handleRemove">
@@ -551,6 +555,9 @@ export default {
     closeDia (type) {
       that.$emit('getPopUps', false, type || '')
     },
+    apiKeyBlur (val) {
+      if (!that.form.day) that.form.day = 0
+    },
     getDialogClose (formName, type) {
       if (type) {
         that.$emit('getPopUps', false, that.typeName, type)
@@ -805,7 +812,7 @@ export default {
         }
         alreadyUploadChunks = uploadListRes.data || []
         if (count <= 1 || (uploadListRes && uploadListRes.data.length === count)) await that.fileMerge(hash, file, currentFold, fold, indexFile)
-        // if (that.typeName !== 'upload_folder_list') that.typeName = 'upload_progress'
+        if (that.typeName !== 'upload_folder_list') that.typeName = 'upload_progress'
         that.loadFileText = `Uploading... ${that.sizeChange(that.uploadFileSize, 1)}/${that.sizeChange(that.uploadFileSizeAll, 1)} (${that.uploadPrecent}%)`
         that.concurrentExecution(chunks, concurrent, (chunk) => {
           return new Promise(async (resolve, reject) => {
@@ -1658,8 +1665,11 @@ export default {
             align-items: center;
             flex-wrap: wrap;
             text-align: center;
+            .el-input-number {
+              width: 100%;
+            }
             .el-input {
-              margin: 0 auto 0.5rem;
+              margin: 0 auto 0.1rem;
               .el-input__inner {
                 height: auto;
                 padding: 0.05rem 0.15rem;
@@ -1667,10 +1677,18 @@ export default {
                 border: 0;
                 border-radius: 0.1rem;
                 font-size: 16px;
+                text-align: left;
                 @media screen and (max-width: 1440px) {
                   font-size: 14px;
                 }
               }
+            }
+            .day_tip {
+              width: 100%;
+              color: #f44336;
+              line-height: 1.2;
+              text-align: left;
+              font-size: 12px;
             }
             .el-form-item__error {
               position: absolute;
@@ -1682,7 +1700,7 @@ export default {
               max-width: 250px;
               min-width: 150px;
               padding: 0.17rem;
-              margin: 0 auto;
+              margin: 0.3rem auto 0;
               font-family: inherit;
               font-size: 16px;
               border: 0;

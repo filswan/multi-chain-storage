@@ -404,6 +404,8 @@ export default {
         that.$router.push({ name: 'Space' })
         return false
       }
+      that.parma.limit = 10
+      that.parma.offset = 1
       that.url = decodeURIComponent(that.$route.query.folder)
       that.currentBucket = that.url.split('/')
       that.getListObjects()

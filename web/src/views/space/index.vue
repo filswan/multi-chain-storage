@@ -118,16 +118,16 @@ export default {
       that.backupLoad = true
       that.dialogFun('detail', row)
       let bucketDetail = row
-      const backupRes = await that.$commonFun.sendRequest(`${process.env.BASE_METASPACE}api/v3/backup/stat/${row.id}`, 'get')
-      if (!backupRes || backupRes.status !== 'success') that.$message.error(backupRes ? backupRes.message : 'Fail')
-      else {
-        bucketDetail.miner_list = backupRes.data.miner_list.split(',') || ''
-        bucketDetail.miner_url_prefix = backupRes.data.miner_url_prefix || ''
-        bucketDetail.miner_count = backupRes.data.miner_count || 0
-        bucketDetail.piece_cid = backupRes.data.piece_cid || ''
-        bucketDetail.payload_cid = backupRes.data.payload_cid || ''
-        bucketDetail.remaining_service_days = backupRes.data.remaining_service_days || 0
-      }
+      // const backupRes = await that.$commonFun.sendRequest(`${process.env.BASE_METASPACE}api/v3/backup/stat/${row.id}`, 'get')
+      // if (!backupRes || backupRes.status !== 'success') that.$message.error(backupRes ? backupRes.message : 'Fail')
+      // else {
+      //   bucketDetail.miner_list = backupRes.data.miner_list.split(',') || ''
+      //   bucketDetail.miner_url_prefix = backupRes.data.miner_url_prefix || ''
+      //   bucketDetail.miner_count = backupRes.data.miner_count || 0
+      //   bucketDetail.piece_cid = backupRes.data.piece_cid || ''
+      //   bucketDetail.payload_cid = backupRes.data.payload_cid || ''
+      //   bucketDetail.remaining_service_days = backupRes.data.remaining_service_days || 0
+      // }
       that.dialogFun('detail', bucketDetail)
       that.backupLoad = false
     },

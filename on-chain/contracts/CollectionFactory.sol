@@ -45,4 +45,8 @@ contract CollectionFactory is Ownable {
     function getCollections(address user) public view returns (address[] memory) {
         return userToCollections[user];
     }
+
+    function changeDefaultCollection(address collectionAddress) public onlyOwner {
+        defaultCollectionAddress = collectionAddress;
+    }
 }

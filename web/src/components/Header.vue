@@ -597,6 +597,7 @@ export default {
             that.$root.MINT_CONTRACT = json.data.data.mint_contract_address
             that.$root.dao_threshold = json.data.data.dao_threshold
             that.$root.filecoin_price = json.data.data.filecoin_price
+            that.$root.COLLECTION_FACTORY_ADDRESS = json.data.data.collection_factory_address
           }
         }).catch(error => {
           console.log(error)

@@ -3,25 +3,36 @@
     <el-dialog :title="$t('uploadFile.nft_title')+'NFT'" :close-on-click-modal="false" :width="widthDia" :visible.sync="mineVisible" :before-close="closeDia">
       <div v-loading="hashload" :element-loading-text="isload?isloadText:''">
         <el-form :model="ruleForm" :rules="rules" ref="ruleForm">
-          <el-form-item :label="'NFT '+$t('uploadFile.nft_Name')" prop="name">
+          <el-form-item :label="'NFT '+$t('uploadFile.nft_Name')" prop="name" class="flex_float">
             <el-input v-model="ruleForm.name" placeholder=""></el-input>
+          </el-form-item>
+          <el-form-item :label="'NFT '+$t('uploadFile.nft_Amount')" prop="amount" class="flex_float">
+            <el-input-number v-model="ruleForm.amount" controls-position="right" :min="1" placeholder=""></el-input-number>
+            <el-button type="primary" @click="submitForm('ruleForm', 'mint')">{{$t('uploadFile.Mint_NFT')}}</el-button>
           </el-form-item>
           <el-form-item :label="'NFT '+$t('uploadFile.nft_Description')" prop="description">
             <el-input v-model="ruleForm.description" type="textarea" :rows="2"></el-input>
           </el-form-item>
+          <el-form-item :label="'NFT Collection list'" prop="list">
+            <el-select v-model="ruleForm.nftMint" placeholder="">
+              <el-option v-for="item in nftMintData" :key="item.value" :label="item.address" :value="item.value">
+              </el-option>
+            </el-select>
+          </el-form-item>
           <el-form-item :label="$t('uploadFile.nft_IPFSURL')" prop="image">
             <el-input v-model="ruleForm.image" readOnly></el-input>
           </el-form-item>
-          <el-form-item :label="$t('uploadFile.Payment_Transaction_Hash')" prop="tx_hash">
+          <!-- <el-form-item :label="$t('uploadFile.Payment_Transaction_Hash')" prop="tx_hash">
             <el-input v-model="ruleForm.tx_hash" readOnly></el-input>
           </el-form-item>
           <el-form-item :label="$t('uploadFile.file_size')" prop="attributes">
             <el-input v-model="ruleForm.attributes[0].value" readOnly></el-input>
-          </el-form-item>
+          </el-form-item> -->
         </el-form>
+
         <div slot="footer" class="dialog-footer">
           <el-button class="cancel" type="info" @click="closeDia">{{$t('uploadFile.Back')}}</el-button>
-          <el-button type="primary" @click="submitForm('ruleForm')">{{isload ? $t('uploadFile.Minting') : $t('uploadFile.Mint_NFT')}}</el-button>
+          <el-button type="primary" @click="submitForm('ruleForm', 'create')">{{isload ? $t('uploadFile.Minting') : $t('uploadFile.Mint_Create_NFT')}}</el-button>
         </div>
       </div>
     </el-dialog>
@@ -30,7 +41,7 @@
 
 <script>
 import axios from 'axios'
-import nftContractAbi from '@/utils/DatabaseMinter.json'
+import CollectionFactoryAbi from '@/utils/CollectionFactory.json'
 let that
 export default {
   name: 'mint_tip',
@@ -42,7 +53,9 @@ export default {
         description: '',
         tx_hash: '',
         attributes: [{ trait_type: 'Size', value: parseInt(this.mintRow.file_size) }],
-        external_url: ''
+        external_url: '',
+        amount: 1,
+        nftMint: 0
       },
       rules: {
         name: [
@@ -54,7 +67,8 @@ export default {
       isload: false,
       isloadText: this.$t('uploadFile.payment_tip_deal'),
       nftHash: '',
-      tokenId: ''
+      tokenId: '',
+      nftMintData: []
     }
   },
   props: ['mintRow', 'mineVisible'],
@@ -65,7 +79,7 @@ export default {
     }
   },
   methods: {
-    submitForm (formName) {
+    submitForm (formName, type) {
       that.$refs[formName].validate(async (valid) => {
         if (valid) {
           if (that.metaAddress) {
@@ -86,26 +100,36 @@ export default {
             const nftUrl = metadataUploadResponse.data.ipfs_url
             that.isloadText = that.$t('uploadFile.payment_tip_deal01')
             console.log('upload success')
-            let nftContract = new that.$web3Init.eth.Contract(
-              nftContractAbi,
-              that.$root.MINT_CONTRACT,
+            let CollectionFactory = new that.$web3Init.eth.Contract(
+              CollectionFactoryAbi,
+              that.$root.COLLECTION_FACTORY_ADDRESS,
+              // '0x3Af54E3797c11097606E3a88937E06FB829715EB',
               { from: that.metaAddress, gas: that.$web3Init.utils.toHex(that.$root.PAY_GAS_LIMIT) }
             )
 
-            await that.mintContract(nftContract, nftUrl)
+            if (type === 'create') {
+              let collections = await CollectionFactory.methods.createCollection(nftUrl).send()
+              console.log('collections', collections)
+              that.isload = false
+              that.init()
+            } else {
+              // let collections = await CollectionFactory.methods.getCollections(that.metaAddress).call()
+              // console.log('collections', collections)
+              // return
+              await that.mintContract(CollectionFactory, that.nftMintData[that.ruleForm.nftMint].address, nftUrl)
 
-            // that.tokenId = await nftContract.methods.totalSupply().call()
-            console.log('totalSupply success', that.tokenId)
-            let mintInfoJson = {
-              source_file_upload_id: that.mintRow.source_file_upload_id,
-              payload_cid: that.mintRow.payload_cid,
-              tx_hash: that.nftHash,
-              token_id: parseInt(that.tokenId),
-              mint_address: that.$root.MINT_CONTRACT
+              console.log('totalSupply success', that.tokenId)
+              let mintInfoJson = {
+                source_file_upload_id: that.mintRow.source_file_upload_id,
+                payload_cid: that.mintRow.payload_cid,
+                tx_hash: that.nftHash,
+                token_id: parseInt(that.tokenId),
+                mint_address: that.$root.MINT_CONTRACT
+              }
+              const mintInfoResponse = await that.sendPostRequest(`${that.baseAPIURL}api/v1/storage/mint/info`, mintInfoJson)
+
+              if (mintInfoResponse) that.$emit('getMintDialog', false, that.tokenId, that.nftHash)
             }
-            const mintInfoResponse = await that.sendPostRequest(`${that.baseAPIURL}api/v1/storage/mint/info`, mintInfoJson)
-
-            if (mintInfoResponse) that.$emit('getMintDialog', false, that.tokenId, that.nftHash)
           }
         } else {
           console.log('error submit!!')
@@ -113,14 +137,14 @@ export default {
         }
       })
     },
-    async mintContract (nftContract, nftUrl) {
+    async mintContract (CollectionFactory, collectAddress, nftUrl) {
       try {
         console.log('start mint contract')
         let payObject = {
           gasPrice: await that.$web3Init.eth.getGasPrice()
         }
-        const transaction = await nftContract.methods
-          .mintUnique(that.metaAddress, nftUrl)
+        const transaction = await CollectionFactory.methods
+          .mint(collectAddress, that.metaAddress, that.ruleForm.amount || 1, nftUrl)
           .send(payObject)
           .on('transactionHash', function (hash) {
             that.nftHash = hash
@@ -138,7 +162,7 @@ export default {
             that.isload = false
             return false
           })
-        // console.log('transaction.events:', transaction.events)
+        // console.log('transaction.events:', transaction)
         that.tokenId = transaction.events.TransferSingle.returnValues.id
         console.log('mintUnique success')
       } catch (err) {
@@ -171,6 +195,12 @@ export default {
 
       const hashRes = await that.sendRequest(`${that.baseAPIURL}api/v1/billing/deal/lockpayment/info?payload_cid=${that.mintRow.payload_cid}&wallet_address=${that.metaAddress}&source_file_upload_id=${that.mintRow.source_file_upload_id}`)
       that.ruleForm.tx_hash = hashRes.data.pay_tx_hash
+
+      const nftMintRes = await that.sendRequest(`${that.baseAPIURL}api/v1/storage/mint/nft_collections`)
+      if (nftMintRes && nftMintRes.status === 'success') that.nftMintData = nftMintRes.data
+      that.nftMintData.forEach((element, i) => {
+        element.value = i
+      })
 
       that.hashload = false
     },
@@ -253,6 +283,7 @@ export default {
           display: flex;
           align-items: center;
           flex-wrap: wrap;
+          width: 100%;
           margin-bottom: 0.05rem;
           .el-form-item__label {
             width: 100%;
@@ -283,6 +314,18 @@ export default {
                 background: #f9f9f9;
               }
             }
+            .el-input-number {
+              width: calc(100% - 85px);
+              margin-right: 10px;
+            }
+            .el-select {
+              width: 100%;
+              .el-input {
+                .el-input__inner[readOnly] {
+                  background: transparent;
+                }
+              }
+            }
           }
           p {
             width: 100%;
@@ -293,6 +336,13 @@ export default {
             white-space: normal;
             word-break: break-all;
             line-height: 1;
+          }
+        }
+        .flex_float {
+          float: left;
+          width: 50%;
+          .el-form-item__content {
+            display: flex;
           }
         }
       }
@@ -314,12 +364,13 @@ export default {
         border: 0;
         background: linear-gradient(45deg, #4f8aff, #4b5eff);
         border-radius: 14px;
-        width: calc(50% - 0.15rem);
+        width: calc(65% - 0.15rem);
         &:hover {
           opacity: 0.9;
         }
       }
       .cancel {
+        width: calc(35% - 0.15rem);
         background: #dadada;
         transition: background-color 0.3s;
         &:hover {

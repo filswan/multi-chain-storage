@@ -54,6 +54,9 @@
               <div class="menuMListChild" @click="handleMoSelect('resources')">
                 {{ $t('route.Resources') }}
               </div>
+              <div class="menuMListChild" @click="handleMoSelect('stats')">
+                {{ $t('route.Stats') }}
+              </div>
               <a href="javascript:;" v-loading="loginLoad" @click="getLogin" class="menuMListChild">
                 {{ $t('route.Login') }}
               </a>
@@ -102,6 +105,9 @@ export default {
   },
   mounted () {
     that = this
+    window.addEventListener('resize', () => {
+      if (document.body.clientWidth > 999) that.mobileMenuShow = false
+    })
   }
 }
 </script>

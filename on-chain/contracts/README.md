@@ -5,6 +5,13 @@
 3. `FilinkConsumer` is used to get the storage price of a deal in FIL
 4. `PriceFeed` converts this amount to USDC
 5. `SwanPayment` will unlock any over-estimated amount back to the user.
+6. `MCSCollection` is an ERC-1155 contract to mint NFTs
+7. `CollectionFactory` is responsible for creating `MCSCollection`s for users and calling the `mint` function in those collections
+
+### FEVM Contracts
+
+1. `FixedPayment` is used to handle payments on the FEVM. Currently testing on the Filecoin Hyperspace network, so users pay a fixed amount of USDC for storage.
+2. `MCSCollection` is an ERC-1155 contract on the FEVM.
 
 ## Functions
 
@@ -20,14 +27,6 @@ Users will interact with the CollectionFactory to create MCSCollections, and min
 - **`mint(collection, recipient, amount, uri)`** mints `amount` of `uri` NFTs to `recipient` in `collection`
 - **`mintToNewCollection(collectionURI, recipient, amount, uri)`** calls `createCollection` and `mint` in one transaction
 - **`getCollections(user)`** gets all collection contract addresses for the user in the factory
-
-### SwanNFT.sol
-
-MCSNFT is an ERC-1155 contract, that allows any user to mint a new NFT for this
-collection.
-
-- **`mintUnique(minter, uri)`** mints a new unique token for `minter` and attaches the `uri` to the `tokenId`
-- **`totalSupply()`** returns the total number of NFTs
 
 ### FilinkConsumer.sol
 

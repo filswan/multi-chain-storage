@@ -447,7 +447,7 @@ export default {
     toptip_Network: 'or',
     title: 'Connect your wallet.',
     MetaMask: 'MetaMask',
-    MetaMask_tip: 'Please connect your wallet to Mumbai Testnet or BSC TestNet.',
+    MetaMask_tip: 'Please connect your wallet to Hyperspace Testnet.',
     Account: 'Account',
     Connected_MetaMask: 'Connected with MetaMask',
     Connected_Email: 'Connected with Email',

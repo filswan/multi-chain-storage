@@ -220,43 +220,17 @@ export default {
     async changeNet (rows) {
       let text = {}
       switch (rows) {
-        case 80001:
+        case 3141:
           text = {
-            chainId: '0x13881',
-            chainName: 'Mumbai Testnet',
+            chainId: that.$web3Init.utils.numberToHex(3141),
+            chainName: 'Hyperspace Testnet',
             nativeCurrency: {
-              name: 'MATIC',
-              symbol: 'MATIC', // 2-6 characters long
+              name: 'tFIL',
+              symbol: 'tFIL', // 2-6 characters long
               decimals: 18
             },
-            rpcUrls: ['https://rpc-mumbai.maticvigil.com'],
-            blockExplorerUrls: ['https://mumbai.polygonscan.com/']
-          }
-          break
-        // case 97:
-        //   text = {
-        //     chainId: '0x61',
-        //     chainName: 'BSC TestNet',
-        //     nativeCurrency: {
-        //       name: 'tBNB',
-        //       symbol: 'tBNB', // 2-6 characters long
-        //       decimals: 18
-        //     },
-        //     rpcUrls: ['https://data-seed-prebsc-1-s1.binance.org:8545'],
-        //     blockExplorerUrls: ['https://testnet.bscscan.com']
-        //   }
-        //   break
-        case 137:
-          text = {
-            chainId: '0x89',
-            chainName: 'Polygon Mainnet',
-            nativeCurrency: {
-              name: 'MATIC',
-              symbol: 'MATIC', // 2-6 characters long
-              decimals: 18
-            },
-            rpcUrls: ['https://polygon-rpc.com'],
-            blockExplorerUrls: ['https://polygonscan.com/']
+            rpcUrls: ['https://filecoin-hyperspace.chainstacklabs.com/rpc/v1'],
+            blockExplorerUrls: ['https://beryx.zondax.ch/']
           }
           break
       }
@@ -276,7 +250,7 @@ export default {
         that.$store.dispatch('setMetaAddress', addr)
         sessionStorage.setItem('login_path', addr)
         const networkCont = {
-          name: that.networkID === 137 ? 'Polygon' : that.networkID === 80001 ? 'Mumbai' : that.networkID === 97 ? 'BSC' : 'Custom',
+          name: that.networkID === 137 ? 'Polygon' : that.networkID === 80001 ? 'Mumbai' : that.networkID === 97 ? 'BSC' : that.networkId === 3141 ? 'Hyperspace Testnet' : 'Custom',
           unit: 'USDC',
           center_fail: false
         }

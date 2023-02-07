@@ -1,11 +1,9 @@
 <template>
   <div class="metamaskLogin">
-    <el-alert type="warning" effect="dark" center show-icon v-if="metaAddress&&!(networkID==80001 || networkID == 97)">
+    <el-alert type="warning" effect="dark" center show-icon v-if="metaAddress&&!(networkID==3141)">
       <div slot="title">
         {{$t('fs3Login.toptip_01')}} {{metaNetworkInfo.name}} {{$t('fs3Login.toptip_02')}}
-        <span @click="changeNet(80001)">Mumbai Testnet</span>.
-        <!-- {{$t('fs3Login.toptip_Network')}}
-        <span @click="changeNet(97)">BSC TestNet</span> -->
+        <span @click="changeNet(3141)">Hyperspace Testnet</span>.
         <p v-if="networkID == 137">{{$t('fs3Login.toptip_04')}}
           <a href="https://www.multichain.storage/#/home" target="_blank">multichain.storage</a>.</p>
       </div>
@@ -214,10 +212,10 @@ export default {
           that.$store.dispatch('setMetaAddress', addr)
           sessionStorage.setItem('login_path', addr)
           //  || that.networkID !== 97
-          if (that.networkID !== 80001) {
+          if (that.networkID !== 3141) {
             const networkCont = {
-              name: that.networkID === 137 ? 'Polygon' : 'Custom',
-              unit: 'USDC',
+              name: 'Hyperspace Testnet',
+              symbol: 'tFIL',
               center_fail: false
             }
             that.$store.dispatch('setMetaNetworkInfo', networkCont)
@@ -231,7 +229,7 @@ export default {
     },
     async signIn () {
       // that.networkID === 97 ||
-      if (that.networkID === 80001) {
+      if (that.networkID === 3141) {
         const lStatus = await that.$metaLogin.login()
         if (lStatus) {
           that.$router.push({ path: '/my_files' })
@@ -250,7 +248,7 @@ export default {
     // 是否已登录
     isLogin () {
       // that.networkID === 97 ||
-      if (that.mcsjwtToken && that.metaAddress && (that.networkID === 80001)) {
+      if (that.mcsjwtToken && that.metaAddress && (that.networkID === 3141)) {
         that.$router.push({ path: '/my_files' })
         // that.activeIndex = 'connect'
       } else that.$store.dispatch('setMetaAddress', '')
@@ -274,43 +272,17 @@ export default {
     changeNet (rows) {
       let text = {}
       switch (rows) {
-        case 80001:
+        case 3141:
           text = {
-            chainId: '0x13881',
-            chainName: 'Mumbai Testnet',
+            chainId: that.$web3Init.utils.numberToHex(3141),
+            chainName: 'Hyperspace Testnet',
             nativeCurrency: {
-              name: 'MATIC',
-              symbol: 'MATIC', // 2-6 characters long
+              name: 'tFIL',
+              symbol: 'tFIL', // 2-6 characters long
               decimals: 18
             },
-            rpcUrls: ['https://rpc-mumbai.maticvigil.com'],
-            blockExplorerUrls: ['https://mumbai.polygonscan.com/']
-          }
-          break
-        // case 97:
-        //   text = {
-        //     chainId: '0x61',
-        //     chainName: 'BSC TestNet',
-        //     nativeCurrency: {
-        //       name: 'tBNB',
-        //       symbol: 'tBNB', // 2-6 characters long
-        //       decimals: 18
-        //     },
-        //     rpcUrls: ['https://data-seed-prebsc-1-s1.binance.org:8545'],
-        //     blockExplorerUrls: ['https://testnet.bscscan.com']
-        //   }
-        //   break
-        case 137:
-          text = {
-            chainId: '0x89',
-            chainName: 'Polygon Mainnet',
-            nativeCurrency: {
-              name: 'MATIC',
-              symbol: 'MATIC', // 2-6 characters long
-              decimals: 18
-            },
-            rpcUrls: ['https://polygon-rpc.com'],
-            blockExplorerUrls: ['https://polygonscan.com/']
+            rpcUrls: ['https://filecoin-hyperspace.chainstacklabs.com/rpc/v1'],
+            blockExplorerUrls: ['https://beryx.zondax.ch/']
           }
           break
       }

@@ -26,8 +26,8 @@ export async function login () {
   const signature = await sign(nonce)
   if (!signature) return false
   const token = await performSignin(signature, nonce)
-  const email = await emailSign(token)
-  console.log(email)
+  // const email = await emailSign(token)
+  // console.log(email)
   return !!token
 }
 
@@ -55,7 +55,7 @@ export async function getNonce () {
   }
   const netId = Number(store.getters.networkID)
   const baseAPIURL = await urlBase(netId)
-  const response = await sendPostRequest(`${baseAPIURL}api/v1/user/register`, reqOpts)
+  const response = await sendPostRequest(`http://172.20.10.5:8889/api/v1/user/register`, reqOpts)
   if (response.status === 'success') {
     const nonce = response.data.nonce
     return ['success', nonce]
@@ -87,10 +87,10 @@ export async function performSignin (sig, nonce) {
     public_key_address: store.getters.metaAddress,
     nonce: nonce,
     signature: sig,
-    network: netId === 80001 ? 'polygon.mumbai' : 'polygon.mainnet'
+    network: 'fevm.testnet'
   }
-  const baseAPIURL = await urlBase(netId)
-  const response = await sendPostRequest(`${baseAPIURL}api/v1/user/login_by_metamask_signature`, reqOpts)
+  // const baseAPIURL = await urlBase(netId)
+  const response = await sendPostRequest(`http://172.20.10.5:8889/api/v1/user/login_by_metamask_signature`, reqOpts)
   if (response.status === 'success') {
     const data = response.data.jwt_token
     store.dispatch('setMCSjwtToken', data)
@@ -101,22 +101,22 @@ export async function performSignin (sig, nonce) {
   return null
 }
 
-export async function emailSign (token, type) {
-  const response = await common.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/user/wallet`, 'get')
-  if (response && response.status === 'success') {
-    const data = response.data.wallet
-    const dataEmail = data.email_popup_at || ''
-    const dataShow = type ? false : !dataEmail
-    data.apiStatus = token && !dataEmail ? await setPopupTime() : dataShow // Control pop-up display
-    store.dispatch('setMCSEmail', JSON.stringify(data))
-    return data
-  }
-  Message.error(response ? response.message : 'Failed to get mailbox')
-  store.dispatch('setMCSEmail', JSON.stringify({
-    apiStatus: false
-  }))
-  return null
-}
+// export async function emailSign (token, type) {
+//   const response = await common.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/user/wallet`, 'get')
+//   if (response && response.status === 'success') {
+//     const data = response.data.wallet
+//     const dataEmail = data.email_popup_at || ''
+//     const dataShow = type ? false : !dataEmail
+//     data.apiStatus = token && !dataEmail ? await setPopupTime() : dataShow // Control pop-up display
+//     store.dispatch('setMCSEmail', JSON.stringify(data))
+//     return data
+//   }
+//   Message.error(response ? response.message : 'Failed to get mailbox')
+//   store.dispatch('setMCSEmail', JSON.stringify({
+//     apiStatus: false
+//   }))
+//   return null
+// }
 
 export async function setPopupTime () {
   const response = await common.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/user/wallet/set_popup_time`, 'put')
@@ -148,17 +148,20 @@ export async function netStatus (id) {
   let status
   const baseNet = process.env.BASE_ENV === true
   switch (id) {
-    case 80001:
+    // case 80001:
+    //   status = !baseNet
+    //   break
+    //   // case 97:
+    //   //   status = !baseNet
+    //   //   break
+    // case 137:
+    //   status = !!baseNet
+    //   break
+    // default:
+    //   status = false
+    //   break
+    case 3141:
       status = !baseNet
-      break
-      // case 97:
-      //   status = !baseNet
-      //   break
-    case 137:
-      status = !!baseNet
-      break
-    default:
-      status = false
       break
   }
   return status
@@ -167,16 +170,19 @@ export async function netStatus (id) {
 export async function urlBase (id) {
   let url = ''
   switch (id) {
-    case 80001:
-      url = process.env.BASE_PAYMENT_GATEWAY_API
-      break
-      // case 97:
-      //   url = process.env.BASE_PAYMENT_GATEWAY_BSC_API
-      //   break
-    case 137:
-      url = process.env.BASE_PAYMENT_GATEWAY_POLYGON_API
-      break
-    default:
+    // case 80001:
+    //   url = process.env.BASE_PAYMENT_GATEWAY_API
+    //   break
+    //   // case 97:
+    //   //   url = process.env.BASE_PAYMENT_GATEWAY_BSC_API
+    //   //   break
+    // case 137:
+    //   url = process.env.BASE_PAYMENT_GATEWAY_POLYGON_API
+    //   break
+    // default:
+    //   url = process.env.BASE_PAYMENT_GATEWAY_POLYGON_API
+    //   break
+    case 3141:
       url = process.env.BASE_PAYMENT_GATEWAY_POLYGON_API
       break
   }

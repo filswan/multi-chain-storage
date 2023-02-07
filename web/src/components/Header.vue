@@ -3,14 +3,8 @@
     <div class="header_arera">
       <div class="header-right">
         <div class="network_mainnet" v-if="addrChild" :class="{'error': networkTip}" @click="networkC=true">
-          <!-- <div class="BSC_mainnet" v-if="networkID == 97" title="BSC TestNet mainnet">
-            <img src="@/assets/images/network_logo/bsc.png" /> {{bodyWidth?'BSC':'BSC TestNet'}}
-          </div> -->
-          <div class="Polygon_mainnet" v-if="networkID == 137" title="Polygon mainnet">
-            <img src="@/assets/images/network_logo/polygon.png" /> {{bodyWidth?'Polygon':'Polygon Mainnet'}}
-          </div>
-          <div class="Mumbai_mainnet" v-else-if="networkID == 80001" title="Mumbai Testnet mainnet">
-            <img src="@/assets/images/network_logo/polygon.png" /> {{bodyWidth?'Mumbai':'Mumbai Testnet'}}
+          <div class="Mumbai_mainnet" v-if="networkID == 3141" title="Hyperspace Testnet">
+            <img src="@/assets/images/network_logo/Filecoin.svg.png" /> {{bodyWidth = 'Hyperspace Testnet'}}
           </div>
           <div class="Mumbai_mainnet" v-else :title="metaNetworkInfo.name+' mainnet'">
             <span></span>
@@ -201,7 +195,7 @@ export default {
     },
     netId: function () {
       //  this.netId === 97 ||
-      if (this.netId === 137 || this.netId === 80001) this.getNetworkC(false, this.netId)
+      if (this.netId === 137 || this.netId === 80001 || this.netId === 3141) this.getNetworkC(false, this.netId)
     }
   },
   methods: {
@@ -210,17 +204,30 @@ export default {
       if (rows) {
         let text = {}
         switch (rows) {
-          case 80001:
+          // case 80001:
+          //   text = {
+          //     chainId: that.$web3Init.utils.numberToHex(80001),
+          //     chainName: 'Mumbai Testnet',
+          //     nativeCurrency: {
+          //       name: 'MATIC',
+          //       symbol: 'MATIC', // 2-6 characters long
+          //       decimals: 18
+          //     },
+          //     rpcUrls: ['https://rpc-mumbai.maticvigil.com'],
+          //     blockExplorerUrls: ['https://mumbai.polygonscan.com/']
+          //   }
+          //   break
+          case 3141:
             text = {
-              chainId: that.$web3Init.utils.numberToHex(80001),
-              chainName: 'Mumbai Testnet',
+              chainId: that.$web3Init.utils.numberToHex(3141),
+              chainName: 'Hyperspace Testnet',
               nativeCurrency: {
-                name: 'MATIC',
-                symbol: 'MATIC', // 2-6 characters long
+                name: 'tFIL',
+                symbol: 'tFIL', // 2-6 characters long
                 decimals: 18
               },
-              rpcUrls: ['https://rpc-mumbai.maticvigil.com'],
-              blockExplorerUrls: ['https://mumbai.polygonscan.com/']
+              rpcUrls: ['https://filecoin-hyperspace.chainstacklabs.com/rpc/v1'],
+              blockExplorerUrls: ['https://beryx.zondax.ch/']
             }
             break
           // case 97:
@@ -236,19 +243,19 @@ export default {
           //     blockExplorerUrls: ['https://testnet.bscscan.com']
           //   }
           //   break
-          case 137:
-            text = {
-              chainId: that.$web3Init.utils.numberToHex(137),
-              chainName: 'Polygon Mainnet',
-              nativeCurrency: {
-                name: 'MATIC',
-                symbol: 'MATIC', // 2-6 characters long
-                decimals: 18
-              },
-              rpcUrls: ['https://polygon-rpc.com'],
-              blockExplorerUrls: ['https://polygonscan.com/']
-            }
-            break
+          // case 137:
+          //   text = {
+          //     chainId: that.$web3Init.utils.numberToHex(137),
+          //     chainName: 'Polygon Mainnet',
+          //     nativeCurrency: {
+          //       name: 'MATIC',
+          //       symbol: 'MATIC', // 2-6 characters long
+          //       decimals: 18
+          //     },
+          //     rpcUrls: ['https://polygon-rpc.com'],
+          //     blockExplorerUrls: ['https://polygonscan.com/']
+          //   }
+          //   break
         }
         ethereum.request({
           method: 'wallet_addEthereumChain',
@@ -270,8 +277,8 @@ export default {
       let status = await that.$metaLogin.netStatus(rows)
       if (!status) {
         let link = that.baseNetwork ? 'https://calibration-mcs.filswan.com' : 'https://www.multichain.storage'
-        if (that.networkID === 80001 || that.networkID === 137) window.open(link)
-        that.signOutFun()
+        if (that.networkID === 3141) window.open(link)
+        // that.signOutFun()
         return false
       } else {
         const lStatus = await that.$metaLogin.login()
@@ -430,83 +437,9 @@ export default {
           await that.contractPrice(netId)
 
           switch (netId) {
-            case 1:
-              that.network.name = 'mainnet'
-              that.network.unit = 'ETH'
-              that.network.center_fail = true
-              that.$store.dispatch('setMetaNetworkInfo', that.network)
-              break
-            case 3:
-              that.network.name = 'ropsten'
-              that.network.unit = 'ETH'
-              that.network.center_fail = true
-              that.$store.dispatch('setMetaNetworkInfo', that.network)
-              break
-            case 4:
-              that.network.name = 'rinkeby'
-              that.network.unit = 'ETH'
-              that.network.center_fail = true
-              that.$store.dispatch('setMetaNetworkInfo', that.network)
-              break
-            case 5:
-              that.network.name = 'goerli'
-              that.network.unit = 'ETH'
-              that.network.center_fail = true
-              that.$store.dispatch('setMetaNetworkInfo', that.network)
-              break
-            case 42:
-              that.network.name = 'kovan'
-              that.network.unit = 'ETH'
-              that.network.center_fail = true
-              that.$store.dispatch('setMetaNetworkInfo', that.network)
-              break
-            case 56:
-              that.network.name = 'BSC'
-              that.network.unit = 'BNB'
-              that.network.center_fail = true
-              that.$store.dispatch('setMetaNetworkInfo', that.network)
-              break
-            case 97:
-              that.network.name = 'BSC'
-              that.network.unit = 'USDC'
-              that.network.center_fail = false
-              that.$store.dispatch('setMetaNetworkInfo', that.network)
-              if (that.meta) {
-                if (that.$route.query.redirect && that.$route.query.redirect !== '/supplierAllBack') {
-                  // 防止登录后需要跳转到指定页面
-                  that.$router.push({ path: that.$route.query.redirect })
-                } else {
-                  that.$router.push({ path: '/my_files' })
-                }
-                window.location.reload()
-                that.$emit('getMetamaskLogin', false)
-              }
-              break
-            case 137:
-              that.network.name = 'Polygon'
-              that.network.unit = 'USDC'
-              that.network.center_fail = true
-              that.$store.dispatch('setMetaNetworkInfo', that.network)
-              if (that.meta) {
-                if (that.$route.query.redirect && that.$route.query.redirect !== '/supplierAllBack') {
-                  // 防止登录后需要跳转到指定页面
-                  that.$router.push({ path: that.$route.query.redirect })
-                } else {
-                  that.$router.push({ path: '/my_files' })
-                }
-                window.location.reload()
-                that.$emit('getMetamaskLogin', false)
-              }
-              break
-            case 999:
-              that.network.name = 'NBAI'
-              that.network.unit = 'NBAI'
-              that.network.center_fail = true
-              that.$store.dispatch('setMetaNetworkInfo', that.network)
-              break
-            case 80001:
-              that.network.name = 'Mumbai'
-              that.network.unit = 'USDC'
+            case 3141:
+              that.network.name = 'Hyperspace Testnet'
+              that.network.unit = 'tFIL'
               that.network.center_fail = false
               that.$store.dispatch('setMetaNetworkInfo', that.network)
               if (that.meta) {
@@ -605,7 +538,7 @@ export default {
     },
     contractPrice (netId) {
       try {
-        if (netId !== 80001 && netId !== 97 && netId !== 137) {
+        if (netId !== 80001 && netId !== 97 && netId !== 137 && netId !== 3141) {
           ethereum
             .request(
               {

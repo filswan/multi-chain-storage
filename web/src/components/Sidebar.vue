@@ -8,20 +8,21 @@
             <div class="header_logo pcShow">
               <div class="logo"><img src="@/assets/images/LOGO_MCS@2x.png"></div>
               <img class="beta" src="@/assets/images/landing/beta.png">
+<!--              <div class="beta"><h2>FEVM</h2></div>-->
             </div>
             <div class="menu_list">
               <el-menu-item v-for="(item, i) in items" :key="i" :index="item.index" @click="sidebarLiIndex(item.name, item.index, item.type)">
                 <i :class="item.icon" style="font-size:15px"></i>
                 <span slot="title">{{ item.title }}</span>
               </el-menu-item>
-              <el-menu-item @click="documentLink">
-                <i class="el-icon-s-documentation" style="font-size:15px; "></i>
-                <span slot="title">{{$t('route.documentation')}}</span>
-              </el-menu-item>
-              <el-menu-item class="mobileShow" v-if="metaAddress">
-                <i class="el-icon-switch-button" style="font-size:15px; "></i>
-                <span slot="title" @click="signOutFun">{{$t('fs3.Disconnect')}}</span>
-              </el-menu-item>
+<!--              <el-menu-item @click="documentLink">-->
+<!--                <i class="el-icon-s-documentation" style="font-size:15px; "></i>-->
+<!--                <span slot="title">{{$t('route.documentation')}}</span>-->
+<!--              </el-menu-item>-->
+<!--              <el-menu-item class="mobileShow" v-if="metaAddress">-->
+<!--                <i class="el-icon-switch-button" style="font-size:15px; "></i>-->
+<!--                <span slot="title" @click="signOutFun">{{$t('fs3.Disconnect')}}</span>-->
+<!--              </el-menu-item>-->
             </div>
           </div>
           <div class="fes-icon">
@@ -81,34 +82,34 @@ export default {
       lanShow: false,
       bodyWidth: document.body.clientWidth < 999,
       items: [
-        {
-          icon: 'el-icon-s-deal',
-          index: '1',
-          title: this.$t('route.Deal'),
-          name: 'my_files',
-          type: ''
-        },
+        // {
+        //   icon: 'el-icon-s-deal',
+        //   index: '1',
+        //   title: this.$t('route.Deal'),
+        //   name: 'my_files',
+        //   type: ''
+        // },
         {
           icon: 'el-icon-s-metaSpace',
           index: '20',
           title: this.$t('route.metaSpace'),
           name: 'Space',
           type: ''
-        },
-        {
-          icon: 'el-icon-s-billing',
-          index: '5',
-          title: this.$t('navbar.BillingHistory'),
-          name: 'billing',
-          type: ''
-        },
-        {
-          icon: 'el-icon-s-myAccount',
-          index: '21',
-          title: this.$t('route.myAccount'),
-          name: 'ApiKey',
-          type: ''
         }
+        // {
+        //   icon: 'el-icon-s-billing',
+        //   index: '5',
+        //   title: this.$t('navbar.BillingHistory'),
+        //   name: 'billing',
+        //   type: ''
+        // },
+        // {
+        //   icon: 'el-icon-s-myAccount',
+        //   index: '21',
+        //   title: this.$t('route.myAccount'),
+        //   name: 'ApiKey',
+        //   type: ''
+        // }
       ],
       share_medium: require('@/assets/images/landing/medium.png'),
       share_twitter: require('@/assets/images/landing/twitter.png'),

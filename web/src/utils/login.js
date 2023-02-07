@@ -55,7 +55,7 @@ export async function getNonce () {
   }
   const netId = Number(store.getters.networkID)
   const baseAPIURL = await urlBase(netId)
-  const response = await sendPostRequest(`http://172.20.10.5:8889/api/v1/user/register`, reqOpts)
+  const response = await sendPostRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/user/register`, reqOpts)
   if (response.status === 'success') {
     const nonce = response.data.nonce
     return ['success', nonce]
@@ -90,7 +90,7 @@ export async function performSignin (sig, nonce) {
     network: 'fevm.testnet'
   }
   // const baseAPIURL = await urlBase(netId)
-  const response = await sendPostRequest(`http://172.20.10.5:8889/api/v1/user/login_by_metamask_signature`, reqOpts)
+  const response = await sendPostRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/user/login_by_metamask_signature`, reqOpts)
   if (response.status === 'success') {
     const data = response.data.jwt_token
     store.dispatch('setMCSjwtToken', data)
@@ -99,29 +99,6 @@ export async function performSignin (sig, nonce) {
   Message.error(response.message ? response.message : 'Fail')
   signOutFun()
   return null
-}
-
-// export async function emailSign (token, type) {
-//   const response = await common.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/user/wallet`, 'get')
-//   if (response && response.status === 'success') {
-//     const data = response.data.wallet
-//     const dataEmail = data.email_popup_at || ''
-//     const dataShow = type ? false : !dataEmail
-//     data.apiStatus = token && !dataEmail ? await setPopupTime() : dataShow // Control pop-up display
-//     store.dispatch('setMCSEmail', JSON.stringify(data))
-//     return data
-//   }
-//   Message.error(response ? response.message : 'Failed to get mailbox')
-//   store.dispatch('setMCSEmail', JSON.stringify({
-//     apiStatus: false
-//   }))
-//   return null
-// }
-
-export async function setPopupTime () {
-  const response = await common.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/user/wallet/set_popup_time`, 'put')
-  if (response && response.status === 'success') return true
-  return false
 }
 
 export async function Disconnect () {
@@ -183,7 +160,7 @@ export async function urlBase (id) {
     //   url = process.env.BASE_PAYMENT_GATEWAY_POLYGON_API
     //   break
     case 3141:
-      url = process.env.BASE_PAYMENT_GATEWAY_POLYGON_API
+      url = process.env.BASE_PAYMENT_GATEWAY_API
       break
   }
   return url

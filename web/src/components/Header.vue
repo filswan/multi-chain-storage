@@ -511,31 +511,31 @@ export default {
         console.log(error.config)
       })
     },
-    commonParam () {
-      let commonApi = `${that.baseAPIURL}api/v1/common/system/params?limit=20&wallet_address=${that.metaAddress}`
-
-      axios.get(commonApi, {
-        headers: {
-          'Authorization': 'Bearer ' + that.$store.getters.mcsjwtToken
-        }
-      })
-        .then((json) => {
-          if (json.data.status === 'success') {
-            that.$root.LOCK_TIME = json.data.data.lock_time
-            that.$root.PAY_GAS_LIMIT = json.data.data.gas_limit
-            that.$root.PAY_WITH_MULTIPLY_FACTOR = json.data.data.pay_multiply_factor
-            that.$root.RECIPIENT = json.data.data.payment_recipient_address
-            that.$root.SWAN_PAYMENT_CONTRACT_ADDRESS = json.data.data.payment_contract_address
-            that.$root.USDC_ADDRESS = json.data.data.usdc_address
-            that.$root.MINT_CONTRACT = json.data.data.default_nft_collection_address
-            that.$root.dao_threshold = json.data.data.dao_threshold
-            that.$root.filecoin_price = json.data.data.filecoin_price
-            that.$root.COLLECTION_FACTORY_ADDRESS = json.data.data.nft_collection_factory_address
-          }
-        }).catch(error => {
-          console.log(error)
-        })
-    },
+    // commonParam () {
+    //   let commonApi = `${that.baseAPIURL}api/v1/common/system/params?limit=20&wallet_address=${that.metaAddress}`
+    //
+    //   axios.get(commonApi, {
+    //     headers: {
+    //       'Authorization': 'Bearer ' + that.$store.getters.mcsjwtToken
+    //     }
+    //   })
+    //     .then((json) => {
+    //       if (json.data.status === 'success') {
+    //         that.$root.LOCK_TIME = json.data.data.lock_time
+    //         that.$root.PAY_GAS_LIMIT = json.data.data.gas_limit
+    //         that.$root.PAY_WITH_MULTIPLY_FACTOR = json.data.data.pay_multiply_factor
+    //         that.$root.RECIPIENT = json.data.data.payment_recipient_address
+    //         that.$root.SWAN_PAYMENT_CONTRACT_ADDRESS = json.data.data.payment_contract_address
+    //         that.$root.USDC_ADDRESS = json.data.data.usdc_address
+    //         that.$root.MINT_CONTRACT = json.data.data.default_nft_collection_address
+    //         that.$root.dao_threshold = json.data.data.dao_threshold
+    //         that.$root.filecoin_price = json.data.data.filecoin_price
+    //         that.$root.COLLECTION_FACTORY_ADDRESS = json.data.data.nft_collection_factory_address
+    //       }
+    //     }).catch(error => {
+    //       console.log(error)
+    //     })
+    // },
     contractPrice (netId) {
       try {
         if (netId !== 80001 && netId !== 97 && netId !== 137 && netId !== 3141) {
@@ -609,7 +609,7 @@ export default {
       }, false)
     }
 
-    that.commonParam()
+    // that.commonParam()
     if (that.metaAddress) {
       that.addrChild = that.metaAddress
       that.walletInfo()

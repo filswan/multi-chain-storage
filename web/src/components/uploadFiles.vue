@@ -532,7 +532,7 @@ export default {
         size: resData.file_size,
         copyLimit: Number(that.ruleForm.storage_copy)
       }
-      console.log(lockObj)
+      // console.log(lockObj)
       contractInstance.methods.lockTokenPayment(lockObj)
         .send(payObject)
         .on('transactionHash', function (hash) {

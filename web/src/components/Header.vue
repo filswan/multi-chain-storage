@@ -594,10 +594,10 @@ export default {
             that.$root.RECIPIENT = json.data.data.payment_recipient_address
             that.$root.SWAN_PAYMENT_CONTRACT_ADDRESS = json.data.data.payment_contract_address
             that.$root.USDC_ADDRESS = json.data.data.usdc_address
-            that.$root.MINT_CONTRACT = json.data.data.mint_contract_address
+            that.$root.MINT_CONTRACT = json.data.data.default_nft_collection_address
             that.$root.dao_threshold = json.data.data.dao_threshold
             that.$root.filecoin_price = json.data.data.filecoin_price
-            that.$root.COLLECTION_FACTORY_ADDRESS = json.data.data.collection_factory_address
+            that.$root.COLLECTION_FACTORY_ADDRESS = json.data.data.nft_collection_factory_address
           }
         }).catch(error => {
           console.log(error)

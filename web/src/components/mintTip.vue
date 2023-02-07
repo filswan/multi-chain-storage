@@ -8,12 +8,16 @@
           </el-form-item>
           <el-form-item :label="'NFT '+$t('uploadFile.nft_Amount')" prop="amount" class="flex_float">
             <el-input-number v-model="ruleForm.amount" controls-position="right" :min="1" placeholder=""></el-input-number>
-            <el-button type="primary" @click="submitForm('ruleForm', 'mint')">{{$t('uploadFile.Mint_NFT')}}</el-button>
+            <el-button type="primary" :disabled="nftMintData.length <1" @click="submitForm('ruleForm', 'mint')">{{$t('uploadFile.Mint_NFT')}}</el-button>
           </el-form-item>
           <el-form-item :label="'NFT '+$t('uploadFile.nft_Description')" prop="description">
             <el-input v-model="ruleForm.description" type="textarea" :rows="2"></el-input>
           </el-form-item>
-          <el-form-item :label="'NFT Collection list'" prop="list">
+          <el-form-item prop="list">
+            <template slot="label">
+              <i class="important">*</i>
+              NFT Collection list
+            </template>
             <el-select v-model="ruleForm.nftMint" placeholder="">
               <el-option v-for="item in nftMintData" :key="item.value" :label="item.address" :value="item.value">
               </el-option>
@@ -55,7 +59,7 @@ export default {
         attributes: [{ trait_type: 'Size', value: parseInt(this.mintRow.file_size) }],
         external_url: '',
         amount: 1,
-        nftMint: 0
+        nftMint: null
       },
       rules: {
         name: [
@@ -108,8 +112,7 @@ export default {
             )
 
             if (type === 'create') {
-              let collections = await CollectionFactory.methods.createCollection(nftUrl).send()
-              console.log('collections', collections)
+              await CollectionFactory.methods.createCollection(nftUrl).send()
               that.isload = false
               that.init()
             } else {
@@ -198,6 +201,7 @@ export default {
 
       const nftMintRes = await that.sendRequest(`${that.baseAPIURL}api/v1/storage/mint/nft_collections`)
       if (nftMintRes && nftMintRes.status === 'success') that.nftMintData = nftMintRes.data
+      if (that.nftMintData.length > 0) that.ruleForm.nftMint = 0
       that.nftMintData.forEach((element, i) => {
         element.value = i
       })
@@ -292,6 +296,10 @@ export default {
             word-break: break-word;
             text-align: left;
             font-size: 0.2rem;
+            .important {
+              color: #f56c6c;
+              margin-right: 4px;
+            }
           }
           .el-form-item__content {
             width: 100%;

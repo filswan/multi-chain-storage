@@ -1,27 +1,38 @@
 <template>
   <div>
     <el-dialog :title="$t('uploadFile.nft_title')+'NFT'" :close-on-click-modal="false" :width="widthDia" :visible.sync="mineVisible" :before-close="closeDia">
-      <div v-loading="hashload" :element-loading-text="isload?isloadText:''">
+      <div v-if="mintIndex === 'list'" v-loading="hashload">
+        <el-table :data="nftMintData" :show-header="false" max-height="250" class="mint_table">
+          <el-table-column label="Address" prop="address">
+            <template slot-scope="scope">
+              <el-popover placement="top" width="300" trigger="hover" :content="scope.row.address">
+                <div slot="reference">{{scope.row.address}}</div>
+              </el-popover>
+            </template>
+          </el-table-column>
+          <el-table-column align="right" width="100">
+            <template slot-scope="scope">
+              <el-button type="primary" size="mini" @click="handleMint(scope.$index, scope.row)">Mint here</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+
+        <div slot="footer" class="dialog-footer">
+          <el-button class="cancel" type="info" @click="closeDia">{{$t('uploadFile.Back')}}</el-button>
+          <el-button type="primary" @click="mintIndex = 'create'">{{isload ? $t('uploadFile.Minting') : $t('uploadFile.Mint_Create_NFT')}}</el-button>
+        </div>
+      </div>
+      <div v-else-if="mintIndex === 'mint'" v-loading="hashload" :element-loading-text="isload?isloadText:''">
         <el-form :model="ruleForm" :rules="rules" ref="ruleForm">
           <el-form-item :label="'NFT '+$t('uploadFile.nft_Name')" prop="name" class="flex_float">
             <el-input v-model="ruleForm.name" placeholder=""></el-input>
           </el-form-item>
           <el-form-item :label="'NFT '+$t('uploadFile.nft_Amount')" prop="amount" class="flex_float">
             <el-input-number v-model="ruleForm.amount" controls-position="right" :min="1" placeholder=""></el-input-number>
-            <el-button type="primary" :disabled="nftMintData.length <1" @click="submitForm('ruleForm', 'mint')">{{$t('uploadFile.Mint_NFT')}}</el-button>
+            <el-button type="primary" @click="submitForm('ruleForm', 'mint')">{{$t('uploadFile.Mint_NFT')}}</el-button>
           </el-form-item>
           <el-form-item :label="'NFT '+$t('uploadFile.nft_Description')" prop="description">
             <el-input v-model="ruleForm.description" type="textarea" :rows="2"></el-input>
-          </el-form-item>
-          <el-form-item prop="list">
-            <template slot="label">
-              <i class="important">*</i>
-              NFT Collection list
-            </template>
-            <el-select v-model="ruleForm.nftMint" placeholder="">
-              <el-option v-for="item in nftMintData" :key="item.value" :label="item.address" :value="item.value">
-              </el-option>
-            </el-select>
           </el-form-item>
           <el-form-item :label="$t('uploadFile.nft_IPFSURL')" prop="image">
             <el-input v-model="ruleForm.image" readOnly></el-input>
@@ -36,7 +47,22 @@
 
         <div slot="footer" class="dialog-footer">
           <el-button class="cancel" type="info" @click="closeDia">{{$t('uploadFile.Back')}}</el-button>
-          <el-button type="primary" @click="submitForm('ruleForm', 'create')">{{isload ? $t('uploadFile.Minting') : $t('uploadFile.Mint_Create_NFT')}}</el-button>
+          <el-button type="primary" @click="mintIndex = 'create'">{{isload ? $t('uploadFile.Minting') : $t('uploadFile.Mint_Create_NFT')}}</el-button>
+        </div>
+      </div>
+      <div v-else-if="mintIndex === 'create'" v-loading="hashload" :element-loading-text="isload?isloadText:''">
+        <el-form :model="ruleCreateForm" :rules="rules" ref="ruleCreateForm">
+          <el-form-item :label="'NFT '+$t('uploadFile.nft_Name')" prop="name">
+            <el-input v-model="ruleCreateForm.name" placeholder=""></el-input>
+          </el-form-item>
+          <el-form-item :label="'NFT '+$t('uploadFile.nft_Description')" prop="description">
+            <el-input v-model="ruleCreateForm.description" type="textarea" :rows="2"></el-input>
+          </el-form-item>
+        </el-form>
+
+        <div slot="footer" class="dialog-footer">
+          <el-button class="cancel" type="info" @click="closeDia">{{$t('uploadFile.Back')}}</el-button>
+          <el-button type="primary" @click="submitForm('ruleCreateForm', 'create')">{{isload ? $t('uploadFile.Minting') : $t('uploadFile.Mint_Create_NFT')}}</el-button>
         </div>
       </div>
     </el-dialog>
@@ -61,6 +87,10 @@ export default {
         amount: 1,
         nftMint: null
       },
+      ruleCreateForm: {
+        name: '',
+        description: ''
+      },
       rules: {
         name: [
           { required: true, message: ' ', trigger: 'blur' }
@@ -72,7 +102,14 @@ export default {
       isloadText: this.$t('uploadFile.payment_tip_deal'),
       nftHash: '',
       tokenId: '',
-      nftMintData: []
+      mintIndex: 'list',
+      mintCollectionAddress: '',
+      nftMintData: [
+        {
+          address: this.$root.MINT_CONTRACT,
+          id: -1
+        }
+      ]
     }
   },
   props: ['mintRow', 'mineVisible'],
@@ -83,6 +120,10 @@ export default {
     }
   },
   methods: {
+    handleMint (index, row) {
+      that.mintCollectionAddress = row.address
+      that.mintIndex = 'mint'
+    },
     submitForm (formName, type) {
       that.$refs[formName].validate(async (valid) => {
         if (valid) {
@@ -112,26 +153,48 @@ export default {
             )
 
             if (type === 'create') {
-              await CollectionFactory.methods.createCollection(nftUrl).send()
+              let collections = await CollectionFactory.methods.createCollection(nftUrl).send()
+              // console.log('collections', collections)
+              that.mintCollectionAddress = ''
+              that.mintIndex = 'list'
+              that.ruleCreateForm.name = ''
+              that.ruleCreateForm.description = ''
+              // let mintInfoJson = {
+              //   source_file_upload_id: that.mintRow.source_file_upload_id,
+              //   payload_cid: that.mintRow.payload_cid,
+              //   tx_hash: collections.transactionHash,
+              //   mint_address: that.$root.MINT_CONTRACT,
+              //   'name': that.ruleCreateForm.name,
+              //   'description': that.ruleCreateForm.description
+              //   // 'image': '',
+              //   // 'banner': '',
+              //   // 'external_link': that.mintRow.ipfs_url,
+              //   // 'collaborators': ['0x0000000000000000000000000000000000000000']
+              // }
+              // await that.sendPostRequest(`${that.baseAPIURL}api/v1/storage/mint/info`, mintInfoJson)
+
               that.isload = false
               that.init()
             } else {
               // let collections = await CollectionFactory.methods.getCollections(that.metaAddress).call()
               // console.log('collections', collections)
               // return
-              await that.mintContract(CollectionFactory, that.nftMintData[that.ruleForm.nftMint].address, nftUrl)
+              await that.mintContract(CollectionFactory, that.mintCollectionAddress, nftUrl)
+              if (that.tokenId) {
+                console.log('totalSupply success', that.tokenId)
+                let mintInfoJson = {
+                  source_file_upload_id: that.mintRow.source_file_upload_id,
+                  payload_cid: that.mintRow.payload_cid,
+                  tx_hash: that.nftHash,
+                  token_id: parseInt(that.tokenId),
+                  mint_address: that.$root.MINT_CONTRACT
+                }
+                const mintInfoResponse = await that.sendPostRequest(`${that.baseAPIURL}api/v1/storage/mint/info`, mintInfoJson)
 
-              console.log('totalSupply success', that.tokenId)
-              let mintInfoJson = {
-                source_file_upload_id: that.mintRow.source_file_upload_id,
-                payload_cid: that.mintRow.payload_cid,
-                tx_hash: that.nftHash,
-                token_id: parseInt(that.tokenId),
-                mint_address: that.$root.MINT_CONTRACT
+                if (mintInfoResponse) that.$emit('getMintDialog', false, that.tokenId, that.nftHash)
+              } else {
+                that.isload = false
               }
-              const mintInfoResponse = await that.sendPostRequest(`${that.baseAPIURL}api/v1/storage/mint/info`, mintInfoJson)
-
-              if (mintInfoResponse) that.$emit('getMintDialog', false, that.tokenId, that.nftHash)
             }
           }
         } else {
@@ -142,7 +205,7 @@ export default {
     },
     async mintContract (CollectionFactory, collectAddress, nftUrl) {
       try {
-        console.log('start mint contract')
+        console.log('start mint contract', collectAddress)
         let payObject = {
           gasPrice: await that.$web3Init.eth.getGasPrice()
         }
@@ -169,7 +232,7 @@ export default {
         that.tokenId = transaction.events.TransferSingle.returnValues.id
         console.log('mintUnique success')
       } catch (err) {
-        console.log('err.response', err, err.message)
+        console.log('err.response', err.message)
         if (err.message.includes('not mined within 50 blocks')) {
           const handle = setInterval(() => {
             that.$web3Init.eth.getTransactionReceipt(err.response.transactionHash).then((resp) => {
@@ -200,11 +263,7 @@ export default {
       that.ruleForm.tx_hash = hashRes.data.pay_tx_hash
 
       const nftMintRes = await that.sendRequest(`${that.baseAPIURL}api/v1/storage/mint/nft_collections`)
-      if (nftMintRes && nftMintRes.status === 'success') that.nftMintData = nftMintRes.data
-      if (that.nftMintData.length > 0) that.ruleForm.nftMint = 0
-      that.nftMintData.forEach((element, i) => {
-        element.value = i
-      })
+      if (nftMintRes && nftMintRes.status === 'success') that.nftMintData = that.nftMintData.concat(nftMintRes.data)
 
       that.hashload = false
     },
@@ -268,6 +327,7 @@ export default {
       }
     }
     .el-dialog__body {
+      min-height: 250px;
       padding: 0.2rem 0.4rem;
       .el-form {
         width: 100%;
@@ -351,6 +411,43 @@ export default {
           width: 50%;
           .el-form-item__content {
             display: flex;
+          }
+        }
+      }
+      .mint_table {
+        width: 100%;
+        min-height: 180px;
+        margin: 0 auto 0.5rem;
+        tr {
+          th,
+          td {
+            padding: 8px 0;
+            .cell {
+              padding: 0;
+              line-height: 1.2;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: normal;
+              display: -webkit-box;
+              -webkit-line-clamp: 1;
+              -webkit-box-orient: vertical;
+            }
+          }
+        }
+        .el-button {
+          padding: 7px 10px;
+          font-size: 14px;
+          font-family: inherit;
+          color: #fff;
+          border-radius: 0.1rem;
+          @media screen and (max-width: 1600px) {
+            font-size: 13px;
+          }
+          @media screen and (max-width: 768px) {
+            font-size: 12px;
+          }
+          &:hover {
+            opacity: 0.9;
           }
         }
       }

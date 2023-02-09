@@ -7,22 +7,13 @@
           <div class="fes-menu">
             <div class="header_logo pcShow">
               <div class="logo"><img src="@/assets/images/LOGO_MCS@2x.png"></div>
-              <img class="beta" src="@/assets/images/landing/beta.png">
-<!--              <div class="beta"><h2>FEVM</h2></div>-->
+              <img class="beta" src="@/assets/images/landing/fevmLogo.png">
             </div>
             <div class="menu_list">
               <el-menu-item v-for="(item, i) in items" :key="i" :index="item.index" @click="sidebarLiIndex(item.name, item.index, item.type)">
                 <i :class="item.icon" style="font-size:15px"></i>
                 <span slot="title">{{ item.title }}</span>
               </el-menu-item>
-<!--              <el-menu-item @click="documentLink">-->
-<!--                <i class="el-icon-s-documentation" style="font-size:15px; "></i>-->
-<!--                <span slot="title">{{$t('route.documentation')}}</span>-->
-<!--              </el-menu-item>-->
-<!--              <el-menu-item class="mobileShow" v-if="metaAddress">-->
-<!--                <i class="el-icon-switch-button" style="font-size:15px; "></i>-->
-<!--                <span slot="title" @click="signOutFun">{{$t('fs3.Disconnect')}}</span>-->
-<!--              </el-menu-item>-->
             </div>
           </div>
           <div class="fes-icon">

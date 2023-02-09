@@ -20,11 +20,11 @@
               {{ $t('route.Resources') }}
             </router-link>
           </el-menu-item>
-          <el-menu-item index="stats">
-            <router-link to="">
-              {{ $t('route.Stats') }}
-            </router-link>
-          </el-menu-item>
+<!--          <el-menu-item index="stats">-->
+<!--            <router-link to="">-->
+<!--              {{ $t('route.Stats') }}-->
+<!--            </router-link>-->
+<!--          </el-menu-item>-->
           <el-menu-item index="login">
             <a href="javascript:;" v-loading="loginLoad" @click="getLogin" class="target">
               {{ $t('route.Login') }}

@@ -4,6 +4,6 @@ const prodEnv = require('./calibration.env')
 
 module.exports = merge(prodEnv, {
   NODE_ENV: '"development"',
-  BASE_METASPACE: '"http://172.20.10.5:8889/"',
-  BASE_PAYMENT_GATEWAY_API: '"http://172.20.10.5:8889/"'
+  BASE_METASPACE: '"https://calibration-fevm-api.filswan.com/"',
+  BASE_PAYMENT_GATEWAY_API: '"https://calibration-fevm-api.filswan.com/"'
 })

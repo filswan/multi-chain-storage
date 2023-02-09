@@ -11,7 +11,6 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
-// const TerserPlugin = require('terser-webpack-plugin')
 
 const env = require('../config/' + process.env.env_config + '.env')
 
@@ -77,24 +76,6 @@ const webpackConfig = merge(baseWebpackConfig, {
         parallel: true
       })
     ]
-    // minimizer: [
-    //   new TerserPlugin({
-    //     terserOptions: {
-    //       ecma: 5,
-    //       warnings: false,
-    //       parse: {},
-    //       compress: {},
-    //       mangle: true, // Note `mangle.properties` is `false` by default.
-    //       module: false,
-    //       output: null,
-    //       toplevel: false,
-    //       nameCache: null,
-    //       ie8: false,
-    //       keep_fnames: false,
-    //       safari10: true
-    //     }
-    //   })
-    // ]
   },
   devtool: config.build.productionSourceMap ? config.build.devtool : false,
   output: {

@@ -2,20 +2,15 @@
   <div>
     <el-dialog :title="$t('uploadFile.nft_title')+'NFT'" :close-on-click-modal="false" :width="widthDia" :visible.sync="mineVisible" :before-close="closeDia">
       <div v-if="mintIndex === 'list'" v-loading="hashload">
-        <el-table :data="nftMintData" :show-header="false" max-height="250" class="mint_table">
-          <el-table-column label="Address" prop="address">
-            <template slot-scope="scope">
-              <el-popover placement="top" width="300" trigger="hover" :content="scope.row.address">
-                <div slot="reference">{{scope.row.address}}</div>
-              </el-popover>
-            </template>
-          </el-table-column>
-          <el-table-column align="right" width="100">
-            <template slot-scope="scope">
-              <el-button type="primary" size="mini" @click="handleMint(scope.$index, scope.row)">Mint here</el-button>
-            </template>
-          </el-table-column>
-        </el-table>
+        <div class="mint_body">
+          <el-card shadow="always" class="mint_card" v-for="(nft, n) in nftMintData" :key="n">
+            <div class="details">
+              <img :src="nft.image" />
+              <span>{{nft.name || '-'}}</span>
+            </div>
+            <el-button type="primary" size="mini" @click="handleMint(n, nft)">Mint here</el-button>
+          </el-card>
+        </div>
 
         <div slot="footer" class="dialog-footer">
           <el-button class="cancel" type="info" @click="closeDia">{{$t('uploadFile.Back')}}</el-button>
@@ -29,7 +24,6 @@
           </el-form-item>
           <el-form-item :label="'NFT '+$t('uploadFile.nft_Amount')" prop="amount" class="flex_float">
             <el-input-number v-model="ruleForm.amount" controls-position="right" :min="1" placeholder=""></el-input-number>
-            <el-button type="primary" @click="submitForm('ruleForm', 'mint')">{{$t('uploadFile.Mint_NFT')}}</el-button>
           </el-form-item>
           <el-form-item :label="'NFT '+$t('uploadFile.nft_Description')" prop="description">
             <el-input v-model="ruleForm.description" type="textarea" :rows="2"></el-input>
@@ -37,31 +31,45 @@
           <el-form-item :label="$t('uploadFile.nft_IPFSURL')" prop="image">
             <el-input v-model="ruleForm.image" readOnly></el-input>
           </el-form-item>
-          <!-- <el-form-item :label="$t('uploadFile.Payment_Transaction_Hash')" prop="tx_hash">
+          <el-form-item :label="$t('uploadFile.Payment_Transaction_Hash')" prop="tx_hash">
             <el-input v-model="ruleForm.tx_hash" readOnly></el-input>
           </el-form-item>
           <el-form-item :label="$t('uploadFile.file_size')" prop="attributes">
             <el-input v-model="ruleForm.attributes[0].value" readOnly></el-input>
-          </el-form-item> -->
+          </el-form-item>
         </el-form>
 
         <div slot="footer" class="dialog-footer">
-          <el-button class="cancel" type="info" @click="closeDia">{{$t('uploadFile.Back')}}</el-button>
-          <el-button type="primary" @click="mintIndex = 'create'">{{isload ? $t('uploadFile.Minting') : $t('uploadFile.Mint_Create_NFT')}}</el-button>
+          <el-button class="cancel" type="info" @click="mintIndex = 'list'">{{$t('uploadFile.Back')}}</el-button>
+          <el-button type="primary" @click="submitForm('ruleForm', 'mint')">{{$t('uploadFile.Mint_NFT')}}</el-button>
         </div>
       </div>
       <div v-else-if="mintIndex === 'create'" v-loading="hashload" :element-loading-text="isload?isloadText:''">
         <el-form :model="ruleCreateForm" :rules="rules" ref="ruleCreateForm">
+          <el-form-item :label="'Image'" prop="images">
+            <el-upload class="upload-demo" ref="uploadFileRef" action="customize" drag list-type="picture-card" :auto-upload="false" :file-list="ruleCreateForm.images" :on-change="handleChange" :on-remove="handleRemove">
+              <i class="el-icon-plus"></i>
+            </el-upload>
+          </el-form-item>
           <el-form-item :label="'NFT '+$t('uploadFile.nft_Name')" prop="name">
             <el-input v-model="ruleCreateForm.name" placeholder=""></el-input>
           </el-form-item>
           <el-form-item :label="'NFT '+$t('uploadFile.nft_Description')" prop="description">
             <el-input v-model="ruleCreateForm.description" type="textarea" :rows="2"></el-input>
           </el-form-item>
+          <el-form-item :label="'External Link'" prop="external_link">
+            <el-input v-model="ruleCreateForm.external_link"></el-input>
+          </el-form-item>
+          <el-form-item :label="'Seller Fee Basis Points'" prop="seller_fee_basis_points">
+            <el-input-number v-model="ruleCreateForm.seller_fee_basis_points" controls-position="right" :min="0" placeholder=""></el-input-number>
+          </el-form-item>
+          <el-form-item :label="'Fee Recipient'" prop="fee_recipient">
+            <el-input v-model="ruleCreateForm.fee_recipient"></el-input>
+          </el-form-item>
         </el-form>
 
         <div slot="footer" class="dialog-footer">
-          <el-button class="cancel" type="info" @click="closeDia">{{$t('uploadFile.Back')}}</el-button>
+          <el-button class="cancel" type="info" @click="mintIndex = 'list'">{{$t('uploadFile.Back')}}</el-button>
           <el-button type="primary" @click="submitForm('ruleCreateForm', 'create')">{{isload ? $t('uploadFile.Minting') : $t('uploadFile.Mint_Create_NFT')}}</el-button>
         </div>
       </div>
@@ -89,7 +97,11 @@ export default {
       },
       ruleCreateForm: {
         name: '',
-        description: ''
+        description: '',
+        images: [],
+        external_link: '',
+        seller_fee_basis_points: 0,
+        fee_recipient: this.metaAddress
       },
       rules: {
         name: [
@@ -106,7 +118,9 @@ export default {
       mintCollectionAddress: '',
       nftMintData: [
         {
-          address: this.$root.MINT_CONTRACT,
+          image: 'https://i.seadn.io/gae/XtydYu3RIjkRurZp94wxtagAxlS8xm_ZPYnZSZ1uXFV68nmpygKbWNXcRudIKMP8LflzLOQqXM-IbYrFGuARB_9SL54JdbhPRlgftQ?auto=format&w=1000',
+          name: 'SWAN NFT',
+          address: this.$root.COLLECTION_FACTORY_ADDRESS,
           id: -1
         }
       ]
@@ -120,6 +134,29 @@ export default {
     }
   },
   methods: {
+    handleChange (file, fileList) {
+      if (fileList.length > 0) that.ruleCreateForm.images = [fileList[fileList.length - 1]]
+      that.uploadFileImage(file, fileList)
+    },
+    handleRemove (file, fileList) {
+      // console.log(file, fileList);
+      that.ruleCreateForm.images = []
+    },
+    uploadFileImage (file, fileList) {
+      // const isJPG = file.raw.type === 'image/jpeg' || file.raw.type === 'image/png'
+      const isJPG = file.raw.type.indexOf('image') > -1
+      const isLt2M = file.size / 1024 / 1024 / 1024 <= 25 // or 1000
+      if (!isJPG) {
+        that.$message.error('Uploaded avatar images can only be in JPG or png format!')
+        that.ruleCreateForm.images = []
+        return false
+      }
+      if (!isLt2M) {
+        that.$message.error(that.$t('deal.upload_form_file_tip'))
+        that.ruleCreateForm.images = []
+        return false
+      }
+    },
     handleMint (index, row) {
       that.mintCollectionAddress = row.address
       that.mintIndex = 'mint'
@@ -148,33 +185,38 @@ export default {
             let CollectionFactory = new that.$web3Init.eth.Contract(
               CollectionFactoryAbi,
               that.$root.COLLECTION_FACTORY_ADDRESS,
-              // '0x3Af54E3797c11097606E3a88937E06FB829715EB',
               { from: that.metaAddress, gas: that.$web3Init.utils.toHex(that.$root.PAY_GAS_LIMIT) }
             )
 
             if (type === 'create') {
               let collections = await CollectionFactory.methods.createCollection(nftUrl).send()
-              // console.log('collections', collections)
+              console.log('collections', collections)
               that.mintCollectionAddress = ''
               that.mintIndex = 'list'
-              that.ruleCreateForm.name = ''
-              that.ruleCreateForm.description = ''
               // let mintInfoJson = {
               //   source_file_upload_id: that.mintRow.source_file_upload_id,
               //   payload_cid: that.mintRow.payload_cid,
               //   tx_hash: collections.transactionHash,
               //   mint_address: that.$root.MINT_CONTRACT,
-              //   'name': that.ruleCreateForm.name,
-              //   'description': that.ruleCreateForm.description
-              //   // 'image': '',
-              //   // 'banner': '',
-              //   // 'external_link': that.mintRow.ipfs_url,
-              //   // 'collaborators': ['0x0000000000000000000000000000000000000000']
+              //   name: that.ruleCreateForm.name,
+              //   description: that.ruleCreateForm.description,
+              //   image: '',
+              //   external_link: that.ruleCreateForm.external_link,
+              //   seller_fee_basis_points: that.ruleCreateForm.seller_fee_basis_points || 0,
+              //   fee_recipient: that.ruleCreateForm.fee_recipient
               // }
               // await that.sendPostRequest(`${that.baseAPIURL}api/v1/storage/mint/info`, mintInfoJson)
 
               that.isload = false
               that.init()
+              that.ruleCreateForm = {
+                name: '',
+                description: '',
+                images: [],
+                external_link: '',
+                seller_fee_basis_points: 0,
+                fee_recipient: that.metaAddress
+              }
             } else {
               // let collections = await CollectionFactory.methods.getCollections(that.metaAddress).call()
               // console.log('collections', collections)
@@ -294,6 +336,7 @@ export default {
   },
   mounted () {
     that = this
+    that.ruleCreateForm.fee_recipient = that.metaAddress
     that.init()
   },
   watch: {},
@@ -352,7 +395,7 @@ export default {
           .el-form-item__label {
             width: 100%;
             color: #000000;
-            line-height: 2.5;
+            line-height: 2;
             word-break: break-word;
             text-align: left;
             font-size: 0.2rem;
@@ -377,21 +420,37 @@ export default {
                 font-size: 0.2rem;
                 font-family: inherit;
                 color: #555;
+                text-align: left;
               }
               .el-input__inner[readOnly] {
                 background: #f9f9f9;
               }
             }
+            .el-select,
             .el-input-number {
-              width: calc(100% - 85px);
-              margin-right: 10px;
-            }
-            .el-select {
               width: 100%;
               .el-input {
                 .el-input__inner[readOnly] {
                   background: transparent;
                 }
+              }
+            }
+            .upload-demo {
+              .el-upload--text {
+                width: auto;
+                height: auto;
+                border: 0;
+              }
+            }
+            .el-upload--picture-card,
+            .el-upload-list--picture-card .el-upload-list__item {
+              width: 65px;
+              height: 65px;
+              line-height: 70px;
+              margin-bottom: 0;
+              .el-upload-dragger {
+                width: 100%;
+                height: 100%;
               }
             }
           }
@@ -414,40 +473,71 @@ export default {
           }
         }
       }
-      .mint_table {
+      .mint_body {
         width: 100%;
+        padding: 0 0.4rem;
+        margin-left: -0.4rem;
+        margin-bottom: 0.5rem;
+        max-height: 250px;
         min-height: 180px;
-        margin: 0 auto 0.5rem;
-        tr {
-          th,
-          td {
-            padding: 8px 0;
-            .cell {
+        overflow: hidden;
+        overflow-y: scroll;
+        &::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        &::-webkit-scrollbar {
+          width: 6px;
+          background: transparent;
+        }
+        &::-webkit-scrollbar-thumb {
+          background: #ccc;
+        }
+        .mint_card {
+          width: 100%;
+          margin: 0.2rem auto;
+          .el-card__body {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.1rem;
+            .details {
+              display: flex;
+              align-items: center;
               padding: 0;
               line-height: 1.2;
-              overflow: hidden;
-              text-overflow: ellipsis;
-              white-space: normal;
-              display: -webkit-box;
-              -webkit-line-clamp: 1;
-              -webkit-box-orient: vertical;
+              img {
+                display: block;
+                width: 40px;
+                height: 40px;
+                margin: 0 7px 0 0;
+                border: 1px solid #4b5eff;
+                border-radius: 100%;
+              }
+              span {
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: normal;
+                display: -webkit-box;
+                -webkit-line-clamp: 1;
+                -webkit-box-orient: vertical;
+              }
             }
-          }
-        }
-        .el-button {
-          padding: 7px 10px;
-          font-size: 14px;
-          font-family: inherit;
-          color: #fff;
-          border-radius: 0.1rem;
-          @media screen and (max-width: 1600px) {
-            font-size: 13px;
-          }
-          @media screen and (max-width: 768px) {
-            font-size: 12px;
-          }
-          &:hover {
-            opacity: 0.9;
+            .el-button {
+              padding: 7px 10px;
+              font-size: 14px;
+              font-family: inherit;
+              color: #fff;
+              border-radius: 0.1rem;
+              @media screen and (max-width: 1600px) {
+                font-size: 13px;
+              }
+              @media screen and (max-width: 768px) {
+                font-size: 12px;
+              }
+              &:hover {
+                opacity: 0.9;
+              }
+            }
           }
         }
       }

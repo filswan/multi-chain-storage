@@ -530,6 +530,7 @@ export default {
     payment_tip_deal: 'Please wait until the process completed.',
     payment_tip_deal01: 'You had uploaded successfully.',
     payment_tip_deal02: 'Please wait until the payment completed.',
+    payment_tip_deal03: 'You had created collection successfully.',
     COMPLETED: 'Completed',
     SUCCESS: 'Your transaction has been submitted successfully. Check more detail in your transaction history. ',
     CLOSE: 'Close',

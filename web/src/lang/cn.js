@@ -537,6 +537,7 @@ export default {
     payment_tip_deal: '请耐心等待该过程完成。',
     payment_tip_deal01: '您已上传成功。',
     payment_tip_deal02: '请耐心等待支付完成。',
+    payment_tip_deal03: '您已成功创建集合。',
     COMPLETED: '转账成功',
     SUCCESS: '您已转账成功，请查看转账历史记录。',
     CLOSE: '关闭',

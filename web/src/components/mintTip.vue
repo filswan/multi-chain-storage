@@ -98,10 +98,14 @@ export default {
       ruleCreateForm: {
         name: '',
         description: '',
+        tx_hash: '',
+        attributes: [{ trait_type: 'Size', value: parseInt(this.mintRow.file_size) }],
         images: [],
         external_link: '',
         seller_fee_basis_points: 0,
-        fee_recipient: this.metaAddress
+        fee_recipient: this.metaAddress,
+        file: '',
+        fileRaw: {}
       },
       rules: {
         name: [
@@ -142,7 +146,7 @@ export default {
       // console.log(file, fileList);
       that.ruleCreateForm.images = []
     },
-    uploadFileImage (file, fileList) {
+    async uploadFileImage (file, fileList) {
       // const isJPG = file.raw.type === 'image/jpeg' || file.raw.type === 'image/png'
       const isJPG = file.raw.type.indexOf('image') > -1
       const isLt2M = file.size / 1024 / 1024 / 1024 <= 25 // or 1000
@@ -156,6 +160,19 @@ export default {
         that.ruleCreateForm.images = []
         return false
       }
+      let reg = new RegExp(' ', 'g')
+      if (file.name.indexOf(' ') > -1) file.name = file.name.replace(reg, '_')
+      that.ruleCreateForm.fileRaw = file
+    },
+    async uploadImage (raw, name) {
+      console.log(raw, name)
+      var imageData = new FormData()
+      imageData.append('file', raw, name)
+      imageData.append('duration', 525)
+      imageData.append('file_type', 1)
+      imageData.append('wallet_address', that.metaAddress)
+      const imageResponse = await that.sendPostRequest(`${that.baseAPIURL}api/v1/storage/ipfs/upload`, imageData)
+      return imageResponse.data.ipfs_url || ''
     },
     handleMint (index, row) {
       that.mintCollectionAddress = row.address
@@ -168,20 +185,12 @@ export default {
             that.hashload = true
             that.isload = true
 
-            const fileBlob = new Blob([JSON.stringify(that.ruleForm)], {
+            const fileBlob = new Blob([JSON.stringify(type === 'create' ? that.ruleCreateForm : that.ruleForm)], {
               type: 'application/json'
             })
-
-            var formData = new FormData()
-            formData.append('file', fileBlob, `${that.ruleForm.name}.json`)
-            formData.append('duration', 525)
-            formData.append('file_type', 1)
-            formData.append('wallet_address', that.metaAddress)
-
-            const metadataUploadResponse = await that.sendPostRequest(`${that.baseAPIURL}api/v1/storage/ipfs/upload`, formData)
-            const nftUrl = metadataUploadResponse.data.ipfs_url
-            that.isloadText = that.$t('uploadFile.payment_tip_deal01')
+            const nftUrl = await that.uploadImage(fileBlob, `${type === 'create' ? that.ruleCreateForm.name : that.ruleForm.name}.json`)
             console.log('upload success')
+
             let CollectionFactory = new that.$web3Init.eth.Contract(
               CollectionFactoryAbi,
               that.$root.COLLECTION_FACTORY_ADDRESS,
@@ -191,22 +200,25 @@ export default {
             if (type === 'create') {
               let collections = await CollectionFactory.methods.createCollection(nftUrl).send()
               console.log('collections', collections)
+              that.isloadText = that.$t('uploadFile.payment_tip_deal03')
+
+              if (that.ruleCreateForm.file) that.ruleCreateForm.file = await that.uploadImage(that.ruleCreateForm.fileRaw.raw, that.ruleCreateForm.fileRaw.name)
+              let mintInfoJson = {
+                source_file_upload_id: that.mintRow.source_file_upload_id,
+                payload_cid: that.mintRow.payload_cid,
+                tx_hash: collections.transactionHash,
+                mint_address: that.$root.MINT_CONTRACT,
+                name: that.ruleCreateForm.name,
+                description: that.ruleCreateForm.description,
+                image: that.ruleCreateForm.file,
+                external_link: that.ruleCreateForm.external_link,
+                seller_fee_basis_points: that.ruleCreateForm.seller_fee_basis_points || 0,
+                fee_recipient: that.ruleCreateForm.fee_recipient
+              }
+              await that.sendPostRequest(`${that.baseAPIURL}api/v1/storage/mint/info`, mintInfoJson)
+
               that.mintCollectionAddress = ''
               that.mintIndex = 'list'
-              // let mintInfoJson = {
-              //   source_file_upload_id: that.mintRow.source_file_upload_id,
-              //   payload_cid: that.mintRow.payload_cid,
-              //   tx_hash: collections.transactionHash,
-              //   mint_address: that.$root.MINT_CONTRACT,
-              //   name: that.ruleCreateForm.name,
-              //   description: that.ruleCreateForm.description,
-              //   image: '',
-              //   external_link: that.ruleCreateForm.external_link,
-              //   seller_fee_basis_points: that.ruleCreateForm.seller_fee_basis_points || 0,
-              //   fee_recipient: that.ruleCreateForm.fee_recipient
-              // }
-              // await that.sendPostRequest(`${that.baseAPIURL}api/v1/storage/mint/info`, mintInfoJson)
-
               that.isload = false
               that.init()
               that.ruleCreateForm = {
@@ -221,6 +233,8 @@ export default {
               // let collections = await CollectionFactory.methods.getCollections(that.metaAddress).call()
               // console.log('collections', collections)
               // return
+
+              that.isloadText = that.$t('uploadFile.payment_tip_deal01')
               await that.mintContract(CollectionFactory, that.mintCollectionAddress, nftUrl)
               if (that.tokenId) {
                 console.log('totalSupply success', that.tokenId)
@@ -229,12 +243,18 @@ export default {
                   payload_cid: that.mintRow.payload_cid,
                   tx_hash: that.nftHash,
                   token_id: parseInt(that.tokenId),
-                  mint_address: that.$root.MINT_CONTRACT
+                  mint_address: that.$root.MINT_CONTRACT,
+                  name: that.ruleForm.name,
+                  description: that.ruleForm.description
                 }
                 const mintInfoResponse = await that.sendPostRequest(`${that.baseAPIURL}api/v1/storage/mint/info`, mintInfoJson)
-
                 if (mintInfoResponse) that.$emit('getMintDialog', false, that.tokenId, that.nftHash)
+                else {
+                  that.hashload = false
+                  that.isload = false
+                }
               } else {
+                that.hashload = false
                 that.isload = false
               }
             }
@@ -503,6 +523,7 @@ export default {
             .details {
               display: flex;
               align-items: center;
+              flex-wrap: wrap;
               padding: 0;
               line-height: 1.2;
               img {
@@ -514,6 +535,7 @@ export default {
                 border-radius: 100%;
               }
               span {
+                width: calc(100% - 50px);
                 overflow: hidden;
                 text-overflow: ellipsis;
                 white-space: normal;

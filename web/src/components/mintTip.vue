@@ -6,7 +6,7 @@
           <el-card shadow="always" class="mint_card" v-for="(nft, n) in nftMintData" :key="n">
             <div class="details">
               <img :src="nft.image" />
-              <span>{{nft.name || '-'}}</span>
+              <span>{{nft.name || nft.address||'-'}}</span>
             </div>
             <el-button type="primary" size="mini" @click="handleMint(n, nft)">Mint here</el-button>
           </el-card>
@@ -120,7 +120,7 @@ export default {
         {
           image: 'https://i.seadn.io/gae/XtydYu3RIjkRurZp94wxtagAxlS8xm_ZPYnZSZ1uXFV68nmpygKbWNXcRudIKMP8LflzLOQqXM-IbYrFGuARB_9SL54JdbhPRlgftQ?auto=format&w=1000',
           name: 'SWAN NFT',
-          address: this.$root.COLLECTION_FACTORY_ADDRESS,
+          address: this.$root.MINT_CONTRACT,
           id: -1
         }
       ]

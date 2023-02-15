@@ -34,7 +34,7 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="file_size" :label="$t('uploadFile.file_size')" min-width="85" sortable="custom">
+          <el-table-column prop="file_size" :label="$t('uploadFile.file_size')" min-width="90" sortable="custom">
             <template slot-scope="scope">
               <div class="hot-cold-box">
                 {{ scope.row.file_size | formatbytes }}
@@ -91,7 +91,7 @@
               </el-popover>
             </template>
           </el-table-column>
-          <el-table-column prop="pin_status" min-width="90">
+          <el-table-column prop="pin_status" min-width="100">
             <template slot="header" slot-scope="scope">
               <div class="tips">
                 {{$t('uploadFile.status')}}
@@ -225,10 +225,13 @@
               <small style="display: block;">({{scope.row.dataUnit}})</small>
             </template>
           </el-table-column>
-          <el-table-column prop="active" min-width="80" :label="$t('uploadFile.payment')">
+          <el-table-column prop="active" min-width="100" :label="$t('uploadFile.payment')">
             <template slot-scope="scope">
               <div class="hot-cold-box">
-                <el-button class="uploadBtn blue" type="primary" v-if="tableData[scope.$index].status.toLowerCase()=='pending'" @click.stop="payClick(scope.row)">
+                <el-button class="uploadBtn grey opacity" v-if="tableData[scope.$index].status.toLowerCase()=='pending'&&tableData[scope.$index].pin_status.toLowerCase()=='unpinned'" :disabled="true">
+                  {{$t('uploadFile.paid')}}
+                </el-button>
+                <el-button class="uploadBtn blue" type="primary" v-else-if="tableData[scope.$index].status.toLowerCase()=='pending'" @click.stop="payClick(scope.row)">
                   {{$t('uploadFile.pay')}}
                 </el-button>
                 <el-button v-else-if="tableData[scope.$index].is_free" :disabled="true" class="uploadBtn grey opacity">{{$t('uploadFile.filter_status_Free')}}</el-button>
@@ -245,17 +248,11 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column v-if="networkID != 97" prop="MINT" min-width="135" :label="$t('uploadFile.MINT')" :filters="[{text: $t('uploadFile.filter_no_minted'), value: 'n'}, {text: $t('uploadFile.filter_minted'), value: 'y'}]" :filter-multiple="false"
+          <el-table-column v-if="networkID != 97" prop="MINT" min-width="100" :label="$t('uploadFile.MINT')" :filters="[{text: $t('uploadFile.filter_no_minted'), value: 'n'}, {text: $t('uploadFile.filter_minted'), value: 'y'}]" :filter-multiple="false"
             :column-key="'minted'">
             <template slot-scope="scope">
               <div class="hot-cold-box">
                 <el-button class="uploadBtn blue" type="primary" @click.stop="mintFunction(scope.row)">{{$t('uploadFile.MINT')}}</el-button>
-                <el-button class="uploadBtn" :class="{'grey opacity': !tableData[scope.$index].token_id, 'blue': tableData[scope.$index].token_id}" :disabled="!tableData[scope.$index].token_id" @click.stop="mintViewFunction(scope.row)">{{$t('uploadFile.mint_view')}}</el-button>
-                <!-- <el-button class="uploadBtn blue" type="primary" v-else-if="(scope.row.status.toLowerCase()=='success'&&scope.row.is_minted==false) || (scope.row.status.toLowerCase()=='processing'&&scope.row.is_minted==false) || (scope.row.status_file&&scope.row.is_minted==false)"
-                  @click.stop="mintFunction(scope.row)">{{$t('uploadFile.MINT')}}</el-button>
-                <el-button class="uploadBtn grey opacity" v-else :disabled="true">
-                  {{$t('uploadFile.MINT')}}
-                </el-button> -->
               </div>
             </template>
           </el-table-column>
@@ -412,7 +409,7 @@ export default {
       storage: 0,
       centerDialogVisible: false,
       center_fail: false,
-      width: document.body.clientWidth > 600 ? '400px' : '95%',
+      width: document.body.clientWidth > 1600 ? '500px' : document.body.clientWidth > 600 ? '400px' : '95%',
       payment: {
         cid: '',
         amount: '',
@@ -785,15 +782,15 @@ export default {
     getDownload (dialog, rows) {
       this.downVisible = dialog
     },
-    getMintDialog (dialog, tokenId, nftHash) {
+    getMintDialog (dialog, mintInfoJson) {
       let _this = this
       _this.mineVisible = dialog
-      if (nftHash) {
+      if (mintInfoJson) {
         _this.firstIndex = 0
         _this.getData()
-        _this.tokenId = tokenId
-        _this.txHash = nftHash
-        _this.mint_address = _this.mintContractAddress
+        _this.tokenId = mintInfoJson.token_id
+        _this.txHash = mintInfoJson.tx_hash
+        _this.mint_address = mintInfoJson.mint_address || mintInfoJson.address
         _this.mintTransaction = true
       }
     },

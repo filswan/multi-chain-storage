@@ -143,8 +143,11 @@
           {{$t('metaSpace.ob_detail_title')}}
         </div>
         <el-form ref="form" class="demo-ruleForm">
-          <el-form-item :label="$t('metaSpace.ob_detail_ObjectName')">
+          <el-form-item :label="$t('uploadFile.file_name')">
             <span class="color">{{areaBody.name}}</span>
+          </el-form-item>
+          <el-form-item :label="$t('metaSpace.ob_detail_ObjectName')">
+            <span class="color">{{areaBody.object_name}}</span>
           </el-form-item>
           <el-form-item :label="$t('metaSpace.ob_detail_DateUploaded')">
             <span class="color">{{momentFun(areaBody.created_at)}}</span>
@@ -459,8 +462,8 @@ export default {
       },
       bodyWidth: document.documentElement.clientWidth < 1024,
       fileListTip: false,
-      width: document.body.clientWidth > 600 ? '400px' : '95%',
-      widthUpload: document.body.clientWidth > 600 ? '450px' : '95%',
+      width: document.body.clientWidth > 1600 ? '500px' : document.body.clientWidth > 600 ? '400px' : '95%',
+      widthUpload: document.body.clientWidth > 600 ? '550px' : document.body.clientWidth > 600 ? '450px' : '95%',
       widthDia: document.body.clientWidth <= 600 ? '95%' : document.body.clientWidth <= 1440 ? '7rem' : '6.6rem',
       pay: {
         num: 1,
@@ -1801,6 +1804,9 @@ export default {
             padding-bottom: 0.1rem;
             min-width: 120px;
             text-align: left;
+            @media screen and (min-width: 1800px) {
+              min-width: 135px;
+            }
           }
           &:last-child {
             .el-form-item__content {

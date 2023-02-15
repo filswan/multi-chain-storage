@@ -5,11 +5,13 @@
         <div class="mint_body">
           <el-card shadow="always" class="mint_card" v-for="(nft, n) in nftMintData" :key="n">
             <div class="details">
-              <img :src="nft.image" />
+              <img :src="nft.image_url" />
               <span>{{nft.name || nft.address||'-'}}</span>
             </div>
-            <el-button type="primary" size="mini" @click="handleMint(n, nft)">Mint here</el-button>
+            <el-button v-if="nft.is_minted" type="primary" size="mini" @click="handleMint('view', nft)">View</el-button>
+            <el-button v-else type="primary" size="mini" @click="handleMint('mint', nft)">Mint here</el-button>
           </el-card>
+          <p class="mint_nodata" v-if="nftMintData.length<1">{{$t('deal.formNotData')}}</p>
         </div>
 
         <div slot="footer" class="dialog-footer">
@@ -61,7 +63,7 @@
             <el-input v-model="ruleCreateForm.external_link"></el-input>
           </el-form-item>
           <el-form-item :label="'Seller Fee Basis Points'" prop="seller_fee_basis_points">
-            <el-input-number v-model="ruleCreateForm.seller_fee_basis_points" controls-position="right" :min="0" placeholder=""></el-input-number>
+            <el-input-number v-model="ruleCreateForm.seller_fee_basis_points" controls-position="right" :min="0" :max="10000" placeholder=""></el-input-number>
           </el-form-item>
           <el-form-item :label="'Fee Recipient'" prop="fee_recipient">
             <el-input v-model="ruleCreateForm.fee_recipient"></el-input>
@@ -112,21 +114,21 @@ export default {
           { required: true, message: ' ', trigger: 'blur' }
         ]
       },
-      widthDia: document.body.clientWidth < 600 ? '90%' : '500px',
+      widthDia: document.body.clientWidth > 1600 ? '550px' : document.body.clientWidth > 600 ? '450px' : '90%',
       hashload: false,
       isload: false,
       isloadText: this.$t('uploadFile.payment_tip_deal'),
       nftHash: '',
       tokenId: '',
       mintIndex: 'list',
-      mintCollectionAddress: '',
+      mintCollectionAddress: {},
       nftMintData: [
-        {
-          image: 'https://i.seadn.io/gae/XtydYu3RIjkRurZp94wxtagAxlS8xm_ZPYnZSZ1uXFV68nmpygKbWNXcRudIKMP8LflzLOQqXM-IbYrFGuARB_9SL54JdbhPRlgftQ?auto=format&w=1000',
-          name: 'SWAN NFT',
-          address: this.$root.MINT_CONTRACT,
-          id: -1
-        }
+        // {
+        //   image_url: 'https://i.seadn.io/gae/XtydYu3RIjkRurZp94wxtagAxlS8xm_ZPYnZSZ1uXFV68nmpygKbWNXcRudIKMP8LflzLOQqXM-IbYrFGuARB_9SL54JdbhPRlgftQ?auto=format&w=1000',
+        //   name: 'SWAN NFT',
+        //   address: this.$root.MINT_CONTRACT,
+        //   id: -1
+        // }
       ]
     }
   },
@@ -165,7 +167,7 @@ export default {
       that.ruleCreateForm.fileRaw = file
     },
     async uploadImage (raw, name) {
-      console.log(raw, name)
+      // console.log(raw, name)
       var imageData = new FormData()
       imageData.append('file', raw, name)
       imageData.append('duration', 525)
@@ -174,9 +176,10 @@ export default {
       const imageResponse = await that.sendPostRequest(`${that.baseAPIURL}api/v1/storage/ipfs/upload`, imageData)
       return imageResponse.data.ipfs_url || ''
     },
-    handleMint (index, row) {
-      that.mintCollectionAddress = row.address
-      that.mintIndex = 'mint'
+    handleMint (type, row) {
+      that.mintCollectionAddress = row
+      if (type === 'view') that.$emit('getMintDialog', false, row)
+      else that.mintIndex = 'mint'
     },
     submitForm (formName, type) {
       that.$refs[formName].validate(async (valid) => {
@@ -199,43 +202,32 @@ export default {
 
             if (type === 'create') {
               let collections = await CollectionFactory.methods.createCollection(nftUrl).send()
-              console.log('collections', collections)
+              // console.log('collections', collections)
+              // let collectionsList = await CollectionFactory.methods.getCollections(that.metaAddress).call()
+              // console.log('collections list', collectionsList)
               that.isloadText = that.$t('uploadFile.payment_tip_deal03')
 
-              if (that.ruleCreateForm.file) that.ruleCreateForm.file = await that.uploadImage(that.ruleCreateForm.fileRaw.raw, that.ruleCreateForm.fileRaw.name)
+              if (that.ruleCreateForm.fileRaw) that.ruleCreateForm.file = await that.uploadImage(that.ruleCreateForm.fileRaw.raw, that.ruleCreateForm.fileRaw.name)
               let mintInfoJson = {
-                source_file_upload_id: that.mintRow.source_file_upload_id,
-                payload_cid: that.mintRow.payload_cid,
+                address: collections.events.CreateCollection.returnValues.collectionAddress,
                 tx_hash: collections.transactionHash,
-                mint_address: that.$root.MINT_CONTRACT,
                 name: that.ruleCreateForm.name,
                 description: that.ruleCreateForm.description,
-                image: that.ruleCreateForm.file,
+                image_url: that.ruleCreateForm.file,
                 external_link: that.ruleCreateForm.external_link,
-                seller_fee_basis_points: that.ruleCreateForm.seller_fee_basis_points || 0,
-                fee_recipient: that.ruleCreateForm.fee_recipient
+                seller_fee: that.ruleCreateForm.seller_fee_basis_points || 0,
+                wallet_recipient: that.ruleCreateForm.fee_recipient
               }
-              await that.sendPostRequest(`${that.baseAPIURL}api/v1/storage/mint/info`, mintInfoJson)
+              await that.sendPostRequest(`${that.baseAPIURL}api/v1/storage/mint/nft_collection`, mintInfoJson)
 
-              that.mintCollectionAddress = ''
+              that.mintCollectionAddress = {}
               that.mintIndex = 'list'
               that.isload = false
               that.init()
-              that.ruleCreateForm = {
-                name: '',
-                description: '',
-                images: [],
-                external_link: '',
-                seller_fee_basis_points: 0,
-                fee_recipient: that.metaAddress
-              }
+              that.$refs['ruleCreateForm'].resetFields()
             } else {
-              // let collections = await CollectionFactory.methods.getCollections(that.metaAddress).call()
-              // console.log('collections', collections)
-              // return
-
               that.isloadText = that.$t('uploadFile.payment_tip_deal01')
-              await that.mintContract(CollectionFactory, that.mintCollectionAddress, nftUrl)
+              await that.mintContract(CollectionFactory, that.mintCollectionAddress.address, nftUrl)
               if (that.tokenId) {
                 console.log('totalSupply success', that.tokenId)
                 let mintInfoJson = {
@@ -243,20 +235,15 @@ export default {
                   payload_cid: that.mintRow.payload_cid,
                   tx_hash: that.nftHash,
                   token_id: parseInt(that.tokenId),
-                  mint_address: that.$root.MINT_CONTRACT,
+                  mint_address: that.mintCollectionAddress.address,
                   name: that.ruleForm.name,
                   description: that.ruleForm.description
                 }
                 const mintInfoResponse = await that.sendPostRequest(`${that.baseAPIURL}api/v1/storage/mint/info`, mintInfoJson)
-                if (mintInfoResponse) that.$emit('getMintDialog', false, that.tokenId, that.nftHash)
-                else {
-                  that.hashload = false
-                  that.isload = false
-                }
-              } else {
-                that.hashload = false
-                that.isload = false
+                if (mintInfoResponse) that.$emit('getMintDialog', false, mintInfoJson)
               }
+              that.hashload = false
+              that.isload = false
             }
           }
         } else {
@@ -326,7 +313,7 @@ export default {
 
       const nftMintRes = await that.sendRequest(`${that.baseAPIURL}api/v1/storage/mint/nft_collections`)
       if (nftMintRes && nftMintRes.status === 'success') that.nftMintData = that.nftMintData.concat(nftMintRes.data)
-
+      that.nftMintData.sort((a, b) => b.is_default - a.is_default)
       that.hashload = false
     },
     async sendRequest (apilink) {
@@ -512,6 +499,9 @@ export default {
         &::-webkit-scrollbar-thumb {
           background: #ccc;
         }
+        .mint_nodata {
+          text-align: center;
+        }
         .mint_card {
           width: 100%;
           margin: 0.2rem auto;
@@ -524,6 +514,7 @@ export default {
               display: flex;
               align-items: center;
               flex-wrap: wrap;
+              width: calc(100% - 100px);
               padding: 0;
               line-height: 1.2;
               img {

@@ -17,7 +17,8 @@ export default {
     Pricing: 'Pricing',
     Resources: 'Resources',
     Login: 'Login',
-    ApiKey: 'API Key'
+    ApiKey: 'API Key',
+    report: 'Audit Report'
   },
   navbar: {
     sidebar_header: 'Multi-Chain Storage',

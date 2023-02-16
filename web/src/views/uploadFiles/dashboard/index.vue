@@ -34,7 +34,7 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="file_size" :label="$t('uploadFile.file_size')" min-width="90" sortable="custom">
+          <el-table-column prop="file_size" :label="$t('uploadFile.file_size')" min-width="85" sortable="custom">
             <template slot-scope="scope">
               <div class="hot-cold-box">
                 {{ scope.row.file_size | formatbytes }}
@@ -91,7 +91,7 @@
               </el-popover>
             </template>
           </el-table-column>
-          <el-table-column prop="pin_status" min-width="100">
+          <el-table-column prop="pin_status" min-width="90">
             <template slot="header" slot-scope="scope">
               <div class="tips">
                 {{$t('uploadFile.status')}}
@@ -225,7 +225,7 @@
               <small style="display: block;">({{scope.row.dataUnit}})</small>
             </template>
           </el-table-column>
-          <el-table-column prop="active" min-width="100" :label="$t('uploadFile.payment')">
+          <el-table-column prop="active" min-width="80" :label="$t('uploadFile.payment')">
             <template slot-scope="scope">
               <div class="hot-cold-box">
                 <el-button class="uploadBtn grey opacity" v-if="tableData[scope.$index].status.toLowerCase()=='pending'&&tableData[scope.$index].pin_status.toLowerCase()=='unpinned'" :disabled="true">
@@ -248,11 +248,12 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column v-if="networkID != 97" prop="MINT" min-width="100" :label="$t('uploadFile.MINT')" :filters="[{text: $t('uploadFile.filter_no_minted'), value: 'n'}, {text: $t('uploadFile.filter_minted'), value: 'y'}]" :filter-multiple="false"
+          <el-table-column v-if="networkID != 97" prop="MINT" min-width="135" :label="$t('uploadFile.MINT')" :filters="[{text: $t('uploadFile.filter_no_minted'), value: 'n'}, {text: $t('uploadFile.filter_minted'), value: 'y'}]" :filter-multiple="false"
             :column-key="'minted'">
             <template slot-scope="scope">
               <div class="hot-cold-box">
-                <el-button class="uploadBtn blue" type="primary" @click.stop="mintFunction(scope.row)">{{$t('uploadFile.MINT')}}</el-button>
+                <el-button class="uploadBtn blue" type="primary" @click.stop="mintFunction(scope.row, 'mint')">{{$t('uploadFile.MINT')}}</el-button>
+                <el-button class="uploadBtn blue" type="primary" @click.stop="mintFunction(scope.row, 'view')">{{$t('uploadFile.mint_view')}}</el-button>
               </div>
             </template>
           </el-table-column>
@@ -539,7 +540,8 @@ export default {
     timeout (delay) {
       return new Promise((resolve) => setTimeout(resolve, delay))
     },
-    mintFunction (row) {
+    mintFunction (row, type) {
+      row.mintType = type
       this.mintRow = row
       this.mineVisible = true
     },
@@ -1898,7 +1900,7 @@ export default {
                   border: 0;
                   padding: 0;
                   background-color: transparent;
-                  font-size: 0.17rem;
+                  font-size: 0.165rem;
                   font-family: inherit;
                   word-break: break-word;
                   color: #000;
@@ -1935,12 +1937,12 @@ export default {
                   width: auto;
                   min-width: 0.65rem;
                   box-sizing: content-box;
-                  padding: 0.07rem 0.1rem;
+                  padding: 0.05rem 0.07rem;
                   margin: auto;
                   color: #555555;
                   // box-shadow: 0 0 0.06rem rgba(191, 191, 191, 0.32);
                   box-shadow: none;
-                  border-radius: 0.14rem;
+                  border-radius: 0.11rem;
                   border: 1px solid #dcdfe6;
                   white-space: nowrap;
                   display: inline-block;

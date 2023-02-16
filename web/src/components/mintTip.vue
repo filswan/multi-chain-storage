@@ -1,22 +1,30 @@
 <template>
   <div>
     <el-dialog :title="$t('uploadFile.nft_title')+'NFT'" :close-on-click-modal="false" :width="widthDia" :visible.sync="mineVisible" :before-close="closeDia">
-      <div v-if="mintIndex === 'list'" v-loading="hashload">
+      <div v-if="mintIndex === 'list'" v-loading="hashload" :class="{'view_style': mintRow.mintType === 'view'}">
         <div class="mint_body">
           <el-card shadow="always" class="mint_card" v-for="(nft, n) in nftMintData" :key="n">
-            <div class="details">
-              <img :src="nft.image_url" />
-              <span>{{nft.name || nft.address||'-'}}</span>
+            <div v-if="mintRow.mintType === 'mint'" class="mint_flex">
+              <div class="details">
+                <img :src="nft.image_url" />
+                <span>{{nft.name || nft.address||'-'}}</span>
+              </div>
+              <el-button v-if="nft.is_minted" type="info" size="mini" disabled>Mint here</el-button>
+              <el-button v-else type="primary" size="mini" @click="handleMint(nft)">Mint here</el-button>
             </div>
-            <el-button v-if="nft.is_minted" type="primary" size="mini" @click="handleMint('view', nft)">View</el-button>
-            <el-button v-else type="primary" size="mini" @click="handleMint('mint', nft)">Mint here</el-button>
+            <div v-else class="mint_flex">
+              <div class="details" @click="handleMint(nft)">
+                <img :src="nft.image_url" />
+                <span>{{nft.name || nft.address||'-'}}</span>
+              </div>
+            </div>
           </el-card>
-          <p class="mint_nodata" v-if="nftMintData.length<1">{{$t('deal.formNotData')}}</p>
+          <p class="mint_nodata" v-if="nftMintData.length<1">This list is empty</p>
         </div>
 
         <div slot="footer" class="dialog-footer">
           <el-button class="cancel" type="info" @click="closeDia">{{$t('uploadFile.Back')}}</el-button>
-          <el-button type="primary" @click="mintIndex = 'create'">{{isload ? $t('uploadFile.Minting') : $t('uploadFile.Mint_Create_NFT')}}</el-button>
+          <el-button type="primary" v-if="mintRow.mintType === 'mint'" @click="mintIndex = 'create'">{{isload ? $t('uploadFile.Minting') : $t('uploadFile.Mint_Create_NFT')}}</el-button>
         </div>
       </div>
       <div v-else-if="mintIndex === 'mint'" v-loading="hashload" :element-loading-text="isload?isloadText:''">
@@ -176,9 +184,9 @@ export default {
       const imageResponse = await that.sendPostRequest(`${that.baseAPIURL}api/v1/storage/ipfs/upload`, imageData)
       return imageResponse.data.ipfs_url || ''
     },
-    handleMint (type, row) {
+    handleMint (row) {
       that.mintCollectionAddress = row
-      if (type === 'view') that.$emit('getMintDialog', false, row)
+      if (that.mintRow.mintType === 'view') that.$emit('getMintDialog', false, row)
       else that.mintIndex = 'mint'
     },
     submitForm (formName, type) {
@@ -303,17 +311,22 @@ export default {
     },
     async init () {
       that.hashload = true
+      if (that.mintRow.mintType === 'view') {
+        const nftMintRes = await that.sendRequest(`${that.baseAPIURL}api/v1/storage/mint/info/${that.mintRow.source_file_upload_id}`)
+        if (nftMintRes && nftMintRes.status === 'success') that.nftMintData = nftMintRes.data || []
+        else that.nftMintData = []
+      } else {
+        that.ruleForm.name = that.mintRow.file_name
+        that.ruleForm.image = that.mintRow.ipfs_url
+        that.ruleForm.external_url = that.mintRow.ipfs_url
 
-      that.ruleForm.name = that.mintRow.file_name
-      that.ruleForm.image = that.mintRow.ipfs_url
-      that.ruleForm.external_url = that.mintRow.ipfs_url
+        const hashRes = await that.sendRequest(`${that.baseAPIURL}api/v1/billing/deal/lockpayment/info?payload_cid=${that.mintRow.payload_cid}&wallet_address=${that.metaAddress}&source_file_upload_id=${that.mintRow.source_file_upload_id}`)
+        that.ruleForm.tx_hash = hashRes.data.pay_tx_hash
 
-      const hashRes = await that.sendRequest(`${that.baseAPIURL}api/v1/billing/deal/lockpayment/info?payload_cid=${that.mintRow.payload_cid}&wallet_address=${that.metaAddress}&source_file_upload_id=${that.mintRow.source_file_upload_id}`)
-      that.ruleForm.tx_hash = hashRes.data.pay_tx_hash
-
-      const nftMintRes = await that.sendRequest(`${that.baseAPIURL}api/v1/storage/mint/nft_collections`)
-      if (nftMintRes && nftMintRes.status === 'success') that.nftMintData = that.nftMintData.concat(nftMintRes.data)
-      that.nftMintData.sort((a, b) => b.is_default - a.is_default)
+        const nftMintRes = await that.sendRequest(`${that.baseAPIURL}api/v1/storage/mint/nft_collections`)
+        if (nftMintRes && nftMintRes.status === 'success') that.nftMintData = that.nftMintData.concat(nftMintRes.data)
+        that.nftMintData.sort((a, b) => b.is_default - a.is_default)
+      }
       that.hashload = false
     },
     async sendRequest (apilink) {
@@ -506,49 +519,52 @@ export default {
           width: 100%;
           margin: 0.2rem auto;
           .el-card__body {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0.1rem;
-            .details {
+            padding: 0;
+            .mint_flex {
               display: flex;
               align-items: center;
-              flex-wrap: wrap;
-              width: calc(100% - 100px);
-              padding: 0;
-              line-height: 1.2;
-              img {
-                display: block;
-                width: 40px;
-                height: 40px;
-                margin: 0 7px 0 0;
-                border: 1px solid #4b5eff;
-                border-radius: 100%;
+              justify-content: space-between;
+              padding: 0.1rem;
+              .details {
+                display: flex;
+                align-items: center;
+                flex-wrap: wrap;
+                width: calc(100% - 100px);
+                padding: 0;
+                line-height: 1.2;
+                img {
+                  display: block;
+                  width: 40px;
+                  height: 40px;
+                  margin: 0 7px 0 0;
+                  border: 1px solid #4b5eff;
+                  border-radius: 100%;
+                }
+                span {
+                  width: calc(100% - 50px);
+                  overflow: hidden;
+                  text-overflow: ellipsis;
+                  white-space: normal;
+                  display: -webkit-box;
+                  -webkit-line-clamp: 1;
+                  -webkit-box-orient: vertical;
+                }
               }
-              span {
-                width: calc(100% - 50px);
-                overflow: hidden;
-                text-overflow: ellipsis;
-                white-space: normal;
-                display: -webkit-box;
-                -webkit-line-clamp: 1;
-                -webkit-box-orient: vertical;
-              }
-            }
-            .el-button {
-              padding: 7px 10px;
-              font-size: 14px;
-              font-family: inherit;
-              color: #fff;
-              border-radius: 0.1rem;
-              @media screen and (max-width: 1600px) {
-                font-size: 13px;
-              }
-              @media screen and (max-width: 768px) {
-                font-size: 12px;
-              }
-              &:hover {
-                opacity: 0.9;
+              .el-button {
+                padding: 7px 10px;
+                font-size: 14px;
+                font-family: inherit;
+                color: #fff;
+                border-radius: 0.1rem;
+                @media screen and (max-width: 1600px) {
+                  font-size: 13px;
+                }
+                @media screen and (max-width: 768px) {
+                  font-size: 12px;
+                }
+                &:hover {
+                  opacity: 0.9;
+                }
               }
             }
           }
@@ -584,6 +600,23 @@ export default {
         &:hover {
           background: linear-gradient(45deg, #4f8aff, #4b5eff);
         }
+      }
+    }
+    .view_style {
+      .mint_body {
+        .mint_card {
+          cursor: pointer;
+          .el-card__body {
+            .mint_flex {
+              .details {
+                width: 100%;
+              }
+            }
+          }
+        }
+      }
+      .dialog-footer {
+        justify-content: flex-end;
       }
     }
   }

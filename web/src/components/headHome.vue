@@ -25,6 +25,12 @@
               {{ $t('route.Stats') }}
             </router-link>
           </el-menu-item>
+          <el-menu-item index="auditReport" @click="goLink('https://github.com/numencyber/AuditReport/blob/main/FILSWAN-Smart-Contract-Audit-Report%20-%20Numen.pdf')">
+            <router-link to="">
+              {{ $t('route.report') }}
+            </router-link>
+
+          </el-menu-item>
           <el-menu-item index="login">
             <a href="javascript:;" v-loading="loginLoad" @click="getLogin" class="target">
               {{ $t('route.Login') }}
@@ -86,6 +92,9 @@ export default {
   },
   watch: {},
   methods: {
+    goLink (link) {
+      window.open(link)
+    },
     header_logo () {
       that.$router.push({ name: 'home_entrance' })
     },

@@ -53,7 +53,7 @@
             <template slot-scope="scope">
               <div class="hot-cold-box">
                 <!-- <i class="icon icon_pay " v-if="!scope.row.is_active" @click="dialogFun('pay', scope.row)"></i> -->
-                <i class="icon icon_pay icon_pay_disable"></i>
+                <!-- <i class="icon icon_pay icon_pay_disable"></i> -->
                 <i class="icon icon_rename" @click="dialogFun('rename', scope.row)"></i>
                 <i class="icon icon_details" @click="getDetail(scope.row)"></i>
                 <i class="icon icon_delete" @click="dialogFun('delete', scope.row)"></i>

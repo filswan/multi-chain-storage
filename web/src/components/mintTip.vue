@@ -1,30 +1,32 @@
 <template>
   <div>
     <el-dialog :title="$t('uploadFile.nft_title')+'NFT'" :close-on-click-modal="false" :width="widthDia" :visible.sync="mineVisible" :before-close="closeDia">
-      <div v-if="mintIndex === 'list'" v-loading="hashload" :class="{'view_style': mintRow.mintType === 'view'}">
+      <div v-if="mintIndex === 'list'" v-loading="hashload">
         <div class="mint_body">
-          <el-card shadow="always" class="mint_card" v-for="(nft, n) in nftMintData" :key="n">
-            <div v-if="mintRow.mintType === 'mint'" class="mint_flex">
+          <el-card shadow="always" class="mint_card" v-for="(nftMint, n) in nftMintData" :key="n">
+            <div class="mint_flex">
               <div class="details">
-                <img :src="nft.image_url" />
-                <span>{{nft.name || nft.address||'-'}}</span>
+                <img :src="nftMint.image_url" />
+                <span>{{nftMint.name || nftMint.address||'-'}}</span>
               </div>
-              <el-button v-if="nft.is_minted" type="info" size="mini" disabled>Mint here</el-button>
-              <el-button v-else type="primary" size="mini" @click="handleMint(nft)">Mint here</el-button>
-            </div>
-            <div v-else class="mint_flex">
-              <div class="details" @click="handleMint(nft)">
-                <img :src="nft.image_url" />
-                <span>{{nft.name || nft.address||'-'}}</span>
-              </div>
+              <el-button type="primary" size="mini" @click="handleMint(nftMint, 'mint')">Mint here</el-button>
             </div>
           </el-card>
-          <p class="mint_nodata" v-if="nftMintData.length<1">This list is empty</p>
+          <el-card shadow="always" class="mint_card" v-for="(nftView, v) in nftViewData" :key="v+nftMintData.length">
+            <div class="mint_flex">
+              <div class="details">
+                <img :src="nftView.image_url" />
+                <span>{{nftView.name||nftView.nft_collection_address || nftView.mint_address || '-'}}</span>
+              </div>
+              <el-button type="primary" size="mini" @click="handleMint(nftView, 'view')">{{$t('uploadFile.mint_view')}}</el-button>
+            </div>
+          </el-card>
+          <p class="mint_nodata" v-if="nftMintData.length<1 && nftViewData.length<1">This list is empty</p>
         </div>
 
         <div slot="footer" class="dialog-footer">
           <el-button class="cancel" type="info" @click="closeDia">{{$t('uploadFile.Back')}}</el-button>
-          <el-button type="primary" v-if="mintRow.mintType === 'mint'" @click="mintIndex = 'create'">{{isload ? $t('uploadFile.Minting') : $t('uploadFile.Mint_Create_NFT')}}</el-button>
+          <el-button type="primary" @click="mintIndex = 'create'">{{isload ? $t('uploadFile.Minting') : $t('uploadFile.Mint_Create_NFT')}}</el-button>
         </div>
       </div>
       <div v-else-if="mintIndex === 'mint'" v-loading="hashload" :element-loading-text="isload?isloadText:''">
@@ -130,14 +132,8 @@ export default {
       tokenId: '',
       mintIndex: 'list',
       mintCollectionAddress: {},
-      nftMintData: [
-        // {
-        //   image_url: 'https://i.seadn.io/gae/XtydYu3RIjkRurZp94wxtagAxlS8xm_ZPYnZSZ1uXFV68nmpygKbWNXcRudIKMP8LflzLOQqXM-IbYrFGuARB_9SL54JdbhPRlgftQ?auto=format&w=1000',
-        //   name: 'SWAN NFT',
-        //   address: this.$root.MINT_CONTRACT,
-        //   id: -1
-        // }
-      ]
+      nftMintData: [],
+      nftViewData: []
     }
   },
   props: ['mintRow', 'mineVisible'],
@@ -184,9 +180,9 @@ export default {
       const imageResponse = await that.sendPostRequest(`${that.baseAPIURL}api/v1/storage/ipfs/upload`, imageData)
       return imageResponse.data.ipfs_url || ''
     },
-    handleMint (row) {
+    handleMint (row, type) {
       that.mintCollectionAddress = row
-      if (that.mintRow.mintType === 'view') that.$emit('getMintDialog', false, row)
+      if (type === 'view') that.$emit('getMintDialog', false, row)
       else that.mintIndex = 'mint'
     },
     submitForm (formName, type) {
@@ -242,6 +238,7 @@ export default {
                   source_file_upload_id: that.mintRow.source_file_upload_id,
                   payload_cid: that.mintRow.payload_cid,
                   tx_hash: that.nftHash,
+                  nft_collection_id: that.mintCollectionAddress.id,
                   token_id: parseInt(that.tokenId),
                   mint_address: that.mintCollectionAddress.address,
                   name: that.ruleForm.name,
@@ -311,22 +308,36 @@ export default {
     },
     async init () {
       that.hashload = true
-      if (that.mintRow.mintType === 'view') {
-        const nftMintRes = await that.sendRequest(`${that.baseAPIURL}api/v1/storage/mint/info/${that.mintRow.source_file_upload_id}`)
-        if (nftMintRes && nftMintRes.status === 'success') that.nftMintData = nftMintRes.data || []
-        else that.nftMintData = []
-      } else {
-        that.ruleForm.name = that.mintRow.file_name
-        that.ruleForm.image = that.mintRow.ipfs_url
-        that.ruleForm.external_url = that.mintRow.ipfs_url
+      that.nftMintData = []
+      that.nftViewData = []
+      that.ruleForm.name = that.mintRow.file_name
+      that.ruleForm.image = that.mintRow.ipfs_url
+      that.ruleForm.external_url = that.mintRow.ipfs_url
 
-        const hashRes = await that.sendRequest(`${that.baseAPIURL}api/v1/billing/deal/lockpayment/info?payload_cid=${that.mintRow.payload_cid}&wallet_address=${that.metaAddress}&source_file_upload_id=${that.mintRow.source_file_upload_id}`)
-        that.ruleForm.tx_hash = hashRes.data.pay_tx_hash
+      const hashRes = await that.sendRequest(`${that.baseAPIURL}api/v1/billing/deal/lockpayment/info?payload_cid=${that.mintRow.payload_cid}&wallet_address=${that.metaAddress}&source_file_upload_id=${that.mintRow.source_file_upload_id}`)
+      that.ruleForm.tx_hash = hashRes.data.pay_tx_hash
 
-        const nftMintRes = await that.sendRequest(`${that.baseAPIURL}api/v1/storage/mint/nft_collections`)
-        if (nftMintRes && nftMintRes.status === 'success') that.nftMintData = that.nftMintData.concat(nftMintRes.data)
-        that.nftMintData.sort((a, b) => b.is_default - a.is_default)
+      const nftMintRes = await that.sendRequest(`${that.baseAPIURL}api/v1/storage/mint/nft_collections`)
+      if (nftMintRes && nftMintRes.status === 'success') that.nftMintData = nftMintRes.data || []
+      else {
+        that.closeDia()
+        return
       }
+
+      const nftViewRes = await that.sendRequest(`${that.baseAPIURL}api/v1/storage/mint/info/${that.mintRow.source_file_upload_id}`)
+      if (nftViewRes && nftViewRes.status === 'success') that.nftViewData = nftViewRes.data || []
+      else {
+        that.closeDia()
+        return
+      }
+
+      that.nftViewData.forEach(element => {
+        that.nftMintData.forEach((mint, m) => {
+          if (mint.address === element.nft_collection_address) that.nftMintData.splice(m, 1)
+        })
+      })
+      that.nftMintData.sort((a, b) => b.is_default - a.is_default)
+
       that.hashload = false
     },
     async sendRequest (apilink) {
@@ -338,7 +349,11 @@ export default {
         })
         return response.data
       } catch (err) {
-        console.error(err)
+        console.error(err, err.response)
+        if (err.response) {
+          that.$message.error(err.response.data.message || 'Failed!')
+          return err.response.data
+        }
       }
     },
     async sendPostRequest (apilink, jsonObject) {
@@ -569,6 +584,16 @@ export default {
             }
           }
         }
+        .view_style {
+          cursor: pointer;
+          .el-card__body {
+            .mint_flex {
+              .details {
+                width: 100%;
+              }
+            }
+          }
+        }
       }
     }
     .dialog-footer {
@@ -600,23 +625,6 @@ export default {
         &:hover {
           background: linear-gradient(45deg, #4f8aff, #4b5eff);
         }
-      }
-    }
-    .view_style {
-      .mint_body {
-        .mint_card {
-          cursor: pointer;
-          .el-card__body {
-            .mint_flex {
-              .details {
-                width: 100%;
-              }
-            }
-          }
-        }
-      }
-      .dialog-footer {
-        justify-content: flex-end;
       }
     }
   }

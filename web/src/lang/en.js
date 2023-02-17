@@ -14,6 +14,7 @@ export default {
     documentation: 'Documentation',
     metaSpace: 'Bucket Storage',
     About: 'About',
+    ipfs: 'IPFS Storage',
     Pricing: 'Pricing',
     Resources: 'Resources',
     Login: 'Login',

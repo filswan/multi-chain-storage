@@ -450,7 +450,7 @@ export default {
   mounted () {
     that = this
     document.getElementById('content-box').scrollTop = 0
-    that.$store.dispatch('setRouterMenu', 20)
+    that.$store.dispatch('setRouterMenu', 22)
     that.$store.dispatch('setHeadertitle', that.$t('route.metaSpace'))
     that.init()
   }

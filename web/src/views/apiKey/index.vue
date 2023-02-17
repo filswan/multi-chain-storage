@@ -65,7 +65,7 @@
         </div>
       </div>
       <div class="fes-search">
-        <el-table :data="toolData" stripe style="width: 100%" max-height="580" :empty-text="$t('deal.formNotData')" class="table_cell">
+        <el-table :data="toolData" stripe style="width: 100%" max-height="380" :empty-text="$t('deal.formNotData')" class="table_cell">
           <el-table-column prop="api_key" :label="$t('my_profile.table_apiKey_th_02')"></el-table-column>
           <el-table-column prop="token" :label="$t('my_profile.table_apiKey_th_03')" max-width="150">
             <template>*******</template>
@@ -89,6 +89,39 @@
             <template slot-scope="scope">
               <div class="revoke">
                 <el-button type="danger" :disabled="scope.row.status == 'Deleted'?true:false" @click="dialogFun('delete', scope.row)">{{$t('my_profile.apiKey_btn_02')}}</el-button>
+              </div>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+
+      <h4>{{$t('my_profile.apiKey_your_Domain')}}</h4>
+      <h6></h6>
+      <div class="form_top">
+        <div class="search_file">
+          <div class="createTask">
+            <!-- @click="dialogFun('add_apikey')" -->
+            <a>
+              <img src="@/assets/images/space/icon_01.png" alt="">
+              <span>{{$t('my_profile.apiKey_btn_03')}}</span>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="fes-search">
+        <el-table :data="[]" stripe style="width: 100%" max-height="380" :empty-text="$t('deal.formNotData')" class="table_cell">
+          <el-table-column prop="api_key" :label="'Domain address'"></el-table-column>
+          <el-table-column prop="create_at" :label="$t('my_profile.table_apiKey_th_04')">
+            <template slot-scope="scope">
+              <div style="">
+                {{momentFun(scope.row.create_at)}}
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column prop="qr_code" label="Actions" max-width="160">
+            <template slot-scope="scope">
+              <div class="revoke">
+                <el-button type="danger" @click="dialogFun('delete', scope.row)">{{$t('my_profile.apiKey_btn_04')}}</el-button>
               </div>
             </template>
           </el-table-column>
@@ -997,6 +1030,7 @@ export default {
     }
     .fes-search {
       // height: calc(100% - 1.7rem);
+      margin: 0 auto 0.65rem;
       .title {
         display: flex;
         align-items: center;

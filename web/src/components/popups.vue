@@ -183,6 +183,59 @@
         </div>
       </div>
     </div>
+    <div class="fe-none" v-else-if="typeName === 'detail_ipfs_file'">
+      <div class="addBucket" v-loading="backupLoad">
+        <i class="el-icon-circle-close closePop" v-if="ipfsUploadLoad" @click="controllerSignal()"></i>
+        <div class="head">
+          {{$t('metaSpace.ob_detail_title')}}
+        </div>
+        <el-form ref="form" class="demo-ruleForm">
+          <el-form-item :label="$t('uploadFile.file_name')">
+            <span class="color">{{areaBody.name}}</span>
+          </el-form-item>
+          <el-form-item :label="$t('metaSpace.ob_detail_ObjectName')">
+            <span class="color">{{areaBody.object_name}}</span>
+          </el-form-item>
+          <el-form-item :label="$t('metaSpace.ob_detail_DateUploaded')">
+            <span class="color">{{momentFun(areaBody.created_at)}}</span>
+          </el-form-item>
+          <el-form-item :label="$t('metaSpace.ob_detail_ObjectSize')">
+            <span class="color">{{areaBody.size | formatbytes}}</span>
+          </el-form-item>
+          <el-form-item :label="$t('metaSpace.ob_detail_ObjectIPFSLink')">
+            <!-- <a class="color ipfsStyle" @click="xhrequest(areaBody.ipfs_url, areaBody.name)"> -->
+            <!-- <a class="color ipfsStyle" :href="areaBody.ipfs_url" target="_blank">
+              {{areaBody.ipfs_url}}
+            </a> -->
+            <el-select v-model="areaBody.ipfs_url" placeholder=" ">
+              <el-option v-for="item in areaBody.options" :key="item.value" :label="item.label" :value="item.value">
+              </el-option>
+            </el-select>
+            {{`?filename=${areaBody.name}`}}
+            <i class="icon el-icon-document-copy" @click="copyLink(`${areaBody.ipfs_url}?filename=${areaBody.name}`)"></i>
+          </el-form-item>
+          <el-form-item :label="$t('metaSpace.ob_detail_ObjectCID')">
+            <span class="color">{{areaBody.payload_cid}}</span>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="closeDia()">{{$t('metaSpace.Close')}}</el-button>
+          </el-form-item>
+        </el-form>
+        <div class="loadTryAgain" v-if="ipfsUploadLoad">
+          <div style="width:100%;">
+            <div class="load_svg">
+              <svg viewBox="25 25 50 50" class="circular">
+                <circle cx="50" cy="50" r="20" fill="none" class="path"></circle>
+              </svg>
+              <p>
+                {{$t('uploadFile.payment_tip_deal')}}
+                <span @click="controllerSignal('try_again', areaBody.ipfs_url, areaBody.name)">{{$t('metaSpace.try_again')}}</span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="fe-none" v-else-if="typeName === 'upload'">
       <div class="uploadDig" v-loading="loading">
         <i class="el-icon-circle-close close" @click="closeDia()"></i>
@@ -784,7 +837,8 @@ export default {
         while (index < count) {
           chunks.push({
             file: file.raw.slice(index * max, (index + 1) * max),
-            filename: `${index + 1}_${file.name}`
+            filename: `${index + 1}_${file.name}`,
+            path: file.path
           })
           index++
         }
@@ -796,6 +850,7 @@ export default {
         uploadListData.append('file', fileBlob, chunks[0].filename)
         uploadListData.append('file_name', chunks[0].filename)
         uploadListData.append('hash', hash)
+        uploadListData.append('path', chunks[0].path)
         const uploadListConfig = {
           onUploadProgress: progressEvent => {
             that.progressEvent = progressEvent
@@ -807,7 +862,8 @@ export default {
             // }
           }
         }
-        let uploadListRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/upload`, 'post', uploadListData, uploadListConfig)
+        // that.$route.name === 'ipfs' 判断是否是ipfs storage页面上传操作，以防修改api地址影响bucket上传
+        let uploadListRes = that.$route.name === 'ipfs' ? await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/upload`, 'post', uploadListData, uploadListConfig) : await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/upload`, 'post', uploadListData, uploadListConfig)
         if ((!uploadListRes || uploadListRes.status !== 'success') && (that.typeName === 'upload_folder' || that.typeName === 'upload_folder_list')) {
           that.ruleForm.fileListFolder[indexFile - 1].err = true
           let contErr = `${file.name.trim()} (path:/${that.currentBucket}/${currentFold})`
@@ -827,6 +883,7 @@ export default {
               uploadData.append('file', fileBlob, chunk.filename)
               uploadData.append('file_name', chunk.filename)
               uploadData.append('hash', hash)
+              uploadData.append('path', chunk.path)
               const config = {
                 onUploadProgress: progressEvent => {
                   that.progressEvent = progressEvent
@@ -837,7 +894,8 @@ export default {
                   // }
                 }
               }
-              let uploadRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/upload`, 'post', uploadData, config)
+              // that.$route.name === 'ipfs' 判断是否是ipfs storage页面上传操作，以防修改api地址影响bucket上传
+              let uploadRes = that.$route.name === 'ipfs' ? await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/upload`, 'post', uploadData, config) : await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/upload`, 'post', uploadData, config)
               if (!uploadRes || uploadRes.status !== 'success') {
                 if (that.typeName === 'upload_folder' || that.typeName === 'upload_folder_list') {
                   that.ruleForm.fileListFolder[indexFile - 1].err = true
@@ -1768,6 +1826,14 @@ export default {
                 text-decoration: underline;
               }
             }
+            .el-icon-document-copy {
+              font-size: 16px;
+              margin: 0 5px;
+              cursor: pointer;
+              &:hover {
+                opacity: 0.9;
+              }
+            }
             .tip {
               display: flex;
               align-items: center;
@@ -1794,6 +1860,20 @@ export default {
                 @media screen and (min-width: 1800px) {
                   width: 18px !important;
                   height: 18px !important;
+                }
+              }
+            }
+            .el-select {
+              width: 100%;
+              .el-input {
+                .el-input__inner {
+                  height: auto;
+                  line-height: 2;
+                  font-size: inherit;
+                }
+                .el-icon-arrow-up {
+                  display: flex;
+                  align-items: center;
                 }
               }
             }

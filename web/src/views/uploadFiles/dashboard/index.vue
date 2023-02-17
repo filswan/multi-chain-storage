@@ -34,7 +34,7 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="file_size" :label="$t('uploadFile.file_size')" min-width="85" sortable="custom">
+          <el-table-column prop="file_size" :label="$t('uploadFile.file_size')" min-width="90" sortable="custom">
             <template slot-scope="scope">
               <div class="hot-cold-box">
                 {{ scope.row.file_size | formatbytes }}
@@ -91,7 +91,7 @@
               </el-popover>
             </template>
           </el-table-column>
-          <el-table-column prop="pin_status" min-width="90">
+          <el-table-column prop="pin_status" min-width="100">
             <template slot="header" slot-scope="scope">
               <div class="tips">
                 {{$t('uploadFile.status')}}
@@ -225,11 +225,11 @@
               <small style="display: block;">({{scope.row.dataUnit}})</small>
             </template>
           </el-table-column>
-          <el-table-column prop="active" min-width="80" :label="$t('uploadFile.payment')">
+          <el-table-column prop="active" min-width="100" :label="$t('uploadFile.payment')">
             <template slot-scope="scope">
               <div class="hot-cold-box">
                 <el-button class="uploadBtn grey opacity" v-if="tableData[scope.$index].status.toLowerCase()=='pending'&&tableData[scope.$index].pin_status.toLowerCase()=='unpinned'" :disabled="true">
-                  {{$t('uploadFile.paid')}}
+                  {{$t('uploadFile.pay')}}
                 </el-button>
                 <el-button class="uploadBtn blue" type="primary" v-else-if="tableData[scope.$index].status.toLowerCase()=='pending'" @click.stop="payClick(scope.row)">
                   {{$t('uploadFile.pay')}}
@@ -248,12 +248,12 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column v-if="networkID != 97" prop="MINT" min-width="135" :label="$t('uploadFile.MINT')" :filters="[{text: $t('uploadFile.filter_no_minted'), value: 'n'}, {text: $t('uploadFile.filter_minted'), value: 'y'}]" :filter-multiple="false"
+          <el-table-column v-if="networkID != 97" prop="MINT" min-width="100" :label="$t('uploadFile.MINT')" :filters="[{text: $t('uploadFile.filter_no_minted'), value: 'n'}, {text: $t('uploadFile.filter_minted'), value: 'y'}]" :filter-multiple="false"
             :column-key="'minted'">
             <template slot-scope="scope">
               <div class="hot-cold-box">
                 <el-button class="uploadBtn blue" type="primary" @click.stop="mintFunction(scope.row, 'mint')">{{$t('uploadFile.MINT')}}</el-button>
-                <el-button class="uploadBtn blue" type="primary" @click.stop="mintFunction(scope.row, 'view')">{{$t('uploadFile.mint_view')}}</el-button>
+                <!-- <el-button class="uploadBtn blue" type="primary" @click.stop="mintFunction(scope.row, 'view')">{{$t('uploadFile.mint_view')}}</el-button> -->
               </div>
             </template>
           </el-table-column>
@@ -791,8 +791,8 @@ export default {
         _this.firstIndex = 0
         _this.getData()
         _this.tokenId = mintInfoJson.token_id
-        _this.txHash = mintInfoJson.tx_hash
-        _this.mint_address = mintInfoJson.mint_address || mintInfoJson.address
+        _this.txHash = mintInfoJson.tx_hash || mintInfoJson.nft_tx_hash
+        _this.mint_address = mintInfoJson.mint_address || mintInfoJson.address || mintInfoJson.nft_collection_address
         _this.mintTransaction = true
       }
     },

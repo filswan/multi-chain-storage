@@ -24,6 +24,10 @@ const space = () =>
   import('@/views/space/index')
 const spaceDetail = () =>
   import('@/views/space/detail')
+const ipfs = () =>
+  import('@/views/ipfs/index')
+const ipfsDetail = () =>
+  import('@/views/ipfs/detail')
 const apiKey = () =>
   import('@/views/apiKey/index')
 
@@ -300,6 +304,46 @@ export default new Router({
       meta: {
         metaInfo: {
           title: 'MailForget',
+          description: 'Multi-Chain storage (MCS) is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks.'
+        }
+      }
+    },
+    {
+      path: '/my_ipfs_detail',
+      name: 'ipfs_detail',
+      component: ipfsDetail,
+      beforeEnter: (to, from, next) => {
+        if (!sessionStorage.getItem('metaAddress')) {
+          next({
+            path: '/home'
+          })
+        } else {
+          next()
+        }
+      },
+      meta: {
+        metaInfo: {
+          title: 'Bucket Storage',
+          description: 'Multi-Chain storage (MCS) is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks.'
+        }
+      }
+    },
+    {
+      path: '/my_ipfs',
+      name: 'ipfs',
+      component: ipfs,
+      beforeEnter: (to, from, next) => {
+        if (!sessionStorage.getItem('metaAddress')) {
+          next({
+            path: '/home'
+          })
+        } else {
+          next()
+        }
+      },
+      meta: {
+        metaInfo: {
+          title: 'Bucket Storage',
           description: 'Multi-Chain storage (MCS) is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks.'
         }
       }

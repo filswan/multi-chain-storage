@@ -13,6 +13,7 @@ export default {
     Search_file: '搜索文件',
     documentation: '文档',
     metaSpace: 'Bucket Storage',
+    ipfs: 'IPFS Storage',
     About: 'About',
     Pricing: 'Pricing',
     Resources: 'Resources',

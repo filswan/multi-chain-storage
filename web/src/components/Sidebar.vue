@@ -96,6 +96,13 @@ export default {
           type: ''
         },
         {
+          icon: 'el-icon-s-metaSpace',
+          index: '22',
+          title: this.$t('route.ipfs'),
+          name: 'ipfs',
+          type: ''
+        },
+        {
           icon: 'el-icon-s-billing',
           index: '5',
           title: this.$t('navbar.BillingHistory'),

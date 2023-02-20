@@ -12,13 +12,16 @@ contract MCSCollection is ERC1155, ERC1155Supply, ERC1155URIStorage, Ownable {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIdCounter;
 
+    string public name;
+    string public symbol;
     string public contractURI;
 
     mapping(address => bool) public isAdmin;
     event AdminSet(address user, bool status);
 
     /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor(string memory contractURI_) ERC1155("") {
+    constructor(string memory collectionName, string memory contractURI_) ERC1155("") {
+        name = collectionName;
         contractURI = contractURI_;
 
         isAdmin[msg.sender] = true;
@@ -78,5 +81,9 @@ contract MCSCollection is ERC1155, ERC1155Supply, ERC1155URIStorage, Ownable {
     // get the current id count of tokens
     function idCount() public view returns (uint256) {
         return _tokenIdCounter.current();
+    }
+
+    function setSymbol(string memory _symbol) public onlyOwner {
+        symbol = _symbol;
     }
 }

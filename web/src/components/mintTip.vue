@@ -205,7 +205,7 @@ export default {
             )
 
             if (type === 'create') {
-              let collections = await CollectionFactory.methods.createCollection(nftUrl).send()
+              let collections = await CollectionFactory.methods.createCollection(that.ruleCreateForm.name, nftUrl).send()
               // console.log('collections', collections)
               // let collectionsList = await CollectionFactory.methods.getCollections(that.metaAddress).call()
               // console.log('collections list', collectionsList)

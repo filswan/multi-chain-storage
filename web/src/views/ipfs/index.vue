@@ -3,97 +3,91 @@
     <div class="slideScroll">
       <div class="fes-search" v-loading="listLoad">
         <div class="form_top">
-          <div class="search_file">
-            <div class="search_left"></div>
-            <div class="createTask">
-              <a @click="dialogFun('upload_folder')">
-                <img src="@/assets/images/space/icon_08.png" alt="">
-                <span>Upload Folder</span>
-              </a>
-            </div>
+          <div class="createTask">
+            <a @click="dialogFun('upload_folder')">
+              <img src="@/assets/images/space/icon_08.png" alt="">
+              <span>Upload Folder</span>
+            </a>
           </div>
         </div>
-        <el-row :gutter="15" class="table_body">
-          <el-col :xs="24" :sm="24" :md="24" :lg="24" class="left">
-            <el-table :data="listData.list" ref="tableList" stripe style="width: 100%" max-height="400" empty-text=" ">
-              <el-table-column type="index" label="No." width="50"></el-table-column>
-              <el-table-column prop="name" :label="$t('metaSpace.table_name')">
-                <template slot-scope="scope">
-                  <div class="hot-cold-box">
-                    <div @click="getDetail('detail_ipfs_file', scope.row)" class="list_style">
-                      <i class="icon el-icon-document"></i>
-                      <span>{{ scope.row.name }}</span>
-                    </div>
+        <div class="table_body">
+          <el-table :data="listData.list" ref="tableList" stripe style="width: 100%" max-height="400" empty-text=" ">
+            <el-table-column type="index" label="No." width="50"></el-table-column>
+            <el-table-column prop="name" :label="$t('metaSpace.table_name')">
+              <template slot-scope="scope">
+                <div class="hot-cold-box">
+                  <div @click="getDetail('detail_ipfs_file', scope.row)" class="list_style">
+                    <i class="icon el-icon-document"></i>
+                    <span>{{ scope.row.name }}</span>
                   </div>
-                </template>
-              </el-table-column>
-              <el-table-column prop="payload_cid" min-width="120">
-                <template slot="header" slot-scope="scope">
-                  <div class="tips" style="white-space: nowrap;">
-                    {{$t('metaSpace.table_cid')}}
-
-                    <el-popover placement="top" popper-class="elPopTitle" width="200" trigger="hover" :content="$t('metaSpace.table_cid_tip')">
-                      <img slot="reference" src="@/assets/images/info.png" />
-                    </el-popover>
-                  </div>
-                </template>
-                <template slot-scope="scope">
-                  <div class="hot-cold-box">
-                    <div class="copyText">
-                      <span>{{ scope.row.payload_cid||'-' }}</span>
-                      <img class="imgCopy" src="@/assets/images/space/icon_10.png" @click="copyLink(scope.row.payload_cid)" v-if="scope.row.payload_cid" alt="">
-                    </div>
-                  </div>
-                </template>
-              </el-table-column>
-              <el-table-column prop="pin_status" :label="$t('metaSpace.table_status')">
-                <template slot-scope="scope">
-                  <div class="hot-cold-box">
-                    <span>{{ scope.row.pin_status||'-' }}</span>
-                  </div>
-                </template>
-              </el-table-column>
-              <el-table-column prop="updated_at" :label="$t('metaSpace.table_LastModified')">
-                <template slot-scope="scope">
-                  <div class="hot-cold-box">
-                    <p>{{ momentFun(scope.row.updated_at) }}</p>
-                  </div>
-                </template>
-              </el-table-column>
-              <el-table-column prop="size" :label="$t('metaSpace.table_size')">
-                <template slot-scope="scope">
-                  <div class="hot-cold-box">
-                    <!--                    <p>{{ scope.row.size | formatbytes }}</p>-->
-                    <p v-if="scope.row.size !== 0">{{ scope.row.size | formatbytes }}</p>
-                    <p v-else>{{ '-' }}</p>
-                  </div>
-                </template>
-              </el-table-column>
-              <el-table-column prop="" :label="$t('metaSpace.table_action')" min-width="120">
-                <template slot-scope="scope">
-                  <div class="hot-cold-box">
-                    <i class="icon icon_share" @click="copyLink(`${scope.row.ipfs_url}?filename=${scope.row.name}`, 1)"></i>
-                    <i class="icon icon_details" @click="getDetail('detail_ipfs_file', scope.row)"></i>
-                    <i class="icon icon_delete" @click="dialogFun('delete', scope.row)"></i>
-                  </div>
-                </template>
-              </el-table-column>
-            </el-table>
-            <div class="form_pagination" v-if="listData.list.length>0">
-              <div class="pagination">
-                <el-pagination :total="parma.total" :page-size="parma.limit" :current-page="parma.offset" :layout="'total, prev, pager, next'" @current-change="handleCurrentChange" @size-change="handleSizeChange" />
-                <div class="span" v-if="!bodyWidth">
-                  <span>{{$t('uploadFile.goTo')}}</span>
-                  <el-input class="paginaInput" @change="pageSizeChange" v-model.number="parma.jumperOffset" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')" autocomplete="off"></el-input>
-                  <span>{{$t('uploadFile.goTopage')}}</span>
                 </div>
+              </template>
+            </el-table-column>
+            <el-table-column prop="payload_cid" min-width="120">
+              <template slot="header" slot-scope="scope">
+                <div class="tips" style="white-space: nowrap;">
+                  {{$t('metaSpace.table_cid')}}
+
+                  <el-popover placement="top" popper-class="elPopTitle" width="200" trigger="hover" :content="$t('metaSpace.table_cid_tip')">
+                    <img slot="reference" src="@/assets/images/info.png" />
+                  </el-popover>
+                </div>
+              </template>
+              <template slot-scope="scope">
+                <div class="hot-cold-box">
+                  <div class="copyText">
+                    <span>{{ scope.row.payload_cid||'-' }}</span>
+                    <img class="imgCopy" src="@/assets/images/space/icon_10.png" @click="copyLink(scope.row.payload_cid)" v-if="scope.row.payload_cid" alt="">
+                  </div>
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column prop="pin_status" :label="$t('metaSpace.table_status')">
+              <template slot-scope="scope">
+                <div class="hot-cold-box">
+                  <span>{{ scope.row.pin_status||'-' }}</span>
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column prop="updated_at" :label="$t('metaSpace.table_LastModified')">
+              <template slot-scope="scope">
+                <div class="hot-cold-box">
+                  <p>{{ momentFun(scope.row.updated_at) }}</p>
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column prop="size" :label="$t('metaSpace.table_size')">
+              <template slot-scope="scope">
+                <div class="hot-cold-box">
+                  <p v-if="scope.row.size !== 0">{{ scope.row.size | formatbytes }}</p>
+                  <p v-else>{{ '-' }}</p>
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column prop="" :label="$t('metaSpace.table_action')" min-width="120">
+              <template slot-scope="scope">
+                <div class="hot-cold-box">
+                  <i class="icon icon_share" @click="copyLink(`${scope.row.ipfs_url}?filename=${scope.row.name}`, 1)"></i>
+                  <i class="icon icon_details" @click="getDetail('detail_ipfs_file', scope.row)"></i>
+                  <i class="icon icon_delete" @click="dialogFun('delete', scope.row)"></i>
+                </div>
+              </template>
+            </el-table-column>
+          </el-table>
+          <div class="form_pagination" v-if="listData.list.length>0">
+            <div class="pagination">
+              <el-pagination :total="parma.total" :page-size="parma.limit" :current-page="parma.offset" :layout="'total, prev, pager, next'" @current-change="handleCurrentChange" @size-change="handleSizeChange" />
+              <div class="span" v-if="!bodyWidth">
+                <span>{{$t('uploadFile.goTo')}}</span>
+                <el-input class="paginaInput" @change="pageSizeChange" v-model.number="parma.jumperOffset" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')" autocomplete="off"></el-input>
+                <span>{{$t('uploadFile.goTopage')}}</span>
               </div>
             </div>
-            <div class="fe-none" v-if="listData.list&&listData.list.length<=0">
-              <p class="p_label">{{$t('metaSpace.empty_prompt_detail')}}</p>
-            </div>
-          </el-col>
-        </el-row>
+          </div>
+          <div class="fe-none" v-if="listData.list&&listData.list.length<=0">
+            <p class="p_label">{{$t('metaSpace.empty_prompt_detail')}}</p>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -112,36 +106,28 @@ export default {
   name: 'Space',
   data () {
     return {
+      bodyWidth: document.documentElement.clientWidth < 1024,
       listLoad: true,
       listTableLoad: false,
       backupLoad: false,
-      url: '',
-      currentBucket: [],
       dialogFormVisible: false,
       createLoad: false,
+      typeName: 'delete',
+      url: '',
+      currentBucket: [],
       listData: {
         listBuckets: [],
         listBucketFile: [],
         listBucketFolder: [],
         list: []
       },
-      defaultProps: {
-        children: 'children',
-        label: 'Name'
-      },
       areaBody: {},
-      typeName: 'delete',
-      detail: {
-        object: 0,
-        size: 0
-      },
       parma: {
         limit: 10,
         offset: 1,
         total: 0,
         jumperOffset: 1
-      },
-      bodyWidth: document.documentElement.clientWidth < 1024
+      }
     }
   },
   components: {
@@ -166,33 +152,15 @@ export default {
         bucketDetail.options = [{
           value: infoRes.data.ipfs_url,
           label: infoRes.data.ipfs_url
-        }, {
-          value: infoRes.data.created_at,
-          label: infoRes.data.created_at
-        }, {
-          value: infoRes.data.size,
-          label: infoRes.data.size
         }]
       }
       that.dialogFun(type, bucketDetail)
       that.backupLoad = false
     },
-    getListBucketMain (fileName, type, index) {
-      let fold = ''
-      if (type && index) fold = (that.currentBucket.slice(0, index + 1)).join('/')
-      else if (type && index === 0) fold = that.currentBucket[0]
-      else fold = `${that.url}/${fileName}`
-
-      if (fileName) that.$router.push({ name: 'Space_detail', query: { folder: encodeURIComponent(fold), bucket_uuid: that.$route.query.bucket_uuid, bucket_size: that.$route.query.bucket_size } })
-      else that.$router.push({ name: 'Space' })
-    },
     async getPopUps (dialog, rows, bucketName) {
       switch (rows) {
         case 'delete':
           that.deleteFun()
-          break
-        case 'rename':
-          that.renameFun(bucketName)
           break
         case 'folderClose':
           that.getUploadDialog(dialog, 1)
@@ -230,26 +198,6 @@ export default {
       if (rows) {
         that.getListObjects(1)
       }
-    },
-    async renameFun (newName) {
-      that.createLoad = true
-      const params =
-        {
-          'action': 'rename',
-          'src': {
-            'dirs': [that.areaBody.id],
-            'items': []
-          },
-          'new_name': newName
-        }
-      const renameRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v3/object/rename`, 'post', params)
-      if (!renameRes || renameRes.status !== 'success') {
-        that.$message.error(renameRes.message || 'Fail')
-      }
-      await that.$commonFun.timeout(500)
-      that.createLoad = false
-      that.dialogFormVisible = false
-      that.getListObjects()
     },
     async deleteFun () {
       that.listTableLoad = true
@@ -291,45 +239,6 @@ export default {
       } finally {
         document.body.removeChild(txtArea)
       }
-    },
-    async getListObjects (type) {
-      that.listLoad = true
-      that.detail.size = 0
-      const offset = that.parma.offset ? (that.parma.offset - 1) * that.parma.limit : 0
-      let params = {
-        prefix: '',
-        bucket_uid: that.$route.query.bucket_uuid,
-        limit: that.parma.limit,
-        offset: offset
-      }
-      const directoryRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/get_file_list?${QS.stringify(params)}`, 'get')
-      if (!directoryRes || directoryRes.status !== 'success') {
-        that.$message.error(directoryRes.message || 'Fail')
-        return false
-      }
-      that.parma.total = directoryRes.data.count
-      that.listData = {
-        listBuckets: directoryRes.data.file_list || [],
-        listBucketFile: [],
-        listBucketFolder: [],
-        list: []
-      }
-      that.listData.listBuckets.forEach((element, i) => {
-        element.index = i
-        that.detail.size += element.size
-        if (element.is_folder) that.listData.listBucketFolder.push(element)
-        else that.listData.listBucketFile.push(element)
-      })
-      that.detail.object = directoryRes.data.length || 0
-      that.listData.list = that.listData.listBucketFolder.concat(that.listData.listBucketFile)
-      await that.$commonFun.timeout(500)
-      that.listLoad = false
-      that.$refs.tableList.bodyWrapper.scrollTop = 0
-      // if (type === 1) that.$refs.tableList.bodyWrapper.scrollTop = that.$refs.tableList.bodyWrapper.scrollHeight
-    },
-    handleNodeClick (data) {
-      // console.log(data)
-      that.getListBucketMain(data.name)
     },
     handleCurrentChange (val) {
       that.parma.offset = Number(val)
@@ -380,6 +289,38 @@ export default {
         ? moment(new Date(parseInt(dateNew))).format('YYYY-MM-DD HH:mm:ss') + ` (${dataUnit})`
         : '-'
       return dateNew
+    },
+    async getListObjects (type) {
+      that.listLoad = true
+      const offset = that.parma.offset ? (that.parma.offset - 1) * that.parma.limit : 0
+      let params = {
+        prefix: '',
+        bucket_uid: that.$route.query.bucket_uuid,
+        limit: that.parma.limit,
+        offset: offset
+      }
+      const directoryRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/get_file_list?${QS.stringify(params)}`, 'get')
+      if (!directoryRes || directoryRes.status !== 'success') {
+        that.$message.error(directoryRes.message || 'Fail')
+        return false
+      }
+      that.parma.total = directoryRes.data.count
+      that.listData = {
+        listBuckets: directoryRes.data.file_list || [],
+        listBucketFile: [],
+        listBucketFolder: [],
+        list: []
+      }
+      that.listData.listBuckets.forEach((element, i) => {
+        element.index = i
+        if (element.is_folder) that.listData.listBucketFolder.push(element)
+        else that.listData.listBucketFile.push(element)
+      })
+      that.listData.list = that.listData.listBucketFolder.concat(that.listData.listBucketFile)
+      await that.$commonFun.timeout(500)
+      that.listLoad = false
+      that.$refs.tableList.bodyWrapper.scrollTop = 0
+      // if (type === 1) that.$refs.tableList.bodyWrapper.scrollTop = that.$refs.tableList.bodyWrapper.scrollHeight
     },
     init () {
       that.parma.limit = 10
@@ -501,6 +442,7 @@ export default {
       .form_top {
         display: flex;
         align-items: center;
+        justify-content: flex-end;
         flex-wrap: wrap;
         margin: 0 auto 0.5rem;
         @media screen and (max-width: 441px) {
@@ -515,6 +457,75 @@ export default {
           color: #000;
           line-height: 0.42rem;
           text-indent: 0;
+        }
+        .createTask {
+          display: flex;
+          align-items: center;
+          cursor: pointer;
+          a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 1.6rem;
+            padding: 0.13rem;
+            margin: 0 0 0 0.2rem;
+            background: linear-gradient(45deg, #4e88ff, #4b5fff);
+            border-radius: 0.14rem;
+            line-height: 1.5;
+            text-align: center;
+            color: #fff;
+            font-size: 0.18rem;
+            border: 0;
+            outline: none;
+            transition: background-color 0.3s, border-color 0.3s, color 0.3s,
+              box-shadow 0.3s;
+            cursor: pointer;
+            white-space: nowrap;
+            img {
+              display: inline-block;
+              height: 0.25rem;
+              margin: 0 0.1rem 0 0;
+              @media screen and (max-width: 1260px) {
+                height: 16px;
+              }
+            }
+            &:hover {
+              opacity: 0.9;
+              box-shadow: 0 12px 12px -12px rgba(12, 22, 44, 0.32);
+            }
+          }
+          .upload_body {
+            position: relative;
+            .upload_absoltu {
+              display: none;
+              position: absolute;
+              left: 0.2rem;
+              right: 0;
+              padding: 0.1rem 0;
+              background-color: #fff;
+              box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+              z-index: 9;
+              border-radius: 5px;
+              @media screen and (max-width: 768px) {
+                left: 0;
+              }
+              p {
+                padding: 0.05rem 0.15rem;
+                font-size: 0.17rem;
+                @media screen and (max-width: 992px) {
+                  font-size: 14px;
+                }
+                &:hover {
+                  background-color: rgba(0, 137, 246, 0.07);
+                }
+              }
+            }
+            &:hover {
+              .upload_absoltu {
+                display: block;
+              }
+            }
+          }
         }
 
         .upload_title {
@@ -537,75 +548,6 @@ export default {
           p {
             font-size: 0.13rem;
             color: #222;
-          }
-          .createTask {
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            a {
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              min-width: 1.6rem;
-              padding: 0.13rem;
-              margin: 0 0 0 0.2rem;
-              background: linear-gradient(45deg, #4e88ff, #4b5fff);
-              border-radius: 0.14rem;
-              line-height: 1.5;
-              text-align: center;
-              color: #fff;
-              font-size: 0.18rem;
-              border: 0;
-              outline: none;
-              transition: background-color 0.3s, border-color 0.3s, color 0.3s,
-                box-shadow 0.3s;
-              cursor: pointer;
-              white-space: nowrap;
-              img {
-                display: inline-block;
-                height: 0.25rem;
-                margin: 0 0.1rem 0 0;
-                @media screen and (max-width: 1260px) {
-                  height: 16px;
-                }
-              }
-              &:hover {
-                opacity: 0.9;
-                box-shadow: 0 12px 12px -12px rgba(12, 22, 44, 0.32);
-              }
-            }
-            .upload_body {
-              position: relative;
-              .upload_absoltu {
-                display: none;
-                position: absolute;
-                left: 0.2rem;
-                right: 0;
-                padding: 0.1rem 0;
-                background-color: #fff;
-                box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
-                z-index: 9;
-                border-radius: 5px;
-                @media screen and (max-width: 768px) {
-                  left: 0;
-                }
-                p {
-                  padding: 0.05rem 0.15rem;
-                  font-size: 0.17rem;
-                  @media screen and (max-width: 992px) {
-                    font-size: 14px;
-                  }
-                  &:hover {
-                    background-color: rgba(0, 137, 246, 0.07);
-                  }
-                }
-              }
-              &:hover {
-                .upload_absoltu {
-                  display: block;
-                }
-              }
-            }
           }
           .search_left {
             display: flex;

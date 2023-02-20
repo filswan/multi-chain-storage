@@ -35,6 +35,20 @@
         </el-form>
       </div>
     </div>
+    <div class="fe-none" v-if="typeName === 'add_domain'">
+      <div class="addBucket" v-loading="createLoad">
+        <i class="el-icon-circle-close close" @click="closeDia()"></i>
+        <div class="title">{{$t('my_profile.apiKey_btn_03')}}</div>
+        <el-form :model="form" status-icon :rules="rulesDomain" label-position="top" ref="form" @submit.native.prevent>
+          <el-form-item prop="domain" label="Domain address">
+            <el-input v-model="form.domain" maxlength="256" ref="bucketNameRef"></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="getDialogClose('form')">{{$t('metaSpace.Submit')}}</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+    </div>
     <div class="fe-none" v-else-if="typeName === 'delete'">
       <div class="addBucket" v-loading="listTableLoad">
         <div class="title" v-if="$route.name == 'Space'">
@@ -487,13 +501,17 @@ export default {
         name: '',
         email: '',
         day: '30',
-        checkType: ['agreement']
+        checkType: ['agreement'],
+        domain: ''
       },
       rules: {
         name: [{ validator: validateName, trigger: 'blur' }]
       },
       rulesDay: {
         day: [{ required: true, message: 'Please fill in the expiration date.', trigger: 'blur' }]
+      },
+      rulesDomain: {
+        domain: [{ required: true, message: 'Please fill in the domain address.', trigger: 'blur' }]
       },
       rulesEmail: {
         email: [
@@ -621,7 +639,7 @@ export default {
       }
       that.$refs[formName].validate(async valid => {
         if (valid) {
-          that.$emit('getPopUps', false, that.typeName, that.typeName === 'add_apikey' ? that.form.day : that.form.name)
+          that.$emit('getPopUps', false, that.typeName, that.typeName === 'add_apikey' ? that.form.day : that.typeName === 'add_domain' ? that.form.domain : that.form.name)
         } else {
           console.log('error submit!!')
           return false
@@ -1234,7 +1252,7 @@ export default {
     }
     document.onkeydown = function (e) {
       if (e.keyCode === 13) {
-        if (that.typeName === 'add' || that.typeName === 'add_apikey' || that.typeName === 'addNewBucket' || that.typeName === 'rename' || that.typeName === 'addSub') that.getDialogClose('form')
+        if (that.typeName === 'add' || that.typeName === 'add_apikey' || that.typeName === 'add_domain' || that.typeName === 'addNewBucket' || that.typeName === 'rename' || that.typeName === 'addSub') that.getDialogClose('form')
         if (that.typeName === 'emailLogin') that.submitEmail('form')
       }
     }

@@ -1,209 +1,138 @@
 <template>
-  <div class="fs3_body">
-    <div class="slideScroll">
-      <header class="fe-header">
-        <h2>
-          <a @click="getListBucketMain()">Buckets</a>
-          >
-          <span class="main" v-for="(item, index) in currentBucket" :key="index">
-            <b v-if="index>0">>&nbsp;</b>
-            <a href="javascript:;" style="word-break: break-word;" @click="getListBucketMain(item, true, index)">{{item}}</a>
-          </span>
-        </h2>
-      </header>
-      <div class="fes-search" v-loading="listLoad">
-        <div class="form_top">
-          <div class="search_file">
-            <div class="search_left">
-              <!-- <div class="icon">{{$route.query.bucket_size | formatbytes}}</div>
-              <div class="icon">{{parma.total}} Object</div> -->
-            </div>
-            <div class="createTask">
-              <a @click="dialogFun('addSub')">
-                <img src="@/assets/images/space/icon_01.png" alt="">
-                <span>{{$t('metaSpace.create_folder')}}</span>
-              </a>
-              <div class="upload_body">
-                <a>
-                  <img src="@/assets/images/space/icon_08.png" alt="">
-                  <span>{{$t('metaSpace.Upload_File')}}</span>
-                </a>
-                <div class="upload_absoltu">
-                  <p @click="dialogFun('upload', $route.query.bucket_uuid)">{{$t('metaSpace.Upload_File')}}</p>
-                  <p @click="dialogFun('upload_folder', $route.query.bucket_uuid)">Upload Folder</p>
-                </div>
-              </div>
-            </div>
+  <div class="spaceStyle" v-loading="listLoad">
+    <div class="slideScroll" v-if="listBucketIndex">
+      <div class="form_top">
+        <div class="search_file">
+          <div class="search_right">
+            <el-input v-if="false" :placeholder="$t('metaSpace.search_bucket')" prefix-icon="el-icon-search" v-model="search" clearable @input="getListBuckets">
+            </el-input>
+          </div>
+          <div class="createTask">
+            <a @click="dialogFun('addNewBucket')">
+              <img src="@/assets/images/space/icon_01.png" alt="">
+              <span>{{$t('metaSpace.add_bucket')}}</span>
+            </a>
           </div>
         </div>
-        <el-row :gutter="15" class="table_body">
-          <el-col :xs="24" :sm="24" :md="24" :lg="24" class="left">
-            <el-table :data="listData.list" ref="tableList" stripe style="width: 100%" max-height="400" empty-text=" ">
-              <el-table-column type="index" label="No." width="50"></el-table-column>
-              <el-table-column prop="name" :label="$t('metaSpace.table_name')">
-                <template slot-scope="scope">
-                  <div class="hot-cold-box">
-                    <div v-if="scope.row.is_folder" @click="getListBucketMain(scope.row.name)" class="list_style">
-                      <i class="icon el-icon-folder"></i>
-                      <span style="text-decoration: underline;">{{ scope.row.name }}</span>
-                    </div>
-                    <div v-else @click="getDetail('detail_file', scope.row)" class="list_style">
-                      <i class="icon el-icon-document"></i>
-                      <span>{{ scope.row.name }}</span>
-                    </div>
-                  </div>
-                </template>
-              </el-table-column>
-              <el-table-column prop="payload_cid" min-width="120">
-                <template slot="header" slot-scope="scope">
-                  <div class="tips" style="white-space: nowrap;">
-                    {{$t('metaSpace.table_cid')}}
+      </div>
+      <div class="fes-search">
+        <div class="title">
+          {{$t('metaSpace.list_bucket')}} ({{listBucketActive}}/{{listBuckets.length>0?listBuckets.length:1}})
 
-                    <el-popover placement="top" popper-class="elPopTitle" width="200" trigger="hover" :content="$t('metaSpace.table_cid_tip')">
-                      <img slot="reference" src="@/assets/images/info.png" />
-                    </el-popover>
-                  </div>
-                </template>
-                <template slot-scope="scope">
-                  <div class="hot-cold-box">
-                    <div class="copyText">
-                      <span>{{ scope.row.payload_cid||'-' }}</span>
-                      <img class="imgCopy" src="@/assets/images/space/icon_10.png" @click="copyLink(scope.row.payload_cid)" v-if="scope.row.payload_cid" alt="">
-                    </div>
-                  </div>
-                </template>
-              </el-table-column>
-              <el-table-column prop="pin_status" :label="$t('metaSpace.table_status')">
-                <template slot-scope="scope">
-                  <div class="hot-cold-box">
-                    <span>{{ scope.row.pin_status||'-' }}</span>
-                  </div>
-                </template>
-              </el-table-column>
-              <el-table-column prop="updated_at" :label="$t('metaSpace.table_LastModified')">
-                <template slot-scope="scope">
-                  <div class="hot-cold-box">
-                    <p>{{ momentFun(scope.row.updated_at) }}</p>
-                  </div>
-                </template>
-              </el-table-column>
-              <el-table-column prop="size" :label="$t('metaSpace.table_size')">
-                <template slot-scope="scope">
-                  <div class="hot-cold-box">
-                    <!--                    <p>{{ scope.row.size | formatbytes }}</p>-->
-                    <p v-if="scope.row.size !== 0">{{ scope.row.size | formatbytes }}</p>
-                    <p v-else>{{ '-' }}</p>
-                  </div>
-                </template>
-              </el-table-column>
-              <el-table-column prop="" :label="$t('metaSpace.table_action')" min-width="120">
-                <template slot-scope="scope">
-                  <div class="hot-cold-box">
-                    <i class="icon icon_share" v-if="!scope.row.is_folder" @click="copyLink(`${scope.row.ipfs_url}?filename=${scope.row.name}`, 1)"></i>
-                    <i class="icon icon_details" v-if="!scope.row.is_folder" @click="getDetail('detail_file', scope.row)"></i>
-                    <i class="icon icon_delete" @click="dialogFun('delete', scope.row)"></i>
-                  </div>
-                </template>
-              </el-table-column>
-            </el-table>
-            <div class="form_pagination" v-if="listData.list.length>0">
-              <div class="pagination">
-                <el-pagination :total="parma.total" :page-size="parma.limit" :current-page="parma.offset" :layout="'total, prev, pager, next'" @current-change="handleCurrentChange" @size-change="handleSizeChange" />
-                <div class="span" v-if="!bodyWidth">
-                  <span>{{$t('uploadFile.goTo')}}</span>
-                  <el-input class="paginaInput" @change="pageSizeChange" v-model.number="parma.jumperOffset" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')" autocomplete="off"></el-input>
-                  <span>{{$t('uploadFile.goTopage')}}</span>
-                </div>
+          <el-popover placement="top" popper-class="elPopTitle" width="200" trigger="hover" :content="$t('metaSpace.list_bucket_tip')">
+            <img slot="reference" src="@/assets/images/info.png" />
+          </el-popover>
+        </div>
+        <el-table :data="listBuckets" stripe style="width: 100%" max-height="580" :empty-text="$t('deal.formNotData')">
+          <el-table-column type="index" label="No." width="50"></el-table-column>
+          <el-table-column prop="bucket_name" :label="$t('metaSpace.table_name')">
+            <template slot-scope="scope">
+              <div class="" v-if="!scope.row.is_active" @click="dialogFun('payActive')">
+                <span style="opacity: 0.7;">{{ scope.row.bucket_name }}</span>
               </div>
-            </div>
-            <div class="fe-none" v-if="listData.list&&listData.list.length<=0">
-              <p class="p_label">{{$t('metaSpace.empty_prompt_detail')}}</p>
-            </div>
-          </el-col>
-        </el-row>
+              <div class="hot-cold-box" v-else @click="getListBucketDetail(scope.row)">
+                <span style="text-decoration: underline;">{{ scope.row.bucket_name }}</span>
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column prop="size" :label="$t('metaSpace.table_space')">
+            <template slot-scope="scope">
+              <div class="hot-cold-box">
+                <span>{{ scope.row.size | formatbytes }}/{{scope.row.max_size | formatbytes}}</span>
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column prop="created_at" :label="$t('metaSpace.table_createon')">
+            <template slot-scope="scope">
+              <div class="hot-cold-box">
+                <span>{{ momentFun(scope.row.created_at) }}</span>
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column prop="" :label="$t('metaSpace.table_action')" min-width="120">
+            <template slot-scope="scope">
+              <div class="hot-cold-box">
+                <!-- <i class="icon icon_pay " v-if="!scope.row.is_active" @click="dialogFun('pay', scope.row)"></i> -->
+                <!-- <i class="icon icon_pay icon_pay_disable"></i> -->
+                <i class="icon icon_rename" @click="dialogFun('rename', scope.row)"></i>
+                <i class="icon icon_details" @click="getDetail(scope.row)"></i>
+                <i class="icon icon_delete" @click="dialogFun('delete', scope.row)"></i>
+              </div>
+            </template>
+          </el-table-column>
+        </el-table>
+        <p class="detailMore">
+          Want more Bucket storage? Click
+          <a href="https://docs.filswan.com/multichain.storage/faq" target="_blank">here</a> for more details.
+        </p>
       </div>
     </div>
 
-    <pop-ups v-if="dialogFormVisible" :dialogFormVisible="dialogFormVisible" :typeModule="typeName" :areaBody="areaBody" :createLoad="createLoad" :listTableLoad="listTableLoad" :currentBucket="url" :backupLoad="backupLoad" :listBucketFolder="listData.listBucketFolder"
-      @getUploadDialog="getUploadDialog" @getPopUps="getPopUps"></pop-ups>
+    <div class="slideScroll" v-else>
+      <div class="form_top">
+        <div class="search_file">
+          <div class="search_right"></div>
+          <div class="createTask">
+            <a @click="dialogFun('add')">
+              <img src="@/assets/images/space/icon_01.png" alt="">
+              <span>{{$t('metaSpace.create_bucket')}}</span>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="fe-none">
+        <p class="p_label">{{$t('metaSpace.empty_prompt')}}</p>
+      </div>
+    </div>
+
+    <pop-ups v-if="dialogFormVisible" :dialogFormVisible="dialogFormVisible" :typeModule="typeName" :areaBody="areaBody" :createLoad="createLoad" :listTableLoad="listTableLoad" :backupLoad="backupLoad" :payLoad="payLoad" @getPopUps="getPopUps"></pop-ups>
   </div>
-
 </template>
-
 <script>
 import moment from 'moment'
-import QS from 'qs'
 import popUps from '@/components/popups'
+import QS from 'qs'
 let that
 export default {
-  name: 'Space',
   data () {
     return {
+      width: document.body.clientWidth > 600 ? '450px' : '95%',
       listLoad: true,
+      createLoad: false,
+      payLoad: false,
       listTableLoad: false,
       backupLoad: false,
-      url: '',
-      currentBucket: [],
+      search: '',
+      listBuckets: [],
+      listBucketsAll: [],
+      listBucketActive: 0,
+      listBucketIndex: false,
       dialogFormVisible: false,
-      createLoad: false,
-      listData: {
-        listBuckets: [],
-        listBucketFile: [],
-        listBucketFolder: [],
-        list: []
-      },
-      defaultProps: {
-        children: 'children',
-        label: 'Name'
-      },
       areaBody: {},
-      typeName: 'delete',
-      detail: {
-        object: 0,
-        size: 0
-      },
-      parma: {
-        limit: 10,
-        offset: 1,
-        total: 0,
-        jumperOffset: 1
-      },
-      bodyWidth: document.documentElement.clientWidth < 1024
+      typeName: 'add'
     }
   },
-  components: {
-    popUps
-  },
+  components: { popUps },
   methods: {
-    async getDetail (type, row) {
+    async getDetail (row) {
       that.backupLoad = true
-      that.dialogFun(type, row)
+      that.dialogFun('detail', row)
       let bucketDetail = row
-      let params = {
-        file_id: row.id
-      }
-      const infoRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/get_file_info?${QS.stringify(params)}`, 'get')
-      if (!infoRes || infoRes.status !== 'success') that.$message.error(infoRes ? infoRes.message : 'Fail')
-      else {
-        bucketDetail.name = infoRes.data.name
-        bucketDetail.created_at = infoRes.data.created_at
-        bucketDetail.size = infoRes.data.size
-        bucketDetail.ipfs_url = `${infoRes.data.ipfs_url}?filename=${infoRes.data.name}`
-        bucketDetail.payload_cid = infoRes.data.payload_cid
-      }
-      that.dialogFun(type, bucketDetail)
+      // const backupRes = await that.$commonFun.sendRequest(`${process.env.BASE_METASPACE}api/v3/backup/stat/${row.id}`, 'get')
+      // if (!backupRes || backupRes.status !== 'success') that.$message.error(backupRes ? backupRes.message : 'Fail')
+      // else {
+      //   bucketDetail.miner_list = backupRes.data.miner_list.split(',') || ''
+      //   bucketDetail.miner_url_prefix = backupRes.data.miner_url_prefix || ''
+      //   bucketDetail.miner_count = backupRes.data.miner_count || 0
+      //   bucketDetail.piece_cid = backupRes.data.piece_cid || ''
+      //   bucketDetail.payload_cid = backupRes.data.payload_cid || ''
+      //   bucketDetail.remaining_service_days = backupRes.data.remaining_service_days || 0
+      // }
+      that.dialogFun('detail', bucketDetail)
       that.backupLoad = false
     },
-    getListBucketMain (fileName, type, index) {
-      let fold = ''
-      if (type && index) fold = (that.currentBucket.slice(0, index + 1)).join('/')
-      else if (type && index === 0) fold = that.currentBucket[0]
-      else fold = `${that.url}/${fileName}`
-
-      if (fileName) that.$router.push({ name: 'Space_detail', query: { folder: encodeURIComponent(fold), bucket_uuid: that.$route.query.bucket_uuid, bucket_size: that.$route.query.bucket_size } })
-      else that.$router.push({ name: 'Space' })
-    },
     async getPopUps (dialog, rows, bucketName) {
+      // console.log('rows', rows)
       switch (rows) {
         case 'delete':
           that.deleteFun()
@@ -211,168 +140,101 @@ export default {
         case 'rename':
           that.renameFun(bucketName)
           break
-        case 'folderClose':
-          that.getUploadDialog(dialog, 1)
+        case 'payClose':
+          that.dialogFormVisible = dialog
+          that.getListBuckets()
           break
         default:
-          if (rows) that.getDialogClose(dialog, rows, bucketName)
+          if (rows) that.getDialogClose(rows, bucketName)
           else that.dialogFormVisible = dialog
           break
       }
     },
-    async getDialogClose (dialog, formName, name) {
-      that.createLoad = true
-      const current = that.currentBucket.slice(1).join('/')
-      const params = {
-        'file_name': `${name.trim()}`,
-        'prefix': current || '',
-        'bucket_uid': that.$route.query.bucket_uuid
-      }
-      const directoryRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/create_folder`, 'post', params)
-      if (!directoryRes || directoryRes.status !== 'success') {
-        that.$message.error(directoryRes.message || 'Fail')
-      }
-      await that.$commonFun.timeout(500)
-      that.createLoad = false
-      that.dialogFormVisible = dialog
-      that.getListObjects()
-    },
     async dialogFun (name, row) {
       that.typeName = name
-      if (row) that.areaBody = row
+      that.areaBody = row || {}
       that.dialogFormVisible = true
-    },
-    getUploadDialog (dialog, rows) {
-      that.dialogFormVisible = dialog
-      if (rows) {
-        that.getListObjects(1)
-      }
     },
     async renameFun (newName) {
       that.createLoad = true
       const params =
         {
-          'action': 'rename',
-          'src': {
-            'dirs': [that.areaBody.id],
-            'items': []
-          },
-          'new_name': newName
+          'bucket_uid': that.areaBody.bucket_uid,
+          'bucket_name': newName
         }
-      const renameRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v3/object/rename`, 'post', params)
+      const renameRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/bucket/rename`, 'post', params)
       if (!renameRes || renameRes.status !== 'success') {
         that.$message.error(renameRes.message || 'Fail')
       }
       await that.$commonFun.timeout(500)
       that.createLoad = false
       that.dialogFormVisible = false
-      that.getListObjects()
+      that.getListBuckets()
     },
     async deleteFun () {
       that.listTableLoad = true
       const params = {
-        'file_id': that.areaBody.id
+        'bucket_uid': that.areaBody.bucket_uid
       }
-      const deleteRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/delete?${QS.stringify(params)}`, 'get')
+      const deleteRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/bucket/delete?${QS.stringify(params)}`, 'get')
       if (!deleteRes || deleteRes.status !== 'success') {
         that.$message.error(deleteRes.status || 'Fail')
       }
       await that.$commonFun.timeout(500)
       that.listTableLoad = false
       that.dialogFormVisible = false
-      that.getListObjects()
+      that.getListBuckets()
     },
-    copyLink (text, tip) {
-      var txtArea = document.createElement('textarea')
-      txtArea.id = 'txt'
-      txtArea.style.position = 'fixed'
-      txtArea.style.top = '0'
-      txtArea.style.left = '0'
-      txtArea.style.opacity = '0'
-      txtArea.value = text
-      document.body.appendChild(txtArea)
-      txtArea.select()
-
-      try {
-        var successful = document.execCommand('copy')
-        var msg = successful ? tip ? 'IPFS link is copied on the clip board!' : 'Copied to clipboard!' : 'copy failed!'
-        // console.log('Copying text command was ' + msg)
-        if (successful) {
-          that.$message({
-            message: msg,
-            type: 'success'
-          })
-        }
-      } catch (err) {
-        console.log('Oops, unable to copy')
-      } finally {
-        document.body.removeChild(txtArea)
+    getListBucketDetail (row) {
+      that.$router.push({ name: 'Space_detail', query: { folder: encodeURIComponent(row.bucket_name), bucket_uuid: row.bucket_uid, bucket_size: row.size } })
+    },
+    async getDialogClose (formName, name) {
+      if (formName === 'pay') that.payLoad = true
+      else that.createLoad = true
+      const params = {
+        'bucket_name': `${name.trim()}`
+      }
+      const directoryRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/bucket/create`, 'post', params)
+      if (!directoryRes || directoryRes.status !== 'success') {
+        that.$message.error(directoryRes.message || 'Fail')
+      }
+      await that.$commonFun.timeout(500)
+      that.dialogFormVisible = false
+      if (formName === 'pay') {
+        that.payLoad = false
+        that.dialogFun('success')
+      } else {
+        that.createLoad = false
+        that.getListBuckets()
       }
     },
-    async getListObjects (type) {
+    async getListBuckets (name) {
+      let size = 0
+      let maxSize = 0
+      that.listBucketActive = 0
       that.listLoad = true
-      that.detail.size = 0
-      const current = that.currentBucket.slice(1).join('/')
-      const offset = that.parma.offset ? (that.parma.offset - 1) * that.parma.limit : 0
-      let params = {
-        prefix: current || '',
-        bucket_uid: that.$route.query.bucket_uuid,
-        limit: that.parma.limit,
-        offset: offset
-      }
-      const directoryRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/get_file_list?${QS.stringify(params)}`, 'get')
+      // const params = {
+      //   file_name: `${that.search.trim()}` || ''
+      // }
+      const directoryRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/bucket/get_bucket_list`, 'get')
+      // const directoryRes = await that.$commonFun.sendRequest(`./static/json/list.json`, 'get')
       if (!directoryRes || directoryRes.status !== 'success') {
         that.$message.error(directoryRes.message || 'Fail')
         return false
       }
-      that.parma.total = directoryRes.data.count
-      that.listData = {
-        listBuckets: directoryRes.data.file_list || [],
-        listBucketFile: [],
-        listBucketFolder: [],
-        list: []
-      }
-      that.listData.listBuckets.forEach((element, i) => {
-        element.index = i
-        that.detail.size += element.size
-        if (element.is_folder) that.listData.listBucketFolder.push(element)
-        else that.listData.listBucketFile.push(element)
+      that.listBuckets = directoryRes.data || []
+      that.listBucketIndex = directoryRes.data.length > 0 || !!(that.search)
+      that.listBuckets.forEach(element => {
+        size += element.size
+        if (element.is_active) {
+          maxSize += element.max_size
+          that.listBucketActive += 1
+        }
       })
-      that.detail.object = directoryRes.data.length || 0
-      that.listData.list = that.listData.listBucketFolder.concat(that.listData.listBucketFile)
-      await that.$commonFun.timeout(500)
+      that.$store.dispatch('setFreeBucket', size || 0)
+      that.$store.dispatch('setFreeBucketAll', maxSize || 0)
+      if (!that.listBucketIndex) that.$store.dispatch('setFreeBucket', 0)
       that.listLoad = false
-      that.$refs.tableList.bodyWrapper.scrollTop = 0
-      // if (type === 1) that.$refs.tableList.bodyWrapper.scrollTop = that.$refs.tableList.bodyWrapper.scrollHeight
-    },
-    handleNodeClick (data) {
-      // console.log(data)
-      that.getListBucketMain(data.name)
-    },
-    handleCurrentChange (val) {
-      that.parma.offset = Number(val)
-      that.parma.jumperOffset = String(val)
-      that.getListObjects()
-    },
-    handleSizeChange (val) {
-      that.parma.limit = Number(val)
-      that.parma.offset = 1
-      that.parma.jumperOffset = 1
-      that.getListObjects()
-    },
-    pageSizeChange (recordPage = parseInt(that.parma.jumperOffset), MaxPagenumber = Math.ceil(that.parma.total / that.parma.limit)) {
-      if ((recordPage > MaxPagenumber) && (MaxPagenumber > 0)) {
-        recordPage = MaxPagenumber
-      } else if (MaxPagenumber <= 0) {
-        recordPage = 1
-      } else if (recordPage < 1) {
-        recordPage = 1
-      } else if (isNaN(that.parma.jumperOffset) || that.parma.jumperOffset === '') {
-        recordPage = 1
-      }
-      that.parma.offset = Number(recordPage)
-      that.parma.jumperOffset = recordPage
-      that.getListObjects()
     },
     momentFun (dateItem) {
       let dateNew = new Date(dateItem).getTime()
@@ -399,335 +261,501 @@ export default {
         : '-'
       return dateNew
     },
-    init () {
-      if (!that.$route.query.folder) {
-        that.$router.push({ name: 'Space' })
-        return false
-      }
-      that.parma.limit = 10
-      that.parma.offset = 1
-      that.url = decodeURIComponent(that.$route.query.folder)
-      that.currentBucket = that.url.split('/')
-      that.getListObjects()
-    },
-    async sort (data) {
-      return data.sort((a, b) => { return b.index - a.index })
-    }
-  },
-  watch: {
-    $route: function (to, from) {
-      // console.log(to, from)
-      that.init()
-    }
-  },
-  filters: {
-    formatbytes: function (bytes) {
-      if (String(bytes) === '0') return '0 B'
-      if (!bytes) return '-'
-      let k = 1024 // or 1000
-      let sizes = ['bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
-      let i = Math.floor(Math.log(bytes) / Math.log(k))
+    copyLink (text) {
+      var txtArea = document.createElement('textarea')
+      txtArea.id = 'txt'
+      txtArea.style.position = 'fixed'
+      txtArea.style.top = '0'
+      txtArea.style.left = '0'
+      txtArea.style.opacity = '0'
+      txtArea.value = text
+      document.body.appendChild(txtArea)
+      txtArea.select()
 
-      if (Math.round((bytes / Math.pow(k, i))).toString().length > 3) {
-        i += 1
-      }
-      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
-      // return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i]
-    },
-    slideName: function (name) {
-      if (!name) return '-'
-      let retName = that.prefixName ? name.replace(that.prefixName + '/', '') : name
-      return retName
-    },
-    hiddAddress: function (val) {
-      if (val) {
-        return `${val.substring(0, 6)}...${val.substring(val.length - 4)}`
-      } else {
-        return '-'
+      try {
+        var successful = document.execCommand('copy')
+        var msg = successful ? 'Copied to clipboard!' : 'copy failed!'
+        // console.log('Copying text command was ' + msg)
+        if (successful) {
+          that.$message({
+            message: msg,
+            type: 'success'
+          })
+        }
+      } catch (err) {
+        console.log('Oops, unable to copy')
+      } finally {
+        document.body.removeChild(txtArea)
       }
     }
   },
   mounted () {
     that = this
     document.getElementById('content-box').scrollTop = 0
-    that.$store.dispatch('setRouterMenu', 22)
+    that.$store.dispatch('setRouterMenu', 20)
     that.$store.dispatch('setHeadertitle', that.$t('route.metaSpace'))
-    that.init()
+    that.getListBuckets()
+  },
+  filters: {
+    NumFormat (value) {
+      if (!value) return '-'
+      return value
+    },
+    formatbytes: function (bytes) {
+      if (bytes === 0) return '0 B'
+      if (!bytes) return '-'
+      var k = 1024 // or 1000
+      var sizes = ['bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
+      var i = Math.floor(Math.log(bytes) / Math.log(k))
+
+      if (Math.round((bytes / Math.pow(k, i))).toString().length > 3) {
+        // 判断大小是999999999左右，解决会显示成1.00e+3科学计数法
+        i += 1
+      }
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
+      // return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i]
+    }
   }
 }
 </script>
-
 <style lang="scss" scoped>
-.fs3_body {
+.el-dialog__wrapper /deep/ {
+  display: flex;
+  align-items: center;
+  .customStyle {
+    margin: auto !important;
+    box-shadow: 0 0 13px rgba(128, 128, 128, 0.8);
+    border-radius: 0.2rem;
+    .el-dialog__header {
+      padding: 0.3rem 0.4rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #dfdfdf;
+      color: #000;
+      font-size: 0.22rem;
+      font-weight: 500;
+      line-height: 1;
+      text-transform: capitalize;
+      @media screen and (max-width: 479px) {
+        padding: 0.3rem 0.2rem;
+      }
+      .el-dialog__headerbtn {
+        position: relative;
+        top: auto;
+        right: auto;
+        font-size: inherit;
+        i {
+          font-size: inherit;
+          &:hover {
+            color: #0b318f;
+          }
+        }
+      }
+      .el-dialog__title {
+        font-size: inherit;
+      }
+    }
+    .el-dialog__body {
+      padding: 0.3rem 0.4rem;
+      font-size: 0.2rem;
+      @media screen and (max-width: 479px) {
+        padding: 0.2rem;
+      }
+      label {
+        word-break: break-word;
+        line-height: 1;
+        color: #666;
+        font-size: inherit;
+      }
+      .address {
+        background: rgba(233, 233, 233, 1);
+        padding: 8px;
+        margin: 10px 0 22px;
+        border-radius: 8px;
+        font-size: inherit;
+      }
+      .share {
+        display: flex;
+        align-items: center;
+        font-size: inherit;
+        .el-button {
+          padding: 0 20px 0 0;
+          background: transparent !important;
+          border: 0;
+          color: #4f7bf5;
+          font-size: inherit;
+          font-weight: normal;
+          font-family: inherit;
+          opacity: 0.8;
+          span {
+            display: flex;
+            align-items: center;
+            svg {
+              width: 15px;
+              height: 15px;
+              margin: 0 3px 0 0;
+            }
+          }
+          &:hover {
+            background: transparent;
+            opacity: 1;
+          }
+        }
+      }
+    }
+    .dialog-footer {
+      display: flex;
+      justify-content: flex-end;
+    }
+  }
+}
+.spaceStyle /deep/ {
   position: relative;
-  width: calc(100% - 1.2rem);
-  padding: 0.3rem;
+  width: calc(100% - 0.6rem);
+  padding: 0 0 0.4rem;
   margin: 0.3rem;
   background-color: #fff;
   border-radius: 0.1rem;
+  .el-loading-mask {
+    z-index: 5;
+  }
   .slideScroll {
-    .fe-header {
-      position: relative;
-      padding: 0.2rem 0 0;
-      @media screen and (max-width: 441px) {
-        padding: 0.2rem 0 0;
+    height: calc(100% - 0.6rem);
+    min-height: 350px;
+    padding: 0.3rem;
+    .form_top {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      margin: 0 auto 0.3rem;
+      .title {
+        width: 100%;
+        margin: 0;
+        text-align: left;
+        font-size: 0.12rem;
+        font-weight: 600;
+        color: #000;
+        line-height: 0.42rem;
+        text-indent: 0;
       }
-      h2 {
-        width: calc(100% - 0.6rem);
-        font-size: 16px;
-        font-weight: 400;
-        margin: 0 auto 0.2rem;
+
+      .upload_title {
+        width: 100%;
+        margin: 0 0 0.05rem;
+        text-align: left;
+        font-weight: 600;
+        line-height: 1.5;
+        text-indent: 0;
+        font-size: 0.13rem;
+        color: #222;
+      }
+      .search {
         display: flex;
         align-items: center;
-        flex-wrap: wrap;
-        @media screen and (max-width: 1440px) {
-          font-size: 14px;
-        }
-        @media screen and (max-width: 768px) {
-          width: 100%;
-        }
-        a {
-          margin-right: 5px;
-          cursor: pointer;
-          &:hover {
-            text-decoration: underline;
-          }
-        }
-        span {
+        justify-content: space-between;
+        width: 100%;
+        height: 0.42rem;
+        .search_right {
           display: flex;
           align-items: center;
-          margin-left: 5px;
-          color: #4f84ff;
-          font-size: inherit;
+          // margin-left: 0.3rem;
         }
-        .fe-edit {
-          font-size: 0.2rem;
-          color: #46a5e0;
-          margin-left: 4px;
-          i {
-            font-size: 0.2rem;
+
+        span {
+          margin: auto 0.05rem auto 0.35rem;
+          font-size: 0.1372rem;
+          color: #000;
+          white-space: nowrap;
+        }
+
+        .el-button {
+          height: 0.34rem;
+          padding: 0 0.4rem;
+          margin: 0 0.1rem;
+          color: #fff;
+          line-height: 0.34rem;
+          font-size: 0.1372rem;
+          border: 0;
+          border-radius: 0.08rem;
+        }
+
+        .el-input {
+          float: left;
+          width: auto;
+
+          .el-input__inner {
+            width: 100%;
+            max-width: 3rem;
+            border-radius: 0.08rem;
+            border: 1px solid #f8f8f8;
+            color: #737373;
+            font-size: 0.12rem;
+            height: 0.24rem;
+            line-height: 0.24rem;
+            padding: 0 0.27rem;
+          }
+
+          .el-input__icon {
+            line-height: 0.24rem;
           }
         }
-        .el-input /deep/ {
-          .el-input__inner {
-            padding: 0;
-            color: #46a5e0;
-            font-size: 0.15rem;
+      }
+      .search_file {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        margin: 0;
+        p {
+          font-size: 0.13rem;
+          color: #222;
+        }
+        .createTask {
+          border-radius: 0.1rem;
+          cursor: pointer;
+          a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 1.6rem;
+            padding: 0.13rem;
+            margin: 0;
+            background: linear-gradient(45deg, #4e88ff, #4b5fff);
+            border-radius: 0.14rem;
+            line-height: 1.5;
+            text-align: center;
+            color: #fff;
+            font-size: 0.19rem;
             border: 0;
-            border-bottom: 1px solid #dcdfe6;
-            border-radius: 0;
+            outline: none;
+            transition: background-color 0.3s, border-color 0.3s, color 0.3s,
+              box-shadow 0.3s;
+            cursor: pointer;
+            white-space: nowrap;
+            img {
+              display: inline-block;
+              height: 0.25rem;
+              margin: 0 0.1rem 0 0;
+              @media screen and (max-width: 1260px) {
+                height: 16px;
+              }
+            }
+            &:hover {
+              opacity: 0.9;
+              box-shadow: 0 12px 12px -12px rgba(12, 22, 44, 0.32);
+            }
+          }
+        }
+        .search_right {
+          display: flex;
+          align-items: center;
+          width: 100%;
+          margin-right: 0.9rem;
+          .el-button {
+            height: 0.3rem;
+            padding: 0 0.15rem;
+            margin: 0;
+            color: #fff;
+            line-height: 0.3rem;
+            font-size: 0.1372rem;
+            border: 0;
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+          }
+        }
+        .el-input {
+          float: left;
+          padding: 0 0.5rem 0 0.7rem;
+          background: #f7f7f7;
+          border-radius: 0.2rem;
+          .el-input__inner {
+            width: 100%;
+            color: #555;
+            font-size: 0.19rem;
+            font-weight: 500;
+            height: 0.54rem;
+            line-height: 0.3rem;
+            padding: 0;
+            background: transparent;
+            border: 0;
+            border-radius: 0.2rem;
+          }
+          .el-input__prefix {
+            left: 0.3rem;
+            i {
+              display: flex;
+              align-items: center;
+              font-size: 0.25rem;
+              color: #000;
+            }
+          }
+          .el-input__icon {
+            line-height: 0.3rem;
+          }
+          .el-input__suffix {
+            right: 0.2rem;
+            .el-input__clear {
+              display: flex;
+              align-items: center;
+              font-size: 0.25rem;
+              color: #666;
+            }
+          }
+          ::-webkit-input-placeholder {
+            color: #555;
+          } /* 使用webkit内核的浏览器 */
+          :-moz-placeholder {
+            color: #555;
+          } /* Firefox版本4-18 */
+          ::-moz-placeholder {
+            color: #555;
+          } /* Firefox版本19+ */
+          :-ms-input-placeholder {
+            color: #555;
+          } /* IE浏览器 */
+        }
+        .is-disabled {
+          opacity: 0.2;
+        }
+      }
+    }
+    .fe-none {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      padding: 0 5%;
+      .p_label {
+        padding: 0.15rem 0.3rem;
+        font-size: 0.27rem;
+        color: #4f87ff;
+        line-height: 1.2;
+        border: dashed;
+        border-radius: 0.1rem;
+        @media screen and (max-width: 1600px) {
+          font-size: 0.25rem;
+        }
+      }
+    }
+    .fes-header {
+      display: flex;
+      justify-content: space-between;
+      align-content: center;
+      width: calc(100% - 0.4rem);
+      padding: 0.25rem 0.2rem;
+      img {
+        width: auto;
+        max-width: 100%;
+        height: 0.35rem;
+      }
+      svg {
+        font-size: 0.25rem;
+        width: 0.25rem;
+        height: 0.25rem;
+        margin: 0.05rem 0 0;
+        color: #333;
+        cursor: pointer;
+      }
+      h2 {
+        margin: 10px 0 0 13px;
+        font-weight: 400;
+        color: #333;
+        font-size: 0.2rem;
+      }
+    }
+    .fs3_backup {
+      margin: 0;
+      .introduce {
+        margin: 0.1rem 0 0.05rem;
+        text-indent: 0.2rem;
+        background: #002a39;
+        // font-family: 'm-semibold';
+        font-weight: bold;
+        a {
+          display: block;
+          line-height: 3;
+          font-size: 0.14rem;
+          color: #333;
+          &:hover {
+            color: #2f85e5;
+          }
+          @media screen and (max-width: 999px) {
+            font-size: 13px;
+            line-height: 3.5;
+          }
+        }
+        .active {
+          color: #2f85e5;
+        }
+      }
+      .introRouter {
+        font-size: 0.14rem;
+        @media screen and (max-width: 999px) {
+          font-size: 13px;
+        }
+        a {
+          display: block;
+          padding: 0.07rem 0.2rem;
+          color: #333;
+          font-size: inherit;
+          @media screen and (max-width: 999px) {
+            padding: 8px 0.2rem;
+          }
+          &:hover {
+            color: #7ecef4;
+            background-color: rgba(0, 0, 0, 0.1);
+          }
+        }
+        .active {
+          color: #7ecef4;
+        }
+      }
+      .el-tree {
+        padding: 0 0.25rem;
+        background: transparent;
+        color: #333;
+        .el-tree-node {
+          .el-tree-node__content {
+            height: auto;
+            background: transparent !important;
+            margin: 0 0 0.08rem;
+            .el-tree-node__expand-icon {
+              padding: 0 0.05rem;
+              &:before {
+                font-size: 0.2rem;
+              }
+            }
+            .el-tree-node__label {
+              font-size: 0.15rem;
+              @media screen and (max-width: 999px) {
+                font-size: 14px;
+              }
+            }
+            &:hover {
+              color: #5f9dcc;
+            }
+          }
+          .el-tree-node__children {
+            .el-tree-node__content {
+              .el-tree-node__label {
+                font-size: 0.14rem;
+                line-height: 1.5;
+                @media screen and (max-width: 999px) {
+                  font-size: 13px;
+                }
+              }
+            }
+          }
+          .is-current,
+          .is-checked {
+            color: #5f9dcc;
           }
         }
       }
     }
     .fes-search {
       // height: calc(100% - 1.7rem);
-      .form_top {
-        display: flex;
-        align-items: center;
-        flex-wrap: wrap;
-        margin: 0 auto 0.5rem;
-        @media screen and (max-width: 441px) {
-          margin: 0 auto 0.4rem;
-        }
-        .title {
-          width: 100%;
-          margin: 0;
-          text-align: left;
-          font-size: 0.12rem;
-          font-weight: 600;
-          color: #000;
-          line-height: 0.42rem;
-          text-indent: 0;
-        }
-
-        .upload_title {
-          width: 100%;
-          margin: 0 0 0.05rem;
-          text-align: left;
-          font-weight: 600;
-          line-height: 1.5;
-          text-indent: 0;
-          font-size: 0.13rem;
-          color: #222;
-        }
-        .search_file {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          flex-wrap: wrap;
-          width: 100%;
-          margin: 0;
-          p {
-            font-size: 0.13rem;
-            color: #222;
-          }
-          .createTask {
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            a {
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              min-width: 1.6rem;
-              padding: 0.13rem;
-              margin: 0 0 0 0.2rem;
-              background: linear-gradient(45deg, #4e88ff, #4b5fff);
-              border-radius: 0.14rem;
-              line-height: 1.5;
-              text-align: center;
-              color: #fff;
-              font-size: 0.18rem;
-              border: 0;
-              outline: none;
-              transition: background-color 0.3s, border-color 0.3s, color 0.3s,
-                box-shadow 0.3s;
-              cursor: pointer;
-              white-space: nowrap;
-              img {
-                display: inline-block;
-                height: 0.25rem;
-                margin: 0 0.1rem 0 0;
-                @media screen and (max-width: 1260px) {
-                  height: 16px;
-                }
-              }
-              &:hover {
-                opacity: 0.9;
-                box-shadow: 0 12px 12px -12px rgba(12, 22, 44, 0.32);
-              }
-            }
-            .upload_body {
-              position: relative;
-              .upload_absoltu {
-                display: none;
-                position: absolute;
-                left: 0.2rem;
-                right: 0;
-                padding: 0.1rem 0;
-                background-color: #fff;
-                box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
-                z-index: 9;
-                border-radius: 5px;
-                @media screen and (max-width: 768px) {
-                  left: 0;
-                }
-                p {
-                  padding: 0.05rem 0.15rem;
-                  font-size: 0.17rem;
-                  @media screen and (max-width: 992px) {
-                    font-size: 14px;
-                  }
-                  &:hover {
-                    background-color: rgba(0, 137, 246, 0.07);
-                  }
-                }
-              }
-              &:hover {
-                .upload_absoltu {
-                  display: block;
-                }
-              }
-            }
-          }
-          .search_left {
-            display: flex;
-            align-items: center;
-            .icon {
-              height: 40px;
-              padding-left: 0.35rem;
-              margin: 0 0 0 0.3rem;
-              font-size: 15px;
-              color: #000;
-              line-height: 40px;
-              @media screen and (max-width: 1440px) {
-                font-size: 14px;
-              }
-              @media screen and (max-width: 441px) {
-                height: 35px;
-                line-height: 35px;
-              }
-              &:nth-child(1) {
-                background: url(../../assets/images/space/icon_06.png) no-repeat
-                  left center;
-                background-size: 0.27rem auto;
-                @media screen and (max-width: 1600px) {
-                  background-size: 0.24rem auto;
-                }
-                @media screen and (max-width: 441px) {
-                  background-size: 13px auto;
-                }
-              }
-              &:nth-child(2) {
-                background: url(../../assets/images/space/icon_07.png) no-repeat
-                  left center;
-                background-size: 0.27rem auto;
-                @media screen and (max-width: 1600px) {
-                  background-size: 0.24rem auto;
-                }
-                @media screen and (max-width: 441px) {
-                  background-size: 13px auto;
-                }
-              }
-            }
-          }
-          .el-input /deep/ {
-            float: left;
-            padding: 0 0.5rem 0 0.7rem;
-            background: #f7f7f7;
-            border-radius: 0.2rem;
-            .el-input__inner {
-              width: 100%;
-              color: #555;
-              font-size: 0.18rem;
-              font-weight: 500;
-              height: 0.54rem;
-              line-height: 0.3rem;
-              padding: 0;
-              background: transparent;
-              border: 0;
-              border-radius: 0.2rem;
-            }
-            .el-input__prefix {
-              left: 0.3rem;
-              i {
-                display: flex;
-                align-items: center;
-                font-size: 0.25rem;
-                color: #000;
-              }
-            }
-            .el-input__icon {
-              line-height: 0.3rem;
-            }
-            .el-input__suffix {
-              right: 0.2rem;
-              .el-input__clear {
-                display: flex;
-                align-items: center;
-                font-size: 0.25rem;
-                color: #666;
-              }
-            }
-            ::-webkit-input-placeholder {
-              color: #555;
-            } /* 使用webkit内核的浏览器 */
-            :-moz-placeholder {
-              color: #555;
-            } /* Firefox版本4-18 */
-            ::-moz-placeholder {
-              color: #555;
-            } /* Firefox版本19+ */
-            :-ms-input-placeholder {
-              color: #555;
-            } /* IE浏览器 */
-          }
-          .is-disabled {
-            opacity: 0.2;
-          }
-        }
-      }
       .title {
         display: flex;
         align-items: center;
@@ -741,440 +769,421 @@ export default {
         }
         img {
           display: block;
-          width: 20px;
-          height: 20px;
+          width: 22px;
+          height: 22px;
           margin: 0 0 0 5px;
           cursor: pointer;
-          @media screen and (max-width: 1440px) {
+          @media screen and (max-width: 1680px) {
+            width: 20px;
+            height: 20px;
+          }
+          @media screen and (max-width: 1260px) {
             width: 17px;
             height: 17px;
           }
         }
       }
-      .table_body /deep/ {
-        .el-table {
-          overflow: visible;
-          font-size: 0.18rem;
-          .el-loading-mask {
-            .el-loading-spinner {
-              top: 50%;
-            }
+      .el-table {
+        overflow: visible;
+        font-size: 0.18rem;
+        .el-loading-mask {
+          .el-loading-spinner {
+            top: 50%;
           }
-          .el-table__body-wrapper,
-          .el-table__header-wrapper {
-            border-radius: 0.2rem;
-          }
+        }
+        .el-table__body-wrapper,
+        .el-table__header-wrapper {
+          border-radius: 0.2rem;
+        }
 
-          tr {
-            cursor: pointer;
-            th {
-              height: 0.7rem;
-              padding: 0;
-              background-color: #e5eeff !important;
-              text-align: center;
+        tr {
+          cursor: pointer;
+          th {
+            height: 0.7rem;
+            padding: 0;
+            background-color: #e5eeff !important;
+            text-align: center;
 
-              .cell {
+            .cell {
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              word-break: break-word;
+              font-size: 0.19rem;
+              font-weight: 500;
+              color: #555;
+              text-transform: capitalize;
+              line-height: 1.3;
+              .caret-wrapper {
+                // display: none;
+                width: 10px;
+                margin-left: 5px;
+                .sort-caret {
+                  left: 0;
+                }
+              }
+              .tips {
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                word-break: break-word;
-                font-size: 0.17rem;
-                font-weight: 500;
-                color: #555;
-                text-transform: capitalize;
-                line-height: 1.3;
-                @media screen and (max-width: 768px) {
-                  font-size: 13px;
-                }
-                .caret-wrapper {
-                  // display: none;
-                  width: 10px;
-                  margin-left: 5px;
-                  .sort-caret {
-                    left: 0;
-                  }
-                }
-                .tips {
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
-                  img {
-                    display: block;
-                    width: 20px;
-                    height: 20px;
-                    margin: 0 0 0 5px;
-                    cursor: pointer;
-                    @media screen and (max-width: 1440px) {
-                      width: 17px;
-                      height: 17px;
-                    }
-                  }
-                }
-                .tipsWidth {
-                  width: 110px;
-                  @media screen and (max-width: 1600px) {
-                    width: 95px;
-                  }
+                img {
+                  display: block;
+                  width: 20px;
+                  height: 20px;
+                  margin: 0 0 0 5px;
+                  cursor: pointer;
                   @media screen and (max-width: 1440px) {
-                    width: 90px;
+                    width: 17px;
+                    height: 17px;
                   }
-                  @media screen and (max-width: 1280px) {
-                    width: 80px;
-                  }
-                }
-                .el-table__column-filter-trigger {
-                  i {
-                    font-size: 13px;
-                    font-weight: 600;
-                    margin-left: 4px;
-                    transform: scale(1);
+                  @media screen and (max-width: 600px) {
+                    width: 15px;
+                    height: 15px;
                   }
                 }
               }
-            }
-
-            th.is-leaf {
-              border-bottom: 0;
-            }
-
-            td {
-              padding: 0.25rem 0.05rem;
-              border-bottom: 1px solid #dfdfdf;
-
-              .cell {
-                padding: 0;
-                font-size: 0.165rem;
-                word-break: break-word;
-                color: #000;
-                text-align: center;
-                line-height: 0.25rem;
-                overflow: visible;
-                @media screen and (max-width: 768px) {
+              .tipsWidth {
+                width: 110px;
+                @media screen and (max-width: 1600px) {
+                  width: 95px;
+                }
+                @media screen and (max-width: 1440px) {
+                  width: 90px;
+                }
+                @media screen and (max-width: 1280px) {
+                  width: 80px;
+                }
+              }
+              .el-table__column-filter-trigger {
+                i {
                   font-size: 13px;
+                  font-weight: 600;
+                  margin-left: 4px;
+                  transform: scale(1);
                 }
-                .el-rate__icon {
-                  font-size: 0.16rem;
-                  margin-right: 0;
-                }
-                .el-icon-arrow-right {
-                  font-weight: bold;
-                  font-size: 0.13rem;
-                }
-                .rightClick {
-                  color: #0c3090;
-                  cursor: pointer;
-                }
+              }
+            }
+          }
 
-                .hot-cold-box {
-                  position: relative;
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
-                  flex-wrap: wrap;
-                  .list_style {
-                    display: flex;
-                    align-items: center;
-                    justify-content: flex-start;
-                    width: 100%;
-                    .icon {
-                      width: 18px;
-                      height: 18px;
-                      font-size: 0.2rem;
-                      @media screen and (max-width: 1600px) {
-                        width: 16px;
-                        height: 16px;
-                      }
-                      @media screen and (max-width: 768px) {
-                        width: 14px;
-                        height: 14px;
-                      }
-                    }
-                    span {
-                      white-space: normal;
-                      text-align: left;
-                      line-height: 1.1;
-                    }
+          th.is-leaf {
+            border-bottom: 0;
+          }
+
+          td {
+            padding: 0.25rem 0.05rem;
+            border-bottom: 1px solid #dfdfdf;
+
+            .cell {
+              padding: 0;
+              font-size: 0.18rem;
+              word-break: break-word;
+              color: #000;
+              text-align: center;
+              line-height: 0.25rem;
+              overflow: visible;
+
+              .el-rate__icon {
+                font-size: 0.16rem;
+                margin-right: 0;
+              }
+              .el-icon-arrow-right {
+                font-weight: bold;
+                font-size: 0.13rem;
+              }
+              .rightClick {
+                color: #0c3090;
+                cursor: pointer;
+              }
+
+              .hot-cold-box {
+                position: relative;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-wrap: wrap;
+                .icon {
+                  display: block;
+                  width: 22px;
+                  height: 22px;
+                  margin: 0 0.15rem;
+                  font-size: 0.24rem;
+                  @media screen and (max-width: 1600px) {
+                    width: 18px;
+                    height: 18px;
                   }
-                  .icon {
-                    display: block;
+                  @media screen and (max-width: 768px) {
+                    width: 15px;
+                    height: 15px;
+                    margin: 0 5px;
+                  }
+                  &:hover {
+                    opacity: 0.7;
+                  }
+                }
+                .icon_pay {
+                  width: 25px;
+                  height: 25px;
+                  background: url(../../assets/images/space/pay.png) no-repeat
+                    center;
+                  background-size: 100% 100%;
+                  @media screen and (max-width: 1600px) {
+                    width: 22px;
+                    height: 22px;
+                  }
+                  @media screen and (max-width: 768px) {
                     width: 20px;
                     height: 20px;
-                    margin: 0 5px;
-                    font-size: 0.24rem;
-                    @media screen and (max-width: 1600px) {
-                      width: 18px;
-                      height: 18px;
-                    }
-                    @media screen and (max-width: 768px) {
-                      width: 15px;
-                      height: 15px;
-                    }
-                    &:hover {
-                      opacity: 0.7;
-                    }
                   }
-                  .icon_rename {
-                    background: url(../../assets/images/space/icon_02.png)
-                      no-repeat center;
-                    background-size: 100% 100%;
+                  &.icon_pay_disable {
+                    opacity: 0.2;
                   }
-                  .icon_details {
-                    background: url(../../assets/images/space/icon_03.png)
-                      no-repeat center;
-                    background-size: 100% 100%;
-                  }
-                  .icon_delete {
-                    background: url(../../assets/images/space/icon_04.png)
-                      no-repeat center;
-                    background-size: 100% 100%;
-                  }
-                  .icon_share {
-                    background: url(../../assets/images/space/icon_09.png)
-                      no-repeat center;
-                    background-size: 100% 100%;
-                  }
-                  .copyText {
-                    display: flex;
-                    align-items: center;
-                    .imgCopy {
-                      width: 15px;
-                      height: 15px;
-                      margin: 0 0 0 5px;
-                      cursor: pointer;
-                      @media screen and (min-width: 1800px) {
-                        width: 18px;
-                        height: 18px;
-                      }
-                    }
-                  }
+                }
+                .icon_rename {
+                  background: url(../../assets/images/space/icon_02.png)
+                    no-repeat center;
+                  background-size: 100% 100%;
+                }
+                .icon_details {
+                  background: url(../../assets/images/space/icon_03.png)
+                    no-repeat center;
+                  background-size: 100% 100%;
+                }
+                .icon_delete {
+                  background: url(../../assets/images/space/icon_04.png)
+                    no-repeat center;
+                  background-size: 100% 100%;
+                }
+              }
+              .hot-miner {
+                .el-button {
                   span {
-                    max-height: 0.5rem;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    white-space: normal;
-                    display: -webkit-box;
-                    -webkit-line-clamp: 2;
-                    -webkit-box-orient: vertical;
-                  }
-                }
-                .hot-miner {
-                  .el-button {
-                    span {
-                      white-space: nowrap;
-                    }
-                  }
-                }
-
-                .el-button.el-icon-upload {
-                  padding: 0 0.03rem;
-                  line-height: 0.25rem;
-                  font-size: 0.1372rem;
-                }
-
-                .scoreStyle {
-                  width: 100%;
-                  clear: both;
-                  text-align: center;
-                  color: #ffb822;
-                  cursor: pointer;
-                }
-
-                .scoreStyle:hover {
-                  text-decoration: underline;
-                }
-              }
-            }
-
-            &:hover {
-              td {
-                .cell {
-                  .hot-cold-box {
-                    .cidMore {
-                      background-color: #f5f7fa;
-                    }
+                    white-space: nowrap;
                   }
                 }
               }
-            }
-          }
-        }
-        .el-table::before {
-          display: none;
-        }
-        .form_pagination {
-          position: relative;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          text-align: center;
-          margin: 0.5rem 0 0.06rem;
-          padding: 0;
-          @media screen and (max-width: 1024px) {
-            padding: 0;
-          }
-          @media screen and (max-width: 600px) {
-            flex-wrap: wrap;
-          }
-          .pagination {
-            display: flex;
-            align-items: center;
-            margin: 0;
-            font-size: 0.18rem;
-            color: #000;
-            .el-pagination {
-              .el-icon {
-                font-size: 0.18rem;
+
+              .el-button.el-icon-upload {
+                padding: 0 0.03rem;
+                line-height: 0.25rem;
+                font-size: 0.1372rem;
               }
-              .el-pager {
-                li {
-                  min-width: 30px;
-                  height: 30px;
-                  font-size: 0.18rem;
-                  font-weight: normal;
-                  line-height: 30px;
-                }
-                .active {
-                  border: 1px solid #6798f5;
-                  border-radius: 5px;
-                  color: #000;
-                }
-              }
-            }
-            .el-select {
-              max-width: 100px;
-              margin-right: 0.15rem;
-              .el-input__inner,
-              .el-input__icon {
-                height: 30px;
-                line-height: 30px;
-              }
-            }
-            .span {
-              margin: 0 0 0 10px;
-              font-size: 13px;
-              font-weight: 400;
-              color: #606266;
-              white-space: nowrap;
-            }
-            .paginaInput {
-              max-width: 50px;
-              .el-input__inner,
-              .el-input__icon {
-                padding: 0 3px;
-                height: 30px;
-                line-height: 30px;
+
+              .scoreStyle {
+                width: 100%;
+                clear: both;
                 text-align: center;
+                color: #ffb822;
+                cursor: pointer;
+              }
+
+              .scoreStyle:hover {
+                text-decoration: underline;
               }
             }
-
-            .pagination_left {
-              width: 0.24rem;
-              height: 0.24rem;
-              margin: 0 0.2rem;
-              border: 1px solid #f8f8f8;
-              border-radius: 0.04rem;
-              text-align: center;
-              line-height: 0.24rem;
-              font-size: 0.16rem;
-              color: #959494;
-              cursor: pointer;
-            }
           }
-          .down {
-            position: absolute;
-            right: 0;
-            font-size: 0.18rem;
-            color: #888;
-            cursor: pointer;
-            @media screen and (max-width: 600px) {
-              position: relative;
-              width: 100%;
-              text-align: center;
-            }
-            span {
-              color: #2c7ff8;
-            }
-            &:hover {
-              text-decoration: underline;
+
+          &:hover {
+            td {
+              .cell {
+                .hot-cold-box {
+                  .cidMore {
+                    background-color: #f5f7fa;
+                  }
+                }
+              }
             }
           }
         }
-        .el-tree {
-          @media screen and (max-width: 768px) {
-            margin-bottom: 0.2rem;
+      }
+      .el-table::before {
+        display: none;
+      }
+      .detailMore {
+        padding: 15px 0;
+        font-size: 12px;
+        color: #888;
+        line-height: 1.5;
+        text-align: center;
+        @media screen and (min-width: 1800px) {
+          font-size: 14px;
+        }
+        a {
+          color: inherit;
+          text-decoration: underline;
+        }
+      }
+    }
+    .fes-host {
+      display: flex;
+      justify-content: space-between;
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      z-index: 21;
+      background-color: rgba(0, 0, 0, 0.1);
+      font-size: 15px;
+      font-weight: 400;
+      // width: calc(3.2rem - 0.4rem);
+      width: calc(100% - 0.4rem);
+      padding: 0.2rem;
+      color: hsla(0, 0%, 100%, 0.75);
+      transition: all;
+      transition-duration: 0.3s;
+      i {
+        float: left;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 0.2rem;
+        margin-right: 10px;
+        width: 20px;
+        height: 20px;
+        color: #888b83;
+        // background: url(../assets/images/icon_01.jpg) no-repeat center;
+        // background-size: 100%;
+        @media screen and (max-width: 999px) {
+          font-size: 18px;
+        }
+      }
+      a {
+        color: hsla(0, 5%, 12%, 0.75);
+        font-size: 15px;
+        font-weight: 400;
+      }
+      .fesHostLink {
+        display: flex;
+        width: calc(100% - 40px);
+        a {
+          display: block;
+          width: calc(100% - 30px);
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+      }
+      .fesHostLogout {
+        cursor: pointer;
+        i {
+          margin: 0;
+          color: #333;
+          &:hover {
+            color: #7ecef4;
           }
-          .el-tree-node__content {
-            .el-tree-node__expand-icon {
-              color: #000;
-              font-weight: 600;
+        }
+      }
+    }
+  }
+  .el-dialog__wrapper {
+    .policyStyle {
+      width: 90%;
+      max-width: 600px;
+      .el-dialog__header {
+        display: flex;
+        .el-dialog__title {
+          font-size: 0.15rem;
+          color: #333;
+        }
+      }
+      .el-dialog__body {
+        padding: 0.3rem 0;
+        .el-form-item {
+          padding: 0.1rem 0.3rem;
+          margin-bottom: 0.1rem;
+          &:nth-child(2n + 2) {
+            background-color: #f7f7f7;
+          }
+        }
+        .el-form-item__content {
+          display: flex;
+          line-height: 0.3rem;
+          .el-input {
+            .el-input__inner {
+              height: 0.3rem;
+              padding-left: 0;
+              line-height: 0.3rem;
+              border: 0;
+              border-bottom: 1px solid #f7f7f7;
+              background-color: transparent;
+              border-radius: 0;
+              font-size: 0.13rem;
+              color: #32393f;
+              text-align: left;
             }
-            .el-tree-node__label,
-            .custom-tree-node {
-              height: 24px;
-              overflow: hidden;
-              text-overflow: ellipsis;
-              white-space: normal;
-              // display: -webkit-box;
-              -webkit-line-clamp: 1;
-              -webkit-box-orient: vertical;
-              line-height: 24px;
-              font-size: 14px;
-            }
-            .custom-tree-node {
+            .el-input__icon {
               display: flex;
               align-items: center;
-              justify-content: space-between;
-              width: calc(100% - 24px);
-              .span {
-                width: calc(100% - 23px);
-                height: 24px;
-                font-weight: normal;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                white-space: normal;
-              }
             }
-            .icon {
-              display: block;
-              width: 17px;
-              height: 17px;
-              margin: 0 5px;
-              font-size: 0.24rem;
-              @media screen and (max-width: 1600px) {
-                width: 15px;
-                height: 15px;
-              }
-              @media screen and (max-width: 768px) {
-                width: 14px;
-                height: 14px;
-              }
-              &:hover {
-                opacity: 0.7;
-              }
+          }
+          .el-input.is-disabled {
+            .el-input__inner {
+              background-color: transparent;
             }
-            .icon_delete {
-              background: url(../../assets/images/space/icon_04.png) no-repeat
-                center;
-              background-size: 100% 100%;
+          }
+          .el-select {
+            margin: 0 5%;
+          }
+          .el-button {
+            width: 130px;
+            height: 0.3rem;
+            padding: 0;
+            line-height: 0.3rem;
+            color: #333;
+            font-size: 12px;
+            font-family: inherit;
+            border: 0;
+            border-radius: 0.02rem;
+            text-align: center;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 1024px) {
+  .spaceStyle {
+    .slideScroll {
+      .form_top {
+        .search {
+          flex-wrap: wrap;
+          height: auto;
+
+          .el-input {
+            width: 100%;
+            margin: 0.1rem 0;
+
+            .el-input__inner {
+              width: 100%;
+              font-size: 0.1372rem;
+            }
+          }
+
+          span {
+            margin-left: 0;
+          }
+
+          .search_right {
+            .el-button {
+              padding: 0 0.2rem;
+              font-size: 0.1372rem;
             }
           }
         }
       }
     }
-    .fe-none {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 0 5%;
-      .p_label {
-        padding: 0.15rem 0.3rem;
-        font-size: 0.27rem;
-        color: #4f87ff;
-        line-height: 1.2;
-        border: dashed;
-        border-radius: 0.1rem;
-        @media screen and (max-width: 1600px) {
-          font-size: 0.25rem;
+  }
+}
+@media screen and (max-width: 470px) {
+  .spaceStyle {
+    .slideScroll {
+      .form_top {
+        .search_file {
+          flex-wrap: wrap;
+          height: auto;
+          .search_right {
+            width: 100%;
+            margin: 0.05rem 0 0.1rem;
+          }
         }
       }
     }

@@ -15,8 +15,8 @@
           <el-card shadow="always" class="mint_card" v-for="(nftView, v) in nftViewData" :key="v+nftMintData.length">
             <div class="mint_flex">
               <div class="details">
-                <img :src="nftView.image_url" />
-                <span>{{nftView.name||nftView.nft_collection_address || nftView.mint_address || '-'}}</span>
+                <img :src="nftView.nft_collecton_image_url" />
+                <span>{{nftView.nft_collection_name||nftView.nft_collection_address || nftView.mint_address || '-'}}</span>
               </div>
               <el-button type="primary" size="mini" @click="handleMint(nftView, 'view')">{{$t('uploadFile.mint_view')}}</el-button>
             </div>
@@ -117,7 +117,8 @@ export default {
         seller_fee_basis_points: 0,
         fee_recipient: this.metaAddress,
         file: '',
-        fileRaw: {}
+        fileRaw: {},
+        collection_name: ''
       },
       rules: {
         name: [
@@ -205,7 +206,7 @@ export default {
             )
 
             if (type === 'create') {
-              let collections = await CollectionFactory.methods.createCollection(nftUrl).send()
+              let collections = await CollectionFactory.methods.createCollection(that.ruleCreateForm.name, nftUrl).send()
               // console.log('collections', collections)
               // let collectionsList = await CollectionFactory.methods.getCollections(that.metaAddress).call()
               // console.log('collections list', collectionsList)

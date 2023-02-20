@@ -16,9 +16,9 @@ contract CollectionFactory is Ownable {
         emit CreateCollection(MCSCollection(defaultCollection).owner(), defaultCollection);
     }
 
-    function createCollection(string memory contractURI) public returns (address) {
+    function createCollection(string memory collectionName, string memory contractURI) public returns (address) {
         // user will be owner AND admin, factory will be admin
-        MCSCollection newCollection = new MCSCollection(contractURI); // this contract will be owner and admin
+        MCSCollection newCollection = new MCSCollection(collectionName, contractURI); // this contract will be owner and admin
         newCollection.setAdmin(msg.sender, true); // set the user as another admin
         newCollection.transferOwnership(msg.sender); // then set user as admin
 
@@ -36,8 +36,8 @@ contract CollectionFactory is Ownable {
         MCSCollection(collection).mint(recipient, amount, uri, "");
     }
 
-    function mintToNewCollection(string memory contractURI, address recipient, uint amount, string memory uri) public {
-        address collection = createCollection(contractURI);
+    function mintToNewCollection(string memory collectionName, string memory contractURI, address recipient, uint amount, string memory uri) public {
+        address collection = createCollection(collectionName, contractURI);
         mint(collection, recipient, amount, uri);
     }
 

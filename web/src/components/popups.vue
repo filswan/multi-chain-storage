@@ -5,14 +5,14 @@
       <div class="addBucket" v-loading="createLoad">
         <i class="el-icon-circle-close close" @click="closeDia()"></i>
         <div class="title" v-if="typeName === 'addSub'">{{$t('metaSpace.folder_name')}}</div>
-        <div class="title" v-else-if="typeName === 'addNewBucket'">Name this bucket</div>
+        <div class="title" v-else-if="typeName === 'addNewBucket'">{{$t('metaSpace.Name_bucket')}}</div>
         <div class="title" v-else>{{$t('metaSpace.bucket_name')}}</div>
         <el-form :model="form" status-icon :rules="rules" ref="form" @submit.native.prevent>
           <el-form-item prop="name">
-            <el-input v-model="form.name" maxlength="256" :placeholder="typeName === 'addSub'?'Folder Name':'Bucket Name'" ref="bucketNameRef"></el-input>
+            <el-input v-model="form.name" maxlength="256" :placeholder="typeName === 'addSub'?$t('metaSpace.folder_name'):$t('metaSpace.bucket_name')" ref="bucketNameRef"></el-input>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="getDialogClose('form')">{{typeName === 'addNewBucket'?'Add this bucket':$t('metaSpace.Submit')}}</el-button>
+            <el-button type="primary" @click="getDialogClose('form')">{{typeName === 'addNewBucket'?$t('apiKey.Add_bucket'):$t('metaSpace.Submit')}}</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -22,15 +22,15 @@
         <i class="el-icon-circle-close close" @click="closeDia()"></i>
         <div class="title">{{$t('my_profile.create_api_title')}}</div>
         <el-form :model="form" status-icon :rules="rulesDay" label-position="top" ref="form" @submit.native.prevent>
-          <el-form-item prop="" label="Expiration (day)">
-            <el-input-number v-model="form.day" controls-position="right" @blur="apiKeyBlur" :controls="false" :min="0" :max="365" maxlength="256" :placeholder="'30 days'" ref="bucketNameRef"></el-input-number>
+          <el-form-item prop="" :label="$t('apiKey.label_Expiration')">
+            <el-input-number v-model="form.day" controls-position="right" @blur="apiKeyBlur" :controls="false" :min="0" :max="365" maxlength="256" :placeholder="'30 '+$t('apiKey.day')" ref="bucketNameRef"></el-input-number>
           </el-form-item>
           <el-form-item>
-            <p class="day_tip">* Entering 0 means that the API Key is permanently active</p>
-            <p class="day_tip">* The maximum number is 365</p>
+            <p class="day_tip">{{$t('apiKey.label_tip01')}}</p>
+            <p class="day_tip">{{$t('apiKey.label_tip02')}}</p>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="getDialogClose('form')">{{typeName === 'addNewBucket'?'Add this bucket':$t('metaSpace.Submit')}}</el-button>
+            <el-button type="primary" @click="getDialogClose('form')">{{typeName === 'addNewBucket'?$t('apiKey.Add_bucket'):$t('metaSpace.Submit')}}</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -51,7 +51,7 @@
           {{ $t('metaSpace.delete_desc') }}
         </div>
         <!--        <div class="cont">{{$route.name == 'ApiKey'?'APIKey will be permanently deleted. This action cannot be undone.':$t('metaSpace.delete_desc')}}</div>-->
-        <div class="cont">{{$route.name == 'ApiKey'?'APIKey will be permanently deleted.This operation cannot be reversed.':""}}</div>
+        <div class="cont">{{$route.name == 'ApiKey'?$t('apiKey.apikey_cont'):""}}</div>
         <el-form ref="form">
           <el-form-item>
             <el-button type="info" @click="closeDia()">{{$t('metaSpace.Cancel')}}</el-button>
@@ -232,7 +232,7 @@
             <img src="@/assets/images/space/icon_11.png" alt="">
             <div class="el-upload__text"></div>
             <el-button type="primary">
-              Browse Folders
+              {{$t('metaSpace.Browse_Folders')}}
             </el-button>
           </el-upload>
         </div>
@@ -244,18 +244,18 @@
         <div class="upload_progress upload_folder_list">
           <div class="title title_upload">
             <div>
-              <i class="el-icon-upload2"></i>{{uploadStart?'Uploading...':'Upload'}} ({{uploadBody.allNum}}/{{uploadBody.addNum}})</div>
-            <el-button type="primary" v-if="!uploadStart" @click="foldUpload(ruleForm.fileListFolder)">Start uploading</el-button>
+              <i class="el-icon-upload2"></i>{{uploadStart?$t('uploadFile.bucket_Uploading'):$t('uploadFile.bucket_Upload')}} ({{uploadBody.allNum}}/{{uploadBody.addNum}})</div>
+            <el-button type="primary" v-if="!uploadStart" @click="foldUpload(ruleForm.fileListFolder)">{{$t('uploadFile.Start_uploading')}}</el-button>
           </div>
           <div class="folder_plan" v-if="ruleForm.fileListFolderErr.length>0 && uploadStart">
-            Upload failed:
+            {{$t('uploadFile.Upload_failed')}}
             <el-popover placement="bottom-start" width="300" trigger="click" popper-class="folderErr">
               <div>
                 <p v-for="(errItem, errIndex) in ruleForm.fileListFolderErr" :key="errIndex" style="color: #f56c6c;margin:0.07rem 0;text-align: left;">
                   <i class="el-icon-upload2"></i> {{errItem.trim()}}
                 </p>
               </div>
-              <el-button slot="reference" type="text" round>view
+              <el-button slot="reference" type="text" round>{{$t('uploadFile.Upload_view')}}
                 <small>({{ruleForm.fileListFolderErr.length}})</small>
               </el-button>
             </el-popover>
@@ -267,7 +267,7 @@
                   <small>({{list.size | formatbytes}}{{list.errCont?'/'+list.errCont:''}})</small>
                 </p>
                 <p style="color:#999">
-                  <small>path: /{{list.path}}</small>
+                  <small>{{$t('uploadFile.Upload_path')}}: /{{list.path}}</small>
                 </p>
               </div>
               <el-progress :color="list.err?'#f56c6c':'#4d75ff'" :percentage="list.uploadPrecent"></el-progress>
@@ -344,7 +344,7 @@
     <div class="fe-none" v-else-if="typeName === 'payActive'">
       <div class="addBucket">
         <!-- <i class="el-icon-circle-close close" @click="closeDia()"></i> -->
-        <div class="cont">You have to active your bucket first</div>
+        <div class="cont">{{$t('metaSpace.active_bucket')}}</div>
         <el-form ref="form">
           <el-form-item>
             <el-button type="primary" @click="closeDia()">{{$t('uploadFile.OK')}}</el-button>

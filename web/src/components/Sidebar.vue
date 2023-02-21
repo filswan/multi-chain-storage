@@ -35,10 +35,15 @@
               </div>
               <el-button round>{{$t('comment.Tell_Comment')}}</el-button>
             </div>
-            <div class="need">Need help? Join our
+            <div class="need" v-if="languageMcs === 'en'">Need help? Join our
               <a href="https://discord.com/invite/KKGhy8ZqzK" target="_blank">Discord</a>
               or send an
               <a href="mailto:team@filswan.com">Email</a> to us.
+            </div>
+            <div class="need" v-else>需要帮助吗？加入我们的
+              <a href="https://discord.com/invite/KKGhy8ZqzK" target="_blank">Discord</a>
+              或发送
+              <a href="mailto:team@filswan.com">电子邮件</a> 给我们。
             </div>
             <div class="progress">
               <el-progress :percentage="(free_bucket/free_bucketAll)*100 || 0"></el-progress>

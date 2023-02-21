@@ -30,7 +30,7 @@
                 </a>
                 <div class="upload_absoltu">
                   <p @click="dialogFun('upload', $route.query.bucket_uuid)">{{$t('metaSpace.Upload_File')}}</p>
-                  <p @click="dialogFun('upload_folder', $route.query.bucket_uuid)">Upload Folder</p>
+                  <p @click="dialogFun('upload_folder', $route.query.bucket_uuid)">{{$t('metaSpace.Upload_Folder')}}</p>
                 </div>
               </div>
             </div>

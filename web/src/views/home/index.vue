@@ -14,9 +14,12 @@
               <el-button type="primary" @click="goLink('https://www.youtube.com/watch?v=rgEP4_dhzoI')">
                 {{$t('fs3Login.Connect_TutorialVideo')}}
               </el-button>
-              <h3>First
+              <h3 v-if="languageMcs === 'en'">First
                 <b>30 GB</b> is
                 <b>FREE</b>!</h3>
+              <h3 v-else>前
+                <b>30 GB</b> 是
+                <b>免费</b> 的!</h3>
             </el-col>
             <el-col :xs="24" :sm="12" :md="13" :lg="13" :xl="13" class="right">
               <img :src="img" />
@@ -29,24 +32,24 @@
       <div class="msCont">
         <div class="width" id="about">
           <div class="title">
-            <i class="icon"></i> Multichain.Storage
+            <i class="icon"></i> {{$t('metaSpace.home_title')}}
           </div>
           <el-row type="flex" class="row-bg" justify="space-between">
             <el-col :xs="24" :sm="11" :md="11" :lg="11" :xl="11" class="left">
               <div class="title">
                 <i class="icon icon_Introduction"></i>
-                Introduction
+                {{$t('metaSpace.home_Introduction')}}
               </div>
-              <p>Multichain.Storage is a smart-contract-based cross-chain storage gateway integrated with Oracle technology and the Filecoin networks. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks.</p>
+              <p>{{$t('metaSpace.home_Introduction_cont')}}</p>
             </el-col>
             <el-col :xs="24" :sm="11" :md="11" :lg="11" :xl="11" class="left">
               <div class="title">
                 <i class="icon icon_Features"></i>
-                Our Features
+                {{$t('metaSpace.home_Our_Features')}}
               </div>
-              <p class="p">Drag and drop files to pin to IPFS and store on the Filecoin network at the same time</p>
-              <p class="p">Fast retrieval globally by reliable edge network</p>
-              <p class="p">Developer support of JS, Python and Golang SDK</p>
+              <p class="p">{{$t('metaSpace.home_Our_Features_cont01')}}</p>
+              <p class="p">{{$t('metaSpace.home_Our_Features_cont02')}}</p>
+              <p class="p">{{$t('metaSpace.home_Our_Features_cont03')}}</p>
             </el-col>
           </el-row>
         </div>
@@ -319,6 +322,9 @@ export default {
     that.fn()
   },
   computed: {
+    languageMcs () {
+      return this.$store.getters.languageMcs
+    },
     metaAddress () {
       return this.$store.getters.metaAddress
     },

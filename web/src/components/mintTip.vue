@@ -6,7 +6,9 @@
           <el-card shadow="always" class="mint_card" v-for="(nftMint, n) in nftMintData" :key="n">
             <div class="mint_flex">
               <div class="details">
-                <img :src="nftMint.image_url" />
+                <div class="img">
+                  <img :src="nftMint.image_url" v-if="nftMint.image_url" />
+                </div>
                 <span>{{nftMint.name || nftMint.address||'-'}}</span>
               </div>
               <el-button type="primary" size="mini" @click="handleMint(nftMint, 'mint')">Mint here</el-button>
@@ -15,13 +17,15 @@
           <el-card shadow="always" class="mint_card" v-for="(nftView, v) in nftViewData" :key="v+nftMintData.length">
             <div class="mint_flex">
               <div class="details">
-                <img :src="nftView.nft_collecton_image_url" />
+                <div class="img">
+                  <img :src="nftView.nft_collection_image_url" v-if="nftView.nft_collection_image_url" />
+                </div>
                 <span>{{nftView.nft_collection_name||nftView.nft_collection_address || nftView.mint_address || '-'}}</span>
               </div>
               <el-button type="primary" size="mini" @click="handleMint(nftView, 'view')">{{$t('uploadFile.mint_view')}}</el-button>
             </div>
           </el-card>
-          <p class="mint_nodata" v-if="nftMintData.length<1 && nftViewData.length<1">This list is empty</p>
+          <p class="mint_nodata" v-if="nftMintData.length<1 && nftViewData.length<1">{{$t('uploadFile.nft_list_empty')}}</p>
         </div>
 
         <div slot="footer" class="dialog-footer">
@@ -58,7 +62,7 @@
       </div>
       <div v-else-if="mintIndex === 'create'" v-loading="hashload" :element-loading-text="isload?isloadText:''">
         <el-form :model="ruleCreateForm" :rules="rules" ref="ruleCreateForm">
-          <el-form-item :label="'Image'" prop="images">
+          <el-form-item :label="'NFT '+$t('uploadFile.nft_Image')" prop="images">
             <el-upload class="upload-demo" ref="uploadFileRef" action="customize" drag list-type="picture-card" :auto-upload="false" :file-list="ruleCreateForm.images" :on-change="handleChange" :on-remove="handleRemove">
               <i class="el-icon-plus"></i>
             </el-upload>
@@ -69,13 +73,13 @@
           <el-form-item :label="'NFT '+$t('uploadFile.nft_Description')" prop="description">
             <el-input v-model="ruleCreateForm.description" type="textarea" :rows="2"></el-input>
           </el-form-item>
-          <el-form-item :label="'External Link'" prop="external_link">
+          <el-form-item :label="$t('uploadFile.nft_External')" prop="external_link">
             <el-input v-model="ruleCreateForm.external_link"></el-input>
           </el-form-item>
-          <el-form-item :label="'Seller Fee Basis Points'" prop="seller_fee_basis_points">
+          <el-form-item :label="$t('uploadFile.nft_Seller')" prop="seller_fee_basis_points">
             <el-input-number v-model="ruleCreateForm.seller_fee_basis_points" controls-position="right" :min="0" :max="10000" placeholder=""></el-input-number>
           </el-form-item>
-          <el-form-item :label="'Fee Recipient'" prop="fee_recipient">
+          <el-form-item :label="$t('uploadFile.nft_Fee_Recipient')" prop="fee_recipient">
             <el-input v-model="ruleCreateForm.fee_recipient"></el-input>
           </el-form-item>
         </el-form>
@@ -179,7 +183,12 @@ export default {
       imageData.append('file_type', 1)
       imageData.append('wallet_address', that.metaAddress)
       const imageResponse = await that.sendPostRequest(`${that.baseAPIURL}api/v1/storage/ipfs/upload`, imageData)
-      return imageResponse.data.ipfs_url || ''
+      if (imageResponse && imageResponse.status === 'success') return imageResponse.data.ipfs_url || ''
+      else {
+        that.$message.error(imageResponse.message || 'Failed!')
+        that.closeDia()
+        return ''
+      }
     },
     handleMint (row, type) {
       that.mintCollectionAddress = row
@@ -197,6 +206,7 @@ export default {
               type: 'application/json'
             })
             const nftUrl = await that.uploadImage(fileBlob, `${type === 'create' ? that.ruleCreateForm.name : that.ruleForm.name}.json`)
+            if (!nftUrl) return
             console.log('upload success')
 
             let CollectionFactory = new that.$web3Init.eth.Contract(
@@ -548,13 +558,19 @@ export default {
                 width: calc(100% - 100px);
                 padding: 0;
                 line-height: 1.2;
-                img {
+                .img {
                   display: block;
                   width: 40px;
                   height: 40px;
                   margin: 0 7px 0 0;
                   border: 1px solid #4b5eff;
                   border-radius: 100%;
+                  img {
+                    display: block;
+                    width: 100%;
+                    height: 100%;
+                    border-radius: 100%;
+                  }
                 }
                 span {
                   width: calc(100% - 50px);

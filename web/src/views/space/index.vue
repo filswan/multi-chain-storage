@@ -61,9 +61,13 @@
             </template>
           </el-table-column>
         </el-table>
-        <p class="detailMore">
+        <p class="detailMore" v-if="languageMcs === 'en'">
           Want more Bucket storage? Click
           <a href="https://docs.filswan.com/multichain.storage/faq" target="_blank">here</a> for more details.
+        </p>
+        <p class="detailMore" v-else>
+          想要更多的Bucket存储空间？单击
+          <a href="https://docs.filswan.com/multichain.storage/faq" target="_blank">此处</a> 了解更多详细信息。
         </p>
       </div>
     </div>
@@ -314,6 +318,11 @@ export default {
       }
       return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
       // return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i]
+    }
+  },
+  computed: {
+    languageMcs () {
+      return this.$store.getters.languageMcs
     }
   }
 }

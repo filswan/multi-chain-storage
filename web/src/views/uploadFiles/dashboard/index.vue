@@ -229,7 +229,7 @@
             <template slot-scope="scope">
               <div class="hot-cold-box">
                 <el-button class="uploadBtn grey opacity" v-if="tableData[scope.$index].status.toLowerCase()=='pending'&&tableData[scope.$index].pin_status.toLowerCase()=='unpinned'" :disabled="true">
-                  {{$t('uploadFile.pay')}}
+                  {{$t('uploadFile.Canceled')}}
                 </el-button>
                 <el-button class="uploadBtn blue" type="primary" v-else-if="tableData[scope.$index].status.toLowerCase()=='pending'" @click.stop="payClick(scope.row)">
                   {{$t('uploadFile.pay')}}

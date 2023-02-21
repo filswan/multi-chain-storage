@@ -22,11 +22,11 @@ export default {
   },
   navbar: {
     sidebar_header: 'Multi-Chain Storage',
-    'section': 'Section',
-    'myprofile': 'My Profile',
-    'support': 'Support',
+    section: 'Section',
+    myprofile: 'My Profile',
+    support: 'Support',
     hi: 'Hi, ',
-    'logout': 'Logout',
+    logout: 'Logout',
     log_in: 'Log In',
     sign_up: 'Sign Up',
     dashboard: 'DASHBOARD',
@@ -41,10 +41,10 @@ export default {
     Tools: 'TOOLS',
     Stats: 'STATISTICS',
     copy: '© 2021 FilSwan Canada',
-    'ScoreChange': 'Score Change',
-    'ScoreChange_legend': 'Score',
-    'PowerChange': 'Power Change',
-    'MiningData': 'Storage Sealing Data',
+    ScoreChange: 'Score Change',
+    ScoreChange_legend: 'Score',
+    PowerChange: 'Power Change',
+    MiningData: 'Storage Sealing Data',
     selectDate: {
       sevenDays: '7days',
       thirtyDays: '30days',
@@ -479,7 +479,8 @@ export default {
     Connect_StartFree: 'Get Started',
     Connect_TutorialVideo: 'Tutorial Video',
     back_home: 'Back to Home Page',
-    Skip: 'Skip'
+    Skip: 'Skip',
+    Connect_tip: 'Confirm to disconnect from mailbox?'
   },
   uploadFile: {
     title: 'Files List',
@@ -507,6 +508,7 @@ export default {
     payment: 'Payment',
     MINT: 'Mint',
     mint_view: 'View',
+    Canceled: 'Canceled',
     pay: 'PAY',
     failed: 'FAILED',
     paid: 'PAID',
@@ -597,6 +599,11 @@ export default {
     nft_Amount: 'Amount',
     nft_IPFSURL: 'IPFS URL',
     nft_Description: 'Description',
+    nft_External: 'External Link',
+    nft_Seller: 'Seller Fee Basis Points',
+    nft_Fee_Recipient: 'Fee Recipient',
+    nft_Image: 'Image',
+    nft_list_empty: 'This list is empty',
     Payment_Transaction_Hash: 'Payment Transaction Hash',
     Back: 'Back',
     Minting: 'Minting…',
@@ -623,7 +630,13 @@ export default {
     filter_status_Pending: 'Pending',
     filter_status_Processing: 'Processing',
     filter_status_Free: 'Free',
-    filter_status_Failed: 'Failed'
+    filter_status_Failed: 'Failed',
+    bucket_Uploading: 'Uploading...',
+    bucket_Upload: 'Upload',
+    Start_uploading: 'Start uploading',
+    Upload_failed: 'Upload failed:',
+    Upload_view: 'view',
+    Upload_path: 'path'
   },
   billing: {
     search_placeholder: 'Search by ',
@@ -669,6 +682,13 @@ export default {
     copy: '© 2022 MULTICHAIN.STORAGE. ALL RIGHTS RESERVED.'
   },
   metaSpace: {
+    home_title: 'Multichain.Storage',
+    home_Introduction: 'Introduction',
+    home_Introduction_cont: 'Multichain.Storage is a smart-contract-based cross-chain storage gateway integrated with Oracle technology and the Filecoin networks. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks.',
+    home_Our_Features: 'Our Features',
+    home_Our_Features_cont01: 'Drag and drop files to pin to IPFS and store on the Filecoin network at the same time',
+    home_Our_Features_cont02: 'Fast retrieval globally by reliable edge network',
+    home_Our_Features_cont03: 'Developer support of JS, Python and Golang SDK',
     empty_prompt: 'You do not have any Bucket storage yet !',
     empty_prompt_detail: 'Start to upload your files.',
     search_bucket: 'Search Bucket Storage',
@@ -698,7 +718,9 @@ export default {
     delete_title_detail: 'Delete permanently?',
     delete_desc: 'This Bucket item will be permanently deleted. This operation cannot be reversed.',
     Upload_File: 'Upload File',
+    Upload_Folder: 'Upload Folder',
     upload_desc: 'Drag&Drop Files Here',
+    Browse_Folders: 'Browse Folders',
     uploadDray_or: 'or',
     uploadDray_text: 'Browse Files',
     detail_title: 'Bucket Details',
@@ -732,7 +754,17 @@ export default {
     pay_load: 'Please Wait',
     pay_success: 'Successfully Paid!',
     pay_success_desc: 'Thank you for your payment. Bucket credit added.',
-    try_again: 'try again'
+    try_again: 'try again',
+    Name_bucket: 'Name this bucket',
+    active_bucket: 'You have to active your bucket first'
+  },
+  apiKey: {
+    day: 'days',
+    label_Expiration: 'Expiration (day)',
+    label_tip01: '* Entering 0 means that the API Key is permanently active',
+    label_tip02: '* The maximum number is 365',
+    Add_bucket: 'Add this bucket',
+    apikey_cont: 'APIKey will be permanently deleted.This operation cannot be reversed.'
   },
   comment: {
     Rate_Product: 'Rate our product',

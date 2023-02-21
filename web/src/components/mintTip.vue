@@ -1,6 +1,7 @@
 <template>
   <div>
-    <el-dialog :title="$t('uploadFile.nft_title')+'NFT'" :close-on-click-modal="false" :width="widthDia" :visible.sync="mineVisible" :before-close="closeDia">
+    <el-dialog :title="$t('uploadFile.nft_title')+'NFT'" :close-on-click-modal="false" :width="widthDia"
+               :visible.sync="mineVisible" :before-close="closeDia">
       <div v-if="mintIndex === 'list'" v-loading="hashload">
         <div class="mint_body">
           <el-card shadow="always" class="mint_card" v-for="(nftMint, n) in nftMintData" :key="n">
@@ -22,15 +23,19 @@
                 </div>
                 <span>{{nftView.nft_collection_name||nftView.nft_collection_address || nftView.mint_address || '-'}}</span>
               </div>
-              <el-button type="primary" size="mini" @click="handleMint(nftView, 'view')">{{$t('uploadFile.mint_view')}}</el-button>
+              <el-button type="primary" size="mini" @click="handleMint(nftView, 'view')">
+                {{ $t('uploadFile.mint_view') }}
+              </el-button>
             </div>
           </el-card>
           <p class="mint_nodata" v-if="nftMintData.length<1 && nftViewData.length<1">{{$t('uploadFile.nft_list_empty')}}</p>
         </div>
 
         <div slot="footer" class="dialog-footer">
-          <el-button class="cancel" type="info" @click="closeDia">{{$t('uploadFile.Back')}}</el-button>
-          <el-button type="primary" @click="mintIndex = 'create'">{{isload ? $t('uploadFile.Minting') : $t('uploadFile.Mint_Create_NFT')}}</el-button>
+          <el-button class="cancel" type="info" @click="closeDia">{{ $t('uploadFile.Back') }}</el-button>
+          <el-button type="primary" @click="mintIndex = 'create'">
+            {{ isload ? $t('uploadFile.Minting') : $t('uploadFile.Mint_Create_NFT') }}
+          </el-button>
         </div>
       </div>
       <div v-else-if="mintIndex === 'mint'" v-loading="hashload" :element-loading-text="isload?isloadText:''">
@@ -39,7 +44,8 @@
             <el-input v-model="ruleForm.name" placeholder=""></el-input>
           </el-form-item>
           <el-form-item :label="'NFT '+$t('uploadFile.nft_Amount')" prop="amount" class="flex_float">
-            <el-input-number v-model="ruleForm.amount" controls-position="right" :min="1" placeholder=""></el-input-number>
+            <el-input-number v-model="ruleForm.amount" controls-position="right" :min="1"
+                             placeholder=""></el-input-number>
           </el-form-item>
           <el-form-item :label="'NFT '+$t('uploadFile.nft_Description')" prop="description">
             <el-input v-model="ruleForm.description" type="textarea" :rows="2"></el-input>
@@ -56,8 +62,8 @@
         </el-form>
 
         <div slot="footer" class="dialog-footer">
-          <el-button class="cancel" type="info" @click="mintIndex = 'list'">{{$t('uploadFile.Back')}}</el-button>
-          <el-button type="primary" @click="submitForm('ruleForm', 'mint')">{{$t('uploadFile.Mint_NFT')}}</el-button>
+          <el-button class="cancel" type="info" @click="mintIndex = 'list'">{{ $t('uploadFile.Back') }}</el-button>
+          <el-button type="primary" @click="submitForm('ruleForm', 'mint')">{{ $t('uploadFile.Mint_NFT') }}</el-button>
         </div>
       </div>
       <div v-else-if="mintIndex === 'create'" v-loading="hashload" :element-loading-text="isload?isloadText:''">
@@ -85,8 +91,10 @@
         </el-form>
 
         <div slot="footer" class="dialog-footer">
-          <el-button class="cancel" type="info" @click="mintIndex = 'list'">{{$t('uploadFile.Back')}}</el-button>
-          <el-button type="primary" @click="submitForm('ruleCreateForm', 'create')">{{isload ? $t('uploadFile.Minting') : $t('uploadFile.Mint_Create_NFT')}}</el-button>
+          <el-button class="cancel" type="info" @click="mintIndex = 'list'">{{ $t('uploadFile.Back') }}</el-button>
+          <el-button type="primary" @click="submitForm('ruleCreateForm', 'create')">
+            {{ isload ? $t('uploadFile.Minting') : $t('uploadFile.Mint_Create_NFT') }}
+          </el-button>
         </div>
       </div>
     </el-dialog>
@@ -96,17 +104,18 @@
 <script>
 import axios from 'axios'
 import CollectionFactoryAbi from '@/utils/CollectionFactory.json'
+
 let that
 export default {
   name: 'mint_tip',
-  data () {
+  data() {
     return {
       ruleForm: {
         name: '',
         image: '',
         description: '',
         tx_hash: '',
-        attributes: [{ trait_type: 'Size', value: parseInt(this.mintRow.file_size) }],
+        attributes: [{trait_type: 'Size', value: parseInt(this.mintRow.file_size)}],
         external_url: '',
         amount: 1,
         nftMint: null
@@ -115,7 +124,7 @@ export default {
         name: '',
         description: '',
         tx_hash: '',
-        attributes: [{ trait_type: 'Size', value: parseInt(this.mintRow.file_size) }],
+        attributes: [{trait_type: 'Size', value: parseInt(this.mintRow.file_size)}],
         images: [],
         external_link: '',
         seller_fee_basis_points: 0,
@@ -126,7 +135,7 @@ export default {
       },
       rules: {
         name: [
-          { required: true, message: ' ', trigger: 'blur' }
+          {required: true, message: ' ', trigger: 'blur'}
         ]
       },
       widthDia: document.body.clientWidth > 1600 ? '550px' : document.body.clientWidth > 600 ? '450px' : '90%',
@@ -144,20 +153,20 @@ export default {
   props: ['mintRow', 'mineVisible'],
   components: {},
   computed: {
-    metaAddress () {
+    metaAddress() {
       return this.$store.getters.metaAddress
     }
   },
   methods: {
-    handleChange (file, fileList) {
+    handleChange(file, fileList) {
       if (fileList.length > 0) that.ruleCreateForm.images = [fileList[fileList.length - 1]]
       that.uploadFileImage(file, fileList)
     },
-    handleRemove (file, fileList) {
+    handleRemove(file, fileList) {
       // console.log(file, fileList);
       that.ruleCreateForm.images = []
     },
-    async uploadFileImage (file, fileList) {
+    async uploadFileImage(file, fileList) {
       // const isJPG = file.raw.type === 'image/jpeg' || file.raw.type === 'image/png'
       const isJPG = file.raw.type.indexOf('image') > -1
       const isLt2M = file.size / 1024 / 1024 / 1024 <= 25 // or 1000
@@ -175,12 +184,12 @@ export default {
       if (file.name.indexOf(' ') > -1) file.name = file.name.replace(reg, '_')
       that.ruleCreateForm.fileRaw = file
     },
-    async uploadImage (raw, name) {
-      // console.log(raw, name)
+    async uploadImage(raw, name) {
+      console.log(raw, name)
       var imageData = new FormData()
       imageData.append('file', raw, name)
-      imageData.append('duration', 525)
-      imageData.append('file_type', 1)
+      imageData.append('duration', '525')
+      imageData.append('file_type', '1')
       imageData.append('wallet_address', that.metaAddress)
       const imageResponse = await that.sendPostRequest(`${that.baseAPIURL}api/v1/storage/ipfs/upload`, imageData)
       if (imageResponse && imageResponse.status === 'success') return imageResponse.data.ipfs_url || ''
@@ -190,12 +199,12 @@ export default {
         return ''
       }
     },
-    handleMint (row, type) {
+    handleMint(row, type) {
       that.mintCollectionAddress = row
       if (type === 'view') that.$emit('getMintDialog', false, row)
       else that.mintIndex = 'mint'
     },
-    submitForm (formName, type) {
+    submitForm(formName, type) {
       that.$refs[formName].validate(async (valid) => {
         if (valid) {
           if (that.metaAddress) {
@@ -212,7 +221,7 @@ export default {
             let CollectionFactory = new that.$web3Init.eth.Contract(
               CollectionFactoryAbi,
               that.$root.COLLECTION_FACTORY_ADDRESS,
-              { from: that.metaAddress, gas: that.$web3Init.utils.toHex(that.$root.PAY_GAS_LIMIT) }
+              {from: that.metaAddress, gas: that.$web3Init.utils.toHex(that.$root.PAY_GAS_LIMIT)}
             )
 
             if (type === 'create') {
@@ -222,7 +231,9 @@ export default {
               // console.log('collections list', collectionsList)
               that.isloadText = that.$t('uploadFile.payment_tip_deal03')
 
-              if (that.ruleCreateForm.fileRaw) that.ruleCreateForm.file = await that.uploadImage(that.ruleCreateForm.fileRaw.raw, that.ruleCreateForm.fileRaw.name)
+              if (that.ruleCreateForm.fileRaw.raw) {
+                that.ruleCreateForm.file = await that.uploadImage(that.ruleCreateForm.fileRaw.raw, that.ruleCreateForm.fileRaw.name)
+              }
               let mintInfoJson = {
                 address: collections.events.CreateCollection.returnValues.collectionAddress,
                 tx_hash: collections.transactionHash,
@@ -395,15 +406,18 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+
   .el-dialog {
     background: #fff;
     margin: auto !important;
     box-shadow: 0 0 13px rgba(128, 128, 128, 0.8);
     border-radius: 0.2rem;
+
     .el-dialog__header {
       padding: 0.3rem 0.4rem;
       display: flex;
       border-bottom: 1px solid #dfdfdf;
+
       .el-dialog__title {
         color: #000;
         font-size: 0.22rem;
@@ -411,33 +425,40 @@ export default {
         line-height: 1;
         text-transform: capitalize;
       }
+
       .el-dialog__headerbtn {
         display: none;
       }
     }
+
     .el-dialog__body {
       min-height: 250px;
       padding: 0.2rem 0.4rem;
+
       .el-form {
         width: 100%;
         margin: auto;
         justify-content: flex-start;
+
         .err {
           .el-form-item__label {
             color: red;
           }
+
           .el-input {
             .el-input__inner {
               border-color: red;
             }
           }
         }
+
         .el-form-item {
           display: flex;
           align-items: center;
           flex-wrap: wrap;
           width: 100%;
           margin-bottom: 0.05rem;
+
           .el-form-item__label {
             width: 100%;
             color: #000000;
@@ -445,11 +466,13 @@ export default {
             word-break: break-word;
             text-align: left;
             font-size: 0.2rem;
+
             .important {
               color: #f56c6c;
               margin-right: 4px;
             }
           }
+
           .el-form-item__content {
             width: 100%;
             display: flex;
@@ -457,9 +480,11 @@ export default {
             overflow: hidden;
             font-size: 0.2rem;
             color: #555;
+
             .el-input,
             .el-textarea {
               margin: 0 5px 0 0;
+
               .el-input__inner,
               .el-textarea__inner {
                 width: 100%;
@@ -468,19 +493,23 @@ export default {
                 color: #555;
                 text-align: left;
               }
+
               .el-input__inner[readOnly] {
                 background: #f9f9f9;
               }
             }
+
             .el-select,
             .el-input-number {
               width: 100%;
+
               .el-input {
                 .el-input__inner[readOnly] {
                   background: transparent;
                 }
               }
             }
+
             .upload-demo {
               .el-upload--text {
                 width: auto;
@@ -488,18 +517,21 @@ export default {
                 border: 0;
               }
             }
+
             .el-upload--picture-card,
             .el-upload-list--picture-card .el-upload-list__item {
               width: 65px;
               height: 65px;
               line-height: 70px;
               margin-bottom: 0;
+
               .el-upload-dragger {
                 width: 100%;
                 height: 100%;
               }
             }
           }
+
           p {
             width: 100%;
             margin: 0.05rem 0;
@@ -511,14 +543,17 @@ export default {
             line-height: 1;
           }
         }
+
         .flex_float {
           float: left;
           width: 50%;
+
           .el-form-item__content {
             display: flex;
           }
         }
       }
+
       .mint_body {
         width: 100%;
         padding: 0 0.4rem;
@@ -528,29 +563,37 @@ export default {
         min-height: 180px;
         overflow: hidden;
         overflow-y: scroll;
+
         &::-webkit-scrollbar-track {
           background: transparent;
         }
+
         &::-webkit-scrollbar {
           width: 6px;
           background: transparent;
         }
+
         &::-webkit-scrollbar-thumb {
           background: #ccc;
         }
+
         .mint_nodata {
           text-align: center;
         }
+
         .mint_card {
           width: 100%;
           margin: 0.2rem auto;
+
           .el-card__body {
             padding: 0;
+
             .mint_flex {
               display: flex;
               align-items: center;
               justify-content: space-between;
               padding: 0.1rem;
+
               .details {
                 display: flex;
                 align-items: center;
@@ -572,6 +615,7 @@ export default {
                     border-radius: 100%;
                   }
                 }
+
                 span {
                   width: calc(100% - 50px);
                   overflow: hidden;
@@ -582,6 +626,7 @@ export default {
                   -webkit-box-orient: vertical;
                 }
               }
+
               .el-button {
                 padding: 7px 10px;
                 font-size: 14px;
@@ -594,6 +639,7 @@ export default {
                 @media screen and (max-width: 768px) {
                   font-size: 12px;
                 }
+
                 &:hover {
                   opacity: 0.9;
                 }
@@ -601,8 +647,10 @@ export default {
             }
           }
         }
+
         .view_style {
           cursor: pointer;
+
           .el-card__body {
             .mint_flex {
               .details {
@@ -613,12 +661,14 @@ export default {
         }
       }
     }
+
     .dialog-footer {
       display: flex;
       justify-content: space-between;
       align-items: center;
       width: 100%;
       margin: 0.25rem auto 0;
+
       .el-button {
         height: 0.6rem;
         padding: 0;
@@ -631,14 +681,17 @@ export default {
         background: linear-gradient(45deg, #4f8aff, #4b5eff);
         border-radius: 14px;
         width: calc(65% - 0.15rem);
+
         &:hover {
           opacity: 0.9;
         }
       }
+
       .cancel {
         width: calc(35% - 0.15rem);
         background: #dadada;
         transition: background-color 0.3s;
+
         &:hover {
           background: linear-gradient(45deg, #4f8aff, #4b5eff);
         }
@@ -646,6 +699,7 @@ export default {
     }
   }
 }
+
 @media screen and (max-width: 599px) {
   .el-dialog__wrapper /deep/ {
     .el-dialog {
@@ -654,18 +708,22 @@ export default {
           font-size: 0.16rem;
         }
       }
+
       .el-dialog__body {
         padding: 0.15rem;
+
         .el-form {
           .el-form-item {
             display: flex;
             flex-wrap: wrap;
             margin: 0 0 0.05rem;
+
             .el-form-item__label {
               width: 100%;
               margin: 0;
               text-align: left;
             }
+
             .el-form-item__content {
               width: 100%;
               margin: 0;

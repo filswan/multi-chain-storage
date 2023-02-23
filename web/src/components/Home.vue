@@ -10,7 +10,7 @@
           {{headertitle}}
         </div>
       </div>
-      <div class="content">
+      <div class="content" id="content_client">
         <div class="content_body" :class="{'stats': $route.name == 'Stats' || $route.name == 'Space' || $route.name == 'Space_detail'}">
           <network-alert v-if="metaAddress&&networkTip" @changeNet="changeNet" @getNetwork="getNetwork"></network-alert>
           <transition name="move" mode="out-in">

@@ -1,7 +1,6 @@
 <template>
   <div>
-    <el-dialog :title="$t('uploadFile.nft_title')+'NFT'" :close-on-click-modal="false" :width="widthDia"
-               :visible.sync="mineVisible" :before-close="closeDia">
+    <el-dialog :title="$t('uploadFile.nft_title')+'NFT'" :close-on-click-modal="false" :width="widthDia" :visible.sync="mineVisible" :before-close="closeDia">
       <div v-if="mintIndex === 'list'" v-loading="hashload">
         <div class="mint_body">
           <el-card shadow="always" class="mint_card" v-for="(nftMint, n) in nftMintData" :key="n">
@@ -44,8 +43,7 @@
             <el-input v-model="ruleForm.name" placeholder=""></el-input>
           </el-form-item>
           <el-form-item :label="'NFT '+$t('uploadFile.nft_Amount')" prop="amount" class="flex_float">
-            <el-input-number v-model="ruleForm.amount" controls-position="right" :min="1"
-                             placeholder=""></el-input-number>
+            <el-input-number v-model="ruleForm.amount" controls-position="right" :min="1" placeholder=""></el-input-number>
           </el-form-item>
           <el-form-item :label="'NFT '+$t('uploadFile.nft_Description')" prop="description">
             <el-input v-model="ruleForm.description" type="textarea" :rows="2"></el-input>
@@ -108,14 +106,14 @@ import CollectionFactoryAbi from '@/utils/CollectionFactory.json'
 let that
 export default {
   name: 'mint_tip',
-  data() {
+  data () {
     return {
       ruleForm: {
         name: '',
         image: '',
         description: '',
         tx_hash: '',
-        attributes: [{trait_type: 'Size', value: parseInt(this.mintRow.file_size)}],
+        attributes: [{ trait_type: 'Size', value: parseInt(this.mintRow.file_size) }],
         external_url: '',
         amount: 1,
         nftMint: null
@@ -124,7 +122,7 @@ export default {
         name: '',
         description: '',
         tx_hash: '',
-        attributes: [{trait_type: 'Size', value: parseInt(this.mintRow.file_size)}],
+        attributes: [{ trait_type: 'Size', value: parseInt(this.mintRow.file_size) }],
         images: [],
         external_link: '',
         seller_fee_basis_points: 0,
@@ -135,7 +133,7 @@ export default {
       },
       rules: {
         name: [
-          {required: true, message: ' ', trigger: 'blur'}
+          { required: true, message: ' ', trigger: 'blur' }
         ]
       },
       widthDia: document.body.clientWidth > 1600 ? '550px' : document.body.clientWidth > 600 ? '450px' : '90%',
@@ -153,20 +151,20 @@ export default {
   props: ['mintRow', 'mineVisible'],
   components: {},
   computed: {
-    metaAddress() {
+    metaAddress () {
       return this.$store.getters.metaAddress
     }
   },
   methods: {
-    handleChange(file, fileList) {
+    handleChange (file, fileList) {
       if (fileList.length > 0) that.ruleCreateForm.images = [fileList[fileList.length - 1]]
       that.uploadFileImage(file, fileList)
     },
-    handleRemove(file, fileList) {
+    handleRemove (file, fileList) {
       // console.log(file, fileList);
       that.ruleCreateForm.images = []
     },
-    async uploadFileImage(file, fileList) {
+    async uploadFileImage (file, fileList) {
       // const isJPG = file.raw.type === 'image/jpeg' || file.raw.type === 'image/png'
       const isJPG = file.raw.type.indexOf('image') > -1
       const isLt2M = file.size / 1024 / 1024 / 1024 <= 25 // or 1000
@@ -184,7 +182,7 @@ export default {
       if (file.name.indexOf(' ') > -1) file.name = file.name.replace(reg, '_')
       that.ruleCreateForm.fileRaw = file
     },
-    async uploadImage(raw, name) {
+    async uploadImage (raw, name) {
       console.log(raw, name)
       var imageData = new FormData()
       imageData.append('file', raw, name)
@@ -199,12 +197,12 @@ export default {
         return ''
       }
     },
-    handleMint(row, type) {
+    handleMint (row, type) {
       that.mintCollectionAddress = row
       if (type === 'view') that.$emit('getMintDialog', false, row)
       else that.mintIndex = 'mint'
     },
-    submitForm(formName, type) {
+    submitForm (formName, type) {
       that.$refs[formName].validate(async (valid) => {
         if (valid) {
           if (that.metaAddress) {
@@ -221,7 +219,7 @@ export default {
             let CollectionFactory = new that.$web3Init.eth.Contract(
               CollectionFactoryAbi,
               that.$root.COLLECTION_FACTORY_ADDRESS,
-              {from: that.metaAddress, gas: that.$web3Init.utils.toHex(that.$root.PAY_GAS_LIMIT)}
+              { from: that.metaAddress, gas: that.$web3Init.utils.toHex(that.$root.PAY_GAS_LIMIT) }
             )
 
             if (type === 'create') {

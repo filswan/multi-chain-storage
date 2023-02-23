@@ -35,6 +35,16 @@
               </div>
             </template>
           </el-table-column>
+          <el-table-column prop="subdomain" :label="$t('metaSpace.table_subdomain')">
+            <template slot-scope="scope">
+              <div class="hot-cold-box">
+                <el-select v-model="domain.value" placeholder=" ">
+                  <el-option v-for="item in domain.data" :key="item" :label="item" :value="item">
+                  </el-option>
+                </el-select>
+              </div>
+            </template>
+          </el-table-column>
           <el-table-column prop="size" :label="$t('metaSpace.table_space')">
             <template slot-scope="scope">
               <div class="hot-cold-box">
@@ -113,7 +123,11 @@ export default {
       listBucketIndex: false,
       dialogFormVisible: false,
       areaBody: {},
-      typeName: 'add'
+      typeName: 'add',
+      domain: {
+        value: '',
+        data: []
+      }
     }
   },
   components: { popUps },
@@ -190,7 +204,7 @@ export default {
       that.getListBuckets()
     },
     getListBucketDetail (row) {
-      that.$router.push({ name: 'Space_detail', query: { folder: encodeURIComponent(row.bucket_name), bucket_uuid: row.bucket_uid, bucket_size: row.size } })
+      that.$router.push({ name: 'Space_detail', query: { folder: encodeURIComponent(row.bucket_name), bucket_uuid: row.bucket_uid, domain: that.domain.value } })
     },
     async getDialogClose (formName, name) {
       if (formName === 'pay') that.payLoad = true
@@ -224,20 +238,35 @@ export default {
       // const directoryRes = await that.$commonFun.sendRequest(`./static/json/list.json`, 'get')
       if (!directoryRes || directoryRes.status !== 'success') {
         that.$message.error(directoryRes.message || 'Fail')
-        return false
+        that.listBuckets = []
+      } else {
+        that.listBuckets = directoryRes.data || []
+        that.listBucketIndex = directoryRes.data.length > 0 || !!(that.search)
+        that.listBuckets.forEach(element => {
+          size += element.size
+          if (element.is_active) {
+            maxSize += element.max_size
+            that.listBucketActive += 1
+          }
+        })
+        that.$store.dispatch('setFreeBucket', size || 0)
+        that.$store.dispatch('setFreeBucketAll', maxSize || 0)
+        if (!that.listBucketIndex) that.$store.dispatch('setFreeBucket', 0)
       }
-      that.listBuckets = directoryRes.data || []
-      that.listBucketIndex = directoryRes.data.length > 0 || !!(that.search)
-      that.listBuckets.forEach(element => {
-        size += element.size
-        if (element.is_active) {
-          maxSize += element.max_size
-          that.listBucketActive += 1
+
+      const domainRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/gateway/get_gateway`, 'get')
+      // const domainRes = { 'status': 'success', 'data': ['5e1e029d22'] }
+      if (!domainRes || domainRes.status !== 'success') {
+        that.$message.error(domainRes.message || 'Fail')
+        that.domain = {
+          value: '',
+          data: []
         }
-      })
-      that.$store.dispatch('setFreeBucket', size || 0)
-      that.$store.dispatch('setFreeBucketAll', maxSize || 0)
-      if (!that.listBucketIndex) that.$store.dispatch('setFreeBucket', 0)
+      } else {
+        that.domain.value = domainRes.data[0] || ''
+        that.domain.data = domainRes.data || []
+      }
+
       that.listLoad = false
     },
     momentFun (dateItem) {
@@ -961,6 +990,20 @@ export default {
                   background: url(../../assets/images/space/icon_04.png)
                     no-repeat center;
                   background-size: 100% 100%;
+                }
+                .el-select {
+                  width: 100%;
+                  .el-input {
+                    .el-input__inner {
+                      height: auto;
+                      line-height: 2;
+                      font-size: inherit;
+                    }
+                    .el-icon-arrow-up {
+                      display: flex;
+                      align-items: center;
+                    }
+                  }
                 }
               }
               .hot-miner {

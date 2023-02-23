@@ -35,6 +35,20 @@
         </el-form>
       </div>
     </div>
+    <div class="fe-none" v-if="typeName === 'add_domain'">
+      <div class="addBucket" v-loading="createLoad">
+        <i class="el-icon-circle-close close" @click="closeDia()"></i>
+        <div class="title">{{$t('my_profile.apiKey_btn_03')}}</div>
+        <el-form :model="form" status-icon :rules="rulesDomain" label-position="top" ref="form" @submit.native.prevent>
+          <el-form-item prop="domain" :label="$t('my_profile.apiKey_your_Domain_label')">
+            <el-input v-model="form.domain" maxlength="256" ref="bucketNameRef"></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="getDialogClose('form')">{{$t('metaSpace.Submit')}}</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+    </div>
     <div class="fe-none" v-else-if="typeName === 'delete'">
       <div class="addBucket" v-loading="listTableLoad">
         <div class="title" v-if="$route.name == 'Space'">
@@ -183,6 +197,40 @@
         </div>
       </div>
     </div>
+    <div class="fe-none" v-else-if="typeName === 'detail_ipfs_file'">
+      <div class="addBucket" v-loading="backupLoad">
+        <i class="el-icon-circle-close closePop" v-if="ipfsUploadLoad" @click="controllerSignal()"></i>
+        <div class="head">
+          {{$t('metaSpace.ob_detail_share')}}
+        </div>
+        <el-form ref="form" class="demo-ruleForm">
+          <el-form-item :label="$t('metaSpace.ob_detail_ObjectIPFSLink')" class="ipfs_form">
+            <el-select v-model="areaBody.ipfs_url" placeholder=" ">
+              <el-option v-for="item in areaBody.options" :key="item.value" :label="item.label" :value="item.value">
+              </el-option>
+            </el-select>
+            {{`/ipfs/${areaBody.payload_cid}`}}
+            <i class="icon el-icon-document-copy" @click="copyLink(`https://${areaBody.ipfs_url}/ipfs/${areaBody.payload_cid}`)"></i>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="closeDia()">{{$t('metaSpace.Close')}}</el-button>
+          </el-form-item>
+        </el-form>
+        <div class="loadTryAgain" v-if="ipfsUploadLoad">
+          <div style="width:100%;">
+            <div class="load_svg">
+              <svg viewBox="25 25 50 50" class="circular">
+                <circle cx="50" cy="50" r="20" fill="none" class="path"></circle>
+              </svg>
+              <p>
+                {{$t('uploadFile.payment_tip_deal')}}
+                <span @click="controllerSignal('try_again', areaBody.ipfs_url, areaBody.name)">{{$t('metaSpace.try_again')}}</span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="fe-none" v-else-if="typeName === 'upload'">
       <div class="uploadDig" v-loading="loading">
         <i class="el-icon-circle-close close" @click="closeDia()"></i>
@@ -227,14 +275,26 @@
       <div class="uploadDig uploadDigFolder" v-loading="loading">
         <i class="el-icon-circle-close close" @click="closeDia()"></i>
         <div class="upload_form">
-          <el-upload class="upload-demo upload-file" :multiple="true" :style="{'border': ruleForm.fileList_tip?'2px dashed #f56c6c':'0'}" drag ref="uploadFolderRef" action="customize" :http-request="uploadFile" :file-list="ruleForm.fileListFolder" :show-file-list="false"
-            :on-change="handleChange" :on-remove="handleRemove">
-            <img src="@/assets/images/space/icon_11.png" alt="">
-            <div class="el-upload__text"></div>
-            <el-button type="primary">
-              {{$t('metaSpace.Browse_Folders')}}
-            </el-button>
-          </el-upload>
+          <div class="upload_to">
+            <div class="text">Upload to MCS</div>
+            <el-upload class="upload-demo upload-file" :multiple="true" ref="uploadFolderRef" action="customize" :http-request="uploadFile" :file-list="ruleForm.fileListFolder" :show-file-list="false" :on-change="handleChange" :on-remove="handleRemove">
+              <img src="@/assets/images/space/icon_11.png" alt="">
+              <div class="el-upload__text"></div>
+              <el-button type="primary">
+                {{$t('metaSpace.Browse_Folders')}}
+              </el-button>
+            </el-upload>
+          </div>
+          <div class="upload_to">
+            <div class="text">Upload to IPFS</div>
+            <el-upload class="upload-demo upload-file" :multiple="true" ref="uploadFolderIPFSRef" action="customize" :http-request="uploadFile" :file-list="ruleForm.fileListFolder" :show-file-list="false" :on-change="handleIPFSChange" :on-remove="handleRemove">
+              <img src="@/assets/images/space/icon_11.png" alt="">
+              <div class="el-upload__text"></div>
+              <el-button type="primary">
+                {{$t('metaSpace.Browse_Folders')}}
+              </el-button>
+            </el-upload>
+          </div>
         </div>
       </div>
     </div>
@@ -434,13 +494,17 @@ export default {
         name: '',
         email: '',
         day: '30',
-        checkType: ['agreement']
+        checkType: ['agreement'],
+        domain: ''
       },
       rules: {
         name: [{ validator: validateName, trigger: 'blur' }]
       },
       rulesDay: {
         day: [{ required: true, message: 'Please fill in the expiration date.', trigger: 'blur' }]
+      },
+      rulesDomain: {
+        domain: [{ required: true, message: 'Please fill in the domain address.', trigger: 'blur' }]
       },
       rulesEmail: {
         email: [
@@ -490,7 +554,8 @@ export default {
         allNum: 0
       },
       uploadStart: false,
-      loadFileText: ''
+      loadFileText: '',
+      uploadType: 'mcs'
     }
   },
   props: ['dialogFormVisible', 'typeModule', 'areaBody', 'createLoad', 'listTableLoad', 'currentBucket', 'fixed', 'backupLoad', 'changeTitle', 'payLoad', 'listBucketFolder'],
@@ -568,7 +633,7 @@ export default {
       }
       that.$refs[formName].validate(async valid => {
         if (valid) {
-          that.$emit('getPopUps', false, that.typeName, that.typeName === 'add_apikey' ? that.form.day : that.form.name)
+          that.$emit('getPopUps', false, that.typeName, that.typeName === 'add_apikey' ? that.form.day : that.typeName === 'add_domain' ? that.form.domain : that.form.name)
         } else {
           console.log('error submit!!')
           return false
@@ -699,6 +764,10 @@ export default {
       }
       return Promise.all(asyncList)
     },
+    handleIPFSChange (file, fileList) {
+      that.uploadType = 'ipfs'
+      that.handleChange(file, fileList)
+    },
     async handleChange (file, fileList) {
       const folderCurrent = file.raw.webkitRelativePath.split('/') || ''
       const currentFold = folderCurrent.slice(0, -1).join('/') || ''
@@ -761,106 +830,110 @@ export default {
     },
     async fileUpload (file, currentFold, fold, indexFile) {
       try {
-        let { hash } = await that.fileMd5(file)
-        let fileCheckRes = await that.fileCheck(hash, file, currentFold, fold, indexFile)
-        if (!fileCheckRes) {
-          if (that.typeName === 'upload_folder' || that.typeName === 'upload_folder_list') {
-            that.ruleForm.fileListFolder[indexFile - 1].uploadPrecent = 100
-            that.ruleForm.fileListFolder[indexFile - 1].name = `${file.name.trim()}` + ' '
-          }
-          if (that.uploadBody.allNum === that.uploadBody.addNum) {
-            that.$emit('getUploadDialog', that.typeName === 'upload_folder_list', 0)
-            that.loading = false
-          }
-          return false
-        }
-
-        let alreadyUploadChunks = []
-        let max = 10 * 1024 * 1024
-        let count = Math.ceil(file.size / max)
-        let index = 0
-        let chunks = []
-        let concurrent = 3
-        while (index < count) {
-          chunks.push({
-            file: file.raw.slice(index * max, (index + 1) * max),
-            filename: `${index + 1}_${file.name}`
-          })
-          index++
-        }
-        let uploadListData = new FormData()
-        const fileBlob = new Blob([chunks[0].file], {
-          type: 'application/json'
-        })
-        that.loadFileText = 'Uploading...'
-        uploadListData.append('file', fileBlob, chunks[0].filename)
-        uploadListData.append('file_name', chunks[0].filename)
-        uploadListData.append('hash', hash)
-        const uploadListConfig = {
-          onUploadProgress: progressEvent => {
-            that.progressEvent = progressEvent
-            // if (that.typeName === 'upload_folder' || that.typeName === 'upload_folder_list') {
-            //   that.ruleForm.fileListFolder[indexFile - 1].name = `${file.name.trim()}` + ' '
-            //   if (count > 1) that.ruleForm.fileListFolder[indexFile - 1].uploadPrecent = index<count?(((index / count) * 100) | 0):99
-            //   else that.ruleForm.fileListFolder[indexFile - 1].uploadPrecent = that.onPross(progressEvent)
-            //   // that.progressHandle(progressEvent)
-            // }
-          }
-        }
-        let uploadListRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/upload`, 'post', uploadListData, uploadListConfig)
-        if ((!uploadListRes || uploadListRes.status !== 'success') && (that.typeName === 'upload_folder' || that.typeName === 'upload_folder_list')) {
-          that.ruleForm.fileListFolder[indexFile - 1].err = true
-          let contErr = `${file.name.trim()} (path:/${that.currentBucket}/${currentFold})`
-          if (that.ruleForm.fileListFolderErr.indexOf(contErr) === -1) that.ruleForm.fileListFolderErr.push(contErr)
-        }
-        alreadyUploadChunks = uploadListRes.data || []
-        if (count <= 1 || (uploadListRes && uploadListRes.data.length === count)) await that.fileMerge(hash, file, currentFold, fold, indexFile)
-        if (that.typeName !== 'upload_folder_list') that.typeName = 'upload_progress'
-        that.loadFileText = `Uploading... ${that.sizeChange(that.uploadFileSize, 1)}/${that.sizeChange(that.uploadFileSizeAll, 1)} (${that.uploadPrecent}%)`
-        that.concurrentExecution(chunks, concurrent, (chunk) => {
-          return new Promise(async (resolve, reject) => {
-            if (alreadyUploadChunks.indexOf(chunk.filename) === -1) {
-              let uploadData = new FormData()
-              const fileBlob = new Blob([chunk.file], {
-                type: 'application/json'
-              })
-              uploadData.append('file', fileBlob, chunk.filename)
-              uploadData.append('file_name', chunk.filename)
-              uploadData.append('hash', hash)
-              const config = {
-                onUploadProgress: progressEvent => {
-                  that.progressEvent = progressEvent
-                  // if (that.typeName === 'upload_folder' || that.typeName === 'upload_folder_list') {
-                  //   that.ruleForm.fileListFolder[indexFile - 1].name = `${file.name.trim()}` + ' '
-                  //   that.ruleForm.fileListFolder[indexFile - 1].uploadPrecent = index < count ? (((index / count) * 100) | 0) : 99
-                  //   // that.progressHandle(progressEvent)
-                  // }
-                }
-              }
-              let uploadRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/upload`, 'post', uploadData, config)
-              if (!uploadRes || uploadRes.status !== 'success') {
-                if (that.typeName === 'upload_folder' || that.typeName === 'upload_folder_list') {
-                  that.ruleForm.fileListFolder[indexFile - 1].err = true
-                  let contErr = `${file.name.trim()} (path:/${that.currentBucket}/${currentFold})`
-                  if (that.ruleForm.fileListFolderErr.indexOf(contErr) === -1) that.ruleForm.fileListFolderErr.push(contErr)
-                }
-                that.$emit('getUploadDialog', that.typeName === 'upload_folder_list', 0)
-                that.loading = false
-                reject(uploadRes.message || 'Fail')
-                return false
-              }
-              alreadyUploadChunks = uploadRes.data
-              if (alreadyUploadChunks.length > 0 && alreadyUploadChunks.includes(chunk.filename)) {
-                that.manageProgress(hash, file, uploadRes.data.length, count, max, currentFold, fold, indexFile)
-                resolve(uploadRes.data)
-              }
-            } else {
-              resolve()
+        if (that.uploadType === 'ipfs') {
+          await that.foldIPFS(file, currentFold, fold, indexFile)
+        } else {
+          let { hash } = await that.fileMd5(file)
+          let fileCheckRes = await that.fileCheck(hash, file, currentFold, fold, indexFile)
+          if (!fileCheckRes) {
+            if (that.typeName === 'upload_folder' || that.typeName === 'upload_folder_list') {
+              that.ruleForm.fileListFolder[indexFile - 1].uploadPrecent = 100
+              that.ruleForm.fileListFolder[indexFile - 1].name = `${file.name.trim()}` + ' '
             }
+            if (that.uploadBody.allNum === that.uploadBody.addNum) {
+              that.$emit('getUploadDialog', that.typeName === 'upload_folder_list', 0)
+              that.loading = false
+            }
+            return false
+          }
+
+          let alreadyUploadChunks = []
+          let max = 10 * 1024 * 1024
+          let count = Math.ceil(file.size / max)
+          let index = 0
+          let chunks = []
+          let concurrent = 3
+          while (index < count) {
+            chunks.push({
+              file: file.raw.slice(index * max, (index + 1) * max),
+              filename: `${index + 1}_${file.name}`
+            })
+            index++
+          }
+          let uploadListData = new FormData()
+          const fileBlob = new Blob([chunks[0].file], {
+            type: 'application/json'
           })
-        }).then(async res => {
-          console.log('finish', res)
-        })
+          that.loadFileText = 'Uploading...'
+          uploadListData.append('file', fileBlob, chunks[0].filename)
+          uploadListData.append('file_name', chunks[0].filename)
+          uploadListData.append('hash', hash)
+          const uploadListConfig = {
+            onUploadProgress: progressEvent => {
+              that.progressEvent = progressEvent
+              // if (that.typeName === 'upload_folder' || that.typeName === 'upload_folder_list') {
+              //   that.ruleForm.fileListFolder[indexFile - 1].name = `${file.name.trim()}` + ' '
+              //   if (count > 1) that.ruleForm.fileListFolder[indexFile - 1].uploadPrecent = index<count?(((index / count) * 100) | 0):99
+              //   else that.ruleForm.fileListFolder[indexFile - 1].uploadPrecent = that.onPross(progressEvent)
+              //   // that.progressHandle(progressEvent)
+              // }
+            }
+          }
+          let uploadListRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/upload`, 'post', uploadListData, uploadListConfig)
+          if ((!uploadListRes || uploadListRes.status !== 'success') && (that.typeName === 'upload_folder' || that.typeName === 'upload_folder_list')) {
+            that.ruleForm.fileListFolder[indexFile - 1].err = true
+            let contErr = `${file.name.trim()} (path:/${that.currentBucket}/${currentFold})`
+            if (that.ruleForm.fileListFolderErr.indexOf(contErr) === -1) that.ruleForm.fileListFolderErr.push(contErr)
+          }
+          alreadyUploadChunks = uploadListRes.data || []
+          if (count <= 1 || (uploadListRes && uploadListRes.data.length === count)) await that.fileMerge(hash, file, currentFold, fold, indexFile)
+          if (that.typeName !== 'upload_folder_list') that.typeName = 'upload_progress'
+          that.loadFileText = `Uploading... ${that.sizeChange(that.uploadFileSize, 1)}/${that.sizeChange(that.uploadFileSizeAll, 1)} (${that.uploadPrecent}%)`
+          that.concurrentExecution(chunks, concurrent, (chunk) => {
+            return new Promise(async (resolve, reject) => {
+              if (alreadyUploadChunks.indexOf(chunk.filename) === -1) {
+                let uploadData = new FormData()
+                const fileBlob = new Blob([chunk.file], {
+                  type: 'application/json'
+                })
+                uploadData.append('file', fileBlob, chunk.filename)
+                uploadData.append('file_name', chunk.filename)
+                uploadData.append('hash', hash)
+                const config = {
+                  onUploadProgress: progressEvent => {
+                    that.progressEvent = progressEvent
+                    // if (that.typeName === 'upload_folder' || that.typeName === 'upload_folder_list') {
+                    //   that.ruleForm.fileListFolder[indexFile - 1].name = `${file.name.trim()}` + ' '
+                    //   that.ruleForm.fileListFolder[indexFile - 1].uploadPrecent = index < count ? (((index / count) * 100) | 0) : 99
+                    //   // that.progressHandle(progressEvent)
+                    // }
+                  }
+                }
+                let uploadRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/upload`, 'post', uploadData, config)
+                if (!uploadRes || uploadRes.status !== 'success') {
+                  if (that.typeName === 'upload_folder' || that.typeName === 'upload_folder_list') {
+                    that.ruleForm.fileListFolder[indexFile - 1].err = true
+                    let contErr = `${file.name.trim()} (path:/${that.currentBucket}/${currentFold})`
+                    if (that.ruleForm.fileListFolderErr.indexOf(contErr) === -1) that.ruleForm.fileListFolderErr.push(contErr)
+                  }
+                  that.$emit('getUploadDialog', that.typeName === 'upload_folder_list', 0)
+                  that.loading = false
+                  reject(uploadRes.message || 'Fail')
+                  return false
+                }
+                alreadyUploadChunks = uploadRes.data
+                if (alreadyUploadChunks.length > 0 && alreadyUploadChunks.includes(chunk.filename)) {
+                  that.manageProgress(hash, file, uploadRes.data.length, count, max, currentFold, fold, indexFile)
+                  resolve(uploadRes.data)
+                }
+              } else {
+                resolve()
+              }
+            })
+          }).then(async res => {
+            console.log('finish', res)
+          })
+        }
       } catch (e) {
         console.log(e)
         await that.$commonFun.timeout(500)
@@ -882,6 +955,32 @@ export default {
       that.uploadPrecent = 99
       that.uploadFileSize = file.size
       await that.fileMerge(hash, file, currentFold, fold, indexFile)
+    },
+    async foldIPFS (file, currentFold, fold, indexFile) {
+      const namepath = file.raw.webkitRelativePath || file.raw.name
+      const filesRow = new File([file.raw], namepath)
+      const folderName = currentFold ? currentFold.split('/')[0] : ''
+      const reg = new RegExp('/' + '$')
+      const current = that.currentBucket.split('/').slice(1).join('/')
+      const parentAddress = that.areaBody.prefix || current || ''
+      const pre = `${parentAddress ? parentAddress + '/' : ''}${currentFold}`
+      let paramCheck = new FormData()
+      paramCheck.append('files', filesRow, namepath)
+      paramCheck.append('folder_name', folderName)
+      paramCheck.append('prefix', reg.test(pre) ? pre.slice(0, -1) : pre)
+      paramCheck.append('bucket_uid', that.areaBody)
+      let ipfsRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/pin_files_to_ipfs`, 'post', paramCheck)
+      if (!ipfsRes || ipfsRes.status !== 'success') {
+        if (ipfsRes) that.$message.error(ipfsRes.message || 'Fail')
+        else that.$message.error('Fail')
+        if (that.typeName === 'upload_folder' || that.typeName === 'upload_folder_list') {
+          that.ruleForm.fileListFolder[indexFile - 1].err = true
+          let contErr = `${file.name.trim()} (path:/${that.currentBucket}/${currentFold})`
+          if (that.ruleForm.fileListFolderErr.indexOf(contErr) === -1) that.ruleForm.fileListFolderErr.push(contErr)
+        }
+        return false
+      }
+      return true
     },
     async fileCheck (hash, file, currentFold, fold, indexFile) {
       that.loadFileText = 'Checking file information...'
@@ -1172,11 +1271,12 @@ export default {
     if (that.typeName === 'upload_folder' || that.typeName === 'upload_folder_list') {
       // that.addEvent()
       that.$refs.uploadFolderRef.$children[0].$refs.input.webkitdirectory = true
-      that.$refs.uploadFolderRef.$refs['upload-inner'].handleClick()
+      that.$refs.uploadFolderIPFSRef.$children[0].$refs.input.webkitdirectory = true
+      // that.$refs.uploadFolderRef.$refs['upload-inner'].handleClick()
     }
     document.onkeydown = function (e) {
       if (e.keyCode === 13) {
-        if (that.typeName === 'add' || that.typeName === 'add_apikey' || that.typeName === 'addNewBucket' || that.typeName === 'rename' || that.typeName === 'addSub') that.getDialogClose('form')
+        if (that.typeName === 'add' || that.typeName === 'add_apikey' || that.typeName === 'add_domain' || that.typeName === 'addNewBucket' || that.typeName === 'rename' || that.typeName === 'addSub') that.getDialogClose('form')
         if (that.typeName === 'emailLogin') that.submitEmail('form')
       }
     }
@@ -1438,7 +1538,7 @@ export default {
     }
     .addBucket {
       position: relative;
-      max-width: 750px;
+      max-width: 600px;
       padding: 0.35rem 0.5rem;
       background-color: #fff;
       border-radius: 0.2rem;
@@ -1768,6 +1868,14 @@ export default {
                 text-decoration: underline;
               }
             }
+            .el-icon-document-copy {
+              font-size: 16px;
+              margin: 0 5px;
+              cursor: pointer;
+              &:hover {
+                opacity: 0.9;
+              }
+            }
             .tip {
               display: flex;
               align-items: center;
@@ -1798,6 +1906,20 @@ export default {
               }
             }
           }
+          .el-select {
+            width: 100%;
+            .el-input {
+              .el-input__inner {
+                height: auto;
+                line-height: 2;
+                font-size: inherit;
+              }
+              .el-icon-arrow-up {
+                display: flex;
+                align-items: center;
+              }
+            }
+          }
           .el-form-item__label {
             padding-top: 0.1rem;
             padding-right: 0.1rem;
@@ -1815,6 +1937,11 @@ export default {
                 margin: 0;
               }
             }
+          }
+        }
+        .ipfs_form {
+          .el-form-item__label {
+            padding-top: 0.23rem;
           }
         }
       }
@@ -2480,6 +2607,58 @@ export default {
                 .el-radio__inner::after {
                   width: 6px;
                   height: 6px;
+                }
+              }
+            }
+          }
+        }
+        .upload_to {
+          float: left;
+          width: calc(46% - 2px);
+          margin: 0.3rem 2% 0.5rem;
+          border: 1px dashed #898989;
+          border-radius: 0.1rem;
+          @media screen and (max-width: 768px) {
+            float: none;
+            width: 100%;
+          }
+          .text {
+            padding: 0.2rem 0 0;
+            text-align: center;
+          }
+          .upload-demo /deep/ {
+            .el-upload {
+              padding: 0.3rem 0;
+              svg,
+              img {
+                width: 0.4rem;
+                height: 0.4rem;
+                margin: 0;
+              }
+              .el-upload__text {
+                margin: 10px 0;
+                font-size: 0.22rem;
+                font-weight: normal;
+                color: #606060;
+                line-height: 1;
+                small {
+                  color: #969696;
+                }
+              }
+              .el-button {
+                width: 45%;
+                max-width: 250px;
+                min-width: 150px;
+                padding: 0.17rem;
+                margin: 0 auto;
+                background: linear-gradient(45deg, #4e88ff, #4b5fff);
+                font-family: inherit;
+                font-size: 16px;
+                border: 0;
+                border-radius: 0.14rem;
+                line-height: 1;
+                @media screen and (max-width: 1600px) {
+                  font-size: 14px;
                 }
               }
             }

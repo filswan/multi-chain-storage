@@ -26,7 +26,7 @@
               <div class="upload_body">
                 <a>
                   <img src="@/assets/images/space/icon_08.png" alt="">
-                  <span>{{$t('metaSpace.Upload_File')}}</span>
+                  <span>{{$t('metaSpace.Upload_btn')}}</span>
                 </a>
                 <div class="upload_absoltu">
                   <p @click="dialogFun('upload', $route.query.bucket_uuid)">{{$t('metaSpace.Upload_File')}}</p>
@@ -43,7 +43,11 @@
               <el-table-column prop="name" :label="$t('metaSpace.table_name')">
                 <template slot-scope="scope">
                   <div class="hot-cold-box">
-                    <div v-if="scope.row.is_folder" @click="getListBucketMain(scope.row.name)" class="list_style">
+                    <a v-if="scope.row.is_folder && scope.row.type === 0" class="list_style" :href="'https://'+$route.query.domain+'/ipfs/'+scope.row.payload_cid" target="_blank">
+                      <i class="icon el-icon-folder"></i>
+                      <span style="text-decoration: underline;">{{ scope.row.name }}</span>
+                    </a>
+                    <div v-else-if="scope.row.is_folder" @click="getListBucketMain(scope.row.name)" class="list_style">
                       <i class="icon el-icon-folder"></i>
                       <span style="text-decoration: underline;">{{ scope.row.name }}</span>
                     </div>
@@ -51,6 +55,15 @@
                       <i class="icon el-icon-document"></i>
                       <span>{{ scope.row.name }}</span>
                     </div>
+                  </div>
+                </template>
+              </el-table-column>
+              <el-table-column prop="type" :label="$t('metaSpace.table_type')">
+                <template slot-scope="scope">
+                  <div class="hot-cold-box">
+                    <span v-if="scope.row.type === 0" style="color: #dc3545">IPFS</span>
+                    <span v-else-if="scope.row.type === 1" style="color: #67c23a">Folder</span>
+                    <span v-else style="color: #0a318e">File</span>
                   </div>
                 </template>
               </el-table-column>
@@ -99,8 +112,9 @@
               <el-table-column prop="" :label="$t('metaSpace.table_action')" min-width="120">
                 <template slot-scope="scope">
                   <div class="hot-cold-box">
+                    <i class="icon icon_share" v-if="scope.row.is_folder && scope.row.type === 0" @click="getDetail('detail_ipfs_file', scope.row)"></i>
                     <i class="icon icon_share" v-if="!scope.row.is_folder" @click="copyLink(`${scope.row.ipfs_url}?filename=${scope.row.name}`, 1)"></i>
-                    <i class="icon icon_details" v-if="!scope.row.is_folder" @click="getDetail('detail_file', scope.row)"></i>
+                    <i class="icon icon_details" v-if="!scope.row.is_folder || (scope.row.is_folder && scope.row.type === 0)" @click="getDetail('detail_file', scope.row)"></i>
                     <i class="icon icon_delete" @click="dialogFun('delete', scope.row)"></i>
                   </div>
                 </template>
@@ -179,17 +193,33 @@ export default {
       that.backupLoad = true
       that.dialogFun(type, row)
       let bucketDetail = row
-      let params = {
-        file_id: row.id
-      }
-      const infoRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/get_file_info?${QS.stringify(params)}`, 'get')
-      if (!infoRes || infoRes.status !== 'success') that.$message.error(infoRes ? infoRes.message : 'Fail')
-      else {
-        bucketDetail.name = infoRes.data.name
-        bucketDetail.created_at = infoRes.data.created_at
-        bucketDetail.size = infoRes.data.size
-        bucketDetail.ipfs_url = `${infoRes.data.ipfs_url}?filename=${infoRes.data.name}`
-        bucketDetail.payload_cid = infoRes.data.payload_cid
+      if (type === 'detail_file') {
+        let params = {
+          file_id: row.id
+        }
+        const infoRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/get_file_info?${QS.stringify(params)}`, 'get')
+        if (!infoRes || infoRes.status !== 'success') that.$message.error(infoRes ? infoRes.message : 'Fail')
+        else {
+          bucketDetail.name = infoRes.data.name
+          bucketDetail.created_at = infoRes.data.created_at
+          bucketDetail.size = infoRes.data.size
+          bucketDetail.ipfs_url = row.type === 0 ? `https://${that.$route.query.domain}/ipfs/${infoRes.data.payload_cid}` : `${infoRes.data.ipfs_url}?filename=${infoRes.data.name}`
+          bucketDetail.payload_cid = infoRes.data.payload_cid
+        }
+      } else {
+        const domainRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/gateway/get_gateway`, 'get')
+        // const domainRes = { 'status': 'success', 'data': ['5e1e029d22'] }
+        if (!domainRes || domainRes.status !== 'success') that.$message.error(domainRes ? domainRes.message : 'Fail')
+        else {
+          bucketDetail.ipfs_url = domainRes.data[0] || ''
+          bucketDetail.options = []
+          domainRes.data.forEach((element, i) => {
+            bucketDetail.options.push({
+              value: element,
+              label: element
+            })
+          })
+        }
       }
       that.dialogFun(type, bucketDetail)
       that.backupLoad = false
@@ -200,7 +230,7 @@ export default {
       else if (type && index === 0) fold = that.currentBucket[0]
       else fold = `${that.url}/${fileName}`
 
-      if (fileName) that.$router.push({ name: 'Space_detail', query: { folder: encodeURIComponent(fold), bucket_uuid: that.$route.query.bucket_uuid, bucket_size: that.$route.query.bucket_size } })
+      if (fileName) that.$router.push({ name: 'Space_detail', query: { folder: encodeURIComponent(fold), bucket_uuid: that.$route.query.bucket_uuid, domain: that.$route.query.domain } })
       else that.$router.push({ name: 'Space' })
     },
     async getPopUps (dialog, rows, bucketName) {
@@ -321,6 +351,7 @@ export default {
         offset: offset
       }
       const directoryRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/get_file_list?${QS.stringify(params)}`, 'get')
+      // const directoryRes = await that.$commonFun.sendRequest(`./static/json/ListObjects.json?${QS.stringify(params)}`, 'get')
       if (!directoryRes || directoryRes.status !== 'success') {
         that.$message.error(directoryRes.message || 'Fail')
         return false
@@ -340,6 +371,7 @@ export default {
       })
       that.detail.object = directoryRes.data.length || 0
       that.listData.list = that.listData.listBucketFolder.concat(that.listData.listBucketFile)
+      that.listData.list.sort((a, b) => a.type - b.type)
       await that.$commonFun.timeout(500)
       that.listLoad = false
       that.$refs.tableList.bodyWrapper.scrollTop = 0
@@ -395,7 +427,7 @@ export default {
           break
       }
       dateNew = dateNew
-        ? moment(new Date(parseInt(dateNew))).format('YYYY-MM-DD HH:mm:ss') + ` (${dataUnit})`
+        ? moment(new Date(parseInt(dateNew))).format('YYYY-MM-DD HH:mm:ss') + ` (${dataUnit}) `
         : '-'
       return dateNew
     },
@@ -570,7 +602,7 @@ export default {
               display: flex;
               align-items: center;
               justify-content: center;
-              min-width: 1.6rem;
+              min-width: 1.2rem;
               padding: 0.13rem;
               margin: 0 0 0 0.2rem;
               background: linear-gradient(45deg, #4e88ff, #4b5fff);
@@ -876,6 +908,7 @@ export default {
                     align-items: center;
                     justify-content: flex-start;
                     width: 100%;
+                    color: inherit;
                     .icon {
                       width: 18px;
                       height: 18px;

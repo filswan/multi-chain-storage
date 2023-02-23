@@ -12,7 +12,7 @@
         <div class="form_top">
           <div class="search_file">
             <div class="createTask">
-              <el-popconfirm @confirm="wrongInfo('disconnect')" :confirm-button-text="$t('uploadFile.OK')" :cancel-button-text="$t('metaSpace.Cancel')" icon="el-icon-info" icon-color="red" :title="$t('fs3Login.Connect_tip')">
+              <el-popconfirm @confirm="wrongInfo('disconnect')" :confirm-button-text="$t('uploadFile.OK')" :cancel-button-text="$t('metaSpace.Cancel')" icon="el-icon-info" icon-color="red" title="Confirm to disconnect from mailbox?">
                 <a slot="reference">
                   <svg t="1669800414838" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5038" width="64" height="64">
                     <path d="M832.6 191.4c-84.6-84.6-221.5-84.6-306 0l-96.9 96.9 51 51 96.9-96.9c53.8-53.8 144.6-59.5 204 0 59.5 59.5 53.8 150.2 0 204l-96.9 96.9 51.1 51.1 96.9-96.9c84.4-84.6 84.4-221.5-0.1-306.1zM446.5 781.6c-53.8 53.8-144.6 59.5-204 0-59.5-59.5-53.8-150.2 0-204l96.9-96.9-51.1-51.1-96.9 96.9c-84.6 84.6-84.6 221.5 0 306s221.5 84.6 306 0l96.9-96.9-51-51-96.8 97zM260.3 209.4c-3.1-3.1-8.2-3.1-11.3 0L209.4 249c-3.1 3.1-3.1 8.2 0 11.3l554.4 554.4c3.1 3.1 8.2 3.1 11.3 0l39.6-39.6c3.1-3.1 3.1-8.2 0-11.3L260.3 209.4z"
@@ -52,47 +52,90 @@
         </div>
       </div>
 
-      <h4>{{$t('my_profile.apiKey_your_title')}}</h4>
-      <h6>{{$t('my_profile.apiKey_tips_01')}}</h6>
-      <div class="form_top">
-        <div class="search_file">
-          <div class="createTask">
-            <a @click="dialogFun('add_apikey')">
-              <img src="@/assets/images/space/icon_01.png" alt="">
-              <span>{{$t('my_profile.apiKey_btn_01')}}</span>
-            </a>
+      <div>
+        <h4>{{$t('my_profile.apiKey_your_title')}}</h4>
+        <h6>{{$t('my_profile.apiKey_tips_01')}}</h6>
+        <div class="form_top">
+          <div class="search_file">
+            <div class="createTask">
+              <a @click="dialogFun('add_apikey')">
+                <img src="@/assets/images/space/icon_01.png" alt="">
+                <span>{{$t('my_profile.apiKey_btn_01')}}</span>
+              </a>
+            </div>
           </div>
         </div>
+        <div class="fes-search">
+          <el-table :data="toolData" stripe style="width: 100%" max-height="300" :empty-text="$t('deal.formNotData')" class="table_cell">
+            <el-table-column prop="api_key" :label="$t('my_profile.table_apiKey_th_02')"></el-table-column>
+            <el-table-column prop="token" :label="$t('my_profile.table_apiKey_th_03')" max-width="150">
+              <template>*******</template>
+            </el-table-column>
+            <el-table-column prop="valid_days" :label="'Expiration (day)'">
+              <template slot-scope="scope">
+                <div style="">
+                  {{calculateDiffTime(scope.row.valid_days, scope.row.create_at)}}
+                  <!-- ({{momentFun(scope.row.create_at,scope.row.valid_days)}}) -->
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column prop="create_at" :label="$t('my_profile.table_apiKey_th_04')">
+              <template slot-scope="scope">
+                <div style="">
+                  {{momentFun(scope.row.create_at)}}
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column prop="qr_code" label="" width="120">
+              <template slot-scope="scope">
+                <div class="revoke">
+                  <el-button type="danger" :disabled="scope.row.status == 'Deleted'?true:false" @click="dialogFun('delete', scope.row)">{{$t('my_profile.apiKey_btn_02')}}</el-button>
+                </div>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
       </div>
-      <div class="fes-search">
-        <el-table :data="toolData" stripe style="width: 100%" max-height="580" :empty-text="$t('deal.formNotData')" class="table_cell">
-          <el-table-column prop="api_key" :label="$t('my_profile.table_apiKey_th_02')"></el-table-column>
-          <el-table-column prop="token" :label="$t('my_profile.table_apiKey_th_03')" max-width="150">
-            <template>*******</template>
-          </el-table-column>
-          <el-table-column prop="valid_days" :label="$t('apiKey.label_Expiration')">
-            <template slot-scope="scope">
-              <div style="">
-                {{calculateDiffTime(scope.row.valid_days, scope.row.create_at)}}
-                <!-- ({{momentFun(scope.row.create_at,scope.row.valid_days)}}) -->
-              </div>
-            </template>
-          </el-table-column>
-          <el-table-column prop="create_at" :label="$t('my_profile.table_apiKey_th_04')">
-            <template slot-scope="scope">
-              <div style="">
-                {{momentFun(scope.row.create_at)}}
-              </div>
-            </template>
-          </el-table-column>
-          <el-table-column prop="qr_code" label="" width="120">
-            <template slot-scope="scope">
-              <div class="revoke">
-                <el-button type="danger" :disabled="scope.row.status == 'Deleted'?true:false" @click="dialogFun('delete', scope.row)">{{$t('my_profile.apiKey_btn_02')}}</el-button>
-              </div>
-            </template>
-          </el-table-column>
-        </el-table>
+
+      <div>
+        <h4>{{$t('my_profile.apiKey_your_Domain')}}</h4>
+        <h6></h6>
+        <div class="form_top">
+          <div class="search_file">
+            <div class="createTask">
+              <a @click="dialogFun('add_domain')">
+                <img src="@/assets/images/space/icon_01.png" alt="">
+                <span>{{$t('my_profile.apiKey_btn_03')}}</span>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="fes-search">
+          <el-table :data="domainData" stripe style="width: 100%" max-height="300" :empty-text="$t('deal.formNotData')" class="table_cell">
+            <el-table-column prop="api_key" :label="$t('my_profile.apiKey_your_Domain_label')">
+              <template slot-scope="scope">
+                <div>
+                  {{scope.row}}
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column prop="create_at" :label="$t('my_profile.table_apiKey_th_04')">
+              <template slot-scope="scope">
+                <div style="">
+                  {{momentFun(scope.row.create_at)}}
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column prop="qr_code" label="Actions" max-width="160">
+              <template slot-scope="scope">
+                <div class="revoke">
+                  <!-- @click="dialogFun('delete', scope.row)" -->
+                  <el-button type="danger" disabled>{{$t('my_profile.apiKey_btn_04')}}</el-button>
+                </div>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
       </div>
     </div>
 
@@ -125,6 +168,7 @@ export default {
       listTableLoad: false,
       createLoad: false,
       toolData: [],
+      domainData: [],
       areaBody: {},
       dialogFormVisible: false,
       typeName: 'add_apikey',
@@ -182,11 +226,17 @@ export default {
         case 'delete':
           that.deleteApiKey()
           break
+        case 'add_domain':
+          that.createDomain(dialog, rows, day)
+          break
         default:
           if (rows) that.createKey(dialog, rows, day)
           else that.dialogFormVisible = dialog
           break
       }
+    },
+    async createDomain (dialog, rows, day) {
+      that.dialogFormVisible = dialog
     },
     async createKey (dialog, formName, day) {
       that.createLoad = true
@@ -214,6 +264,7 @@ export default {
       that.areaBody = row || {}
       that.changeTitle = title || ''
       that.dialogFormVisible = true
+      if (name === 'add_domain' || name === 'add_apikey') document.getElementById('content_client').scrollTop = 120
     },
     async deleteApiKey () {
       that.listTableLoad = true
@@ -234,9 +285,16 @@ export default {
       const directoryRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/user/apikey`, 'get')
       if (!directoryRes || directoryRes.status !== 'success') {
         that.$message.error(directoryRes.message || 'Fail')
-        return false
-      }
-      that.toolData = directoryRes.data.apikey || []
+        that.toolData = []
+      } else that.toolData = directoryRes.data.apikey || []
+
+      const domainRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/gateway/get_gateway`, 'get')
+      // const domainRes = { 'status': 'success', 'data': ['5e1e029d22'] }
+      if (!domainRes || domainRes.status !== 'success') {
+        that.$message.error(domainRes.message || 'Fail')
+        that.domainData = []
+      } else that.domainData = domainRes.data || []
+
       that.listLoad = false
     },
     momentFun (dateItem, type) {
@@ -274,7 +332,6 @@ export default {
       txtArea.value = text
       document.body.appendChild(txtArea)
       txtArea.select()
-
       try {
         var successful = document.execCommand('copy')
         var msg = successful ? 'Copied to clipboard!' : 'copy failed!'
@@ -321,7 +378,6 @@ export default {
       var k = 1024 // or 1000
       var sizes = ['bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
       var i = Math.floor(Math.log(bytes) / Math.log(k))
-
       if (Math.round((bytes / Math.pow(k, i))).toString().length > 3) {
         // 判断大小是999999999左右，解决会显示成1.00e+3科学计数法
         i += 1
@@ -566,7 +622,6 @@ export default {
         line-height: 0.42rem;
         text-indent: 0;
       }
-
       .upload_title {
         width: 100%;
         margin: 0 0 0.05rem;
@@ -588,14 +643,12 @@ export default {
           align-items: center;
           // margin-left: 0.3rem;
         }
-
         span {
           margin: auto 0.05rem auto 0.35rem;
           font-size: 0.1372rem;
           color: #000;
           white-space: nowrap;
         }
-
         .el-button {
           height: 0.34rem;
           padding: 0 0.4rem;
@@ -606,11 +659,9 @@ export default {
           border: 0;
           border-radius: 0.08rem;
         }
-
         .el-input {
           float: left;
           width: auto;
-
           .el-input__inner {
             width: 100%;
             max-width: 3rem;
@@ -622,7 +673,6 @@ export default {
             line-height: 0.24rem;
             padding: 0 0.27rem;
           }
-
           .el-input__icon {
             line-height: 0.24rem;
           }
@@ -997,6 +1047,7 @@ export default {
     }
     .fes-search {
       // height: calc(100% - 1.7rem);
+      margin: 0 auto 0.65rem;
       .title {
         display: flex;
         align-items: center;
@@ -1036,7 +1087,6 @@ export default {
         .el-table__header-wrapper {
           border-radius: 0.2rem;
         }
-
         tr {
           cursor: pointer;
           th {
@@ -1044,7 +1094,6 @@ export default {
             padding: 0;
             background-color: #e5eeff !important;
             text-align: center;
-
             .cell {
               display: flex;
               align-items: center;
@@ -1105,15 +1154,12 @@ export default {
               }
             }
           }
-
           th.is-leaf {
             border-bottom: 0;
           }
-
           td {
             padding: 0.25rem 0.05rem;
             border-bottom: 1px solid #dfdfdf;
-
             .cell {
               padding: 0;
               font-size: 0.18rem;
@@ -1122,7 +1168,6 @@ export default {
               text-align: center;
               line-height: 0.25rem;
               overflow: visible;
-
               .el-rate__icon {
                 font-size: 0.16rem;
                 margin-right: 0;
@@ -1135,7 +1180,6 @@ export default {
                 color: #0c3090;
                 cursor: pointer;
               }
-
               .revoke {
                 .el-button {
                   padding: 0.1rem 0.12rem;
@@ -1201,13 +1245,11 @@ export default {
                   }
                 }
               }
-
               .el-button.el-icon-upload {
                 padding: 0 0.03rem;
                 line-height: 0.25rem;
                 font-size: 0.1372rem;
               }
-
               .scoreStyle {
                 width: 100%;
                 clear: both;
@@ -1215,13 +1257,11 @@ export default {
                 color: #ffb822;
                 cursor: pointer;
               }
-
               .scoreStyle:hover {
                 text-decoration: underline;
               }
             }
           }
-
           &:hover {
             td {
               .cell {
@@ -1314,7 +1354,6 @@ export default {
     }
   }
 }
-
 @media screen and (max-width: 1024px) {
   .spaceStyle {
     .slideScroll {
@@ -1322,21 +1361,17 @@ export default {
         .search {
           flex-wrap: wrap;
           height: auto;
-
           .el-input {
             width: 100%;
             margin: 0.1rem 0;
-
             .el-input__inner {
               width: 100%;
               font-size: 0.1372rem;
             }
           }
-
           span {
             margin-left: 0;
           }
-
           .search_right {
             .el-button {
               padding: 0 0.2rem;

@@ -205,12 +205,12 @@
         </div>
         <el-form ref="form" class="demo-ruleForm">
           <el-form-item :label="$t('metaSpace.ob_detail_ObjectIPFSLink')" class="ipfs_form">
-            <el-select v-model="areaBody.ipfs_url" placeholder=" ">
+            <el-select v-model="areaBody.ipfs_url_domain" placeholder=" ">
               <el-option v-for="item in areaBody.options" :key="item.value" :label="item.label" :value="item.value">
               </el-option>
             </el-select>
             {{`/ipfs/${areaBody.payload_cid}`}}
-            <i class="icon el-icon-document-copy" @click="copyLink(`https://${areaBody.ipfs_url}/ipfs/${areaBody.payload_cid}`)"></i>
+            <i class="icon el-icon-document-copy" @click="copyLink(`https://${areaBody.ipfs_url_domain}/ipfs/${areaBody.payload_cid}`)"></i>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="closeDia()">{{$t('metaSpace.Close')}}</el-button>
@@ -287,7 +287,8 @@
           </div>
           <div class="upload_to">
             <div class="text">Upload to IPFS</div>
-            <el-upload class="upload-demo upload-file" :multiple="true" ref="uploadFolderIPFSRef" action="customize" :http-request="uploadFile" :file-list="ruleForm.fileListFolder" :show-file-list="false" :on-change="handleIPFSChange" :on-remove="handleRemove">
+            <el-upload class="upload-demo upload-file upload-file-ipfs" :multiple="true" ref="uploadFolderIPFSRef" action="customize" :http-request="uploadFileIPFS" :file-list="ruleForm.fileListFolder" :show-file-list="false" :on-change="handleIPFSChange"
+              :on-remove="handleRemove">
               <img src="@/assets/images/space/icon_11.png" alt="">
               <div class="el-upload__text"></div>
               <el-button type="primary">
@@ -517,6 +518,8 @@ export default {
       loading: false,
       ruleForm: {
         fileList: [],
+        fileIPFSList: [],
+        uploadNum: 0,
         fileList_tip: false,
         fileList_tip_text: '',
         file_size: '',
@@ -554,8 +557,7 @@ export default {
         allNum: 0
       },
       uploadStart: false,
-      loadFileText: '',
-      uploadType: 'mcs'
+      loadFileText: ''
     }
   },
   props: ['dialogFormVisible', 'typeModule', 'areaBody', 'createLoad', 'listTableLoad', 'currentBucket', 'fixed', 'backupLoad', 'changeTitle', 'payLoad', 'listBucketFolder'],
@@ -764,9 +766,21 @@ export default {
       }
       return Promise.all(asyncList)
     },
-    handleIPFSChange (file, fileList) {
-      that.uploadType = 'ipfs'
-      that.handleChange(file, fileList)
+    async uploadFileIPFS (params) {
+      that.ruleForm.fileIPFSList.push(params.file)
+      if (that.ruleForm.uploadNum === that.ruleForm.fileIPFSList.length) {
+        const folderName = params.file.webkitRelativePath.split('/')[0] || ''
+        await that.foldIPFS(that.ruleForm.fileIPFSList, folderName)
+      }
+    },
+    async handleIPFSChange (file, fileList) {
+      var uploadImg = document.getElementsByClassName('upload-file-ipfs')
+      if (uploadImg && uploadImg.length > 0) {
+        var upload = uploadImg[0].getElementsByTagName('input')
+        if (upload && upload.length > 0 && upload[0].files && upload[0].files.length > 0) {
+          that.ruleForm.uploadNum = upload[0].files.length
+        }
+      }
     },
     async handleChange (file, fileList) {
       const folderCurrent = file.raw.webkitRelativePath.split('/') || ''
@@ -830,110 +844,106 @@ export default {
     },
     async fileUpload (file, currentFold, fold, indexFile) {
       try {
-        if (that.uploadType === 'ipfs') {
-          await that.foldIPFS(file, currentFold, fold, indexFile)
-        } else {
-          let { hash } = await that.fileMd5(file)
-          let fileCheckRes = await that.fileCheck(hash, file, currentFold, fold, indexFile)
-          if (!fileCheckRes) {
-            if (that.typeName === 'upload_folder' || that.typeName === 'upload_folder_list') {
-              that.ruleForm.fileListFolder[indexFile - 1].uploadPrecent = 100
-              that.ruleForm.fileListFolder[indexFile - 1].name = `${file.name.trim()}` + ' '
-            }
-            if (that.uploadBody.allNum === that.uploadBody.addNum) {
-              that.$emit('getUploadDialog', that.typeName === 'upload_folder_list', 0)
-              that.loading = false
-            }
-            return false
+        let { hash } = await that.fileMd5(file)
+        let fileCheckRes = await that.fileCheck(hash, file, currentFold, fold, indexFile)
+        if (!fileCheckRes) {
+          if (that.typeName === 'upload_folder' || that.typeName === 'upload_folder_list') {
+            that.ruleForm.fileListFolder[indexFile - 1].uploadPrecent = 100
+            that.ruleForm.fileListFolder[indexFile - 1].name = `${file.name.trim()}` + ' '
           }
-
-          let alreadyUploadChunks = []
-          let max = 10 * 1024 * 1024
-          let count = Math.ceil(file.size / max)
-          let index = 0
-          let chunks = []
-          let concurrent = 3
-          while (index < count) {
-            chunks.push({
-              file: file.raw.slice(index * max, (index + 1) * max),
-              filename: `${index + 1}_${file.name}`
-            })
-            index++
+          if (that.uploadBody.allNum === that.uploadBody.addNum) {
+            that.$emit('getUploadDialog', that.typeName === 'upload_folder_list', 0)
+            that.loading = false
           }
-          let uploadListData = new FormData()
-          const fileBlob = new Blob([chunks[0].file], {
-            type: 'application/json'
-          })
-          that.loadFileText = 'Uploading...'
-          uploadListData.append('file', fileBlob, chunks[0].filename)
-          uploadListData.append('file_name', chunks[0].filename)
-          uploadListData.append('hash', hash)
-          const uploadListConfig = {
-            onUploadProgress: progressEvent => {
-              that.progressEvent = progressEvent
-              // if (that.typeName === 'upload_folder' || that.typeName === 'upload_folder_list') {
-              //   that.ruleForm.fileListFolder[indexFile - 1].name = `${file.name.trim()}` + ' '
-              //   if (count > 1) that.ruleForm.fileListFolder[indexFile - 1].uploadPrecent = index<count?(((index / count) * 100) | 0):99
-              //   else that.ruleForm.fileListFolder[indexFile - 1].uploadPrecent = that.onPross(progressEvent)
-              //   // that.progressHandle(progressEvent)
-              // }
-            }
-          }
-          let uploadListRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/upload`, 'post', uploadListData, uploadListConfig)
-          if ((!uploadListRes || uploadListRes.status !== 'success') && (that.typeName === 'upload_folder' || that.typeName === 'upload_folder_list')) {
-            that.ruleForm.fileListFolder[indexFile - 1].err = true
-            let contErr = `${file.name.trim()} (path:/${that.currentBucket}/${currentFold})`
-            if (that.ruleForm.fileListFolderErr.indexOf(contErr) === -1) that.ruleForm.fileListFolderErr.push(contErr)
-          }
-          alreadyUploadChunks = uploadListRes.data || []
-          if (count <= 1 || (uploadListRes && uploadListRes.data.length === count)) await that.fileMerge(hash, file, currentFold, fold, indexFile)
-          if (that.typeName !== 'upload_folder_list') that.typeName = 'upload_progress'
-          that.loadFileText = `Uploading... ${that.sizeChange(that.uploadFileSize, 1)}/${that.sizeChange(that.uploadFileSizeAll, 1)} (${that.uploadPrecent}%)`
-          that.concurrentExecution(chunks, concurrent, (chunk) => {
-            return new Promise(async (resolve, reject) => {
-              if (alreadyUploadChunks.indexOf(chunk.filename) === -1) {
-                let uploadData = new FormData()
-                const fileBlob = new Blob([chunk.file], {
-                  type: 'application/json'
-                })
-                uploadData.append('file', fileBlob, chunk.filename)
-                uploadData.append('file_name', chunk.filename)
-                uploadData.append('hash', hash)
-                const config = {
-                  onUploadProgress: progressEvent => {
-                    that.progressEvent = progressEvent
-                    // if (that.typeName === 'upload_folder' || that.typeName === 'upload_folder_list') {
-                    //   that.ruleForm.fileListFolder[indexFile - 1].name = `${file.name.trim()}` + ' '
-                    //   that.ruleForm.fileListFolder[indexFile - 1].uploadPrecent = index < count ? (((index / count) * 100) | 0) : 99
-                    //   // that.progressHandle(progressEvent)
-                    // }
-                  }
-                }
-                let uploadRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/upload`, 'post', uploadData, config)
-                if (!uploadRes || uploadRes.status !== 'success') {
-                  if (that.typeName === 'upload_folder' || that.typeName === 'upload_folder_list') {
-                    that.ruleForm.fileListFolder[indexFile - 1].err = true
-                    let contErr = `${file.name.trim()} (path:/${that.currentBucket}/${currentFold})`
-                    if (that.ruleForm.fileListFolderErr.indexOf(contErr) === -1) that.ruleForm.fileListFolderErr.push(contErr)
-                  }
-                  that.$emit('getUploadDialog', that.typeName === 'upload_folder_list', 0)
-                  that.loading = false
-                  reject(uploadRes.message || 'Fail')
-                  return false
-                }
-                alreadyUploadChunks = uploadRes.data
-                if (alreadyUploadChunks.length > 0 && alreadyUploadChunks.includes(chunk.filename)) {
-                  that.manageProgress(hash, file, uploadRes.data.length, count, max, currentFold, fold, indexFile)
-                  resolve(uploadRes.data)
-                }
-              } else {
-                resolve()
-              }
-            })
-          }).then(async res => {
-            console.log('finish', res)
-          })
+          return false
         }
+
+        let alreadyUploadChunks = []
+        let max = 10 * 1024 * 1024
+        let count = Math.ceil(file.size / max)
+        let index = 0
+        let chunks = []
+        let concurrent = 3
+        while (index < count) {
+          chunks.push({
+            file: file.raw.slice(index * max, (index + 1) * max),
+            filename: `${index + 1}_${file.name}`
+          })
+          index++
+        }
+        let uploadListData = new FormData()
+        const fileBlob = new Blob([chunks[0].file], {
+          type: 'application/json'
+        })
+        that.loadFileText = 'Uploading...'
+        uploadListData.append('file', fileBlob, chunks[0].filename)
+        uploadListData.append('file_name', chunks[0].filename)
+        uploadListData.append('hash', hash)
+        const uploadListConfig = {
+          onUploadProgress: progressEvent => {
+            that.progressEvent = progressEvent
+            // if (that.typeName === 'upload_folder' || that.typeName === 'upload_folder_list') {
+            //   that.ruleForm.fileListFolder[indexFile - 1].name = `${file.name.trim()}` + ' '
+            //   if (count > 1) that.ruleForm.fileListFolder[indexFile - 1].uploadPrecent = index<count?(((index / count) * 100) | 0):99
+            //   else that.ruleForm.fileListFolder[indexFile - 1].uploadPrecent = that.onPross(progressEvent)
+            //   // that.progressHandle(progressEvent)
+            // }
+          }
+        }
+        let uploadListRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/upload`, 'post', uploadListData, uploadListConfig)
+        if ((!uploadListRes || uploadListRes.status !== 'success') && (that.typeName === 'upload_folder' || that.typeName === 'upload_folder_list')) {
+          that.ruleForm.fileListFolder[indexFile - 1].err = true
+          let contErr = `${file.name.trim()} (path:/${that.currentBucket}/${currentFold})`
+          if (that.ruleForm.fileListFolderErr.indexOf(contErr) === -1) that.ruleForm.fileListFolderErr.push(contErr)
+        }
+        alreadyUploadChunks = uploadListRes.data || []
+        if (count <= 1 || (uploadListRes && uploadListRes.data.length === count)) await that.fileMerge(hash, file, currentFold, fold, indexFile)
+        if (that.typeName !== 'upload_folder_list') that.typeName = 'upload_progress'
+        that.loadFileText = `Uploading... ${that.sizeChange(that.uploadFileSize, 1)}/${that.sizeChange(that.uploadFileSizeAll, 1)} (${that.uploadPrecent}%)`
+        that.concurrentExecution(chunks, concurrent, (chunk) => {
+          return new Promise(async (resolve, reject) => {
+            if (alreadyUploadChunks.indexOf(chunk.filename) === -1) {
+              let uploadData = new FormData()
+              const fileBlob = new Blob([chunk.file], {
+                type: 'application/json'
+              })
+              uploadData.append('file', fileBlob, chunk.filename)
+              uploadData.append('file_name', chunk.filename)
+              uploadData.append('hash', hash)
+              const config = {
+                onUploadProgress: progressEvent => {
+                  that.progressEvent = progressEvent
+                  // if (that.typeName === 'upload_folder' || that.typeName === 'upload_folder_list') {
+                  //   that.ruleForm.fileListFolder[indexFile - 1].name = `${file.name.trim()}` + ' '
+                  //   that.ruleForm.fileListFolder[indexFile - 1].uploadPrecent = index < count ? (((index / count) * 100) | 0) : 99
+                  //   // that.progressHandle(progressEvent)
+                  // }
+                }
+              }
+              let uploadRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/upload`, 'post', uploadData, config)
+              if (!uploadRes || uploadRes.status !== 'success') {
+                if (that.typeName === 'upload_folder' || that.typeName === 'upload_folder_list') {
+                  that.ruleForm.fileListFolder[indexFile - 1].err = true
+                  let contErr = `${file.name.trim()} (path:/${that.currentBucket}/${currentFold})`
+                  if (that.ruleForm.fileListFolderErr.indexOf(contErr) === -1) that.ruleForm.fileListFolderErr.push(contErr)
+                }
+                that.$emit('getUploadDialog', that.typeName === 'upload_folder_list', 0)
+                that.loading = false
+                reject(uploadRes.message || 'Fail')
+                return false
+              }
+              alreadyUploadChunks = uploadRes.data
+              if (alreadyUploadChunks.length > 0 && alreadyUploadChunks.includes(chunk.filename)) {
+                that.manageProgress(hash, file, uploadRes.data.length, count, max, currentFold, fold, indexFile)
+                resolve(uploadRes.data)
+              }
+            } else {
+              resolve()
+            }
+          })
+        }).then(async res => {
+          console.log('finish', res)
+        })
       } catch (e) {
         console.log(e)
         await that.$commonFun.timeout(500)
@@ -956,31 +966,28 @@ export default {
       that.uploadFileSize = file.size
       await that.fileMerge(hash, file, currentFold, fold, indexFile)
     },
-    async foldIPFS (file, currentFold, fold, indexFile) {
-      const namepath = file.raw.webkitRelativePath || file.raw.name
-      const filesRow = new File([file.raw], namepath)
-      const folderName = currentFold ? currentFold.split('/')[0] : ''
-      const reg = new RegExp('/' + '$')
+    async foldIPFS (fileList, folderName) {
+      that.loading = true
+      that.ruleForm.fileIPFSList = []
       const current = that.currentBucket.split('/').slice(1).join('/')
       const parentAddress = that.areaBody.prefix || current || ''
-      const pre = `${parentAddress ? parentAddress + '/' : ''}${currentFold}`
       let paramCheck = new FormData()
-      paramCheck.append('files', filesRow, namepath)
+      fileList.forEach(file => {
+        let namepath = file.webkitRelativePath || file.name
+        let fileNew = new File([file], namepath)
+        paramCheck.append('files', fileNew, namepath)
+        // console.log('files', fileNew)
+      })
       paramCheck.append('folder_name', folderName)
-      paramCheck.append('prefix', reg.test(pre) ? pre.slice(0, -1) : pre)
+      paramCheck.append('prefix', parentAddress)
       paramCheck.append('bucket_uid', that.areaBody)
       let ipfsRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/pin_files_to_ipfs`, 'post', paramCheck)
       if (!ipfsRes || ipfsRes.status !== 'success') {
         if (ipfsRes) that.$message.error(ipfsRes.message || 'Fail')
         else that.$message.error('Fail')
-        if (that.typeName === 'upload_folder' || that.typeName === 'upload_folder_list') {
-          that.ruleForm.fileListFolder[indexFile - 1].err = true
-          let contErr = `${file.name.trim()} (path:/${that.currentBucket}/${currentFold})`
-          if (that.ruleForm.fileListFolderErr.indexOf(contErr) === -1) that.ruleForm.fileListFolderErr.push(contErr)
-        }
-        return false
       }
-      return true
+      that.$emit('getUploadDialog', that.typeName === 'upload_folder_list', 1)
+      that.loading = false
     },
     async fileCheck (hash, file, currentFold, fold, indexFile) {
       that.loadFileText = 'Checking file information...'

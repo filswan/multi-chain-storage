@@ -794,13 +794,7 @@ export default {
       that.uploadBody.addNum += 1
       let indexFile = that.uploadBody.addNum
       let reg = new RegExp(' ', 'g')
-      if (file.size <= 0) {
-        if (that.typeName !== 'upload_folder' && that.typeName !== 'upload_folder_list') {
-          that.$message.error('Error: Upload file size cannot be 0')
-          that.ruleForm.fileList = []
-          return false
-        }
-      } else if (file.name.indexOf(' ') > -1) {
+      if (file.name.indexOf(' ') > -1) {
         file.name = file.name.replace(reg, '_')
         file.raw = new File([file.raw], file.name)
       }
@@ -827,14 +821,7 @@ export default {
       that.uploadStart = true
       that.concurrentExecution(listRowData, 1, (element) => {
         return new Promise(async (resolve, reject) => {
-          if (element.size <= 0) {
-            element.uploadPrecent = 0
-            element.err = true
-            element.errCont = 'Error: Upload file size cannot be 0'
-            element.path = `${that.currentBucket}/${element.currentFold}`
-            const contErr = `${element.name.trim()} (path:/${element.path})`
-            if (that.ruleForm.fileListFolderErr.indexOf(contErr) === -1) that.ruleForm.fileListFolderErr.push(contErr)
-          } else await that.fileUpload(element, element.currentFold, element.fold, element.chunkIndex)
+          await that.fileUpload(element, element.currentFold, element.fold, element.chunkIndex)
           await that.$commonFun.timeout(1000)
           resolve(element)
         })
@@ -1545,7 +1532,7 @@ export default {
     }
     .addBucket {
       position: relative;
-      max-width: 600px;
+      max-width: 7.5rem;
       padding: 0.35rem 0.5rem;
       background-color: #fff;
       border-radius: 0.2rem;

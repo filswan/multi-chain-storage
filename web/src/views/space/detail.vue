@@ -43,11 +43,11 @@
               <el-table-column prop="name" :label="$t('metaSpace.table_name')">
                 <template slot-scope="scope">
                   <div class="hot-cold-box">
-                    <a v-if="scope.row.is_folder && scope.row.type === 0" class="list_style" :href="'https://'+$route.query.domain+'/ipfs/'+scope.row.payload_cid" target="_blank">
-                      <i class="icon el-icon-folder"></i>
+                    <a v-if="scope.row.type === 0" class="list_style" :href="'https://'+$route.query.domain+'/ipfs/'+scope.row.payload_cid" target="_blank">
+                      <i class="icon icon_ipfs_folder"></i>
                       <span style="text-decoration: underline;">{{ scope.row.name }}</span>
                     </a>
-                    <div v-else-if="scope.row.is_folder" @click="getListBucketMain(scope.row.name)" class="list_style">
+                    <div v-else-if="scope.row.type === 1" @click="getListBucketMain(scope.row.name)" class="list_style">
                       <i class="icon el-icon-folder"></i>
                       <span style="text-decoration: underline;">{{ scope.row.name }}</span>
                     </div>
@@ -112,9 +112,9 @@
               <el-table-column prop="" :label="$t('metaSpace.table_action')" min-width="120">
                 <template slot-scope="scope">
                   <div class="hot-cold-box">
-                    <i class="icon icon_share" v-if="scope.row.is_folder && scope.row.type === 0" @click="getDetail('detail_ipfs_file', scope.row)"></i>
-                    <i class="icon icon_share" v-if="!scope.row.is_folder" @click="copyLink(`${scope.row.ipfs_url}?filename=${scope.row.name}`, 1)"></i>
-                    <i class="icon icon_details" v-if="!scope.row.is_folder || (scope.row.is_folder && scope.row.type === 0)" @click="getDetail('detail_file', scope.row)"></i>
+                    <i class="icon icon_share" v-if="scope.row.type === 0" @click="getDetail('detail_ipfs_file', scope.row)"></i>
+                    <i class="icon icon_share" v-if="scope.row.type === 2" @click="copyLink(`https://${$route.query.domain}/ipfs/${scope.row.payload_cid}?filename=${scope.row.name}`, 1)"></i>
+                    <i class="icon icon_details" v-if="scope.row.type !== 1" @click="getDetail('detail_file', scope.row)"></i>
                     <i class="icon icon_delete" @click="dialogFun('delete', scope.row)"></i>
                   </div>
                 </template>
@@ -203,12 +203,11 @@ export default {
           bucketDetail.name = infoRes.data.name
           bucketDetail.created_at = infoRes.data.created_at
           bucketDetail.size = infoRes.data.size
-          bucketDetail.ipfs_url = row.type === 0 ? `https://${that.$route.query.domain}/ipfs/${infoRes.data.payload_cid}` : `${infoRes.data.ipfs_url}?filename=${infoRes.data.name}`
+          bucketDetail.ipfs_url = `https://${that.$route.query.domain}/ipfs/${infoRes.data.payload_cid}${row.type === 2 ? '?filename=' + infoRes.data.name : ''}`
           bucketDetail.payload_cid = infoRes.data.payload_cid
         }
       } else {
         const domainRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/gateway/get_gateway`, 'get')
-        // const domainRes = { 'status': 'success', 'data': ['5e1e029d22'] }
         if (!domainRes || domainRes.status !== 'success') that.$message.error(domainRes ? domainRes.message : 'Fail')
         else {
           bucketDetail.ipfs_url_domain = domainRes.data[0] || ''
@@ -921,6 +920,11 @@ export default {
                         width: 14px;
                         height: 14px;
                       }
+                    }
+                    .icon_ipfs_folder {
+                      background: url(../../assets/images/space/icon_21.png)
+                        no-repeat center;
+                      background-size: 100% 100%;
                     }
                     span {
                       white-space: normal;

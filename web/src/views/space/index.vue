@@ -255,7 +255,6 @@ export default {
       }
 
       const domainRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/gateway/get_gateway`, 'get')
-      // const domainRes = { 'status': 'success', 'data': ['5e1e029d22'] }
       if (!domainRes || domainRes.status !== 'success') {
         that.$message.error(domainRes.message || 'Fail')
         that.domain = {

@@ -219,36 +219,44 @@ export default {
             let CollectionFactory = new that.$web3Init.eth.Contract(
               CollectionFactoryAbi,
               that.$root.COLLECTION_FACTORY_ADDRESS,
+              // '0xeC8988d45F1E85Fb9cF816f365Bf5775a78dcA3a',
               { from: that.metaAddress, gas: that.$web3Init.utils.toHex(that.$root.PAY_GAS_LIMIT) }
             )
 
             if (type === 'create') {
-              let collections = await CollectionFactory.methods.createCollection(that.ruleCreateForm.name, nftUrl).send()
-              // console.log('collections', collections)
-              // let collectionsList = await CollectionFactory.methods.getCollections(that.metaAddress).call()
-              // console.log('collections list', collectionsList)
-              that.isloadText = that.$t('uploadFile.payment_tip_deal03')
+              CollectionFactory.methods.createCollection(that.ruleCreateForm.name, nftUrl)
+                .send()
+                .on('transactionHash', async (hash) => {
+                  console.log('hash console:', hash)
+                  if (that.ruleCreateForm.fileRaw.raw) {
+                    that.ruleCreateForm.file = await that.uploadImage(that.ruleCreateForm.fileRaw.raw, that.ruleCreateForm.fileRaw.name)
+                  }
+                  let mintInfoJson = {
+                    address: that.ruleCreateForm.name,
+                    tx_hash: hash,
+                    name: that.ruleCreateForm.name,
+                    description: that.ruleCreateForm.description,
+                    image_url: that.ruleCreateForm.file,
+                    external_link: that.ruleCreateForm.external_link,
+                    seller_fee: that.ruleCreateForm.seller_fee_basis_points || 0,
+                    wallet_recipient: that.ruleCreateForm.fee_recipient
+                  }
+                  await that.sendPostRequest(`${that.baseAPIURL}api/v1/storage/mint/nft_collection`, mintInfoJson)
+                })
+                .on('confirmation', function (confirmationNumber, receipt) {
+                  console.log('confirmationNumber console:', confirmationNumber, receipt)
+                })
+                .on('receipt', function (receipt) {
+                  // receipt example
+                  console.log('create receipt console:', receipt)
+                  that.isloadText = that.$t('uploadFile.payment_tip_deal03')
 
-              if (that.ruleCreateForm.fileRaw.raw) {
-                that.ruleCreateForm.file = await that.uploadImage(that.ruleCreateForm.fileRaw.raw, that.ruleCreateForm.fileRaw.name)
-              }
-              let mintInfoJson = {
-                address: collections.events.CreateCollection.returnValues.collectionAddress,
-                tx_hash: collections.transactionHash,
-                name: that.ruleCreateForm.name,
-                description: that.ruleCreateForm.description,
-                image_url: that.ruleCreateForm.file,
-                external_link: that.ruleCreateForm.external_link,
-                seller_fee: that.ruleCreateForm.seller_fee_basis_points || 0,
-                wallet_recipient: that.ruleCreateForm.fee_recipient
-              }
-              await that.sendPostRequest(`${that.baseAPIURL}api/v1/storage/mint/nft_collection`, mintInfoJson)
-
-              that.mintCollectionAddress = {}
-              that.mintIndex = 'list'
-              that.isload = false
-              that.init()
-              that.$refs['ruleCreateForm'].resetFields()
+                  that.mintCollectionAddress = {}
+                  that.mintIndex = 'list'
+                  that.isload = false
+                  that.init()
+                  that.$refs['ruleCreateForm'].resetFields()
+                })
             } else {
               that.isloadText = that.$t('uploadFile.payment_tip_deal01')
               await that.mintContract(CollectionFactory, that.mintCollectionAddress.address, nftUrl)

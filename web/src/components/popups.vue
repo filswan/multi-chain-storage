@@ -273,29 +273,28 @@
     </div>
     <div class="fe-none" v-else-if="typeName === 'upload_folder'">
       <div class="uploadDig uploadDigFolder" v-loading="loading">
-        <i class="el-icon-circle-close close" @click="closeDia()"></i>
-        <div class="upload_form">
-          <div class="upload_to">
-            <div class="text">Upload to MCS</div>
-            <el-upload class="upload-demo upload-file" :multiple="true" ref="uploadFolderRef" action="customize" :http-request="uploadFile" :file-list="ruleForm.fileListFolder" :show-file-list="false" :on-change="handleChange" :on-remove="handleRemove">
-              <img src="@/assets/images/space/icon_11.png" alt="">
-              <div class="el-upload__text"></div>
-              <el-button type="primary">
-                {{$t('metaSpace.Browse_Folders')}}
-              </el-button>
-            </el-upload>
-          </div>
-          <div class="upload_to">
-            <div class="text">Upload to IPFS</div>
-            <el-upload class="upload-demo upload-file upload-file-ipfs" :multiple="true" ref="uploadFolderIPFSRef" action="customize" :http-request="uploadFileIPFS" :file-list="ruleForm.fileListFolder" :show-file-list="false" :on-change="handleIPFSChange"
-              :on-remove="handleRemove">
-              <img src="@/assets/images/space/icon_11.png" alt="">
-              <div class="el-upload__text"></div>
-              <el-button type="primary">
-                {{$t('metaSpace.Browse_Folders')}}
-              </el-button>
-            </el-upload>
-          </div>
+        <div class="upload_form upload_to">
+          <div class="text">{{$t('metaSpace.Browse_Folders_title')}}</div>
+          <el-form ref="form" @submit.native.prevent>
+            <el-form-item :label="$t('metaSpace.Browse_Folders_title01')">
+              <el-select v-model="form.uploadLabel" placeholder=" ">
+                <el-option v-for="item in form.uploadLabeloptions" :key="item.value" :label="item.label" :value="item.value">
+                </el-option>
+              </el-select>
+              <p>{{$t('metaSpace.Browse_Folders_desc')}}</p>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="info" class="upload-demo" @click="closeDia()">{{$t('metaSpace.Cancel')}}</el-button>
+              <el-upload v-show="form.uploadLabel === 'mcs'" class="upload-demo upload-file" :multiple="true" ref="uploadFolderRef" action="customize" :http-request="uploadFile" :file-list="ruleForm.fileListFolder" :show-file-list="false" :on-change="handleChange"
+                :on-remove="handleRemove">
+                <el-button type="primary">{{$t('metaSpace.Submit')}}</el-button>
+              </el-upload>
+              <el-upload v-show="form.uploadLabel === 'ipfs'" class="upload-demo upload-file upload-file-ipfs" :multiple="true" ref="uploadFolderIPFSRef" action="customize" :http-request="uploadFileIPFS" :file-list="ruleForm.fileListFolder" :show-file-list="false"
+                :on-change="handleIPFSChange" :on-remove="handleRemove">
+                <el-button type="primary">{{$t('metaSpace.Submit')}}</el-button>
+              </el-upload>
+            </el-form-item>
+          </el-form>
         </div>
       </div>
     </div>
@@ -496,7 +495,15 @@ export default {
         email: '',
         day: '30',
         checkType: ['agreement'],
-        domain: ''
+        domain: '',
+        uploadLabel: 'mcs',
+        uploadLabeloptions: [{
+          value: 'mcs',
+          label: 'Multi-Chain storage'
+        }, {
+          value: 'ipfs',
+          label: 'IPFS'
+        }]
       },
       rules: {
         name: [{ validator: validateName, trigger: 'blur' }]
@@ -553,6 +560,7 @@ export default {
       uploadBody: {
         uploadList: [],
         uploadListAll: [],
+        uploadListName: false,
         addNum: 0,
         allNum: 0
       },
@@ -805,15 +813,25 @@ export default {
         that.uploadFileName = file.name
         that.uploadFileSizeAll = file.size
         if (that.typeName === 'upload_folder' || that.typeName === 'upload_folder_list') {
-          that.typeName = 'upload_folder_list'
-          file.uploadPrecent = 0
-          file.currentFold = currentFold
-          file.fold = fold
-          file.chunkIndex = indexFile
-          that.ruleForm.fileListFolder.push(file)
-          that.ruleForm.fileListFolder[that.uploadBody.addNum - 1].path = `${that.currentBucket}/${currentFold}`
-          // console.log(fileList)
-          if (!that.uploadStart) await that.foldUpload(fileList)
+          if (fold) {
+            // fold = true, Folder already exists, upload terminated
+            if (that.uploadBody.uploadListName !== fold) {
+              that.uploadBody.uploadListName = fold
+              that.$message.error('Folder already exists')
+              that.$emit('getUploadDialog', that.typeName === 'upload_folder_list', 1)
+              that.loading = false
+            }
+          } else {
+            that.typeName = 'upload_folder_list'
+            file.uploadPrecent = 0
+            file.currentFold = currentFold
+            file.fold = fold
+            file.chunkIndex = indexFile
+            that.ruleForm.fileListFolder.push(file)
+            that.ruleForm.fileListFolder[that.uploadBody.addNum - 1].path = `${that.currentBucket}/${currentFold}`
+            // console.log(fileList)
+            if (!that.uploadStart) await that.foldUpload(fileList)
+          }
         } else that.fileUpload(file, currentFold, fold, indexFile)
       }
     },
@@ -1143,6 +1161,7 @@ export default {
       that.ruleForm.fileListFolder = []
       that.ruleForm.fileListFolderErr = []
       that.uploadBody.uploadListAll = []
+      that.uploadBody.uploadListName = false
       that.uploadBody.addNum = 0
       that.uploadBody.allNum = 0
       that.uploadStart = false
@@ -2606,54 +2625,115 @@ export default {
             }
           }
         }
-        .upload_to {
-          float: left;
-          width: calc(46% - 2px);
-          margin: 0.3rem 2% 0.5rem;
-          border: 1px dashed #898989;
-          border-radius: 0.1rem;
+      }
+      .upload_to {
+        float: left;
+        width: calc(100% - 2px - 1rem);
+        margin: 0.25rem;
+        border: 1px dashed #898989;
+        border-radius: 0.1rem;
+        @media screen and (max-width: 768px) {
+          float: none;
+          width: 100%;
+        }
+        .text {
+          padding: 0;
+          text-align: left;
+          color: #000;
+        }
+        .el-form /deep/ {
+          min-width: 5rem;
+          padding: 0.15rem 0 0;
+          @media screen and (max-width: 1440px) {
+            min-width: 4.5rem;
+          }
+          @media screen and (max-width: 1200px) {
+            min-width: 4rem;
+          }
+          @media screen and (max-width: 992px) {
+            min-width: 3.5rem;
+          }
           @media screen and (max-width: 768px) {
-            float: none;
-            width: 100%;
+            min-width: 3rem;
           }
-          .text {
-            padding: 0.2rem 0 0;
-            text-align: center;
-          }
-          .upload-demo /deep/ {
-            .el-upload {
-              padding: 0.3rem 0;
-              svg,
-              img {
-                width: 0.4rem;
-                height: 0.4rem;
-                margin: 0;
+          .el-form-item {
+            display: block;
+            margin: 0;
+            .el-form-item__label {
+              width: 100%;
+              padding: 0;
+              text-align: left;
+              color: #000;
+            }
+            .el-form-item__content {
+              position: relative;
+              display: flex;
+              align-items: center;
+              flex-wrap: wrap;
+              width: 100%;
+              text-align: center;
+              .el-select {
+                width: 100%;
+                font-size: 16px;
               }
-              .el-upload__text {
-                margin: 10px 0;
-                font-size: 0.22rem;
-                font-weight: normal;
-                color: #606060;
-                line-height: 1;
-                small {
-                  color: #969696;
+              p {
+                font-size: 14px;
+                text-align: left;
+                line-height: 1.3;
+                @media screen and (max-width: 1600px) {
+                  font-size: 12px;
                 }
               }
-              .el-button {
-                width: 45%;
+              .el-input {
+                margin: 0 auto 0.1rem;
+                .el-input__inner {
+                  height: auto;
+                  padding: 0.05rem 0.15rem;
+                  background-color: #f7f7f7;
+                  border: 0;
+                  border-radius: 0.1rem;
+                  font-size: 16px;
+                  text-align: left;
+                  @media screen and (max-width: 1600px) {
+                    font-size: 15px;
+                  }
+                  @media screen and (max-width: 1440px) {
+                    font-size: 14px;
+                  }
+                }
+              }
+              .upload-demo {
+                justify-content: center;
+                width: calc(50% - 0.34rem);
                 max-width: 250px;
                 min-width: 150px;
                 padding: 0.17rem;
-                margin: 0 auto;
-                background: linear-gradient(45deg, #4e88ff, #4b5fff);
+                margin: 0.3rem auto 0;
                 font-family: inherit;
                 font-size: 16px;
                 border: 0;
-                border-radius: 0.14rem;
+                border-radius: 0.1rem;
                 line-height: 1;
+                text-align: center;
                 @media screen and (max-width: 1600px) {
+                  font-size: 15px;
+                }
+                @media screen and (max-width: 1440px) {
                   font-size: 14px;
                 }
+                @media screen and (max-width: 441px) {
+                  width: calc(100% - 0.34rem);
+                  min-width: auto;
+                }
+                .el-button {
+                  width: 100%;
+                }
+              }
+              .el-button--primary {
+                background: linear-gradient(45deg, #4e88ff, #4b5fff);
+              }
+              .el-button--info {
+                background: #dadada;
               }
             }
           }

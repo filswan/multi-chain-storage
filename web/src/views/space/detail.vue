@@ -365,7 +365,7 @@ export default {
       that.listData.listBuckets.forEach((element, i) => {
         element.index = i
         that.detail.size += element.size
-        if (element.is_folder) that.listData.listBucketFolder.push(element)
+        if (element.type === 0 || element.type === 1) that.listData.listBucketFolder.push(element)
         else that.listData.listBucketFile.push(element)
       })
       that.detail.object = directoryRes.data.length || 0

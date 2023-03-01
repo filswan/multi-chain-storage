@@ -126,6 +126,40 @@
         </el-form>
       </div>
     </div>
+    <div class="fe-none" v-else-if="typeName === 'detail_ipfs_file'">
+      <div class="addBucket" v-loading="backupLoad">
+        <i class="el-icon-circle-close closePop" v-if="ipfsUploadLoad" @click="controllerSignal()"></i>
+        <div class="head">
+          {{$t('metaSpace.ob_detail_share')}}
+        </div>
+        <el-form ref="form" class="demo-ruleForm">
+          <el-form-item :label="$t('metaSpace.ob_detail_ObjectIPFSLink')" class="ipfs_form">
+            <el-select v-model="areaBody.ipfs_url_domain" placeholder=" ">
+              <el-option v-for="item in areaBody.options" :key="item.value" :label="item.label" :value="item.value">
+              </el-option>
+            </el-select>
+            {{`/ipfs/${areaBody.payload_cid}`}}
+            <i class="icon el-icon-document-copy" @click="copyLink(`https://${areaBody.ipfs_url_domain}/ipfs/${areaBody.payload_cid}`)"></i>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="closeDia()">{{$t('metaSpace.Close')}}</el-button>
+          </el-form-item>
+        </el-form>
+        <div class="loadTryAgain" v-if="ipfsUploadLoad">
+          <div style="width:100%;">
+            <div class="load_svg">
+              <svg viewBox="25 25 50 50" class="circular">
+                <circle cx="50" cy="50" r="20" fill="none" class="path"></circle>
+              </svg>
+              <p>
+                {{$t('uploadFile.payment_tip_deal')}}
+                <span @click="controllerSignal('try_again', areaBody.ipfs_url, areaBody.name)">{{$t('metaSpace.try_again')}}</span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="fe-none" v-else-if="typeName === 'detail_folder'">
       <div class="addBucket" v-loading="backupLoad">
         <div class="head">
@@ -197,40 +231,6 @@
         </div>
       </div>
     </div>
-    <div class="fe-none" v-else-if="typeName === 'detail_ipfs_file'">
-      <div class="addBucket" v-loading="backupLoad">
-        <i class="el-icon-circle-close closePop" v-if="ipfsUploadLoad" @click="controllerSignal()"></i>
-        <div class="head">
-          {{$t('metaSpace.ob_detail_share')}}
-        </div>
-        <el-form ref="form" class="demo-ruleForm">
-          <el-form-item :label="$t('metaSpace.ob_detail_ObjectIPFSLink')" class="ipfs_form">
-            <el-select v-model="areaBody.ipfs_url_domain" placeholder=" ">
-              <el-option v-for="item in areaBody.options" :key="item.value" :label="item.label" :value="item.value">
-              </el-option>
-            </el-select>
-            {{`/ipfs/${areaBody.payload_cid}`}}
-            <i class="icon el-icon-document-copy" @click="copyLink(`https://${areaBody.ipfs_url_domain}/ipfs/${areaBody.payload_cid}`)"></i>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" @click="closeDia()">{{$t('metaSpace.Close')}}</el-button>
-          </el-form-item>
-        </el-form>
-        <div class="loadTryAgain" v-if="ipfsUploadLoad">
-          <div style="width:100%;">
-            <div class="load_svg">
-              <svg viewBox="25 25 50 50" class="circular">
-                <circle cx="50" cy="50" r="20" fill="none" class="path"></circle>
-              </svg>
-              <p>
-                {{$t('uploadFile.payment_tip_deal')}}
-                <span @click="controllerSignal('try_again', areaBody.ipfs_url, areaBody.name)">{{$t('metaSpace.try_again')}}</span>
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
     <div class="fe-none" v-else-if="typeName === 'upload'">
       <div class="uploadDig" v-loading="loading">
         <i class="el-icon-circle-close close" @click="closeDia()"></i>
@@ -281,7 +281,8 @@
                 <el-option v-for="item in form.uploadLabeloptions" :key="item.value" :label="item.label" :value="item.value">
                 </el-option>
               </el-select>
-              <p>{{$t('metaSpace.Browse_Folders_desc')}}</p>
+              <p v-show="form.uploadLabel === 'mcs'">{{$t('metaSpace.Browse_Folders_mcs_desc')}}</p>
+              <p v-show="form.uploadLabel === 'ipfs'">{{$t('metaSpace.Browse_Folders_desc')}}</p>
             </el-form-item>
             <el-form-item>
               <el-button type="info" class="upload-demo" @click="closeDia()">{{$t('metaSpace.Cancel')}}</el-button>
@@ -2632,10 +2633,6 @@ export default {
         margin: 0.25rem;
         border: 1px dashed #898989;
         border-radius: 0.1rem;
-        @media screen and (max-width: 768px) {
-          float: none;
-          width: 100%;
-        }
         .text {
           padding: 0;
           text-align: left;
@@ -2722,11 +2719,13 @@ export default {
                   font-size: 14px;
                 }
                 @media screen and (max-width: 441px) {
-                  width: calc(100% - 0.34rem);
-                  min-width: auto;
+                  min-width: 100px;
                 }
                 .el-button {
                   width: 100%;
+                  height: auto !important;
+                  padding: 0.17rem 0 !important;
+                  line-height: 1.2 !important;
                 }
               }
               .el-button--primary {

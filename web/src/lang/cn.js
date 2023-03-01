@@ -735,6 +735,7 @@ export default {
     Browse_Folders: '浏览文件夹',
     Browse_Folders_title: '选择文件夹的存储位置：',
     Browse_Folders_title01: '名称',
+    Browse_Folders_mcs_desc: '*该文件夹将存储在MCS系统中，以后可以编辑但不能共享。可以查看和共享文件夹中的文件。',
     Browse_Folders_desc: '*该文件夹将永久存储在IPFS系统中，可以稍后共享，但无法编辑。',
     upload_desc: '将文件拖放到此处',
     uploadDray_or: '或',

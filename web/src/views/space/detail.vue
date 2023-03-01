@@ -616,6 +616,9 @@ export default {
                 box-shadow 0.3s;
               cursor: pointer;
               white-space: nowrap;
+              @media screen and (max-width: 1440px) {
+                min-width: 1.5rem;
+              }
               img {
                 display: inline-block;
                 height: 0.25rem;

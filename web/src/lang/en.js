@@ -730,6 +730,7 @@ export default {
     Browse_Folders: 'Browse Folders',
     Browse_Folders_title: 'Select where the folder will be stored:',
     Browse_Folders_title01: 'Title',
+    Browse_Folders_mcs_desc: '*The folder will be stored in the MCS system and later can be edited but not shared. Files in the folder can be viewed and shared.',
     Browse_Folders_desc: "*The folder will be permanently stored in the IPFS system and can be latershared but can't be edited.",
     uploadDray_or: 'or',
     uploadDray_text: 'Browse Files',

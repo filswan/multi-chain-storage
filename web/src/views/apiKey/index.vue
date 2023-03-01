@@ -119,7 +119,7 @@
                 </div>
               </template>
             </el-table-column>
-            <el-table-column prop="create_at" :label="$t('my_profile.table_apiKey_th_04')">
+            <!-- <el-table-column prop="create_at" :label="$t('my_profile.table_apiKey_th_04')">
               <template slot-scope="scope">
                 <div style="">
                   {{momentFun(scope.row.create_at)}}
@@ -129,11 +129,10 @@
             <el-table-column prop="qr_code" label="Actions" max-width="160">
               <template slot-scope="scope">
                 <div class="revoke">
-                  <!-- @click="dialogFun('delete', scope.row)" -->
                   <el-button type="danger" disabled>{{$t('my_profile.apiKey_btn_04')}}</el-button>
                 </div>
               </template>
-            </el-table-column>
+            </el-table-column> -->
           </el-table>
         </div>
       </div>
@@ -1047,6 +1046,20 @@ export default {
     .fes-search {
       // height: calc(100% - 1.7rem);
       margin: 0 auto 0.65rem;
+      .detailMore {
+        padding: 15px 0;
+        font-size: 12px;
+        color: #888;
+        line-height: 1.5;
+        text-align: center;
+        @media screen and (min-width: 1800px) {
+          font-size: 14px;
+        }
+        a {
+          color: inherit;
+          text-decoration: underline;
+        }
+      }
       .title {
         display: flex;
         align-items: center;
@@ -1276,20 +1289,6 @@ export default {
       }
       .el-table::before {
         display: none;
-      }
-      .detailMore {
-        padding: 15px 0;
-        font-size: 12px;
-        color: #888;
-        line-height: 1.5;
-        text-align: center;
-        @media screen and (min-width: 1800px) {
-          font-size: 14px;
-        }
-        a {
-          color: inherit;
-          text-decoration: underline;
-        }
       }
     }
     .fes-host {

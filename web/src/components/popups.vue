@@ -779,7 +779,7 @@ export default {
       that.ruleForm.fileIPFSList.push(params.file)
       if (that.ruleForm.uploadNum === that.ruleForm.fileIPFSList.length) {
         const folderName = params.file.webkitRelativePath.split('/')[0] || ''
-        await that.foldIPFS(that.ruleForm.fileIPFSList, folderName)
+        await that.foldUploadIPFS(that.ruleForm.fileIPFSList, folderName)
       }
     },
     async handleIPFSChange (file, fileList) {
@@ -835,6 +835,30 @@ export default {
           }
         } else that.fileUpload(file, currentFold, fold, indexFile)
       }
+    },
+    async foldUploadIPFS (fileList, folderName) {
+      that.ruleForm.fileIPFSList = []
+      that.loading = true
+      const current = that.currentBucket.split('/').slice(1).join('/')
+      const parentAddress = that.areaBody.prefix || current || ''
+      let paramCheck = new FormData()
+      fileList.forEach(file => {
+        let namepath = file.webkitRelativePath || file.name
+        let fileNew = new File([file], namepath, { type: file.type })
+        fileNew.path = namepath
+        paramCheck.append('files', fileNew, namepath)
+        // console.log('files', fileNew, namepath)
+      })
+      paramCheck.append('folder_name', folderName)
+      paramCheck.append('prefix', parentAddress)
+      paramCheck.append('bucket_uid', that.areaBody)
+      let ipfsRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/pin_files_to_ipfs`, 'post', paramCheck)
+      if (!ipfsRes || ipfsRes.status !== 'success') {
+        if (ipfsRes) that.$message.error(ipfsRes.message || 'Fail')
+        else that.$message.error('Fail')
+      }
+      that.$emit('getUploadDialog', that.typeName === 'upload_folder_list', 1)
+      that.loading = false
     },
     async foldUpload (listRowData) {
       that.uploadStart = true
@@ -971,29 +995,6 @@ export default {
       that.uploadPrecent = 99
       that.uploadFileSize = file.size
       await that.fileMerge(hash, file, currentFold, fold, indexFile)
-    },
-    async foldIPFS (fileList, folderName) {
-      that.loading = true
-      that.ruleForm.fileIPFSList = []
-      const current = that.currentBucket.split('/').slice(1).join('/')
-      const parentAddress = that.areaBody.prefix || current || ''
-      let paramCheck = new FormData()
-      fileList.forEach(file => {
-        let namepath = file.webkitRelativePath || file.name
-        let fileNew = new File([file], namepath)
-        paramCheck.append('files', fileNew, namepath)
-        // console.log('files', fileNew)
-      })
-      paramCheck.append('folder_name', folderName)
-      paramCheck.append('prefix', parentAddress)
-      paramCheck.append('bucket_uid', that.areaBody)
-      let ipfsRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/pin_files_to_ipfs`, 'post', paramCheck)
-      if (!ipfsRes || ipfsRes.status !== 'success') {
-        if (ipfsRes) that.$message.error(ipfsRes.message || 'Fail')
-        else that.$message.error('Fail')
-      }
-      that.$emit('getUploadDialog', that.typeName === 'upload_folder_list', 1)
-      that.loading = false
     },
     async fileCheck (hash, file, currentFold, fold, indexFile) {
       that.loadFileText = 'Checking file information...'
@@ -2686,8 +2687,8 @@ export default {
                 .el-input__inner {
                   height: auto;
                   padding: 0.05rem 0.15rem;
-                  background-color: #f7f7f7;
-                  border: 0;
+                  background-color: transparent;
+                  border: 1px solid #4f8aff;
                   border-radius: 0.1rem;
                   font-size: 16px;
                   text-align: left;
@@ -2696,6 +2697,23 @@ export default {
                   }
                   @media screen and (max-width: 1440px) {
                     font-size: 14px;
+                  }
+                }
+                .el-input__suffix-inner {
+                  display: flex;
+                  align-items: center;
+                  height: 100%;
+                  .el-icon-arrow-up {
+                    width: 25px;
+                    height: 25px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    &::before {
+                      content: "\e78f";
+                      color: #000;
+                      font-size: 18px;
+                    }
                   }
                 }
               }

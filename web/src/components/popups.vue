@@ -843,11 +843,7 @@ export default {
       const parentAddress = that.areaBody.prefix || current || ''
       let paramCheck = new FormData()
       fileList.forEach(file => {
-        let namepath = file.webkitRelativePath || file.name
-        let fileNew = new File([file], namepath, { type: file.type })
-        fileNew.path = namepath
-        paramCheck.append('files', fileNew, namepath)
-        // console.log('files', fileNew, namepath)
+        paramCheck.append('files', file)
       })
       paramCheck.append('folder_name', folderName)
       paramCheck.append('prefix', parentAddress)

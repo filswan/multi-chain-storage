@@ -22,8 +22,19 @@ export async function sendRequest (apilink, type, jsonObject, config) {
         })
         return response.data
     }
-  } catch (err) {
-    console.error(err)
+  } catch (error) {
+    console.log(error)
+    if (error.response) {
+      // The request has been sent, but the status code of the server response is not within the range of 2xx
+      // console.log(error.response.data)
+      // console.log(error.response.status)
+      // console.log(error.response.headers)
+      return error.response.data
+    } else {
+      // Something happened in setting up the request that triggered an Error
+      console.log('Error', error.message)
+    }
+    // console.log(error.config)
   }
 }
 

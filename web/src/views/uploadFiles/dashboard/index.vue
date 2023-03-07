@@ -45,48 +45,50 @@
                        {text: $t('uploadFile.filter_status_Refundable'), value: 'Refundable'}, {text: $t('uploadFile.filter_status_Refunded'), value: 'Refunded'},
                        {text: $t('uploadFile.filter_status_Success'), value: 'Success'}, {text: $t('uploadFile.filter_status_Failed'), value: 'Failed'}]" :filter-multiple="false" :column-key="'payment'">
             <template slot-scope="scope">
-              <el-button plain type="pending" class="statusStyle" v-if="scope.row.status&&scope.row.status.toLowerCase()=='pending'">
-                {{ languageMcs == "en" ? "Pending" : '待支付'}}
-              </el-button>
-              <el-button plain type="pending" class="statusStyle" v-else-if="(scope.row.status&&(scope.row.status.toLowerCase()=='completed' || scope.row.status.toLowerCase()=='refundable')&&scope.row.status_failed_file) || (scope.row.status&&scope.row.status.toLowerCase()=='processing'&&scope.row.status_failed_file&&scope.row.offline_deal.length>0)">
-                {{ languageMcs == "en" ? "Failed" : '失败'}}
-              </el-button>
-              <el-button plain type="primary" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='processing'&&scope.row.status_failed_file&&scope.row.offline_deal.length<=0">
-                {{ languageMcs == "en" ? "Processing" : '处理中'}}
-              </el-button>
-              <el-button plain type="success" class="statusStyle" v-else-if="scope.row.status&&(scope.row.status.toLowerCase()=='completed' || scope.row.status.toLowerCase()=='refundable' || scope.row.status.toLowerCase()=='processing' || scope.row.status.toLowerCase()=='success')&&scope.row.status_success_file">
-                {{ languageMcs == "en" ? "Success" : '完成'}}
-              </el-button>
-              <el-button type="successPart" class="statusStyle" v-else-if="scope.row.status_file">
-                {{ languageMcs == "en" ? "Success" : '完成'}}
-              </el-button>
-              <el-button type="danger" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='failed'">
-                {{ languageMcs == "en" ? "Fail" : '失败'}}
-              </el-button>
-              <el-button plain type="primary" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='processing'&&!scope.row.status_file">
-                {{ languageMcs == "en" ? "Processing" : '处理中'}}
-              </el-button>
-              <el-button plain type="success" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='active'&&!scope.row.status_file">
-                {{ languageMcs == "en" ? "Active" : '完成'}}
-              </el-button>
-              <el-button plain type="info" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='refunded'&&!scope.row.status_file">
-                {{ languageMcs == "en" ? "Refunded" : '已退款'}}
-              </el-button>
-              <el-button plain type="refunding" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='refunding'&&!scope.row.status_file">
-                {{ languageMcs == "en" ? "Refunding" : '可退款'}}
-              </el-button>
-              <el-button plain type="refunding" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='refundable'&&!scope.row.status_file">
-                {{ languageMcs == "en" ? "Refundable" : '可退款'}}
-              </el-button>
-              <el-button plain type="refunding" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='free'&&!scope.row.status_file">
-                {{ languageMcs == "en" ? "Free" : '免费'}}
-              </el-button>
-              <el-button plain type="info" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='completed'&&!scope.row.status_file">
-                {{ languageMcs == "en" ? "Completed" : '完成'}}
-              </el-button>
-              <el-button plain type="info" class="statusStyle" v-else>
-                {{scope.row.status}}
-              </el-button>
+              <el-popover :disabled="!scope.row.note" placement="top" popper-class="elPopTitle" class="item" width="200" trigger="hover" :content="scope.row.note">
+                <el-button slot="reference" plain type="pending" class="statusStyle" v-if="scope.row.status&&scope.row.status.toLowerCase()=='pending'">
+                  {{ languageMcs == "en" ? "Pending" : '待支付'}}
+                </el-button>
+                <el-button slot="reference" plain type="pending" class="statusStyle" v-else-if="(scope.row.status&&(scope.row.status.toLowerCase()=='completed' || scope.row.status.toLowerCase()=='refundable')&&scope.row.status_failed_file) || (scope.row.status&&scope.row.status.toLowerCase()=='processing'&&scope.row.status_failed_file&&scope.row.offline_deal.length>0)">
+                  {{ languageMcs == "en" ? "Failed" : '失败'}}
+                </el-button>
+                <el-button slot="reference" plain type="primary" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='processing'&&scope.row.status_failed_file&&scope.row.offline_deal.length<=0">
+                  {{ languageMcs == "en" ? "Processing" : '处理中'}}
+                </el-button>
+                <el-button slot="reference" plain type="success" class="statusStyle" v-else-if="scope.row.status&&(scope.row.status.toLowerCase()=='completed' || scope.row.status.toLowerCase()=='refundable' || scope.row.status.toLowerCase()=='processing' || scope.row.status.toLowerCase()=='success')&&scope.row.status_success_file">
+                  {{ languageMcs == "en" ? "Success" : '完成'}}
+                </el-button>
+                <el-button slot="reference" type="successPart" class="statusStyle" v-else-if="scope.row.status_file">
+                  {{ languageMcs == "en" ? "Success" : '完成'}}
+                </el-button>
+                <el-button slot="reference" type="danger" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='failed'">
+                  {{ languageMcs == "en" ? "Fail" : '失败'}}
+                </el-button>
+                <el-button slot="reference" plain type="primary" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='processing'&&!scope.row.status_file">
+                  {{ languageMcs == "en" ? "Processing" : '处理中'}}
+                </el-button>
+                <el-button slot="reference" plain type="success" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='active'&&!scope.row.status_file">
+                  {{ languageMcs == "en" ? "Active" : '完成'}}
+                </el-button>
+                <el-button slot="reference" plain type="info" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='refunded'&&!scope.row.status_file">
+                  {{ languageMcs == "en" ? "Refunded" : '已退款'}}
+                </el-button>
+                <el-button slot="reference" plain type="refunding" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='refunding'&&!scope.row.status_file">
+                  {{ languageMcs == "en" ? "Refunding" : '可退款'}}
+                </el-button>
+                <el-button slot="reference" plain type="refunding" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='refundable'&&!scope.row.status_file">
+                  {{ languageMcs == "en" ? "Refundable" : '可退款'}}
+                </el-button>
+                <el-button slot="reference" plain type="refunding" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='free'&&!scope.row.status_file">
+                  {{ languageMcs == "en" ? "Free" : '免费'}}
+                </el-button>
+                <el-button slot="reference" plain type="info" class="statusStyle" v-else-if="scope.row.status&&scope.row.status.toLowerCase()=='completed'&&!scope.row.status_file">
+                  {{ languageMcs == "en" ? "Completed" : '完成'}}
+                </el-button>
+                <el-button slot="reference" plain type="info" class="statusStyle" v-else>
+                  {{scope.row.status}}
+                </el-button>
+              </el-popover>
             </template>
           </el-table-column>
           <el-table-column prop="pin_status" min-width="100">
@@ -226,11 +228,14 @@
           <el-table-column prop="active" min-width="100" :label="$t('uploadFile.payment')">
             <template slot-scope="scope">
               <div class="hot-cold-box">
-                <el-button class="uploadBtn blue" type="primary" v-if="tableData[scope.$index].status.toLowerCase()=='pending'" @click.stop="payClick(scope.row)">
+                <el-button class="uploadBtn grey opacity" v-if="tableData[scope.$index].status.toLowerCase()=='pending'&&tableData[scope.$index].pin_status.toLowerCase()=='unpinned'" :disabled="true">
+                  {{$t('uploadFile.Canceled')}}
+                </el-button>
+                <el-button class="uploadBtn blue" type="primary" v-else-if="tableData[scope.$index].status.toLowerCase()=='pending'" @click.stop="payClick(scope.row)">
                   {{$t('uploadFile.pay')}}
                 </el-button>
                 <el-button v-else-if="tableData[scope.$index].is_free" :disabled="true" class="uploadBtn grey opacity">{{$t('uploadFile.filter_status_Free')}}</el-button>
-                <el-button class="uploadBtn blue" type="primary" v-else-if="tableData[scope.$index].status.toLowerCase()=='completed' && !tableData[scope.$index].is_free && tableData[scope.$index].refunded_by_self" :disabled="true">
+                <el-button class="uploadBtn grey opacity" type="primary" v-else-if="tableData[scope.$index].status.toLowerCase()=='completed' && !tableData[scope.$index].is_free && tableData[scope.$index].refunded_by_self" :disabled="true">
                   {{$t('uploadFile.refund')}}
                 </el-button>
                 <el-button v-else-if="tableData[scope.$index].status.toLowerCase()=='completed' && !tableData[scope.$index].is_free && !tableData[scope.$index].refunded_by_self" :disabled="true" class="uploadBtn grey opacity">{{$t('uploadFile.paid')}}</el-button>
@@ -247,12 +252,8 @@
             :column-key="'minted'">
             <template slot-scope="scope">
               <div class="hot-cold-box">
-                <el-button class="uploadBtn blue" type="primary" v-if="tableData[scope.$index].token_id" @click.stop="mintViewFunction(scope.row)">{{$t('uploadFile.mint_view')}}</el-button>
-                <el-button class="uploadBtn blue" type="primary" v-else-if="(scope.row.status.toLowerCase()=='success'&&scope.row.is_minted==false) || (scope.row.status.toLowerCase()=='processing'&&scope.row.is_minted==false) || (scope.row.status_file&&scope.row.is_minted==false)"
-                  @click.stop="mintFunction(scope.row)">{{$t('uploadFile.MINT')}}</el-button>
-                <el-button class="uploadBtn grey opacity" v-else :disabled="true">
-                  {{$t('uploadFile.MINT')}}
-                </el-button>
+                <el-button class="uploadBtn blue" type="primary" @click.stop="mintFunction(scope.row, 'mint')">{{$t('uploadFile.MINT')}}</el-button>
+                <!-- <el-button class="uploadBtn blue" type="primary" @click.stop="mintFunction(scope.row, 'view')">{{$t('uploadFile.mint_view')}}</el-button> -->
               </div>
             </template>
           </el-table-column>
@@ -409,7 +410,7 @@ export default {
       storage: 0,
       centerDialogVisible: false,
       center_fail: false,
-      width: document.body.clientWidth > 600 ? '400px' : '95%',
+      width: document.body.clientWidth > 1600 ? '500px' : document.body.clientWidth > 600 ? '400px' : '95%',
       payment: {
         cid: '',
         amount: '',
@@ -539,7 +540,8 @@ export default {
     timeout (delay) {
       return new Promise((resolve) => setTimeout(resolve, delay))
     },
-    mintFunction (row) {
+    mintFunction (row, type) {
+      row.mintType = type
       this.mintRow = row
       this.mineVisible = true
     },
@@ -782,15 +784,15 @@ export default {
     getDownload (dialog, rows) {
       this.downVisible = dialog
     },
-    getMintDialog (dialog, tokenId, nftHash) {
+    getMintDialog (dialog, mintInfoJson) {
       let _this = this
       _this.mineVisible = dialog
-      if (nftHash) {
+      if (mintInfoJson) {
         _this.firstIndex = 0
         _this.getData()
-        _this.tokenId = tokenId
-        _this.txHash = nftHash
-        _this.mint_address = _this.mintContractAddress
+        _this.tokenId = mintInfoJson.token_id
+        _this.txHash = mintInfoJson.tx_hash || mintInfoJson.nft_tx_hash
+        _this.mint_address = mintInfoJson.mint_address || mintInfoJson.address || mintInfoJson.nft_collection_address
         _this.mintTransaction = true
       }
     },
@@ -1045,16 +1047,16 @@ export default {
                 let dataUnitArray = dataTime.substring(dataUnitIndex, dataUnitIndex + 8)
                 switch (dataUnitArray) {
                   case 'GMT+1000':
-                    item.dataUnit = 'GMT+10'
+                    item.dataUnit = 'UTC+10'
                     break
                   case 'GMT-1000':
-                    item.dataUnit = 'GMT-10'
+                    item.dataUnit = 'UTC-10'
                     break
                   case 'GMT+0000':
-                    item.dataUnit = 'GMT+0'
+                    item.dataUnit = 'UTC+0'
                     break
                   default:
-                    item.dataUnit = dataUnitArray ? dataUnitArray.replace(/0/g, '') : '-'
+                    item.dataUnit = dataUnitArray ? dataUnitArray.replace(/0/g, '').replace('GMT', 'UTC') : '-'
                     break
                 }
 
@@ -1898,7 +1900,7 @@ export default {
                   border: 0;
                   padding: 0;
                   background-color: transparent;
-                  font-size: 0.17rem;
+                  font-size: 0.165rem;
                   font-family: inherit;
                   word-break: break-word;
                   color: #000;
@@ -1933,14 +1935,14 @@ export default {
                 }
                 .uploadBtn {
                   width: auto;
-                  min-width: 0.75rem;
+                  min-width: 0.65rem;
                   box-sizing: content-box;
-                  padding: 0.07rem 0.1rem;
+                  padding: 0.05rem 0.07rem;
                   margin: auto;
                   color: #555555;
                   // box-shadow: 0 0 0.06rem rgba(191, 191, 191, 0.32);
                   box-shadow: none;
-                  border-radius: 0.14rem;
+                  border-radius: 0.11rem;
                   border: 1px solid #dcdfe6;
                   white-space: nowrap;
                   display: inline-block;

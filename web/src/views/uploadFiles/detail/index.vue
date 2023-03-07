@@ -59,7 +59,8 @@
             <el-descriptions-item :label="$t('uploadFile.file_name')">{{dealCont.source_file_upload_deal.file_name | NumFormat}}</el-descriptions-item>
             <el-descriptions-item :label="$t('uploadFile.detail_IPFSDownload')">
               <div class="module">
-                <a class="linkTo" v-if="dealCont.source_file_upload_deal.ipfs_url" @click="xhrequest(dealCont.source_file_upload_deal.ipfs_url, dealCont.source_file_upload_deal.file_name)">
+                <!-- <a class="linkTo" v-if="dealCont.source_file_upload_deal.ipfs_url" @click="xhrequest(dealCont.source_file_upload_deal.ipfs_url, dealCont.source_file_upload_deal.file_name)"> -->
+                <a class="linkTo" v-if="dealCont.source_file_upload_deal.ipfs_url" :href="dealCont.source_file_upload_deal.ipfs_url" target="_blank">
                   {{dealCont.source_file_upload_deal.ipfs_url}}
                 </a>
                 <span v-else>-</span>

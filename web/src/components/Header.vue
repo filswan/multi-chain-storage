@@ -3,10 +3,10 @@
     <div class="header_arera">
       <div class="header-right">
         <div class="network_mainnet" v-if="addrChild" :class="{'error': networkTip}" @click="networkC=true">
-          <div class="BSC_mainnet" v-if="networkID == 97" title="BSC TestNet mainnet">
+          <!-- <div class="BSC_mainnet" v-if="networkID == 97" title="BSC TestNet mainnet">
             <img src="@/assets/images/network_logo/bsc.png" /> {{bodyWidth?'BSC':'BSC TestNet'}}
-          </div>
-          <div class="Polygon_mainnet" v-else-if="networkID == 137" title="Polygon mainnet">
+          </div> -->
+          <div class="Polygon_mainnet" v-if="networkID == 137" title="Polygon mainnet">
             <img src="@/assets/images/network_logo/polygon.png" /> {{bodyWidth?'Polygon':'Polygon Mainnet'}}
           </div>
           <div class="Mumbai_mainnet" v-else-if="networkID == 80001" title="Mumbai Testnet mainnet">
@@ -29,7 +29,7 @@
             <!-- <span class="text textTrue">{{metaNetworkInfo.name}}</span> -->
             <div class="info">
               <h5>{{priceAccound}} {{ metaNetworkInfo.unit}}</h5>
-              <h4 @click="wrongInfo">{{addrChild | hiddAddress}}</h4>
+              <h4 @click="wrongVisible = true">{{addrChild | hiddAddress}}</h4>
             </div>
             <el-button class="text textTrue pcShow" @click="signOutFun">{{$t('fs3.Disconnect')}}</el-button>
           </div>
@@ -65,47 +65,9 @@
     <el-dialog :title="$t('fs3Login.Account')" :visible.sync="wrongVisible" :width="width" custom-class="wrongNet">
       <label>{{$t('fs3Login.Connected_MetaMask')}}</label>
       <div class="address">{{addrChild | hiddAddress}}</div>
-      <div v-loading="wrongLoad" v-if="mcsEmail&&false" class="address_email">
-        <label>{{$t('fs3Login.Connected_Email')}}</label>
-        <div class="address_body">
-          <div class="address">{{mcsEmail | hiddEmail}}</div>
-          <div class="address_right" :class="{'bg-primary':mcsEmailStatus === 0}">
-            <div>{{mcsEmailStatus === 0?'Active':'Not Active'}}</div>
-          </div>
-        </div>
-        <div class="share">
-          <el-popconfirm @confirm="wrongInfo('disconnect')" :confirm-button-text="$t('uploadFile.OK')" :cancel-button-text="$t('metaSpace.Cancel')" icon="el-icon-info" icon-color="red" title="Confirm to disconnect from mailbox?">
-            <el-button slot="reference">
-              <svg t="1669800414838" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5038" width="64" height="64">
-                <path d="M832.6 191.4c-84.6-84.6-221.5-84.6-306 0l-96.9 96.9 51 51 96.9-96.9c53.8-53.8 144.6-59.5 204 0 59.5 59.5 53.8 150.2 0 204l-96.9 96.9 51.1 51.1 96.9-96.9c84.4-84.6 84.4-221.5-0.1-306.1zM446.5 781.6c-53.8 53.8-144.6 59.5-204 0-59.5-59.5-53.8-150.2 0-204l96.9-96.9-51.1-51.1-96.9 96.9c-84.6 84.6-84.6 221.5 0 306s221.5 84.6 306 0l96.9-96.9-51-51-96.8 97zM260.3 209.4c-3.1-3.1-8.2-3.1-11.3 0L209.4 249c-3.1 3.1-3.1 8.2 0 11.3l554.4 554.4c3.1 3.1 8.2 3.1 11.3 0l39.6-39.6c3.1-3.1 3.1-8.2 0-11.3L260.3 209.4z"
-                  p-id="5039" fill="#0b318f"></path>
-              </svg>
-              {{$t('fs3Login.Disconnect_mailbox')}}
-            </el-button>
-          </el-popconfirm>
-          <el-button @click="closeDia('change')">
-            <svg t="1640937862402" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3723" width="32" height="32">
-              <path d="M852.77 889.05H171.23A36.27 36.27 0 0 1 135 852.78V171.22A36.27 36.27 0 0 1 171.23 135H375a36.28 36.28 0 0 1 0 72.55H207.5v609h609V649a36.28 36.28 0 1 1 72.55 0v203.78a36.27 36.27 0 0 1-36.28 36.27z" fill="#0b318f" p-id="3724"></path>
-              <path d="M407.15 653.13a36.28 36.28 0 0 1-25.66-61.93L747.66 225A36.28 36.28 0 1 1 799 276.34L432.8 642.51a36.17 36.17 0 0 1-25.65 10.62z" fill="#0b318f" p-id="3725"></path>
-              <path d="M852.78 414.94V171.23H609.06l140.42 103.29 103.3 140.42z" fill="#0b318f" p-id="3726"></path>
-              <path d="M852.78 451.22a36.29 36.29 0 0 1-29.23-14.78l-100-136-136-100a36.28 36.28 0 0 1 21.5-65.5h243.72a36.28 36.28 0 0 1 36.28 36.28V415a36.28 36.28 0 0 1-36.27 36.27zM719.6 207.5l51.4 37.8a36.23 36.23 0 0 1 7.7 7.7l37.8 51.38V207.5z" fill="#0b318f"
-                p-id="3727"></path>
-            </svg>
-            {{$t('fs3Login.Change_Address')}}
-          </el-button>
-        </div>
-      </div>
       <div class="share">
-        <el-button v-if="!mcsEmail&&false" @click="closeDia()">
-          <svg t="1669803088505" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2608" width="64" height="64">
-            <path d="M1024.00144 220.64v574.32c0 5.76-0.736 11.456-1.824 17.072v0.064l-0.224 0.944A84.336 84.336 0 0 1 939.29744 880H101.08944a102.72 102.72 0 0 1-82.512-40.832 95.904 95.904 0 0 1-18.56-57.248V236.256a74.08 74.08 0 0 1 52.064-70.784l0.736-0.208 0.208-0.08A127.648 127.648 0 0 1 89.66544 160h883.424c1.328 0.512 2.64 1.232 4.032 1.44 25.52 4.32 40.592 19.152 45.344 44.496v0.08c0.88 4.816 1.536 9.712 1.536 14.608zM512.00144 591.232l451.152-379.472c-66.272-3.888-888.48-1.728-897.84 2.368L512.00144 591.2v0.064z m133.856-45.152l-114.112 96.144c-13.76 11.52-25.6 11.664-39.2 0.208l-48.272-40.752-63.84-53.936L81.02544 825.28l1.024 2.304h873.328L645.79344 546.08h0.064z m-304.864-31.68L51.79344 270.032v512.48l289.28-268.096h-0.08z m344.352-1.648l287.088 260.96V270.944L685.34544 512.768z"
-              p-id="2609" fill="#0b318f"></path>
-          </svg>
-          {{$t('fs3Login.Connected_Email_Address')}}
-        </el-button>
-
         <el-button @click="shareTo">
-          <svg t="1669800457857" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="6207" width="64" height="64">
+          <svg t="1669800457857" class="icon icon_big" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="6207" width="64" height="64">
             <path d="M923.648 1015.442H100.206a91.648 91.648 0 0 1-91.721-91.72V101.01a91.502 91.502 0 0 1 91.72-91.501H649.29a30.72 30.72 0 0 1 0 61.44H130.487a60.855 60.855 0 0 0-60.928 60.854v762.003a60.855 60.855 0 0 0 60.928 60.928h762.441a60.855 60.855 0 0 0 60.928-60.928V345.088a30.72 30.72 0 1 1 61.44 0v579.291a91.21 91.21 0 0 1-91.648 91.063z m-497.81-403.675a30.574 30.574 0 1 1-43.228-43.228L930.816 17.92a30.574 30.574 0 1 1 43.154 43.3L425.91 611.768z"
               p-id="6208" fill="#0b318f"></path>
             <path d="M923.648 1023.854H100.206A100.206 100.206 0 0 1 0.073 923.72v-822.71C0.22 45.86 44.91 1.096 100.206 1.096h549.083a39.131 39.131 0 1 1 0 78.263H130.414a52.443 52.443 0 0 0-52.444 52.443v762.003c0 28.964 23.48 52.443 52.517 52.516H893a52.368 52.368 0 0 0 37.084-15.36 52.81 52.81 0 0 0 15.36-37.156V345.088a39.131 39.131 0 0 1 78.262 0v579.291a99.913 99.913 0 0 1-100.059 99.475zM100.059 17.92c-45.787 0-82.944 37.23-83.017 83.09v822.784c0.073 46.007 37.303 83.237 83.31 83.31h823.37a83.09 83.09 0 0 0 83.163-82.798V345.015a22.309 22.309 0 0 0-44.544 0v548.864c0 18.359-7.315 35.986-20.188 49.006a68.754 68.754 0 0 1-49.079 20.333H130.487a69.486 69.486 0 0 1-69.34-69.34V131.804a69.266 69.266 0 0 1 69.267-69.339h518.948a22.309 22.309 0 1 0-0.146-44.544h-549.01z m304.202 611.328a39.058 39.058 0 0 1-27.575-66.706L924.818 11.995a38.985 38.985 0 1 1 55.077 55.223l-548.06 550.473c-7.314 7.315-17.261 11.484-27.574 11.557zM952.32 17.335a22.162 22.162 0 0 0-15.58 6.583L388.536 574.39a22.162 22.162 0 1 0 31.378 31.451L968.046 55.296a21.943 21.943 0 0 0 6.583-15.726 22.382 22.382 0 0 0-22.236-22.235z"
@@ -137,6 +99,7 @@
         </el-button>
 
       </div>
+      <div class="loadStyle" v-show="loadAccount" v-loading="loadAccount"></div>
     </el-dialog>
 
     <div class="loadIndexStyle" v-show="loadIndexing" v-loading="loadIndexing"></div>
@@ -181,13 +144,13 @@ export default {
       },
       addrChild: '',
       wrongVisible: false,
-      wrongLoad: false,
       width: document.body.clientWidth > 600 ? '450px' : '95%',
       copyClick: true,
       switchWidth: 56,
       reverseSwitch: false,
       networkC: false,
-      prevType: true
+      prevType: true,
+      loadAccount: false
     }
   },
   props: ['meta', 'netId', 'networkTip'],
@@ -215,14 +178,6 @@ export default {
     },
     networkID () {
       return Number(this.$store.getters.networkID)
-    },
-    mcsEmail () {
-      const data = this.$store.getters.mcsEmail
-      return data === '{}' ? '' : JSON.parse(data).Email
-    },
-    mcsEmailStatus () {
-      const data = this.$store.getters.mcsEmail
-      return data === '{}' ? 0 : JSON.parse(data).Status
     }
   },
   watch: {
@@ -245,17 +200,11 @@ export default {
       this.walletInfo()
     },
     netId: function () {
-      if (this.netId === 137 || this.netId === 97 || this.netId === 80001) this.getNetworkC(false, this.netId)
+      //  this.netId === 97 ||
+      if (this.netId === 137 || this.netId === 80001) this.getNetworkC(false, this.netId)
     }
   },
   methods: {
-    async wrongInfo (status) {
-      // that.wrongLoad = true
-      that.wrongVisible = true
-      // if (status === 'disconnect') await that.$metaLogin.Disconnect()
-      // await that.$metaLogin.emailSign('', 'detail')
-      // that.wrongLoad = false
-    },
     getNetworkC (dialog, rows) {
       that.networkC = dialog
       if (rows) {
@@ -274,26 +223,26 @@ export default {
               blockExplorerUrls: ['https://mumbai.polygonscan.com/']
             }
             break
-          case 97:
-            text = {
-              chainId: that.$web3Init.utils.numberToHex(97),
-              chainName: 'BSC TestNet',
-              nativeCurrency: {
-                name: 'tBNB',
-                symbol: 'tBNB', // 2-6 characters long
-                decimals: 18
-              },
-              rpcUrls: ['https://data-seed-prebsc-1-s1.binance.org:8545'],
-              blockExplorerUrls: ['https://testnet.bscscan.com']
-            }
-            break
+          // case 97:
+          //   text = {
+          //     chainId: that.$web3Init.utils.numberToHex(97),
+          //     chainName: 'BSC TestNet',
+          //     nativeCurrency: {
+          //       name: 'tBNB',
+          //       symbol: 'tBNB', // 2-6 characters long
+          //       decimals: 18
+          //     },
+          //     rpcUrls: ['https://data-seed-prebsc-1-s1.binance.org:8545'],
+          //     blockExplorerUrls: ['https://testnet.bscscan.com']
+          //   }
+          //   break
           case 137:
             text = {
               chainId: that.$web3Init.utils.numberToHex(137),
               chainName: 'Polygon Mainnet',
               nativeCurrency: {
-                name: 'tBNB',
-                symbol: 'tBNB', // 2-6 characters long
+                name: 'MATIC',
+                symbol: 'MATIC', // 2-6 characters long
                 decimals: 18
               },
               rpcUrls: ['https://polygon-rpc.com'],
@@ -321,7 +270,7 @@ export default {
       let status = await that.$metaLogin.netStatus(rows)
       if (!status) {
         let link = that.baseNetwork ? 'https://calibration-mcs.filswan.com' : 'https://www.multichain.storage'
-        window.open(link)
+        if (that.networkID === 80001 || that.networkID === 137) window.open(link)
         that.signOutFun()
         return false
       } else {
@@ -335,11 +284,7 @@ export default {
     shareTo () {
       window.open(`${that.baseAddressURL}address/${that.addrChild}`)
     },
-    closeDia (type) {
-      that.$emit('getPopUps', true, type || '')
-      that.wrongVisible = false
-    },
-    copyTextToClipboard (text) {
+    copyTextToClipboard (text, type) {
       var txtArea = document.createElement('textarea')
       txtArea.id = 'txt'
       txtArea.style.position = 'fixed'
@@ -355,8 +300,11 @@ export default {
         var msg = successful ? 'successful' : 'unsuccessful'
         console.log('Copying text command was ' + msg)
         if (successful) {
-          that.copyClick = false
-          setTimeout(function () { that.copyClick = true }, 600)
+          if (type) that.$message({ message: msg, type: 'success' })
+          else {
+            that.copyClick = false
+            setTimeout(function () { that.copyClick = true }, 600)
+          }
           return true
         }
       } catch (err) {
@@ -471,7 +419,6 @@ export default {
         return false
       }
 
-      const ethereum = window.ethereum
       ethereum
         .request({ method: 'eth_chainId' })
         .then(async (chainId) => {
@@ -647,9 +594,10 @@ export default {
             that.$root.RECIPIENT = json.data.data.payment_recipient_address
             that.$root.SWAN_PAYMENT_CONTRACT_ADDRESS = json.data.data.payment_contract_address
             that.$root.USDC_ADDRESS = json.data.data.usdc_address
-            that.$root.MINT_CONTRACT = json.data.data.mint_contract_address
+            that.$root.MINT_CONTRACT = json.data.data.default_nft_collection_address
             that.$root.dao_threshold = json.data.data.dao_threshold
             that.$root.filecoin_price = json.data.data.filecoin_price
+            that.$root.COLLECTION_FACTORY_ADDRESS = json.data.data.nft_collection_factory_address
           }
         }).catch(error => {
           console.log(error)
@@ -685,7 +633,7 @@ export default {
             contractErc20.methods.balanceOf(that.metaAddress).call()
               .then(balance => {
                 let usdcAvailable = that.$web3Init.utils.fromWei(balance, 'mwei')
-                console.log('Available balance:', usdcAvailable, balance)
+                // console.log('Available balance:', usdcAvailable, balance)
                 // that.priceAccound = that.formatDecimal(usdcAvailable, 3)
                 // that.priceAccound = Number(usdcAvailable).toFixed(0)
                 that.priceAccound = parseInt(usdcAvailable)
@@ -779,7 +727,7 @@ export default {
     box-shadow: 0 0 13px rgba(128, 128, 128, 0.8);
     border-radius: 0.2rem;
     .el-dialog__header {
-      padding: 0.3rem 0.4rem;
+      padding: 0.2rem 0.4rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -809,6 +757,7 @@ export default {
       }
     }
     .el-dialog__body {
+      position: relative;
       padding: 0.3rem 0.4rem 0.4rem;
       font-size: 0.2rem;
       @media screen and (max-width: 479px) {
@@ -915,10 +864,39 @@ export default {
               height: 15px;
               margin: 0 3px 0 0;
             }
+            .icon_big {
+              width: 13px;
+              height: 13px;
+            }
           }
           &:hover {
             background: transparent;
             opacity: 1;
+          }
+        }
+      }
+      .loadStyle {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 2000;
+        background: rgba(255, 255, 255, 1);
+        border-radius: 0.2rem;
+      }
+      .apiTipCont {
+        p {
+          display: flex;
+          align-items: center;
+          text-indent: 0.1rem;
+          margin: 0.1rem;
+          color: #7e7e7e;
+          font-size: 0.18rem;
+          .el-icon-document-copy {
+            display: block;
+            font-size: 17px;
+            cursor: pointer;
           }
         }
       }

@@ -163,7 +163,7 @@
       <span slot="title">{{$t('uploadFile.File_uploading')}}... {{percentIn?'('+percentIn+'%)':''}}</span>
       <h3>{{$t('uploadFile.File_uploading_tooltip')}}</h3>
       <img src="@/assets/images/upload.gif" class="gif_img" alt="">
-      <small>{{speedChange(uploadPrecentSpeed)}}</small>
+      <small>Current upload speed: {{speedChange(uploadPrecentSpeed)}}</small>
     </el-dialog>
 
     <el-dialog title="" :visible.sync="paymentPopup" :width="width" custom-class="completeDia">
@@ -257,8 +257,8 @@ export default {
       center_fail: false,
       centerDialogVisible: false,
       modelClose: true,
-      width: document.body.clientWidth > 600 ? '400px' : '95%',
-      widthUpload: document.body.clientWidth > 600 ? '450px' : '95%',
+      width: document.body.clientWidth > 1600 ? '500px' : document.body.clientWidth > 600 ? '400px' : '95%',
+      widthUpload: document.body.clientWidth > 1600 ? '450px' : document.body.clientWidth > 600 ? '450px' : '95%',
       widthDia: document.body.clientWidth <= 600 ? '95%' : document.body.clientWidth <= 1440 ? '7rem' : '6.6rem',
       gatewayContractAddress: this.$root.SWAN_PAYMENT_CONTRACT_ADDRESS,
       recipientAddress: this.$root.RECIPIENT,
@@ -438,7 +438,8 @@ export default {
                               })
                           }
                         } else {
-                          that.$message.error(that.$t('uploadFile.xhr_tip'))
+                          that.$message.error(res.message || that.$t('uploadFile.xhr_tip'))
+                          that.finishClose()
                         }
                       }
                     }
@@ -499,13 +500,13 @@ export default {
       const uploadPrecent = ((loaded / total) * 100) | 0 // Calculation progress
       that.percentIn = loaded < total && uploadPrecent === 100 ? 99 : uploadPrecent
 
-      console.log('当前已上传文件大小: ' + loaded, '总文件大小: ', total, 'progress: ', uploadPrecent + '%')
+      // console.log('当前已上传文件大小: ' + loaded, '总文件大小: ', total, 'progress: ', uploadPrecent + '%')
     },
     speedChange (bytes) {
-      if (String(bytes) === '0') return '0 b/s'
+      if (String(bytes) === '0') return '0 byte/s'
       if (!bytes) return '-'
       var k = 1024 // or 1000
-      var sizes = ['b/s', 'k/s', 'M/s']
+      var sizes = ['byte/s', 'kb/s', 'mb/s', 'gb/s']
       var i = Math.floor(Math.log(bytes) / Math.log(k))
       if (Math.round((bytes / Math.pow(k, i))).toString().length > 3) i += 1
       return (bytes / Math.pow(k, i)).toFixed(1) + ' ' + sizes[i]
@@ -531,7 +532,7 @@ export default {
         size: resData.file_size,
         copyLimit: Number(that.ruleForm.storage_copy)
       }
-      console.log(lockObj)
+      // console.log(lockObj)
       contractInstance.methods.lockTokenPayment(lockObj)
         .send(payObject)
         .on('transactionHash', function (hash) {

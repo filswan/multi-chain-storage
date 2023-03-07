@@ -1,84 +1,90 @@
 <template>
   <div class="metamaskHome">
     <v-head @getHome="getHome" @getLogin="signFun" :loginLoad="loginLoad"></v-head>
-    <div class="loginBody">
-      <div class="width">
-        <el-row>
-          <el-col :xs="24" :sm="12" :md="11" :lg="11" :xl="11" class="left">
-            <h1>{{$t('fs3Login.Connect_text')}}</h1>
-            <h4>{{$t('fs3Login.Connect_text_desc')}}</h4>
+    <div class="homeBody" v-if="!moduleMenu">
+      <div class="loginBody">
+        <div class="width">
+          <el-row>
+            <el-col :xs="24" :sm="12" :md="11" :lg="11" :xl="11" class="left">
+              <h1>{{$t('fs3Login.Connect_text')}}</h1>
+              <h4>{{$t('fs3Login.Connect_text_desc')}}</h4>
+              <el-button type="primary" v-loading="loginLoad" @click="signFun">
+                {{$t('fs3Login.Connect_StartFree')}}
+              </el-button>
+              <el-button type="primary" @click="goLink('https://www.youtube.com/watch?v=rgEP4_dhzoI')">
+                {{$t('fs3Login.Connect_TutorialVideo')}}
+              </el-button>
+              <h3 v-if="languageMcs === 'en'">First
+                <b>30 GB</b> is
+                <b>FREE</b>!</h3>
+              <h3 v-else>前
+                <b>30 GB</b> 是
+                <b>免费</b> 的!</h3>
+            </el-col>
+            <el-col :xs="24" :sm="12" :md="13" :lg="13" :xl="13" class="right">
+              <img :src="img" />
+            </el-col>
+          </el-row>
+
+          <CarouselContainer :slide-list="collaboratorsData" currentIndex="1"></CarouselContainer>
+        </div>
+      </div>
+      <div class="msCont">
+        <div class="width" id="about">
+          <div class="title">
+            <i class="icon"></i> {{$t('metaSpace.home_title')}}
+          </div>
+          <el-row type="flex" class="row-bg" justify="space-between">
+            <el-col :xs="24" :sm="11" :md="11" :lg="11" :xl="11" class="left">
+              <div class="title">
+                <i class="icon icon_Introduction"></i>
+                {{$t('metaSpace.home_Introduction')}}
+              </div>
+              <p>{{$t('metaSpace.home_Introduction_cont')}}</p>
+            </el-col>
+            <el-col :xs="24" :sm="11" :md="11" :lg="11" :xl="11" class="left">
+              <div class="title">
+                <i class="icon icon_Features"></i>
+                {{$t('metaSpace.home_Our_Features')}}
+              </div>
+              <p class="p">{{$t('metaSpace.home_Our_Features_cont01')}}</p>
+              <p class="p">{{$t('metaSpace.home_Our_Features_cont02')}}</p>
+              <p class="p">{{$t('metaSpace.home_Our_Features_cont03')}}</p>
+            </el-col>
+          </el-row>
+        </div>
+      </div>
+      <div class="pricing" v-if="false">
+        <div class="width" id="pricing">
+          <div class="title">
+            <i class="icon"></i> Pricing for Multichain.Storage
             <el-button type="primary" v-loading="loginLoad" @click="signFun">
               {{$t('fs3Login.Connect_StartFree')}}
             </el-button>
-            <el-button type="primary" @click="goLink('https://www.youtube.com/watch?v=rgEP4_dhzoI')">
-              {{$t('fs3Login.Connect_TutorialVideo')}}
-            </el-button>
-            <h3>First
-              <b>30 GB</b> is
-              <b>FREE</b>!</h3>
-          </el-col>
-          <el-col :xs="24" :sm="12" :md="13" :lg="13" :xl="13" class="right">
-            <img :src="img" />
-          </el-col>
-        </el-row>
-
-        <CarouselContainer :slide-list="collaboratorsData" currentIndex="1"></CarouselContainer>
-      </div>
-    </div>
-    <div class="msCont">
-      <div class="width" id="about">
-        <div class="title">
-          <i class="icon"></i> Multichain.Storage
+          </div>
+          <el-row type="flex" class="row-bg" justify="space-around">
+            <el-col :xs="24" :sm="11" :md="11" :lg="11" :xl="11" class="left">
+              <h1>Free</h1>
+              <p>One bucket (with 30GB storage) free</p>
+              <p>Pin to IPFS</p>
+              <p>Weekly backup to decentralize storage network (5 copies)</p>
+              <p>SDK/API technical support</p>
+            </el-col>
+            <el-col :xs="24" :sm="11" :md="11" :lg="11" :xl="11" class="left">
+              <h1>More Storage</h1>
+              <p>USDC 7.2 for each added bucket each year
+                <span>(30GB storage for each bucket)</span>
+              </p>
+              <p>33 Bucket storage for each wallet</p>
+              <p>Pin to IPFS</p>
+              <p>Weekly backup to decentralize storage network (5 copies)</p>
+              <p>SDK/API technical support</p>
+            </el-col>
+          </el-row>
         </div>
-        <el-row type="flex" class="row-bg" justify="space-between">
-          <el-col :xs="24" :sm="11" :md="11" :lg="11" :xl="11" class="left">
-            <div class="title">
-              <i class="icon icon_Introduction"></i>
-              Introduction
-            </div>
-            <p>Multichain.Storage is a smart-contract-based cross-chain storage gateway integrated with Oracle technology and the Filecoin networks. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks.</p>
-          </el-col>
-          <el-col :xs="24" :sm="11" :md="11" :lg="11" :xl="11" class="left">
-            <div class="title">
-              <i class="icon icon_Features"></i>
-              Our Features
-            </div>
-            <p class="p">Drag and drop files to pin to IPFS and store on the Filecoin network at the same time</p>
-            <p class="p">Fast retrieval globally by reliable edge network</p>
-            <p class="p">Developer support of JS, Python and Golang SDK</p>
-          </el-col>
-        </el-row>
       </div>
     </div>
-    <div class="pricing" v-if="false">
-      <div class="width" id="pricing">
-        <div class="title">
-          <i class="icon"></i> Pricing for Multichain.Storage
-          <el-button type="primary" v-loading="loginLoad" @click="signFun">
-            {{$t('fs3Login.Connect_StartFree')}}
-          </el-button>
-        </div>
-        <el-row type="flex" class="row-bg" justify="space-around">
-          <el-col :xs="24" :sm="11" :md="11" :lg="11" :xl="11" class="left">
-            <h1>Free</h1>
-            <p>One bucket (with 30GB storage) free</p>
-            <p>Pin to IPFS</p>
-            <p>Weekly backup to decentralize storage network (5 copies)</p>
-            <p>SDK/API technical support</p>
-          </el-col>
-          <el-col :xs="24" :sm="11" :md="11" :lg="11" :xl="11" class="left">
-            <h1>More Storage</h1>
-            <p>USDC 7.2 for each added bucket each year
-              <span>(30GB storage for each bucket)</span>
-            </p>
-            <p>33 buckets for each wallet</p>
-            <p>Pin to IPFS</p>
-            <p>Weekly backup to decentralize storage network (5 copies)</p>
-            <p>SDK/API technical support</p>
-          </el-col>
-        </el-row>
-      </div>
-    </div>
+    <v-stats v-else></v-stats>
     <v-foot id="resources"></v-foot>
     <el-backtop target=".metamaskHome"></el-backtop>
     <network-alert v-if="metaAddress&&networkTip" @changeNet="changeNet" @getNetwork="getNetwork"></network-alert>
@@ -88,6 +94,7 @@
 <script>
 import vHead from '@/components/headHome.vue'
 import vFoot from '@/components/footHome.vue'
+import vStats from '@/views/stats/index.vue'
 import networkAlert from '@/components/networkAlert.vue'
 import CarouselContainer from '@/components/CarouselContainer.vue'
 let that
@@ -186,17 +193,20 @@ export default {
       img: require('@/assets/images/space/1.png'),
       loginLoad: false,
       prevType: true,
-      networkTip: false
+      networkTip: false,
+      moduleMenu: false
     }
   },
   components: {
-    vHead, vFoot, CarouselContainer, networkAlert
+    vHead, vFoot, CarouselContainer, networkAlert, vStats
   },
   methods: {
     goLink (link) {
       window.open(link)
     },
     getHome (key) {
+      that.moduleMenu = key === 'stats'
+      if (key === 'stats') return false
       var PageId = document.querySelector('#' + key)
       document.querySelector('.metamaskHome').scrollTo({
         top: PageId.offsetTop,
@@ -226,26 +236,26 @@ export default {
             blockExplorerUrls: ['https://mumbai.polygonscan.com/']
           }
           break
-        case 97:
-          text = {
-            chainId: '0x61',
-            chainName: 'BSC TestNet',
-            nativeCurrency: {
-              name: 'tBNB',
-              symbol: 'tBNB', // 2-6 characters long
-              decimals: 18
-            },
-            rpcUrls: ['https://data-seed-prebsc-1-s1.binance.org:8545'],
-            blockExplorerUrls: ['https://testnet.bscscan.com']
-          }
-          break
+        // case 97:
+        //   text = {
+        //     chainId: '0x61',
+        //     chainName: 'BSC TestNet',
+        //     nativeCurrency: {
+        //       name: 'tBNB',
+        //       symbol: 'tBNB', // 2-6 characters long
+        //       decimals: 18
+        //     },
+        //     rpcUrls: ['https://data-seed-prebsc-1-s1.binance.org:8545'],
+        //     blockExplorerUrls: ['https://testnet.bscscan.com']
+        //   }
+        //   break
         case 137:
           text = {
             chainId: '0x89',
             chainName: 'Polygon Mainnet',
             nativeCurrency: {
-              name: 'tBNB',
-              symbol: 'tBNB', // 2-6 characters long
+              name: 'MATIC',
+              symbol: 'MATIC', // 2-6 characters long
               decimals: 18
             },
             rpcUrls: ['https://polygon-rpc.com'],
@@ -312,6 +322,9 @@ export default {
     that.fn()
   },
   computed: {
+    languageMcs () {
+      return this.$store.getters.languageMcs
+    },
     metaAddress () {
       return this.$store.getters.metaAddress
     },

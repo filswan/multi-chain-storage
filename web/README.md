@@ -34,10 +34,19 @@ Run `npm install` to generate component.
 
 ## Development server
 
-Run `npm run dev` for a dev server. Navigate to `http://localhost:8080/`. The app will automatically reload if you change any of the source files.
+```shell
+# Node version below 17
+$ npm run dev
+
+# Node version 17 and above
+$ npm run dev_t
+```
+
+Navigate to `http://localhost:8080/`. The app will automatically reload if you change any of the source files.
 
 ## Build project
 
+Node version below 17
 ```shell
 # Build test projects
 $ npm run build:test
@@ -53,6 +62,24 @@ $ npm run build:prod
 
 # Build semi prod projects
 $ npm run build:semi_prod
+```
+
+Node version 17 and above
+```shell
+# Build test projects
+$ npm run build:test_t
+
+# Build prod test projects
+$ npm run build:test_prod_t
+
+# Build calibration projects
+$ npm run build:calibration_t
+
+# Build prod projects
+$ npm run build:prod_t
+
+# Build semi prod projects
+$ npm run build:semi_prod_t
 ```
 
 The build artifacts will be stored in the `dist/` directory.

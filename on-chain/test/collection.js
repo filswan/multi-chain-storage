@@ -24,7 +24,7 @@ describe('Collection Factory', function () {
       defaultCollection = await Collection.deploy('')
 
       const Factory = await ethers.getContractFactory('CollectionFactory')
-      factory = await upgrades.deployProxy(Factory, [defaultCollection.address])
+      factory = await Factory.deploy(defaultCollection.address)
       await factory.deployed()
       //const { nft, owner } = await loadFixture(deployContracts)
 

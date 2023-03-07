@@ -1,104 +1,104 @@
 <template>
 
-    <el-dialog title="Pay the file" :modal="true" :close-on-click-modal="false" :width="widthDia" :visible.sync="payVisible" :before-close="closeDia">
-        <div class="load" v-if="hashload" v-loading="hashload"></div>
-        <div class="upload_form">
-            <el-form :model="payRow" status-icon ref="ruleForm" class="demo-ruleForm">
-                <el-form-item prop="fileList" :label="$t('uploadFile.upload')">
-                    <div>
-                        <p>
-                            <i class="el-icon-document" style="font-size:14px;margin: 0px 4px 0px 5px;"></i>
-                            {{payRow.file_name}}
-                        </p>
-                        <p style="display: flex;align-items: center;line-height: 1;">
-                            <svg t="1637031488880" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3310" style="width: 14px;height: 14px;margin: 0 6px 0 5px;">
-                                <path d="M512 1024a512 512 0 1 1 512-512 32 32 0 0 1-32 32h-448v448a32 32 0 0 1-32 32zM512 64a448 448 0 0 0-32 896V512a32 32 0 0 1 32-32h448A448 448 0 0 0 512 64z" fill="#999999" p-id="3311"></path>
-                                <path d="M858.88 976a32 32 0 0 1-32-32V640a32 32 0 0 1 32-32 32 32 0 0 1 32 32v304a32 32 0 0 1-32 32z" fill="#999999" p-id="3312"></path>
-                                <path d="M757.12 773.12a34.56 34.56 0 0 1-22.4-8.96 32 32 0 0 1 0-45.44l101.12-101.12a32 32 0 0 1 45.44 0 30.72 30.72 0 0 1 0 44.8l-101.12 101.76a34.56 34.56 0 0 1-23.04 8.96z" fill="#999999" p-id="3313"></path>
-                                <path d="M960 773.12a32 32 0 0 1-22.4-8.96l-101.76-101.76a32 32 0 0 1 0-44.8 32 32 0 0 1 45.44 0l101.12 101.12a32 32 0 0 1-22.4 54.4z" fill="#999999" p-id="3314"></path>
-                            </svg>
-                            {{payRow.file_size | sizeChange}}
-                        </p>
-                    </div>
-                </el-form-item>
-                <el-form-item prop="duration">
-                    <template slot="label">
-                        {{$t('uploadFile.Duration')}}
+  <el-dialog title="Pay the file" :modal="true" :close-on-click-modal="false" :width="widthDia" :visible.sync="payVisible" :before-close="closeDia">
+    <div class="load" v-if="hashload" v-loading="hashload"></div>
+    <div class="upload_form">
+      <el-form :model="payRow" status-icon ref="ruleForm" class="demo-ruleForm">
+        <el-form-item prop="fileList" :label="$t('uploadFile.upload')">
+          <div>
+            <p>
+              <i class="el-icon-document" style="font-size:14px;margin: 0px 4px 0px 5px;"></i>
+              {{payRow.file_name}}
+            </p>
+            <p style="display: flex;align-items: center;line-height: 1;">
+              <svg t="1637031488880" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3310" style="width: 14px;height: 14px;margin: 0 6px 0 5px;">
+                <path d="M512 1024a512 512 0 1 1 512-512 32 32 0 0 1-32 32h-448v448a32 32 0 0 1-32 32zM512 64a448 448 0 0 0-32 896V512a32 32 0 0 1 32-32h448A448 448 0 0 0 512 64z" fill="#999999" p-id="3311"></path>
+                <path d="M858.88 976a32 32 0 0 1-32-32V640a32 32 0 0 1 32-32 32 32 0 0 1 32 32v304a32 32 0 0 1-32 32z" fill="#999999" p-id="3312"></path>
+                <path d="M757.12 773.12a34.56 34.56 0 0 1-22.4-8.96 32 32 0 0 1 0-45.44l101.12-101.12a32 32 0 0 1 45.44 0 30.72 30.72 0 0 1 0 44.8l-101.12 101.76a34.56 34.56 0 0 1-23.04 8.96z" fill="#999999" p-id="3313"></path>
+                <path d="M960 773.12a32 32 0 0 1-22.4-8.96l-101.76-101.76a32 32 0 0 1 0-44.8 32 32 0 0 1 45.44 0l101.12 101.12a32 32 0 0 1-22.4 54.4z" fill="#999999" p-id="3314"></path>
+              </svg>
+              {{payRow.file_size | sizeChange}}
+            </p>
+          </div>
+        </el-form-item>
+        <el-form-item prop="duration">
+          <template slot="label">
+            {{$t('uploadFile.Duration')}}
 
-                        <el-tooltip effect="dark" :content="$t('uploadFile.Duration_tooltip')" placement="top">
-                            <img src="@/assets/images/info.png" />
-                        </el-tooltip>
-                    </template>
-                    {{payRow.duration}} {{$t('components.day')}}
-                </el-form-item>
-                <el-form-item prop="storage_copy">
-                    <template slot="label">
-                        {{$t('uploadFile.Storage_copy')}}
+            <el-tooltip effect="dark" :content="$t('uploadFile.Duration_tooltip')" placement="top">
+              <img src="@/assets/images/info.png" />
+            </el-tooltip>
+          </template>
+          {{payRow.duration}} {{$t('components.day')}}
+        </el-form-item>
+        <el-form-item prop="storage_copy">
+          <template slot="label">
+            {{$t('uploadFile.Storage_copy')}}
 
-                        <el-tooltip effect="dark" :content="$t('uploadFile.Storage_copy_tooltip')" placement="top">
-                            <img src="@/assets/images/info.png" />
-                        </el-tooltip>
-                    </template>
-                    5
-                </el-form-item>
-                <el-form-item prop="Free_Storage_Capacity">
-                    <template slot="label">
-                        {{$t('uploadFile.Free_Storage_Capacity')}}
+            <el-tooltip effect="dark" :content="$t('uploadFile.Storage_copy_tooltip')" placement="top">
+              <img src="@/assets/images/info.png" />
+            </el-tooltip>
+          </template>
+          5
+        </el-form-item>
+        <el-form-item prop="Free_Storage_Capacity">
+          <template slot="label">
+            {{$t('uploadFile.Free_Storage_Capacity')}}
 
-                        <el-tooltip effect="dark" :content="$t('uploadFile.Free_Storage_Capacity_tooltip')" placement="top">
-                            <img src="@/assets/images/info.png" />
-                        </el-tooltip>
-                    </template>
-                    <span style="color:#2C7FF8">{{free_quota_per_month-free_usage | byteStorage}} GB</span>
-                </el-form-item>
-                <el-form-item prop="storage_cost">
-                    <template slot="label">
-                        {{$t('uploadFile.Estimated_Storage_Cost')}}
+            <el-tooltip effect="dark" :content="$t('uploadFile.Free_Storage_Capacity_tooltip')" placement="top">
+              <img src="@/assets/images/info.png" />
+            </el-tooltip>
+          </template>
+          <span style="color:#2C7FF8">{{free_quota_per_month-free_usage | byteStorage}} GB</span>
+        </el-form-item>
+        <el-form-item prop="storage_cost">
+          <template slot="label">
+            {{$t('uploadFile.Estimated_Storage_Cost')}}
 
-                        <el-tooltip effect="dark" :content="$t('uploadFile.Estimated_Storage_Cost_tooltip')" placement="top">
-                            <img src="@/assets/images/info.png" />
-                        </el-tooltip>
-                    </template>
-                    <span style="color:#2C7FF8">{{payRow.storage_cost | NumStorage}} FIL</span>
-                </el-form-item>
-            </el-form>
-            <div class="upload_plan">
-                <div class="title" :style="{'color': pay.lock_plan_tip? '#f67e7e' : '#000'}">
-                    {{$t('uploadFile.Select_Lock_Funds_Plan')}}
-                    <el-tooltip effect="dark" :content="$t('uploadFile.Select_Lock_Funds_Plan_tooltip')" placement="top">
-                        <img src="@/assets/images/info.png" />
-                    </el-tooltip>
-                </div>
-                <div class="desc">{{$t('uploadFile.latest_exchange_rate')}} {{biling_price}}.</div>
-                <div class="upload_plan_radio">
-                    <el-radio-group v-model="pay.lock_plan" @change="agreeChange">
-                        <el-radio label="1" border>
-                            <div class="title">{{$t('uploadFile.Low')}}</div>
-                            <div class="cont">
-                                {{cost.storage_cost_low || 0}} USDC
-                            </div>
-                        </el-radio>
-                        <el-radio label="2" border>
-                            <div class="title">{{$t('uploadFile.Average')}}</div>
-                            <div class="cont">
-                                {{cost.storage_cost_average || 0}} USDC
-                            </div>
-                        </el-radio>
-                        <el-radio label="3" border>
-                            <div class="title">{{$t('uploadFile.High')}}</div>
-                            <div class="cont">
-                                {{cost.storage_cost_high || 0}} USDC
-                            </div>
-                        </el-radio>
-                    </el-radio-group>
-                </div>
-            </div>
-            <div class="upload_bot">
-                <el-button type="primary" class="cancel" @click="closeDia">{{$t('deal.Cancel')}}</el-button>
-                <el-button type="primary" @click="payCom">{{$t('deal.Submit')}}</el-button>
-            </div>
+            <el-tooltip effect="dark" :content="$t('uploadFile.Estimated_Storage_Cost_tooltip')" placement="top">
+              <img src="@/assets/images/info.png" />
+            </el-tooltip>
+          </template>
+          <span style="color:#2C7FF8">{{payRow.storage_cost | NumStorage}} FIL</span>
+        </el-form-item>
+      </el-form>
+      <div class="upload_plan">
+        <div class="title" :style="{'color': pay.lock_plan_tip? '#f67e7e' : '#000'}">
+          {{$t('uploadFile.Select_Lock_Funds_Plan')}}
+          <el-tooltip effect="dark" :content="$t('uploadFile.Select_Lock_Funds_Plan_tooltip')" placement="top">
+            <img src="@/assets/images/info.png" />
+          </el-tooltip>
         </div>
-    </el-dialog>
+        <div class="desc">{{$t('uploadFile.latest_exchange_rate')}} {{biling_price}}.</div>
+        <div class="upload_plan_radio">
+          <el-radio-group v-model="pay.lock_plan" @change="agreeChange">
+            <el-radio label="1" border>
+              <div class="title">{{$t('uploadFile.Low')}}</div>
+              <div class="cont">
+                {{cost.storage_cost_low || 0}} USDC
+              </div>
+            </el-radio>
+            <el-radio label="2" border>
+              <div class="title">{{$t('uploadFile.Average')}}</div>
+              <div class="cont">
+                {{cost.storage_cost_average || 0}} USDC
+              </div>
+            </el-radio>
+            <el-radio label="3" border>
+              <div class="title">{{$t('uploadFile.High')}}</div>
+              <div class="cont">
+                {{cost.storage_cost_high || 0}} USDC
+              </div>
+            </el-radio>
+          </el-radio-group>
+        </div>
+      </div>
+      <div class="upload_bot">
+        <el-button type="primary" class="cancel" @click="closeDia">{{$t('deal.Cancel')}}</el-button>
+        <el-button type="primary" @click="payCom">{{$t('deal.Submit')}}</el-button>
+      </div>
+    </div>
+  </el-dialog>
 
 </template>
 

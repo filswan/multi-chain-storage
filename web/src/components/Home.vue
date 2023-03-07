@@ -10,7 +10,7 @@
           {{headertitle}}
         </div>
       </div>
-      <div class="content">
+      <div class="content" id="content_client">
         <div class="content_body" :class="{'stats': $route.name == 'Stats' || $route.name == 'Space' || $route.name == 'Space_detail'}">
           <network-alert v-if="metaAddress&&networkTip" @changeNet="changeNet" @getNetwork="getNetwork"></network-alert>
           <transition name="move" mode="out-in">
@@ -21,7 +21,7 @@
         </div>
         <div class="fes-icon">
           <div class="fes-icon-copy">
-            <span>© 2022 FilSwan</span>
+            <span>© {{fullYear}} FilSwan</span>
             <el-divider direction="vertical"></el-divider>
             <a href="https://www.filswan.com/" target="_block">filswan.com</a>
 
@@ -62,7 +62,8 @@ export default {
       networkTip: false,
       dialogFormVisible: false,
       typeName: 'emailLogin',
-      changeTitle: ''
+      changeTitle: '',
+      fullYear: new Date().getFullYear()
     }
   },
   components: {
@@ -98,7 +99,7 @@ export default {
     },
     mcsEmail () {
       const data = this.$store.getters.mcsEmail
-      return data === '{}' ? '' : JSON.parse(data).Email
+      return data === '{}' ? '' : JSON.parse(data).email
     },
     apiStatus () {
       const data = this.$store.getters.mcsEmail
@@ -116,8 +117,7 @@ export default {
   },
   methods: {
     async getPopUps (dialog, rows, bucketName) {
-      // that.dialogFormVisible = dialog
-      that.dialogFormVisible = false
+      that.dialogFormVisible = dialog
       that.changeTitle = rows || ''
     },
     getNetwork (dis) {
@@ -130,8 +130,7 @@ export default {
       that.meta = meta
     },
     async init () {
-      // that.dialogFormVisible = !!that.metaAddress && !that.mcsEmail && that.apiStatus
-      that.dialogFormVisible = false
+      that.dialogFormVisible = !!that.metaAddress && !that.mcsEmail && that.apiStatus
       let status = await that.$metaLogin.netStatus(that.networkID)
       that.networkTip = !status
       if (that.reverse) document.body.classList.add('reverse_phase')

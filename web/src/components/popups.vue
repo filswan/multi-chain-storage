@@ -1,12 +1,47 @@
 <template>
-  <div :class="{'slideScroll slideAdd': true, 'slideAddBg': dialogFormVisible&&(typeName !== 'add'), 'slideComSoon': fixed, slideEmail: dialogFormVisible&&(typeName === 'emailLogin'||typeName === 'emailCheck')}" v-if="dialogFormVisible">
-    <div class="fe-none" v-if="typeName === 'add' || typeName === 'rename' || typeName === 'addSub'">
+  <div :class="{'slideScroll slideAdd': true, 'slideAddBg': dialogFormVisible&&(typeName !== 'add'), 'slideComSoon': fixed, slideEmail: dialogFormVisible&&(typeName === 'emailLogin'||typeName === 'emailCheck'||typeName === 'upload_folder_list')}"
+    v-if="dialogFormVisible">
+    <div class="fe-none" v-if="typeName === 'add' || typeName === 'addNewBucket' || typeName === 'rename' || typeName === 'addSub'">
       <div class="addBucket" v-loading="createLoad">
         <i class="el-icon-circle-close close" @click="closeDia()"></i>
-        <div class="title">{{typeName == 'addSub'?$t('metaSpace.bucket_subname'):$t('metaSpace.bucket_name')}}</div>
-        <el-form :model="form" status-icon :rules="rules" ref="form">
+        <div class="title" v-if="typeName === 'addSub'">{{$t('metaSpace.folder_name')}}</div>
+        <div class="title" v-else-if="typeName === 'addNewBucket'">{{$t('metaSpace.Name_bucket')}}</div>
+        <div class="title" v-else>{{$t('metaSpace.bucket_name')}}</div>
+        <el-form :model="form" status-icon :rules="rules" ref="form" @submit.native.prevent>
           <el-form-item prop="name">
-            <el-input v-model="form.name" maxlength="256" placeholder="Bucket Name" ref="bucketNameRef"></el-input>
+            <el-input v-model="form.name" maxlength="256" :placeholder="typeName === 'addSub'?$t('metaSpace.folder_name'):$t('metaSpace.bucket_name')" ref="bucketNameRef"></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="getDialogClose('form')">{{typeName === 'addNewBucket'?$t('apiKey.Add_bucket'):$t('metaSpace.Submit')}}</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+    </div>
+    <div class="fe-none" v-if="typeName === 'add_apikey'">
+      <div class="addBucket" v-loading="createLoad">
+        <i class="el-icon-circle-close close" @click="closeDia()"></i>
+        <div class="title">{{$t('my_profile.create_api_title')}}</div>
+        <el-form :model="form" status-icon :rules="rulesDay" label-position="top" ref="form" @submit.native.prevent>
+          <el-form-item prop="" :label="$t('apiKey.label_Expiration')">
+            <el-input-number v-model="form.day" controls-position="right" @blur="apiKeyBlur" :controls="false" :min="0" :max="365" maxlength="256" :placeholder="'30 '+$t('apiKey.day')" ref="bucketNameRef"></el-input-number>
+          </el-form-item>
+          <el-form-item>
+            <p class="day_tip">{{$t('apiKey.label_tip01')}}</p>
+            <p class="day_tip">{{$t('apiKey.label_tip02')}}</p>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="getDialogClose('form')">{{typeName === 'addNewBucket'?$t('apiKey.Add_bucket'):$t('metaSpace.Submit')}}</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+    </div>
+    <div class="fe-none" v-if="typeName === 'add_domain'">
+      <div class="addBucket" v-loading="createLoad">
+        <i class="el-icon-circle-close close" @click="closeDia()"></i>
+        <div class="title">{{$t('my_profile.apiKey_btn_03')}}</div>
+        <el-form :model="form" status-icon :rules="rulesDomain" label-position="top" ref="form" @submit.native.prevent>
+          <el-form-item prop="domain" :label="$t('my_profile.apiKey_your_Domain_label')">
+            <el-input v-model="form.domain" maxlength="256" ref="bucketNameRef"></el-input>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="getDialogClose('form')">{{$t('metaSpace.Submit')}}</el-button>
@@ -16,11 +51,21 @@
     </div>
     <div class="fe-none" v-else-if="typeName === 'delete'">
       <div class="addBucket" v-loading="listTableLoad">
-        <div class="title">
+        <div class="title" v-if="$route.name == 'Space'">
           <i class="el-icon-warning-outline"></i>
-          {{$route.name == 'Space'?$t('metaSpace.delete_title'):$t('metaSpace.delete_title_detail')}}
+          {{$t('metaSpace.delete_title')}}
         </div>
-        <div class="cont">{{$t('metaSpace.delete_desc')}}</div>
+        <div class="title" v-if="$route.name == 'ApiKey'">
+          <i class="el-icon-warning-outline"></i>
+          {{$t('my_profile.module_tips04')}}
+        </div>
+        <div class="title cont" v-else>
+          <i class="el-icon-warning-outline"></i>
+          <!--          {{$t('metaSpace.delete_title_detail')}}-->
+          {{ $t('metaSpace.delete_desc') }}
+        </div>
+        <!--        <div class="cont">{{$route.name == 'ApiKey'?'APIKey will be permanently deleted. This action cannot be undone.':$t('metaSpace.delete_desc')}}</div>-->
+        <div class="cont">{{$route.name == 'ApiKey'?$t('apiKey.apikey_cont'):""}}</div>
         <el-form ref="form">
           <el-form-item>
             <el-button type="info" @click="closeDia()">{{$t('metaSpace.Cancel')}}</el-button>
@@ -36,22 +81,22 @@
         </div>
         <el-form ref="form" class="demo-ruleForm">
           <el-form-item :label="$t('metaSpace.detail_BucketName')">
-            {{areaBody.name}}
+            {{areaBody.bucket_name}}
           </el-form-item>
           <el-form-item :label="$t('metaSpace.detail_DateCreated')">
-            <span class="color">{{momentFun(areaBody.create_date)}}</span>
+            <span class="color">{{momentFun(areaBody.created_at)}}</span>
           </el-form-item>
           <el-form-item :label="$t('metaSpace.detail_LastModified')">
-            <span class="color">{{momentFun(areaBody.update_date)}}</span>
+            <span class="color">{{momentFun(areaBody.updated_at)}}</span>
           </el-form-item>
           <el-form-item :label="$t('metaSpace.detail_CurrentFiles')">
-            {{areaBody.files_count}}
+            {{areaBody.file_number}}
           </el-form-item>
           <el-form-item :label="$t('metaSpace.detail_CurrentSize')">
             {{areaBody.size | formatbytes}}
           </el-form-item>
           <el-form-item></el-form-item>
-          <el-form-item :label="$t('metaSpace.detail_BackupInfo')">
+          <!-- <el-form-item :label="$t('metaSpace.detail_BackupInfo')">
             <div class="tip">
               {{$t('metaSpace.detail_StorageProvider')}}({{areaBody.miner_count}})
 
@@ -74,6 +119,64 @@
           </el-form-item>
           <el-form-item :label="$t('metaSpace.detail_RemainingServiceDays')">
             <span class="color">{{areaBody.remaining_service_days}}</span>
+          </el-form-item> -->
+          <el-form-item>
+            <el-button type="primary" @click="closeDia()">{{$t('metaSpace.Close')}}</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+    </div>
+    <div class="fe-none" v-else-if="typeName === 'detail_ipfs_file'">
+      <div class="addBucket" v-loading="backupLoad">
+        <i class="el-icon-circle-close closePop" v-if="ipfsUploadLoad" @click="controllerSignal()"></i>
+        <div class="head">
+          {{$t('metaSpace.ob_detail_share')}}
+        </div>
+        <el-form ref="form" class="demo-ruleForm">
+          <el-form-item :label="$t('metaSpace.ob_detail_ObjectIPFSLink')" class="ipfs_form">
+            <el-select v-model="areaBody.ipfs_url_domain" placeholder=" ">
+              <el-option v-for="item in areaBody.options" :key="item.value" :label="item.label" :value="item.value">
+              </el-option>
+            </el-select>
+            {{`/ipfs/${areaBody.payload_cid}`}}
+            <i class="icon el-icon-document-copy" @click="copyLink(`https://${areaBody.ipfs_url_domain}/ipfs/${areaBody.payload_cid}`)"></i>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="closeDia()">{{$t('metaSpace.Close')}}</el-button>
+          </el-form-item>
+        </el-form>
+        <div class="loadTryAgain" v-if="ipfsUploadLoad">
+          <div style="width:100%;">
+            <div class="load_svg">
+              <svg viewBox="25 25 50 50" class="circular">
+                <circle cx="50" cy="50" r="20" fill="none" class="path"></circle>
+              </svg>
+              <p>
+                {{$t('uploadFile.payment_tip_deal')}}
+                <span @click="controllerSignal('try_again', areaBody.ipfs_url, areaBody.name)">{{$t('metaSpace.try_again')}}</span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="fe-none" v-else-if="typeName === 'detail_folder'">
+      <div class="addBucket" v-loading="backupLoad">
+        <div class="head">
+          {{$t('metaSpace.detail_folder_title')}}
+        </div>
+        <el-form ref="form" class="demo-ruleForm">
+          <el-form-item :label="$t('metaSpace.detail_folderName')">
+            {{areaBody.name}}
+          </el-form-item>
+          <el-form-item :label="$t('metaSpace.detail_DateCreated')">
+            <span class="color">{{momentFun(areaBody.created_at)}}</span>
+          </el-form-item>
+          <el-form-item :label="$t('metaSpace.detail_LastModified')">
+            <span class="color">{{momentFun(areaBody.updated_at)}}</span>
+          </el-form-item>
+          <el-form-item :label="$t('metaSpace.detail_CurrentSize')">
+            {{areaBody.size | formatbytes}}
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="closeDia()">{{$t('metaSpace.Close')}}</el-button>
@@ -82,23 +185,27 @@
       </div>
     </div>
     <div class="fe-none" v-else-if="typeName === 'detail_file'">
-      <div class="addBucket">
+      <div class="addBucket" v-loading="backupLoad">
         <i class="el-icon-circle-close closePop" v-if="ipfsUploadLoad" @click="controllerSignal()"></i>
         <div class="head">
           {{$t('metaSpace.ob_detail_title')}}
         </div>
         <el-form ref="form" class="demo-ruleForm">
-          <el-form-item :label="$t('metaSpace.ob_detail_ObjectName')">
+          <el-form-item :label="$t('uploadFile.file_name')">
             <span class="color">{{areaBody.name}}</span>
           </el-form-item>
+          <el-form-item :label="$t('metaSpace.ob_detail_ObjectName')">
+            <span class="color">{{areaBody.object_name}}</span>
+          </el-form-item>
           <el-form-item :label="$t('metaSpace.ob_detail_DateUploaded')">
-            <span class="color">{{momentFun(areaBody.create_date)}}</span>
+            <span class="color">{{momentFun(areaBody.created_at)}}</span>
           </el-form-item>
           <el-form-item :label="$t('metaSpace.ob_detail_ObjectSize')">
             <span class="color">{{areaBody.size | formatbytes}}</span>
           </el-form-item>
           <el-form-item :label="$t('metaSpace.ob_detail_ObjectIPFSLink')">
-            <a class="color ipfsStyle" @click="xhrequest(areaBody.ipfs_url, areaBody.name)">
+            <!-- <a class="color ipfsStyle" @click="xhrequest(areaBody.ipfs_url, areaBody.name)"> -->
+            <a class="color ipfsStyle" :href="areaBody.ipfs_url" target="_blank">
               {{areaBody.ipfs_url}}
             </a>
           </el-form-item>
@@ -154,11 +261,78 @@
     <div class="fe-none" v-else-if="typeName === 'upload_progress'">
       <div class="uploadDig">
         <div class="upload_progress">
-          <img src="@/assets/images/space/load_sunny.gif" class="load" />
-          <div class="progress">
-            <p>{{uploadPrecent}}%
-              <small>{{speedChange(uploadPrecentSpeed)}}</small>
-            </p>
+          <div class="load_svg">
+            <el-progress type="circle" :stroke-width="10" :width="110" :color="'#4d75ff'" :percentage="uploadPrecent"></el-progress>
+            <div class="load_cont">
+              <p>{{uploadFileName}}</p>
+              <p>{{uploadFileSize | formatbytes}}/{{uploadFileSizeAll| formatbytes}}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="fe-none" v-else-if="typeName === 'upload_folder'">
+      <div class="uploadDig uploadDigFolder" v-loading="loading">
+        <div class="upload_form upload_to">
+          <div class="text">{{$t('metaSpace.Browse_Folders_title')}}</div>
+          <el-form ref="form" @submit.native.prevent>
+            <el-form-item :label="$t('metaSpace.Browse_Folders_title01')">
+              <el-select v-model="form.uploadLabel" placeholder=" ">
+                <el-option v-for="item in form.uploadLabeloptions" :key="item.value" :label="item.label" :value="item.value">
+                </el-option>
+              </el-select>
+              <p v-show="form.uploadLabel === 'mcs'">{{$t('metaSpace.Browse_Folders_mcs_desc')}}</p>
+              <p v-show="form.uploadLabel === 'ipfs'">{{$t('metaSpace.Browse_Folders_desc')}}</p>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="info" class="upload-demo" @click="closeDia()">{{$t('metaSpace.Cancel')}}</el-button>
+              <el-upload v-show="form.uploadLabel === 'mcs'" class="upload-demo upload-file" :multiple="true" ref="uploadFolderRef" action="customize" :http-request="uploadFile" :file-list="ruleForm.fileListFolder" :show-file-list="false" :on-change="handleChange"
+                :on-remove="handleRemove">
+                <el-button type="primary">{{$t('metaSpace.Submit')}}</el-button>
+              </el-upload>
+              <el-upload v-show="form.uploadLabel === 'ipfs'" class="upload-demo upload-file upload-file-ipfs" :multiple="true" ref="uploadFolderIPFSRef" action="customize" :http-request="uploadFileIPFS" :file-list="ruleForm.fileListFolder" :show-file-list="false"
+                :on-change="handleIPFSChange" :on-remove="handleRemove">
+                <el-button type="primary">{{$t('metaSpace.Submit')}}</el-button>
+              </el-upload>
+            </el-form-item>
+          </el-form>
+        </div>
+      </div>
+    </div>
+    <div class="fe-none" v-else-if="typeName === 'upload_folder_list'">
+      <div class="uploadDig">
+        <i class="el-icon-circle-close close" @click="closeDia('folderClose')"></i>
+        <div class="upload_progress upload_folder_list">
+          <div class="title title_upload">
+            <div>
+              <i class="el-icon-upload2"></i>{{uploadStart?$t('uploadFile.bucket_Uploading'):$t('uploadFile.bucket_Upload')}} ({{uploadBody.allNum}}/{{uploadBody.addNum}})</div>
+            <el-button type="primary" v-if="!uploadStart" @click="foldUpload(ruleForm.fileListFolder)">{{$t('uploadFile.Start_uploading')}}</el-button>
+          </div>
+          <div class="folder_plan" v-if="ruleForm.fileListFolderErr.length>0 && uploadStart">
+            {{$t('uploadFile.Upload_failed')}}
+            <el-popover placement="bottom-start" width="300" trigger="click" popper-class="folderErr">
+              <div>
+                <p v-for="(errItem, errIndex) in ruleForm.fileListFolderErr" :key="errIndex" style="color: #f56c6c;margin:0.07rem 0;text-align: left;">
+                  <i class="el-icon-upload2"></i> {{errItem.trim()}}
+                </p>
+              </div>
+              <el-button slot="reference" type="text" round>{{$t('uploadFile.Upload_view')}}
+                <small>({{ruleForm.fileListFolderErr.length}})</small>
+              </el-button>
+            </el-popover>
+          </div>
+          <div class="folder">
+            <div class="folder_style" v-for="(list, l) in ruleForm.fileListFolder" :key="l">
+              <div class="load_cont">
+                <p :style="{'color':list.err?'#f56c6c':'#4d75ff'}">{{list.name}}
+                  <small>({{list.size | formatbytes}}{{list.errCont?'/'+list.errCont:''}})</small>
+                </p>
+                <p style="color:#999">
+                  <small>{{$t('uploadFile.Upload_path')}}: /{{list.path}}</small>
+                </p>
+              </div>
+              <el-progress :color="list.err?'#f56c6c':'#4d75ff'" :percentage="list.uploadPrecent"></el-progress>
+            </div>
           </div>
         </div>
       </div>
@@ -169,14 +343,23 @@
         <div class="head">
           {{$t('metaSpace.pay_title')}}
         </div>
-        <div class="pay_tip">
-          {{$t('metaSpace.pay_tip')}} <br />{{$t('metaSpace.pay_tip1')}}
-        </div>
         <el-row class="pay_body">
           <el-col :span="24">
             <div class="pay_body_top">
+              <label>{{$t('metaSpace.pay_body_BucketName')}}</label>
+              <el-form :model="form" status-icon :rules="rules" ref="payForm" @submit.native.prevent>
+                <el-form-item prop="name">
+                  <div v-if="areaBody.bucket_name" style="color:#333">{{areaBody.bucket_name}}</div>
+                  <el-input v-else v-model="form.name" maxlength="256" :placeholder="'Bucket Name'" ref="bucketNameRef"></el-input>
+                </el-form-item>
+              </el-form>
+            </div>
+          </el-col>
+          <el-col :span="24">
+            <div class="pay_body_top">
               <label>{{$t('metaSpace.pay_body_Bucket')}}</label>
-              <el-input-number v-model="pay.num" controls-position="right" @change="payhandChange" :min="1"></el-input-number>
+              <!-- <el-input-number v-model="pay.num" controls-position="right" @change="payhandChange" :min="1"></el-input-number> -->
+              <el-input v-model="pay.num" disabled controls-position="right" @change="payhandChange" :min="1"></el-input>
             </div>
             <p>{{$t('metaSpace.pay_body_Bucket_desc')}}</p>
           </el-col>
@@ -193,10 +376,15 @@
               {{pay.total}} USDC
             </div>
           </el-col>
+          <el-col :span="24">
+            <div class="pay_tip">
+              {{$t('metaSpace.pay_tip')}} <br />{{$t('metaSpace.pay_tip1')}}
+            </div>
+          </el-col>
         </el-row>
         <el-form ref="form">
           <el-form-item>
-            <el-button type="primary" @click="payClick">{{$t('metaSpace.Pay')}}</el-button>
+            <el-button type="primary" @click="getDialogClose('payForm', areaBody.bucket_name)">{{$t('metaSpace.Pay')}}</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -209,7 +397,18 @@
         <div class="cont">{{$t('metaSpace.pay_success_desc')}}</div>
         <el-form ref="form">
           <el-form-item>
-            <el-button type="primary" @click="closeDia()">{{$t('metaSpace.Close')}}</el-button>
+            <el-button type="primary" @click="closeDia('payClose')">{{$t('metaSpace.Close')}}</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+    </div>
+    <div class="fe-none" v-else-if="typeName === 'payActive'">
+      <div class="addBucket">
+        <!-- <i class="el-icon-circle-close close" @click="closeDia()"></i> -->
+        <div class="cont">{{$t('metaSpace.active_bucket')}}</div>
+        <el-form ref="form">
+          <el-form-item>
+            <el-button type="primary" @click="closeDia()">{{$t('uploadFile.OK')}}</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -220,7 +419,7 @@
         <div class="soonImg"></div>
       </div>
     </div>
-    <div class="fe-none" v-else-if="typeName === 'emailLogin' && false">
+    <div class="fe-none" v-else-if="typeName === 'emailLogin'">
       <div class="addBucket loginEmail">
         <div class="titleCont">
           <div class="address">
@@ -235,7 +434,7 @@
         </div>
         <div v-loading="emailLoad" class="ruleForm">
           <div class="form_title">{{changeTitle?$t('fs3Login.Connect_form_label_change'):$t('fs3Login.Connect_form_label')}}</div>
-          <el-form :model="form" status-icon :rules="rulesEmail" ref="form">
+          <el-form :model="form" status-icon :rules="rulesEmail" ref="form" @submit.native.prevent>
             <el-form-item prop="email">
               <el-input v-model="form.email" placeholder="you@domain.com" ref="bucketEmailRef"></el-input>
             </el-form-item>
@@ -280,14 +479,41 @@ import moment from 'moment'
 let that
 export default {
   data () {
+    let validateName = (rule, value, callback) => {
+      let regexp = /[/:*?"<>'|\\]/gi
+      if (regexp.test(value)) {
+        callback(new Error("The folder name cannot contain any of the following characters /:*?\"<>'|\\"))
+      }
+      if (value.trim() === '') {
+        callback(new Error('Folder name cannot be empty'))
+      } else {
+        callback()
+      }
+    }
     return {
       form: {
         name: '',
         email: '',
-        checkType: ['agreement']
+        day: '30',
+        checkType: ['agreement'],
+        domain: '',
+        uploadLabel: 'mcs',
+        uploadLabeloptions: [{
+          value: 'mcs',
+          label: 'Multi-Chain storage'
+        }, {
+          value: 'ipfs',
+          label: 'IPFS'
+        }]
       },
       rules: {
-        name: [{ required: true, message: '', trigger: 'blur' }]
+        name: [{ validator: validateName, trigger: 'blur' }]
+      },
+      rulesDay: {
+        day: [{ required: true, message: 'Please fill in the expiration date.', trigger: 'blur' }]
+      },
+      rulesDomain: {
+        domain: [{ required: true, message: 'Please fill in the domain address.', trigger: 'blur' }]
       },
       rulesEmail: {
         email: [
@@ -300,22 +526,25 @@ export default {
       loading: false,
       ruleForm: {
         fileList: [],
+        fileIPFSList: [],
+        uploadNum: 0,
         fileList_tip: false,
         fileList_tip_text: '',
         file_size: '',
-        file_size_byte: ''
+        file_size_byte: '',
+        fileListFolder: [],
+        fileListFolderErr: []
       },
       bodyWidth: document.documentElement.clientWidth < 1024,
       fileListTip: false,
-      width: document.body.clientWidth > 600 ? '400px' : '95%',
-      widthUpload: document.body.clientWidth > 600 ? '450px' : '95%',
+      width: document.body.clientWidth > 1600 ? '500px' : document.body.clientWidth > 600 ? '400px' : '95%',
+      widthUpload: document.body.clientWidth > 600 ? '550px' : document.body.clientWidth > 600 ? '450px' : '95%',
       widthDia: document.body.clientWidth <= 600 ? '95%' : document.body.clientWidth <= 1440 ? '7rem' : '6.6rem',
       pay: {
         num: 1,
         price: 7.2,
         total: 7.2
       },
-      payLoad: false,
       ipfsUploadLoad: false,
       typeName: this.typeModule,
       uploadPrecent: 0,
@@ -323,10 +552,24 @@ export default {
       controller: new AbortController(),
       lastUploadTime: 0,
       lastUploadSize: 0,
-      uploadPrecentSpeed: 0
+      uploadPrecentSpeed: 0,
+      progressEvent: {},
+      uploadFileName: '',
+      uploadFileSizeAll: 0,
+      uploadFileSize: 0,
+      createFold: true,
+      uploadBody: {
+        uploadList: [],
+        uploadListAll: [],
+        uploadListName: false,
+        addNum: 0,
+        allNum: 0
+      },
+      uploadStart: false,
+      loadFileText: ''
     }
   },
-  props: ['dialogFormVisible', 'typeModule', 'areaBody', 'createLoad', 'listTableLoad', 'dataCont', 'currentBucket', 'fixed', 'backupLoad', 'changeTitle'],
+  props: ['dialogFormVisible', 'typeModule', 'areaBody', 'createLoad', 'listTableLoad', 'currentBucket', 'fixed', 'backupLoad', 'changeTitle', 'payLoad', 'listBucketFolder'],
   watch: {
     dialogFormVisible: function () {
       let _this = this
@@ -336,6 +579,9 @@ export default {
           _this.$refs.bucketNameRef.$el.querySelector('input').focus()
         })
       }
+    },
+    typeModule: function () {
+      that.typeName = that.typeModule
     }
   },
   methods: {
@@ -381,11 +627,6 @@ export default {
         })
       return data
     },
-    async payClick () {
-      that.payLoad = true
-      await that.$commonFun.timeout(2000)
-      that.typeName = 'success'
-    },
     payhandChange (value) {
       // console.log(value);
       that.pay.total = value * that.pay.price
@@ -393,10 +634,17 @@ export default {
     closeDia (type) {
       that.$emit('getPopUps', false, type || '')
     },
+    apiKeyBlur (val) {
+      if (!that.form.day) that.form.day = 0
+    },
     getDialogClose (formName, type) {
+      if (type) {
+        that.$emit('getPopUps', false, that.typeName, type)
+        return false
+      }
       that.$refs[formName].validate(async valid => {
         if (valid) {
-          that.$emit('getPopUps', false, that.typeName === 'rename' ? 'rename' : formName, that.form.name)
+          that.$emit('getPopUps', false, that.typeName, that.typeName === 'add_apikey' ? that.form.day : that.typeName === 'add_domain' ? that.form.domain : that.form.name)
         } else {
           console.log('error submit!!')
           return false
@@ -411,16 +659,16 @@ export default {
       let dataUnitArray = dataTime.substring(dataUnitIndex, dataUnitIndex + 8)
       switch (dataUnitArray) {
         case 'GMT+1000':
-          dataUnit = 'GMT+10'
+          dataUnit = 'UTC+10'
           break
         case 'GMT-1000':
-          dataUnit = 'GMT-10'
+          dataUnit = 'UTC-10'
           break
         case 'GMT+0000':
-          dataUnit = 'GMT+0'
+          dataUnit = 'UTC+0'
           break
         default:
-          dataUnit = dataUnitArray ? dataUnitArray.replace(/0/g, '') : '-'
+          dataUnit = dataUnitArray ? dataUnitArray.replace(/0/g, '').replace('GMT', 'UTC') : '-'
           break
       }
       dateNew = dateNew
@@ -469,7 +717,7 @@ export default {
         that.ruleForm.fileList_tip = false
       }
     },
-    sizeChange (bytes) {
+    sizeChange (bytes, type) {
       if (bytes === 0) return '0 B'
       if (!bytes) return '-'
       var k = 1024 // or 1000
@@ -482,13 +730,14 @@ export default {
       }
 
       // if(i == 2) return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];
-      return Number(bytes / Math.pow(k, i)) + ' ' + sizes[i]
+      if (type) return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
+      else return Number(bytes / Math.pow(k, i)) + ' ' + sizes[i]
     },
     speedChange (bytes) {
-      if (String(bytes) === '0') return '0 b/s'
+      if (String(bytes) === '0') return '0 byte/s'
       if (!bytes) return '-'
       var k = 1024 // or 1000
-      var sizes = ['b/s', 'k/s', 'M/s']
+      var sizes = ['byte/s', 'kb/s', 'mb/s', 'gb/s']
       var i = Math.floor(Math.log(bytes) / Math.log(k))
       if (Math.round((bytes / Math.pow(k, i))).toString().length > 3) i += 1
       return (bytes / Math.pow(k, i)).toFixed(1) + ' ' + sizes[i]
@@ -501,84 +750,426 @@ export default {
       return size
       // return Number(size).toFixed(3);
     },
+    async listFold (current) {
+      let resultRes = false
+      that.listBucketFolder.some((element) => {
+        if (element.name === current) resultRes = true
+      })
+      return resultRes
+    },
+    async concurrentExecution (list, limit, asyncHandle) {
+      let recursion = (arr) => {
+        return asyncHandle(arr.shift()).then(() => {
+          if (arr.length !== 0) {
+            return recursion(arr)
+          } else {
+            return 'finish'
+          }
+        })
+      }
+      let listCopy = [].concat(list)
+      let asyncList = []
+      limit = limit > listCopy.length ? listCopy.length : limit
+      while (limit--) {
+        asyncList.push(recursion(listCopy))
+      }
+      return Promise.all(asyncList)
+    },
+    async uploadFileIPFS (params) {
+      that.ruleForm.fileIPFSList.push(params.file)
+      if (that.ruleForm.uploadNum === that.ruleForm.fileIPFSList.length) {
+        const folderName = params.file.webkitRelativePath.split('/')[0] || ''
+        await that.foldUploadIPFS(that.ruleForm.fileIPFSList, folderName)
+      }
+    },
+    async handleIPFSChange (file, fileList) {
+      var uploadImg = document.getElementsByClassName('upload-file-ipfs')
+      if (uploadImg && uploadImg.length > 0) {
+        var upload = uploadImg[0].getElementsByTagName('input')
+        if (upload && upload.length > 0 && upload[0].files && upload[0].files.length > 0) {
+          that.ruleForm.uploadNum = upload[0].files.length
+        }
+      }
+    },
     async handleChange (file, fileList) {
-      let regexp = /[#\\?]/
+      const folderCurrent = file.raw.webkitRelativePath.split('/') || ''
+      const currentFold = folderCurrent.slice(0, -1).join('/') || ''
+      const fold = currentFold !== '' ? await that.listFold(currentFold) : false
+
+      that.uploadBody.uploadList.push(currentFold)
+      that.uploadBody.uploadList = that.uploadBody.uploadList.filter((item, index) => {
+        return that.uploadBody.uploadList.indexOf(item) === index
+      })
+      that.uploadBody.addNum += 1
+      let indexFile = that.uploadBody.addNum
       let reg = new RegExp(' ', 'g')
-      let uploadStatus = 0
-      if (file.size <= 0) {
-        that.$message.error('Error: Upload file size cannot be 0')
-        that.ruleForm.fileList = []
-        return false
-      } else if (regexp.test(file.name)) {
-        that.$message.error('The filename cannot contain any of the following characters # ? \\')
-        that.ruleForm.fileList = []
-        return false
-      } else if (file.name.indexOf(' ') > -1) {
+      if (file.name.indexOf(' ') > -1) {
         file.name = file.name.replace(reg, '_')
         file.raw = new File([file.raw], file.name)
       }
 
       if (fileList.length > 0) {
-        that.ruleForm.fileList = [fileList[fileList.length - 1]]
-
         that.loading = true
-        try {
-          const params = {
-            'path': `/${that.currentBucket}`,
-            'size': that.ruleForm.fileList[0].size,
-            'name': that.ruleForm.fileList[0].name,
-            'policy_id': that.dataCont.policy.id,
-            'last_modified': new Date().getTime()
-          }
-          const directoryRes = await that.$commonFun.sendRequest(`${process.env.BASE_METASPACE}api/v3/file/upload`, 'put', params)
-          if (!directoryRes || directoryRes.status !== 'success') {
-            that.$message({
-              showClose: true,
-              message: directoryRes ? directoryRes.message : 'Fail',
-              type: 'error',
-              duration: 10000
-            })
-          }
-          const session = directoryRes.data.sessionID
-
-          that.typeName = 'upload_progress'
-          that.lastUploadTime = 0
-          that.lastUploadSize = 0
-          const config = {
-            onUploadProgress: progressEvent => {
-              that.progressHandle(progressEvent)
+        that.ruleForm.fileList = [fileList[fileList.length - 1]]
+        that.uploadFileName = file.name
+        that.uploadFileSizeAll = file.size
+        if (that.typeName === 'upload_folder' || that.typeName === 'upload_folder_list') {
+          if (fold) {
+            // fold = true, Folder already exists, upload terminated
+            if (that.uploadBody.uploadListName !== fold) {
+              that.uploadBody.uploadListName = fold
+              that.$message.error('Folder already exists')
+              that.$emit('getUploadDialog', that.typeName === 'upload_folder_list', 1)
+              that.loading = false
             }
-          }
-          const uploadRes = await that.$commonFun.sendRequest(`${process.env.BASE_METASPACE}api/v3/file/upload/${session}/0`, 'post', file.raw, config)
-          console.log('upload:', uploadRes)
-          if (!uploadRes || uploadRes.status !== 'success') {
-            that.$message.error(uploadRes ? uploadRes.message : 'Fail')
           } else {
-            that.$message({
-              message: uploadRes.status ? uploadRes.status : 'Success',
-              type: 'success'
-            })
+            that.typeName = 'upload_folder_list'
+            file.uploadPrecent = 0
+            file.currentFold = currentFold
+            file.fold = fold
+            file.chunkIndex = indexFile
+            that.ruleForm.fileListFolder.push(file)
+            that.ruleForm.fileListFolder[that.uploadBody.addNum - 1].path = `${that.currentBucket}/${currentFold}`
+            // console.log(fileList)
+            if (!that.uploadStart) await that.foldUpload(fileList)
           }
-          uploadStatus = 1
-        } catch (e) {
-          console.log(e)
-          uploadStatus = 0
+        } else that.fileUpload(file, currentFold, fold, indexFile)
+      }
+    },
+    async foldUploadIPFS (fileList, folderName) {
+      that.ruleForm.fileIPFSList = []
+      that.loading = true
+      const current = that.currentBucket.split('/').slice(1).join('/')
+      const parentAddress = that.areaBody.prefix || current || ''
+      let paramCheck = new FormData()
+      fileList.forEach(file => {
+        paramCheck.append('files', file)
+      })
+      paramCheck.append('folder_name', folderName)
+      paramCheck.append('prefix', parentAddress)
+      paramCheck.append('bucket_uid', that.areaBody)
+      let ipfsRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/pin_files_to_ipfs`, 'post', paramCheck)
+      if (!ipfsRes || ipfsRes.status !== 'success') {
+        if (ipfsRes) that.$message.error(ipfsRes.message || 'Fail')
+        else that.$message.error('Fail')
+      }
+      that.$emit('getUploadDialog', that.typeName === 'upload_folder_list', 1)
+      that.loading = false
+    },
+    async foldUpload (listRowData) {
+      that.uploadStart = true
+      that.concurrentExecution(listRowData, 1, (element) => {
+        return new Promise(async (resolve, reject) => {
+          await that.fileUpload(element, element.currentFold, element.fold, element.chunkIndex)
+          await that.$commonFun.timeout(1000)
+          resolve(element)
+        })
+      }).then(async res => {
+        console.log('finish', res)
+      })
+    },
+    async fileUpload (file, currentFold, fold, indexFile) {
+      try {
+        let { hash } = await that.fileMd5(file)
+        let fileCheckRes = await that.fileCheck(hash, file, currentFold, fold, indexFile)
+        if (!fileCheckRes) {
+          if (that.typeName === 'upload_folder' || that.typeName === 'upload_folder_list') {
+            that.ruleForm.fileListFolder[indexFile - 1].uploadPrecent = 100
+            that.ruleForm.fileListFolder[indexFile - 1].name = `${file.name.trim()}` + ' '
+          }
+          if (that.uploadBody.allNum === that.uploadBody.addNum) {
+            that.$emit('getUploadDialog', that.typeName === 'upload_folder_list', 0)
+            that.loading = false
+          }
+          return false
         }
+
+        let alreadyUploadChunks = []
+        let max = 10 * 1024 * 1024
+        let count = Math.ceil(file.size / max)
+        let index = 0
+        let chunks = []
+        let concurrent = 3
+        while (index < count) {
+          chunks.push({
+            file: file.raw.slice(index * max, (index + 1) * max),
+            filename: `${index + 1}_${file.name}`
+          })
+          index++
+        }
+        let uploadListData = new FormData()
+        const fileBlob = new Blob([chunks[0].file], {
+          type: 'application/json'
+        })
+        that.loadFileText = 'Uploading...'
+        uploadListData.append('file', fileBlob, chunks[0].filename)
+        uploadListData.append('file_name', chunks[0].filename)
+        uploadListData.append('hash', hash)
+        const uploadListConfig = {
+          onUploadProgress: progressEvent => {
+            that.progressEvent = progressEvent
+            // if (that.typeName === 'upload_folder' || that.typeName === 'upload_folder_list') {
+            //   that.ruleForm.fileListFolder[indexFile - 1].name = `${file.name.trim()}` + ' '
+            //   if (count > 1) that.ruleForm.fileListFolder[indexFile - 1].uploadPrecent = index<count?(((index / count) * 100) | 0):99
+            //   else that.ruleForm.fileListFolder[indexFile - 1].uploadPrecent = that.onPross(progressEvent)
+            //   // that.progressHandle(progressEvent)
+            // }
+          }
+        }
+        let uploadListRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/upload`, 'post', uploadListData, uploadListConfig)
+        if ((!uploadListRes || uploadListRes.status !== 'success') && (that.typeName === 'upload_folder' || that.typeName === 'upload_folder_list')) {
+          that.ruleForm.fileListFolder[indexFile - 1].err = true
+          let contErr = `${file.name.trim()} (path:/${that.currentBucket}/${currentFold})`
+          if (that.ruleForm.fileListFolderErr.indexOf(contErr) === -1) that.ruleForm.fileListFolderErr.push(contErr)
+        }
+        alreadyUploadChunks = uploadListRes.data || []
+        if (count <= 1 || (uploadListRes && uploadListRes.data.length === count)) await that.fileMerge(hash, file, currentFold, fold, indexFile)
+        if (that.typeName !== 'upload_folder_list') that.typeName = 'upload_progress'
+        that.loadFileText = `Uploading... ${that.sizeChange(that.uploadFileSize, 1)}/${that.sizeChange(that.uploadFileSizeAll, 1)} (${that.uploadPrecent}%)`
+        that.concurrentExecution(chunks, concurrent, (chunk) => {
+          return new Promise(async (resolve, reject) => {
+            if (alreadyUploadChunks.indexOf(chunk.filename) === -1) {
+              let uploadData = new FormData()
+              const fileBlob = new Blob([chunk.file], {
+                type: 'application/json'
+              })
+              uploadData.append('file', fileBlob, chunk.filename)
+              uploadData.append('file_name', chunk.filename)
+              uploadData.append('hash', hash)
+              const config = {
+                onUploadProgress: progressEvent => {
+                  that.progressEvent = progressEvent
+                  // if (that.typeName === 'upload_folder' || that.typeName === 'upload_folder_list') {
+                  //   that.ruleForm.fileListFolder[indexFile - 1].name = `${file.name.trim()}` + ' '
+                  //   that.ruleForm.fileListFolder[indexFile - 1].uploadPrecent = index < count ? (((index / count) * 100) | 0) : 99
+                  //   // that.progressHandle(progressEvent)
+                  // }
+                }
+              }
+              let uploadRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/upload`, 'post', uploadData, config)
+              if (!uploadRes || uploadRes.status !== 'success') {
+                if (that.typeName === 'upload_folder' || that.typeName === 'upload_folder_list') {
+                  that.ruleForm.fileListFolder[indexFile - 1].err = true
+                  let contErr = `${file.name.trim()} (path:/${that.currentBucket}/${currentFold})`
+                  if (that.ruleForm.fileListFolderErr.indexOf(contErr) === -1) that.ruleForm.fileListFolderErr.push(contErr)
+                }
+                that.$emit('getUploadDialog', that.typeName === 'upload_folder_list', 0)
+                that.loading = false
+                reject(uploadRes.message || 'Fail')
+                return false
+              }
+              alreadyUploadChunks = uploadRes.data
+              if (alreadyUploadChunks.length > 0 && alreadyUploadChunks.includes(chunk.filename)) {
+                that.manageProgress(hash, file, uploadRes.data.length, count, max, currentFold, fold, indexFile)
+                resolve(uploadRes.data)
+              }
+            } else {
+              resolve()
+            }
+          })
+        }).then(async res => {
+          console.log('finish', res)
+        })
+      } catch (e) {
+        console.log(e)
         await that.$commonFun.timeout(500)
-        that.$emit('getUploadDialog', false, uploadStatus)
+        that.$emit('getUploadDialog', that.typeName === 'upload_folder_list', 0)
         that.loading = false
       }
+    },
+    async manageProgress (hash, file, index, count, max, currentFold, fold, indexFile) {
+      // console.log(file.name, index, count)
+      if (that.typeName === 'upload_folder' || that.typeName === 'upload_folder_list') {
+        that.ruleForm.fileListFolder[indexFile - 1].name = `${file.name.trim()}` + ' '
+        that.ruleForm.fileListFolder[indexFile - 1].uploadPrecent = index < count ? (((index / count) * 100) | 0) : 99
+        that.ruleForm.fileListFolder[indexFile - 1].name = `${file.name.trim()}` + '  '
+      } else {
+        that.uploadPrecent = ((index / count) * 100) | 0
+        that.uploadFileSize = `${index * max}`
+      }
+      if (index < count) return
+      that.uploadPrecent = 99
+      that.uploadFileSize = file.size
+      await that.fileMerge(hash, file, currentFold, fold, indexFile)
+    },
+    async fileCheck (hash, file, currentFold, fold, indexFile) {
+      that.loadFileText = 'Checking file information...'
+      const reg = new RegExp('/' + '$')
+      const current = that.currentBucket.split('/').slice(1).join('/')
+      const parentAddress = that.areaBody.prefix || current || ''
+      const pre = `${parentAddress ? parentAddress + '/' : ''}${currentFold}`
+      let paramCheck = {
+        'file_hash': hash,
+        'file_name': `${file.name.trim()}`,
+        'prefix': reg.test(pre) ? pre.slice(0, -1) : pre,
+        'bucket_uid': that.areaBody
+      }
+      let checkRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/check`, 'post', paramCheck)
+      if (!checkRes || checkRes.status !== 'success') {
+        that.$message.error(checkRes.message || 'Fail')
+        return false
+      }
+      if (that.typeName === 'upload_folder_list' && (that.uploadBody.uploadList !== that.uploadBody.uploadListAll)) {
+        that.uploadBody.uploadList = await that.getArray(that.uploadBody.uploadList)
+        that.uploadBody.uploadList = that.uploadBody.uploadList.filter((item, index) => {
+          return that.uploadBody.uploadList.indexOf(item) === index
+        })
+        await that.getUploadFolderFun(that.uploadBody.uploadList)
+      }
+      if (checkRes.data.file_is_exist || checkRes.data.ipfs_is_exist) {
+        that.uploadBody.allNum += 1
+        if (checkRes.data.file_is_exist && that.typeName !== 'upload_folder_list') that.$message.error('You have uploaded this file!')
+        if (that.uploadBody.allNum === that.uploadBody.addNum) {
+          that.$emit('getUploadDialog', that.typeName === 'upload_folder_list', 1)
+          that.loading = false
+        }
+        return false
+      }
+      return true
+    },
+    async getArray (list) {
+      let b = []
+      list.forEach(element => {
+        let arr = element.split('/')
+        arr.forEach((child, i) => {
+          let listChild = arr.slice(0, i + 1).join('/')
+          b.push(listChild)
+        })
+      })
+      list = list.concat(b)
+      return list
+    },
+    async getUploadFolderFun (list) {
+      const reg = new RegExp('/' + '$')
+      that.uploadBody.uploadListAll = that.uploadBody.uploadList
+      list.forEach(async element => {
+        let arr = element.split('/')
+        let arrLeng = arr.length > 1
+        let name = `${arrLeng ? element.split('/').slice(-1) : element}`
+        if (arrLeng) arr.pop()
+        const current = that.currentBucket.split('/').slice(1).join('/')
+        const parentAddress = that.areaBody.prefix || current || ''
+        const pre = `${parentAddress ? parentAddress + '/' : ''}${arrLeng ? arr.join('/') : ''}`
+        const params = {
+          'file_name': `${name.trim()}`,
+          'prefix': reg.test(pre) ? pre.slice(0, -1) : pre,
+          'bucket_uid': `${that.$route.query.bucket_uuid}`
+        }
+        const directoryRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/create_folder`, 'post', params)
+        if (!directoryRes || directoryRes.status !== 'success') {
+          that.$message.error(directoryRes.message || 'Fail')
+        }
+      })
+    },
+    async fileMerge (hash, file, currentFold, fold, indexFile) {
+      that.loadFileText = 'Merging...'
+      const reg = new RegExp('/' + '$')
+      const current = that.currentBucket.split('/').slice(1).join('/')
+      const parentAddress = that.areaBody.prefix || current || ''
+      const pre = `${parentAddress ? parentAddress + '/' : ''}${currentFold}`
+      let paramMerge = {
+        'file_hash': hash,
+        'file_name': `${file.name.trim()}`,
+        'prefix': reg.test(pre) ? pre.slice(0, -1) : pre,
+        'bucket_uid': that.areaBody
+      }
+      let mergeRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/merge`, 'post', paramMerge)
+      if (!mergeRes || mergeRes.status !== 'success') {
+        that.$message.error(mergeRes.message || 'Fail')
+        if (that.typeName === 'upload_folder_list') {
+          that.ruleForm.fileListFolder[indexFile - 1].err = true
+          let contErr = `${file.name.trim()} (path:/${that.currentBucket}/${currentFold})`
+          if (that.ruleForm.fileListFolderErr.indexOf(contErr) === -1) that.ruleForm.fileListFolderErr.push(contErr)
+        } else {
+          that.$emit('getUploadDialog', that.typeName === 'upload_folder_list', 0)
+          that.loading = false
+        }
+      } else {
+        that.uploadBody.allNum += 1
+        if (that.typeName === 'upload_folder_list') {
+          that.ruleForm.fileListFolder[indexFile - 1].uploadPrecent = 100
+          that.ruleForm.fileListFolder[indexFile - 1].name = `${file.name.trim()}` + ' '
+        }
+      }
+      if (that.uploadBody.allNum === that.uploadBody.addNum) {
+        that.$emit('getUploadDialog', that.typeName === 'upload_folder_list', 1)
+        that.loading = false
+      }
+    },
+    async fileMd5 (file) {
+      return new Promise(async resolve => {
+        let blobSlice = File.prototype.slice || File.prototype.mozSlice || File.prototype.webkitSlice
+        let chunkSize = 2097152 // Read in chunks of 2MB
+        let chunks = Math.ceil(file.size / chunkSize)
+        let currentChunk = 0
+        // let time = new Date().getTime()
+        let spark = new that.$SparkMD5.ArrayBuffer()
+
+        let fileReader = new FileReader()
+        fileReader.onload = async ev => {
+          spark.append(ev.target.result)
+          currentChunk++
+
+          if (currentChunk < chunks) {
+            that.loadFileText = 'Generating MD5...'
+            var { start, end } = await that.loadNext(file, currentChunk, chunkSize)
+            fileReader.readAsArrayBuffer(blobSlice.call(file.raw, start, end))
+          } else {
+            let md5 = spark.end()
+            // console.log(`Md5 complete: ${file.name} \nMD5: ${md5} \nchunks: ${chunks} size: ${file.size} time: ${new Date().getTime() - time} ms`)
+            spark.destroy() // Free cache
+
+            let buffer = ev.target.result
+            let hash
+            let suffix
+            hash = md5
+            let reg = /\.([a-zA-Z0-9]+)$/
+            suffix = reg.exec(file.name) ? reg.exec(file.name)[1] : ''
+            resolve({
+              buffer,
+              hash,
+              suffix,
+              filename: `${hash}.${suffix}`
+            })
+          }
+        }
+        fileReader.onerror = err => {
+          console.log(err)
+        }
+        // fileReader.readAsArrayBuffer(file.raw)
+        var { start, end } = await that.loadNext(file, currentChunk, chunkSize)
+        fileReader.readAsArrayBuffer(blobSlice.call(file.raw, start, end))
+      })
+    },
+    async loadNext (file, currentChunk, chunkSize) {
+      return new Promise(async resolve => {
+        let start = currentChunk * chunkSize
+        let end = ((start + chunkSize) >= file.size) ? file.size : start + chunkSize
+        resolve({
+          start, end
+        })
+      })
     },
     handleRemove (file, fileList) {
       // console.log(file, fileList);
       that.ruleForm.fileList = []
       that.ruleForm.file_size = ''
       that.ruleForm.file_size_byte = ''
+      that.uploadBody.uploadList = []
+      that.ruleForm.fileListFolder = []
+      that.ruleForm.fileListFolderErr = []
+      that.uploadBody.uploadListAll = []
+      that.uploadBody.uploadListName = false
+      that.uploadBody.addNum = 0
+      that.uploadBody.allNum = 0
+      that.uploadStart = false
+      that.loadFileText = ''
     },
     onPross (e) {
       const { loaded, total } = e
       const uploadPrecent = ((loaded / total) * 100) | 0
-      that.uploadPrecent = loaded < total && uploadPrecent === 100 ? 99 : uploadPrecent
+      return uploadPrecent === 100 ? 99 : uploadPrecent
+      // that.uploadPrecent = loaded < total && uploadPrecent === 100 ? 99 : uploadPrecent
     },
     async progressHandle (e) {
       const { loaded, total } = e
@@ -595,10 +1186,10 @@ export default {
 
       that.uploadPrecentSpeed = intervalSize / intervalTime // Calculation speed
       // const leftTime = ((total - loaded) / that.uploadPrecentSpeed) // Calculate remaining time
-      const uploadPrecent = ((loaded / total) * 100) | 0 // Calculation progress
-      that.uploadPrecent = loaded < total && uploadPrecent === 100 ? 99 : uploadPrecent
+      // const uploadPrecent = ((loaded / total) * 100) | 0 // Calculation progress
+      // that.uploadPrecent = loaded < total && uploadPrecent === 100 ? 99 : uploadPrecent
 
-      console.log('loaded: ' + loaded, 'total: ', total, 'progress: ', that.uploadPrecent + '%')
+      console.log('loaded: ' + loaded, 'total: ', total, 'speed: ', that.uploadPrecentSpeed)
     },
     submitEmail (formName) {
       that.$refs[formName].validate(async valid => {
@@ -608,18 +1199,18 @@ export default {
             const params = {
               'email': that.form.email
             }
-            const emailRes = await that.$commonFun.sendRequest(`${process.env.BASE_METASPACE}api/v3/email`, 'post', params)
+            const emailRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/user/register_email`, 'post', params)
             if (!emailRes || emailRes.status !== 'success') {
               that.$message({
                 showClose: true,
-                message: emailRes ? emailRes.message : 'Fail',
+                message: emailRes.message || 'Fail',
                 type: 'error',
                 duration: 10000
               })
             } else {
               that.$message({
                 showClose: true,
-                message: emailRes ? emailRes.data : 'Success',
+                message: emailRes.data || 'Success',
                 type: 'success',
                 duration: 10000
               })
@@ -641,14 +1232,63 @@ export default {
       data.apiStatus = false
       that.$store.dispatch('setMCSEmail', JSON.stringify(data))
       that.closeDia()
+    },
+    addEvent () {
+      const oDragBody = document.querySelector('.uploadDigFolder')
+      oDragBody.addEventListener('dragenter', (e) => {
+        e.preventDefault() // 拖进
+      })
+      oDragBody.addEventListener('dragover', (e) => {
+        e.preventDefault() // 清除默认事件
+      })
+      oDragBody.addEventListener('dragleave', (e) => {
+        e.preventDefault() // 拖离
+      })
+      oDragBody.addEventListener('drop', (e) => {
+        that.dropHandler(e) // 抛下
+      })
+    },
+    dropHandler (e) {
+      let items = e.dataTransfer.items
+      for (let i = 0; i <= items.length - 1; i++) {
+        let item = items[i]
+        if (item.kind === 'file') {
+          let entry = item.webkitGetAsEntry()
+          that.getFileFromEntryRecursively(entry)
+        }
+      }
+      e.preventDefault()
+    },
+    getFileFromEntryRecursively (entry) {
+      if (entry.isFile) {
+        entry.file(file => {
+          let path = entry.fullPath.substring(1)
+          // let folder = path.split('/').length > 1
+          // console.log('文件夹：' + folder + '，文件名称：' + file.name + '，相对路径：' + path)
+          file.raw = new File([file], file.name)
+          console.log('file', file)
+          that.handleChange(file, [], path)
+        }, e => { console.log(e) })
+      } else {
+        let reader = entry.createReader()
+        reader.readEntries(entries => {
+          entries.forEach(entry => that.getFileFromEntryRecursively(entry))
+        }, e => { console.log(e) })
+      }
     }
   },
   mounted () {
     that = this
+    if (that.typeName === 'upload_folder' || that.typeName === 'upload_folder_list') {
+      // that.addEvent()
+      that.$refs.uploadFolderRef.$children[0].$refs.input.webkitdirectory = true
+      that.$refs.uploadFolderIPFSRef.$children[0].$refs.input.webkitdirectory = true
+      // that.$refs.uploadFolderRef.$refs['upload-inner'].handleClick()
+    }
     document.onkeydown = function (e) {
       if (e.keyCode === 13) {
-        if (that.typeName === 'add' || that.typeName === 'rename' || that.typeName === 'addSub') that.getDialogClose('form')
-        // if (that.typeName === 'emailLogin') that.submitEmail('form')
+        if (that.typeName === 'add' || that.typeName === 'add_apikey' || that.typeName === 'add_domain' || that.typeName === 'addNewBucket' || that.typeName === 'rename' || that.typeName === 'addSub') that.getDialogClose('form')
+        if (that.typeName === 'emailLogin') that.submitEmail('form')
       }
     }
   },
@@ -893,6 +1533,9 @@ export default {
     align-items: center;
     height: 100%;
     padding: 0 5%;
+    @media screen and (max-width: 441px) {
+      padding: 0;
+    }
     .p {
       padding: 0.15rem 0.3rem;
       font-size: 0.27rem;
@@ -906,12 +1549,13 @@ export default {
     }
     .addBucket {
       position: relative;
-      max-width: 750px;
+      max-width: 7.5rem;
       padding: 0.35rem 0.5rem;
       background-color: #fff;
       border-radius: 0.2rem;
       text-align: left;
       @media screen and (max-width: 441px) {
+        width: 100%;
         max-width: 300px;
         padding: 15px;
       }
@@ -970,7 +1614,8 @@ export default {
         }
       }
       .pay_tip {
-        padding: 0.1rem 0;
+        padding: 0;
+        margin: 0;
         font-size: 0.14rem;
         text-align: left;
         @media screen and (min-width: 1800px) {
@@ -986,6 +1631,7 @@ export default {
       .pay_body /deep/ {
         max-width: 750px;
         padding: 0.15rem 0.2rem;
+        margin: 0.3rem auto 0;
         background-color: #f7f7f7;
         border-radius: 0.1rem;
         @media screen and (max-width: 441px) {
@@ -999,6 +1645,27 @@ export default {
           @media screen and (max-width: 768px) {
             font-size: 13px;
           }
+          .el-form {
+            padding: 0;
+            .el-form-item {
+              margin: 0;
+              .el-form-item__content {
+                .el-input {
+                  margin: 0;
+                  .el-input__inner {
+                    font-size: 0.17rem;
+                    border: 1px solid #999;
+                    @media screen and (max-width: 768px) {
+                      font-size: 13px;
+                    }
+                  }
+                }
+                .el-form-item__error {
+                  top: 90%;
+                }
+              }
+            }
+          }
           .pay_body_top {
             display: flex;
             align-items: center;
@@ -1009,6 +1676,16 @@ export default {
               text-align: left;
               color: #000;
               font-weight: 600;
+              text-transform: capitalize;
+            }
+            .el-input {
+              .el-input__inner {
+                height: auto;
+                background-color: transparent;
+                border: 0;
+                line-height: 1;
+                color: #333;
+              }
             }
             .el-input-number {
               width: auto;
@@ -1064,6 +1741,8 @@ export default {
             font-size: 0.14rem;
             text-align: left;
             color: #999999;
+            padding: 0;
+            border: 0;
             @media screen and (min-width: 1800px) {
               font-size: 14px;
             }
@@ -1090,13 +1769,21 @@ export default {
         }
         .el-form-item {
           margin: 0;
+          .el-form-item__label {
+            display: flex;
+            padding: 0;
+          }
           .el-form-item__content {
+            position: relative;
             display: flex;
             align-items: center;
             flex-wrap: wrap;
             text-align: center;
+            .el-input-number {
+              width: 100%;
+            }
             .el-input {
-              margin: 0 auto 0.5rem;
+              margin: 0 auto 0.1rem;
               .el-input__inner {
                 height: auto;
                 padding: 0.05rem 0.15rem;
@@ -1104,20 +1791,30 @@ export default {
                 border: 0;
                 border-radius: 0.1rem;
                 font-size: 16px;
+                text-align: left;
                 @media screen and (max-width: 1440px) {
                   font-size: 14px;
                 }
               }
             }
+            .day_tip {
+              width: 100%;
+              color: #f44336;
+              line-height: 1.2;
+              text-align: left;
+              font-size: 12px;
+            }
             .el-form-item__error {
-              display: none;
+              position: absolute;
+              top: 0.65rem;
+              text-align: left;
             }
             .el-button {
               width: 45%;
               max-width: 250px;
               min-width: 150px;
               padding: 0.17rem;
-              margin: 0 auto;
+              margin: 0.3rem auto 0;
               font-family: inherit;
               font-size: 16px;
               border: 0;
@@ -1182,6 +1879,14 @@ export default {
                 text-decoration: underline;
               }
             }
+            .el-icon-document-copy {
+              font-size: 16px;
+              margin: 0 5px;
+              cursor: pointer;
+              &:hover {
+                opacity: 0.9;
+              }
+            }
             .tip {
               display: flex;
               align-items: center;
@@ -1212,10 +1917,29 @@ export default {
               }
             }
           }
+          .el-select {
+            width: 100%;
+            .el-input {
+              .el-input__inner {
+                height: auto;
+                line-height: 2;
+                font-size: inherit;
+              }
+              .el-icon-arrow-up {
+                display: flex;
+                align-items: center;
+              }
+            }
+          }
           .el-form-item__label {
+            padding-top: 0.1rem;
             padding-right: 0.1rem;
+            padding-bottom: 0.1rem;
             min-width: 120px;
             text-align: left;
+            @media screen and (min-width: 1800px) {
+              min-width: 135px;
+            }
           }
           &:last-child {
             .el-form-item__content {
@@ -1224,6 +1948,11 @@ export default {
                 margin: 0;
               }
             }
+          }
+        }
+        .ipfs_form {
+          .el-form-item__label {
+            padding-top: 0.23rem;
           }
         }
       }
@@ -1564,6 +2293,58 @@ export default {
       @media screen and (max-width: 600px) {
         width: 95%;
       }
+      .loadTryAgain {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: rgba(255, 255, 255, 0.8);
+        .load_svg {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          flex-wrap: wrap;
+          width: 100%;
+          svg {
+            height: 42px;
+            width: 42px;
+            -webkit-animation: loading-rotate 2s linear infinite;
+            animation: loading-rotate 2s linear infinite;
+            .path {
+              -webkit-animation: loading-dash 1.5s ease-in-out infinite;
+              animation: loading-dash 1.5s ease-in-out infinite;
+              stroke-dasharray: 90, 150;
+              stroke-dashoffset: 0;
+              stroke-width: 2;
+              stroke: #409eff;
+              stroke-linecap: round;
+            }
+          }
+          p {
+            width: 100%;
+            text-align: center;
+            font-size: 16px;
+            color: #333;
+            @media screen and (max-width: 1600px) {
+              font-size: 14px;
+            }
+            @media screen and (max-width: 768px) {
+              font-size: 13px;
+            }
+            @media screen and (max-width: 441px) {
+              font-size: 12px;
+            }
+            span {
+              color: #4b83fb;
+              cursor: pointer;
+            }
+          }
+        }
+      }
       .close {
         position: absolute;
         right: -0.1rem;
@@ -1843,6 +2624,134 @@ export default {
           }
         }
       }
+      .upload_to {
+        float: left;
+        width: calc(100% - 2px - 1rem);
+        margin: 0.25rem;
+        border: 1px dashed #898989;
+        border-radius: 0.1rem;
+        .text {
+          padding: 0;
+          text-align: left;
+          color: #000;
+        }
+        .el-form /deep/ {
+          min-width: 5rem;
+          padding: 0.15rem 0 0;
+          @media screen and (max-width: 1440px) {
+            min-width: 4.5rem;
+          }
+          @media screen and (max-width: 1200px) {
+            min-width: 4rem;
+          }
+          @media screen and (max-width: 992px) {
+            min-width: 3.5rem;
+          }
+          @media screen and (max-width: 768px) {
+            min-width: 3rem;
+          }
+          .el-form-item {
+            display: block;
+            margin: 0;
+            .el-form-item__label {
+              width: 100%;
+              padding: 0;
+              text-align: left;
+              color: #000;
+            }
+            .el-form-item__content {
+              position: relative;
+              display: flex;
+              align-items: center;
+              flex-wrap: wrap;
+              width: 100%;
+              text-align: center;
+              .el-select {
+                width: 100%;
+                font-size: 16px;
+              }
+              p {
+                font-size: 14px;
+                text-align: left;
+                line-height: 1.3;
+                @media screen and (max-width: 1600px) {
+                  font-size: 12px;
+                }
+              }
+              .el-input {
+                margin: 0 auto 0.1rem;
+                .el-input__inner {
+                  height: auto;
+                  padding: 0.05rem 0.15rem;
+                  background-color: transparent;
+                  border: 1px solid #4f8aff;
+                  border-radius: 0.1rem;
+                  font-size: 16px;
+                  text-align: left;
+                  @media screen and (max-width: 1600px) {
+                    font-size: 15px;
+                  }
+                  @media screen and (max-width: 1440px) {
+                    font-size: 14px;
+                  }
+                }
+                .el-input__suffix-inner {
+                  display: flex;
+                  align-items: center;
+                  height: 100%;
+                  .el-icon-arrow-up {
+                    width: 25px;
+                    height: 25px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    &::before {
+                      content: "\e78f";
+                      color: #000;
+                      font-size: 18px;
+                    }
+                  }
+                }
+              }
+              .upload-demo {
+                justify-content: center;
+                width: calc(50% - 0.34rem);
+                max-width: 250px;
+                min-width: 150px;
+                padding: 0.17rem;
+                margin: 0.3rem auto 0;
+                font-family: inherit;
+                font-size: 16px;
+                border: 0;
+                border-radius: 0.1rem;
+                line-height: 1;
+                text-align: center;
+                @media screen and (max-width: 1600px) {
+                  font-size: 15px;
+                }
+                @media screen and (max-width: 1440px) {
+                  font-size: 14px;
+                }
+                @media screen and (max-width: 441px) {
+                  min-width: 100px;
+                }
+                .el-button {
+                  width: 100%;
+                  height: auto !important;
+                  padding: 0.17rem 0 !important;
+                  line-height: 1.2 !important;
+                }
+              }
+              .el-button--primary {
+                background: linear-gradient(45deg, #4e88ff, #4b5fff);
+              }
+              .el-button--info {
+                background: #dadada;
+              }
+            }
+          }
+        }
+      }
       .upload_progress {
         position: relative;
         width: 100%;
@@ -1853,6 +2762,91 @@ export default {
         flex-wrap: wrap;
         justify-content: center;
         align-items: center;
+        .folder_plan {
+          width: 90%;
+          padding: 0.05rem 5%;
+          margin: 0;
+          background-color: #fef0f0;
+          color: #f56c6c;
+          .el-button /deep/ {
+            margin: 0.05rem 0;
+            padding: 5px;
+            color: inherit;
+            text-decoration: underline;
+            font-family: inherit;
+          }
+        }
+        .folder {
+          width: 100%;
+          max-height: 300px;
+          overflow-y: scroll;
+          .folder_style {
+            padding: 0.1rem 5%;
+            .load_cont {
+              width: 100%;
+              p {
+                width: 100%;
+                text-align: left;
+                color: #000;
+                line-height: 20px;
+                max-height: none;
+                white-space: normal;
+                display: block;
+                small {
+                  line-height: 1;
+                }
+              }
+            }
+            .el-progress /deep/ {
+              margin: 0.1rem 0 0;
+              .el-progress__text {
+                font-size: 12px !important;
+              }
+            }
+          }
+          &::-webkit-scrollbar-track {
+            background: #fff;
+          }
+          &::-webkit-scrollbar {
+            width: 5px;
+            background: #fff;
+          }
+          &::-webkit-scrollbar-thumb {
+            background: #4f8aff;
+          }
+        }
+        .title {
+          display: flex;
+          align-items: center;
+          flex-wrap: wrap;
+          width: 90%;
+          padding: 0.25rem 5%;
+          text-align: left;
+          font-size: 0.22rem;
+          color: #000;
+          line-height: 1;
+          @media screen and (max-width: 768px) {
+            font-size: 16px;
+          }
+          i {
+            display: block;
+            width: 20px;
+            height: 20px;
+            margin: 0 5px 0 0;
+            font-size: 20px;
+            color: #666;
+          }
+        }
+        .title_upload {
+          justify-content: space-between;
+          div {
+            display: flex;
+            align-items: center;
+          }
+          .el-button {
+            padding: 8px;
+          }
+        }
         .load {
           display: block;
           width: 100%;
@@ -1918,7 +2912,8 @@ export default {
           justify-content: center;
           align-items: center;
           flex-wrap: wrap;
-          width: 100%;
+          width: 90%;
+          padding: 0 5%;
           svg {
             height: 42px;
             width: 42px;
@@ -1939,10 +2934,31 @@ export default {
             text-align: center;
           }
         }
-        .el-progress {
-          width: 90%;
-          margin: 0.3rem auto 0;
+        .load_cont {
+          width: calc(100% - 126px - 0.6rem);
+          p {
+            text-align: left;
+            color: #000;
+            line-height: 30px;
+            max-height: 30px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: normal;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+          }
         }
+        .el-progress {
+          margin: 0.3rem;
+          .el-progress__text {
+            font-size: 12px !important;
+          }
+        }
+      }
+      .upload_folder_list {
+        padding: 0 0 0.25rem;
+        align-items: flex-start;
       }
     }
     .loginEmail {
@@ -2096,6 +3112,11 @@ export default {
     /deep/ .el-list-enter,
     /deep/ .el-list-leave-active {
       opacity: 0;
+    }
+    /deep/ .el-loading-mask {
+      .el-loading-spinner {
+        top: 30%;
+      }
     }
   }
   .fes-header {

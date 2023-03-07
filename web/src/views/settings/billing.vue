@@ -146,7 +146,7 @@ export default {
       loading: false,
       downCsv: localStorage.getItem('addressYM') ? localStorage.getItem('addressYM') : '',
       bodyWidth: document.documentElement.clientWidth < 1024,
-      width: document.body.clientWidth > 600 ? '400px' : '95%',
+      width: document.body.clientWidth > 1600 ? '500px' : document.body.clientWidth > 600 ? '400px' : '95%',
       center_fail: false,
       network: {
         name: '',

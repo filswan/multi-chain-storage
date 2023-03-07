@@ -26,8 +26,8 @@ export async function login () {
   const signature = await sign(nonce)
   if (!signature) return false
   const token = await performSignin(signature, nonce)
-  // const email = await emailSign(token)
-  // console.log(email)
+  const email = await emailSign(token)
+  console.log(email)
   return !!token
 }
 
@@ -82,11 +82,12 @@ export async function sign (nonce) {
 
 export async function performSignin (sig, nonce) {
   const netId = Number(store.getters.networkID)
+  // netId === 97 ? 'bsc.testnet' :
   const reqOpts = {
     public_key_address: store.getters.metaAddress,
     nonce: nonce,
     signature: sig,
-    network: netId === 97 ? 'bsc.testnet' : netId === 80001 ? 'polygon.mumbai' : 'polygon.mainnet'
+    network: netId === 80001 ? 'polygon.mumbai' : 'polygon.mainnet'
   }
   const baseAPIURL = await urlBase(netId)
   const response = await sendPostRequest(`${baseAPIURL}api/v1/user/login_by_metamask_signature`, reqOpts)
@@ -101,10 +102,10 @@ export async function performSignin (sig, nonce) {
 }
 
 export async function emailSign (token, type) {
-  const response = await common.sendRequest(`${process.env.BASE_METASPACE}api/v3/email`, 'get')
+  const response = await common.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/user/wallet`, 'get')
   if (response && response.status === 'success') {
-    const data = response.data
-    const dataEmail = data.EmailPopupAt || ''
+    const data = response.data.wallet
+    const dataEmail = data.email_popup_at || ''
     const dataShow = type ? false : !dataEmail
     data.apiStatus = token && !dataEmail ? await setPopupTime() : dataShow // Control pop-up display
     store.dispatch('setMCSEmail', JSON.stringify(data))
@@ -118,13 +119,13 @@ export async function emailSign (token, type) {
 }
 
 export async function setPopupTime () {
-  const response = await common.sendRequest(`${process.env.BASE_METASPACE}api/v3/email/set_popup_time`, 'put')
+  const response = await common.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/user/wallet/set_popup_time`, 'put')
   if (response && response.status === 'success') return true
   return false
 }
 
 export async function Disconnect () {
-  const response = await common.sendRequest(`${process.env.BASE_METASPACE}api/v3/email`, 'delete')
+  const response = await common.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/user/delete_email`, 'put')
   if (response && response.status === 'success') return true
   return false
 }
@@ -150,9 +151,9 @@ export async function netStatus (id) {
     case 80001:
       status = !baseNet
       break
-    case 97:
-      status = !baseNet
-      break
+      // case 97:
+      //   status = !baseNet
+      //   break
     case 137:
       status = !!baseNet
       break
@@ -169,9 +170,9 @@ export async function urlBase (id) {
     case 80001:
       url = process.env.BASE_PAYMENT_GATEWAY_API
       break
-    case 97:
-      url = process.env.BASE_PAYMENT_GATEWAY_BSC_API
-      break
+      // case 97:
+      //   url = process.env.BASE_PAYMENT_GATEWAY_BSC_API
+      //   break
     case 137:
       url = process.env.BASE_PAYMENT_GATEWAY_POLYGON_API
       break

@@ -35,17 +35,25 @@
               </div>
               <el-button round>{{$t('comment.Tell_Comment')}}</el-button>
             </div>
-            <div class="need">Need help? Join our
-              <a href="https://discord.gg/9QP4TAEwtn" target="_blank">Discord</a>.</div>
+            <div class="need" v-if="languageMcs === 'en'">Need help? Join our
+              <a href="https://discord.com/invite/KKGhy8ZqzK" target="_blank">Discord</a>
+              or send an
+              <a href="mailto:team@filswan.com">Email</a> to us.
+            </div>
+            <div class="need" v-else>需要帮助吗？加入我们的
+              <a href="https://discord.com/invite/KKGhy8ZqzK" target="_blank">Discord</a>
+              或发送
+              <a href="mailto:team@filswan.com">电子邮件</a> 给我们。
+            </div>
             <div class="progress">
               <el-progress :percentage="(free_bucket/free_bucketAll)*100 || 0"></el-progress>
-              <span v-if="languageMcs === 'en'" class="tip">{{free_bucket | byteStorage}}GB of {{free_bucketAll | byteStorage}}GB for Buckets free storage</span>
-              <span v-else class="tip">目前使用量：{{free_bucket | byteStorage}}GB（Buckets免费储存空间配额：{{free_bucketAll | byteStorage}}GB）</span>
+              <span v-if="languageMcs === 'en'" class="tip">{{free_bucket | byteStorage}}GB of 32GB for Bucket storage</span>
+              <span v-else class="tip">目前使用量：{{free_bucket | byteStorage}}GB（Bucket储存空间配额：32GB）</span>
             </div>
             <!-- <div class="progress">
               <el-progress :percentage="(free_usage/free_quota_per_month)*100 || 0"></el-progress>
-              <span v-if="languageMcs === 'en'" class="tip">{{free_usage | byteStorage}}GB of {{free_quota_per_month | byteStorage}}GB for My Files free storage</span>
-              <span v-else class="tip">目前使用量：{{free_usage | byteStorage}}GB（My Files免费储存空间配额：{{free_quota_per_month | byteStorage}}GB）</span>
+              <span v-if="languageMcs === 'en'" class="tip">{{free_usage | byteStorage}}GB of {{free_quota_per_month | byteStorage}}GB for Onchain Storage free storage</span>
+              <span v-else class="tip">目前使用量：{{free_usage | byteStorage}}GB（Onchain Storage免费储存空间配额：{{free_quota_per_month | byteStorage}}GB）</span>
             </div> -->
             <div class="fes-icon-logo">
               <a href="https://filswan.medium.com/" target="_blank"><img :src="share_medium" alt=""></a>
@@ -100,10 +108,10 @@ export default {
           type: ''
         },
         {
-          icon: 'el-icon-s-Stats',
-          index: '4',
-          title: this.$t('route.Stats'),
-          name: 'Stats',
+          icon: 'el-icon-s-myAccount',
+          index: '21',
+          title: this.$t('route.myAccount'),
+          name: 'ApiKey',
           type: ''
         }
       ],
@@ -142,7 +150,7 @@ export default {
       return freeBucket
     },
     free_bucketAll () {
-      return this.$store.getters.free_bucketAll
+      return this.$store.getters.free_bucketAll === 0 ? 34359738368 : this.$store.getters.free_bucketAll
     }
   },
   watch: {
@@ -219,16 +227,16 @@ export default {
     async getListBuckets (name) {
       let _this = this
       let size = 0
-      const directoryRes = await _this.$commonFun.sendRequest(`${process.env.BASE_METASPACE}api/v3/directory/`, 'get')
-      if (!directoryRes || directoryRes.status !== 'success') {
-        return false
-      }
-      directoryRes.data.objects.forEach(element => {
+      let maxSize = 0
+      const directoryRes = await _this.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/bucket/get_bucket_list`, 'get')
+      if (!directoryRes || directoryRes.status !== 'success') return false
+      directoryRes.data.forEach(element => {
         size += element.size
+        if (element.is_active) maxSize += element.max_size
       })
       await _this.$commonFun.timeout(500)
       _this.$store.dispatch('setFreeBucket', size || 0)
-      _this.$store.dispatch('setFreeBucketAll', directoryRes.data.policy.max_size || 0)
+      _this.$store.dispatch('setFreeBucketAll', maxSize || 0)
     }
   },
   filters: {
@@ -422,7 +430,7 @@ export default {
       background: transparent;
     }
     &::-webkit-scrollbar-thumb {
-      background: #ccc;
+      background: #080b29;
     }
   }
   .fes-icon {
@@ -535,7 +543,7 @@ export default {
       font-size: 12px;
       color: #fff;
       text-align: center;
-      line-height: 1;
+      line-height: 1.1;
       @media screen and (min-width: 1800px) {
         font-size: 14px;
       }
@@ -545,7 +553,7 @@ export default {
       }
     }
     .progress {
-      margin: 0 0.28rem 10px;
+      margin: 2px 0.28rem 10px;
       .el-progress /deep/ {
         font-size: 12px;
         .el-progress-bar {
@@ -682,6 +690,12 @@ export default {
           no-repeat center;
       }
     }
+    .el-icon-s-ApiKey {
+      &::before {
+        background: url(../assets/images/menuIcon/icon_ApiKey.png) no-repeat
+          center;
+      }
+    }
     .el-icon-s-documentation {
       &::before {
         background: url(../assets/images/menuIcon/icon_documentation@2x.png)
@@ -702,8 +716,7 @@ export default {
     }
     .el-icon-s-dataset {
       &::before {
-        background: url(../assets/images/menuIcon/myAccount.png) no-repeat
-          center;
+        background: url(../assets/images/menuIcon/dataset.png) no-repeat center;
       }
     }
     .el-icon-search {
@@ -774,6 +787,12 @@ export default {
       &::before {
         background: url(../assets/images/menuIcon/icon_Statistics@2x-1.png)
           no-repeat center;
+      }
+    }
+    .el-icon-s-ApiKey {
+      &::before {
+        background: url(../assets/images/menuIcon/icon_ApiKey-1.png) no-repeat
+          center;
       }
     }
     .el-icon-s-documentation {

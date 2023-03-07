@@ -683,7 +683,7 @@ export default {
     Developer_Quick_Start: 'Developer Quick Start',
     FAQ: 'FAQ',
     Get_Help: 'Get Help',
-    copy: '© 2022 MULTICHAIN.STORAGE. ALL RIGHTS RESERVED.'
+    copy: ' MULTICHAIN.STORAGE. ALL RIGHTS RESERVED.'
   },
   metaSpace: {
     home_title: 'Multichain.Storage',

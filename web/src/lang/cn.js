@@ -689,7 +689,7 @@ export default {
     Developer_Quick_Start: '开发人员快速入门',
     FAQ: '常见问题解答',
     Get_Help: '获取帮助',
-    copy: '© 2022 MULTICHAIN.STORAGE. ALL RIGHTS RESERVED.'
+    copy: ' MULTICHAIN.STORAGE. ALL RIGHTS RESERVED.'
   },
   metaSpace: {
     home_title: '多链存储',

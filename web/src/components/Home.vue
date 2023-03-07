@@ -21,7 +21,7 @@
         </div>
         <div class="fes-icon">
           <div class="fes-icon-copy">
-            <span>© 2022 FilSwan</span>
+            <span>© {{fullYear}} FilSwan</span>
             <el-divider direction="vertical"></el-divider>
             <a href="https://www.filswan.com/" target="_block">filswan.com</a>
 
@@ -62,7 +62,8 @@ export default {
       networkTip: false,
       dialogFormVisible: false,
       typeName: 'emailLogin',
-      changeTitle: ''
+      changeTitle: '',
+      fullYear: new Date().getFullYear()
     }
   },
   components: {

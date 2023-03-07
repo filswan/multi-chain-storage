@@ -100,7 +100,7 @@
       <div>
         <h4>{{$t('my_profile.apiKey_your_Domain')}}</h4>
         <h6></h6>
-        <div class="form_top">
+        <!-- <div class="form_top">
           <div class="search_file">
             <div class="createTask">
               <a @click="dialogFun('add_domain')">
@@ -109,7 +109,7 @@
               </a>
             </div>
           </div>
-        </div>
+        </div> -->
         <div class="fes-search">
           <el-table :data="domainData" stripe style="width: 100%" max-height="300" :empty-text="$t('deal.formNotData')" class="table_cell">
             <el-table-column prop="api_key" :label="$t('my_profile.apiKey_your_Domain_label')">

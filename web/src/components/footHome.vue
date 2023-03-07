@@ -15,7 +15,7 @@
         <a href="https://github.com/filswan" target="_blank"><img :src="share_github" alt=""></a>
         <a href="https://t.me/filswan" target="_blank"><img :src="share_telegram" alt=""></a>
       </div>
-      <p class="copy">{{$t('footer.copy')}}</p>
+      <p class="copy">© {{fullYear}}{{$t('footer.copy')}}</p>
     </div>
 
     <pop-ups v-if="ComingSoon" :dialogFormVisible="ComingSoon" :typeModule="typeName" :fixed="true" @getPopUps="getPopUps"></pop-ups>
@@ -34,7 +34,8 @@ export default {
       share_telegram: require('@/assets/images/landing/telegram.png'),
       share_discord: require('@/assets/images/landing/discord.png'),
       ComingSoon: false,
-      typeName: 'comingSoon'
+      typeName: 'comingSoon',
+      fullYear: new Date().getFullYear()
     }
   },
   components: {

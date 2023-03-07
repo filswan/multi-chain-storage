@@ -58,10 +58,10 @@ contract FilinkConsumer is ChainlinkClient, Ownable {
         string memory key = concatenate(deal, network);
         
         /**
-         * GET http://35.168.51.2:7886/deal/<deal>?network=<network>
-         * ex. GET http://35.168.51.2:7886/deal/123456?network=filecoin_calibration, data.deal.storage_price = 8294400600825600
+         * GET https://flink-adapter.filswan.com/deal/<deal>?network=<network>
+         * ex. GET https://flink-adapter.filswan.com/deal/123456?network=filecoin_mainnet, data.deal.storage_price = 42855481110
          */ 
-        request.add("get", concatenate("http://35.168.51.2:7886/deal/", params));
+        request.add("get", concatenate("https://flink-adapter.filswan.com/deal/", params));
         request.add("path", "data,deal,storage_price");
         request.addInt('times', 1);
         

@@ -1,6 +1,10 @@
 <template>
   <div>
-    <el-dialog :title="$t('uploadFile.nft_title')+'NFT'" :close-on-click-modal="false" :width="widthDia" :visible.sync="mineVisible" :before-close="closeDia">
+    <el-dialog :close-on-click-modal="false" :width="widthDia" :visible.sync="mineVisible" :before-close="closeDia">
+      <div slot="title" class="dialog-header">
+        <span class="el-dialog__title">{{$t('uploadFile.nft_title')+'NFT'}}</span>
+        <el-button type="primary" size="mini" v-if="mintIndex === 'list' && !hashload" @click="init">{{$t('my_profile.swan_miners_Refresh')}}</el-button>
+      </div>
       <div v-if="mintIndex === 'list'" v-loading="hashload">
         <div class="mint_body">
           <el-card shadow="always" class="mint_card" v-for="(nftMint, n) in nftMintData" :key="n">
@@ -11,7 +15,10 @@
                 </div>
                 <span>{{nftMint.name || nftMint.address||'-'}}</span>
               </div>
-              <el-button type="primary" size="mini" @click="handleMint(nftMint, 'mint')">Mint here</el-button>
+              <el-button v-if="nftMint.address && nftMint.address.indexOf('0x') > -1" type="primary" size="mini" @click="handleMint(nftMint, 'mint')">Mint here</el-button>
+              <el-popover v-else placement="top" popper-class="elPopTitle" class="item" width="200" trigger="hover" :content="$t('uploadFile.mint_pending')">
+                <el-button slot="reference" disabled type="primary" size="mini" @click="handleMint(nftMint, 'mint')">Mint here</el-button>
+              </el-popover>
             </div>
           </el-card>
           <el-card shadow="always" class="mint_card" v-for="(nftView, v) in nftViewData" :key="v+nftMintData.length">
@@ -183,7 +190,6 @@ export default {
       that.ruleCreateForm.fileRaw = file
     },
     async uploadImage (raw, name) {
-      console.log(raw, name)
       var imageData = new FormData()
       imageData.append('file', raw, name)
       imageData.append('duration', '525')
@@ -232,7 +238,6 @@ export default {
                     that.ruleCreateForm.file = await that.uploadImage(that.ruleCreateForm.fileRaw.raw, that.ruleCreateForm.fileRaw.name)
                   }
                   let mintInfoJson = {
-                    address: that.ruleCreateForm.name,
                     tx_hash: hash,
                     name: that.ruleCreateForm.name,
                     description: that.ruleCreateForm.description,
@@ -242,20 +247,19 @@ export default {
                     wallet_recipient: that.ruleCreateForm.fee_recipient
                   }
                   await that.sendPostRequest(`${that.baseAPIURL}api/v1/storage/mint/nft_collection`, mintInfoJson)
-                })
-                .on('confirmation', function (confirmationNumber, receipt) {
-                  console.log('confirmationNumber console:', confirmationNumber, receipt)
-                })
-                .on('receipt', function (receipt) {
-                  // receipt example
-                  console.log('create receipt console:', receipt)
-                  that.isloadText = that.$t('uploadFile.payment_tip_deal03')
 
                   that.mintCollectionAddress = {}
                   that.mintIndex = 'list'
                   that.isload = false
                   that.init()
                   that.$refs['ruleCreateForm'].resetFields()
+                })
+                .on('confirmation', function (confirmationNumber, receipt) {
+                  // console.log('confirmationNumber console:', confirmationNumber, receipt)
+                })
+                .on('receipt', function (receipt) {
+                  // receipt example
+                  console.log('create receipt console:', receipt)
                 })
             } else {
               that.isloadText = that.$t('uploadFile.payment_tip_deal01')
@@ -420,10 +424,32 @@ export default {
     border-radius: 0.2rem;
 
     .el-dialog__header {
-      padding: 0.3rem 0.4rem;
+      padding: 0.25rem 0.4rem;
       display: flex;
       border-bottom: 1px solid #dfdfdf;
+      .dialog-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        .el-button {
+          padding: 7px 10px;
+          font-size: 14px;
+          font-family: inherit;
+          color: #fff;
+          border-radius: 0.1rem;
+          @media screen and (max-width: 1600px) {
+            font-size: 13px;
+          }
+          @media screen and (max-width: 768px) {
+            font-size: 12px;
+          }
 
+          &:hover {
+            opacity: 0.9;
+          }
+        }
+      }
       .el-dialog__title {
         color: #000;
         font-size: 0.22rem;

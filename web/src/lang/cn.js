@@ -647,7 +647,8 @@ export default {
     Start_uploading: '开始上传',
     Upload_failed: '上传失败:',
     Upload_view: '查看',
-    Upload_path: '路径'
+    Upload_path: '路径',
+    mint_pending: '正在从链上扫描collection信息，请等待!'
   },
   billing: {
     search_placeholder: '搜索方式',

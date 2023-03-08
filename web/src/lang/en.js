@@ -640,7 +640,8 @@ export default {
     Start_uploading: 'Start uploading',
     Upload_failed: 'Upload failed:',
     Upload_view: 'view',
-    Upload_path: 'path'
+    Upload_path: 'path',
+    mint_pending: 'Collection information is being scanned from the chain, please wait!'
   },
   billing: {
     search_placeholder: 'Search by ',

@@ -7,7 +7,7 @@
         <!-- {{$t('fs3Login.toptip_Network')}}
         <span @click="changeNet(97)">BSC TestNet</span> -->
         <p v-if="networkID == 137">{{$t('fs3Login.toptip_04')}}
-          <a href="https://www.multichain.storage/#/home" target="_blank">multichain.storage</a>.</p>
+          <a href="https://www.multichain.storage/" target="_blank">multichain.storage</a>.</p>
       </div>
     </el-alert>
     <div class="loginBody width">

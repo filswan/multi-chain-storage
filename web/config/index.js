@@ -3,8 +3,16 @@
 // see http://vuejs-templates.github.io/webpack for documentation.
 
 const path = require('path')
+const GitRevisionPlugin = require('git-revision-webpack-plugin')
 
 module.exports = {
+  'chainWebpack': config => {
+    config.plugin('define').tap(args => {
+      const gitRevisionPlugin = new GitRevisionPlugin()
+      args[0]['process.env']['COMMIT_HASH'] = JSON.stringify(gitRevisionPlugin.commithash())
+      return args
+    })
+  },
   dev: {
 
     // Paths

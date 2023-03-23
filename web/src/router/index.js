@@ -53,8 +53,8 @@ const homeEntrance = () =>
 
 // 配置路由
 export default new Router({
-  // mode: 'history', // 后端支持可开
-  mode: 'hash',
+  mode: 'history', // 后端支持可开
+  // mode: 'hash',
   routes: [{
     path: '/',
     redirect: '/my_files'

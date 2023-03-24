@@ -2,8 +2,8 @@
   <div class="metamaskLogin">
     <el-alert type="warning" effect="dark" center show-icon v-if="metaAddress&&!(networkID==80001 || networkID == 97)">
       <div slot="title">
-        {{$t('fs3Login.toptip_01')}} {{metaNetworkInfo.name}} {{$t('fs3Login.toptip_02')}}
-        <span @click="changeNet(80001)">Mumbai Testnet</span>.
+        {{$t('fs3Login.toptip_01')}}
+        <span @click="changeNet(80001)">Mumbai Testnet</span>{{$t('fs3Login.toptip_02')}}
         <!-- {{$t('fs3Login.toptip_Network')}}
         <span @click="changeNet(97)">BSC TestNet</span> -->
         <p v-if="networkID == 137">{{$t('fs3Login.toptip_04')}}

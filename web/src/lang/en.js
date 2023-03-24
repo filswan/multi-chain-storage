@@ -215,6 +215,7 @@ export default {
     create_api_tips05: 'When you generate your keys, you will see a modal with the Swan  API Key, Swan API Secret, and the JWT.',
     create_api_tips06: 'Your "Swan API Key" acts as your public key for our REST API, and your "Swan Secret API Key" acts as the password for your public key. The JWT is an encoded mix of the two. Be sure to keep your secret key private!',
     create_api_tips07: "For added customer security, these keys are encrypted on Swan's side and will only ever be displayed once, so write them down. If you lose these values you'll need to revoke the key and create a new one.",
+    create_api_tips08: 'You will not be able to view your access token again when you close the page.',
     Check_dataCap: 'Check DataCap',
     form_contact: 'Contact Info',
     form_username: 'User Name',
@@ -443,8 +444,8 @@ export default {
     Disconnect: 'Sign out'
   },
   fs3Login: {
-    toptip_01: 'Your wallet is wrongly connected to',
-    toptip_02: 'Network. To use our site, please switch to',
+    toptip_01: 'Currently supporting ',
+    toptip_02: '; additional chains arriving soon!',
     toptip_03: 'Connect to your MetaMask Wallet',
     toptip_04: 'If you would like to visit MCS Polygon Mainnet, please click',
     toptip_04_1: 'Testnet, please click',

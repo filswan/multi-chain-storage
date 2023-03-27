@@ -340,7 +340,6 @@ export default {
         ],
         // loading data
 
-
         series: [
           {
             name: 'IPFS Storage (GiB)',
@@ -549,7 +548,7 @@ export default {
         size = bytes / (1024 * 1024 * 1024) // or 1000
         size = size.toFixed(2)
       }
-      return size + " GiB"
+      return size + ' GiB'
       // return Number(size).toFixed(3);
     },
     NumFormat (value) {

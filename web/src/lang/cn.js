@@ -789,5 +789,19 @@ export default {
   comment: {
     Rate_Product: '评价我们的产品',
     Tell_Comment: '告诉我们您的意见'
+  },
+  pricing: {
+    'title_3': '敬请关注我们即将推出的定价！',
+    'title_4': '与此同时，我们邀请您与我们联系，提出您的建议、反馈或任何询问。',
+    'btn': '联系我们',
+    'bid_title_1': 'Free',
+    'bid_title_2': 'Pro',
+    'bid_desc_1': 'xxx',
+    'bid_desc_2': 'xxx',
+    'coming_soon': 'Coming soon...',
+    'supported_wallet': 'Supported wallet',
+    'prepay_using': 'Prepay using',
+    'question_title': '常见问题',
+    'collapse_1_title': 'Does MultiChain Storage provide a free version?'
   }
 }

@@ -1,7 +1,9 @@
 <template>
   <div class="metamaskHome">
     <v-head @getHome="getHome" @getLogin="signFun" :loginLoad="loginLoad"></v-head>
-    <div class="homeBody" v-if="!moduleMenu">
+    <v-stats v-if="moduleMenu === 'stats'"></v-stats>
+    <v-pricing v-else-if="moduleMenu === 'pricing'"></v-pricing>
+    <div class="homeBody" v-else>
       <div class="loginBody">
         <div class="width">
           <el-row>
@@ -84,7 +86,6 @@
         </div>
       </div>
     </div>
-    <v-stats v-else></v-stats>
     <v-foot id="resources"></v-foot>
     <el-backtop target=".metamaskHome"></el-backtop>
     <network-alert v-if="metaAddress&&networkTip" @changeNet="changeNet" @getNetwork="getNetwork"></network-alert>
@@ -95,6 +96,7 @@
 import vHead from '@/components/headHome.vue'
 import vFoot from '@/components/footHome.vue'
 import vStats from '@/views/stats/index.vue'
+import vPricing from '@/components/pricing.vue'
 import networkAlert from '@/components/networkAlert.vue'
 import CarouselContainer from '@/components/CarouselContainer.vue'
 let that
@@ -194,19 +196,19 @@ export default {
       loginLoad: false,
       prevType: true,
       networkTip: false,
-      moduleMenu: false
+      moduleMenu: ''
     }
   },
   components: {
-    vHead, vFoot, CarouselContainer, networkAlert, vStats
+    vHead, vFoot, CarouselContainer, networkAlert, vStats, vPricing
   },
   methods: {
     goLink (link) {
       window.open(link)
     },
     getHome (key) {
-      that.moduleMenu = key === 'stats'
-      if (key === 'stats') return false
+      that.moduleMenu = key
+      if (key === 'stats' || key === 'pricing') return false
       var PageId = document.querySelector('#' + key)
       document.querySelector('.metamaskHome').scrollTo({
         top: PageId.offsetTop,

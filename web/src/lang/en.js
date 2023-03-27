@@ -783,5 +783,25 @@ export default {
   comment: {
     Rate_Product: 'Rate our product',
     Tell_Comment: 'Tell us your comment'
+  },
+  pricing: {
+    'title_1': 'Choose the plans that work for you',
+    'title_2': 'Start storing your data in web3.',
+    'title_3': 'Stay tuned for our upcoming pricing!',
+    'title_4': 'In the meantime, we invite you to contact us with your proposals, feedback, or any inquiries.',
+    'btn': 'Contact us',
+    'bid_title_1': 'Free',
+    'bid_title_2': 'Pro',
+    'bid_desc_1': 'xxx',
+    'bid_desc_2': 'xxx',
+    'coming_soon': 'Coming soon...',
+    'supported_wallet': 'Supported wallet',
+    'prepay_using': 'Prepay using',
+    'volume_title': 'Looking for more storage or volume?',
+    'volume_title_1': 'How to create a Discord ticket?',
+    'volume_p': "Our enterprise solutions and tailored plans are here to help youreach your goals. Contact us now via Discord and let's explore howwe can unlock your storage potential together.",
+    'volume_create': 'Gif of how to create a ticket in a discord',
+    'question_title': 'Frequently asked questions',
+    'collapse_1_title': 'Does MultiChain Storage provide a free version?'
   }
 }

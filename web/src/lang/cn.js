@@ -215,6 +215,7 @@ export default {
     create_api_tips05: '当您生成密钥时，您将看到一个带有Swan API密钥、Swan API Secret和JWT的模式。',
     create_api_tips06: '您的“Swan API密钥”充当我们restapi的公钥，您的“Swan Secret API密钥”充当您公钥的密码。JWT是两者的编码混合。一定要保密！',
     create_api_tips07: '为了增强客户的安全性，这些密钥在Swan一侧加密，并且只显示一次，所以请将它们写下来。如果丢失了这些值，则需要撤消密钥并创建一个新的密钥。',
+    create_api_tips08: '关闭页面后，您将无法再次查看您的访问令牌。',
     Check_dataCap: '检查DataCap',
     form_contact: '联系方式',
     form_username: '用户名',
@@ -450,8 +451,8 @@ export default {
     Disconnect: '登出'
   },
   fs3Login: {
-    toptip_01: '您的钱包被错误地连接到',
-    toptip_02: '网络。使用我们的网站，请切换到',
+    toptip_01: '目前支持',
+    toptip_02: '；额外的链条即将到来！',
     toptip_03: '连接到您的MetaMask钱包',
     toptip_04: '如果您想访问MCS Polygon Mainnet，请单击',
     toptip_04_1: 'Testnet，请单击',

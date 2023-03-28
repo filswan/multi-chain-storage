@@ -2,7 +2,7 @@
   <div class="metamaskHome">
     <v-head @getHome="getHome" @getLogin="signFun" :loginLoad="loginLoad"></v-head>
     <v-stats v-if="moduleMenu === 'stats'"></v-stats>
-    <v-pricing v-else-if="moduleMenu === 'pricing'"></v-pricing>
+    <v-pricing v-else-if="moduleMenu === 'pricing'" @getLogin="signFun"></v-pricing>
     <div class="homeBody" v-else>
       <div class="loginBody">
         <div class="width">
@@ -439,6 +439,11 @@ export default {
     }
     @media screen and (max-width: 999px) {
       width: 94%;
+    }
+  }
+  .statsHome {
+    @media screen and (max-width: 992px) {
+      padding-top: 1rem;
     }
   }
   .loginBody {

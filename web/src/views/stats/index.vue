@@ -74,7 +74,6 @@ export default {
       list: [],
       loading: true,
       loading_ecosystem: true,
-      logo_img_black: require('@/assets/images/icons/MCSLOGO.png'),
       collaboratorsData: [
         {
           img: require('@/assets/images/dashboard/moon/MULTI-CHAIN-01.png'),
@@ -457,7 +456,6 @@ export default {
     },
     async getData () {
       const ecosysRes = await that.getRequest(`${process.env.BASE_ECO_API}ecosys/data`)
-      // const ecosysRes = await that.getRequest(`./static/json/eco.json`)
       if (!ecosysRes || ecosysRes.status !== 'success') {
         that.MCS_Dataset = []
         that.loading_ecosystem = false
@@ -573,9 +571,6 @@ export default {
 <style lang="scss" scoped>
 .statsCont {
   position: relative;
-  // width: calc(100% - 1rem);
-  // padding: 0.3rem 0.2rem;
-  // margin: 0.3rem;
   width: 80%;
   max-width: 1440px;
   min-width: 300px;
@@ -585,12 +580,6 @@ export default {
   @media screen and (max-width: 992px) {
     padding: 0.25rem 0;
   }
-  // background-image:
-  //     url(../../assets/images/dashboard/bg_top.png),
-  //     url(../../assets/images/dashboard/bg_bottom.png);
-  // background-position: left top, right bottom;
-  // background-repeat: no-repeat, no-repeat;
-  // background-size: 27%, 22%;
   border-radius: 0.1rem;
   .moon {
     display: none;

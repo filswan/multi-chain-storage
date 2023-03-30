@@ -1,9 +1,6 @@
 <template>
   <div class="login register">
     <div class="loginArea">
-      <div class="loginAreaLeft">
-        <img src="@/assets/images/login/login_logo_en.png" />
-      </div>
       <div class="loginAreaRight" v-loading="regLoad">
         <a href="javascript:void(0);" @click="menuIndexFun('/login',7)" class="login_register1">{{generateRegister('register_h1')}} ></a>
         <h1 style="margin:0.65rem 0px 0.4rem">{{generateRegister('register_registermail')}}</h1>

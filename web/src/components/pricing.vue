@@ -3,6 +3,8 @@
     <h1 class="text_h1">{{$t('pricing.title_1')}}</h1>
     <h2 class="text_h2">{{$t('pricing.title_2')}}</h2>
     <h4 class="text_h4">{{$t('pricing.title_3')}}</h4>
+    <h4 class="text_h4">{{$t('pricing.title_4')}}</h4>
+    <a href="https://discord.com/channels/867879887871672331/938902177659879444" target="_blank" class="contact">{{$t('pricing.btn')}}.</a>
     <el-row class="bid">
       <el-col :xs="24" :sm="12" :md="12" :lg="12">
         <div class="grid-content">
@@ -32,10 +34,10 @@
           <p>{{$t('pricing.bid_desc_2')}}</p>
           <div class="price">
             <b>$8</b>USD/annually
-            <div class="small">Ends in 00:00:00</div>
+            <div class="small"></div>
           </div>
-          <el-button type="primary">
-            {{$t('pricing.get_plan')}}
+          <el-button type="info">
+            {{$t('pricing.coming_soon')}}
           </el-button>
           <div class="introduce" v-for="(o, pIndex) in introduce.pro" :key="pIndex">
             <div class="cont">
@@ -49,7 +51,7 @@
         </div>
       </el-col>
     </el-row>
-    <el-row :gutter="20" class="sustain">
+    <el-row :gutter="35" class="sustain">
       <el-col :span="12">
         <div class="grid-content">
           {{$t('pricing.supported_wallet')}}
@@ -102,7 +104,7 @@
             {{$t('pricing.collapse_3_title')}}
           </template>
           <div>Yes! We provide SDKs for Python and JavaScript. You can check them
-            <a @click="goLink('')">here</a>
+            <a @click="goLink('https://docs.filswan.com/multichain.storage/developer-quickstart/sdk')">here</a>
           </div>
         </el-collapse-item>
         <el-collapse-item name="4">
@@ -206,7 +208,7 @@ export default {
 
 <style scoped lang="scss">
 @font-face {
-  font-family: "gilroy-regular";
+  font-family: "Gilroy-Medium";
   src: url(../assets/font/Gilroy-Medium-2.otf);
   font-style: normal;
   font-display: block;
@@ -219,7 +221,7 @@ export default {
   margin: 0.1rem auto;
   padding: 0.8rem 0;
   background-color: #fff;
-  font-family: "gilroy-regular";
+  font-family: "Gilroy-Medium";
   font-size: 16px;
   word-break: break-word;
   color: #010102;
@@ -368,7 +370,7 @@ export default {
               }
               span {
                 display: block;
-                padding: 0 0.3rem 0 0;
+                padding: 0.05rem 0.3rem 0 0;
                 font-size: 12px;
                 color: #afafaf;
                 line-height: 1.2;
@@ -385,6 +387,8 @@ export default {
   .sustain /deep/ {
     margin: 0.55rem auto;
     .el-col {
+      display: flex;
+      align-items: center;
       min-height: 40px;
       padding: 0.05rem;
       font-size: 0.2229rem;
@@ -392,10 +396,21 @@ export default {
       @media screen and (max-width: 768px) {
         font-size: 15px;
       }
+      .grid-content {
+        display: flex;
+        align-items: center;
+        height: 100%;
+      }
       .meta_img {
         height: 22px;
         @media screen and (min-width: 1800px) {
           height: 25px;
+        }
+        @media screen and (max-width: 768px) {
+          height: 20px;
+        }
+        @media screen and (max-width: 600px) {
+          height: 18px;
         }
       }
       .usd_img {
@@ -403,9 +418,15 @@ export default {
         @media screen and (min-width: 1800px) {
           height: 27px;
         }
+        @media screen and (max-width: 768px) {
+          height: 22px;
+        }
+        @media screen and (max-width: 600px) {
+          height: 20px;
+        }
       }
       &:nth-child(2n + 1) {
-        text-align: right;
+        justify-content: flex-end;
       }
     }
   }

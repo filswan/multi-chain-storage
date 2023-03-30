@@ -235,7 +235,6 @@ export default {
       //   file_name: `${that.search.trim()}` || ''
       // }
       const directoryRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/bucket/get_bucket_list`, 'get')
-      // const directoryRes = await that.$commonFun.sendRequest(`./static/json/list.json`, 'get')
       if (!directoryRes || directoryRes.status !== 'success') {
         that.$message.error(directoryRes.message || 'Fail')
         that.listBuckets = []

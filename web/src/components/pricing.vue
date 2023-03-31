@@ -33,11 +33,11 @@
           <h3>{{$t('pricing.bid_title_2')}}</h3>
           <p>{{$t('pricing.bid_desc_2')}}</p>
           <div class="price">
-            <b>$8</b>USD/annually
+            <b>$96</b>USD/annually
             <div class="small"></div>
           </div>
-          <el-button type="info">
-            {{$t('pricing.coming_soon')}}
+          <el-button type="primary" @click="goLink('https://discord.com/channels/867879887871672331/938902177659879444')">
+            {{$t('pricing.btn')}}
           </el-button>
           <div class="introduce" v-for="(o, pIndex) in introduce.pro" :key="pIndex">
             <div class="cont">

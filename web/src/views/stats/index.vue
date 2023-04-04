@@ -42,7 +42,7 @@
           </div>
         </div>
         <div class="roseChart_all">
-          <div class="roseChart" id="roseChart"></div>
+<!--          <div class="roseChart" id="roseChart"></div>-->
           <div class="roseChart" id="roseChart_1"></div>
         </div>
 
@@ -243,7 +243,7 @@ export default {
     async getPie () {
       // Init E chart
       // MyChart for IPFSStorage&StorageArchived
-      const myChart = echarts.init(document.getElementById('roseChart'))
+      // const myChart = echarts.init(document.getElementById('roseChart'))
       // MyChart1 for FilesUploaded&Buckets
       const myChart1 = echarts.init(document.getElementById('roseChart_1'))
       // Setting Chart for 'IPFS Storage (GiB)', 'Storage Archived (GiB)'
@@ -447,10 +447,10 @@ export default {
         ]
       }
       // put data to chart
-      myChart.setOption(option)
+      // myChart.setOption(option)
       myChart1.setOption(option1)
       window.onresize = function () {
-        myChart.resize()
+        // myChart.resize()
         myChart1.resize()
       }
     },

@@ -1,9 +1,6 @@
 <template>
   <div class="login register">
     <div class="loginArea">
-      <div class="loginAreaLeft">
-        <img src="@/assets/images/login/login_logo_en.png" />
-      </div>
       <div class="loginAreaRight" v-loading="forgetLoad">
         <a href="javascript:void(0);" @click="menuIndexFun('/login',7)" class="login_register1">{{generateForgetPassword('forgetPassword_h1')}} ></a>
         <h1>{{generateForgetPassword('forgetPassword_mail')}}</h1>

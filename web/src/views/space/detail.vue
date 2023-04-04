@@ -349,7 +349,6 @@ export default {
         offset: offset
       }
       const directoryRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/get_file_list?${QS.stringify(params)}`, 'get')
-      // const directoryRes = await that.$commonFun.sendRequest(`./static/json/ListObjects.json?${QS.stringify(params)}`, 'get')
       if (!directoryRes || directoryRes.status !== 'success') {
         that.$message.error(directoryRes.message || 'Fail')
         return false

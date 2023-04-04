@@ -789,5 +789,33 @@ export default {
   comment: {
     Rate_Product: '评价我们的产品',
     Tell_Comment: '告诉我们您的意见'
+  },
+  pricing: {
+    'title_1': 'Choose the plan that works for you',
+    'title_2': 'Start storing your data in web3.',
+    'title_3': 'Stay tuned for our upcoming pricing! ',
+    'title_4': 'In the meantime, we invite you to contact us with your proposals, feedback, or any inquiries.',
+    'btn': 'Contact us',
+    'bid_title_1': 'Free',
+    'bid_title_2': 'Pro',
+    'bid_desc_1': 'Get started with free essentials',
+    'bid_desc_2': 'Empower your storage with higher limits',
+    'get_plan': 'Get a Plan',
+    'coming_soon': 'Coming soon...',
+    'supported_wallet': 'Supported wallet',
+    'prepay_using': 'Prepay using',
+    'volume_title': 'Looking for more storage or volume?',
+    'volume_title_1': 'How to create a Discord ticket?',
+    'volume_p': "Our enterprise solutions and tailored plans are here to help you reach your goals. Contact us now via Discord and let's explore how we can unlock your storage potential together.",
+    'volume_create': 'Gif of how to create a ticket in a discord',
+    'question_title': 'Frequently asked questions',
+    'collapse_1_title': 'Does MultiChain Storage provide a free version?',
+    'collapse_1_desc': 'Yes, our free plan provides essential features and suits any individual to get started with decentralized storage',
+    'collapse_2_title': 'How many buckets and folders can I create?',
+    'collapse_2_desc': 'You can create unlimited buckets and folders as soon as you do not go over your storage capacity',
+    'collapse_3_title': 'Do you provide with SDK?',
+    'collapse_3_desc': 'Yes! We provide SDKs for Python and JavaScript. You can check them here (Link)',
+    'collapse_4_title': 'What if I run out of limits in Pro plan?',
+    'collapse_4_desc': 'No worries! Our team always open to communicate and customize a special plan for your needs. Create a ticket in our Discord community and we will get back to you shortly after.'
   }
 }

@@ -10,7 +10,7 @@
               {{ $t('route.About') }}
             </router-link>
           </el-menu-item>
-          <el-menu-item index="pricing" v-if="false">
+          <el-menu-item index="pricing">
             <router-link to="">
               {{ $t('route.Pricing') }}
             </router-link>
@@ -54,9 +54,9 @@
               <div class="menuMListChild" @click="handleMoSelect('about')">
                 {{ $t('route.About') }}
               </div>
-              <router-link to="" v-if="false" class="menuMListChild" @click="handleMoSelect('pricing')">
+              <div class="menuMListChild" @click="handleMoSelect('pricing')">
                 {{ $t('route.Pricing') }}
-              </router-link>
+              </div>
               <div class="menuMListChild" @click="handleMoSelect('resources')">
                 {{ $t('route.Resources') }}
               </div>

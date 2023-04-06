@@ -793,7 +793,7 @@ export default {
   pricing: {
     'title_1': 'Choose the plan that works for you',
     'title_2': 'Start storing your data in web3.',
-    'title_3': 'Stay tuned for our upcoming pricing! ',
+    'title_3': 'Stay tuned and contact us for more service details. ',
     'title_4': 'In the meantime, we invite you to contact us with your proposals, feedback, or any inquiries.',
     'btn': 'Contact us',
     'bid_title_1': 'Free',

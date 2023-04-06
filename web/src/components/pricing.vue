@@ -3,7 +3,6 @@
     <h1 class="text_h1">{{$t('pricing.title_1')}}</h1>
     <h2 class="text_h2">{{$t('pricing.title_2')}}</h2>
     <h4 class="text_h4">{{$t('pricing.title_3')}}</h4>
-    <h4 class="text_h4">{{$t('pricing.title_4')}}</h4>
     <a href="https://discord.com/channels/867879887871672331/938902177659879444" target="_blank" class="contact">{{$t('pricing.btn')}}.</a>
     <el-row class="bid">
       <el-col :xs="24" :sm="12" :md="12" :lg="12">

@@ -314,25 +314,6 @@ export default {
       }
       return false
     },
-    handleSelect (key, keyPath) {
-      // console.log(key, keyPath);
-    },
-    pageJump (data) {
-      let name = that.$router.history.current.name
-      if (name === 'login' || name === 'register') {
-        if (data === 1) {
-          that.$router.replace('/login')
-        } else if (data === 2) {
-          that.$router.replace('/register')
-        }
-      } else {
-        if (data === 1) {
-          that.$router.push('/login')
-        } else if (data === 2) {
-          that.$router.push('/register')
-        }
-      }
-    },
     // 侧边栏折叠
     collapseChage () {
       that.collapseLocal = !that.collapseLocal

@@ -131,20 +131,15 @@ export default {
           link: 'https://sui.io/'
         },
         {
-          img: require('@/assets/images/dashboard/moon/MULTI-CHAIN-13.png'),
-          img_sunny: require('@/assets/images/dashboard/sunny/MULTI-CHAIN-13-sunny.png'),
-          link: 'https://en.fogmeta.com/'
-        },
-        {
           img: require('@/assets/images/dashboard/moon/MULTI-CHAIN-14.png'),
           img_sunny: require('@/assets/images/dashboard/sunny/MULTI-CHAIN-14-sunny.png'),
           link: 'https://www.web3cloud.tech/'
         },
-        {
-          img: require('@/assets/images/dashboard/moon/MULTI-CHAIN-15.png'),
-          img_sunny: require('@/assets/images/dashboard/sunny/MULTI-CHAIN-15-sunny.png'),
-          link: 'https://github.com/srblabotw69/Afianthack'
-        },
+        // {
+        //   img: require('@/assets/images/dashboard/moon/MULTI-CHAIN-15.png'),
+        //   img_sunny: require('@/assets/images/dashboard/sunny/MULTI-CHAIN-15-sunny.png'),
+        //   link: 'https://github.com/srblabotw69/Afianthack'
+        // },
         {
           img: require('@/assets/images/dashboard/moon/MULTI-CHAIN-16.png'),
           img_sunny: require('@/assets/images/dashboard/sunny/MULTI-CHAIN-16-sunny.png'),
@@ -154,6 +149,41 @@ export default {
           img: require('@/assets/images/dashboard/moon/MULTI-CHAIN-17.png'),
           img_sunny: require('@/assets/images/dashboard/sunny/MULTI-CHAIN-17-sunny.png'),
           link: 'https://sao.network/#/'
+        },
+        {
+          img: require('@/assets/images/dashboard/moon/Oortech-moon.png'),
+          img_sunny: require('@/assets/images/dashboard/sunny/Oortech-sunny.png'),
+          link: 'https://www.oortech.com/'
+        },
+        {
+          img: require('@/assets/images/dashboard/moon/Telnyx-moon.png'),
+          img_sunny: require('@/assets/images/dashboard/sunny/Telnyx-sunny.png'),
+          link: 'https://telnyx.com/'
+        },
+        {
+          img: require('@/assets/images/dashboard/moon/Apus-moon.png'),
+          img_sunny: require('@/assets/images/dashboard/sunny/Apus-sunny.png'),
+          link: 'https://www.apus.network/'
+        },
+        {
+          img: require('@/assets/images/dashboard/moon/PPIO-moon.png'),
+          img_sunny: require('@/assets/images/dashboard/sunny/PPIO-sunny.png'),
+          link: 'https://www.ppio.cn/'
+        },
+        {
+          img: require('@/assets/images/dashboard/moon/Filmine-moon.png'),
+          img_sunny: require('@/assets/images/dashboard/sunny/Filmine-sunny.png'),
+          link: 'https://filmine.io/'
+        },
+        {
+          img: require('@/assets/images/dashboard/moon/Lagrange-moon.png'),
+          img_sunny: require('@/assets/images/dashboard/sunny/Lagrange-sunny.png'),
+          link: 'https://lagrangedao.org/'
+        },
+        {
+          img: require('@/assets/images/dashboard/moon/MULTI-CHAIN-13.png'),
+          img_sunny: require('@/assets/images/dashboard/sunny/MULTI-CHAIN-13-sunny.png'),
+          link: 'https://en.fogmeta.com/'
         },
         {
           img: require('@/assets/images/dashboard/moon/MULTI-CHAIN-12.png'),

@@ -200,8 +200,6 @@
 </template>
 
 <script>
-// import bus from '@/components/bus'
-// import * as myAjax from '@/api/uploadFile'
 import axios from 'axios'
 import firstContractJson from '@/utils/swanPayment.json'
 import erc20ContractJson from '@/utils/ERC20.json'
@@ -655,7 +653,6 @@ export default {
         that.biling_price = that.$root.filecoin_price
 
         that.loading = false
-        // that.addEvent()
       } else {
         setTimeout(function () {
           that.stats()
@@ -686,30 +683,6 @@ export default {
       that.uploadFile(uploadFile)
       that.ruleForm.fileList = [fileList[0]]
       that.bgStyle = false
-    },
-    addEvent () {
-      const oDragBody = document.querySelector('.uploadDig')
-      oDragBody.addEventListener('dragenter', (e) => {
-        e.preventDefault() // 拖进
-        that.bgStyle = true
-      })
-      oDragBody.addEventListener('dragover', (e) => {
-        e.preventDefault() // 清除默认事件
-      })
-      const oDragWrap = document.querySelector('.uploadDigID')
-      oDragWrap.addEventListener('dragenter', (e) => {
-        e.preventDefault() // 拖进
-      })
-      oDragWrap.addEventListener('dragleave', (e) => {
-        e.preventDefault() // 拖离
-        that.bgStyle = false
-      })
-      oDragWrap.addEventListener('dragover', (e) => {
-        e.preventDefault() // 清除默认事件
-      })
-      oDragWrap.addEventListener('drop', (e) => {
-        that.dropHandler(e) // 抛下
-      })
     }
   },
   mounted () {

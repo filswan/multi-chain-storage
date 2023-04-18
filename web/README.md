@@ -73,7 +73,7 @@ $ npm run build:test_t
 $ npm run build:test_prod_t
 
 # Build calibration projects
-$ npm run build:calibration_t
+$ npm run build:cali_t
 
 # Build prod projects
 $ npm run build:prod_t

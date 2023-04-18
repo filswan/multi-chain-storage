@@ -4,6 +4,8 @@
 
 const path = require('path')
 const GitRevisionPlugin = require('git-revision-webpack-plugin')
+const env = require('../config/' + process.env.env_config + '.env')
+const env_node = env.NODE_ENV.indexOf('production') > -1
 
 module.exports = {
   'chainWebpack': config => {
@@ -74,7 +76,7 @@ module.exports = {
     // Paths
     assetsRoot: path.resolve(__dirname, '../dist'),
     assetsSubDirectory: 'static',
-    assetsPublicPath: '/',
+    assetsPublicPath: env_node ? '/' : './',
 
     /**
      * Source Maps

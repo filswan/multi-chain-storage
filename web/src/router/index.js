@@ -50,6 +50,7 @@ const homeEntrance = () =>
 // 配置路由
 export default new Router({
   mode: 'history', // 后端支持可开
+  base: process.env.NODE_ENV === 'test' ? '/mcs' : '/',
   // mode: 'hash',
   routes: [{
     path: '/',

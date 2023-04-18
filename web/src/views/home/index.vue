@@ -232,13 +232,18 @@ export default {
   components: {
     vHead, vFoot, CarouselContainer, networkAlert, vStats, vPricing
   },
+  watch: {
+    $route: function (to, from) {
+      if (to.query.id) that.getHome(to.query.id)
+    }
+  },
   methods: {
     goLink (link) {
       window.open(link)
     },
     getHome (key) {
       that.moduleMenu = key
-      if (key === 'stats' || key === 'pricing') return false
+      if (key === 'stats' || key === 'pricing' || key === 'auditReport') return false
       var PageId = document.querySelector('#' + key)
       document.querySelector('.metamaskHome').scrollTo({
         top: PageId ? PageId.offsetTop : 0,

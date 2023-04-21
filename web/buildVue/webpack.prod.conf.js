@@ -62,6 +62,37 @@ const webpackConfig = merge(baseWebpackConfig, {
           chunks: 'all',
           name: 'commons',
           minChunks: Infinity
+        },
+        vendors: {
+          name: 'chunk-vendors',
+          test: /[\\/]node_modules[\\/]/,
+          chunks: 'all',
+          priority: -10
+        },
+        common: {
+          name: 'chunk-common',
+          minChunks: 2,
+          chunks: 'initial',
+          priority: -20,
+          reuseExistingChunk: true
+        },
+        'element-ui': {
+          name: 'element-ui',
+          test: /[\\/]element-ui[\\/]/,
+          chunks: 'all',
+          priority: 0
+        },
+        'moment': {
+          name: 'moment',
+          test: /[\\/]moment[\\/]/,
+          chunks: 'all',
+          priority: 0
+        },
+        'loadsh': {
+          name: 'loadsh',
+          test: /[\\/]loadsh[\\/]/,
+          chunks: 'all',
+          priority: 0
         }
       }
     },

@@ -560,7 +560,7 @@ export default {
       })
     },
     commonParam () {
-      let commonApi = `${that.baseAPIURL}api/v1/common/system/params?limit=20&wallet_address=${that.metaAddress}`
+      let commonApi = `${that.baseAPIURL}api/v1/config/params?limit=20&wallet_address=${that.metaAddress}`
 
       axios.get(commonApi, {
         headers: {

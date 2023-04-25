@@ -11,8 +11,8 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
-// const GitRevisionPlugin = require('git-revision-webpack-plugin')
-// const gitRevision = new GitRevisionPlugin()
+const GitRevisionPlugin = require('git-revision-webpack-plugin')
+const gitRevision = new GitRevisionPlugin()
 
 const env = require('../config/' + process.env.env_config + '.env')
 
@@ -87,13 +87,13 @@ const webpackConfig = merge(baseWebpackConfig, {
     chunkFilename: utils.assetsPath('js/[id].[chunkhash].js')
   },
   plugins: [
-    // gitRevision,
+    gitRevision,
     // http://vuejs.github.io/vue-loader/en/workflow/production.html
     new webpack.DefinePlugin({
       'process.env': env,
-      // 'process.env.VERSION': JSON.stringify(gitRevision.version()),
-      // 'process.env.COMMITHASH': JSON.stringify(gitRevision.commithash()),
-      // 'process.env.BRANCH': JSON.stringify(gitRevision.branch())
+      'process.env.VERSION': JSON.stringify(gitRevision.version()),
+      'process.env.COMMITHASH': JSON.stringify(gitRevision.commithash()),
+      'process.env.BRANCH': JSON.stringify(gitRevision.branch())
     }),
     // http://vuejs.github.io/vue-loader/en/workflow/production.html
     new webpack.DefinePlugin({

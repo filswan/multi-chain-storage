@@ -8,8 +8,8 @@ const GitRevisionPlugin = require('git-revision-webpack-plugin')
 module.exports = {
   'chainWebpack': config => {
     config.plugin('define').tap(args => {
-      const gitRevisionPlugin = new GitRevisionPlugin()
-      args[0]['process.env']['COMMIT_HASH'] = JSON.stringify(gitRevisionPlugin.commithash())
+      // const gitRevisionPlugin = new GitRevisionPlugin()
+      // args[0]['process.env']['COMMIT_HASH'] = JSON.stringify(gitRevisionPlugin.commithash())
       return args
     })
   },

@@ -27,7 +27,7 @@ COPY . .
 ENV NODE_OPTIONS="--openssl-legacy-provider"
 
 # build app for production with minification
-RUN npm run build:dev
+RUN npm run build:test
 
 EXPOSE 8080
 CMD [ "http-server", "dist" ]

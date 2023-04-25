@@ -2,9 +2,6 @@
   <div class="login-page login">
 
     <div class="loginArea">
-      <div class="loginAreaLeft">
-        <img src="@/assets/images/login/login_logo_en.png" />
-      </div>
       <transition name="wrapperFade" mode="out-in">
 
         <!-- 登录 -->

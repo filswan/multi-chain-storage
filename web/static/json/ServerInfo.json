@@ -1,1 +1,0 @@
-{"jsonrpc":"2.0","result":{"MinioVersion":"2022-08-30T23:58:26Z","MinioMemory":"","MinioPlatform":"Host: 9601551ab6d4 | OS: linux | Arch: amd64","MinioRuntime":"Version: go1.16.6 | CPUs: 32","MinioGlobalInfo":{"domains":null,"serverRegion":""},"MinioUserInfo":{"isIAMUser":false},"uiVersion":"2022-08-30T23:58:26Z"},"id":1}

@@ -71,7 +71,7 @@
       </template>
     </el-menu>
 
-    <!-- <div class="copyStyle" v-if="!collapseLocal">{{ $t('navbar.copy') }} {{git_version}}</div> -->
+    <div class="copyStyle">{{git_version}}</div>
   </div>
 </template>
 
@@ -865,12 +865,12 @@ export default {
   }
 }
 .copyStyle {
-  padding: 0 0 0 20px;
-  background: #080b29;
+  position: absolute;
+  top: 0;
+  left: 0;
   font-size: 0.12rem;
   line-height: 0.3rem;
-  color: #9c9c9c;
-  border-top: 0.01rem solid rgba(255, 255, 255, 0.2);
+  color: #080b29;
   z-index: 999;
   @media screen and (max-width: 1200px) {
     padding: 0 0 0 10px;

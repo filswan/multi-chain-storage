@@ -42,7 +42,7 @@
           </div>
         </div>
         <div class="roseChart_all">
-          <div class="roseChart" id="roseChart"></div>
+<!--          <div class="roseChart" id="roseChart"></div>-->
           <div class="roseChart" id="roseChart_1"></div>
         </div>
 
@@ -74,7 +74,6 @@ export default {
       list: [],
       loading: true,
       loading_ecosystem: true,
-      logo_img_black: require('@/assets/images/icons/MCSLOGO.png'),
       collaboratorsData: [
         {
           img: require('@/assets/images/dashboard/moon/MULTI-CHAIN-01.png'),
@@ -132,20 +131,15 @@ export default {
           link: 'https://sui.io/'
         },
         {
-          img: require('@/assets/images/dashboard/moon/MULTI-CHAIN-13.png'),
-          img_sunny: require('@/assets/images/dashboard/sunny/MULTI-CHAIN-13-sunny.png'),
-          link: 'https://en.fogmeta.com/'
-        },
-        {
           img: require('@/assets/images/dashboard/moon/MULTI-CHAIN-14.png'),
           img_sunny: require('@/assets/images/dashboard/sunny/MULTI-CHAIN-14-sunny.png'),
           link: 'https://www.web3cloud.tech/'
         },
-        {
-          img: require('@/assets/images/dashboard/moon/MULTI-CHAIN-15.png'),
-          img_sunny: require('@/assets/images/dashboard/sunny/MULTI-CHAIN-15-sunny.png'),
-          link: 'https://github.com/srblabotw69/Afianthack'
-        },
+        // {
+        //   img: require('@/assets/images/dashboard/moon/MULTI-CHAIN-15.png'),
+        //   img_sunny: require('@/assets/images/dashboard/sunny/MULTI-CHAIN-15-sunny.png'),
+        //   link: 'https://github.com/srblabotw69/Afianthack'
+        // },
         {
           img: require('@/assets/images/dashboard/moon/MULTI-CHAIN-16.png'),
           img_sunny: require('@/assets/images/dashboard/sunny/MULTI-CHAIN-16-sunny.png'),
@@ -155,6 +149,41 @@ export default {
           img: require('@/assets/images/dashboard/moon/MULTI-CHAIN-17.png'),
           img_sunny: require('@/assets/images/dashboard/sunny/MULTI-CHAIN-17-sunny.png'),
           link: 'https://sao.network/#/'
+        },
+        {
+          img: require('@/assets/images/dashboard/moon/Oortech-moon.png'),
+          img_sunny: require('@/assets/images/dashboard/sunny/Oortech-sunny.png'),
+          link: 'https://www.oortech.com/'
+        },
+        {
+          img: require('@/assets/images/dashboard/moon/Telnyx-moon.png'),
+          img_sunny: require('@/assets/images/dashboard/sunny/Telnyx-sunny.png'),
+          link: 'https://telnyx.com/'
+        },
+        {
+          img: require('@/assets/images/dashboard/moon/Apus-moon.png'),
+          img_sunny: require('@/assets/images/dashboard/sunny/Apus-sunny.png'),
+          link: 'https://www.apus.network/'
+        },
+        {
+          img: require('@/assets/images/dashboard/moon/PPIO-moon.png'),
+          img_sunny: require('@/assets/images/dashboard/sunny/PPIO-sunny.png'),
+          link: 'https://www.ppio.cn/'
+        },
+        {
+          img: require('@/assets/images/dashboard/moon/Filmine-moon.png'),
+          img_sunny: require('@/assets/images/dashboard/sunny/Filmine-sunny.png'),
+          link: 'https://filmine.io/'
+        },
+        {
+          img: require('@/assets/images/dashboard/moon/Lagrange-moon.png'),
+          img_sunny: require('@/assets/images/dashboard/sunny/Lagrange-sunny.png'),
+          link: 'https://lagrangedao.org/'
+        },
+        {
+          img: require('@/assets/images/dashboard/moon/MULTI-CHAIN-13.png'),
+          img_sunny: require('@/assets/images/dashboard/sunny/MULTI-CHAIN-13-sunny.png'),
+          link: 'https://en.fogmeta.com/'
         },
         {
           img: require('@/assets/images/dashboard/moon/MULTI-CHAIN-12.png'),
@@ -244,7 +273,7 @@ export default {
     async getPie () {
       // Init E chart
       // MyChart for IPFSStorage&StorageArchived
-      const myChart = echarts.init(document.getElementById('roseChart'))
+      // const myChart = echarts.init(document.getElementById('roseChart'))
       // MyChart1 for FilesUploaded&Buckets
       const myChart1 = echarts.init(document.getElementById('roseChart_1'))
       // Setting Chart for 'IPFS Storage (GiB)', 'Storage Archived (GiB)'
@@ -339,7 +368,6 @@ export default {
           }
         ],
         // loading data
-
 
         series: [
           {
@@ -449,16 +477,15 @@ export default {
         ]
       }
       // put data to chart
-      myChart.setOption(option)
+      // myChart.setOption(option)
       myChart1.setOption(option1)
       window.onresize = function () {
-        myChart.resize()
+        // myChart.resize()
         myChart1.resize()
       }
     },
     async getData () {
       const ecosysRes = await that.getRequest(`${process.env.BASE_ECO_API}ecosys/data`)
-      // const ecosysRes = await that.getRequest(`./static/json/eco.json`)
       if (!ecosysRes || ecosysRes.status !== 'success') {
         that.MCS_Dataset = []
         that.loading_ecosystem = false
@@ -549,7 +576,7 @@ export default {
         size = bytes / (1024 * 1024 * 1024) // or 1000
         size = size.toFixed(2)
       }
-      return size + " GiB"
+      return size + ' GiB'
       // return Number(size).toFixed(3);
     },
     NumFormat (value) {
@@ -574,9 +601,6 @@ export default {
 <style lang="scss" scoped>
 .statsCont {
   position: relative;
-  // width: calc(100% - 1rem);
-  // padding: 0.3rem 0.2rem;
-  // margin: 0.3rem;
   width: 80%;
   max-width: 1440px;
   min-width: 300px;
@@ -586,12 +610,6 @@ export default {
   @media screen and (max-width: 992px) {
     padding: 0.25rem 0;
   }
-  // background-image:
-  //     url(../../assets/images/dashboard/bg_top.png),
-  //     url(../../assets/images/dashboard/bg_bottom.png);
-  // background-position: left top, right bottom;
-  // background-repeat: no-repeat, no-repeat;
-  // background-size: 27%, 22%;
   border-radius: 0.1rem;
   .moon {
     display: none;

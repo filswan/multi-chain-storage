@@ -4,9 +4,6 @@
 
       <!-- <div class="forget-title">{{generateForgetPassword('forgetPassword_title')}}</div> -->
 
-      <div class="loginAreaLeft">
-        <img src="@/assets/images/login/login_logo_en.png" />
-      </div>
       <!-- 邮箱密码重置 -->
       <div class="loginAreaRight" v-loading="mailresetLoad">
 

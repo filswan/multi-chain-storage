@@ -215,6 +215,7 @@ export default {
     create_api_tips05: '当您生成密钥时，您将看到一个带有Swan API密钥、Swan API Secret和JWT的模式。',
     create_api_tips06: '您的“Swan API密钥”充当我们restapi的公钥，您的“Swan Secret API密钥”充当您公钥的密码。JWT是两者的编码混合。一定要保密！',
     create_api_tips07: '为了增强客户的安全性，这些密钥在Swan一侧加密，并且只显示一次，所以请将它们写下来。如果丢失了这些值，则需要撤消密钥并创建一个新的密钥。',
+    create_api_tips08: '关闭页面后，您将无法再次查看您的访问令牌。',
     Check_dataCap: '检查DataCap',
     form_contact: '联系方式',
     form_username: '用户名',
@@ -450,8 +451,8 @@ export default {
     Disconnect: '登出'
   },
   fs3Login: {
-    toptip_01: '您的钱包被错误地连接到',
-    toptip_02: '网络。使用我们的网站，请切换到',
+    toptip_01: '目前支持',
+    toptip_02: '；额外的链条即将到来！',
     toptip_03: '连接到您的MetaMask钱包',
     toptip_04: '如果您想访问MCS Polygon Mainnet，请单击',
     toptip_04_1: 'Testnet，请单击',
@@ -647,7 +648,8 @@ export default {
     Start_uploading: '开始上传',
     Upload_failed: '上传失败:',
     Upload_view: '查看',
-    Upload_path: '路径'
+    Upload_path: '路径',
+    mint_pending: '正在从链上扫描collection信息，请等待!'
   },
   billing: {
     search_placeholder: '搜索方式',
@@ -787,5 +789,33 @@ export default {
   comment: {
     Rate_Product: '评价我们的产品',
     Tell_Comment: '告诉我们您的意见'
+  },
+  pricing: {
+    'title_1': 'Choose the plan that works for you',
+    'title_2': 'Start storing your data in web3.',
+    'title_3': 'Stay tuned and contact us for more service details. ',
+    'title_4': 'In the meantime, we invite you to contact us with your proposals, feedback, or any inquiries.',
+    'btn': 'Contact us',
+    'bid_title_1': 'Free',
+    'bid_title_2': 'Pro',
+    'bid_desc_1': 'Get started with free essentials',
+    'bid_desc_2': 'Empower your storage with higher limits',
+    'get_plan': 'Get a Plan',
+    'coming_soon': 'Coming soon...',
+    'supported_wallet': 'Supported wallet',
+    'prepay_using': 'Prepay using',
+    'volume_title': 'Looking for more storage or volume?',
+    'volume_title_1': 'How to create a Discord ticket?',
+    'volume_p': "Our enterprise solutions and tailored plans are here to help you reach your goals. Contact us now via Discord and let's explore how we can unlock your storage potential together.",
+    'volume_create': 'Gif of how to create a ticket in a discord',
+    'question_title': 'Frequently asked questions',
+    'collapse_1_title': 'Does MultiChain Storage provide a free version?',
+    'collapse_1_desc': 'Yes, our free plan provides essential features and suits any individual to get started with decentralized storage',
+    'collapse_2_title': 'How many buckets and folders can I create?',
+    'collapse_2_desc': 'You can create unlimited buckets and folders as soon as you do not go over your storage capacity',
+    'collapse_3_title': 'Do you provide with SDK?',
+    'collapse_3_desc': 'Yes! We provide SDKs for Python and JavaScript. You can check them here (Link)',
+    'collapse_4_title': 'What if I run out of limits in Pro plan?',
+    'collapse_4_desc': 'No worries! Our team always open to communicate and customize a special plan for your needs. Create a ticket in our Discord community and we will get back to you shortly after.'
   }
 }

@@ -228,7 +228,7 @@
           <el-table-column prop="active" min-width="100" :label="$t('uploadFile.payment')">
             <template slot-scope="scope">
               <div class="hot-cold-box">
-                <el-button class="uploadBtn grey opacity" v-if="tableData[scope.$index].status.toLowerCase()=='pending'&&tableData[scope.$index].pin_status.toLowerCase()=='unpinned'" :disabled="true">
+                <el-button class="uploadBtn grey opacity" v-if="tableData[scope.$index].pay_amount==''&&tableData[scope.$index].pin_status.toLowerCase()=='unpinned'" :disabled="true">
                   {{$t('uploadFile.Canceled')}}
                 </el-button>
                 <el-button class="uploadBtn blue" type="primary" v-else-if="tableData[scope.$index].status.toLowerCase()=='pending'" @click.stop="payClick(scope.row)">
@@ -324,14 +324,14 @@
     <el-dialog title="" :visible.sync="metamaskLoginTip" :width="width" custom-class="completeDia">
       <img src="@/assets/images/box-important.png" class="resno" />
       <h4 v-if="baseNetwork">
-        {{$t('fs3Login.toptip_01')}} {{metaNetworkInfo.name}} {{$t('fs3Login.toptip_02')}}
-        <b>Polygon Mainnet</b>.
+        {{$t('fs3Login.toptip_01')}}
+        <b>Polygon Mainnet</b>{{$t('fs3Login.toptip_02')}}
       </h4>
       <h4 v-else>
-        {{$t('fs3Login.toptip_01')}} {{metaNetworkInfo.name}} {{$t('fs3Login.toptip_02')}}
+        {{$t('fs3Login.toptip_01')}}
         <b>Mumbai Testnet</b>
         {{$t('fs3Login.toptip_Network')}}
-        <b>BSC TestNet</b>.
+        <b>BSC TestNet</b>{{$t('fs3Login.toptip_02')}}
       </h4>
       <a class="a-close" @click="metamaskLoginTip=false">{{$t('uploadFile.OK')}}</a>
     </el-dialog>

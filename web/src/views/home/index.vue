@@ -1,7 +1,9 @@
 <template>
   <div class="metamaskHome">
     <v-head @getHome="getHome" @getLogin="signFun" :loginLoad="loginLoad"></v-head>
-    <div class="homeBody" v-if="!moduleMenu">
+    <v-stats v-if="moduleMenu === 'stats'"></v-stats>
+    <v-pricing v-else-if="moduleMenu === 'pricing'" @getLogin="signFun"></v-pricing>
+    <div class="homeBody" v-else>
       <div class="loginBody">
         <div class="width">
           <el-row>
@@ -84,7 +86,6 @@
         </div>
       </div>
     </div>
-    <v-stats v-else></v-stats>
     <v-foot id="resources"></v-foot>
     <el-backtop target=".metamaskHome"></el-backtop>
     <network-alert v-if="metaAddress&&networkTip" @changeNet="changeNet" @getNetwork="getNetwork"></network-alert>
@@ -95,6 +96,7 @@
 import vHead from '@/components/headHome.vue'
 import vFoot from '@/components/footHome.vue'
 import vStats from '@/views/stats/index.vue'
+import vPricing from '@/components/pricing.vue'
 import networkAlert from '@/components/networkAlert.vue'
 import CarouselContainer from '@/components/CarouselContainer.vue'
 let that
@@ -160,20 +162,15 @@ export default {
           link: 'https://sui.io/'
         },
         {
-          img: require('@/assets/images/dashboard/moon/MULTI-CHAIN-13.png'),
-          img_sunny: require('@/assets/images/dashboard/sunny/MULTI-CHAIN-13-sunny.png'),
-          link: 'https://en.fogmeta.com/'
-        },
-        {
           img: require('@/assets/images/dashboard/moon/MULTI-CHAIN-14.png'),
           img_sunny: require('@/assets/images/dashboard/sunny/MULTI-CHAIN-14-sunny.png'),
           link: 'https://www.web3cloud.tech/'
         },
-        {
-          img: require('@/assets/images/dashboard/moon/MULTI-CHAIN-15.png'),
-          img_sunny: require('@/assets/images/dashboard/sunny/MULTI-CHAIN-15-sunny.png'),
-          link: 'https://github.com/srblabotw69/Afianthack'
-        },
+        // {
+        //   img: require('@/assets/images/dashboard/moon/MULTI-CHAIN-15.png'),
+        //   img_sunny: require('@/assets/images/dashboard/sunny/MULTI-CHAIN-15-sunny.png'),
+        //   link: 'https://github.com/srblabotw69/Afianthack'
+        // },
         {
           img: require('@/assets/images/dashboard/moon/MULTI-CHAIN-16.png'),
           img_sunny: require('@/assets/images/dashboard/sunny/MULTI-CHAIN-16-sunny.png'),
@@ -185,6 +182,41 @@ export default {
           link: 'https://sao.network/#/'
         },
         {
+          img: require('@/assets/images/dashboard/moon/Oortech-moon.png'),
+          img_sunny: require('@/assets/images/dashboard/sunny/Oortech-sunny.png'),
+          link: 'https://www.oortech.com/'
+        },
+        {
+          img: require('@/assets/images/dashboard/moon/Telnyx-moon.png'),
+          img_sunny: require('@/assets/images/dashboard/sunny/Telnyx-sunny.png'),
+          link: 'https://telnyx.com/'
+        },
+        {
+          img: require('@/assets/images/dashboard/moon/Apus-moon.png'),
+          img_sunny: require('@/assets/images/dashboard/sunny/Apus-sunny.png'),
+          link: 'https://www.apus.network/'
+        },
+        {
+          img: require('@/assets/images/dashboard/moon/PPIO-moon.png'),
+          img_sunny: require('@/assets/images/dashboard/sunny/PPIO-sunny.png'),
+          link: 'https://www.ppio.cn/'
+        },
+        {
+          img: require('@/assets/images/dashboard/moon/Filmine-moon.png'),
+          img_sunny: require('@/assets/images/dashboard/sunny/Filmine-sunny.png'),
+          link: 'https://filmine.io/'
+        },
+        {
+          img: require('@/assets/images/dashboard/moon/Lagrange-moon.png'),
+          img_sunny: require('@/assets/images/dashboard/sunny/Lagrange-sunny.png'),
+          link: 'https://lagrangedao.org/'
+        },
+        {
+          img: require('@/assets/images/dashboard/moon/MULTI-CHAIN-13.png'),
+          img_sunny: require('@/assets/images/dashboard/sunny/MULTI-CHAIN-13-sunny.png'),
+          link: 'https://en.fogmeta.com/'
+        },
+        {
           img: require('@/assets/images/dashboard/moon/MULTI-CHAIN-12.png'),
           img_sunny: require('@/assets/images/dashboard/sunny/MULTI-CHAIN-12-sunny.png'),
           link: 'https://www.nebulablock.com/'
@@ -194,22 +226,22 @@ export default {
       loginLoad: false,
       prevType: true,
       networkTip: false,
-      moduleMenu: false
+      moduleMenu: ''
     }
   },
   components: {
-    vHead, vFoot, CarouselContainer, networkAlert, vStats
+    vHead, vFoot, CarouselContainer, networkAlert, vStats, vPricing
   },
   methods: {
     goLink (link) {
       window.open(link)
     },
     getHome (key) {
-      that.moduleMenu = key === 'stats'
-      if (key === 'stats') return false
+      that.moduleMenu = key
+      if (key === 'stats' || key === 'pricing') return false
       var PageId = document.querySelector('#' + key)
       document.querySelector('.metamaskHome').scrollTo({
-        top: PageId.offsetTop,
+        top: PageId ? PageId.offsetTop : 0,
         behavior: 'smooth'
       })
     },
@@ -437,6 +469,11 @@ export default {
     }
     @media screen and (max-width: 999px) {
       width: 94%;
+    }
+  }
+  .statsHome {
+    @media screen and (max-width: 992px) {
+      padding-top: 1rem;
     }
   }
   .loginBody {

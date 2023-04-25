@@ -215,6 +215,7 @@ export default {
     create_api_tips05: 'When you generate your keys, you will see a modal with the Swan  API Key, Swan API Secret, and the JWT.',
     create_api_tips06: 'Your "Swan API Key" acts as your public key for our REST API, and your "Swan Secret API Key" acts as the password for your public key. The JWT is an encoded mix of the two. Be sure to keep your secret key private!',
     create_api_tips07: "For added customer security, these keys are encrypted on Swan's side and will only ever be displayed once, so write them down. If you lose these values you'll need to revoke the key and create a new one.",
+    create_api_tips08: 'You will not be able to view your access token again when you close the page.',
     Check_dataCap: 'Check DataCap',
     form_contact: 'Contact Info',
     form_username: 'User Name',
@@ -443,8 +444,8 @@ export default {
     Disconnect: 'Sign out'
   },
   fs3Login: {
-    toptip_01: 'Your wallet is wrongly connected to',
-    toptip_02: 'Network. To use our site, please switch to',
+    toptip_01: 'Currently supporting ',
+    toptip_02: '; additional chains arriving soon!',
     toptip_03: 'Connect to your MetaMask Wallet',
     toptip_04: 'If you would like to visit MCS Polygon Mainnet, please click',
     toptip_04_1: 'Testnet, please click',
@@ -640,7 +641,8 @@ export default {
     Start_uploading: 'Start uploading',
     Upload_failed: 'Upload failed:',
     Upload_view: 'view',
-    Upload_path: 'path'
+    Upload_path: 'path',
+    mint_pending: 'Collection information is being scanned from the chain, please wait!'
   },
   billing: {
     search_placeholder: 'Search by ',
@@ -781,5 +783,33 @@ export default {
   comment: {
     Rate_Product: 'Rate our product',
     Tell_Comment: 'Tell us your comment'
+  },
+  pricing: {
+    'title_1': 'Choose the plan that works for you',
+    'title_2': 'Start storing your data in web3.',
+    'title_3': 'Stay tuned and contact us for more service details. ',
+    'title_4': 'In the meantime, we invite you to contact us with your proposals, feedback, or any inquiries.',
+    'btn': 'Contact us',
+    'bid_title_1': 'Free',
+    'bid_title_2': 'Pro',
+    'bid_desc_1': 'Get started with free essentials',
+    'bid_desc_2': 'Empower your storage with higher limits',
+    'get_plan': 'Get a Plan',
+    'coming_soon': 'Coming soon...',
+    'supported_wallet': 'Supported wallet',
+    'prepay_using': 'Prepay using',
+    'volume_title': 'Looking for more storage or volume?',
+    'volume_title_1': 'How to create a Discord ticket?',
+    'volume_p': "Our enterprise solutions and tailored plans are here to help you reach your goals. Contact us now via Discord and let's explore how we can unlock your storage potential together.",
+    'volume_create': 'Gif of how to create a ticket in a discord',
+    'question_title': 'Frequently asked questions',
+    'collapse_1_title': 'Does MultiChain Storage provide a free version?',
+    'collapse_1_desc': 'Yes, our free plan provides essential features and suits any individual to get started with decentralized storage',
+    'collapse_2_title': 'How many buckets and folders can I create?',
+    'collapse_2_desc': 'You can create unlimited buckets and folders as soon as you do not go over your storage capacity',
+    'collapse_3_title': 'Do you provide with SDK?',
+    'collapse_3_desc': 'Yes! We provide SDKs for Python and JavaScript. You can check them here (Link)',
+    'collapse_4_title': 'What if I run out of limits in Pro plan?',
+    'collapse_4_desc': 'No worries! Our team always open to communicate and customize a special plan for your needs. Create a ticket in our Discord community and we will get back to you shortly after.'
   }
 }

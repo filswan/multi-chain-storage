@@ -138,10 +138,13 @@
       </div>
     </div>
 
-    <el-dialog :title="$t('my_profile.create_api_title01')" :visible.sync="apiTips" :width="width" custom-class="wrongNet">
+    <el-dialog :title="$t('my_profile.create_api_title01')" :visible.sync="apiTips" :width="width" custom-class="wrongNet" :modal="true" :close-on-click-modal="false">
       <div class="apiTipCont">
+        <b>{{$t('my_profile.create_api_tips08')}}</b>
         <label>{{$t('my_profile.create_api_tips03')}}</label>
-        <p>{{apiCont.apiKey}}</p>
+        <p>{{apiCont.apiKey}}
+          <span class="el-icon-document-copy" @click="copyLink(apiCont.apiKey, 1)"></span>
+        </p>
 
         <label>{{$t('my_profile.create_api_tips04')}}</label>
         <p>
@@ -263,7 +266,7 @@ export default {
       that.areaBody = row || {}
       that.changeTitle = title || ''
       that.dialogFormVisible = true
-      if (name === 'add_domain' || name === 'add_apikey') document.getElementById('content_client').scrollTop = 120
+      document.getElementById('content_client').scrollTop = 120
     },
     async deleteApiKey () {
       that.listTableLoad = true
@@ -554,6 +557,17 @@ export default {
         border-radius: 0.2rem;
       }
       .apiTipCont {
+        b {
+          display: block;
+          margin: 0 0 0.2rem;
+          line-height: 1.2;
+          color: #f44336;
+          font-size: 14px;
+          font-weight: 600;
+          @media screen and (max-width: 768px) {
+            font-size: 12px;
+          }
+        }
         p {
           display: flex;
           align-items: center;

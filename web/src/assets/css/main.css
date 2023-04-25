@@ -314,22 +314,6 @@ a {
   background: #fff;
 }
 
-.login .loginArea .loginAreaLeft {
-  float: left;
-  display: flex;
-  width: 52.7%;
-  height: 100%;
-  background: url(../images/login/img_login01.jpg) no-repeat center;
-  background-size: cover;
-  justify-content: space-evenly;
-  align-items: center;
-  display: none;
-}
-
-.login .loginArea .loginAreaLeft img {
-  width: 50%;
-}
-
 .login .loginArea .loginAreaRight {
   position: relative;
   float: left;
@@ -721,16 +705,6 @@ a {
     max-width: 400px;
     height: auto;
     min-width: auto;
-  }
-  .login .loginArea .loginAreaLeft {
-    display: none;
-    float: none;
-    width: 100%;
-    height: auto;
-    padding: 0.2rem 0;
-  }
-  .login .loginArea .loginAreaLeft img {
-    width: 40%;
   }
   .login .loginArea .loginAreaRight {
     width: 100%;

@@ -126,10 +126,6 @@ const webpackConfig = merge(baseWebpackConfig, {
       'process.env.COMMITHASH': JSON.stringify(gitRevision.commithash()),
       'process.env.BRANCH': JSON.stringify(gitRevision.branch())
     }),
-    // http://vuejs.github.io/vue-loader/en/workflow/production.html
-    new webpack.DefinePlugin({
-      'process.env': env
-    }),
     // new UglifyJsPlugin({
     //   uglifyOptions: {
     //     compress: {

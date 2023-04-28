@@ -475,7 +475,7 @@
 </template>
 
 <script>
-import moment from 'moment'
+// import moment from 'moment'
 let that
 export default {
   data () {

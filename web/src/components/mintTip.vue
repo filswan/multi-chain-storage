@@ -107,7 +107,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+// import axios from 'axios'
 import CollectionFactoryAbi from '@/utils/CollectionFactory.json'
 
 let that

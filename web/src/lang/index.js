@@ -1,4 +1,4 @@
-import Vue from 'vue'
+// import Vue from 'vue'
 import VueI18n from 'vue-i18n'
 // import Cookies from 'js-cookie'
 import elementEnLocale from 'element-ui/lib/locale/lang/en' // 英语

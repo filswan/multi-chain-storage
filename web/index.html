@@ -36,6 +36,27 @@
 
   </script>
 
+  <%if (process.env.NODE_ENV === 'production'){ %>
+    <link rel="stylesheet" href="<% process.env.BASE_URL %>static/css/element-ui.css">
+    <script src="<% process.env.BASE_URL %>static/js/echarts.min.js"></script>
+    <script src="<% process.env.BASE_URL %>static/js/qs.min.js"></script>
+    <script src="<% process.env.BASE_URL %>static/js/axios.min.js"></script>
+    <script src="<% process.env.BASE_URL %>static/js/moment.min.js"></script>
+    <script src="<% process.env.BASE_URL %>static/js/vue.min.js"></script>
+    <script src="<% process.env.BASE_URL %>static/js/vue-router.min.js"></script>
+    <script src="<% process.env.BASE_URL %>static/js/vuex.js"></script>
+    <!-- <script src="<% process.env.BASE_URL %>static/js/element-ui.min.js"></script> -->
+    <%} else {%>
+      <link rel="stylesheet" href="/static/css/element-ui.css">
+      <script src="/static/js/echarts.min.js"></script>
+      <script src="/static/js/qs.min.js"></script>
+      <script src="/static/js/axios.min.js"></script>
+      <script src="/static/js/moment.min.js"></script>
+      <script src="/static/js/vue.min.js"></script>
+      <script src="/static/js/vue-router.min.js"></script>
+      <script src="/static/js/vuex.js"></script>
+      <!-- <script src="/static/js/element-ui.min.js"></script> -->
+      <%}%>
 </head>
 
 <body>

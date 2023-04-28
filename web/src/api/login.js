@@ -1,5 +1,5 @@
 import request from '../utils/request'
-import QS from 'qs'
+// import Qs from 'qs'
 // 用户登录
 export function login (data) {
   return request({
@@ -14,7 +14,7 @@ export function logout (data) {
   return request({
     url: `/auth/logout`,
     method: 'POST',
-    data: QS.stringify(data)
+    data: Qs.stringify(data)
   })
 }
 

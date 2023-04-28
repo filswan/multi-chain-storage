@@ -200,7 +200,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+// import axios from 'axios'
 import firstContractJson from '@/utils/swanPayment.json'
 import erc20ContractJson from '@/utils/ERC20.json'
 let contractErc20

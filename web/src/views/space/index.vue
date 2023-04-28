@@ -103,9 +103,9 @@
   </div>
 </template>
 <script>
-import moment from 'moment'
+// import moment from 'moment'
 import popUps from '@/components/popups'
-import QS from 'qs'
+// import Qs from 'qs'
 let that
 export default {
   data () {
@@ -194,7 +194,7 @@ export default {
       const params = {
         'bucket_uid': that.areaBody.bucket_uid
       }
-      const deleteRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/bucket/delete?${QS.stringify(params)}`, 'get')
+      const deleteRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/bucket/delete?${Qs.stringify(params)}`, 'get')
       if (!deleteRes || deleteRes.status !== 'success') {
         that.$message.error(deleteRes.status || 'Fail')
       }

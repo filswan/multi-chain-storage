@@ -1,17 +1,17 @@
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
-import Vue from 'vue'
+// import Vue from 'vue'
 import App from './App'
 import router from './router'
-import Router from 'vue-router'
-import Vuex from 'vuex'
+// import Router from 'vue-router'
+// import Vuex from 'vuex'
 import store from './store'
 import i18n from './lang'
 
 import ElementUI from 'element-ui'
 import locale from 'element-ui/lib/locale/lang/en'
 import localeCN from 'element-ui/lib/locale/lang/zh-CN'
-import 'element-ui/lib/theme-chalk/index.css'
+// import 'element-ui/lib/theme-chalk/index.css'
 import './assets/css/icon.css'
 import './assets/css/main.css'
 
@@ -24,12 +24,13 @@ import md5 from 'js-md5'
 import SparkMD5 from 'spark-md5'
 import uploader from 'vue-simple-uploader'
 
-Vue.use(Router)
+// Vue.use(Router)
 let langNew = store.getters.languageMcs === 'en' ? {
   locale
 } : {
   localeCN
 }
+// Vue.use(ELEMENT, langNew)
 Vue.use(ElementUI, langNew)
 Vue.use(Vuex)
 Vue.use(Meta)
@@ -49,7 +50,7 @@ Vue.prototype.baseAPIURL = netData === 80001 ? process.env.BASE_PAYMENT_GATEWAY_
 Vue.prototype.baseAddressURL = netData === 80001 ? process.env.BASE_MUMBAI_ADDRESS : process.env.BASE_POLYGON_ADDRESS
 Vue.prototype.Web3 = Web3
 Vue.prototype.baseNetwork = process.env.BASE_ENV === true
-console.log('update time: 2023-4-25', 'env:', process.env.BASE_ENV === true ? 'Main' : 'Cali', process.env.BASE_ENV)
+console.log('update time: 2023-4-28', 'env:', process.env.BASE_ENV === true ? 'Main' : 'Cali', process.env.BASE_ENV)
 router.beforeEach((to, from, next) => {
   if (to.matched.some(record => record.meta.requiresAuth)) {
     if (!sessionStorage.getItem('metaAddress')) {

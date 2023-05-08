@@ -109,7 +109,7 @@
 </template>
 <script>
 import networkChange from '@/components/networkChange'
-import axios from 'axios'
+// import axios from 'axios'
 import erc20ContractJson from '@/utils/ERC20.json'
 const ethereum = window.ethereum
 let contractErc20
@@ -560,7 +560,7 @@ export default {
       })
     },
     commonParam () {
-      let commonApi = `${that.baseAPIURL}api/v1/common/system/params?limit=20&wallet_address=${that.metaAddress}`
+      let commonApi = `${that.baseAPIURL}api/v1/config/params?limit=20&wallet_address=${that.metaAddress}`
 
       axios.get(commonApi, {
         headers: {

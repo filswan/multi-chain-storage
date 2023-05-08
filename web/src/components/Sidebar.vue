@@ -77,7 +77,7 @@
 
 <script>
 // import bus from './bus';
-import axios from 'axios'
+// import axios from 'axios'
 export default {
   data () {
     return {

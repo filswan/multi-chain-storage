@@ -1,42 +1,44 @@
 <template>
-    <div id="dealManagement" v-loading="loading">
-        <div class="backTo" @click="back">
-            <span class="el-icon-back"></span>
-            <span style="font-size:0.18rem;margin-left:0.05rem">{{$t('deal.backto')}}</span>
-        </div>
-        <div class="upload">
-            <div class="title">{{source_file.file_name}}</div>
-            <el-row :gutter="30">
-                <el-col :span="6" v-for="(item, o) in dealsData" :key="o">
-                    <el-card class="box-card">
-                        <div slot="header" class="clearfix">
-                            <span>{{item.miner_fid}}</span>
-                        </div>
-                        <div class="text item">
-                            <label>{{$t('uploadFile.deal_id')}}:</label>
-                            <p><span @click="toDetail(item.deal_id)">{{item.deal_id}}</span></p>
-                        </div>
-                        <div class="text item">
-                            <label>{{$t('deal.form_select_title01')}}</label>
-                            <p>{{item.status}}</p>
-                        </div>
-                        <div class="text item">
-                            <label>{{$t('uploadFile.update_time')}}</label>
-                            <p>{{item.update_at}}</p>
-                        </div>
-                    </el-card>
-                </el-col>
-            </el-row>
-        </div>
-
-        <!-- 回到顶部 -->
-        <el-backtop target=".content-box" :bottom="40" :right="20"></el-backtop>
+  <div id="dealManagement" v-loading="loading">
+    <div class="backTo" @click="back">
+      <span class="el-icon-back"></span>
+      <span style="font-size:0.18rem;margin-left:0.05rem">{{$t('deal.backto')}}</span>
     </div>
+    <div class="upload">
+      <div class="title">{{source_file.file_name}}</div>
+      <el-row :gutter="30">
+        <el-col :span="6" v-for="(item, o) in dealsData" :key="o">
+          <el-card class="box-card">
+            <div slot="header" class="clearfix">
+              <span>{{item.miner_fid}}</span>
+            </div>
+            <div class="text item">
+              <label>{{$t('uploadFile.deal_id')}}:</label>
+              <p>
+                <span @click="toDetail(item.deal_id)">{{item.deal_id}}</span>
+              </p>
+            </div>
+            <div class="text item">
+              <label>{{$t('deal.form_select_title01')}}</label>
+              <p>{{item.status}}</p>
+            </div>
+            <div class="text item">
+              <label>{{$t('uploadFile.update_time')}}</label>
+              <p>{{item.update_at}}</p>
+            </div>
+          </el-card>
+        </el-col>
+      </el-row>
+    </div>
+
+    <!-- 回到顶部 -->
+    <el-backtop target=".content-box" :bottom="40" :right="20"></el-backtop>
+  </div>
 </template>
 
 <script>
-import axios from 'axios'
-import moment from 'moment'
+// import axios from 'axios'
+// import moment from 'moment'
 export default {
   name: 'my_files',
   data () {
@@ -64,7 +66,7 @@ export default {
   },
   methods: {
     toDetail (id) {
-      this.$router.push({name: 'my_files_detail', params: {id: id, cid: this.source_file.payload_cid}})
+      this.$router.push({ name: 'my_files_detail', params: { id: id, cid: this.source_file.payload_cid } })
     },
     back () {
       this.$router.go(-1)// 返回上一层
@@ -148,117 +150,115 @@ export default {
 </script>
 
 <style scoped lang="scss">
-#dealManagement{
-    padding: 0.25rem 0.2rem 0.2rem;
-    .backTo{
-        display: flex;
-        align-items: center;
-        font-size: 0.24rem;
-        line-height: 1;
-        max-width: 200px;
-        margin: 0 0 0.2rem;
-        cursor: pointer;
+#dealManagement {
+  padding: 0.25rem 0.2rem 0.2rem;
+  .backTo {
+    display: flex;
+    align-items: center;
+    font-size: 0.24rem;
+    line-height: 1;
+    max-width: 200px;
+    margin: 0 0 0.2rem;
+    cursor: pointer;
+  }
+  .upload {
+    padding: 0.1rem 0.3rem 0.2rem;
+    // background-color: #fff;
+    border-radius: 5px;
+    overflow: hidden;
+    // border-top: 3px solid #0b318f;
+    .title {
+      position: relative;
+      padding: 0 0 0.08rem;
+      margin: 0 auto 0.15rem;
+      font-size: 0.2rem;
+      text-align: center;
+      word-break: break-all;
+      &::before {
+        content: "";
+        position: absolute;
+        left: 50%;
+        bottom: 0;
+        width: 50px;
+        height: 3px;
+        margin-left: -25px;
+        background: #0b318f;
+      }
+      @media screen and (max-width: 600px) {
+        font-size: 16px;
+      }
     }
-    .upload{
-        padding: 0.1rem 0.3rem 0.2rem;
-        // background-color: #fff;
-        border-radius: 5px;
-        overflow: hidden;
-        // border-top: 3px solid #0b318f;
-        .title{
-            position: relative;
-            padding: 0 0 0.08rem;
-            margin: 0 auto 0.15rem;
-            font-size: 0.2rem;
-            text-align: center;
-            word-break: break-all;
-            &::before{
-                content: '';
-                position: absolute;
-                left: 50%;
-                bottom: 0;
-                width: 50px;
-                height: 3px;
-                margin-left: -25px;
-                background: #0b318f;
-            }
-            @media screen and (max-width:600px){
-                font-size: 16px;
-            }
+    .el-row /deep/ {
+      padding: 0.15rem 0;
+      .el-col {
+        padding: 0.05rem 0;
+        margin: 0 auto 10px;
+        font-size: 0.18rem;
+        line-height: 1.3;
+        color: #333;
+        word-break: break-word;
+        @media screen and (max-width: 1260px) {
+          width: 33%;
         }
-        .el-row /deep/{
-            padding: 0.15rem 0;
-            .el-col{
-                padding: 0.05rem 0;
-                margin: 0 auto 10px;
-                font-size: 0.18rem;
-                line-height: 1.3;
-                color: #333;
-                word-break: break-word;
-                @media screen and (max-width:1260px){
-                    width: 33%;
-                }
-                @media screen and (max-width:600px){
-                    width: 50%;
-                    font-size: 16px;
-                }
-                @media screen and (max-width:441px){
-                    width: 100%;
-                }
-                .el-card{
-                    border-radius: 0.1rem;
-                    .el-card__header{
-                        padding: 0.1rem;
-                        text-align: center;
-                        font-weight: 600;
-                        border-bottom: 2px solid #999;
-                    }
-                    .text{
-                        label{
-                            display: block;
-                            line-height: 1.5;
-                            color: #000;
-                            font-size: 0.15rem;
-                            font-weight: 600;
-                            @media screen and (max-width:600px){
-                                font-size: 14px;
-                            }
-                        }
-                        p{
-                            margin: 0.1rem 0;
-                            text-align: center;
-                            color: #8f8f8f;
-                            font-size: 0.14rem;
-                            span{
-                                font-weight: 600;
-                                cursor: pointer;
-                                color: #0b318f;
-                                &:hover{
-                                    text-decoration: underline;
-                                }
-                            }
-                            @media screen and (max-width:600px){
-                                font-size: 14px;
-                            }
-                        }
-                    }
-                }
-            }
+        @media screen and (max-width: 600px) {
+          width: 50%;
+          font-size: 16px;
         }
-    }
-}
-
-@media screen and (max-width:999px){
-    #dealManagement{
-        padding: 0.15rem 0.1rem 0.2rem;
-        .backTo{
-            margin: 0.2rem 0;
+        @media screen and (max-width: 441px) {
+          width: 100%;
         }
-        .upload{
+        .el-card {
+          border-radius: 0.1rem;
+          .el-card__header {
             padding: 0.1rem;
+            text-align: center;
+            font-weight: 600;
+            border-bottom: 2px solid #999;
+          }
+          .text {
+            label {
+              display: block;
+              line-height: 1.5;
+              color: #000;
+              font-size: 0.15rem;
+              font-weight: 600;
+              @media screen and (max-width: 600px) {
+                font-size: 14px;
+              }
+            }
+            p {
+              margin: 0.1rem 0;
+              text-align: center;
+              color: #8f8f8f;
+              font-size: 0.14rem;
+              span {
+                font-weight: 600;
+                cursor: pointer;
+                color: #0b318f;
+                &:hover {
+                  text-decoration: underline;
+                }
+              }
+              @media screen and (max-width: 600px) {
+                font-size: 14px;
+              }
+            }
+          }
         }
-
+      }
     }
+  }
 }
 
+@media screen and (max-width: 999px) {
+  #dealManagement {
+    padding: 0.15rem 0.1rem 0.2rem;
+    .backTo {
+      margin: 0.2rem 0;
+    }
+    .upload {
+      padding: 0.1rem;
+    }
+  }
+}
 </style>

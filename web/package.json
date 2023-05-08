@@ -26,9 +26,9 @@
   "dependencies": {
     "axios": "^0.21.1",
     "cross-env": "^7.0.3",
-    "echarts": "^5.4.0",
+    "echarts": "^5.0.2",
     "element-resize-detector": "^1.2.3",
-    "element-ui": "^2.15.6",
+    "element-ui": "^2.13.2",
     "jquery": "^3.6.0",
     "js-md5": "^0.7.3",
     "moment": "^2.29.1",
@@ -38,9 +38,9 @@
     "vue": "^2.5.2",
     "vue-drag-verify": "^1.0.6",
     "vue-meta": "^2.4.0",
-    "vue-router": "^3.0.1",
+    "vue-router": "^3.4.3",
     "vue-simple-uploader": "^0.7.6",
-    "vuex": "^3.6.2",
+    "vuex": "^3.5.1",
     "web3": "^1.7.0"
   },
   "devDependencies": {

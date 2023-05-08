@@ -1,6 +1,6 @@
 import store from '../store'
 import router from '../router'
-import axios from 'axios'
+// import axios from 'axios'
 import common from './common'
 import {
   Message

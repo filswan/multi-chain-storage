@@ -217,9 +217,9 @@
 </template>
 
 <script>
-import axios from 'axios'
-import QS from 'qs'
-import moment from 'moment'
+// import axios from 'axios'
+// import Qs from 'qs'
+// import moment from 'moment'
 let that
 export default {
   name: 'my_files',
@@ -337,7 +337,7 @@ export default {
         // payload_cid: that.$route.params.cid,
         wallet_address: that.$store.getters.metaAddress
       }
-      axios.get(`${that.baseAPIURL}api/v1/storage/deal/detail/${that.dealId}?${QS.stringify(dataCid)}`, {
+      axios.get(`${that.baseAPIURL}api/v1/storage/deal/detail/${that.dealId}?${Qs.stringify(dataCid)}`, {
         // axios.get(`./static/detail_page_response.json`, {
         headers: {
           'Authorization': 'Bearer ' + that.$store.getters.mcsjwtToken
@@ -392,7 +392,7 @@ export default {
       let obj = {
         wallet_address: that.$store.getters.metaAddress
       }
-      axios.get(`${that.baseAPIURL}api/v1/storage/deal/log/${that.logId}?${QS.stringify(obj)}`, {
+      axios.get(`${that.baseAPIURL}api/v1/storage/deal/log/${that.logId}?${Qs.stringify(obj)}`, {
         // axios.get(`./static/deal_logs.json`, {
         headers: {
           'Authorization': 'Bearer ' + that.$store.getters.mcsjwtToken

@@ -124,9 +124,9 @@
 
 <script>
 // import bus from '@/components/bus';
-import axios from 'axios'
-import QS from 'qs'
-import moment from 'moment'
+// import axios from 'axios'
+// import Qs from 'qs'
+// import moment from 'moment'
 import download from '@/components/download'
 export default {
   name: 'Billing',
@@ -263,8 +263,8 @@ export default {
         'order_by': _this.parma.is_ascend ? _this.parma.order_by : '',
         'is_ascend': _this.parma.is_ascend
       }
-      let uploadApi = `${_this.baseAPIURL}api/v1/billing?${QS.stringify(obj)}`
-      // let uploadApi = `./static/response-billing.json?${QS.stringify(obj)}`;
+      let uploadApi = `${_this.baseAPIURL}api/v1/billing?${Qs.stringify(obj)}`
+      // let uploadApi = `./static/response-billing.json?${Qs.stringify(obj)}`;
 
       axios.get(uploadApi, {
         headers: {

@@ -42,7 +42,7 @@
           </div>
         </div>
         <div class="roseChart_all">
-<!--          <div class="roseChart" id="roseChart"></div>-->
+          <!--          <div class="roseChart" id="roseChart"></div>-->
           <div class="roseChart" id="roseChart_1"></div>
         </div>
 
@@ -61,10 +61,10 @@
 </template>
 
 <script>
-import axios from 'axios'
-import * as echarts from 'echarts'
+// import axios from 'axios'
+// import * as echarts from 'echarts'
 import { generateState } from '@/utils/i18n'
-import moment from 'moment'
+// import moment from 'moment'
 let that
 export default {
   name: 'Stats',
@@ -277,114 +277,114 @@ export default {
       // MyChart1 for FilesUploaded&Buckets
       const myChart1 = echarts.init(document.getElementById('roseChart_1'))
       // Setting Chart for 'IPFS Storage (GiB)', 'Storage Archived (GiB)'
-      const option = {
-        toolbox: {
-          show: true,
-          feature: {
-            mark: {
-              show: true
-            },
-            // dataZoom: {
-            //   yAxisIndex: false,
-            // },
-            // dataView: {
-            //     show: true,
-            //     readOnly: false,
-            //     title:'数据视图'
-            // },
-            magicType: {
-              show: true,
-              type: ['line', 'bar'],
-              title: {
-                line: 'Switch to line graph',
-                bar: 'Switch to bar graph'
-              }
-            },
-            restore: {
-              show: true,
-              title: 'Restore'
-            },
-            saveAsImage: {
-              show: true,
-              title: 'Save'
-            }
-          }
-        },
-        tooltip: {
-          trigger: 'axis',
-          axisPointer: {
-            type: 'cross',
-            label: {
-              backgroundColor: '#6a7985'
-            }
-          }
-        },
-        legend: {
-          bottom: 0,
-          left: 'center',
-          textStyle: {
-            color: '#000',
-            fontSize: 13
-          },
-          data: ['IPFS Storage (GiB)', 'Storage Archived (GiB)']
-        },
-        grid: {
-          top: '70',
-          left: '3%',
-          right: '3%',
-          bottom: '50',
-          containLabel: true
-        },
-        // color: ['#4472c4', '#ed7d31', 'green'],
-        xAxis: {
-          type: 'category',
-          boundaryGap: false,
-          data: that.echartData.time.map(function (str) {
-            return str.replace(' ', '\n')
-          })
-        },
-        yAxis: [
-          // IPFS Storage (GiB)
-          {
-            // boundaryGap: [0, '30%'],
-            name: 'GiB',
-            type: 'value',
-            // min: that.echartData.min_file,
-            // max: that.echartData.max_file,
-            scale: true,
-            splitNumber: 5,
-            alignTicks: true
-          },
-          // Storage Archived (GiB)
-          {
-            // boundaryGap: [0, '50%'],
-            name: 'GiB',
-            type: 'value',
-            position: 'right',
-            // min: that.echartData.min_val,
-            // max: that.echartData.max_val,
-            scale: true,
-            splitNumber: 5
-          }
-        ],
-        // loading data
+      // const option = {
+      //   toolbox: {
+      //     show: true,
+      //     feature: {
+      //       mark: {
+      //         show: true
+      //       },
+      //       // dataZoom: {
+      //       //   yAxisIndex: false,
+      //       // },
+      //       // dataView: {
+      //       //     show: true,
+      //       //     readOnly: false,
+      //       //     title:'数据视图'
+      //       // },
+      //       magicType: {
+      //         show: true,
+      //         type: ['line', 'bar'],
+      //         title: {
+      //           line: 'Switch to line graph',
+      //           bar: 'Switch to bar graph'
+      //         }
+      //       },
+      //       restore: {
+      //         show: true,
+      //         title: 'Restore'
+      //       },
+      //       saveAsImage: {
+      //         show: true,
+      //         title: 'Save'
+      //       }
+      //     }
+      //   },
+      //   tooltip: {
+      //     trigger: 'axis',
+      //     axisPointer: {
+      //       type: 'cross',
+      //       label: {
+      //         backgroundColor: '#6a7985'
+      //       }
+      //     }
+      //   },
+      //   legend: {
+      //     bottom: 0,
+      //     left: 'center',
+      //     textStyle: {
+      //       color: '#000',
+      //       fontSize: 13
+      //     },
+      //     data: ['IPFS Storage (GiB)', 'Storage Archived (GiB)']
+      //   },
+      //   grid: {
+      //     top: '70',
+      //     left: '3%',
+      //     right: '3%',
+      //     bottom: '50',
+      //     containLabel: true
+      //   },
+      //   // color: ['#4472c4', '#ed7d31', 'green'],
+      //   xAxis: {
+      //     type: 'category',
+      //     boundaryGap: false,
+      //     data: that.echartData.time.map(function (str) {
+      //       return str.replace(' ', '\n')
+      //     })
+      //   },
+      //   yAxis: [
+      //     // IPFS Storage (GiB)
+      //     {
+      //       // boundaryGap: [0, '30%'],
+      //       name: 'GiB',
+      //       type: 'value',
+      //       // min: that.echartData.min_file,
+      //       // max: that.echartData.max_file,
+      //       scale: true,
+      //       splitNumber: 5,
+      //       alignTicks: true
+      //     },
+      //     // Storage Archived (GiB)
+      //     {
+      //       // boundaryGap: [0, '50%'],
+      //       name: 'GiB',
+      //       type: 'value',
+      //       position: 'right',
+      //       // min: that.echartData.min_val,
+      //       // max: that.echartData.max_val,
+      //       scale: true,
+      //       splitNumber: 5
+      //     }
+      //   ],
+      //   // loading data
 
-        series: [
-          {
-            name: 'IPFS Storage (GiB)',
-            type: 'line',
-            data: that.echartData.pinned_size,
-            yAxisIndex: 0
-          },
-          {
-            name: 'Storage Archived (GiB)',
-            type: 'line',
-            data: that.echartData.archived,
-            yAxisIndex: 1
-            // showSymbol: false
-          }
-        ]
-      }
+      //   series: [
+      //     {
+      //       name: 'IPFS Storage (GiB)',
+      //       type: 'line',
+      //       data: that.echartData.pinned_size,
+      //       yAxisIndex: 0
+      //     },
+      //     {
+      //       name: 'Storage Archived (GiB)',
+      //       type: 'line',
+      //       data: that.echartData.archived,
+      //       yAxisIndex: 1
+      //       // showSymbol: false
+      //     }
+      //   ]
+      // }
       // Setting chart for 'Files uploaded', 'Buckets'
       const option1 = {
         toolbox: {

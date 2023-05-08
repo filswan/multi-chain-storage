@@ -357,9 +357,9 @@
 </template>
 
 <script>
-import axios from 'axios'
-import QS from 'qs'
-import moment from 'moment'
+// import axios from 'axios'
+// import Qs from 'qs'
+// import moment from 'moment'
 import payTip from '@/components/payTip'
 import payTips from '@/components/uploadFiles'
 import mintTip from '@/components/mintTip'
@@ -1020,8 +1020,8 @@ export default {
       _this.tableData = []
 
       let uploadRes = new Promise((resolve, reject) => {
-        let storageApi = `${_this.baseAPIURL}api/v1/storage/tasks/deals?${QS.stringify(parma)}`
-        // let storageApi = `./static/pay-status-response.json?${QS.stringify(parma)}`
+        let storageApi = `${_this.baseAPIURL}api/v1/storage/tasks/deals?${Qs.stringify(parma)}`
+        // let storageApi = `./static/pay-status-response.json?${Qs.stringify(parma)}`
 
         axios.get(storageApi, {
           headers: {

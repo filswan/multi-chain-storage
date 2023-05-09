@@ -96,7 +96,7 @@
             {{areaBody.size | formatbytes}}
           </el-form-item>
           <el-form-item></el-form-item>
-          <el-form-item :label="$t('metaSpace.detail_BackupInfo')">
+          <!-- <el-form-item :label="$t('metaSpace.detail_BackupInfo')">
             <div class="tip">
               {{$t('metaSpace.detail_StorageProvider')}}({{areaBody.miner_count}})
 
@@ -119,45 +119,11 @@
           </el-form-item>
           <el-form-item :label="$t('metaSpace.detail_RemainingServiceDays')">
             <span class="color">{{areaBody.remaining_service_days}}</span>
-          </el-form-item>
+          </el-form-item> -->
           <el-form-item>
             <el-button type="primary" @click="closeDia()">{{$t('metaSpace.Close')}}</el-button>
           </el-form-item>
         </el-form>
-      </div>
-    </div>
-    <div class="fe-none" v-else-if="typeName === 'detail_ipfs_file'">
-      <div class="addBucket" v-loading="backupLoad">
-        <i class="el-icon-circle-close closePop" v-if="ipfsUploadLoad" @click="controllerSignal()"></i>
-        <div class="head">
-          {{$t('metaSpace.ob_detail_share')}}
-        </div>
-        <el-form ref="form" class="demo-ruleForm">
-          <el-form-item :label="$t('metaSpace.ob_detail_ObjectIPFSLink')" class="ipfs_form">
-            <el-select v-model="areaBody.ipfs_url_domain" placeholder=" ">
-              <el-option v-for="item in areaBody.options" :key="item.value" :label="item.label" :value="item.value">
-              </el-option>
-            </el-select>
-            {{`/ipfs/${areaBody.payload_cid}`}}
-            <i class="icon el-icon-document-copy" @click="copyLink(`https://${areaBody.ipfs_url_domain}/ipfs/${areaBody.payload_cid}`)"></i>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" @click="closeDia()">{{$t('metaSpace.Close')}}</el-button>
-          </el-form-item>
-        </el-form>
-        <div class="loadTryAgain" v-if="ipfsUploadLoad">
-          <div style="width:100%;">
-            <div class="load_svg">
-              <svg viewBox="25 25 50 50" class="circular">
-                <circle cx="50" cy="50" r="20" fill="none" class="path"></circle>
-              </svg>
-              <p>
-                {{$t('uploadFile.payment_tip_deal')}}
-                <span @click="controllerSignal('try_again', areaBody.ipfs_url, areaBody.name)">{{$t('metaSpace.try_again')}}</span>
-              </p>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
     <div class="fe-none" v-else-if="typeName === 'detail_folder'">
@@ -231,6 +197,40 @@
         </div>
       </div>
     </div>
+    <div class="fe-none" v-else-if="typeName === 'detail_ipfs_file'">
+      <div class="addBucket" v-loading="backupLoad">
+        <i class="el-icon-circle-close closePop" v-if="ipfsUploadLoad" @click="controllerSignal()"></i>
+        <div class="head">
+          {{$t('metaSpace.ob_detail_share')}}
+        </div>
+        <el-form ref="form" class="demo-ruleForm">
+          <el-form-item :label="$t('metaSpace.ob_detail_ObjectIPFSLink')" class="ipfs_form">
+            <el-select v-model="areaBody.ipfs_url_domain" placeholder=" ">
+              <el-option v-for="item in areaBody.options" :key="item.value" :label="item.label" :value="item.value">
+              </el-option>
+            </el-select>
+            {{`/ipfs/${areaBody.payload_cid}`}}
+            <i class="icon el-icon-document-copy" @click="copyLink(`https://${areaBody.ipfs_url_domain}/ipfs/${areaBody.payload_cid}`)"></i>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="closeDia()">{{$t('metaSpace.Close')}}</el-button>
+          </el-form-item>
+        </el-form>
+        <div class="loadTryAgain" v-if="ipfsUploadLoad">
+          <div style="width:100%;">
+            <div class="load_svg">
+              <svg viewBox="25 25 50 50" class="circular">
+                <circle cx="50" cy="50" r="20" fill="none" class="path"></circle>
+              </svg>
+              <p>
+                {{$t('uploadFile.payment_tip_deal')}}
+                <span @click="controllerSignal('try_again', areaBody.ipfs_url, areaBody.name)">{{$t('metaSpace.try_again')}}</span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="fe-none" v-else-if="typeName === 'upload'">
       <div class="uploadDig" v-loading="loading">
         <i class="el-icon-circle-close close" @click="closeDia()"></i>
@@ -273,29 +273,29 @@
     </div>
     <div class="fe-none" v-else-if="typeName === 'upload_folder'">
       <div class="uploadDig uploadDigFolder" v-loading="loading">
-        <div class="upload_form upload_to">
-          <div class="text">{{$t('metaSpace.Browse_Folders_title')}}</div>
-          <el-form ref="form" @submit.native.prevent>
-            <el-form-item :label="$t('metaSpace.Browse_Folders_title01')">
-              <el-select v-model="form.uploadLabel" placeholder=" ">
-                <el-option v-for="item in form.uploadLabeloptions" :key="item.value" :label="item.label" :value="item.value">
-                </el-option>
-              </el-select>
-              <p v-show="form.uploadLabel === 'mcs'">{{$t('metaSpace.Browse_Folders_mcs_desc')}}</p>
-              <p v-show="form.uploadLabel === 'ipfs'">{{$t('metaSpace.Browse_Folders_desc')}}</p>
-            </el-form-item>
-            <el-form-item>
-              <el-button type="info" class="upload-demo" @click="closeDia()">{{$t('metaSpace.Cancel')}}</el-button>
-              <el-upload v-show="form.uploadLabel === 'mcs'" class="upload-demo upload-file" :multiple="true" ref="uploadFolderRef" action="customize" :http-request="uploadFile" :file-list="ruleForm.fileListFolder" :show-file-list="false" :on-change="handleChange"
-                :on-remove="handleRemove">
-                <el-button type="primary">{{$t('metaSpace.Submit')}}</el-button>
-              </el-upload>
-              <el-upload v-show="form.uploadLabel === 'ipfs'" class="upload-demo upload-file upload-file-ipfs" :multiple="true" ref="uploadFolderIPFSRef" action="customize" :http-request="uploadFileIPFS" :file-list="ruleForm.fileListFolder" :show-file-list="false"
-                :on-change="handleIPFSChange" :on-remove="handleRemove">
-                <el-button type="primary">{{$t('metaSpace.Submit')}}</el-button>
-              </el-upload>
-            </el-form-item>
-          </el-form>
+        <i class="el-icon-circle-close close" @click="closeDia()"></i>
+        <div class="upload_form">
+          <div class="upload_to">
+            <div class="text">Upload to MCS</div>
+            <el-upload class="upload-demo upload-file" :multiple="true" ref="uploadFolderRef" action="customize" :http-request="uploadFile" :file-list="ruleForm.fileListFolder" :show-file-list="false" :on-change="handleChange" :on-remove="handleRemove">
+              <img src="@/assets/images/space/icon_11.png" alt="">
+              <div class="el-upload__text"></div>
+              <el-button type="primary">
+                {{$t('metaSpace.Browse_Folders')}}
+              </el-button>
+            </el-upload>
+          </div>
+          <div class="upload_to">
+            <div class="text">Upload to IPFS</div>
+            <el-upload class="upload-demo upload-file upload-file-ipfs" :multiple="true" ref="uploadFolderIPFSRef" action="customize" :http-request="uploadFileIPFS" :file-list="ruleForm.fileListFolder" :show-file-list="false" :on-change="handleIPFSChange"
+              :on-remove="handleRemove">
+              <img src="@/assets/images/space/icon_11.png" alt="">
+              <div class="el-upload__text"></div>
+              <el-button type="primary">
+                {{$t('metaSpace.Browse_Folders')}}
+              </el-button>
+            </el-upload>
+          </div>
         </div>
       </div>
     </div>
@@ -475,7 +475,7 @@
 </template>
 
 <script>
-// import moment from 'moment'
+import moment from 'moment'
 let that
 export default {
   data () {
@@ -496,15 +496,7 @@ export default {
         email: '',
         day: '30',
         checkType: ['agreement'],
-        domain: '',
-        uploadLabel: 'mcs',
-        uploadLabeloptions: [{
-          value: 'mcs',
-          label: 'Multi-Chain storage'
-        }, {
-          value: 'ipfs',
-          label: 'IPFS'
-        }]
+        domain: ''
       },
       rules: {
         name: [{ validator: validateName, trigger: 'blur' }]
@@ -561,7 +553,7 @@ export default {
       uploadBody: {
         uploadList: [],
         uploadListAll: [],
-        uploadListName: false,
+        uploadListName: '',
         addNum: 0,
         allNum: 0
       },
@@ -779,7 +771,7 @@ export default {
       that.ruleForm.fileIPFSList.push(params.file)
       if (that.ruleForm.uploadNum === that.ruleForm.fileIPFSList.length) {
         const folderName = params.file.webkitRelativePath.split('/')[0] || ''
-        await that.foldUploadIPFS(that.ruleForm.fileIPFSList, folderName)
+        await that.foldIPFS(that.ruleForm.fileIPFSList, folderName)
       }
     },
     async handleIPFSChange (file, fileList) {
@@ -814,47 +806,17 @@ export default {
         that.uploadFileName = file.name
         that.uploadFileSizeAll = file.size
         if (that.typeName === 'upload_folder' || that.typeName === 'upload_folder_list') {
-          if (fold) {
-            // fold = true, Folder already exists, upload terminated
-            if (that.uploadBody.uploadListName !== fold) {
-              that.uploadBody.uploadListName = fold
-              that.$message.error('Folder already exists')
-              that.$emit('getUploadDialog', that.typeName === 'upload_folder_list', 1)
-              that.loading = false
-            }
-          } else {
-            that.typeName = 'upload_folder_list'
-            file.uploadPrecent = 0
-            file.currentFold = currentFold
-            file.fold = fold
-            file.chunkIndex = indexFile
-            that.ruleForm.fileListFolder.push(file)
-            that.ruleForm.fileListFolder[that.uploadBody.addNum - 1].path = `${that.currentBucket}/${currentFold}`
-            // console.log(fileList)
-            if (!that.uploadStart) await that.foldUpload(fileList)
-          }
+          that.typeName = 'upload_folder_list'
+          file.uploadPrecent = 0
+          file.currentFold = currentFold
+          file.fold = fold
+          file.chunkIndex = indexFile
+          that.ruleForm.fileListFolder.push(file)
+          that.ruleForm.fileListFolder[that.uploadBody.addNum - 1].path = `${that.currentBucket}/${currentFold}`
+          // console.log(fileList)
+          if (!that.uploadStart) await that.foldUpload(fileList)
         } else that.fileUpload(file, currentFold, fold, indexFile)
       }
-    },
-    async foldUploadIPFS (fileList, folderName) {
-      that.ruleForm.fileIPFSList = []
-      that.loading = true
-      const current = that.currentBucket.split('/').slice(1).join('/')
-      const parentAddress = that.areaBody.prefix || current || ''
-      let paramCheck = new FormData()
-      fileList.forEach(file => {
-        paramCheck.append('files', file)
-      })
-      paramCheck.append('folder_name', folderName)
-      paramCheck.append('prefix', parentAddress)
-      paramCheck.append('bucket_uid', that.areaBody)
-      let ipfsRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/pin_files_to_ipfs`, 'post', paramCheck)
-      if (!ipfsRes || ipfsRes.status !== 'success') {
-        if (ipfsRes) that.$message.error(ipfsRes.message || 'Fail')
-        else that.$message.error('Fail')
-      }
-      that.$emit('getUploadDialog', that.typeName === 'upload_folder_list', 1)
-      that.loading = false
     },
     async foldUpload (listRowData) {
       that.uploadStart = true
@@ -873,9 +835,16 @@ export default {
         let { hash } = await that.fileMd5(file)
         let fileCheckRes = await that.fileCheck(hash, file, currentFold, fold, indexFile)
         if (!fileCheckRes) {
+          console.log(currentFold, that.uploadBody.uploadListName)
           if (that.typeName === 'upload_folder' || that.typeName === 'upload_folder_list') {
-            that.ruleForm.fileListFolder[indexFile - 1].uploadPrecent = 100
-            that.ruleForm.fileListFolder[indexFile - 1].name = `${file.name.trim()}` + ' '
+            if (currentFold === that.uploadBody.uploadListName) {
+              that.ruleForm.fileListFolder[indexFile - 1].err = true
+              let contErr = `${file.name.trim()} (path:/${that.currentBucket}/${currentFold})`
+              if (that.ruleForm.fileListFolderErr.indexOf(contErr) === -1) that.ruleForm.fileListFolderErr.push(contErr)
+            } else {
+              that.ruleForm.fileListFolder[indexFile - 1].uploadPrecent = 100
+              that.ruleForm.fileListFolder[indexFile - 1].name = `${file.name.trim()}` + ' '
+            }
           }
           if (that.uploadBody.allNum === that.uploadBody.addNum) {
             that.$emit('getUploadDialog', that.typeName === 'upload_folder_list', 0)
@@ -992,8 +961,41 @@ export default {
       that.uploadFileSize = file.size
       await that.fileMerge(hash, file, currentFold, fold, indexFile)
     },
+    async foldIPFS (fileList, folderName) {
+      that.loading = true
+      that.ruleForm.fileIPFSList = []
+      const current = that.currentBucket.split('/').slice(1).join('/')
+      const parentAddress = that.areaBody.prefix || current || ''
+      let paramCheck = new FormData()
+      fileList.forEach(file => {
+        let namepath = file.webkitRelativePath || file.name
+        let fileNew = new File([file], namepath)
+        paramCheck.append('files', fileNew, namepath)
+        // console.log('files', fileNew)
+      })
+      paramCheck.append('folder_name', folderName)
+      paramCheck.append('prefix', parentAddress)
+      paramCheck.append('bucket_uid', that.areaBody)
+      let ipfsRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/pin_files_to_ipfs`, 'post', paramCheck)
+      if (!ipfsRes || ipfsRes.status !== 'success') {
+        if (ipfsRes) that.$message.error(ipfsRes.message || 'Fail')
+        else that.$message.error('Fail')
+      }
+      that.$emit('getUploadDialog', that.typeName === 'upload_folder_list', 1)
+      that.loading = false
+    },
     async fileCheck (hash, file, currentFold, fold, indexFile) {
       that.loadFileText = 'Checking file information...'
+      if (that.typeName === 'upload_folder_list' && (that.uploadBody.uploadList !== that.uploadBody.uploadListAll)) {
+        that.uploadBody.uploadList = await that.getArray(that.uploadBody.uploadList)
+        that.uploadBody.uploadList = that.uploadBody.uploadList.filter((item, index) => {
+          return that.uploadBody.uploadList.indexOf(item) === index
+        })
+        const checkFolder = await that.getUploadFolderFun(that.uploadBody.uploadList)
+        console.log(checkFolder, that.uploadBody.uploadListName)
+        if (!checkFolder) return false
+      }
+      if (currentFold === that.uploadBody.uploadListName) return false
       const reg = new RegExp('/' + '$')
       const current = that.currentBucket.split('/').slice(1).join('/')
       const parentAddress = that.areaBody.prefix || current || ''
@@ -1008,13 +1010,6 @@ export default {
       if (!checkRes || checkRes.status !== 'success') {
         that.$message.error(checkRes.message || 'Fail')
         return false
-      }
-      if (that.typeName === 'upload_folder_list' && (that.uploadBody.uploadList !== that.uploadBody.uploadListAll)) {
-        that.uploadBody.uploadList = await that.getArray(that.uploadBody.uploadList)
-        that.uploadBody.uploadList = that.uploadBody.uploadList.filter((item, index) => {
-          return that.uploadBody.uploadList.indexOf(item) === index
-        })
-        await that.getUploadFolderFun(that.uploadBody.uploadList)
       }
       if (checkRes.data.file_is_exist || checkRes.data.ipfs_is_exist) {
         that.uploadBody.allNum += 1
@@ -1058,6 +1053,7 @@ export default {
         const directoryRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/create_folder`, 'post', params)
         if (!directoryRes || directoryRes.status !== 'success') {
           that.$message.error(directoryRes.message || 'Fail')
+          that.uploadBody.uploadListName = name.trim()
         }
       })
     },
@@ -1159,7 +1155,7 @@ export default {
       that.ruleForm.fileListFolder = []
       that.ruleForm.fileListFolderErr = []
       that.uploadBody.uploadListAll = []
-      that.uploadBody.uploadListName = false
+      that.uploadBody.uploadListName = ''
       that.uploadBody.addNum = 0
       that.uploadBody.allNum = 0
       that.uploadStart = false
@@ -1549,7 +1545,7 @@ export default {
     }
     .addBucket {
       position: relative;
-      max-width: 7.5rem;
+      max-width: 600px;
       padding: 0.35rem 0.5rem;
       background-color: #fff;
       border-radius: 0.2rem;
@@ -2623,130 +2619,54 @@ export default {
             }
           }
         }
-      }
-      .upload_to {
-        float: left;
-        width: calc(100% - 2px - 1rem);
-        margin: 0.25rem;
-        border: 1px dashed #898989;
-        border-radius: 0.1rem;
-        .text {
-          padding: 0;
-          text-align: left;
-          color: #000;
-        }
-        .el-form /deep/ {
-          min-width: 5rem;
-          padding: 0.15rem 0 0;
-          @media screen and (max-width: 1440px) {
-            min-width: 4.5rem;
-          }
-          @media screen and (max-width: 1200px) {
-            min-width: 4rem;
-          }
-          @media screen and (max-width: 992px) {
-            min-width: 3.5rem;
-          }
+        .upload_to {
+          float: left;
+          width: calc(46% - 2px);
+          margin: 0.3rem 2% 0.5rem;
+          border: 1px dashed #898989;
+          border-radius: 0.1rem;
           @media screen and (max-width: 768px) {
-            min-width: 3rem;
+            float: none;
+            width: 100%;
           }
-          .el-form-item {
-            display: block;
-            margin: 0;
-            .el-form-item__label {
-              width: 100%;
-              padding: 0;
-              text-align: left;
-              color: #000;
-            }
-            .el-form-item__content {
-              position: relative;
-              display: flex;
-              align-items: center;
-              flex-wrap: wrap;
-              width: 100%;
-              text-align: center;
-              .el-select {
-                width: 100%;
-                font-size: 16px;
+          .text {
+            padding: 0.2rem 0 0;
+            text-align: center;
+          }
+          .upload-demo /deep/ {
+            .el-upload {
+              padding: 0.3rem 0;
+              svg,
+              img {
+                width: 0.4rem;
+                height: 0.4rem;
+                margin: 0;
               }
-              p {
-                font-size: 14px;
-                text-align: left;
-                line-height: 1.3;
-                @media screen and (max-width: 1600px) {
-                  font-size: 12px;
+              .el-upload__text {
+                margin: 10px 0;
+                font-size: 0.22rem;
+                font-weight: normal;
+                color: #606060;
+                line-height: 1;
+                small {
+                  color: #969696;
                 }
               }
-              .el-input {
-                margin: 0 auto 0.1rem;
-                .el-input__inner {
-                  height: auto;
-                  padding: 0.05rem 0.15rem;
-                  background-color: transparent;
-                  border: 1px solid #4f8aff;
-                  border-radius: 0.1rem;
-                  font-size: 16px;
-                  text-align: left;
-                  @media screen and (max-width: 1600px) {
-                    font-size: 15px;
-                  }
-                  @media screen and (max-width: 1440px) {
-                    font-size: 14px;
-                  }
-                }
-                .el-input__suffix-inner {
-                  display: flex;
-                  align-items: center;
-                  height: 100%;
-                  .el-icon-arrow-up {
-                    width: 25px;
-                    height: 25px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    &::before {
-                      content: "\e78f";
-                      color: #000;
-                      font-size: 18px;
-                    }
-                  }
-                }
-              }
-              .upload-demo {
-                justify-content: center;
-                width: calc(50% - 0.34rem);
+              .el-button {
+                width: 45%;
                 max-width: 250px;
                 min-width: 150px;
                 padding: 0.17rem;
-                margin: 0.3rem auto 0;
+                margin: 0 auto;
+                background: linear-gradient(45deg, #4e88ff, #4b5fff);
                 font-family: inherit;
                 font-size: 16px;
                 border: 0;
-                border-radius: 0.1rem;
+                border-radius: 0.14rem;
                 line-height: 1;
-                text-align: center;
                 @media screen and (max-width: 1600px) {
-                  font-size: 15px;
-                }
-                @media screen and (max-width: 1440px) {
                   font-size: 14px;
                 }
-                @media screen and (max-width: 441px) {
-                  min-width: 100px;
-                }
-                .el-button {
-                  width: 100%;
-                  height: auto !important;
-                  padding: 0.17rem 0 !important;
-                  line-height: 1.2 !important;
-                }
-              }
-              .el-button--primary {
-                background: linear-gradient(45deg, #4e88ff, #4b5fff);
-              }
-              .el-button--info {
-                background: #dadada;
               }
             }
           }

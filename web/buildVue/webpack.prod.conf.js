@@ -11,8 +11,8 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
-const GitRevisionPlugin = require('git-revision-webpack-plugin')
-const gitRevision = new GitRevisionPlugin()
+// const GitRevisionPlugin = require('git-revision-webpack-plugin')
+// const gitRevision = new GitRevisionPlugin()
 
 const env = require('../config/' + process.env.env_config + '.env')
 
@@ -87,13 +87,13 @@ const webpackConfig = merge(baseWebpackConfig, {
     chunkFilename: utils.assetsPath('js/[id].[chunkhash].js')
   },
   plugins: [
-    gitRevision,
+    // gitRevision,
     // http://vuejs.github.io/vue-loader/en/workflow/production.html
     new webpack.DefinePlugin({
-      'process.env': env,
-      'process.env.VERSION': JSON.stringify(gitRevision.version()),
-      'process.env.COMMITHASH': JSON.stringify(gitRevision.commithash()),
-      'process.env.BRANCH': JSON.stringify(gitRevision.branch())
+      'process.env': env
+      // 'process.env.VERSION': JSON.stringify(gitRevision.version()),
+      // 'process.env.COMMITHASH': JSON.stringify(gitRevision.commithash()),
+      // 'process.env.BRANCH': JSON.stringify(gitRevision.branch())
     }),
     // new UglifyJsPlugin({
     //   uglifyOptions: {
@@ -122,14 +122,14 @@ const webpackConfig = merge(baseWebpackConfig, {
     // Compress extracted CSS. We are using this plugin so that possible
     // duplicated CSS from different components can be deduped.
     new OptimizeCSSPlugin({
-      cssProcessorOptions: config.build.productionSourceMap
-        ? {
+      cssProcessorOptions: config.build.productionSourceMap ?
+        {
           safe: true,
           map: {
             inline: false
           }
-        }
-        : {
+        } :
+        {
           safe: true
         }
     }),

@@ -126,6 +126,78 @@
         </el-form>
       </div>
     </div>
+    <div class="fe-none" v-else-if="typeName === 'detail_file'">
+      <div class="addBucket" v-loading="backupLoad">
+        <i class="el-icon-circle-close closePop" v-if="ipfsUploadLoad" @click="controllerSignal()"></i>
+        <div class="head">
+          {{$t('metaSpace.ob_detail_title')}}
+        </div>
+        <el-form ref="form" class="demo-ruleForm">
+          <el-form-item :label="$t('uploadFile.file_name')">
+            <span class="color">{{areaBody.name}}</span>
+          </el-form-item>
+          <el-form-item :label="$t('metaSpace.ob_detail_ObjectName')">
+            <span class="color">{{areaBody.object_name}}</span>
+          </el-form-item>
+          <el-form-item :label="$t('metaSpace.ob_detail_DateUploaded')">
+            <span class="color">{{momentFun(areaBody.created_at)}}</span>
+          </el-form-item>
+          <el-form-item :label="$t('metaSpace.ob_detail_ObjectSize')">
+            <span class="color">{{areaBody.size | formatbytes}}</span>
+          </el-form-item>
+          <el-form-item :label="$t('metaSpace.ob_detail_ObjectIPFSLink')">
+            <!-- <a class="color ipfsStyle" @click="xhrequest(areaBody.ipfs_url, areaBody.name)"> -->
+            <a class="color ipfsStyle" :href="areaBody.ipfs_url" target="_blank">
+              {{areaBody.ipfs_url}}
+            </a>
+          </el-form-item>
+          <el-form-item :label="$t('metaSpace.ob_detail_ObjectCID')">
+            <span class="color">{{areaBody.payload_cid}}</span>
+          </el-form-item>
+          <el-form-item></el-form-item>
+          <el-form-item :label="$t('metaSpace.detail_BackupInfo')">
+            <div class="tip">
+              {{$t('metaSpace.detail_StorageProvider')}}({{areaBody.miner_count}})
+
+              <el-popover placement="top" popper-class="elPopTitle" width="200" trigger="hover" v-if="areaBody.miner_count">
+                <div>
+                  <a v-for="(minerFid,s) in areaBody.miner_list" :key="s" :href="`${areaBody.miner_url_prefix}${minerFid}`" target="_blank" style="color: #474747;">
+                    {{minerFid}}
+                    <span v-if="s<areaBody.miner_list.length-1">,&nbsp;</span>
+                  </a>
+                </div>
+                <img slot="reference" src="@/assets/images/info.png" />
+              </el-popover>
+            </div>
+          </el-form-item>
+          <el-form-item :label="$t('metaSpace.detail_PieceCID')">
+            <div class="tip">
+              {{areaBody.piece_cid}}
+              <img slot="reference" src="@/assets/images/space/icon_10.png" class="copy" @click="copyLink(areaBody.piece_cid)" />
+            </div>
+          </el-form-item>
+          <el-form-item :label="$t('metaSpace.detail_RemainingServiceDays')">
+            <span class="color">{{areaBody.remaining_service_days}}</span>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="closeDia()">{{$t('metaSpace.Close')}}</el-button>
+          </el-form-item>
+        </el-form>
+        <div class="loadTryAgain" v-if="ipfsUploadLoad">
+          <div style="width:100%;">
+            <div class="load_svg">
+              <svg viewBox="25 25 50 50" class="circular">
+                <circle cx="50" cy="50" r="20" fill="none" class="path"></circle>
+              </svg>
+              <p>
+                {{$t('uploadFile.payment_tip_deal')}}
+                <span @click="controllerSignal('try_again', areaBody.ipfs_url, areaBody.name)">{{$t('metaSpace.try_again')}}</span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="fe-none" v-else-if="typeName === 'detail_ipfs_file'">
       <div class="addBucket" v-loading="backupLoad">
         <i class="el-icon-circle-close closePop" v-if="ipfsUploadLoad" @click="controllerSignal()"></i>
@@ -182,53 +254,6 @@
             <el-button type="primary" @click="closeDia()">{{$t('metaSpace.Close')}}</el-button>
           </el-form-item>
         </el-form>
-      </div>
-    </div>
-    <div class="fe-none" v-else-if="typeName === 'detail_file'">
-      <div class="addBucket" v-loading="backupLoad">
-        <i class="el-icon-circle-close closePop" v-if="ipfsUploadLoad" @click="controllerSignal()"></i>
-        <div class="head">
-          {{$t('metaSpace.ob_detail_title')}}
-        </div>
-        <el-form ref="form" class="demo-ruleForm">
-          <el-form-item :label="$t('uploadFile.file_name')">
-            <span class="color">{{areaBody.name}}</span>
-          </el-form-item>
-          <el-form-item :label="$t('metaSpace.ob_detail_ObjectName')">
-            <span class="color">{{areaBody.object_name}}</span>
-          </el-form-item>
-          <el-form-item :label="$t('metaSpace.ob_detail_DateUploaded')">
-            <span class="color">{{momentFun(areaBody.created_at)}}</span>
-          </el-form-item>
-          <el-form-item :label="$t('metaSpace.ob_detail_ObjectSize')">
-            <span class="color">{{areaBody.size | formatbytes}}</span>
-          </el-form-item>
-          <el-form-item :label="$t('metaSpace.ob_detail_ObjectIPFSLink')">
-            <!-- <a class="color ipfsStyle" @click="xhrequest(areaBody.ipfs_url, areaBody.name)"> -->
-            <a class="color ipfsStyle" :href="areaBody.ipfs_url" target="_blank">
-              {{areaBody.ipfs_url}}
-            </a>
-          </el-form-item>
-          <el-form-item :label="$t('metaSpace.ob_detail_ObjectCID')">
-            <span class="color">{{areaBody.payload_cid}}</span>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" @click="closeDia()">{{$t('metaSpace.Close')}}</el-button>
-          </el-form-item>
-        </el-form>
-        <div class="loadTryAgain" v-if="ipfsUploadLoad">
-          <div style="width:100%;">
-            <div class="load_svg">
-              <svg viewBox="25 25 50 50" class="circular">
-                <circle cx="50" cy="50" r="20" fill="none" class="path"></circle>
-              </svg>
-              <p>
-                {{$t('uploadFile.payment_tip_deal')}}
-                <span @click="controllerSignal('try_again', areaBody.ipfs_url, areaBody.name)">{{$t('metaSpace.try_again')}}</span>
-              </p>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
     <div class="fe-none" v-else-if="typeName === 'upload'">

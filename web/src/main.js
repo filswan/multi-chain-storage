@@ -82,7 +82,7 @@ new Vue({
   router,
   store,
   i18n,
-  metaInfo () {
+  metaInfo() {
     return {
       title: this.$store.getters.metaInfo.title,
       meta: [{

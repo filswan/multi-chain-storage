@@ -695,7 +695,7 @@ export default {
         size: _this.payRow.file_size,
         copyLimit: 5
       }
-      console.log(lockObj)
+      // console.log(lockObj)
       contractInstance.methods.lockTokenPayment(lockObj)
         .send(payObject)
         .on('transactionHash', function (hash) {

@@ -209,7 +209,7 @@ export default {
         const domainRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/gateway/get_gateway`, 'get')
         if (!domainRes || domainRes.status !== 'success') that.$message.error(domainRes ? domainRes.message : 'Fail')
         else {
-          bucketDetail.ipfs_url_domain = domainRes.data[0] || ''
+          bucketDetail.ipfs_url_domain = domainRes.data ? domainRes.data[0] : ''
           bucketDetail.options = []
           domainRes.data.forEach((element, i) => {
             bucketDetail.options.push({

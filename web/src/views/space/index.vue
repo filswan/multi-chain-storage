@@ -261,7 +261,7 @@ export default {
           data: []
         }
       } else {
-        that.domain.value = domainRes.data[0] || ''
+        that.domain.value = domainRes.data ? domainRes.data[0] : ''
         that.domain.data = domainRes.data || []
       }
 

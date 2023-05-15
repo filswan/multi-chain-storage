@@ -29,10 +29,7 @@
                 </div>
                 <span>{{nftView.nft_collection_name||nftView.nft_collection_address || nftView.mint_address || '-'}}</span>
               </div>
-              <el-button v-if="nftView.status" type="primary" size="mini" @click="handleMint(nftView, 'view')">
-                {{ $t('uploadFile.mint_view') }}
-              </el-button>
-              <el-button v-else disabled type="primary" size="mini" @click="handleMint(nftView, 'view')">
+              <el-button type="primary" size="mini" @click="handleMint(nftView, 'view')">
                 {{ $t('uploadFile.mint_view') }}
               </el-button>
             </div>
@@ -266,57 +263,24 @@ export default {
                 })
             } else {
               that.isloadText = that.$t('uploadFile.payment_tip_deal01')
-              let payObject = {
-                gasPrice: await that.$web3Init.eth.getGasPrice()
+              await that.mintContract(CollectionFactory, that.mintCollectionAddress.address, nftUrl)
+              if (that.tokenId) {
+                console.log('totalSupply success', that.tokenId)
+                let mintInfoJson = {
+                  source_file_upload_id: that.mintRow.source_file_upload_id,
+                  payload_cid: that.mintRow.payload_cid,
+                  tx_hash: that.nftHash,
+                  nft_collection_id: that.mintCollectionAddress.id,
+                  token_id: parseInt(that.tokenId),
+                  mint_address: that.mintCollectionAddress.address,
+                  name: that.ruleForm.name,
+                  description: that.ruleForm.description
+                }
+                const mintInfoResponse = await that.sendPostRequest(`${that.baseAPIURL}api/v1/storage/mint/info`, mintInfoJson)
+                if (mintInfoResponse) that.$emit('getMintDialog', false, mintInfoJson)
               }
-              CollectionFactory.methods
-                .mint(that.mintCollectionAddress.address, that.metaAddress, that.ruleForm.amount || 1, nftUrl)
-                .send(payObject)
-                .on('transactionHash', async function (hash) {
-                  that.nftHash = hash
-                  that.isloadText = that.$t('uploadFile.payment_tip_deal02')
-                  let mintInfoJson = {
-                    source_file_upload_id: that.mintRow.source_file_upload_id,
-                    payload_cid: that.mintRow.payload_cid,
-                    tx_hash: hash,
-                    nft_collection_id: that.mintCollectionAddress.id,
-                    mint_address: that.mintCollectionAddress.address,
-                    name: that.ruleForm.name,
-                    description: that.ruleForm.description
-                  }
-                  await that.sendPostRequest(`${that.baseAPIURL}api/v1/storage/mint/info`, mintInfoJson)
-
-                  that.mintCollectionAddress = {}
-                  that.mintIndex = 'list'
-                  that.hashload = false
-                  that.isload = false
-                  that.init()
-                })
-                .on('confirmation', function (confirmationNumber, receipt) {
-                  // console.log('confirmationNumber console:', confirmationNumber, receipt)
-                })
-                .on('receipt', function (receipt) {
-                  // receipt example
-                  console.log('mint receipt console:', receipt)
-                })
-              // await that.mintContract(CollectionFactory, that.mintCollectionAddress.address, nftUrl)
-              // if (that.tokenId) {
-              //   console.log('totalSupply success', that.tokenId)
-              //   let mintInfoJson = {
-              //     source_file_upload_id: that.mintRow.source_file_upload_id,
-              //     payload_cid: that.mintRow.payload_cid,
-              //     tx_hash: that.nftHash,
-              //     nft_collection_id: that.mintCollectionAddress.id,
-              //     token_id: parseInt(that.tokenId),
-              //     mint_address: that.mintCollectionAddress.address,
-              //     name: that.ruleForm.name,
-              //     description: that.ruleForm.description
-              //   }
-              //   const mintInfoResponse = await that.sendPostRequest(`${that.baseAPIURL}api/v1/storage/mint/info`, mintInfoJson)
-              //   if (mintInfoResponse) that.$emit('getMintDialog', false, mintInfoJson)
-              // }
-              // that.hashload = false
-              // that.isload = false
+              that.hashload = false
+              that.isload = false
             }
           }
         } else {

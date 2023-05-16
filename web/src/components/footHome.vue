@@ -9,11 +9,11 @@
         <li @click="goLink('https://discord.gg/pGDTxtgB')">{{$t('footer.Get_Help')}}</li>
       </ul>
       <div class="fes-icon-logo">
-        <a href="https://filswan.medium.com/" target="_blank"><img :src="share_medium" alt=""></a>
-        <a href="https://discord.com/invite/KKGhy8ZqzK" target="_blank"><img :src="share_discord" alt=""></a>
-        <a href="https://twitter.com/0xfilswan" target="_blank"><img :src="share_twitter" alt=""></a>
-        <a href="https://github.com/filswan" target="_blank"><img :src="share_github" alt=""></a>
-        <a href="https://t.me/filswan" target="_blank"><img :src="share_telegram" alt=""></a>
+        <a :href="medium_link" target="_blank"><img :src="share_medium" alt=""></a>
+        <a :href="discord_link" target="_blank"><img :src="share_discord" alt=""></a>
+        <a :href="twitter_link" target="_blank"><img :src="share_twitter" alt=""></a>
+        <a :href="github_link" target="_blank"><img :src="share_github" alt=""></a>
+        <a :href="telegram_link" target="_blank"><img :src="share_telegram" alt=""></a>
       </div>
       <p class="copy">© {{fullYear}}{{$t('footer.copy')}}</p>
     </div>
@@ -33,6 +33,11 @@ export default {
       share_github: require('@/assets/images/landing/github-fill.png'),
       share_telegram: require('@/assets/images/landing/telegram.png'),
       share_discord: require('@/assets/images/landing/discord.png'),
+      medium_link: process.env.MEDIUM_LINK,
+      discord_link: process.env.DISCORD_LINK,
+      twitter_link: process.env.TWITTER_LINK,
+      github_link: process.env.GITHUB_LINK,
+      telegram_link: process.env.TELEGRAM_LINK,
       ComingSoon: false,
       typeName: 'comingSoon',
       fullYear: new Date().getFullYear()

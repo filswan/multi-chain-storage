@@ -3,7 +3,7 @@
     <h1 class="text_h1">{{$t('pricing.title_1')}}</h1>
     <h2 class="text_h2">{{$t('pricing.title_2')}}</h2>
     <h4 class="text_h4">{{$t('pricing.title_3')}}</h4>
-    <a href="https://discord.com/channels/867879887871672331/938902177659879444" target="_blank" class="contact">{{$t('pricing.btn')}}.</a>
+    <a :href="discord_link" target="_blank" class="contact">{{$t('pricing.btn')}}.</a>
     <el-row class="bid">
       <el-col :xs="24" :sm="12" :md="12" :lg="12">
         <div class="grid-content">
@@ -35,7 +35,7 @@
             <b>$96</b>USD/annually
             <div class="small"></div>
           </div>
-          <el-button type="primary" @click="goLink('https://discord.com/channels/867879887871672331/938902177659879444')">
+          <el-button type="primary" @click="goLink(discord_link)">
             {{$t('pricing.btn')}}
           </el-button>
           <div class="introduce" v-for="(o, pIndex) in introduce.pro" :key="pIndex">
@@ -76,7 +76,7 @@
       <div class="volume_body">
         <h2>{{$t('pricing.volume_title')}}</h2>
         <p>{{$t('pricing.volume_p')}}</p>
-        <el-button type="primary" @click="goLink('https://discord.com/channels/867879887871672331/938902177659879444')">
+        <el-button type="primary" @click="goLink(discord_link)">
           {{$t('pricing.btn')}}
         </el-button>
         <h3>{{$t('pricing.volume_title_1')}}</h3>
@@ -111,7 +111,7 @@
             {{$t('pricing.collapse_4_title')}}
           </template>
           <div>No worries! Our team always open to communicate and customize a special plan for your needs.
-            <a @click="goLink('https://discord.com/channels/867879887871672331/938902177659879444')">Create a ticket</a> in our Discord community and we will get back to you shortly after.</div>
+            <a @click="goLink(discord_link)">Create a ticket</a> in our Discord community and we will get back to you shortly after.</div>
         </el-collapse-item>
       </el-collapse>
     </div>
@@ -184,7 +184,8 @@ export default {
           desc: this.$t('pricing.collapse_2_desc')
         }
       ],
-      activeNames: ['1']
+      activeNames: ['1'],
+      discord_link: process.env.DISCORD_LINK
     }
   },
   components: {},

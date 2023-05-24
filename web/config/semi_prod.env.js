@@ -1,5 +1,5 @@
 'use strict'
-module.exports = {  
+module.exports = {
   NODE_ENV: '"production"',
   BASE_API: '"https://api.filswan.com/"',
   BASE_URL: '"https://www.multichain.storage/"',
@@ -13,5 +13,10 @@ module.exports = {  
   BASE_POLYGON_ADDRESS: '"https://polygonscan.com/"',
   BASE_ECO_API: '"https://ecosystem-api.multichain.storage/"',
   BASE_METASPACE: '"https://meta-api.multichain.storage/"',
-  BASE_ENV: 'true'
+  BASE_ENV: 'true',
+  MEDIUM_LINK: '"https://filswan.medium.com/"',
+  DISCORD_LINK: '"https://discord.com/invite/KKGhy8ZqzK"',
+  TWITTER_LINK: '"https://twitter.com/0xfilswan"',
+  GITHUB_LINK: '"https://github.com/filswan"',
+  TELEGRAM_LINK: '"https://t.me/filswan"'
 }

@@ -13,5 +13,10 @@ module.exports = {
   BASE_POLYGON_ADDRESS: '"https://polygonscan.com/"',
   BASE_ECO_API: '"http://192.168.88.216:5005/"',
   BASE_METASPACE: '"http://192.168.88.41:5212/"',
-  BASE_ENV: 'true'
+  BASE_ENV: 'true',
+  MEDIUM_LINK: '"https://filswan.medium.com/"',
+  DISCORD_LINK: '"https://discord.com/invite/KKGhy8ZqzK"',
+  TWITTER_LINK: '"https://twitter.com/0xfilswan"',
+  GITHUB_LINK: '"https://github.com/filswan"',
+  TELEGRAM_LINK: '"https://t.me/filswan"'
 }

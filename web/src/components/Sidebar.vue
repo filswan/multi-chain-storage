@@ -36,12 +36,12 @@
               <el-button round>{{$t('comment.Tell_Comment')}}</el-button>
             </div>
             <div class="need" v-if="languageMcs === 'en'">Need help? Join our
-              <a href="https://discord.com/invite/KKGhy8ZqzK" target="_blank">Discord</a>
+              <a :href="discord_link" target="_blank">Discord</a>
               or send an
               <a href="mailto:team@filswan.com">Email</a> to us.
             </div>
             <div class="need" v-else>需要帮助吗？加入我们的
-              <a href="https://discord.com/invite/KKGhy8ZqzK" target="_blank">Discord</a>
+              <a :href="discord_link" target="_blank">Discord</a>
               或发送
               <a href="mailto:team@filswan.com">电子邮件</a> 给我们。
             </div>
@@ -56,11 +56,11 @@
               <span v-else class="tip">目前使用量：{{free_usage | byteStorage}}GB（Onchain Storage免费储存空间配额：{{free_quota_per_month | byteStorage}}GB）</span>
             </div> -->
             <div class="fes-icon-logo">
-              <a href="https://filswan.medium.com/" target="_blank"><img :src="share_medium" alt=""></a>
-              <a href="https://discord.com/invite/KKGhy8ZqzK" target="_blank"><img :src="share_discord" alt=""></a>
-              <a href="https://twitter.com/0xfilswan" target="_blank"><img :src="share_twitter" alt=""></a>
-              <a href="https://github.com/filswan" target="_blank"><img :src="share_github" alt=""></a>
-              <a href="https://t.me/filswan" target="_blank"><img :src="share_telegram" alt=""></a>
+              <a :href="medium_link" target="_blank"><img :src="share_medium" alt=""></a>
+              <a :href="discord_link" target="_blank"><img :src="share_discord" alt=""></a>
+              <a :href="twitter_link" target="_blank"><img :src="share_twitter" alt=""></a>
+              <a :href="github_link" target="_blank"><img :src="share_github" alt=""></a>
+              <a :href="telegram_link" target="_blank"><img :src="share_telegram" alt=""></a>
             </div>
             <!-- market data white badge -->
             <div class="fes-market">
@@ -120,6 +120,11 @@ export default {
       share_github: require('@/assets/images/landing/github-fill.png'),
       share_telegram: require('@/assets/images/landing/telegram.png'),
       share_discord: require('@/assets/images/landing/discord.png'),
+      medium_link: process.env.MEDIUM_LINK,
+      discord_link: process.env.DISCORD_LINK,
+      twitter_link: process.env.TWITTER_LINK,
+      github_link: process.env.GITHUB_LINK,
+      telegram_link: process.env.TELEGRAM_LINK,
       rateValue: null,
       colors: { 5: '#e92721' },
       iconClasses: ['icon-rate-face']

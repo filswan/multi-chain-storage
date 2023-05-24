@@ -109,7 +109,7 @@
 </template>
 <script>
 import networkChange from '@/components/networkChange'
-import axios from 'axios'
+// import axios from 'axios'
 import erc20ContractJson from '@/utils/ERC20.json'
 const ethereum = window.ethereum
 let contractErc20

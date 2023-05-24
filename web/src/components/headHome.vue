@@ -29,7 +29,6 @@
             <router-link to="">
               {{ $t('route.report') }}
             </router-link>
-
           </el-menu-item>
           <el-menu-item index="login">
             <a href="javascript:;" v-loading="loginLoad" @click="getLogin" class="target">
@@ -63,6 +62,9 @@
               <div class="menuMListChild" @click="handleMoSelect('stats')">
                 {{ $t('route.Stats') }}
               </div>
+              <a href="javascript:;" @click="goLink('https://github.com/numencyber/AuditReport/blob/main/FILSWAN-Smart-Contract-Audit-Report%20-%20Numen.pdf')" class="menuMListChild">
+                {{ $t('route.report') }}
+              </a>
               <a href="javascript:;" v-loading="loginLoad" @click="getLogin" class="menuMListChild">
                 {{ $t('route.Login') }}
               </a>
@@ -90,7 +92,11 @@ export default {
       return this.$store.getters.routerMenu
     }
   },
-  watch: {},
+  watch: {
+    $route: function (to, from) {
+      this.activeName()
+    }
+  },
   methods: {
     goLink (link) {
       window.open(link)
@@ -99,10 +105,12 @@ export default {
       that.$router.push({ name: 'home_entrance' })
     },
     handleSelect (key, keyPath) {
-      if (key !== 'login') that.$emit('getHome', key)
+      // if (key !== 'login') that.$emit('getHome', key)
+      if (key !== 'login' && key !== 'auditReport') that.$router.push({ name: 'home_entrance', query: { id: key } })
     },
     handleMoSelect (key) {
-      that.$emit('getHome', key)
+      // that.$emit('getHome', key)
+      that.$router.push({ name: 'home_entrance', query: { id: key } })
       that.mobileMenuFun()
     },
     mobileMenuFun () {
@@ -110,10 +118,28 @@ export default {
     },
     getLogin () {
       that.$emit('getLogin', true)
+    },
+    activeName () {
+      let pathAdress = that.$route.query.id
+      if (!pathAdress) that.activeIndex = '4'
+      else {
+        if (pathAdress.indexOf('about') > -1) {
+          that.activeIndex = 'about'
+        } else if (pathAdress.indexOf('pricing') > -1) {
+          that.activeIndex = 'pricing'
+        } else if (pathAdress.indexOf('resources') > -1) {
+          that.activeIndex = 'resources'
+        } else if (pathAdress.indexOf('stats') > -1) {
+          that.activeIndex = 'stats'
+        } else {
+          that.activeIndex = '4'
+        }
+      }
     }
   },
   mounted () {
     that = this
+    that.activeName()
     window.addEventListener('resize', () => {
       if (document.body.clientWidth > 999) that.mobileMenuShow = false
     })

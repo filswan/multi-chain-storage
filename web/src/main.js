@@ -1,17 +1,17 @@
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
-import Vue from 'vue'
+// import Vue from 'vue'
 import App from './App'
 import router from './router'
-import Router from 'vue-router'
-import Vuex from 'vuex'
+// import Router from 'vue-router'
+// import Vuex from 'vuex'
 import store from './store'
 import i18n from './lang'
 
 import ElementUI from 'element-ui'
 import locale from 'element-ui/lib/locale/lang/en'
 import localeCN from 'element-ui/lib/locale/lang/zh-CN'
-import 'element-ui/lib/theme-chalk/index.css'
+// import 'element-ui/lib/theme-chalk/index.css'
 import './assets/css/icon.css'
 import './assets/css/main.css'
 
@@ -24,12 +24,13 @@ import md5 from 'js-md5'
 import SparkMD5 from 'spark-md5'
 import uploader from 'vue-simple-uploader'
 
-Vue.use(Router)
+// Vue.use(Router)
 let langNew = store.getters.languageMcs === 'en' ? {
   locale
 } : {
   localeCN
 }
+// Vue.use(ELEMENT, langNew)
 Vue.use(ElementUI, langNew)
 Vue.use(Vuex)
 Vue.use(Meta)
@@ -81,7 +82,7 @@ new Vue({
   router,
   store,
   i18n,
-  metaInfo () {
+  metaInfo() {
     return {
       title: this.$store.getters.metaInfo.title,
       meta: [{

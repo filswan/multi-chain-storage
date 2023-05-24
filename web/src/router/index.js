@@ -1,6 +1,6 @@
-import Vue from 'vue'
-import Router from 'vue-router'
-Vue.use(Router)
+// import Vue from 'vue'
+// import Router from 'vue-router'
+Vue.use(VueRouter)
 // 路由懒加载
 const home = () =>
   import('@/components/Home')
@@ -48,8 +48,9 @@ const homeEntrance = () =>
   import('@/views/home/index.vue')
 
 // 配置路由
-export default new Router({
+export default new VueRouter({
   mode: 'history', // 后端支持可开
+  base: '/',
   // mode: 'hash',
   routes: [{
     path: '/',
@@ -332,7 +333,7 @@ export default new Router({
   }
   ]
 })
-const originalPush = Router.prototype.push
-Router.prototype.push = function push (location) {
+const originalPush = VueRouter.prototype.push
+VueRouter.prototype.push = function push (location) {
   return originalPush.call(this, location).catch(err => err)
 }

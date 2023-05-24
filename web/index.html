@@ -10,25 +10,58 @@
     <meta content="telephone=no" name="format-detection">
 	<meta content="email=no" name="format-detection" />
 
-	<meta name="keywords" content="MCS,Swan,Dashboard,Browse Tasks,Tools,Statistics"/>
-	<meta name="description" content="Multi-Chain storage (MCS) is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks."/>
-	<meta property="og:title" content="MCS">
-	<meta property="og:type" content="website">
-	<meta property="og:url" content="https://www.multichain.storage/">
-	<meta property="og:image" content="https://www.multichain.storage/static/swan_logo.png">
-    <meta property="og:image:type" content="image/png">
-    <meta property="og:image:width" content="300">
-    <meta property="og:image:height" content="300">
-    <meta property="og:image:alt" content="MCS logo">
-	<meta property="og:description" content="Multi-Chain storage (MCS) is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks.">
+  <meta name="keywords" content="MCS,Swan,Dashboard,Browse Tasks,Tools,Statistics" />
+  <meta name="description" content="Multi-Chain storage (MCS) is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks."
+  />
+  <meta property="og:title" content="MCS">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.multichain.storage/">
+  <meta property="og:image" content="https://www.multichain.storage/static/swan_logo.png">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="300">
+  <meta property="og:image:height" content="300">
+  <meta property="og:image:alt" content="MCS logo">
+  <meta property="og:description" content="Multi-Chain storage (MCS) is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks.">
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-1B38S3HX28"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
 
-	<!-- Google tag (gtag.js) --> 
-	<script async src="https://www.googletagmanager.com/gtag/js?id=G-1B38S3HX28"></script> 
-	<script>   
-		window.dataLayer = window.dataLayer || [];   
-		function gtag(){dataLayer.push(arguments);}   
-		gtag('js', new Date());   gtag('config', 'G-1B38S3HX28'); 
-	</script>
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag('js', new Date());
+    gtag('config', 'G-1B38S3HX28');
+
+  </script>
+
+  <%if (process.env.NODE_ENV === 'production'){ %>
+    <link rel="stylesheet" href="<% process.env.BASE_URL %>static/css/element-ui.css">
+    <script src="<% process.env.BASE_URL %>static/js/echarts.min.js"></script>
+    <script src="<% process.env.BASE_URL %>static/js/qs.min.js"></script>
+    <script src="<% process.env.BASE_URL %>static/js/axios.min.js"></script>
+    <script src="<% process.env.BASE_URL %>static/js/moment.min.js"></script>
+    <script src="<% process.env.BASE_URL %>static/js/vue.min.js"></script>
+    <script src="<% process.env.BASE_URL %>static/js/vue-router.min.js"></script>
+    <script src="<% process.env.BASE_URL %>static/js/vuex.js"></script>
+    <!-- <script src="<% process.env.BASE_URL %>static/js/element-ui.min.js"></script> -->
+    <%} else {%>
+      <link rel="stylesheet" href="/static/css/element-ui.css">
+      <script src="/static/js/echarts.min.js"></script>
+      <script src="/static/js/qs.min.js"></script>
+      <script src="/static/js/axios.min.js"></script>
+      <script src="/static/js/moment.min.js"></script>
+      <script src="/static/js/vue.min.js"></script>
+      <script src="/static/js/vue-router.min.js"></script>
+      <script src="/static/js/vuex.js"></script>
+      <!-- <script src="/static/js/element-ui.min.js"></script> -->
+      <%}%>
+</head>
+
+<body>
+  <div id="app"></div>
+  <!-- built files will be auto injected -->
+</body>
 
   </head>
   <body>

@@ -2,6 +2,7 @@
 module.exports = {
   NODE_ENV: '"production"',
   BASE_API: '"https://api.filswan.com/"',
+  BASE_URL: '"https://www.multichain.storage/"',
   BASE_PAYMENT_GATEWAY_API: '"https://api.multichain.storage/"',
   BASE_PAYMENT_GATEWAY_BSC_API: '"https://calibration-mcs-bsc.filswan.com/"',
   BASE_PAYMENT_GATEWAY_POLYGON_API: '"https://api.multichain.storage/"',

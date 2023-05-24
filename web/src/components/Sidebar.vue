@@ -77,7 +77,7 @@
 
 <script>
 // import bus from './bus';
-import axios from 'axios'
+// import axios from 'axios'
 export default {
   data () {
     return {
@@ -165,9 +165,7 @@ export default {
     }
   },
   created () {
-    if (process.env.COMMITHASH) {
-      this.git_version = process.env.COMMITHASH.slice(0, 8)
-    }
+    if (process.env.COMMITHASH) this.git_version = process.env.COMMITHASH.slice(0, 8)
     this.getListBuckets()
   },
   methods: {

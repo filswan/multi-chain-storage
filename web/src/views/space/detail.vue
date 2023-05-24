@@ -144,8 +144,8 @@
 </template>
 
 <script>
-import moment from 'moment'
-import QS from 'qs'
+// import moment from 'moment'
+// import Qs from 'qs'
 import popUps from '@/components/popups'
 let that
 export default {
@@ -196,7 +196,7 @@ export default {
         let params = {
           file_id: row.id
         }
-        const infoRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/get_file_info?${QS.stringify(params)}`, 'get')
+        const infoRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/get_file_info?${Qs.stringify(params)}`, 'get')
         if (!infoRes || infoRes.status !== 'success') that.$message.error(infoRes ? infoRes.message : 'Fail')
         else {
           bucketDetail.name = infoRes.data.name
@@ -301,7 +301,7 @@ export default {
       const params = {
         'file_id': that.areaBody.id
       }
-      const deleteRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/delete?${QS.stringify(params)}`, 'get')
+      const deleteRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/delete?${Qs.stringify(params)}`, 'get')
       if (!deleteRes || deleteRes.status !== 'success') {
         that.$message.error(deleteRes.status || 'Fail')
       }
@@ -348,7 +348,7 @@ export default {
         limit: that.parma.limit,
         offset: offset
       }
-      const directoryRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/get_file_list?${QS.stringify(params)}`, 'get')
+      const directoryRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/get_file_list?${Qs.stringify(params)}`, 'get')
       if (!directoryRes || directoryRes.status !== 'success') {
         that.$message.error(directoryRes.message || 'Fail')
         return false

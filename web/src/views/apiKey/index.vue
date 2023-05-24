@@ -158,9 +158,9 @@
   </div>
 </template>
 <script>
-import moment from 'moment'
+// import moment from 'moment'
 import popUps from '@/components/popups'
-import QS from 'qs'
+// import Qs from 'qs'
 let that
 export default {
   data () {
@@ -245,7 +245,7 @@ export default {
       const params = {
         'valid_days': day
       }
-      const apiKeyRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/user/generate_api_key?${QS.stringify(params)}`, 'get')
+      const apiKeyRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/user/generate_api_key?${Qs.stringify(params)}`, 'get')
       if (!apiKeyRes || apiKeyRes.status !== 'success') {
         that.$message.error(apiKeyRes.message ? apiKeyRes.message : 'Fail')
         that.createLoad = false
@@ -273,7 +273,7 @@ export default {
       const params = {
         'apikey': that.areaBody.api_key
       }
-      const deleteRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/user/delete_api_key?${QS.stringify(params)}`, 'put')
+      const deleteRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/user/delete_api_key?${Qs.stringify(params)}`, 'put')
       if (!deleteRes || deleteRes.status !== 'success') {
         that.$message.error(deleteRes.status || 'Fail')
       }

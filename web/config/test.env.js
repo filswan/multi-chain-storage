@@ -2,7 +2,7 @@
 module.exports = {
   NODE_ENV: '"test"',
   BASE_API: '"http://192.168.88.216:5002/"',
-  BASE_URL: '"http://192.168.88.216:8080/mcs/"',
+  BASE_URL: '"http://192.168.88.216:8080/mcs"',
   BASE_PAYMENT_GATEWAY_API: '"http://192.168.88.41:8889/"',
   BASE_PAYMENT_GATEWAY_BSC_API: '"http://192.168.88.41:8892/"',
   BASE_PAYMENT_GATEWAY_POLYGON_API: '"https://api.multichain.storage/"',

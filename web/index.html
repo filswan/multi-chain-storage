@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html>
-  <head prefix="og: http://ogp.me/ns#">
-    <meta name="referrer" content="no-referrer" charset="utf-8">
-    <title>Multi-Chain storage</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
-    <meta name="format-detection" content="telephone=no" />
-    <meta name="renderer" content="webkit|ie-comp|ie-stand">
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
-    <meta content="telephone=no" name="format-detection">
-	<meta content="email=no" name="format-detection" />
+
+<head prefix="og: http://ogp.me/ns#">
+  <meta name="referrer" content="no-referrer" charset="utf-8">
+  <title>Multi-Chain storage</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+  <meta name="format-detection" content="telephone=no" />
+  <meta name="renderer" content="webkit|ie-comp|ie-stand">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta content="telephone=no" name="format-detection">
+  <meta content="email=no" name="format-detection" />
 
   <meta name="keywords" content="MCS,Swan,Dashboard,Browse Tasks,Tools,Statistics" />
   <meta name="description" content="Multi-Chain storage (MCS) is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks."
@@ -36,15 +37,15 @@
   </script>
 
   <%if (process.env.NODE_ENV === 'production'){ %>
-    <link rel="stylesheet" href="<% process.env.BASE_URL %>static/css/element-ui.css">
-    <script src="<% process.env.BASE_URL %>static/js/echarts.min.js"></script>
-    <script src="<% process.env.BASE_URL %>static/js/qs.min.js"></script>
-    <script src="<% process.env.BASE_URL %>static/js/axios.min.js"></script>
-    <script src="<% process.env.BASE_URL %>static/js/moment.min.js"></script>
-    <script src="<% process.env.BASE_URL %>static/js/vue.min.js"></script>
-    <script src="<% process.env.BASE_URL %>static/js/vue-router.min.js"></script>
-    <script src="<% process.env.BASE_URL %>static/js/vuex.js"></script>
-    <!-- <script src="<% process.env.BASE_URL %>static/js/element-ui.min.js"></script> -->
+    <link rel="stylesheet" href="<% process.env.BASE_URL %>/static/css/element-ui.css">
+    <script src="<% process.env.BASE_URL %>/static/js/echarts.min.js"></script>
+    <script src="<% process.env.BASE_URL %>/static/js/qs.min.js"></script>
+    <script src="<% process.env.BASE_URL %>/static/js/axios.min.js"></script>
+    <script src="<% process.env.BASE_URL %>/static/js/moment.min.js"></script>
+    <script src="<% process.env.BASE_URL %>/static/js/vue.min.js"></script>
+    <script src="<% process.env.BASE_URL %>/static/js/vue-router.min.js"></script>
+    <script src="<% process.env.BASE_URL %>/static/js/vuex.js"></script>
+    <!-- <script src="<% process.env.BASE_URL %>/static/js/element-ui.min.js"></script> -->
     <%} else {%>
       <link rel="stylesheet" href="/static/css/element-ui.css">
       <script src="/static/js/echarts.min.js"></script>
@@ -63,9 +64,11 @@
   <!-- built files will be auto injected -->
 </body>
 
-  </head>
-  <body>
-    <div id="app"></div>
-    <!-- built files will be auto injected -->	
-  </body>
+</head>
+
+<body>
+  <div id="app"></div>
+  <!-- built files will be auto injected -->
+</body>
+
 </html>

@@ -108,6 +108,13 @@
                   </div>
                 </template>
               </el-table-column>
+              <el-table-column prop="backup_status" :label="$t('metaSpace.table_backup_status')">
+                <template slot-scope="scope">
+                  <div class="hot-cold-box">
+                    <p>{{ scope.row.backup_status || '-' }}</p>
+                  </div>
+                </template>
+              </el-table-column>
               <el-table-column prop="" :label="$t('metaSpace.table_action')" min-width="120">
                 <template slot-scope="scope">
                   <div class="hot-cold-box">
@@ -193,31 +200,16 @@ export default {
       that.dialogFun(type, row)
       let bucketDetail = row
       if (type === 'detail_file') {
-        // let params = {
-        //   file_id: row.id
-        // }
-        // const infoRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/get_file_info?${Qs.stringify(params)}`, 'get')
-        // if (!infoRes || infoRes.status !== 'success') that.$message.error(infoRes ? infoRes.message : 'Fail')
-        // else {
-        //   bucketDetail.name = infoRes.data.name
-        //   bucketDetail.created_at = infoRes.data.created_at
-        //   bucketDetail.size = infoRes.data.size
+        bucketDetail.miner_count = 0
         bucketDetail.ipfs_url = `https://${that.$route.query.domain}/ipfs/${row.payload_cid}${row.type === 2 ? '?filename=' + row.name : ''}`
-        //   bucketDetail.payload_cid = infoRes.data.payload_cid
-        // }
 
-        const backupParams = {
-          bucket_uid: row.bucket_uid,
-          object_name: row.object_name
-        }
-        const backupRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/get_file_by_object_name?${Qs.stringify(backupParams)}`, 'get')
+        const backupRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/get_backup_info?payload_cid=${row.payload_cid}`, 'get')
         if (!backupRes || backupRes.status !== 'success') that.$message.error(backupRes ? backupRes.message : 'Fail')
         else {
-          // bucketDetail.miner_list = backupRes.data.miner_list.split(',') || ''
-          // bucketDetail.miner_url_prefix = backupRes.data.miner_url_prefix || ''
-          // bucketDetail.miner_count = backupRes.data.miner_count || 0
-          // bucketDetail.piece_cid = backupRes.data.piece_cid || ''
-          // bucketDetail.remaining_service_days = backupRes.data.remaining_service_days || 0
+          bucketDetail.storage_providers = backupRes.data.storage_providers || []
+          bucketDetail.miner_count = backupRes.data.storage_providers ? backupRes.data.storage_providers.length : 0
+          bucketDetail.piece_cid = backupRes.data.piece_cid || ''
+          bucketDetail.payload_cid = backupRes.data.payload_cid || ''
         }
       } else {
         const domainRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/gateway/get_gateway`, 'get')

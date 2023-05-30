@@ -87,17 +87,17 @@ export default {
       bodyWidth: document.body.clientWidth < 999,
       items: [
         {
-          icon: 'el-icon-s-deal',
-          index: '1',
-          title: this.$t('route.Deal'),
-          name: 'my_files',
-          type: ''
-        },
-        {
           icon: 'el-icon-s-metaSpace',
           index: '20',
           title: this.$t('route.metaSpace'),
           name: 'Space',
+          type: ''
+        },
+        {
+          icon: 'el-icon-s-deal',
+          index: '1',
+          title: this.$t('route.Deal'),
+          name: 'my_files',
           type: ''
         },
         {

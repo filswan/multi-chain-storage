@@ -95,7 +95,7 @@
           <el-form-item :label="$t('metaSpace.detail_CurrentSize')">
             {{areaBody.size | formatbytes}}
           </el-form-item>
-          <el-form-item></el-form-item>
+          <!-- <el-form-item></el-form-item>
           <el-form-item :label="$t('metaSpace.detail_BackupInfo')">
             <div class="tip">
               {{$t('metaSpace.detail_StorageProvider')}}({{areaBody.miner_count}})
@@ -119,7 +119,7 @@
           </el-form-item>
           <el-form-item :label="$t('metaSpace.detail_RemainingServiceDays')">
             <span class="color">{{areaBody.remaining_service_days}}</span>
-          </el-form-item>
+          </el-form-item> -->
           <el-form-item>
             <el-button type="primary" @click="closeDia()">{{$t('metaSpace.Close')}}</el-button>
           </el-form-item>
@@ -156,29 +156,38 @@
           </el-form-item>
           <el-form-item></el-form-item>
           <el-form-item :label="$t('metaSpace.detail_BackupInfo')">
-            <div class="tip">
-              {{$t('metaSpace.detail_StorageProvider')}}({{areaBody.miner_count}})
-
-              <el-popover placement="top" popper-class="elPopTitle" width="200" trigger="hover" v-if="areaBody.miner_count">
-                <div>
-                  <a v-for="(minerFid,s) in areaBody.miner_list" :key="s" :href="`${areaBody.miner_url_prefix}${minerFid}`" target="_blank" style="color: #474747;">
-                    {{minerFid}}
-                    <span v-if="s<areaBody.miner_list.length-1">,&nbsp;</span>
-                  </a>
+            <div class="tip" v-if="areaBody.miner_count">
+              <el-popover placement="top" popper-class="elPopTitle" width="300" trigger="hover" v-for="(minerFid,s) in areaBody.storage_providers" :key="s">
+                <div slot="reference" style="display: flex;">
+                  {{minerFid.storage_provider_id}}
+                  <span v-if="s<areaBody.storage_providers.length-1">,&nbsp;</span>
                 </div>
-                <img slot="reference" src="@/assets/images/info.png" />
+                <ul class="miner_style">
+                  <li>
+                    <b>Storage Status:</b> {{minerFid.storage_status}}</li>
+                  <li>
+                    <b>Deal ID:</b> {{minerFid.deal_id}}</li>
+                  <li>
+                    <b>Deal CID:</b> {{minerFid.deal_cid}}</li>
+                  <li>
+                    <b>Start Time:</b> {{momentFun(minerFid.start_time)}}</li>
+                  <li>
+                    <b>End Time:</b> {{momentFun(minerFid.end_time)}}</li>
+                </ul>
               </el-popover>
             </div>
+            <div class="tip" v-else>-</div>
           </el-form-item>
           <el-form-item :label="$t('metaSpace.detail_PieceCID')">
-            <div class="tip">
+            <div class="tip" v-if="areaBody.miner_count">
               {{areaBody.piece_cid}}
               <img slot="reference" src="@/assets/images/space/icon_10.png" class="copy" @click="copyLink(areaBody.piece_cid)" />
             </div>
+            <div class="tip" v-else>-</div>
           </el-form-item>
-          <el-form-item :label="$t('metaSpace.detail_RemainingServiceDays')">
+          <!-- <el-form-item :label="$t('metaSpace.detail_RemainingServiceDays')">
             <span class="color">{{areaBody.remaining_service_days}}</span>
-          </el-form-item>
+          </el-form-item> -->
           <el-form-item>
             <el-button type="primary" @click="closeDia()">{{$t('metaSpace.Close')}}</el-button>
           </el-form-item>
@@ -3574,6 +3583,22 @@ export default {
           }
         }
       }
+    }
+  }
+}
+</style>
+
+<style lang="scss">
+.miner_style {
+  // padding: 0 0 0 0.2rem;
+  list-style: none;
+  li {
+    padding: 0.05rem 0;
+    font-size: 13px;
+    line-height: 1.2;
+    b {
+      display: block;
+      width: 100%;
     }
   }
 }

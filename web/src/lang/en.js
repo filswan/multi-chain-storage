@@ -720,6 +720,7 @@ export default {
     table_cid: 'CID',
     table_cid_tip: 'The content ID for the file or bucket',
     table_status: 'Status',
+    table_backup_status: 'Backup Status',
     table_LastModified: 'Last Modified',
     table_action: 'Actions',
     delete_title: 'Delete Bucket',

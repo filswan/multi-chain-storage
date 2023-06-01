@@ -298,7 +298,7 @@ export default {
         const transaction = await CollectionFactory.methods
           .mint(collectAddress, that.metaAddress, that.ruleForm.amount || 1, nftUrl)
           .send(payObject)
-          .on('transactionHash', function (hash) {
+          .on('transactionHash', async function (hash) {
             that.nftHash = hash
             that.isloadText = that.$t('uploadFile.payment_tip_deal02')
             console.log('transactionHash console:', that.nftHash)

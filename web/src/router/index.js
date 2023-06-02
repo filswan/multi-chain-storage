@@ -63,6 +63,7 @@ export default new VueRouter({
         path: '/my_files',
         name: 'my_files',
         component: myFilesIndex,
+
         beforeEnter: (to, from, next) => {
           if (!sessionStorage.getItem('metaAddress')) {
             next({

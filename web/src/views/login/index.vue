@@ -224,7 +224,7 @@ export default {
     isLogin () {
       var _this = this
       if (localStorage.getItem('mcsLoginAccessToken')) {
-        _this.$router.push({ path: '/my_files' })
+        _this.$router.push({ path: '/my_buckets' })
       }
     },
     menuIndexFun (to, index) {

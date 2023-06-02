@@ -251,7 +251,7 @@ export default {
     isLogin () {
       // that.networkID === 97 ||
       if (that.mcsjwtToken && that.metaAddress && (that.networkID === 80001)) {
-        that.$router.push({ path: '/my_files' })
+        that.$router.push({ path: '/my_buckets' })
         // that.activeIndex = 'connect'
       } else that.$store.dispatch('setMetaAddress', '')
     },

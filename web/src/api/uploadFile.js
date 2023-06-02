@@ -1,10 +1,10 @@
 import request from '@/utils/request'
-import QS from 'qs'
+// import Qs from 'qs'
 
 // task list
 export const getTasksList = (query) => {
   return request({
-    url: '/tasks?' + QS.stringify(query),
+    url: '/tasks?' + Qs.stringify(query),
     method: 'get',
     data: query
   })
@@ -12,7 +12,7 @@ export const getTasksList = (query) => {
 
 export const getPaymentDeals = (query) => {
   return request({
-    url: '/paymentgateway/deals?' + QS.stringify(query),
+    url: '/paymentgateway/deals?' + Qs.stringify(query),
     method: 'get',
     data: query
   })

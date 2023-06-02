@@ -232,13 +232,18 @@ export default {
   components: {
     vHead, vFoot, CarouselContainer, networkAlert, vStats, vPricing
   },
+  watch: {
+    $route: function (to, from) {
+      if (to.query.id) that.getHome(to.query.id)
+    }
+  },
   methods: {
     goLink (link) {
       window.open(link)
     },
     getHome (key) {
       that.moduleMenu = key
-      if (key === 'stats' || key === 'pricing') return false
+      if (key === 'stats' || key === 'pricing' || key === 'auditReport') return false
       var PageId = document.querySelector('#' + key)
       document.querySelector('.metamaskHome').scrollTo({
         top: PageId ? PageId.offsetTop : 0,
@@ -249,7 +254,7 @@ export default {
     async isLogin () {
       let status = await that.$metaLogin.netStatus(that.networkID)
       if (that.mcsjwtToken && that.metaAddress && status) {
-        that.$router.push({ path: '/my_files' })
+        that.$router.push({ path: '/my_buckets' })
       } else that.$store.dispatch('setMetaAddress', '')
     },
     async changeNet (rows) {

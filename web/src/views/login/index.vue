@@ -207,7 +207,7 @@ export default {
               _this.$router.push({ path: _this.fromEnter })
             } else {
               // this.$router.go(-1)
-              _this.$router.push({ path: '/my_files' })
+              _this.$router.push({ path: '/my_buckets' })
             }
             _this.loginLoad = false
           } else {
@@ -224,7 +224,7 @@ export default {
     isLogin () {
       var _this = this
       if (localStorage.getItem('mcsLoginAccessToken')) {
-        _this.$router.push({ path: '/my_files' })
+        _this.$router.push({ path: '/my_buckets' })
       }
     },
     menuIndexFun (to, index) {

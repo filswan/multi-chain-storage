@@ -1,5 +1,5 @@
-import axios from 'axios' // 引入axios  npm install axios
-// import QS from 'qs'
+// import axios from 'axios' // 引入axios  npm install axios
+// import Qs from 'qs'
 import store from '../store'
 // import router from '../router'
 import {
@@ -17,7 +17,7 @@ service.interceptors.request.use(function (config) {
     config.baseURL = process.env.BASE_API
   }
   if (config.method === 'post') {
-    // config.data = qs.stringify(config.data)
+    // config.data = Qs.stringify(config.data)
     // config.content-type = 'application/x-www-form-urlencoded'npm
   }
   config.headers.lang = store.getters.languageMcs

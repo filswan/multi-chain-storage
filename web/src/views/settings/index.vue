@@ -1,46 +1,46 @@
 <template>
-    <div id="dealManagement" v-loading="loading">
-        <div class="upload">
-            <div class="upload_form_detail">
-                <el-tabs v-model="activeName">
-                    <el-tab-pane :label="$t('miner.tab_left')" name="User_Profile">
-                        <div class="resetPass">
-                            <h2>{{$t('my_profile.Change_password')}}</h2>
+  <div id="dealManagement" v-loading="loading">
+    <div class="upload">
+      <div class="upload_form_detail">
+        <el-tabs v-model="activeName">
+          <el-tab-pane :label="$t('miner.tab_left')" name="User_Profile">
+            <div class="resetPass">
+              <h2>{{$t('my_profile.Change_password')}}</h2>
 
-                            <div class="formStyle" :class="verify.mailPassword.tipsbox ? 'border-red' : ''">
-                                <h4>{{$t('my_profile.pass_current')}}</h4>
-                                <el-input v-model="formData.mail.password" type="password" :placeholder="generateMailResetPassword('mailResetPassword_pw')"></el-input>
-                                <h6 v-if="passwordWrong">{{$t('my_profile.wrong_password')}}</h6>
-                            </div>
-                            <div class="form-tips" v-show="verify.mailPassword.tipsbox">{{verify.mailPassword.tips}}</div>
+              <div class="formStyle" :class="verify.mailPassword.tipsbox ? 'border-red' : ''">
+                <h4>{{$t('my_profile.pass_current')}}</h4>
+                <el-input v-model="formData.mail.password" type="password" :placeholder="generateMailResetPassword('mailResetPassword_pw')"></el-input>
+                <h6 v-if="passwordWrong">{{$t('my_profile.wrong_password')}}</h6>
+              </div>
+              <div class="form-tips" v-show="verify.mailPassword.tipsbox">{{verify.mailPassword.tips}}</div>
 
-                            <div class="formStyle" :class="verify.newPasswordVerify.tipsbox ? 'border-red' : ''">
-                                <h4>{{$t('my_profile.pass_new')}}</h4>
-                                <el-input v-model="formData.mail.passwordNew" type="password" :placeholder="generateMailResetPassword('mailResetPassword_new_pw')"></el-input>
-                            </div>
-                            <div class="form-tips" v-show="verify.newPasswordVerify.tipsbox">{{verify.newPasswordVerify.tips}}</div>
+              <div class="formStyle" :class="verify.newPasswordVerify.tipsbox ? 'border-red' : ''">
+                <h4>{{$t('my_profile.pass_new')}}</h4>
+                <el-input v-model="formData.mail.passwordNew" type="password" :placeholder="generateMailResetPassword('mailResetPassword_new_pw')"></el-input>
+              </div>
+              <div class="form-tips" v-show="verify.newPasswordVerify.tipsbox">{{verify.newPasswordVerify.tips}}</div>
 
-                            <div class="formStyle" :class="verify.mailPasswordVerify.tipsbox ? 'border-red' : ''">
-                                <h4>{{$t('my_profile.Reenter_new_password')}}</h4>
-                                <el-input v-model="formData.mail.passwordComfirm" type="password" :placeholder="generateMailResetPassword('mailResetPassword_pwconfirm')"></el-input>
-                            </div>
-                            <div class="form-tips" v-show="verify.mailPasswordVerify.tipsbox">{{verify.mailPasswordVerify.tips}}</div>
+              <div class="formStyle" :class="verify.mailPasswordVerify.tipsbox ? 'border-red' : ''">
+                <h4>{{$t('my_profile.Reenter_new_password')}}</h4>
+                <el-input v-model="formData.mail.passwordComfirm" type="password" :placeholder="generateMailResetPassword('mailResetPassword_pwconfirm')"></el-input>
+              </div>
+              <div class="form-tips" v-show="verify.mailPasswordVerify.tipsbox">{{verify.mailPasswordVerify.tips}}</div>
 
-                            <el-button type="primary" @click="mailResetSub">{{$t('deal.saveSetting')}}</el-button>
-                        </div>
-                    </el-tab-pane>
-                </el-tabs>
+              <el-button type="primary" @click="mailResetSub">{{$t('deal.saveSetting')}}</el-button>
             </div>
-        </div>
-
-        <!-- 回到顶部 -->
-        <el-backtop target=".content-box" :bottom="40" :right="20"></el-backtop>
+          </el-tab-pane>
+        </el-tabs>
+      </div>
     </div>
+
+    <!-- 回到顶部 -->
+    <el-backtop target=".content-box" :bottom="40" :right="20"></el-backtop>
+  </div>
 </template>
 
 <script>
 import { generateMailResetPassword } from '@/utils/i18n'
-import axios from 'axios'
+// import axios from 'axios'
 
 export default {
   name: 'Settings',

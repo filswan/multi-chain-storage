@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-import QS from 'qs'
+// import Qs from 'qs'
 
 // 重新发送邮件
 export function sendActivateLink (data) {
@@ -13,7 +13,7 @@ export function sendActivateLink (data) {
 // 检查
 export function checkCode (data) {
   return request({
-    url: `/activate_user?${QS.stringify(data)}`,
+    url: `/activate_user?${Qs.stringify(data)}`,
     method: 'get'
   })
 }

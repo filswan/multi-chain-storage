@@ -1,5 +1,5 @@
 import store from '../store'
-import axios from 'axios'
+// import axios from 'axios'
 
 export async function sendRequest (apilink, type, jsonObject, config) {
   // axios.defaults.timeout = 60000

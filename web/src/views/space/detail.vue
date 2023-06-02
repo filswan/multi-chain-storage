@@ -108,6 +108,13 @@
                   </div>
                 </template>
               </el-table-column>
+              <el-table-column prop="backup_status" :label="$t('metaSpace.table_backup_status')">
+                <template slot-scope="scope">
+                  <div class="hot-cold-box">
+                    <p>{{ scope.row.backup_status || '-' }}</p>
+                  </div>
+                </template>
+              </el-table-column>
               <el-table-column prop="" :label="$t('metaSpace.table_action')" min-width="120">
                 <template slot-scope="scope">
                   <div class="hot-cold-box">
@@ -144,8 +151,8 @@
 </template>
 
 <script>
-import moment from 'moment'
-import QS from 'qs'
+// import moment from 'moment'
+// import Qs from 'qs'
 import popUps from '@/components/popups'
 let that
 export default {
@@ -193,23 +200,22 @@ export default {
       that.dialogFun(type, row)
       let bucketDetail = row
       if (type === 'detail_file') {
-        let params = {
-          file_id: row.id
-        }
-        const infoRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/get_file_info?${QS.stringify(params)}`, 'get')
-        if (!infoRes || infoRes.status !== 'success') that.$message.error(infoRes ? infoRes.message : 'Fail')
+        bucketDetail.miner_count = 0
+        bucketDetail.ipfs_url = `https://${that.$route.query.domain}/ipfs/${row.payload_cid}${row.type === 2 ? '?filename=' + row.name : ''}`
+
+        const backupRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/get_backup_info?payload_cid=${row.payload_cid}`, 'get')
+        if (!backupRes || backupRes.status !== 'success') that.$message.error(backupRes ? backupRes.message : 'Fail')
         else {
-          bucketDetail.name = infoRes.data.name
-          bucketDetail.created_at = infoRes.data.created_at
-          bucketDetail.size = infoRes.data.size
-          bucketDetail.ipfs_url = `https://${that.$route.query.domain}/ipfs/${infoRes.data.payload_cid}${row.type === 2 ? '?filename=' + infoRes.data.name : ''}`
-          bucketDetail.payload_cid = infoRes.data.payload_cid
+          bucketDetail.storage_providers = backupRes.data.storage_providers || []
+          bucketDetail.miner_count = backupRes.data.storage_providers ? backupRes.data.storage_providers.length : 0
+          bucketDetail.piece_cid = backupRes.data.piece_cid || ''
+          bucketDetail.payload_cid = backupRes.data.payload_cid || ''
         }
       } else {
         const domainRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/gateway/get_gateway`, 'get')
         if (!domainRes || domainRes.status !== 'success') that.$message.error(domainRes ? domainRes.message : 'Fail')
         else {
-          bucketDetail.ipfs_url_domain = domainRes.data[0] || ''
+          bucketDetail.ipfs_url_domain = domainRes.data ? domainRes.data[0] : ''
           bucketDetail.options = []
           domainRes.data.forEach((element, i) => {
             bucketDetail.options.push({
@@ -301,7 +307,7 @@ export default {
       const params = {
         'file_id': that.areaBody.id
       }
-      const deleteRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/delete?${QS.stringify(params)}`, 'get')
+      const deleteRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/delete?${Qs.stringify(params)}`, 'get')
       if (!deleteRes || deleteRes.status !== 'success') {
         that.$message.error(deleteRes.status || 'Fail')
       }
@@ -348,7 +354,7 @@ export default {
         limit: that.parma.limit,
         offset: offset
       }
-      const directoryRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/get_file_list?${QS.stringify(params)}`, 'get')
+      const directoryRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/get_file_list?${Qs.stringify(params)}`, 'get')
       if (!directoryRes || directoryRes.status !== 'success') {
         that.$message.error(directoryRes.message || 'Fail')
         return false

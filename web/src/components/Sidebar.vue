@@ -93,13 +93,13 @@ export default {
           name: 'Space',
           type: ''
         },
-        // {
-        //   icon: 'el-icon-s-deal',
-        //   index: '1',
-        //   title: this.$t('route.Deal'),
-        //   name: 'my_files',
-        //   type: ''
-        // },
+        {
+          icon: 'el-icon-s-deal',
+          index: '1',
+          title: this.$t('route.Deal'),
+          name: 'my_files',
+          type: ''
+        },
         {
           icon: 'el-icon-s-billing',
           index: '5',

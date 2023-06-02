@@ -54,7 +54,7 @@ export default new VueRouter({
   // mode: 'hash',
   routes: [{
     path: '/',
-    redirect: '/my_files'
+    redirect: '/my_buckets'
   },
   {
     path: '/',

@@ -457,7 +457,7 @@ export default {
                   // 防止登录后需要跳转到指定页面
                   that.$router.push({ path: that.$route.query.redirect })
                 } else {
-                  that.$router.push({ path: '/my_files' })
+                  that.$router.push({ path: '/my_buckets' })
                 }
                 window.location.reload()
                 that.$emit('getMetamaskLogin', false)
@@ -473,7 +473,7 @@ export default {
                   // 防止登录后需要跳转到指定页面
                   that.$router.push({ path: that.$route.query.redirect })
                 } else {
-                  that.$router.push({ path: '/my_files' })
+                  that.$router.push({ path: '/my_buckets' })
                 }
                 window.location.reload()
                 that.$emit('getMetamaskLogin', false)
@@ -495,7 +495,7 @@ export default {
                   // 防止登录后需要跳转到指定页面
                   that.$router.push({ path: that.$route.query.redirect })
                 } else {
-                  that.$router.push({ path: '/my_files' })
+                  that.$router.push({ path: '/my_buckets' })
                 }
                 window.location.reload()
                 that.$emit('getMetamaskLogin', false)

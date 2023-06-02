@@ -254,7 +254,7 @@ export default {
     async isLogin () {
       let status = await that.$metaLogin.netStatus(that.networkID)
       if (that.mcsjwtToken && that.metaAddress && status) {
-        that.$router.push({ path: '/my_files' })
+        that.$router.push({ path: '/my_buckets' })
       } else that.$store.dispatch('setMetaAddress', '')
     },
     async changeNet (rows) {

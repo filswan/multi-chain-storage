@@ -234,7 +234,7 @@ export default {
       if (that.networkID === 80001) {
         const lStatus = await that.$metaLogin.login()
         if (lStatus) {
-          that.$router.push({ path: '/my_files' })
+          that.$router.push({ path: '/my_buckets' })
           setTimeout(function () { window.location.reload() }, 200)
         } else {
           that.loginLoad = false

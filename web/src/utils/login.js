@@ -26,8 +26,8 @@ export async function login () {
   const signature = await sign(nonce)
   if (!signature) return false
   const token = await performSignin(signature, nonce)
-  const email = await emailSign(token)
-  console.log(email)
+  // const email = await emailSign(token)
+  // console.log(email)
   return !!token
 }
 
@@ -51,11 +51,11 @@ export async function sendPostRequest (apilink, jsonObject) {
 
 export async function getNonce () {
   const reqOpts = {
-    'public_key_address': store.getters.metaAddress
+    'address': store.getters.metaAddress
   }
   const netId = Number(store.getters.networkID)
   const baseAPIURL = await urlBase(netId)
-  const response = await sendPostRequest(`${baseAPIURL}api/v1/user/register`, reqOpts)
+  const response = await sendPostRequest(`${baseAPIURL}api/v2/user/wallet_register`, reqOpts)
   if (response.status === 'success') {
     const nonce = response.data.nonce
     return ['success', nonce]
@@ -84,13 +84,12 @@ export async function performSignin (sig, nonce) {
   const netId = Number(store.getters.networkID)
   // netId === 97 ? 'bsc.testnet' :
   const reqOpts = {
-    public_key_address: store.getters.metaAddress,
-    nonce: nonce,
-    signature: sig,
-    network: netId === 80001 ? 'polygon.mumbai' : 'polygon.mainnet'
+    address: store.getters.metaAddress,
+    message: nonce,
+    signature: sig
   }
   const baseAPIURL = await urlBase(netId)
-  const response = await sendPostRequest(`${baseAPIURL}api/v1/user/login_by_metamask_signature`, reqOpts)
+  const response = await sendPostRequest(`${baseAPIURL}/api/v2/user/wallet_login`, reqOpts)
   if (response.status === 'success') {
     const data = response.data.jwt_token
     store.dispatch('setMCSjwtToken', data)
@@ -145,23 +144,7 @@ export function signOutFun () {
 }
 
 export async function netStatus (id) {
-  let status
-  const baseNet = process.env.BASE_ENV === true
-  switch (id) {
-    case 80001:
-      status = !baseNet
-      break
-      // case 97:
-      //   status = !baseNet
-      //   break
-    case 137:
-      status = !!baseNet
-      break
-    default:
-      status = false
-      break
-  }
-  return status
+  return true
 }
 
 export async function urlBase (id) {
@@ -177,7 +160,7 @@ export async function urlBase (id) {
       url = process.env.BASE_PAYMENT_GATEWAY_POLYGON_API
       break
     default:
-      url = process.env.BASE_PAYMENT_GATEWAY_POLYGON_API
+      url = process.env.BASE_ENV === true ? process.env.BASE_PAYMENT_GATEWAY_POLYGON_API : process.env.BASE_PAYMENT_GATEWAY_API
       break
   }
   return url

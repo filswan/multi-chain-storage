@@ -2,7 +2,7 @@
   <div class="header" :class="{'content-collapse': collapseLocal}">
     <div class="header_arera">
       <div class="header-right">
-        <div class="network_mainnet" v-if="addrChild" :class="{'error': networkTip}" @click="networkC=true">
+        <div class="network_mainnet" v-if="addrChild && false" :class="{'error': networkTip}" @click="networkC=true">
           <!-- <div class="BSC_mainnet" v-if="networkID == 97" title="BSC TestNet mainnet">
             <img src="@/assets/images/network_logo/bsc.png" /> {{bodyWidth?'BSC':'BSC TestNet'}}
           </div> -->

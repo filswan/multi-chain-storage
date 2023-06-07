@@ -26,8 +26,8 @@ export async function login () {
   const signature = await sign(nonce)
   if (!signature) return false
   const token = await performSignin(signature, nonce)
-  const email = await emailSign(token)
-  console.log(email)
+  // const email = await emailSign(token)
+  // console.log(email)
   return !!token
 }
 
@@ -145,23 +145,7 @@ export function signOutFun () {
 }
 
 export async function netStatus (id) {
-  let status
-  const baseNet = process.env.BASE_ENV === true
-  switch (id) {
-    case 80001:
-      status = !baseNet
-      break
-      // case 97:
-      //   status = !baseNet
-      //   break
-    case 137:
-      status = !!baseNet
-      break
-    default:
-      status = false
-      break
-  }
-  return status
+  return true
 }
 
 export async function urlBase (id) {
@@ -177,7 +161,7 @@ export async function urlBase (id) {
       url = process.env.BASE_PAYMENT_GATEWAY_POLYGON_API
       break
     default:
-      url = process.env.BASE_PAYMENT_GATEWAY_POLYGON_API
+      url = process.env.BASE_ENV === true ? process.env.BASE_PAYMENT_GATEWAY_POLYGON_API : process.env.BASE_PAYMENT_GATEWAY_API
       break
   }
   return url

@@ -5,7 +5,7 @@
       <template>
         <template>
           <div class="fes-menu">
-            <div class="header_logo pcShow">
+            <div class="header_logo pcShow" @click="sidebarLiIndex('Space', '20', '')">
               <div class="logo"><img src="@/assets/images/LOGO_MCS@2x.png"></div>
               <img class="beta" src="@/assets/images/landing/beta.png">
             </div>
@@ -322,6 +322,7 @@ export default {
     width: calc(100% - 0.3rem);
     padding: 0.41rem 0 0.62rem;
     background-color: #080b29;
+    cursor: pointer;
     // transition: width .3s;
     .logo {
       width: 2rem;

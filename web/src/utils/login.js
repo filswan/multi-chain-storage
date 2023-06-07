@@ -51,11 +51,11 @@ export async function sendPostRequest (apilink, jsonObject) {
 
 export async function getNonce () {
   const reqOpts = {
-    'address': store.getters.metaAddress
+    'public_key_address': store.getters.metaAddress
   }
   const netId = Number(store.getters.networkID)
   const baseAPIURL = await urlBase(netId)
-  const response = await sendPostRequest(`${baseAPIURL}api/v2/user/wallet_register`, reqOpts)
+  const response = await sendPostRequest(`${baseAPIURL}api/v1/user/register`, reqOpts)
   if (response.status === 'success') {
     const nonce = response.data.nonce
     return ['success', nonce]
@@ -84,12 +84,13 @@ export async function performSignin (sig, nonce) {
   const netId = Number(store.getters.networkID)
   // netId === 97 ? 'bsc.testnet' :
   const reqOpts = {
-    address: store.getters.metaAddress,
-    message: nonce,
-    signature: sig
+    public_key_address: store.getters.metaAddress,
+    nonce: nonce,
+    signature: sig,
+    network: netId === 80001 ? 'polygon.mumbai' : 'polygon.mainnet'
   }
   const baseAPIURL = await urlBase(netId)
-  const response = await sendPostRequest(`${baseAPIURL}/api/v2/user/wallet_login`, reqOpts)
+  const response = await sendPostRequest(`${baseAPIURL}api/v1/user/login_by_metamask_signature`, reqOpts)
   if (response.status === 'success') {
     const data = response.data.jwt_token
     store.dispatch('setMCSjwtToken', data)

@@ -536,28 +536,18 @@ export default {
       })
     },
     signOutFun () {
-      let params = {}
-      axios.post(`${that.baseAPIURL}api/v1/user/logout_for_metamask_signature`, params, {
-        headers: {
-          'Authorization': 'Bearer ' + that.$store.getters.mcsjwtToken
-        }
-      }).then((response) => {
-        if (response.data.status !== 'success') that.$message.error(response.data.message || 'Fail')
-        that.addrChild = ''
-        that.$store.dispatch('setMetaAddress', '')
-        that.$store.dispatch('setMCSjwtToken', '')
-        that.$store.dispatch('setMetaNetworkId', 0)
-        that.network.name = ''
-        that.network.unit = ''
-        that.network.center_fail = false
-        that.$store.dispatch('setMetaNetworkInfo', JSON.stringify(that.network))
-        sessionStorage.removeItem('login_path')
-        sessionStorage.removeItem('mcs_dev_jwtToken')
-        // that.$router.push('/home')
-        setTimeout(function () { window.location.reload() }, 200)
-      }).catch(function (error) {
-        console.log(error.config)
-      })
+      that.addrChild = ''
+      that.$store.dispatch('setMetaAddress', '')
+      that.$store.dispatch('setMCSjwtToken', '')
+      that.$store.dispatch('setMetaNetworkId', 0)
+      that.network.name = ''
+      that.network.unit = ''
+      that.network.center_fail = false
+      that.$store.dispatch('setMetaNetworkInfo', JSON.stringify(that.network))
+      sessionStorage.removeItem('login_path')
+      sessionStorage.removeItem('mcs_dev_jwtToken')
+      // that.$router.push('/home')
+      setTimeout(function () { window.location.reload() }, 200)
     },
     commonParam () {
       let commonApi = `${that.baseAPIURL}api/v1/common/system/params?limit=20&wallet_address=${that.metaAddress}`

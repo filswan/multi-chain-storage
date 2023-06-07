@@ -209,23 +209,13 @@ export default {
     },
     signOutFun () {
       let _this = this
-      let params = {}
-      axios.post(`${_this.baseAPIURL}api/v1/user/logout_for_metamask_signature`, params, {
-        headers: {
-          'Authorization': 'Bearer ' + _this.$store.getters.mcsjwtToken
-        }
-      }).then((response) => {
-        if (response.data.status !== 'success') _this.$message.error(response.data.message || 'Fail')
-        _this.$store.dispatch('setMetaAddress', '')
-        _this.$store.dispatch('setMCSjwtToken', '')
-        _this.$store.dispatch('setMetaNetworkId', 0)
-        _this.$store.dispatch('setMetaNetworkInfo', JSON.stringify({}))
-        sessionStorage.removeItem('login_path')
-        // _this.$router.push('/home')
-        setTimeout(function () { window.location.reload() }, 200)
-      }).catch(function (error) {
-        console.log(error.config)
-      })
+      _this.$store.dispatch('setMetaAddress', '')
+      _this.$store.dispatch('setMCSjwtToken', '')
+      _this.$store.dispatch('setMetaNetworkId', 0)
+      _this.$store.dispatch('setMetaNetworkInfo', JSON.stringify({}))
+      sessionStorage.removeItem('login_path')
+      // _this.$router.push('/home')
+      setTimeout(function () { window.location.reload() }, 200)
     },
     async getListBuckets (name) {
       let _this = this

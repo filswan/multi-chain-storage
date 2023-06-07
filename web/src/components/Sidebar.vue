@@ -6,8 +6,10 @@
         <template>
           <div class="fes-menu">
             <div class="header_logo pcShow" @click="sidebarLiIndex('Space', '20', '')">
-              <div class="logo"><img src="@/assets/images/LOGO_MCS@2x.png"></div>
-              <img class="beta" src="@/assets/images/landing/beta.png">
+              <div class="logo">
+                <img class="img" src="@/assets/images/LOGO_MCS@2x.png">
+                <img class="beta" src="@/assets/images/landing/beta.png">
+              </div>
             </div>
             <div class="menu_list">
               <el-menu-item v-for="(item, i) in items" :key="i" :index="item.index" @click="sidebarLiIndex(item.name, item.index, item.type)">
@@ -315,18 +317,28 @@ export default {
     cursor: pointer;
     // transition: width .3s;
     .logo {
-      width: 2rem;
-      img {
+      position: relative;
+      width: 1.5rem;
+      .img {
         display: block;
         width: 100%;
         height: auto;
       }
-    }
-    .beta {
-      position: absolute;
-      width: 60px;
-      right: 0;
-      top: 0.75rem;
+      .beta {
+        position: absolute;
+        width: 40px;
+        right: -0.2rem;
+        top: 0.3rem;
+        @media screen and (min-width: 1800px) {
+          width: 45px;
+        }
+        @media screen and (max-width: 1366px) {
+          right: -0.25rem;
+        }
+        @media screen and (max-width: 1280px) {
+          right: -0.3rem;
+        }
+      }
     }
     .header_btn {
       display: flex;

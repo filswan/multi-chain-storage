@@ -46,6 +46,43 @@
         </div>
       </div>
 
+      <div v-loading="payLoad">
+        <h4>{{$t('billing.bill_overview')}}</h4>
+        <h6></h6>
+        <div class="form_top">
+          <div class="search_file">
+            <div class="createTask">
+              <a v-if="$root.plan_id === 0" @click="payPlan">
+                <span>{{$t('billing.bill_btn_pay')}}</span>
+              </a>
+              <a v-else class="disabled">
+                <span>{{$t('billing.bill_btn_paid')}}</span>
+              </a>
+            </div>
+          </div>
+        </div>
+        <el-row class="billing_style" :gutter="20">
+          <el-col :xs="24" :sm="12" :md="9" :lg="8">
+            <router-link :to="{path: '/billing'}" class="billing_cont">
+              <div class="icon el-icon-s-billing"></div>
+              <div class="desc">
+                <div class="desc_t">{{$t('billing.bill_cont1_title')}}</div>
+                <div class="desc_d">{{$t('billing.bill_cont1_desc')}}</div>
+              </div>
+            </router-link>
+          </el-col>
+          <el-col :xs="24" :sm="12" :md="9" :lg="8">
+            <router-link :to="{name: 'home_entrance', query: { id: 'pricing' }}" target="_blank" class="billing_cont">
+              <div class="icon el-icon-s-pricing"></div>
+              <div class="desc">
+                <div class="desc_t">{{$t('billing.bill_cont2_title')}}</div>
+                <div class="desc_d">{{$t('billing.bill_cont2_desc')}}</div>
+              </div>
+            </router-link>
+          </el-col>
+        </el-row>
+      </div>
+
       <div>
         <h4>{{$t('my_profile.apiKey_your_Domain')}}</h4>
         <h6></h6>
@@ -110,6 +147,8 @@
 // import moment from 'moment'
 import popUps from '@/components/popups'
 // import Qs from 'qs'
+import payAbi from '@/utils/pay.json'
+import linkTokenAbi from '@/utils/linkToken.json'
 let that
 export default {
   data () {
@@ -128,11 +167,15 @@ export default {
         apiKey: '',
         access: ''
       },
-      changeTitle: ''
+      changeTitle: '',
+      payLoad: false
     }
   },
   components: { popUps },
   computed: {
+    metaAddress () {
+      return this.$store.getters.metaAddress
+    },
     mcsEmail () {
       const data = this.$store.getters.mcsEmail
       return data === '{}' ? '-' : JSON.parse(data).email
@@ -290,6 +333,45 @@ export default {
       } finally {
         document.body.removeChild(txtArea)
       }
+    },
+    async payPlan () {
+      that.payLoad = true
+      let tokenFactory = new that.$web3Init.eth.Contract(linkTokenAbi, that.$root.USDC_ADDRESS)
+      let payObject = {
+        from: that.metaAddress,
+        gasPrice: await that.$web3Init.eth.getGasPrice()
+      }
+      let account = 1
+
+      tokenFactory.methods.approve(that.$root.PAYMENT_CONTRACT_ADDRESS, account).send(payObject)
+        .then(receipt => {
+          console.log('approve receipt:', receipt)
+          that.contractSend()
+        })
+        .catch(() => {
+          that.payLoad = false
+        })
+    },
+    async contractSend () {
+      let payFactory = new that.$web3Init.eth.Contract(payAbi, that.$root.PAYMENT_CONTRACT_ADDRESS)
+      let estimatedGas = await payFactory.methods
+        .pay(that.$root.plan_id)
+        .estimateGas({ from: that.metaAddress })
+      let gasLimit = Math.floor(estimatedGas * 1.5)
+
+      await payFactory.methods.pay(that.$root.plan_id)
+        .send({ from: that.metaAddress, gasLimit: gasLimit })
+        .on('transactionHash', async (hash) => {
+          console.log('hash console:', hash)
+        })
+        .on('confirmation', function (confirmationNumber, receipt) {
+          // console.log('confirmationNumber console:', confirmationNumber, receipt)
+        })
+        .on('receipt', function (receipt) {
+          // receipt example
+          console.log('create receipt console:', receipt)
+        })
+      that.payLoad = false
     }
   },
   mounted () {
@@ -681,6 +763,12 @@ export default {
             &:hover {
               opacity: 0.9;
               box-shadow: 0 12px 12px -12px rgba(12, 22, 44, 0.32);
+            }
+            &.disabled {
+              opacity: 0.5;
+              &:hover {
+                box-shadow: none;
+              }
             }
           }
         }
@@ -1302,6 +1390,71 @@ export default {
           &:hover {
             color: #7ecef4;
           }
+        }
+      }
+    }
+  }
+  .billing_style {
+    padding: 0.2rem 0 1rem;
+    @media screen and (max-width: 992px) {
+      padding: 0.2rem 0 0.8rem;
+    }
+    @media screen and (max-width: 600px) {
+      padding: 0.2rem 0 0.6rem;
+    }
+    .el-col {
+      margin-bottom: 0.2rem;
+      .billing_cont {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        color: #333;
+        .icon {
+          position: relative;
+          width: 0.7rem;
+          height: 0.7rem;
+          margin-right: 0.2rem;
+          &::before {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            content: "";
+            background-size: 0.25rem !important;
+            border-radius: 0.08rem;
+          }
+          &.el-icon-s-billing {
+            &::before {
+              background: #753fdd
+                url(../../assets/images/menuIcon/billing@2x-1.png) no-repeat
+                center;
+            }
+          }
+          &.el-icon-s-pricing {
+            &::before {
+              background: #f1a44d url(../../assets/images/menuIcon/billing.png)
+                no-repeat center;
+            }
+          }
+        }
+        .desc {
+          .desc_t {
+            font-size: 14px;
+            @media screen and (min-width: 1800px) {
+              font-size: 16px;
+            }
+          }
+          .desc_d {
+            font-size: 12px;
+            color: #787889;
+            @media screen and (min-width: 1800px) {
+              font-size: 14px;
+            }
+          }
+        }
+        &:hover {
+          background: #f7f7f7;
         }
       }
     }

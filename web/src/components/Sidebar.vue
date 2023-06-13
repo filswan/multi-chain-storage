@@ -49,8 +49,8 @@
             </div>
             <div class="progress">
               <el-progress :percentage="(free_bucket/free_bucketAll)*100 || 0"></el-progress>
-              <span v-if="languageMcs === 'en'" class="tip">{{free_bucket | byteStorage}}GB of 32GB for Bucket storage</span>
-              <span v-else class="tip">目前使用量：{{free_bucket | byteStorage}}GB（Bucket储存空间配额：32GB）</span>
+              <span v-if="languageMcs === 'en'" class="tip">{{free_bucket | byteStorage}}GB of {{ $root.max_storage | byteStorage}}GB for Bucket storage</span>
+              <span v-else class="tip">目前使用量：{{free_bucket | byteStorage}}GB（Bucket储存空间配额：{{ $root.max_storage | byteStorage}}GB）</span>
             </div>
             <!-- <div class="progress">
               <el-progress :percentage="(free_usage/free_quota_per_month)*100 || 0"></el-progress>

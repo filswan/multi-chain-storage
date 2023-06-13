@@ -311,7 +311,7 @@ export default {
         console.log(error)
       }
     },
-    signFun () {
+    signFun (s, jump) {
       that.$commonFun.Init(async addr => {
         that.$store.dispatch('setMetaAddress', addr)
         sessionStorage.setItem('login_path', addr)
@@ -322,16 +322,20 @@ export default {
         }
         that.$store.dispatch('setMetaNetworkInfo', networkCont)
         that.loginLoad = true
-        that.signIn()
+        that.signIn(jump)
       })
     },
-    async signIn () {
+    async signIn (jump) {
       let status = await that.$metaLogin.netStatus(that.networkID)
       that.networkTip = !status
       if (!status) return false
       const lStatus = await that.$metaLogin.login()
-      if (lStatus) setTimeout(function () { window.location.reload() }, 200)
-      else that.loginLoad = false
+      if (lStatus) {
+        setTimeout(function () {
+          that.$router.push({ path: jump ? '/my_account' : '/my_buckets' })
+          window.location.reload()
+        }, 200)
+      } else that.loginLoad = false
     },
     getNetwork (dis) {
       that.networkTip = dis

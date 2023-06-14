@@ -482,6 +482,7 @@ export default {
     Connect_email_again: 'Didn’t recieve any email? Try again.',
     Connect_email_jump: 'Click here to jump to the page.',
     Connect_StartFree: 'Get Started',
+    Connect_BuyNow: 'Buy Now',
     Connect_TutorialVideo: 'Tutorial Video',
     back_home: 'Back to Home Page',
     Skip: 'Skip',
@@ -675,7 +676,14 @@ export default {
     end_date: 'End date',
     time_to: 'To',
     data_download: 'Download',
-    data_export: 'Export'
+    data_export: 'Export',
+    bill_overview: 'Billing Overview',
+    bill_btn_pay: 'Upgrade to paid plan',
+    bill_btn_paid: 'You have become a paid subscriber',
+    bill_cont1_title: 'Billing history',
+    bill_cont1_desc: 'View past and current invoices',
+    bill_cont2_title: 'Pricing',
+    bill_cont2_desc: 'View pricing and FAQs'
   },
   network: {
     title: 'All Chains'

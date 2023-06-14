@@ -489,6 +489,7 @@ export default {
     Connect_email_again: '没有收到任何电子邮件？再试一次。',
     Connect_email_jump: '单击此处跳转到页面。',
     Connect_StartFree: '入门',
+    Connect_BuyNow: '立即购买',
     Connect_TutorialVideo: '教程视频',
     back_home: '返回主页',
     Skip: '跳过',
@@ -681,7 +682,14 @@ export default {
     end_date: '结束日期',
     time_to: '至',
     data_download: '导出',
-    data_export: '格式'
+    data_export: '格式',
+    bill_overview: '计费概述',
+    bill_btn_pay: '升级为付费计划',
+    bill_btn_paid: '您已成为付费用户',
+    bill_cont1_title: '账单详情',
+    bill_cont1_desc: '查看过去和当前的发票',
+    bill_cont2_title: '定价',
+    bill_cont2_desc: '查看定价和常见问题解答'
   },
   network: {
     title: 'All Chains'

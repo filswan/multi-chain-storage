@@ -38,6 +38,9 @@
           <el-button type="primary" @click="goLink(discord_link)">
             {{$t('pricing.btn')}}
           </el-button>
+          <el-button type="primary" @click="getLogin('pay')">
+            {{$t('fs3Login.Connect_BuyNow')}}
+          </el-button>
           <div class="introduce" v-for="(o, pIndex) in introduce.pro" :key="pIndex">
             <div class="cont">
               <i class="el-icon-success"></i>
@@ -194,8 +197,8 @@ export default {
     goLink (link) {
       window.open(link)
     },
-    getLogin () {
-      that.$emit('getLogin', true)
+    getLogin (jump) {
+      that.$emit('getLogin', true, jump || '')
     }
   },
   mounted () {

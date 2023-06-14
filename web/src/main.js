@@ -50,7 +50,7 @@ Vue.prototype.baseAPIURL = netData === 80001 ? process.env.BASE_PAYMENT_GATEWAY_
 Vue.prototype.baseAddressURL = netData === 80001 ? process.env.BASE_MUMBAI_ADDRESS : process.env.BASE_POLYGON_ADDRESS
 Vue.prototype.Web3 = Web3
 Vue.prototype.baseNetwork = process.env.BASE_ENV === true
-console.log('update time: 2023-6-7', 'env:', process.env.BASE_ENV === true ? 'Main' : 'Cali', process.env.BASE_ENV)
+console.log('update time: 2023-6-14', 'env:', process.env.BASE_ENV === true ? 'Main' : 'Cali', process.env.BASE_ENV)
 router.beforeEach((to, from, next) => {
   if (to.matched.some(record => record.meta.requiresAuth)) {
     if (!sessionStorage.getItem('metaAddress')) {
@@ -93,12 +93,15 @@ new Vue({
   },
   data: function () {
     return {
-      LOCK_TIME: '6',
+      plan_id: 0,
+      max_storage: 32212254720,
+      pay_name: '',
+      pay_account: 2000000000,
+      PAYMENT_CONTRACT_ADDRESS: '',
       PAY_GAS_LIMIT: '9999999',
-      PAY_WITH_MULTIPLY_FACTOR: '1.5',
       RECIPIENT: '',
       SWAN_PAYMENT_CONTRACT_ADDRESS: '',
-      USDC_ADDRESS: '',
+      USDC_ADDRESS: '0x326C977E6efc84E512bB9C30f76E30c160eD06FB',
       dao_threshold: '',
       filecoin_price: ''
     }

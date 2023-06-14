@@ -28,7 +28,7 @@
           <div v-else class="logged_in">
             <!-- <span class="text textTrue">{{metaNetworkInfo.name}}</span> -->
             <div class="info">
-              <h5>{{priceAccound}} {{ metaNetworkInfo.unit}}</h5>
+              <!-- <h5>{{priceAccound}} {{ metaNetworkInfo.unit}}</h5> -->
               <h4 @click="wrongVisible = true">{{addrChild | hiddAddress}}</h4>
             </div>
             <el-button class="text textTrue pcShow" @click="signOutFun">{{$t('fs3.Disconnect')}}</el-button>
@@ -549,30 +549,28 @@ export default {
       // that.$router.push('/home')
       setTimeout(function () { window.location.reload() }, 200)
     },
-    commonParam () {
-      let commonApi = `${that.baseAPIURL}api/v1/common/system/params?limit=20&wallet_address=${that.metaAddress}`
+    async commonParam () {
+      //       that.$root.SWAN_PAYMENT_CONTRACT_ADDRESS = json.data.data.payment_contract_address
+      //       that.$root.USDC_ADDRESS = json.data.data.usdc_address
+      //       that.$root.MINT_CONTRACT = json.data.data.default_nft_collection_address
+      //       that.$root.COLLECTION_FACTORY_ADDRESS = json.data.data.nft_collection_factory_address
+      let paymentRes = await that.$commonFun.sendRequest(`${that.baseAPIURL}api/v2/payment/get_payment`, 'get')
+      if (!paymentRes || paymentRes.status !== 'success') {
+        if (paymentRes) that.$message.error(paymentRes.message || 'Fail')
+        else that.$message.error('Fail')
+      } else {
+        that.$root.plan_id = paymentRes.data.plan_id
+        that.$root.max_storage = paymentRes.data.max_storage
+      }
 
-      axios.get(commonApi, {
-        headers: {
-          'Authorization': 'Bearer ' + that.$store.getters.mcsjwtToken
-        }
-      })
-        .then((json) => {
-          if (json.data.status === 'success') {
-            that.$root.LOCK_TIME = json.data.data.lock_time
-            that.$root.PAY_GAS_LIMIT = json.data.data.gas_limit
-            that.$root.PAY_WITH_MULTIPLY_FACTOR = json.data.data.pay_multiply_factor
-            that.$root.RECIPIENT = json.data.data.payment_recipient_address
-            that.$root.SWAN_PAYMENT_CONTRACT_ADDRESS = json.data.data.payment_contract_address
-            that.$root.USDC_ADDRESS = json.data.data.usdc_address
-            that.$root.MINT_CONTRACT = json.data.data.default_nft_collection_address
-            that.$root.dao_threshold = json.data.data.dao_threshold
-            that.$root.filecoin_price = json.data.data.filecoin_price
-            that.$root.COLLECTION_FACTORY_ADDRESS = json.data.data.nft_collection_factory_address
-          }
-        }).catch(error => {
-          console.log(error)
-        })
+      let networkRes = await that.$commonFun.sendRequest(`${that.baseAPIURL}api/v2/network/get_network`, 'get')
+      if (!networkRes || networkRes.status !== 'success') {
+        if (networkRes) that.$message.error(networkRes.message || 'Fail')
+        else that.$message.error('Fail')
+      } else {
+        that.$root.PAYMENT_CONTRACT_ADDRESS = networkRes.data[0].payment_contract_address
+        that.$root.pay_name = networkRes.data[0].name
+      }
     },
     contractPrice (netId) {
       try {
@@ -1411,7 +1409,7 @@ export default {
         h4 {
           padding: 0 0.17rem 0 0.1rem;
           margin-left: 0.1rem;
-          background: #2d43e7;
+          // background: #2d43e7;
           line-height: 2;
           border-radius: 0.14rem;
           cursor: pointer;

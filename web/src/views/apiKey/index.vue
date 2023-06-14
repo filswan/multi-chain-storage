@@ -341,15 +341,16 @@ export default {
         from: that.metaAddress,
         gasPrice: await that.$web3Init.eth.getGasPrice()
       }
-      let account = 1
+      let account = that.$root.pay_account
 
       tokenFactory.methods.approve(that.$root.PAYMENT_CONTRACT_ADDRESS, account).send(payObject)
         .then(receipt => {
           console.log('approve receipt:', receipt)
           that.contractSend()
         })
-        .catch(() => {
+        .catch((err) => {
           that.payLoad = false
+          if (err && err.message) that.$message.error(err.message)
         })
     },
     async contractSend () {
@@ -370,6 +371,9 @@ export default {
         .on('receipt', function (receipt) {
           // receipt example
           console.log('create receipt console:', receipt)
+        })
+        .on('error', function (error) {
+          if (error && error.message) that.$message.error(error.message)
         })
       that.payLoad = false
     }

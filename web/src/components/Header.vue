@@ -28,7 +28,7 @@
           <div v-else class="logged_in">
             <!-- <span class="text textTrue">{{metaNetworkInfo.name}}</span> -->
             <div class="info">
-              <h5>{{priceAccound}} {{ metaNetworkInfo.unit}}</h5>
+              <!-- <h5>{{priceAccound}} {{ metaNetworkInfo.unit}}</h5> -->
               <h4 @click="wrongVisible = true">{{addrChild | hiddAddress}}</h4>
             </div>
             <el-button class="text textTrue pcShow" @click="signOutFun">{{$t('fs3.Disconnect')}}</el-button>
@@ -1409,7 +1409,7 @@ export default {
         h4 {
           padding: 0 0.17rem 0 0.1rem;
           margin-left: 0.1rem;
-          background: #2d43e7;
+          // background: #2d43e7;
           line-height: 2;
           border-radius: 0.14rem;
           cursor: pointer;

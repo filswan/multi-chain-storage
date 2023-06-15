@@ -550,10 +550,6 @@ export default {
       setTimeout(function () { window.location.reload() }, 200)
     },
     async commonParam () {
-      //       that.$root.SWAN_PAYMENT_CONTRACT_ADDRESS = json.data.data.payment_contract_address
-      //       that.$root.USDC_ADDRESS = json.data.data.usdc_address
-      //       that.$root.MINT_CONTRACT = json.data.data.default_nft_collection_address
-      //       that.$root.COLLECTION_FACTORY_ADDRESS = json.data.data.nft_collection_factory_address
       let paymentRes = await that.$commonFun.sendRequest(`${that.baseAPIURL}api/v2/payment/get_payment`, 'get')
       if (!paymentRes || paymentRes.status !== 'success') {
         if (paymentRes) that.$message.error(paymentRes.message || 'Fail')

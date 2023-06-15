@@ -356,11 +356,11 @@ export default {
     async contractSend () {
       let payFactory = new that.$web3Init.eth.Contract(payAbi, that.$root.PAYMENT_CONTRACT_ADDRESS)
       let estimatedGas = await payFactory.methods
-        .pay(that.$root.plan_id)
+        .pay(1)
         .estimateGas({ from: that.metaAddress })
       let gasLimit = Math.floor(estimatedGas * 1.5)
 
-      await payFactory.methods.pay(that.$root.plan_id)
+      await payFactory.methods.pay(1)
         .send({ from: that.metaAddress, gasLimit: gasLimit })
         .on('transactionHash', async (hash) => {
           console.log('hash console:', hash)

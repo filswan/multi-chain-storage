@@ -74,6 +74,18 @@
         </el-form>
       </div>
     </div>
+    <div class="fe-none" v-else-if="typeName === 'billing_tip'">
+      <div class="addBucket">
+        <div class="cont">
+          {{$t('billing.bill_tip')}}
+        </div>
+        <el-form ref="form">
+          <el-form-item>
+            <el-button type="primary" @click="closeDia('refresh')">{{$t('metaSpace.Close')}}</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+    </div>
     <div class="fe-none" v-else-if="typeName === 'detail'">
       <div class="addBucket" v-loading="backupLoad">
         <div class="head">

@@ -515,6 +515,9 @@ export default {
         display: flex;
         align-items: center;
         flex-wrap: wrap;
+        @media screen and (max-width: 600px) {
+          width: 100%;
+        }
         @media screen and (max-width: 1440px) {
           font-size: 14px;
         }

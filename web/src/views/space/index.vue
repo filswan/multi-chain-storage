@@ -6,6 +6,23 @@
           <div class="search_right">
             <el-input v-if="false" :placeholder="$t('metaSpace.search_bucket')" prefix-icon="el-icon-search" v-model="search" clearable @input="getListBuckets">
             </el-input>
+            <div class="left_progress">
+              <div class="need" v-if="languageMcs === 'en'">Need help? Join our
+                <a :href="discord_link" target="_blank">Discord</a>
+                or send an
+                <a href="mailto:team@filswan.com">Email</a> to us.
+              </div>
+              <div class="need" v-else>需要帮助吗？加入我们的
+                <a :href="discord_link" target="_blank">Discord</a>
+                或发送
+                <a href="mailto:team@filswan.com">电子邮件</a> 给我们。
+              </div>
+              <div class="progress">
+                <el-progress :percentage="(free_bucket/free_bucketAll)*100 || 0"></el-progress>
+                <span v-if="languageMcs === 'en'" class="tip">{{free_bucket | byteStorage}}GB of {{ $root.max_storage | byteStorage}}GB for Bucket storage</span>
+                <span v-else class="tip">目前使用量：{{free_bucket | byteStorage}}GB（Bucket储存空间配额：{{ $root.max_storage | byteStorage}}GB）</span>
+              </div>
+            </div>
           </div>
           <div class="createTask">
             <a @click="dialogFun('addNewBucket')">
@@ -127,7 +144,8 @@ export default {
       domain: {
         value: '',
         data: []
-      }
+      },
+      discord_link: process.env.DISCORD_LINK
     }
   },
   components: { popUps },
@@ -335,11 +353,37 @@ export default {
       }
       return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
       // return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i]
+    },
+    byteStorage (limit) {
+      // 只转换成GB
+      if (limit <= 0) {
+        return '0'
+      } else if (limit <= 10737419) { // 10737419 ~= 0.01GB
+        return '0.01'
+      } else {
+        // return (limit/( 1024 * 1024 * 1024)).toPrecision(2)  //or 1000
+        let value = limit / (1024 * 1024 * 1024)
+        let v1 = String(value).split('.')
+        let v2 = v1[1] || ''
+        let v3 = String(v2).replace(/(0+)\b/gi, '')
+        if (v3) {
+          return v1[0] + '.' + v3.slice(0, 2)
+        } else {
+          return v1[0]
+        }
+      }
     }
   },
   computed: {
     languageMcs () {
       return this.$store.getters.languageMcs
+    },
+    free_bucket () {
+      let freeBucket = this.$store.getters.free_bucket < this.$store.getters.free_bucketAll ? this.$store.getters.free_bucket : this.$store.getters.free_bucketAll
+      return freeBucket
+    },
+    free_bucketAll () {
+      return this.$store.getters.free_bucketAll === 0 ? 34359738368 : this.$store.getters.free_bucketAll
     }
   }
 }
@@ -443,6 +487,11 @@ export default {
   margin: 0.3rem;
   background-color: #fff;
   border-radius: 0.1rem;
+  @media screen and (max-width: 600px) {
+    width: 100%;
+    padding: 0;
+    margin: 0.3rem 0;
+  }
   .el-loading-mask {
     z-index: 5;
   }
@@ -531,6 +580,7 @@ export default {
         display: flex;
         align-items: center;
         justify-content: space-between;
+        flex-wrap: wrap;
         width: 100%;
         margin: 0;
         p {
@@ -576,8 +626,9 @@ export default {
         .search_right {
           display: flex;
           align-items: center;
-          width: 100%;
-          margin-right: 0.9rem;
+          @media screen and (max-width: 600px) {
+            width: 100%;
+          }
           .el-button {
             height: 0.3rem;
             padding: 0 0.15rem;
@@ -588,6 +639,47 @@ export default {
             border: 0;
             border-top-left-radius: 0;
             border-bottom-left-radius: 0;
+          }
+          .left_progress {
+            padding: 0 0.28rem;
+            @media screen and (max-width: 600px) {
+              padding: 0 0 0.2rem;
+            }
+            .need {
+              font-size: 12px;
+              color: #000;
+              text-align: center;
+              line-height: 1.1;
+              @media screen and (min-width: 1800px) {
+                font-size: 14px;
+              }
+              a {
+                color: inherit;
+                text-decoration: underline;
+              }
+            }
+            .progress {
+              margin: 0.1rem 0 0;
+              .el-progress {
+                font-size: 12px;
+                .el-progress-bar {
+                  padding-right: 0;
+                  margin: 0 0 5px 0;
+                }
+                .el-progress__text {
+                  display: none;
+                }
+              }
+              .tip {
+                display: block;
+                font-size: 12px;
+                line-height: 1.2;
+                color: rgb(179, 192, 231);
+                @media screen and (min-width: 1800px) {
+                  font-size: 14px;
+                }
+              }
+            }
           }
         }
         .el-input {

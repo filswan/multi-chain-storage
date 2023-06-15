@@ -11,7 +11,7 @@ export default {
     myAccount: 'Setting',
     Upload_files: 'Upload File',
     Search_file: 'Search File',
-    documentation: 'Documentation',
+    documentation: 'Document',
     metaSpace: 'Bucket Storage',
     About: 'About',
     Pricing: 'Pricing',
@@ -189,8 +189,8 @@ export default {
     Change_password: 'Change Password',
     wrong_password: 'wrong password',
     Reenter_new_password: 'Reenter New Password',
-    apiKey_your_title: 'Your API keys',
-    apiKey_your_Domain: 'Your Custom Domain',
+    apiKey_your_title: 'API keys',
+    apiKey_your_Domain: 'Custom Domain',
     apiKey_your_Domain_label: 'Domain address',
     apiKey_tips_01: 'API keys provide full access to your swan account, so keep them safe.',
     apiKey_tips_02: 'How to use API key.',
@@ -683,7 +683,9 @@ export default {
     bill_cont1_title: 'Billing history',
     bill_cont1_desc: 'View past and current invoices',
     bill_cont2_title: 'Pricing',
-    bill_cont2_desc: 'View pricing and FAQs'
+    bill_cont2_desc: 'View pricing and FAQs',
+    have_faq: 'Have question?',
+    bill_tip: 'There may be a delay in transaction processing. Please refresh this page after confirming the success. Please do not make duplicate payments, as it may result in financial loss.'
   },
   network: {
     title: 'All Chains'
@@ -791,7 +793,8 @@ export default {
   },
   comment: {
     Rate_Product: 'Rate our product',
-    Tell_Comment: 'Tell us your comment'
+    Tell_Comment: 'Tell us your comment',
+    theme: 'Theme'
   },
   pricing: {
     'title_1': 'Choose the plan that works for you',

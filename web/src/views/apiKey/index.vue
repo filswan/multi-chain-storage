@@ -59,28 +59,39 @@
                 <span>{{$t('billing.bill_btn_paid')}}</span>
               </a>
             </div>
+            <router-link :to="{name: 'home_entrance', query: { id: 'pricing' }}" target="_blank" class="billing_cont">
+              {{$t('billing.have_faq')}}
+            </router-link>
           </div>
         </div>
-        <el-row class="billing_style" :gutter="20">
-          <el-col :xs="24" :sm="12" :md="9" :lg="8">
-            <router-link :to="{path: '/billing'}" class="billing_cont">
-              <div class="icon el-icon-s-billing"></div>
-              <div class="desc">
-                <div class="desc_t">{{$t('billing.bill_cont1_title')}}</div>
-                <div class="desc_d">{{$t('billing.bill_cont1_desc')}}</div>
-              </div>
-            </router-link>
-          </el-col>
-          <el-col :xs="24" :sm="12" :md="9" :lg="8">
-            <router-link :to="{name: 'home_entrance', query: { id: 'pricing' }}" target="_blank" class="billing_cont">
-              <div class="icon el-icon-s-pricing"></div>
-              <div class="desc">
-                <div class="desc_t">{{$t('billing.bill_cont2_title')}}</div>
-                <div class="desc_d">{{$t('billing.bill_cont2_desc')}}</div>
-              </div>
-            </router-link>
-          </el-col>
-        </el-row>
+        <div class="fes-search">
+          <el-table :data="billingData" v-loading="billingLoad" stripe style="width: 100%" max-height="300" :empty-text="$t('deal.formNotData')" class="table_cell" @sort-change="sortChange" :default-sort="{prop: 'date', order: 'descending'}">
+            <el-table-column prop="pay_tx_hash" :label="$t('billing.TRANSACTION')">
+              <template slot-scope="scope">
+                <div class="hot-cold-box">
+                  <el-popover placement="top" trigger="hover" width="200" v-model="scope.row.txHashVis">
+                    <div class="upload_form_right">
+                      <p>{{scope.row.pay_tx_hash}}</p>
+                    </div>
+                    <el-button slot="reference" class="resno" @click="networkLink(scope.row.pay_tx_hash, scope.row.network_name)" :class="{'color': scope.row.network_name&&scope.row.network_name.toLowerCase() == 'polygon'}">
+                      <!-- <img src="@/assets/images/copy.png" alt=""> -->
+                      {{scope.row.pay_tx_hash}}
+                    </el-button>
+                  </el-popover>
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column prop="pay_amount" :label="$t('billing.AMOUNT')" min-width="150" sortable="custom">
+              <template slot-scope="scope">
+                <div class="hot-cold-box">
+                  {{scope.row.pay_amount | balanceMweiFilter}}
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column prop="network_name" :label="$t('billing.NETWORK')" min-width="120"></el-table-column>
+            <el-table-column prop="pay_at" :label="$t('billing.PAYMENTDATE')" min-width="140" sortable="custom"></el-table-column>
+          </el-table>
+        </div>
       </div>
 
       <div>
@@ -157,8 +168,10 @@ export default {
       listLoad: true,
       listTableLoad: false,
       createLoad: false,
+      billingLoad: false,
       toolData: [],
       domainData: [],
+      billingData: [],
       areaBody: {},
       dialogFormVisible: false,
       typeName: 'add_apikey',
@@ -173,6 +186,9 @@ export default {
   },
   components: { popUps },
   computed: {
+    languageMcs () {
+      return this.$store.state.app.languageMcs
+    },
     metaAddress () {
       return this.$store.getters.metaAddress
     },
@@ -186,6 +202,10 @@ export default {
     }
   },
   methods: {
+    async sortChange (column) {
+      // this.billingLoad = true
+      // this.getListBuckets()
+    },
     calculateDiffTime (validDays, startTime) {
       if (String(validDays) === '0') return 'Forever'
       if (!parseInt(validDays)) return '-'
@@ -215,6 +235,9 @@ export default {
           break
         case 'add_domain':
           that.createDomain(dialog, rows, day)
+          break
+        case 'refresh':
+          that.refreshFun(dialog)
           break
         default:
           if (rows) that.createKey(dialog, rows, day)
@@ -251,6 +274,7 @@ export default {
       that.areaBody = row || {}
       that.changeTitle = title || ''
       that.dialogFormVisible = true
+      that.payLoad = false
       document.getElementById('content_client').scrollTop = 120
     },
     async deleteApiKey () {
@@ -280,6 +304,12 @@ export default {
         that.$message.error(domainRes.message || 'Fail')
         that.domainData = []
       } else that.domainData = domainRes.data || []
+
+      const billingRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/billing`, 'get')
+      if (!billingRes || billingRes.status !== 'success') {
+        that.$message.error(billingRes.message || 'Fail')
+        that.billingData = []
+      } else that.billingData = billingRes.data.billing || []
 
       that.listLoad = false
     },
@@ -334,8 +364,24 @@ export default {
         document.body.removeChild(txtArea)
       }
     },
+    async refreshFun (dialog) {
+      that.dialogFormVisible = dialog
+      that.payLoad = true
+      let paymentRes = await that.$commonFun.sendRequest(`${that.baseAPIURL}api/v2/payment/get_payment`, 'get')
+      if (!paymentRes || paymentRes.status !== 'success') return false
+      else {
+        that.$root.plan_id = paymentRes.data.plan_id
+        that.$root.max_storage = paymentRes.data.max_storage
+      }
+      that.payLoad = false
+    },
     async payPlan () {
       that.payLoad = true
+      const getID = await that.$commonFun.web3Init.eth.net.getId()
+      if (that.$root.chain_id !== getID) {
+        that.$message.error(that.languageMcs === 'en' ? `Please switch to a network with chain ID ${that.$root.chain_id}!` : `请切换到chain ID为${that.$root.chain_id}的网络！`)
+        that.payLoad = false
+      }
       let tokenFactory = new that.$web3Init.eth.Contract(linkTokenAbi, that.$root.USDC_ADDRESS)
       let payObject = {
         from: that.metaAddress,
@@ -364,6 +410,7 @@ export default {
         .send({ from: that.metaAddress, gasLimit: gasLimit })
         .on('transactionHash', async (hash) => {
           console.log('hash console:', hash)
+          that.dialogFun('billing_tip')
         })
         .on('confirmation', function (confirmationNumber, receipt) {
           // console.log('confirmationNumber console:', confirmationNumber, receipt)
@@ -619,6 +666,11 @@ export default {
   margin: 0.3rem;
   background-color: #fff;
   border-radius: 0.1rem;
+  @media screen and (max-width: 600px) {
+    width: 100%;
+    padding: 0;
+    margin: 0.3rem 0;
+  }
   h4 {
     font-size: 0.22rem;
     font-weight: normal;
@@ -720,7 +772,6 @@ export default {
       .search_file {
         display: flex;
         align-items: center;
-        justify-content: space-between;
         width: 100%;
         margin: 0;
         p {
@@ -774,6 +825,17 @@ export default {
                 box-shadow: none;
               }
             }
+          }
+        }
+        .billing_cont {
+          margin-left: 0.15rem;
+          font-size: 14px;
+          color: #333;
+          @media screen and (max-width: 600px) {
+            font-size: 12px;
+          }
+          &:hover {
+            text-decoration: underline;
           }
         }
         .search_right {
@@ -1413,6 +1475,7 @@ export default {
         align-items: center;
         cursor: pointer;
         color: #333;
+        font-size: 14px;
         .icon {
           position: relative;
           width: 0.7rem;

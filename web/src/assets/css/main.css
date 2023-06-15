@@ -45,11 +45,21 @@ a {
   overflow-y: scroll;
 }
 
+.mWidth {
+  max-width: 2560px;
+}
+
+.flex {
+  display: flex;
+  align-items: center;
+}
+
 .content-box {
   bottom: 0;
   -webkit-transition: left .3s ease-in-out;
   transition: left .3s ease-in-out;
   background: #f0f0f0;
+  background-color: #fff;
   overflow-y: scroll;
 }
 

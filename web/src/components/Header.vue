@@ -1,6 +1,15 @@
 <template>
   <div class="header" :class="{'content-collapse': collapseLocal}">
-    <div class="header_arera">
+    <div class="header_arera mWidth">
+      <div class="header_left">
+        <div class="logoImg">
+          <img :src="logo" class="img" alt='FilSwan' />
+          <img class="beta" src="@/assets/images/landing/beta.png">
+        </div>
+        <router-link :to="{name: 'Space'}" class="meta-space pcShow">
+          {{$t('route.metaSpace')}}
+        </router-link>
+      </div>
       <div class="header-right">
         <div class="network_mainnet" v-if="addrChild && false" :class="{'error': networkTip}" @click="networkC=true">
           <!-- <div class="BSC_mainnet" v-if="networkID == 97" title="BSC TestNet mainnet">
@@ -28,34 +37,80 @@
           <div v-else class="logged_in">
             <!-- <span class="text textTrue">{{metaNetworkInfo.name}}</span> -->
             <div class="info">
-              <!-- <h5>{{priceAccound}} {{ metaNetworkInfo.unit}}</h5> -->
-              <h4 @click="wrongVisible = true">{{addrChild | hiddAddress}}</h4>
-            </div>
-            <el-button class="text textTrue pcShow" @click="signOutFun">{{$t('fs3.Disconnect')}}</el-button>
-          </div>
-        </div>
-        <div class="lang_style">
-          <span v-if="languageMcs === 'en'" @click="handleSetLanguage('cn')">EN</span>
-          <span v-else @click="handleSetLanguage('en')">中</span>
-        </div>
-        <div class="switch">
-          <div class="swithUI" v-if="reverse" @click="reverseChange(false)">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" class="css-sunny">
-              <path fill-rule="evenodd" clip-rule="evenodd" d="M10.5 2h3v3h-3V2zM16 12a4 4 0 11-8 0 4 4 0 018 0zM5.99 3.869L3.867 5.99 5.99 8.112 8.111 5.99 5.989 3.87zM2 13.5v-3h3v3H2zm1.868 4.51l2.121 2.12 2.122-2.12-2.122-2.122-2.121 2.121zM13.5 19v3h-3v-3h3zm4.51-3.112l-2.121 2.122 2.121 2.121 2.121-2.121-2.121-2.122zM19 10.5h3v3h-3v-3zm-3.11-4.51l2.12 2.121 2.122-2.121-2.121-2.121-2.122 2.121z"
-                fill="currentColor"></path>
-            </svg>
-          </div>
-          <div class="swithUI" v-else @click="reverseChange(true)">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" class="css-moon">
-              <path d="M20.968 12.768a7 7 0 01-9.735-9.735 9 9 0 109.735 9.735z" fill="currentColor"></path>
-            </svg>
-          </div>
-        </div>
-        <!-- mobile显示 -->
-        <div class="mobileShow">
-          <div class="collapse-btn-cont" @click="collapseChage">
-            <div class="header_btn" :class="{'el-icon-s-unfold': !collapseLocal, 'el-icon-s-fold': collapseLocal}">
-              <!-- <span></span> -->
+              <!-- <h5>{{priceAccound}} {{ metaNetworkInfo.unit}}</h5> <h4></h4> -->
+              <h5 @click="wrongVisible = true">{{addrChild | hiddAddress}}</h5>
+              <el-dropdown class="dropdown-style" @command="handleCommand" trigger="click" :hide-on-click="true">
+                <span class="el-dropdown-link">
+                  <i class="el-icon-setting"></i>
+                </span>
+                <el-dropdown-menu slot="dropdown" class="dropdown-ul">
+                  <el-dropdown-item command="bucket" class="mobileShow">
+                    <div class="dropdown-body flex">
+                      <div class="dropdown-left flex">
+                        <i class="el-icon-s-metaSpace"></i>
+                        {{$t('route.metaSpace')}}
+                      </div>
+                    </div>
+                  </el-dropdown-item>
+                  <el-dropdown-item command="setting">
+                    <div class="dropdown-body flex">
+                      <div class="dropdown-left flex">
+                        <i class="el-icon-s-myAccount"></i>
+                        {{$t('route.myAccount')}}
+                      </div>
+                    </div>
+                  </el-dropdown-item>
+                  <el-dropdown-item command="lang">
+                    <div class="dropdown-body flex">
+                      <div class="dropdown-left flex">
+                        <i class="el-icon-language"></i>
+                        {{$t('navbar.language')}}
+                      </div>
+                      <div class="lang_style">
+                        <span v-if="languageMcs === 'en'" @click="handleSetLanguage('cn')">EN</span>
+                        <span v-else @click="handleSetLanguage('en')">中</span>
+                      </div>
+                    </div>
+                  </el-dropdown-item>
+                  <el-dropdown-item command="theme">
+                    <div class="dropdown-body flex">
+                      <div class="dropdown-left flex">
+                        <i class="el-icon-theme"></i>
+                        {{$t('comment.theme')}}
+                      </div>
+                      <div class="switch">
+                        <div class="swithUI flex" v-if="reverse" @click="reverseChange(false)">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" class="css-sunny">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M10.5 2h3v3h-3V2zM16 12a4 4 0 11-8 0 4 4 0 018 0zM5.99 3.869L3.867 5.99 5.99 8.112 8.111 5.99 5.989 3.87zM2 13.5v-3h3v3H2zm1.868 4.51l2.121 2.12 2.122-2.12-2.122-2.122-2.121 2.121zM13.5 19v3h-3v-3h3zm4.51-3.112l-2.121 2.122 2.121 2.121 2.121-2.121-2.121-2.122zM19 10.5h3v3h-3v-3zm-3.11-4.51l2.12 2.121 2.122-2.121-2.121-2.121-2.122 2.121z"
+                              fill="currentColor"></path>
+                          </svg>
+                        </div>
+                        <div class="swithUI flex" v-else @click="reverseChange(true)">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" class="css-moon">
+                            <path d="M20.968 12.768a7 7 0 01-9.735-9.735 9 9 0 109.735 9.735z" fill="currentColor"></path>
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+                  </el-dropdown-item>
+                  <el-dropdown-item command="doc">
+                    <div class="dropdown-body flex" @click="documentLink">
+                      <div class="dropdown-left flex">
+                        <i class="el-icon-s-documentation"></i>
+                        <span slot="title">{{$t('route.documentation')}}</span>
+                      </div>
+                    </div>
+                  </el-dropdown-item>
+                  <el-dropdown-item command="disconnect">
+                    <div class="dropdown-body flex" @click="signOutFun">
+                      <div class="dropdown-left flex">
+                        <i class="el-icon-switch-button"></i>
+                        <div class="text textTrue">{{$t('fs3.Disconnect')}}</div>
+                      </div>
+                    </div>
+                  </el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown>
             </div>
           </div>
         </div>
@@ -150,7 +205,8 @@ export default {
       reverseSwitch: false,
       networkC: false,
       prevType: true,
-      loadAccount: false
+      loadAccount: false,
+      logo: require('@/assets/images/MCS_logo_2.png')
     }
   },
   props: ['meta', 'netId', 'networkTip'],
@@ -205,6 +261,22 @@ export default {
     }
   },
   methods: {
+    documentLink () {
+      window.open('https://docs.filswan.com/multi-chain-storage/overview', '_blank')
+    },
+    handleCommand (command) {
+      // console.log(command)
+      sessionStorage.removeItem('dealsPaginationIndexDev')
+      switch (command) {
+        case 'setting':
+          that.$router.push({ name: 'ApiKey' })
+          break
+        case 'bucket':
+          that.$router.push({ name: 'Space' })
+          break
+        default:
+      }
+    },
     getNetworkC (dialog, rows) {
       that.networkC = dialog
       if (rows) {
@@ -566,6 +638,7 @@ export default {
       } else {
         that.$root.PAYMENT_CONTRACT_ADDRESS = networkRes.data[0].payment_contract_address
         that.$root.pay_name = networkRes.data[0].name
+        that.$root.chain_id = networkRes.data[0].chain_id
       }
     },
     contractPrice (netId) {
@@ -934,65 +1007,6 @@ export default {
         margin: 0.1rem 0.05rem;
       }
     }
-    .collapse-btn-cont {
-      float: left;
-      padding: 0;
-      cursor: pointer;
-      align-items: center;
-      display: flex;
-      .header_btn {
-        display: flex;
-        align-items: center;
-        flex-wrap: wrap;
-        width: 0.26rem;
-        height: 0.26rem;
-        margin: 0 0.03rem 0 0.06rem;
-        transition: all 0.4s ease;
-        outline: none;
-        color: #000;
-        font-size: 22px;
-      }
-      .header_btn span {
-        position: relative;
-        display: block;
-        width: 100%;
-        height: 1px;
-        margin: auto;
-        background-color: #000;
-        transition: all 0.4s ease;
-      }
-      .header_btn span::after {
-        content: "";
-        position: absolute;
-        top: -7px;
-        right: 0;
-        width: 100%;
-        height: 1px;
-        background-color: #000;
-        transition: all 0.4s ease;
-      }
-      .header_btn span::before {
-        content: "";
-        position: absolute;
-        bottom: -7px;
-        right: 0;
-        width: 100%;
-        height: 1px;
-        background-color: #000;
-        transition: all 0.4s ease;
-      }
-      .header_btn.header_btn_left span::before,
-      .header_btn.header_btn_left span::after {
-        right: auto;
-        left: 0;
-      }
-      .header_btn:hover span,
-      .header_btn:hover span::before,
-      .header_btn:hover span::after {
-        width: 100%;
-        background-color: #555;
-      }
-    }
   }
   .header_left_logo {
     float: left;
@@ -1012,85 +1026,25 @@ export default {
         width: 100%;
       }
     }
-
-    .header_btn {
-      display: flex;
-      align-items: center;
-      flex-wrap: wrap;
-      width: 0.26rem;
-      height: 0.26rem;
-      margin: 0 0.03rem 0 0.06rem;
-      transition: all 0.4s ease;
-      outline: none;
-      color: #000;
-      font-size: 22px;
-    }
-    .header_btn span {
-      position: relative;
-      display: block;
-      width: 100%;
-      height: 1px;
-      margin: auto;
-      background-color: #000;
-      transition: all 0.4s ease;
-    }
-    .header_btn span::after {
-      content: "";
-      position: absolute;
-      top: -7px;
-      right: 0;
-      width: 50%;
-      height: 1px;
-      background-color: #000;
-      transition: all 0.4s ease;
-    }
-    .header_btn span::before {
-      content: "";
-      position: absolute;
-      bottom: -7px;
-      right: 0;
-      width: 75%;
-      height: 1px;
-      background-color: #000;
-      transition: all 0.4s ease;
-    }
-    .header_btn.header_btn_left span::before,
-    .header_btn.header_btn_left span::after {
-      right: auto;
-      left: 0;
-    }
-    .header_btn:hover span,
-    .header_btn:hover span::before,
-    .header_btn:hover span::after {
-      width: 100%;
-      background-color: #555;
-    }
   }
   .header_left_hidd {
     width: 0.74rem;
     padding: 0;
     justify-content: center;
   }
-  .collapse-btn-cont {
-    float: left;
-    padding: 0;
-    cursor: pointer;
-    align-items: center;
-    display: flex;
-  }
 }
 .header_arera {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
   height: 100%;
   padding: 0;
-  margin: 0 0.6rem;
-  @media screen and (max-width: 1260px) {
+  // margin: 0 0.6rem;
+  padding: 0 0.6rem;
+  box-shadow: 0 0 7px #33333309;
+  @media screen and (max-width: 600px) {
+    padding: 0 0.3rem;
   }
-}
-.header_arera_hidd {
-  width: calc(100% - 1rem);
 }
 .header_left {
   float: left;
@@ -1145,82 +1099,49 @@ export default {
       }
     }
   }
-  img {
-    height: 0.35rem;
-  }
-}
-// .collapse-btn-cont {
-//     float: left;
-//     height: 100%;
-//     padding: 0;
-//     cursor: pointer;
-// }
-
-.collapse-btn-cont {
-  float: left;
-  padding: 0;
-  cursor: pointer;
-  align-items: center;
-  display: flex;
-  .header_btn {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    width: 22px;
-    height: 22px;
-    margin: 0 5px 0 15px;
-    transition: all 0.4s ease;
-    outline: none;
-    color: #000;
-    font-size: 22px;
-    @media screen and (max-width: 479px) {
-      margin: 0 0 0 10px;
-    }
-    &:hover {
-      color: #4b5fff;
-    }
-  }
-  .header_btn span {
+  .logoImg {
     position: relative;
-    display: block;
-    width: 100%;
-    height: 1px;
-    margin: auto;
-    background-color: #000;
-    transition: all 0.4s ease;
+    height: 40px;
+    cursor: pointer;
+    @media screen and (max-width: 992px) {
+      height: 30px;
+    }
+    .img {
+      height: 100%;
+    }
+    .beta {
+      position: absolute;
+      width: 40px;
+      right: -0.2rem;
+      bottom: 0.05rem;
+      @media screen and (min-width: 1800px) {
+        width: 45px;
+        bottom: 0.03rem;
+      }
+      @media screen and (max-width: 1366px) {
+        right: -0.25rem;
+      }
+      @media screen and (max-width: 1280px) {
+        right: -0.3rem;
+      }
+      @media screen and (max-width: 600px) {
+        bottom: 0.02rem;
+      }
+    }
   }
-  .header_btn span::after {
-    content: "";
-    position: absolute;
-    top: -7px;
-    right: 0;
-    width: 100%;
-    height: 1px;
-    background-color: #000;
-    transition: all 0.4s ease;
-  }
-  .header_btn span::before {
-    content: "";
-    position: absolute;
-    bottom: -7px;
-    right: 0;
-    width: 100%;
-    height: 1px;
-    background-color: #000;
-    transition: all 0.4s ease;
-  }
-  .header_btn.header_btn_left span::before,
-  .header_btn.header_btn_left span::after {
-    right: auto;
-    left: 0;
-  }
-  .header_btn:hover span,
-  .header_btn:hover span::before,
-  .header_btn:hover span::after {
-    width: 100%;
-    background-color: #555;
+  .meta-space {
+    padding-left: 0.25rem;
+    margin-left: 0.45rem;
+    font-size: 14px;
+    border-left: 1px solid #eee;
+    color: rgb(4, 17, 29);
+    text-transform: capitalize;
+    &:hover {
+      text-decoration: underline;
+    }
   }
 }
+
 .header-right {
   display: flex;
   justify-content: right;
@@ -1243,37 +1164,6 @@ export default {
       display: block;
       font-size: 12px;
       line-height: 1.2;
-    }
-  }
-  .lang_style {
-    min-width: 0.26rem;
-    margin: 0 0.2rem;
-    line-height: 0.26rem;
-    font-size: 0.14rem;
-    font-weight: 500;
-    color: #000;
-    border: 2px solid;
-    border-radius: 6px;
-    text-align: center;
-    @media screen and (min-width: 1800px) {
-      font-size: 16px;
-    }
-    @media screen and (max-width: 991px) {
-      font-size: 13px;
-      width: 25px;
-      height: 25px;
-      margin: 0 15px;
-      line-height: 25px;
-    }
-    @media screen and (max-width: 479px) {
-      margin: 0 10px;
-    }
-    span {
-      cursor: pointer;
-      color: inherit;
-      &:hover {
-        color: #4b5eff;
-      }
     }
   }
   .network_mainnet {
@@ -1403,17 +1293,36 @@ export default {
         border-radius: 0.14rem;
         background: linear-gradient(45deg, #4f8aff, #4b5eff);
         h4 {
-          padding: 0 0.17rem 0 0.1rem;
+          padding: 0 0.12rem;
           margin-left: 0.1rem;
-          // background: #2d43e7;
+          background: #2d43e7;
+          font-size: 18px;
           line-height: 2;
-          border-radius: 0.14rem;
+          border-radius: 0.1rem;
           cursor: pointer;
           @media screen and (max-width: 600px) {
             margin: 0;
           }
           &:hover {
             opacity: 0.9;
+          }
+        }
+        .dropdown-style {
+          padding: 0 0.12rem;
+          margin-left: 0.1rem;
+          background: #2d43e7;
+          font-size: 18px;
+          line-height: 2;
+          border-radius: 0.1rem;
+          cursor: pointer;
+          @media screen and (max-width: 768px) {
+            line-height: 1.5;
+          }
+          &:hover {
+            opacity: 0.9;
+          }
+          .el-dropdown-link {
+            color: #fff;
           }
         }
         @media screen and (max-width: 600px) {
@@ -1430,112 +1339,6 @@ export default {
     &:before {
       // background: #0fce7c;
       display: none;
-    }
-  }
-  .switch {
-    position: relative;
-    display: flex;
-    margin: 0;
-    .on {
-      position: absolute;
-      top: 0;
-      left: 5px;
-      z-index: 9;
-      font-size: 12px;
-      line-height: 2;
-      color: #fff;
-      svg {
-        width: 18px;
-        height: 18px;
-        margin: 2px 0 0;
-      }
-    }
-    .off {
-      position: absolute;
-      top: 0;
-      right: 5px;
-      z-index: 9;
-      font-size: 12px;
-      line-height: 2;
-      color: #fff;
-      svg {
-        width: 14px;
-        height: 14px;
-        margin: 4px 0 0;
-      }
-    }
-    .el-switch /deep/ {
-      // margin-left: 0.1rem;
-      height: 22px;
-      .el-switch__core {
-        height: 22px;
-      }
-      .el-switch__core:after {
-        background-color: #fff;
-        top: 0;
-        width: 20px;
-        height: 20px;
-        z-index: 10;
-      }
-      .el-switch__label--left {
-        position: absolute;
-        top: 0;
-        left: 5px;
-        margin: 0;
-        color: #fff;
-        font-size: 15px;
-        z-index: 9;
-        i {
-          font-size: inherit;
-        }
-      }
-      .el-switch__label--right {
-        position: absolute;
-        top: 0;
-        right: 5px;
-        margin: 0;
-        color: #fff;
-        font-size: 15px;
-        z-index: 9;
-        i {
-          font-size: inherit;
-        }
-      }
-    }
-    .el-switch.is-checked /deep/ {
-      .el-switch__core::after {
-        margin-left: -22px;
-      }
-    }
-    .swithUI {
-      display: flex;
-      -webkit-box-pack: center;
-      justify-content: center;
-      -webkit-box-align: center;
-      align-items: center;
-      cursor: pointer;
-      font-size: 22px;
-      svg {
-        box-sizing: border-box;
-        margin: 0px;
-        min-width: 0px;
-        font-size: 22px;
-        cursor: pointer;
-        width: 22px;
-        height: 22px;
-      }
-      .css-sunny {
-        color: #fff;
-        &:hover {
-          color: #4f8aff;
-        }
-      }
-      .css-moon {
-        color: #333;
-        &:hover {
-          color: #4f8aff;
-        }
-      }
     }
   }
   b {
@@ -1612,37 +1415,7 @@ export default {
   width: 0.25rem;
   margin: 0.17rem 0.05rem 0 0;
 }
-.el-popper {
-  padding: 0 0.1rem;
-  border: 0.01rem solid #eee;
-  border-bottom: 0;
-  box-shadow: 0 0 0.1rem rgba(187, 180, 180, 0.51);
-}
-.el-dropdown-menu__item {
-  padding: 0 0.2rem;
-  font-size: 0.14rem;
-  border-bottom: 0.01rem solid #eee;
-  line-height: 0.5rem;
-}
-.el-dropdown-menu__item.is-disabled {
-  /* color: #ffb933; */
-  pointer-events: none;
-  /* background: #f9f9f9; */
-  color: #606266;
-  background: transparent;
-}
-.el-dropdown-menu__item:focus,
-.el-dropdown-menu__item:not(.is-disabled):hover {
-  background-color: transparent;
-  color: #ffb933;
-}
 @media screen and (max-width: 991px) {
-  .header_arera {
-    margin: 0 0.1rem;
-    // height: auto;
-    padding: 0;
-    border: 0;
-  }
   .header_left {
     font-size: 0.2rem;
     color: #fff;
@@ -1663,28 +1436,286 @@ export default {
       margin-right: 0;
       color: #fff;
     }
-    .pcShow {
-      display: none;
-    }
-  }
-  .mobileShow {
-    display: block;
   }
   .language {
     margin: 0 0.1rem 0 0.15rem;
     color: #fff;
   }
 }
-@media screen and (max-width: 640px) {
+@media screen and (max-width: 768px) {
   .language {
     margin: 0 0.05rem;
+  }
+  .pcShow {
+    display: none;
+  }
+  .mobileShow {
+    display: block;
   }
 }
 @media screen and (max-width: 470px) {
   .header_left {
     font-size: 0.16rem;
-    img {
-      height: 30px;
+  }
+}
+</style>
+<style lang="scss">
+.dropdown-ul {
+  min-width: 200px;
+  padding: 0.1rem;
+  border: 0.01rem solid #eee;
+  border-bottom: 0;
+  box-shadow: 0 0 0.1rem rgba(187, 180, 180, 0.51);
+  .el-dropdown-menu__item {
+    color: #333;
+    padding: 0.1rem 0.15rem;
+    margin: 0.05rem 0;
+    font-size: 14px;
+    line-height: 2;
+    border-radius: 5px;
+    @media screen and (min-width: 1800px) {
+      font-size: 16px;
+    }
+    &:focus,
+    &:hover {
+      color: #333;
+    }
+    .dropdown-body {
+      justify-content: space-between;
+      .dropdown-left {
+        min-width: 100px;
+        margin-right: 0.2rem;
+        i,
+        svg {
+          font-size: inherit;
+          position: relative;
+          width: 16px;
+          height: 16px;
+          margin-right: 5px;
+          @media screen and (min-width: 1800px) {
+            width: 20px;
+            height: 20px;
+          }
+          &::before {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            content: "";
+            background-size: 16px !important;
+            @media screen and (min-width: 1800px) {
+              background-size: 20px !important;
+            }
+          }
+        }
+        .el-icon-switch-button {
+          font-size: 17px;
+          &::before {
+            content: "\E71B";
+          }
+        }
+        .el-icon-s-home {
+          &::before {
+            background: url(../assets/images/menuIcon/Dashboard.png) no-repeat
+              center;
+          }
+        }
+        .el-icon-s-upload {
+          &::before {
+            background: url(../assets/images/menuIcon/uploadFile.png) no-repeat
+              center;
+          }
+        }
+        .el-icon-s-browse {
+          &::before {
+            background: url(../assets/images/menuIcon/browse.png) no-repeat
+              center;
+          }
+        }
+        .el-icon-s-deal {
+          &::before {
+            background: url(../assets/images/menuIcon/icon_Files@2x.png)
+              no-repeat center;
+          }
+        }
+        .el-icon-s-myFs3 {
+          &::before {
+            background: url(../assets/images/menuIcon/S3.png) no-repeat center;
+          }
+        }
+        .el-icon-s-myProfile {
+          &::before {
+            background: url(../assets/images/menuIcon/myProfile.png) no-repeat
+              center;
+          }
+        }
+        .el-icon-s-tools {
+          &::before {
+            background: url(../assets/images/menuIcon/tool.png) no-repeat center;
+          }
+        }
+        .el-icon-s-Stats {
+          &::before {
+            background: url(../assets/images/menuIcon/icon_Statistics@2x.png)
+              no-repeat center;
+          }
+        }
+        .el-icon-s-ApiKey {
+          &::before {
+            background: url(../assets/images/menuIcon/icon_ApiKey.png) no-repeat
+              center;
+          }
+        }
+        .el-icon-s-documentation {
+          &::before {
+            background: url(../assets/images/menuIcon/icon_documentation@2x-2.png)
+              no-repeat center;
+          }
+        }
+        .el-icon-s-metaSpace {
+          &::before {
+            background: url(../assets/images/menuIcon/metaSpace-3.png) no-repeat
+              center;
+          }
+        }
+        .el-icon-language {
+          &::before {
+            background: url(../assets/images/menuIcon/language-2.png) no-repeat
+              center;
+            background-size: 100% !important;
+          }
+        }
+        .el-icon-theme {
+          &::before {
+            background: url(../assets/images/menuIcon/theme.png) no-repeat
+              center;
+            background-size: 100% !important;
+          }
+        }
+        .el-icon-s-dataset {
+          &::before {
+            background: url(../assets/images/menuIcon/dataset.png) no-repeat
+              center;
+          }
+        }
+        .el-icon-search {
+          &::before {
+            background: url(../assets/images/menuIcon/Search-File.png) no-repeat
+              center;
+          }
+        }
+        .el-icon-s-myAccount {
+          &::before {
+            background: url(../assets/images/menuIcon/myAccount-2.png) no-repeat
+              center;
+          }
+        }
+        .el-icon-s-billing {
+          &::before {
+            background: url(../assets/images/menuIcon/billing@2x.png) no-repeat
+              center;
+          }
+        }
+      }
+      .lang_style {
+        min-width: 0.26rem;
+        margin: 0;
+        line-height: 0.26rem;
+        font-size: 0.14rem;
+        font-weight: 500;
+        color: #000;
+        text-align: center;
+        @media screen and (min-width: 1800px) {
+          font-size: 16px;
+        }
+        @media screen and (max-width: 991px) {
+          font-size: 13px;
+          width: 25px;
+          height: 25px;
+          line-height: 25px;
+        }
+        span {
+          cursor: pointer;
+          color: inherit;
+          &:hover {
+            color: #4b5eff;
+          }
+        }
+      }
+      .el-switch {
+        // margin-left: 0.1rem;
+        height: 20px;
+        .el-switch__core {
+          height: 20px;
+        }
+        .el-switch__core:after {
+          background-color: #fff;
+          top: 0;
+          width: 18px;
+          height: 18px;
+          z-index: 10;
+        }
+        .el-switch__label--left {
+          position: absolute;
+          top: 0;
+          left: 5px;
+          margin: 0;
+          color: #fff;
+          font-size: 15px;
+          z-index: 9;
+          i {
+            font-size: inherit;
+          }
+        }
+        .el-switch__label--right {
+          position: absolute;
+          top: 0;
+          right: 5px;
+          margin: 0;
+          color: #fff;
+          font-size: 15px;
+          z-index: 9;
+          i {
+            font-size: inherit;
+          }
+        }
+      }
+      .el-switch.is-checked {
+        .el-switch__core::after {
+          margin-left: -20px;
+        }
+      }
+      .swithUI {
+        cursor: pointer;
+        font-size: 20px;
+        svg {
+          box-sizing: border-box;
+          margin: 0px;
+          min-width: 0px;
+          font-size: 20px;
+          cursor: pointer;
+          width: 20px;
+          height: 20px;
+        }
+        .css-sunny {
+          color: #fff;
+          &:hover {
+            color: #4f8aff;
+          }
+        }
+        .css-moon {
+          color: #333;
+          &:hover {
+            color: #4f8aff;
+          }
+        }
+      }
+      .switch {
+        position: relative;
+        display: flex;
+        margin: 0;
+      }
     }
   }
 }

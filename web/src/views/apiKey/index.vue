@@ -66,30 +66,24 @@
         </div>
         <div class="fes-search">
           <el-table :data="billingData" v-loading="billingLoad" stripe style="width: 100%" max-height="300" :empty-text="$t('deal.formNotData')" class="table_cell" @sort-change="sortChange" :default-sort="{prop: 'date', order: 'descending'}">
-            <el-table-column prop="pay_tx_hash" :label="$t('billing.TRANSACTION')">
+            <el-table-column prop="tx_hash" :label="$t('billing.TRANSACTION')" min-width="150">
               <template slot-scope="scope">
                 <div class="hot-cold-box">
-                  <el-popover placement="top" trigger="hover" width="200" v-model="scope.row.txHashVis">
-                    <div class="upload_form_right">
-                      <p>{{scope.row.pay_tx_hash}}</p>
-                    </div>
-                    <el-button slot="reference" class="resno" @click="networkLink(scope.row.pay_tx_hash, scope.row.network_name)" :class="{'color': scope.row.network_name&&scope.row.network_name.toLowerCase() == 'polygon'}">
-                      <!-- <img src="@/assets/images/copy.png" alt=""> -->
-                      {{scope.row.pay_tx_hash}}
-                    </el-button>
-                  </el-popover>
+                  <div class="upload_form_right" @click="networkLink(scope.row.tx_hash, scope.row.chain_id)">
+                    <p>{{scope.row.tx_hash}}</p>
+                  </div>
                 </div>
               </template>
             </el-table-column>
-            <el-table-column prop="pay_amount" :label="$t('billing.AMOUNT')" min-width="150" sortable="custom">
+            <el-table-column prop="amount" :label="$t('billing.AMOUNT')" min-width="90"></el-table-column>
+            <el-table-column prop="chain_id" :label="$t('billing.chain_id')" min-width="90"></el-table-column>
+            <el-table-column prop="pay_time" :label="$t('billing.PAYMENTDATE')" min-width="120">
               <template slot-scope="scope">
                 <div class="hot-cold-box">
-                  {{scope.row.pay_amount | balanceMweiFilter}}
+                  {{momentFun(scope.row.pay_time)}}
                 </div>
               </template>
             </el-table-column>
-            <el-table-column prop="network_name" :label="$t('billing.NETWORK')" min-width="120"></el-table-column>
-            <el-table-column prop="pay_at" :label="$t('billing.PAYMENTDATE')" min-width="140" sortable="custom"></el-table-column>
           </el-table>
         </div>
       </div>
@@ -202,6 +196,9 @@ export default {
     }
   },
   methods: {
+    networkLink (hash, chain_id) {
+      window.open(`${this.baseAddressURL}tx/${hash}`)
+    },
     async sortChange (column) {
       // this.billingLoad = true
       // this.getListBuckets()
@@ -295,21 +292,21 @@ export default {
       that.listLoad = true
       const directoryRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/user/apikey`, 'get')
       if (!directoryRes || directoryRes.status !== 'success') {
-        that.$message.error(directoryRes.message || 'Fail')
+        that.$message.error(directoryRes.message ? directoryRes.message : 'Fail')
         that.toolData = []
       } else that.toolData = directoryRes.data.apikey || []
 
       const domainRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/gateway/get_gateway`, 'get')
       if (!domainRes || domainRes.status !== 'success') {
-        that.$message.error(domainRes.message || 'Fail')
+        that.$message.error(domainRes.message ? domainRes.message : 'Fail')
         that.domainData = []
       } else that.domainData = domainRes.data || []
 
-      const billingRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/billing`, 'get')
+      const billingRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/payment/get_payment_history`, 'get')
       if (!billingRes || billingRes.status !== 'success') {
-        that.$message.error(billingRes.message || 'Fail')
+        that.$message.error(billingRes.message ? billingRes.message : 'Fail')
         that.billingData = []
-      } else that.billingData = billingRes.data.billing || []
+      } else that.billingData = billingRes.data || []
 
       that.listLoad = false
     },
@@ -459,6 +456,30 @@ export default {
       }
       return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
       // return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i]
+    },
+    balanceMweiFilter (value) {
+      if (String(value) === '0') return 0
+      if (!value) return '-'
+      // if (!Number(value)) return 0;
+      // if (isNaN(value)) return value;
+      // 18 - 单位换算需要 / 1000000000000000000，浮点运算显示有bug
+      // value = Number(value)
+      if (String(value).length > 9) {
+        let v1 = String(value).substring(0, String(value).length - 9)
+        let v2 = String(value).substring(String(value).length - 9)
+        let v3 = String(v2).replace(/(0+)\b/gi, '')
+        if (v3) {
+          return v1 + '.' + v3
+        } else {
+          return v1
+        }
+      } else {
+        let v3 = ''
+        for (let i = 0; i < 9 - String(value).length; i++) {
+          v3 += '0'
+        }
+        return '0.' + String(v3 + value).replace(/(0+)\b/gi, '')
+      }
     }
   }
 }
@@ -1315,6 +1336,13 @@ export default {
                 align-items: center;
                 justify-content: center;
                 flex-wrap: wrap;
+                .upload_form_right {
+                  padding: 0 10px;
+                  text-align: left;
+                  &:hover {
+                    text-decoration: underline;
+                  }
+                }
                 .icon {
                   display: block;
                   width: 22px;

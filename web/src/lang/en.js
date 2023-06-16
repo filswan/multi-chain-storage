@@ -652,6 +652,7 @@ export default {
     search_btn: 'Search',
     clear_btn: 'Clear',
     TRANSACTION: 'Transaction',
+    chain_id: 'CHAIN ID',
     AMOUNT: 'Amount',
     UNLOCKAMOUNT: 'Unlock Amount',
     TOKEN: 'Token',

@@ -67,8 +67,8 @@
                         {{$t('navbar.language')}}
                       </div>
                       <div class="lang_style">
-                        <span v-if="languageMcs === 'en'" @click="handleSetLanguage('cn')">EN</span>
-                        <span v-else @click="handleSetLanguage('en')">中</span>
+                        <span v-if="languageMcs === 'en'">EN</span>
+                        <span v-else>中</span>
                       </div>
                     </div>
                   </el-dropdown-item>
@@ -79,13 +79,13 @@
                         {{$t('comment.theme')}}
                       </div>
                       <div class="switch">
-                        <div class="swithUI flex" v-if="reverse" @click="reverseChange(false)">
+                        <div class="swithUI flex" v-if="reverse">
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" class="css-sunny">
                             <path fill-rule="evenodd" clip-rule="evenodd" d="M10.5 2h3v3h-3V2zM16 12a4 4 0 11-8 0 4 4 0 018 0zM5.99 3.869L3.867 5.99 5.99 8.112 8.111 5.99 5.989 3.87zM2 13.5v-3h3v3H2zm1.868 4.51l2.121 2.12 2.122-2.12-2.122-2.122-2.121 2.121zM13.5 19v3h-3v-3h3zm4.51-3.112l-2.121 2.122 2.121 2.121 2.121-2.121-2.121-2.122zM19 10.5h3v3h-3v-3zm-3.11-4.51l2.12 2.121 2.122-2.121-2.121-2.121-2.122 2.121z"
                               fill="currentColor"></path>
                           </svg>
                         </div>
-                        <div class="swithUI flex" v-else @click="reverseChange(true)">
+                        <div class="swithUI flex" v-else>
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" class="css-moon">
                             <path d="M20.968 12.768a7 7 0 01-9.735-9.735 9 9 0 109.735 9.735z" fill="currentColor"></path>
                           </svg>
@@ -249,7 +249,7 @@ export default {
     },
     metaAddress: function () {
       this.addrChild = this.metaAddress
-      this.commonParam()
+      // this.commonParam()
       this.walletInfo()
     },
     meta: function () {
@@ -273,6 +273,13 @@ export default {
           break
         case 'bucket':
           that.$router.push({ name: 'Space' })
+          break
+        case 'lang':
+          const language = that.languageMcs === 'en' ? 'cn' : 'en'
+          that.handleSetLanguage(language)
+          break
+        case 'theme':
+          that.reverseChange(!that.reverse)
           break
         default:
       }
@@ -1247,6 +1254,7 @@ export default {
       h5 {
         font-size: inherit;
         font-weight: normal;
+        cursor: pointer;
       }
       span {
         font-size: inherit;

@@ -659,6 +659,7 @@ export default {
     search_btn: '搜索',
     clear_btn: '清除',
     TRANSACTION: '交易哈希',
+    chain_id: '链ID',
     AMOUNT: '锁定金额',
     UNLOCKAMOUNT: '解锁金额',
     TOKEN: '代币',

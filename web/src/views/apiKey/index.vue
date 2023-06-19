@@ -378,6 +378,7 @@ export default {
       if (that.$root.chain_id !== getID) {
         that.$message.error(that.languageMcs === 'en' ? `Please switch to a network with chain ID ${that.$root.chain_id}!` : `请切换到chain ID为${that.$root.chain_id}的网络！`)
         that.payLoad = false
+        return false
       }
       let tokenFactory = new that.$web3Init.eth.Contract(linkTokenAbi, that.$root.USDC_ADDRESS)
       let payObject = {

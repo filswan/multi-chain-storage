@@ -226,7 +226,7 @@ export default {
       min-height: calc(100% - 0.84rem);
       margin: auto;
       @media screen and (max-width: 441px) {
-        min-height: calc(100% - 1.4rem);
+        min-height: calc(100% - 1.76rem);
       }
       .el-alert /deep/ {
         position: absolute;

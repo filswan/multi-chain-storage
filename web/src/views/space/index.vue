@@ -661,7 +661,9 @@ export default {
           display: flex;
           align-items: center;
           @media screen and (max-width: 600px) {
+            flex-wrap: wrap;
             width: 100%;
+            margin-bottom: 0.2rem;
           }
           .el-button {
             height: 0.3rem;
@@ -677,6 +679,7 @@ export default {
           .left_progress {
             padding: 0 0.28rem 0 0;
             @media screen and (max-width: 600px) {
+              width: 100%;
               padding: 0 0 0.2rem;
             }
             .need {
@@ -686,6 +689,9 @@ export default {
               line-height: 1.1;
               @media screen and (min-width: 1800px) {
                 font-size: 14px;
+              }
+              @media screen and (max-width: 600px) {
+                text-align: left;
               }
               a {
                 color: inherit;
@@ -776,17 +782,20 @@ export default {
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100%;
-      padding: 0 5%;
+      height: auto;
+      padding: 1.5rem 5% 0.5rem;
+      @media screen and (max-width: 600px) {
+        padding: 0.5rem 5%;
+      }
       .p_label {
         padding: 0.15rem 0.3rem;
-        font-size: 0.27rem;
+        font-size: 0.25rem;
         color: #4f87ff;
         line-height: 1.2;
         border: dashed;
         border-radius: 0.1rem;
         @media screen and (max-width: 1600px) {
-          font-size: 0.25rem;
+          font-size: 0.23rem;
         }
       }
     }

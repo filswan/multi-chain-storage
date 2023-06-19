@@ -1048,13 +1048,13 @@ export default {
       padding: 0 5%;
       .p_label {
         padding: 0.15rem 0.3rem;
-        font-size: 0.27rem;
+        font-size: 0.25rem;
         color: #4f87ff;
         line-height: 1.2;
         border: dashed;
         border-radius: 0.1rem;
         @media screen and (max-width: 1600px) {
-          font-size: 0.25rem;
+          font-size: 0.23rem;
         }
       }
     }

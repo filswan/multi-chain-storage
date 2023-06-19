@@ -2,6 +2,7 @@
   <div class="spaceStyle" v-loading="listLoad">
     <div class="slideScroll" v-if="listBucketIndex">
       <div class="form_top">
+        <h4>{{$t('route.metaSpace')}}</h4>
         <div class="search_file">
           <div class="search_right">
             <el-input v-if="false" :placeholder="$t('metaSpace.search_bucket')" prefix-icon="el-icon-search" v-model="search" clearable @input="getListBuckets">
@@ -23,6 +24,11 @@
                 <span v-else class="tip">目前使用量：{{free_bucket | byteStorage}}GB（Bucket储存空间配额：{{ $root.max_storage | byteStorage}}GB）</span>
               </div>
             </div>
+            <div class="createTask">
+              <router-link :to="{name: 'ApiKey'}">
+                <span>{{$t('billing.bill_btn_pay')}}</span>
+              </router-link>
+            </div>
           </div>
           <div class="createTask">
             <a @click="dialogFun('addNewBucket')">
@@ -34,11 +40,7 @@
       </div>
       <div class="fes-search">
         <div class="title">
-          {{$t('metaSpace.list_bucket')}} ({{listBucketActive}}/{{listBuckets.length>0?listBuckets.length:1}})
-
-          <el-popover placement="top" popper-class="elPopTitle" width="200" trigger="hover" :content="$t('metaSpace.list_bucket_tip')">
-            <img slot="reference" src="@/assets/images/info.png" />
-          </el-popover>
+          {{$t('metaSpace.list_bucket')}}
         </div>
         <el-table :data="listBuckets" stripe style="width: 100%" max-height="580" :empty-text="$t('deal.formNotData')">
           <el-table-column type="index" label="No." width="50"></el-table-column>
@@ -62,10 +64,10 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="size" :label="$t('metaSpace.table_space')">
+          <el-table-column prop="size" :label="$t('metaSpace.table_size')">
             <template slot-scope="scope">
               <div class="hot-cold-box">
-                <span>{{ scope.row.size | formatbytes }}/{{scope.row.max_size | formatbytes}}</span>
+                <span>{{ scope.row.size | formatbytes }}</span>
               </div>
             </template>
           </el-table-column>
@@ -101,8 +103,32 @@
 
     <div class="slideScroll" v-else>
       <div class="form_top">
+        <h4>{{$t('route.metaSpace')}}</h4>
         <div class="search_file">
-          <div class="search_right"></div>
+          <div class="search_right">
+            <div class="left_progress">
+              <div class="need" v-if="languageMcs === 'en'">Need help? Join our
+                <a :href="discord_link" target="_blank">Discord</a>
+                or send an
+                <a href="mailto:team@filswan.com">Email</a> to us.
+              </div>
+              <div class="need" v-else>需要帮助吗？加入我们的
+                <a :href="discord_link" target="_blank">Discord</a>
+                或发送
+                <a href="mailto:team@filswan.com">电子邮件</a> 给我们。
+              </div>
+              <div class="progress">
+                <el-progress :percentage="(free_bucket/free_bucketAll)*100 || 0"></el-progress>
+                <span v-if="languageMcs === 'en'" class="tip">{{free_bucket | byteStorage}}GB of {{ $root.max_storage | byteStorage}}GB for Bucket storage</span>
+                <span v-else class="tip">目前使用量：{{free_bucket | byteStorage}}GB（Bucket储存空间配额：{{ $root.max_storage | byteStorage}}GB）</span>
+              </div>
+            </div>
+            <div class="createTask">
+              <router-link :to="{name: 'ApiKey'}">
+                <span>{{$t('billing.bill_btn_pay')}}</span>
+              </router-link>
+            </div>
+          </div>
           <div class="createTask">
             <a @click="dialogFun('add')">
               <img src="@/assets/images/space/icon_01.png" alt="">
@@ -504,6 +530,14 @@ export default {
       align-items: center;
       flex-wrap: wrap;
       margin: 0 auto 0.3rem;
+      h4 {
+        width: 100%;
+        margin: 0 0 0.3rem;
+        font-size: 0.22rem;
+        font-weight: normal;
+        color: #000;
+        line-height: 1.5;
+      }
       .title {
         width: 100%;
         margin: 0;
@@ -641,7 +675,7 @@ export default {
             border-bottom-left-radius: 0;
           }
           .left_progress {
-            padding: 0 0.28rem;
+            padding: 0 0.28rem 0 0;
             @media screen and (max-width: 600px) {
               padding: 0 0 0.2rem;
             }

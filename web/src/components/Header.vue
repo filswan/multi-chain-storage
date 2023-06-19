@@ -2,15 +2,18 @@
   <div class="header" :class="{'content-collapse': collapseLocal}">
     <div class="header_arera mWidth">
       <div class="header_left">
-        <div class="logoImg">
+        <router-link :to="{name: 'Space'}" class="logoImg">
           <img :src="logo" class="img" alt='FilSwan' />
           <img class="beta" src="@/assets/images/landing/beta.png">
-        </div>
-        <router-link :to="{name: 'Space'}" class="meta-space pcShow">
-          {{$t('route.metaSpace')}}
         </router-link>
       </div>
       <div class="header-right">
+        <router-link :to="{name: 'ApiKey'}" class="meta-space pcShow">
+          {{$t('route.myAccount')}}
+        </router-link>
+        <div @click="documentLink" class="meta-space pcShow">
+          {{$t('route.documentation')}}
+        </div>
         <div class="network_mainnet" v-if="addrChild && false" :class="{'error': networkTip}" @click="networkC=true">
           <!-- <div class="BSC_mainnet" v-if="networkID == 97" title="BSC TestNet mainnet">
             <img src="@/assets/images/network_logo/bsc.png" /> {{bodyWidth?'BSC':'BSC TestNet'}}
@@ -44,14 +47,6 @@
                   <i class="el-icon-setting"></i>
                 </span>
                 <el-dropdown-menu slot="dropdown" class="dropdown-ul">
-                  <el-dropdown-item command="bucket" class="mobileShow">
-                    <div class="dropdown-body flex">
-                      <div class="dropdown-left flex">
-                        <i class="el-icon-s-metaSpace"></i>
-                        {{$t('route.metaSpace')}}
-                      </div>
-                    </div>
-                  </el-dropdown-item>
                   <el-dropdown-item command="setting">
                     <div class="dropdown-body flex">
                       <div class="dropdown-left flex">
@@ -1136,17 +1131,6 @@ export default {
       }
     }
   }
-  .meta-space {
-    padding-left: 0.25rem;
-    margin-left: 0.45rem;
-    font-size: 14px;
-    border-left: 1px solid #eee;
-    color: rgb(4, 17, 29);
-    text-transform: capitalize;
-    &:hover {
-      text-decoration: underline;
-    }
-  }
 }
 
 .header-right {
@@ -1155,6 +1139,17 @@ export default {
   align-items: center;
   font-size: 0.1372rem;
   color: #959595;
+  .meta-space {
+    margin-right: 0.4rem;
+    font-size: 14px;
+    // border-right: 1px solid #eee;
+    color: rgb(4, 17, 29);
+    text-transform: capitalize;
+    cursor: pointer;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
   .progress {
     width: 200px;
     margin: 0 0.4rem 0 0;

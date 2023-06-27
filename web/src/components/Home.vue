@@ -4,14 +4,15 @@
       <v-sidebar></v-sidebar>
     </el-col> -->
     <el-col :xs="24" :sm="24" :md="24" :lg="24" class="content-box" id="content-box">
-      <v-head :meta="meta" @getMetamaskLogin="getMetamaskLogin" :netId="netId" :networkTip="networkTip" @getNetwork="getNetwork" @getNetId="changeNet" @getPopUps="getPopUps"></v-head>
+      <!-- <v-head :meta="meta" @getMetamaskLogin="getMetamaskLogin" :netId="netId" :networkTip="networkTip" @getNetwork="getNetwork" @getNetId="changeNet" @getPopUps="getPopUps"></v-head> -->
+      <v-head></v-head>
       <div id="headerMb" v-if="bodyWidth">
         <div class="headerMb" v-if="email">
           {{headertitle}}
         </div>
       </div>
       <div class="content" id="content_client">
-        <div class="content_body mWidth" :class="{'stats': $route.name == 'Stats' || $route.name == 'Space' || $route.name == 'Space_detail'}">
+        <div class="content_body mWidth width" :class="{'stats': $route.name == 'Stats' || $route.name == 'Space' || $route.name == 'Space_detail'}">
           <network-alert v-if="metaAddress&&networkTip" @changeNet="changeNet" @getNetwork="getNetwork"></network-alert>
           <transition name="move" mode="out-in">
             <keep-alive :include="tagsList">
@@ -20,20 +21,22 @@
           </transition>
         </div>
         <div class="fes-icon mWidth">
-          <div class="fes-icon-logo">
-            <a :href="medium_link" target="_blank"><img :src="share_medium" alt=""></a>
-            <a :href="discord_link" target="_blank"><img :src="share_discord" alt=""></a>
-            <a :href="twitter_link" target="_blank"><img :src="share_twitter" alt=""></a>
-            <a :href="github_link" target="_blank"><img :src="share_github" alt=""></a>
-            <a :href="telegram_link" target="_blank"><img :src="share_telegram" alt=""></a>
-          </div>
-          <div class="fes-icon-copy">
-            <span>© {{fullYear}} FilSwan</span>
-            <el-divider direction="vertical"></el-divider>
-            <a href="https://www.filswan.com/" target="_block">filswan.com</a>
-          </div>
-          <div class="fes-market">
-            <a href="https://chn.lk/3DTWSjE" target="_blank"><img src="@/assets/images/landing/chainlink-badge-market-data.svg" alt="market data secured with chainlink"></a>
+          <div class="width">
+            <div class="fes-icon-logo">
+              <a :href="medium_link" target="_blank"><img :src="share_medium" alt=""></a>
+              <a :href="discord_link" target="_blank"><img :src="share_discord" alt=""></a>
+              <a :href="twitter_link" target="_blank"><img :src="share_twitter" alt=""></a>
+              <a :href="github_link" target="_blank"><img :src="share_github" alt=""></a>
+              <a :href="telegram_link" target="_blank"><img :src="share_telegram" alt=""></a>
+            </div>
+            <div class="fes-icon-copy">
+              <span>© {{fullYear}} FilSwan</span>
+              <el-divider direction="vertical"></el-divider>
+              <a href="https://www.filswan.com/" target="_block">filswan.com</a>
+            </div>
+            <div class="fes-market">
+              <a href="https://chn.lk/3DTWSjE" target="_blank"><img src="@/assets/images/landing/chainlink-badge-market-data.svg" alt="market data secured with chainlink"></a>
+            </div>
           </div>
         </div>
         <el-backtop target=".content"></el-backtop>
@@ -44,7 +47,8 @@
 </template>
 
 <script>
-import vHead from './Header.vue'
+// import vHead from './Header.vue'
+import vHead from './headHome.vue'
 import vSidebar from './Sidebar.vue'
 import popUps from './popups.vue'
 import networkAlert from '@/components/networkAlert.vue'
@@ -177,6 +181,20 @@ export default {
   @media screen and (max-width: 1024px) {
     width: 20.48rem;
   }
+  .width {
+    display: flex;
+    flex-wrap: wrap;
+    width: 80%;
+    max-width: 1440px;
+    min-width: 300px;
+    margin: auto;
+    @media screen and (max-width: 1150px) {
+      width: 90%;
+    }
+    @media screen and (max-width: 999px) {
+      width: 94%;
+    }
+  }
   .side {
     height: 100%;
     // transition: all 0.3s ease;
@@ -202,6 +220,9 @@ export default {
     overflow-y: scroll;
     // transition: all;
     // transition-duration: .3s;
+    @media screen and (max-width: 768px) {
+      height: calc(100% - 1.04rem);
+    }
     &::-webkit-scrollbar {
       width: 1px;
       height: 1px;
@@ -285,7 +306,7 @@ export default {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 0 0.6rem;
+      padding: 0;
       margin: auto;
       background-color: #f0f0f0;
       background-color: #23355f;
@@ -298,6 +319,11 @@ export default {
       }
       @media screen and (max-width: 441px) {
         padding: 0.15rem 0;
+      }
+      .width {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
       }
       .fes-icon-logo {
         display: flex;

@@ -372,11 +372,29 @@ export default {
       }
       that.payLoad = false
     },
+    async getUnit (id) {
+      let name = ''
+      switch (id) {
+        case 97:
+          name = 'BSC TestNet'
+          break
+        case 137:
+          name = 'Polygon Mainnet'
+          break
+        case 80001:
+          name = 'Mumbai Testnet'
+          break
+      }
+      return ({
+        name
+      })
+    },
     async payPlan () {
       that.payLoad = true
       const getID = await that.$commonFun.web3Init.eth.net.getId()
       if (that.$root.chain_id !== getID) {
-        that.$message.error(that.languageMcs === 'en' ? `Please switch to a network with chain ID ${that.$root.chain_id}!` : `请切换到chain ID为${that.$root.chain_id}的网络！`)
+        const { name } = await that.getUnit(Number(that.$root.chain_id))
+        that.$message.error(that.languageMcs === 'en' ? `Please switch to the network: ${name}` : `请切换到网络：${name}`)
         that.payLoad = false
         return false
       }
@@ -683,9 +701,10 @@ export default {
 }
 .spaceStyle /deep/ {
   position: relative;
-  width: calc(100% - 0.6rem);
+  // width: calc(100% - 0.6rem);
+  width: 100%;
   padding: 0 0 0.4rem;
-  margin: 0.3rem;
+  margin: 0.3rem 0;
   background-color: #fff;
   border-radius: 0.1rem;
   @media screen and (max-width: 600px) {
@@ -719,7 +738,7 @@ export default {
   .slideScroll {
     height: calc(100% - 0.6rem);
     min-height: 350px;
-    padding: 0.3rem;
+    padding: 0.3rem 0;
     .form_top {
       display: flex;
       align-items: center;

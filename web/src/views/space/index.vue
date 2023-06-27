@@ -508,9 +508,10 @@ export default {
 }
 .spaceStyle /deep/ {
   position: relative;
-  width: calc(100% - 0.6rem);
+  // width: calc(100% - 0.6rem);
+  width: 100%;
   padding: 0 0 0.4rem;
-  margin: 0.3rem;
+  margin: 0.3rem 0;
   background-color: #fff;
   border-radius: 0.1rem;
   @media screen and (max-width: 600px) {
@@ -524,7 +525,7 @@ export default {
   .slideScroll {
     height: calc(100% - 0.6rem);
     min-height: 350px;
-    padding: 0.3rem;
+    padding: 0.3rem 0;
     .form_top {
       display: flex;
       align-items: center;

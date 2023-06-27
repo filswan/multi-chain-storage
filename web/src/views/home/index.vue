@@ -312,18 +312,21 @@ export default {
       }
     },
     signFun (s, jump) {
-      that.$commonFun.Init(async addr => {
-        that.$store.dispatch('setMetaAddress', addr)
-        sessionStorage.setItem('login_path', addr)
-        const networkCont = {
-          name: that.networkID === 137 ? 'Polygon' : that.networkID === 80001 ? 'Mumbai' : that.networkID === 97 ? 'BSC' : 'Custom',
-          unit: 'USDC',
-          center_fail: false
-        }
-        that.$store.dispatch('setMetaNetworkInfo', networkCont)
-        that.loginLoad = true
-        that.signIn(jump)
-      })
+      if (that.metaAddress) that.$router.push({ path: jump ? '/my_account' : '/my_buckets' })
+      else {
+        that.$commonFun.Init(async addr => {
+          that.$store.dispatch('setMetaAddress', addr)
+          sessionStorage.setItem('login_path', addr)
+          const networkCont = {
+            name: that.networkID === 137 ? 'Polygon' : that.networkID === 80001 ? 'Mumbai' : that.networkID === 97 ? 'BSC' : 'Custom',
+            unit: 'USDC',
+            center_fail: false
+          }
+          that.$store.dispatch('setMetaNetworkInfo', networkCont)
+          that.loginLoad = true
+          that.signIn(jump)
+        })
+      }
     },
     async signIn (jump) {
       let status = await that.$metaLogin.netStatus(that.networkID)
@@ -333,7 +336,7 @@ export default {
       if (lStatus) {
         setTimeout(function () {
           that.$router.push({ path: jump ? '/my_account' : '/my_buckets' })
-          window.location.reload()
+          // window.location.reload()
         }, 200)
       } else that.loginLoad = false
     },
@@ -359,7 +362,7 @@ export default {
   mounted () {
     that = this
     if (that.$route.query.id) that.getHome(that.$route.query.id)
-    that.isLogin()
+    // that.isLogin()
     that.fn()
   },
   computed: {

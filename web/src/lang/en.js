@@ -482,6 +482,7 @@ export default {
     Connect_email_again: 'Didn’t recieve any email? Try again.',
     Connect_email_jump: 'Click here to jump to the page.',
     Connect_StartFree: 'Get Started',
+    Connect_Bucket: 'Back to Bucket Storage',
     Connect_BuyNow: 'Buy Now',
     Connect_TutorialVideo: 'Tutorial Video',
     back_home: 'Back to Home Page',

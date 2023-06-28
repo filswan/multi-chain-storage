@@ -184,15 +184,18 @@ export default {
   .width {
     display: flex;
     flex-wrap: wrap;
-    width: 80%;
-    max-width: 1440px;
+    width: calc(100% - 32px);
+    padding: 0 16px;
+    max-width: 2560px;
     min-width: 300px;
     margin: auto;
-    @media screen and (max-width: 1150px) {
-      width: 90%;
+    @media screen and (min-width: 1200px) {
+      width: calc(100% - 64px);
+      padding: 0 32px;
     }
-    @media screen and (max-width: 999px) {
-      width: 94%;
+    @media screen and (min-width: 1600px) {
+      width: calc(100% - 128px);
+      padding: 0 64px;
     }
   }
   .side {
@@ -216,12 +219,12 @@ export default {
   }
   .content {
     position: relative;
-    height: calc(100% - 1.1rem);
+    height: calc(100% - 76px);
     overflow-y: scroll;
     // transition: all;
     // transition-duration: .3s;
-    @media screen and (max-width: 768px) {
-      height: calc(100% - 1.04rem);
+    @media screen and (max-width: 999px) {
+      height: calc(100% - 60px);
     }
     &::-webkit-scrollbar {
       width: 1px;

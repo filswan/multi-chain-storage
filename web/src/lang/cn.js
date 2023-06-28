@@ -489,6 +489,7 @@ export default {
     Connect_email_again: '没有收到任何电子邮件？再试一次。',
     Connect_email_jump: '单击此处跳转到页面。',
     Connect_StartFree: '入门',
+    Connect_Bucket: '返回Bucket存储',
     Connect_BuyNow: '立即购买',
     Connect_TutorialVideo: '教程视频',
     back_home: '返回主页',

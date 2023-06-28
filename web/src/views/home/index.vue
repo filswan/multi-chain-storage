@@ -11,7 +11,7 @@
               <h1>{{$t('fs3Login.Connect_text')}}</h1>
               <h4>{{$t('fs3Login.Connect_text_desc')}}</h4>
               <el-button type="primary" v-loading="loginLoad" @click="signFun">
-                {{$t('fs3Login.Connect_StartFree')}}
+                {{metaAddress? $t('fs3Login.Connect_Bucket') : $t('fs3Login.Connect_StartFree')}}
               </el-button>
               <el-button type="primary" @click="goLink('https://www.youtube.com/watch?v=rgEP4_dhzoI')">
                 {{$t('fs3Login.Connect_TutorialVideo')}}
@@ -52,35 +52,6 @@
               <p class="p">{{$t('metaSpace.home_Our_Features_cont01')}}</p>
               <p class="p">{{$t('metaSpace.home_Our_Features_cont02')}}</p>
               <p class="p">{{$t('metaSpace.home_Our_Features_cont03')}}</p>
-            </el-col>
-          </el-row>
-        </div>
-      </div>
-      <div class="pricing" v-if="false">
-        <div class="width" id="pricing">
-          <div class="title">
-            <i class="icon"></i> Pricing for Multichain.Storage
-            <el-button type="primary" v-loading="loginLoad" @click="signFun">
-              {{$t('fs3Login.Connect_StartFree')}}
-            </el-button>
-          </div>
-          <el-row type="flex" class="row-bg" justify="space-around">
-            <el-col :xs="24" :sm="11" :md="11" :lg="11" :xl="11" class="left">
-              <h1>Free</h1>
-              <p>One bucket (with 30GB storage) free</p>
-              <p>Pin to IPFS</p>
-              <p>Weekly backup to decentralize storage network (5 copies)</p>
-              <p>SDK/API technical support</p>
-            </el-col>
-            <el-col :xs="24" :sm="11" :md="11" :lg="11" :xl="11" class="left">
-              <h1>More Storage</h1>
-              <p>USDC 7.2 for each added bucket each year
-                <span>(30GB storage for each bucket)</span>
-              </p>
-              <p>33 Bucket storage for each wallet</p>
-              <p>Pin to IPFS</p>
-              <p>Weekly backup to decentralize storage network (5 copies)</p>
-              <p>SDK/API technical support</p>
             </el-col>
           </el-row>
         </div>
@@ -235,6 +206,7 @@ export default {
   watch: {
     $route: function (to, from) {
       if (to.query.id) that.getHome(to.query.id)
+      else that.moduleMenu = ''
     }
   },
   methods: {
@@ -559,6 +531,7 @@ export default {
           white-space: normal;
           @media screen and (max-width: 600px) {
             font-size: 14px;
+            margin: 0 0 0.2rem;
           }
           .el-loading-mask {
             border-radius: 0.5rem;

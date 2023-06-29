@@ -327,6 +327,10 @@ export default {
         display: flex;
         justify-content: space-between;
         align-items: center;
+        @media screen and (max-width: 441px) {
+          flex-wrap: wrap;
+          justify-content: center;
+        }
       }
       .fes-icon-logo {
         display: flex;

@@ -230,10 +230,13 @@ export default {
   color: #010102;
   line-height: 1.3;
   @media screen and (max-width: 992px) {
-    padding: 1.8rem 0 0.25rem;
+    padding: 0.8rem 0 0.25rem;
   }
   @media screen and (max-width: 768px) {
     font-size: 14px;
+  }
+  @media screen and (max-width: 441px) {
+    padding: 0.3rem 0;
   }
   .text_h1 {
     font-size: 0.5572rem;

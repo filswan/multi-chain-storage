@@ -455,11 +455,6 @@ export default {
       width: 94%;
     }
   }
-  .statsHome {
-    @media screen and (max-width: 992px) {
-      padding-top: 1rem;
-    }
-  }
   .loginBody {
     display: flex;
     flex-wrap: wrap;

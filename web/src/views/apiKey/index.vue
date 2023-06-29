@@ -705,9 +705,8 @@ export default {
 }
 .spaceStyle /deep/ {
   position: relative;
-  // width: calc(100% - 0.6rem);
-  width: 100%;
-  padding: 0 0 0.4rem;
+  width: calc(100% - 1.6rem);
+  padding: 0 0.8rem 0.4rem;
   margin: 0.3rem 0;
   background-color: #fff;
   border-radius: 0.1rem;

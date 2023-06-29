@@ -54,7 +54,7 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="subdomain" :label="$t('metaSpace.table_subdomain')">
+          <el-table-column prop="subdomain" :label="$t('metaSpace.table_subdomain')" min-width="120px">
             <template slot-scope="scope">
               <div class="hot-cold-box">
                 <el-select v-model="domain.value" placeholder=" ">
@@ -508,9 +508,8 @@ export default {
 }
 .spaceStyle /deep/ {
   position: relative;
-  // width: calc(100% - 0.6rem);
-  width: 100%;
-  padding: 0 0 0.4rem;
+  width: calc(100% - 1.6rem);
+  padding: 0 0.8rem 0.4rem;
   margin: 0.3rem 0;
   background-color: #fff;
   border-radius: 0.1rem;

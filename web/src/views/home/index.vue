@@ -383,16 +383,16 @@ export default {
   font-family: "gilroy-regular";
   font-size: 16px;
   overflow-y: scroll;
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  &::-webkit-scrollbar {
-    width: 6px;
-    background: transparent;
-  }
-  &::-webkit-scrollbar-thumb {
-    background: #ccc;
-  }
+  // &::-webkit-scrollbar-track {
+  //   background: transparent;
+  // }
+  // &::-webkit-scrollbar {
+  //   width: 6px;
+  //   background: transparent;
+  // }
+  // &::-webkit-scrollbar-thumb {
+  //   background: #ccc;
+  // }
   .el-alert {
     position: fixed;
     left: 0;
@@ -475,7 +475,32 @@ export default {
         img {
           display: block;
           width: 100%;
-          margin: auto;
+          margin: 0 auto;
+          animation: floating 3.5s ease-in-out infinite;
+        }
+
+        @keyframes floating {
+          0% {
+            transform: translateY(0);
+          }
+          50% {
+            transform: translateY(11px);
+          }
+          100% {
+            transform: translateY(0);
+          }
+        }
+
+        @-webkit-keyframes floating /* Safari and Chrome */ {
+          0% {
+            transform: translateY(0);
+          }
+          50% {
+            transform: translateY(11px);
+          }
+          100% {
+            transform: translateY(0);
+          }
         }
       }
       .left {

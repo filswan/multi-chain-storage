@@ -159,6 +159,9 @@ export default {
           0.15rem center;
         background-size: 0.3rem;
       }
+      &:hover {
+        box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.35);
+      }
     }
   }
   .fes-icon-logo {

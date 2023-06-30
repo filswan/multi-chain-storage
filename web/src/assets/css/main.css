@@ -67,7 +67,7 @@ a {
   top: 0;
 }
 
-.content-box::-webkit-scrollbar-track,
+/* .content-box::-webkit-scrollbar-track,
 .folderErr::-webkit-scrollbar-track {
   background: transparent;
 }
@@ -81,7 +81,7 @@ a {
 .content-box::-webkit-scrollbar-thumb,
 .folderErr::-webkit-scrollbar-thumb {
   background: #ccc;
-}
+} */
 
 .content-box .el-loading-spinner {
   top: 1.5rem;

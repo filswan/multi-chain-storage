@@ -139,6 +139,27 @@
       </div>
       <div class="fe-none">
         <p class="p_label">{{$t('metaSpace.empty_prompt')}}</p>
+        <el-row :gutter="40">
+          <el-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8" v-for="(card, c) in bucket_card" :key="c">
+            <el-card shadow="hover" @click.native="cardMethod(card.type)">
+              <div class="c-box"></div>
+              <div class="c-images">
+                <img class="img" :src="card.images" />
+                <img class="star" src="@/assets/images/space/c-star.png" />
+                <img class="star-left" src="@/assets/images/space/c-star.png" />
+              </div>
+              <div class="c-wrap">
+                <div class="c-title">{{card.name}}</div>
+                <div class="c-icon-arrow">
+                  <svg width="100%" height="100%" viewBox="0 0 27 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M13.165 27.2947C20.4359 27.2947 26.33 21.3098 26.33 13.9271C26.33 6.54443 20.4359 0.55957 13.165 0.55957C5.89418 0.55957 0 6.54443 0 13.9271C0 21.3098 5.89418 27.2947 13.165 27.2947ZM11.9901 7.88025C11.5429 7.42623 10.818 7.42623 10.3708 7.88025C9.92369 8.33428 9.92369 9.0704 10.3708 9.52442L14.7836 14.005L10.3934 18.224C9.93414 18.6654 9.9142 19.4012 10.3489 19.8676C10.7836 20.3339 11.5082 20.3542 11.9675 19.9128L17.2125 14.8724L18.0672 14.0509L17.235 13.2059L11.9901 7.88025Z"
+                      fill="currentColor"></path>
+                  </svg>
+                </div>
+              </div>
+            </el-card>
+          </el-col>
+        </el-row>
       </div>
     </div>
 
@@ -171,11 +192,42 @@ export default {
         value: '',
         data: []
       },
-      discord_link: process.env.DISCORD_LINK
+      discord_link: process.env.DISCORD_LINK,
+      bucket_card: [
+        {
+          name: this.$t('metaSpace.bucket_card_create'),
+          type: 'create',
+          images: require('@/assets/images/space/c-doc.png')
+        },
+        {
+          name: this.$t('metaSpace.bucket_plan'),
+          type: 'pricing',
+          images: require('@/assets/images/space/c-doc.png')
+        },
+        {
+          name: this.$t('metaSpace.bucket_sdk'),
+          type: 'doc',
+          images: require('@/assets/images/space/c-doc.png')
+        }
+      ]
     }
   },
   components: { popUps },
   methods: {
+    cardMethod (type) {
+      console.log(type)
+      switch (type) {
+        case 'create':
+          that.dialogFun('add')
+          break
+        case 'pricing':
+          that.$router.push({ name: 'home_entrance', query: { id: 'pricing' } })
+          break
+        case 'doc':
+          window.open('https://docs.filswan.com/multi-chain-storage/overview', '_blank')
+          break
+      }
+    },
     async getDetail (row) {
       that.backupLoad = true
       that.dialogFun('detail', row)
@@ -782,10 +834,11 @@ export default {
       display: flex;
       justify-content: center;
       align-items: center;
+      flex-wrap: wrap;
       height: auto;
-      padding: 1.5rem 5% 0.5rem;
+      padding: 1.5rem 5% 0;
       @media screen and (max-width: 600px) {
-        padding: 0.5rem 5%;
+        padding: 0.5rem 5% 0;
       }
       .p_label {
         padding: 0.15rem 0.3rem;
@@ -796,6 +849,200 @@ export default {
         border-radius: 0.1rem;
         @media screen and (max-width: 1600px) {
           font-size: 0.23rem;
+        }
+      }
+      .el-row {
+        width: 100%;
+        margin: 0.8rem auto 0;
+        .el-col {
+          margin-bottom: 0.3rem;
+          .el-card {
+            position: relative;
+            height: 100%;
+            font-size: 0.23rem;
+            border-radius: 0.1rem;
+            cursor: pointer;
+            * {
+              cursor: inherit;
+            }
+            .c-box {
+              height: 25%;
+              min-height: 100px;
+              border-radius: 17px;
+              position: absolute;
+              top: 0%;
+              bottom: auto;
+              left: 0%;
+              right: 0%;
+              opacity: 0.35;
+            }
+            .c-images {
+              height: 10em;
+              max-height: 200px;
+              position: relative;
+              display: flex;
+              align-items: center;
+              top: -0.5em;
+              .img {
+                display: block;
+                width: 100%;
+                max-width: 200px;
+                max-height: 100%;
+                margin: 0.6rem auto 0;
+                transform: rotate(15deg) translate(-20px, 0px);
+              }
+              .star {
+                position: absolute;
+                right: 0;
+                top: 3%;
+                width: 0.7rem;
+                opacity: 0;
+              }
+              .star-left {
+                position: absolute;
+                left: 8%;
+                top: 12%;
+                width: 0.5rem;
+                opacity: 0;
+                transform: rotate(15deg);
+              }
+            }
+            .c-wrap {
+              max-width: 11ch;
+              padding: 0 0 0.5rem;
+              margin: auto;
+              grid-row-gap: 10px;
+              text-align: center;
+              flex-direction: column;
+              justify-content: flex-start;
+              align-items: center;
+              display: flex;
+              .c-title {
+                min-height: 0.7rem;
+                font-size: 0.23rem;
+                font-weight: 700;
+                line-height: 0.35rem;
+              }
+              .c-icon-arrow {
+                color: rgb(28, 28, 28);
+                width: 27px;
+                height: 27px;
+                justify-content: center;
+                align-items: center;
+                display: flex;
+                transform: translate(4px, 1px);
+              }
+            }
+            &:hover {
+              .c-box {
+                opacity: 1;
+              }
+              .c-images {
+                .img {
+                  animation: floating 3.5s ease-in-out 2;
+                }
+                .star,
+                .star-left {
+                  animation: floating-star 1s ease-in-out 1 forwards;
+                }
+                .star-left {
+                  animation-delay: 0.1s;
+                }
+
+                @keyframes floating {
+                  0% {
+                    transform: rotate(15deg) translate(-20px, 0px);
+                  }
+                  50% {
+                    transform: rotate(17deg) translate(-20px, 4px);
+                  }
+                  100% {
+                    transform: rotate(15deg) translate(-20px, 0px);
+                  }
+                }
+
+                @-webkit-keyframes floating /* Safari and Chrome */ {
+                  0% {
+                    transform: rotate(15deg) translate(-20px, 0px);
+                  }
+                  50% {
+                    transform: rotate(17deg) translate(-20px, 4px);
+                  }
+                  100% {
+                    transform: rotate(15deg) translate(-20px, 0px);
+                  }
+                }
+
+                @keyframes floating-star {
+                  0% {
+                    opacity: 0;
+                  }
+                  10% {
+                    opacity: 1;
+                  }
+                  50% {
+                    opacity: 0;
+                  }
+                  60% {
+                    opacity: 1;
+                  }
+                  70% {
+                    opacity: 0;
+                  }
+                  100% {
+                    opacity: 1;
+                  }
+                }
+
+                @-webkit-keyframes floating-star /* Safari and Chrome */ {
+                  0% {
+                    opacity: 0;
+                  }
+                  10% {
+                    opacity: 1;
+                  }
+                  50% {
+                    opacity: 0;
+                  }
+                  60% {
+                    opacity: 1;
+                  }
+                  70% {
+                    opacity: 0;
+                  }
+                  100% {
+                    opacity: 1;
+                  }
+                }
+              }
+              .c-wrap {
+                .c-icon-arrow {
+                  color: #409eff;
+                }
+              }
+            }
+          }
+          &:nth-child(3n + 1) {
+            .el-card {
+              .c-box {
+                background-color: #6d57ff;
+              }
+            }
+          }
+          &:nth-child(3n + 2) {
+            .el-card {
+              .c-box {
+                background-color: #79cfff;
+              }
+            }
+          }
+          &:nth-child(3n + 3) {
+            .el-card {
+              .c-box {
+                background-color: #4de5a6;
+              }
+            }
+          }
         }
       }
     }

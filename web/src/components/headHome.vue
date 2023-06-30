@@ -22,9 +22,9 @@
               {{ $t('route.Pricing') }}
             </router-link>
           </el-menu-item>
-          <el-menu-item index="resources" class="pcShow">
+          <el-menu-item index="documentation" class="pcShow" @click="documentLink">
             <router-link to="">
-              {{ $t('route.Resources') }}
+              {{ $t('route.documentation') }}
             </router-link>
           </el-menu-item>
           <el-menu-item index="stats" class="pcShow">
@@ -101,14 +101,6 @@
                           </div>
                         </div>
                       </el-dropdown-item>
-                      <el-dropdown-item command="doc">
-                        <div class="dropdown-body flex" @click="documentLink">
-                          <div class="dropdown-left flex">
-                            <i class="el-icon-s-documentation"></i>
-                            <span slot="title">{{$t('route.documentation')}}</span>
-                          </div>
-                        </div>
-                      </el-dropdown-item>
                       <el-dropdown-item command="disconnect">
                         <div class="dropdown-body flex" @click="signOutFun">
                           <div class="dropdown-left flex">
@@ -146,9 +138,9 @@
               <div class="menuMListChild" @click="handleMoSelect('pricing')">
                 {{ $t('route.Pricing') }}
               </div>
-              <div class="menuMListChild" @click="handleMoSelect('resources')">
-                {{ $t('route.Resources') }}
-              </div>
+              <a href="javascript:;" @click="documentLink" class="menuMListChild">
+                {{ $t('route.documentation') }}
+              </a>
               <div class="menuMListChild" @click="handleMoSelect('stats')">
                 {{ $t('route.Stats') }}
               </div>
@@ -208,6 +200,7 @@
 </template>
 <script>
 let that
+const ethereum = window.ethereum
 export default {
   data () {
     return {
@@ -218,6 +211,7 @@ export default {
       addrChild: '',
       width: document.body.clientWidth > 600 ? '450px' : '95%',
       copyClick: true,
+      prevType: true,
       wrongVisible: false
     }
   },
@@ -353,7 +347,7 @@ export default {
     },
     handleSelect (key, keyPath) {
       // if (key !== 'login') that.$emit('getHome', key)
-      if (key !== 'login' && key !== 'auditReport' && key !== 'logged') that.$router.push({ name: 'home_entrance', query: { id: key } })
+      if (key !== 'login' && key !== 'documentation' && key !== 'auditReport' && key !== 'logged') that.$router.push({ name: 'home_entrance', query: { id: key } })
     },
     handleMoSelect (key) {
       // that.$emit('getHome', key)
@@ -382,6 +376,18 @@ export default {
           that.activeIndex = '4'
         }
       }
+    },
+    fn () {
+      ethereum.on('accountsChanged', function (account) {
+        // console.log('account header:', account[0]);  //Once the account is switched, it will be executed here
+        if (that.prevType) that.signOutFun()
+      })
+      ethereum.on('chainChanged', function (accounts) {
+        if (that.prevType) that.signOutFun()
+      })
+      ethereum.on('disconnect', (code, reason) => {
+        // console.log(`Ethereum Provider connection closed: ${reason}. Code: ${code}`);
+      })
     }
   },
   mounted () {
@@ -390,6 +396,11 @@ export default {
     that.addrChild = that.metaAddress || ''
     window.addEventListener('resize', () => {
       if (document.body.clientWidth > 999) that.mobileMenuShow = false
+    })
+    that.fn()
+
+    document.addEventListener('visibilitychange', function () {
+      that.prevType = !document.hidden
     })
   },
   filters: {

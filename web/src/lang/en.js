@@ -783,7 +783,10 @@ export default {
     pay_success_desc: 'Thank you for your payment. Bucket credit added.',
     try_again: 'try again',
     Name_bucket: 'Name this bucket',
-    active_bucket: 'You have to active your bucket first'
+    active_bucket: 'You have to active your bucket first',
+    bucket_card_create: 'Create your first bucket',
+    bucket_plan: 'Take look our Pro plan',
+    bucket_sdk: 'Try our SDK'
   },
   apiKey: {
     day: 'days',

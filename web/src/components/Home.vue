@@ -219,38 +219,41 @@ export default {
   }
   .content {
     position: relative;
-    height: calc(100% - 76px);
-    overflow-y: scroll;
+    min-height: calc(100vh - 76px);
+    // overflow-y: scroll;
     // transition: all;
     // transition-duration: .3s;
     @media screen and (max-width: 999px) {
-      height: calc(100% - 60px);
+      min-height: calc(100vh - 60px);
     }
-    &::-webkit-scrollbar {
-      width: 1px;
-      height: 1px;
-      background-color: #eee;
-    }
+    // &::-webkit-scrollbar {
+    //   width: 1px;
+    //   height: 1px;
+    //   background-color: #eee;
+    // }
 
-    &::-webkit-scrollbar-track {
-      box-shadow: none;
-      -webkit-box-shadow: none;
-      border-radius: 10px;
-      background-color: #eee;
-    }
+    // &::-webkit-scrollbar-track {
+    //   box-shadow: none;
+    //   -webkit-box-shadow: none;
+    //   border-radius: 10px;
+    //   background-color: #eee;
+    // }
 
-    &::-webkit-scrollbar-thumb {
-      border-radius: 10px;
-      box-shadow: none;
-      -webkit-box-shadow: none;
-      background-color: #eee;
-    }
+    // &::-webkit-scrollbar-thumb {
+    //   border-radius: 10px;
+    //   box-shadow: none;
+    //   -webkit-box-shadow: none;
+    //   background-color: #eee;
+    // }
     .content_body {
       // position: relative;
-      min-height: calc(100% - 0.84rem);
+      min-height: calc(100vh - 0.84rem - 76px);
       margin: auto;
+      @media screen and (max-width: 999px) {
+        min-height: calc(100vh - 0.84rem - 60px);
+      }
       @media screen and (max-width: 441px) {
-        min-height: calc(100% - 1.76rem);
+        min-height: calc(100vh - 1.76rem - 60px);
       }
       .el-alert /deep/ {
         position: absolute;

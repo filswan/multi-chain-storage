@@ -789,7 +789,10 @@ export default {
     pay_success_desc: '感谢您的支付。已添加桶信用。',
     try_again: '再试一次',
     Name_bucket: '命名此存储桶',
-    active_bucket: '你必须先激活你的存储桶'
+    active_bucket: '你必须先激活你的存储桶',
+    bucket_card_create: '创建您的第一个bucket',
+    bucket_plan: '看看我们的专业计划',
+    bucket_sdk: '试试我们的SDK'
   },
   apiKey: {
     day: '天',

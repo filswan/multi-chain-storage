@@ -1,9 +1,9 @@
 <template>
   <div class="headerCont">
-    <div class="landing" style="min-height: 0.86rem;">
+    <div class="landing">
       <div class="header width">
         <div class="header_left">
-          <div class="logoImg">
+          <div class="logoImg" @click="header_logo">
             <img :src="logo" class="img" alt='FilSwan' />
             <img class="beta" src="@/assets/images/landing/beta.png">
           </div>
@@ -11,8 +11,6 @@
             {{$t('route.metaSpace')}}
           </router-link>
         </div>
-        <!-- <img :src="logo" class="logoImg" alt='FilSwan' @click="header_logo" /> -->
-        <!-- 菜单导航 -->
         <el-menu :default-active="activeIndex" class="el-menu-demo " mode="horizontal" @select="handleSelect" background-color="transparent" text-color="#333" active-text-color="#5580e9">
           <el-menu-item index="about" class="pcShow">
             <router-link to="">
@@ -166,7 +164,7 @@
       </div>
     </div>
 
-    <el-dialog :title="$t('fs3Login.Account')" :visible.sync="wrongVisible" :width="width" custom-class="wrongNet">
+    <el-dialog :title="$t('fs3Login.Account')" :visible.sync="wrongVisible" :modal-append-to-body="false" :width="width" custom-class="wrongNet">
       <label>{{$t('fs3Login.Connected_MetaMask')}}</label>
       <div class="address">{{addrChild | hiddAddress}}</div>
       <div class="share">
@@ -447,31 +445,31 @@ export default {
   .width {
     display: flex;
     flex-wrap: wrap;
-    width: 80%;
-    max-width: 1440px;
+    padding: 0 16px;
+    max-width: 2560px;
     min-width: 300px;
     margin: auto;
-    @media screen and (max-width: 1150px) {
-      width: 90%;
+    @media screen and (min-width: 1200px) {
+      padding: 0 32px;
     }
-    @media screen and (max-width: 999px) {
-      width: 94%;
+    @media screen and (min-width: 1600px) {
+      width: calc(100% - 128px);
+      padding: 0 64px;
     }
   }
   .header /deep/ {
-    padding: 0.2rem 0;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    height: 76px;
     -webkit-transition: position 0.4s, padding 0s;
     transition: position 0.4s, padding 0s;
     @media screen and (max-width: 999px) {
-      padding: 0;
       height: 60px;
     }
     .logoImg {
       height: 40px;
-      // cursor: pointer;
+      cursor: pointer;
     }
     .header_left {
       float: left;
@@ -509,7 +507,7 @@ export default {
       .logoImg {
         position: relative;
         height: 40px;
-        // cursor: pointer;
+        cursor: pointer;
         @media screen and (max-width: 992px) {
           height: 30px;
         }
@@ -680,7 +678,6 @@ export default {
         .info {
           display: flex;
           align-items: center;
-          padding: 0.08rem 0.1rem;
           margin: 0;
           line-height: 1.5;
           color: #fff;
@@ -688,6 +685,9 @@ export default {
           cursor: text;
           border-radius: 0.14rem;
           background: linear-gradient(45deg, #4f8aff, #4b5eff);
+          h5 {
+            padding: 0.08rem 0.1rem;
+          }
           h4 {
             padding: 0 0.12rem;
             margin-left: 0.1rem;
@@ -704,13 +704,16 @@ export default {
             }
           }
           .dropdown-style {
-            padding: 0.12rem;
-            margin-left: 0.1rem;
-            background: #2d43e7;
+            padding: 0.15rem;
+            // background: #2d43e7;
             font-size: 18px;
             line-height: 2;
-            border-radius: 0.1rem;
+            // border-radius: 0.1rem;
+            border-left: 1px solid #2d43e7;
             cursor: pointer;
+            @media screen and (min-width: 1800px) {
+              font-size: 20px;
+            }
             @media screen and (max-width: 768px) {
               line-height: 1.5;
             }
@@ -889,6 +892,190 @@ export default {
 @media screen and (max-width: 479px) {
   .header {
     padding: 25px 24px;
+  }
+}
+.el-dialog__wrapper /deep/ {
+  display: flex;
+  align-items: center;
+  .wrongNet {
+    margin: auto !important;
+    box-shadow: 0 0 13px rgba(128, 128, 128, 0.8);
+    border-radius: 0.2rem;
+    .el-dialog__header {
+      padding: 0.2rem 0.4rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #dfdfdf;
+      color: #000;
+      font-size: 0.22rem;
+      font-weight: 500;
+      line-height: 1;
+      text-transform: capitalize;
+      @media screen and (max-width: 479px) {
+        padding: 0.3rem 0.2rem;
+      }
+      .el-dialog__headerbtn {
+        position: relative;
+        top: auto;
+        right: auto;
+        font-size: inherit;
+        i {
+          font-size: inherit;
+          &:hover {
+            color: #0b318f;
+          }
+        }
+      }
+      .el-dialog__title {
+        font-size: inherit;
+      }
+    }
+    .el-dialog__body {
+      position: relative;
+      padding: 0.3rem 0.4rem 0.4rem;
+      font-size: 0.2rem;
+      @media screen and (max-width: 479px) {
+        padding: 0.2rem;
+      }
+      label {
+        word-break: break-word;
+        line-height: 1;
+        color: #666;
+        font-size: inherit;
+      }
+      .address {
+        background: rgba(233, 233, 233, 1);
+        padding: 8px;
+        margin: 10px 0 22px;
+        border-radius: 8px;
+        font-size: inherit;
+      }
+      .address_email {
+        margin: 0 0 10px;
+        .address_body {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin: 10px 0 0;
+          .address {
+            width: 80%;
+            margin: 0;
+          }
+          .address_right {
+            position: relative;
+            display: inline-block;
+            padding: 0.05rem 0.2rem 0.05rem 0.32rem;
+            margin: 0 5px;
+            background-color: rgba(85, 128, 233, 0.15);
+            font-size: 0.148rem;
+            border-radius: 0.5rem;
+            white-space: nowrap;
+            @media screen and (max-width: 1600px) {
+              font-size: 13px;
+            }
+            @media screen and (max-width: 600px) {
+              font-size: 12px;
+            }
+            &::before {
+              position: absolute;
+              left: 0.16rem;
+              top: 50%;
+              content: "";
+              width: 0.08rem;
+              height: 0.08rem;
+              margin-top: -0.04rem;
+              background-color: #606266;
+              border-radius: 0.5rem;
+            }
+          }
+          .bg-primary {
+            &::before {
+              background-color: #4d73ff;
+            }
+          }
+        }
+        .share {
+          .el-button {
+            width: 100%;
+            margin: 3px 0 0;
+            font-size: 13px;
+            @media screen and (min-width: 1800px) {
+              font-size: 14px;
+            }
+            @media screen and (max-width: 600px) {
+              font-size: 12px;
+            }
+          }
+        }
+        .el-loading-mask {
+          .el-loading-spinner {
+            top: 50%;
+          }
+        }
+      }
+      .share {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        font-size: inherit;
+        .el-button {
+          min-width: 50%;
+          padding: 0;
+          margin: 8px 0 0;
+          background: transparent !important;
+          border: 0;
+          color: #4f7bf5;
+          font-size: inherit;
+          font-weight: normal;
+          font-family: inherit;
+          opacity: 0.8;
+          span {
+            display: flex;
+            align-items: center;
+            svg {
+              width: 15px;
+              height: 15px;
+              margin: 0 3px 0 0;
+            }
+            .icon_big {
+              width: 13px;
+              height: 13px;
+            }
+          }
+          &:hover {
+            background: transparent;
+            opacity: 1;
+          }
+        }
+      }
+      .loadStyle {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 2000;
+        background: rgba(255, 255, 255, 1);
+        border-radius: 0.2rem;
+      }
+      .apiTipCont {
+        p {
+          display: flex;
+          align-items: center;
+          text-indent: 0.1rem;
+          margin: 0.1rem;
+          color: #7e7e7e;
+          font-size: 0.18rem;
+          .el-icon-document-copy {
+            display: block;
+            font-size: 17px;
+            cursor: pointer;
+          }
+        }
+      }
+    }
   }
 }
 </style>

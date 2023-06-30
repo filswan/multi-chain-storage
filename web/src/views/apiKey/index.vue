@@ -292,7 +292,11 @@ export default {
       that.listLoad = true
       const directoryRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/user/apikey`, 'get')
       if (!directoryRes || directoryRes.status !== 'success') {
-        that.$message.error(directoryRes.message ? directoryRes.message : 'Fail')
+        that.$message({
+          showClose: true,
+          message: directoryRes.message ? directoryRes.message : 'Fail',
+          type: 'error'
+        })
         that.toolData = []
       } else that.toolData = directoryRes.data.apikey || []
 
@@ -701,9 +705,8 @@ export default {
 }
 .spaceStyle /deep/ {
   position: relative;
-  // width: calc(100% - 0.6rem);
-  width: 100%;
-  padding: 0 0 0.4rem;
+  width: calc(100% - 1.6rem);
+  padding: 0 0.8rem 0.4rem;
   margin: 0.3rem 0;
   background-color: #fff;
   border-radius: 0.1rem;

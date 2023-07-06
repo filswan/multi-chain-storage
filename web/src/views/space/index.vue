@@ -138,15 +138,14 @@
         </div>
       </div>
       <div class="fe-none">
-        <p class="p_label">{{$t('metaSpace.empty_prompt')}}</p>
         <el-row :gutter="40">
           <el-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8" v-for="(card, c) in bucket_card" :key="c">
-            <el-card shadow="hover" @click.native="cardMethod(card.type)">
-              <div class="c-box"></div>
+            <el-card @click.native="cardMethod(card.type)">
+              <div class="c-box">
+                <img v-for="(image, i) in card.elements" :key="i" :class="image.class" :src="image.images" />
+              </div>
               <div class="c-images">
                 <img class="img" :src="card.images" />
-                <img class="star" src="@/assets/images/space/c-star.png" />
-                <img class="star-left" src="@/assets/images/space/c-star.png" />
               </div>
               <div class="c-wrap">
                 <div class="c-title">{{card.name}}</div>
@@ -197,17 +196,59 @@ export default {
         {
           name: this.$t('metaSpace.bucket_card_create'),
           type: 'create',
-          images: require('@/assets/images/space/c-doc.png')
+          images: require('@/assets/images/space/animation/animate_1.png'),
+          elements: [
+            {
+              class: 'element element-left animate-left',
+              images: require('@/assets/images/space/animation/animate_1_1.png')
+            },
+            {
+              class: 'element element-right animate-star',
+              images: require('@/assets/images/space/animation/animate_1_2.png')
+            },
+            {
+              class: 'element element-right animate-star animate-delay1',
+              images: require('@/assets/images/space/animation/animate_1_3.png')
+            },
+            {
+              class: 'element element-right animate-star animate-delay2',
+              images: require('@/assets/images/space/animation/animate_1_4.png')
+            }
+          ]
         },
         {
           name: this.$t('metaSpace.bucket_plan'),
           type: 'pricing',
-          images: require('@/assets/images/space/c-doc.png')
+          images: require('@/assets/images/space/animation/animate_2.png'),
+          elements: [
+            {
+              class: 'element element-left animate-top',
+              images: require('@/assets/images/space/animation/animate_2_1.png')
+            },
+            {
+              class: 'element element-right animate-left',
+              images: require('@/assets/images/space/animation/animate_2_2.png')
+            }
+          ]
         },
         {
           name: this.$t('metaSpace.bucket_sdk'),
           type: 'doc',
-          images: require('@/assets/images/space/c-doc.png')
+          images: require('@/assets/images/space/animation/animate_3.png'),
+          elements: [
+            {
+              class: 'element element-left animate-arc',
+              images: require('@/assets/images/space/animation/animate_3_1.png')
+            },
+            {
+              class: 'element element-top animate-star',
+              images: require('@/assets/images/space/animation/animate_3_2.png')
+            },
+            {
+              class: 'element element-right animate-turn',
+              images: require('@/assets/images/space/animation/animate_3_3.png')
+            }
+          ]
         }
       ]
     }
@@ -836,7 +877,7 @@ export default {
       align-items: center;
       flex-wrap: wrap;
       height: auto;
-      padding: 1.5rem 5% 0;
+      padding: 1.5rem 5% 0.3rem;
       @media screen and (max-width: 600px) {
         padding: 0.5rem 5% 0;
       }
@@ -853,14 +894,16 @@ export default {
       }
       .el-row {
         width: 100%;
-        margin: 0.8rem auto 0;
+        margin: 0 auto;
         .el-col {
           margin-bottom: 0.3rem;
           .el-card {
             position: relative;
             height: 100%;
             font-size: 0.23rem;
-            border-radius: 0.1rem;
+            border-radius: 0.25rem;
+            border: 0;
+            box-shadow: 0 2px 17px rgba(0, 0, 0, 0.07);
             cursor: pointer;
             * {
               cursor: inherit;
@@ -868,13 +911,40 @@ export default {
             .c-box {
               height: 25%;
               min-height: 100px;
-              border-radius: 17px;
+              border-radius: 0.25rem;
               position: absolute;
               top: 0%;
               bottom: auto;
               left: 0%;
               right: 0%;
-              opacity: 0.35;
+              opacity: 0.5;
+              .element {
+                position: absolute;
+                opacity: 0;
+              }
+              .element-top {
+                right: 30%;
+                bottom: 43%;
+                width: 0.2rem;
+              }
+              .element-right {
+                right: 14%;
+                bottom: 12%;
+                width: 0.7rem;
+              }
+              .element-left {
+                left: 14%;
+                bottom: 13%;
+                width: 0.5rem;
+              }
+              .animate-arc {
+                left: 7%;
+                width: 0.9rem;
+              }
+              .animate-turn {
+                bottom: 9%;
+                width: 0.4rem;
+              }
             }
             .c-images {
               height: 10em;
@@ -886,30 +956,14 @@ export default {
               .img {
                 display: block;
                 width: 100%;
-                max-width: 200px;
+                max-width: 130px;
                 max-height: 100%;
-                margin: 0.6rem auto 0;
-                transform: rotate(15deg) translate(-20px, 0px);
-              }
-              .star {
-                position: absolute;
-                right: 0;
-                top: 3%;
-                width: 0.7rem;
-                opacity: 0;
-              }
-              .star-left {
-                position: absolute;
-                left: 8%;
-                top: 12%;
-                width: 0.5rem;
-                opacity: 0;
-                transform: rotate(15deg);
+                margin: 0.1rem auto 0;
+                // transform: rotate(15deg) translate(-20px, 0px);
               }
             }
             .c-wrap {
-              max-width: 11ch;
-              padding: 0 0 0.5rem;
+              padding: 0 0 0.1rem;
               margin: auto;
               grid-row-gap: 10px;
               text-align: center;
@@ -918,101 +972,65 @@ export default {
               align-items: center;
               display: flex;
               .c-title {
-                min-height: 0.7rem;
-                font-size: 0.23rem;
+                font-size: 0.22rem;
                 font-weight: 700;
                 line-height: 0.35rem;
               }
               .c-icon-arrow {
                 color: rgb(28, 28, 28);
-                width: 27px;
-                height: 27px;
+                width: 36px;
+                height: 36px;
                 justify-content: center;
                 align-items: center;
                 display: flex;
                 transform: translate(4px, 1px);
+                @media screen and (max-width: 1680px) {
+                  width: 32px;
+                  height: 32px;
+                }
+                @media screen and (max-width: 1024px) {
+                  width: 27px;
+                  height: 27px;
+                }
               }
             }
             &:hover {
               .c-box {
                 opacity: 1;
+                .element {
+                  opacity: 1;
+                }
+                .animate-left {
+                  animation: floating-left 2s ease-in-out 2 forwards;
+                }
+                .animate-top {
+                  animation: floating-rotate 2s ease-in-out 2 forwards;
+                  animation-delay: 0.5s;
+                }
+                .animate-star {
+                  animation: floating-star 1s ease-in-out 1 forwards;
+                }
+                .animate-turn {
+                  animation: floating-turn 3s ease-in-out 1;
+                  // animation-direction: normal;
+                }
+                .element-left {
+                  animation-delay: 0.1s;
+                }
+                .animate-arc {
+                  animation: floating-arc 0.4s ease-in 1 forwards;
+                  animation-delay: 0.2s;
+                }
+                .animate-delay1 {
+                  animation-delay: 0.2s;
+                }
+                .animate-delay2 {
+                  animation-delay: 0.1s;
+                }
               }
               .c-images {
                 .img {
-                  animation: floating 3.5s ease-in-out 2;
-                }
-                .star,
-                .star-left {
-                  animation: floating-star 1s ease-in-out 1 forwards;
-                }
-                .star-left {
-                  animation-delay: 0.1s;
-                }
-
-                @keyframes floating {
-                  0% {
-                    transform: rotate(15deg) translate(-20px, 0px);
-                  }
-                  50% {
-                    transform: rotate(17deg) translate(-20px, 4px);
-                  }
-                  100% {
-                    transform: rotate(15deg) translate(-20px, 0px);
-                  }
-                }
-
-                @-webkit-keyframes floating /* Safari and Chrome */ {
-                  0% {
-                    transform: rotate(15deg) translate(-20px, 0px);
-                  }
-                  50% {
-                    transform: rotate(17deg) translate(-20px, 4px);
-                  }
-                  100% {
-                    transform: rotate(15deg) translate(-20px, 0px);
-                  }
-                }
-
-                @keyframes floating-star {
-                  0% {
-                    opacity: 0;
-                  }
-                  10% {
-                    opacity: 1;
-                  }
-                  50% {
-                    opacity: 0;
-                  }
-                  60% {
-                    opacity: 1;
-                  }
-                  70% {
-                    opacity: 0;
-                  }
-                  100% {
-                    opacity: 1;
-                  }
-                }
-
-                @-webkit-keyframes floating-star /* Safari and Chrome */ {
-                  0% {
-                    opacity: 0;
-                  }
-                  10% {
-                    opacity: 1;
-                  }
-                  50% {
-                    opacity: 0;
-                  }
-                  60% {
-                    opacity: 1;
-                  }
-                  70% {
-                    opacity: 0;
-                  }
-                  100% {
-                    opacity: 1;
-                  }
+                  animation: floating-up 3.5s ease-in-out 2;
                 }
               }
               .c-wrap {
@@ -1025,21 +1043,21 @@ export default {
           &:nth-child(3n + 1) {
             .el-card {
               .c-box {
-                background-color: #6d57ff;
+                background-color: #5b85ff;
               }
             }
           }
           &:nth-child(3n + 2) {
             .el-card {
               .c-box {
-                background-color: #79cfff;
+                background-color: #ffba60;
               }
             }
           }
           &:nth-child(3n + 3) {
             .el-card {
               .c-box {
-                background-color: #4de5a6;
+                background-color: #b689e4;
               }
             }
           }

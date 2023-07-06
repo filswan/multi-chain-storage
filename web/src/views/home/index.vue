@@ -478,30 +478,6 @@ export default {
           margin: 0 auto;
           animation: floating 3.5s ease-in-out infinite;
         }
-
-        @keyframes floating {
-          0% {
-            transform: translateY(0);
-          }
-          50% {
-            transform: translateY(11px);
-          }
-          100% {
-            transform: translateY(0);
-          }
-        }
-
-        @-webkit-keyframes floating /* Safari and Chrome */ {
-          0% {
-            transform: translateY(0);
-          }
-          50% {
-            transform: translateY(11px);
-          }
-          100% {
-            transform: translateY(0);
-          }
-        }
       }
       .left {
         padding: 0 0.3rem 0 0;

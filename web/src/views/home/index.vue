@@ -34,7 +34,7 @@
       <div class="msCont">
         <div class="width" id="about">
           <div class="title">
-            <i class="icon"></i> {{$t('metaSpace.home_title')}}
+            <i class="icon icon_title"></i> {{$t('metaSpace.home_title')}}
           </div>
           <el-row type="flex" class="row-bg" justify="space-between">
             <el-col :xs="24" :sm="11" :md="11" :lg="11" :xl="11" class="left">
@@ -478,30 +478,6 @@ export default {
           margin: 0 auto;
           animation: floating 3.5s ease-in-out infinite;
         }
-
-        @keyframes floating {
-          0% {
-            transform: translateY(0);
-          }
-          50% {
-            transform: translateY(11px);
-          }
-          100% {
-            transform: translateY(0);
-          }
-        }
-
-        @-webkit-keyframes floating /* Safari and Chrome */ {
-          0% {
-            transform: translateY(0);
-          }
-          50% {
-            transform: translateY(11px);
-          }
-          100% {
-            transform: translateY(0);
-          }
-        }
       }
       .left {
         padding: 0 0.3rem 0 0;
@@ -629,10 +605,38 @@ export default {
       .icon_Introduction {
         background: url(../../assets/images/space/icon_12.png) no-repeat center;
         background-size: 100%;
+        animation: none;
       }
       .icon_Features {
         background: url(../../assets/images/space/icon_13.png) no-repeat center;
         background-size: 100%;
+      }
+      .icon_title {
+        animation: scale 2s ease-in-out infinite;
+      }
+
+      @keyframes scale {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(0.9);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      @-webkit-keyframes scale /* Safari and Chrome */ {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(0.9);
+        }
+        100% {
+          transform: scale(1);
+        }
       }
     }
     .el-row /deep/ {

@@ -3497,7 +3497,7 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #cecece;
+  background-color: rgba(96, 96, 96, 0.5);
   border-radius: 0.1rem;
   z-index: 1;
 }

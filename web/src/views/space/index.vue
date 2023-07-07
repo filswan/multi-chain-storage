@@ -879,7 +879,7 @@ export default {
       height: auto;
       padding: 1.5rem 5% 0.3rem;
       @media screen and (max-width: 600px) {
-        padding: 0.5rem 5% 0;
+        padding: 0.2rem 0 0;
       }
       .p_label {
         padding: 0.15rem 0.3rem;
@@ -897,6 +897,9 @@ export default {
         margin: 0 auto;
         .el-col {
           margin-bottom: 0.3rem;
+          @media screen and (max-width: 600px) {
+            margin: 0.3rem 0;
+          }
           .el-card {
             position: relative;
             height: 100%;
@@ -960,6 +963,10 @@ export default {
                 max-height: 100%;
                 margin: 0.1rem auto 0;
                 // transform: rotate(15deg) translate(-20px, 0px);
+                @media screen and (max-width: 600px) {
+                  max-width: 110px;
+                  margin: 0 auto;
+                }
               }
             }
             .c-wrap {

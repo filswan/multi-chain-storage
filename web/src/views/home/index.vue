@@ -581,7 +581,7 @@ export default {
   .msCont {
     padding: 1.7rem 0;
     @media screen and (max-width: 992px) {
-      padding: 1rem 0;
+      padding: 1rem 4%;
     }
     .title {
       display: flex;

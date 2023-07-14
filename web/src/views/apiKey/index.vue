@@ -16,22 +16,20 @@
         </div>
         <div class="fes-search">
           <el-table :data="toolData" stripe style="width: 100%" max-height="300" :empty-text="$t('deal.formNotData')" class="table_cell">
-            <el-table-column prop="api_key" :label="$t('my_profile.table_apiKey_th_02')"></el-table-column>
-            <el-table-column prop="token" :label="$t('my_profile.table_apiKey_th_03')" max-width="150">
-              <template>*******</template>
-            </el-table-column>
+            <el-table-column prop="apikey" :label="$t('my_profile.table_apiKey_th_02')"></el-table-column>
             <el-table-column prop="valid_days" :label="'Expiration (day)'">
               <template slot-scope="scope">
                 <div style="">
-                  {{calculateDiffTime(scope.row.valid_days, scope.row.create_at)}}
-                  <!-- ({{momentFun(scope.row.create_at,scope.row.valid_days)}}) -->
+                  <!-- {{calculateDiffTime(scope.row.valid_days, new Date(scope.row.created_at).getTime()/1000)}} -->
+                  {{calculateDiffTime(scope.row.valid_days, scope.row.created_at)}}
                 </div>
               </template>
             </el-table-column>
-            <el-table-column prop="create_at" :label="$t('my_profile.table_apiKey_th_04')">
+            <el-table-column prop="created_at" :label="$t('my_profile.table_apiKey_th_04')">
               <template slot-scope="scope">
                 <div style="">
-                  {{momentFun(scope.row.create_at)}}
+                  <!-- {{momentFun(new Date(scope.row.created_at).getTime()/1000)}} -->
+                  {{momentFun(scope.row.created_at)}}
                 </div>
               </template>
             </el-table-column>
@@ -135,12 +133,6 @@
         <label>{{$t('my_profile.create_api_tips03')}}</label>
         <p>{{apiCont.apiKey}}
           <span class="el-icon-document-copy" @click="copyLink(apiCont.apiKey, 1)"></span>
-        </p>
-
-        <label>{{$t('my_profile.create_api_tips04')}}</label>
-        <p>
-          {{apiCont.access}}
-          <span class="el-icon-document-copy" @click="copyLink(apiCont.access, 1)"></span>
         </p>
       </div>
     </el-dialog>
@@ -250,7 +242,7 @@ export default {
       const params = {
         'valid_days': day
       }
-      const apiKeyRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/user/generate_api_key?${Qs.stringify(params)}`, 'get')
+      const apiKeyRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/apikey/create`, 'post', params)
       if (!apiKeyRes || apiKeyRes.status !== 'success') {
         that.$message.error(apiKeyRes.message ? apiKeyRes.message : 'Fail')
         that.createLoad = false
@@ -260,8 +252,7 @@ export default {
       that.createLoad = false
       that.dialogFormVisible = dialog
       that.apiCont = {
-        apiKey: apiKeyRes.data.apikey || '',
-        access: apiKeyRes.data.access_token || ''
+        apiKey: apiKeyRes.data.apikey || ''
       }
       that.apiTips = true
       that.getListBuckets()
@@ -277,9 +268,9 @@ export default {
     async deleteApiKey () {
       that.listTableLoad = true
       const params = {
-        'apikey': that.areaBody.api_key
+        'uuid': that.areaBody.uuid
       }
-      const deleteRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/user/delete_api_key?${Qs.stringify(params)}`, 'put')
+      const deleteRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/apikey/delete?${Qs.stringify(params)}`, 'get')
       if (!deleteRes || deleteRes.status !== 'success') {
         that.$message.error(deleteRes.status || 'Fail')
       }
@@ -290,7 +281,7 @@ export default {
     },
     async getListBuckets (name) {
       that.listLoad = true
-      const directoryRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/user/apikey`, 'get')
+      const directoryRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/apikey/get_list`, 'get')
       if (!directoryRes || directoryRes.status !== 'success') {
         that.$message({
           showClose: true,
@@ -298,7 +289,7 @@ export default {
           type: 'error'
         })
         that.toolData = []
-      } else that.toolData = directoryRes.data.apikey || []
+      } else that.toolData = directoryRes.data || []
 
       const domainRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/gateway/get_gateway`, 'get')
       if (!domainRes || domainRes.status !== 'success') {

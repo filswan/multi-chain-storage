@@ -21,15 +21,13 @@
               <template slot-scope="scope">
                 <div style="">
                   {{calculateDiffTime(scope.row.valid_days, new Date(scope.row.created_at).getTime()/1000)}}
-                  <!-- {{calculateDiffTime(scope.row.valid_days, scope.row.created_at)}} -->
                 </div>
               </template>
             </el-table-column>
             <el-table-column prop="created_at" :label="$t('my_profile.table_apiKey_th_04')">
               <template slot-scope="scope">
                 <div style="">
-                  <!-- {{momentFun(new Date(scope.row.created_at).getTime()/1000)}} -->
-                  {{scope.row.created_at || '-'}}
+                  {{momentFun(new Date(scope.row.created_at).getTime()/1000)}}
                 </div>
               </template>
             </el-table-column>

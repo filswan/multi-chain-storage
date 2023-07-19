@@ -1212,6 +1212,7 @@ export default {
       display: flex;
       justify-content: center;
       align-items: center;
+      height: 100%;
       padding: 0 5%;
       .p_label {
         padding: 0.15rem 0.3rem;

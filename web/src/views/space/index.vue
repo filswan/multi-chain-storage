@@ -875,12 +875,8 @@ export default {
       display: flex;
       justify-content: center;
       align-items: center;
-      flex-wrap: wrap;
-      height: auto;
-      padding: 1.5rem 5% 0.3rem;
-      @media screen and (max-width: 600px) {
-        padding: 0.2rem 0 0;
-      }
+      height: 100%;
+      padding: 0 5%;
       .p_label {
         padding: 0.15rem 0.3rem;
         font-size: 0.25rem;

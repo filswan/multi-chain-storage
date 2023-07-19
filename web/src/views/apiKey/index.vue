@@ -20,8 +20,8 @@
             <el-table-column prop="valid_days" :label="'Expiration (day)'">
               <template slot-scope="scope">
                 <div style="">
-                  <!-- {{calculateDiffTime(scope.row.valid_days, new Date(scope.row.created_at).getTime()/1000)}} -->
-                  {{calculateDiffTime(scope.row.valid_days, scope.row.created_at)}}
+                  {{calculateDiffTime(scope.row.valid_days, new Date(scope.row.created_at).getTime()/1000)}}
+                  <!-- {{calculateDiffTime(scope.row.valid_days, scope.row.created_at)}} -->
                 </div>
               </template>
             </el-table-column>
@@ -29,7 +29,7 @@
               <template slot-scope="scope">
                 <div style="">
                   <!-- {{momentFun(new Date(scope.row.created_at).getTime()/1000)}} -->
-                  {{momentFun(scope.row.created_at)}}
+                  {{scope.row.created_at || '-'}}
                 </div>
               </template>
             </el-table-column>

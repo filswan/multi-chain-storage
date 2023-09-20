@@ -188,7 +188,12 @@
                 </ul>
               </el-popover>
             </div>
-            <div class="tip" v-else>-</div>
+            <div class="tip" v-else>
+              -
+              <el-popover v-if="areaBody.messageError" placement="top" popper-class="elPopTitle" width="200" trigger="hover" :content="areaBody.messageError">
+                <img slot="reference" src="@/assets/images/info.png" />
+              </el-popover>
+            </div>
           </el-form-item>
           <el-form-item :label="$t('metaSpace.detail_PieceCID')">
             <div class="tip" v-if="areaBody.miner_count">

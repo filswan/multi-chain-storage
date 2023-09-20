@@ -204,7 +204,7 @@ export default {
         bucketDetail.ipfs_url = `https://${that.$route.query.domain}/ipfs/${row.payload_cid}${row.type === 2 ? '?filename=' + row.name : ''}`
 
         const backupRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/get_backup_info?payload_cid=${row.payload_cid}`, 'get')
-        if (!backupRes || backupRes.status !== 'success') that.$message.error(backupRes ? backupRes.message : 'Fail')
+        if (!backupRes || backupRes.status !== 'success') bucketDetail.messageError = backupRes ? backupRes.message || '' : ''
         else {
           bucketDetail.storage_providers = backupRes.data.storage_providers || []
           bucketDetail.miner_count = backupRes.data.storage_providers ? backupRes.data.storage_providers.length : 0

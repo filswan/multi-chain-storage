@@ -130,7 +130,7 @@ export default {
       introduce: {
         free: [
           {
-            title: 'Storage - 32GB',
+            title: 'Storage - 30 GB',
             desc: ''
           },
           {
@@ -152,11 +152,11 @@ export default {
         ],
         pro: [
           {
-            title: 'Storage - 320 GB',
+            title: 'Storage - 300 GB',
             desc: ''
           },
           {
-            title: 'Total Volume - 320 GB',
+            title: 'Total Volume - 300 GB',
             desc: 'Total Volume is the total amount of data transferred when someone loads a file through your gateway.'
           },
           {

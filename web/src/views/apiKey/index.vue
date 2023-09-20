@@ -409,29 +409,34 @@ export default {
         })
     },
     async contractSend () {
-      let payFactory = new that.$web3Init.eth.Contract(payAbi, that.$root.PAYMENT_CONTRACT_ADDRESS)
-      let estimatedGas = await payFactory.methods
-        .pay(1)
-        .estimateGas({ from: that.metaAddress })
-      let gasLimit = Math.floor(estimatedGas * 1.5)
+      try {
+        let payFactory = new that.$web3Init.eth.Contract(payAbi, that.$root.PAYMENT_CONTRACT_ADDRESS)
+        let estimatedGas = await payFactory.methods
+          .pay(1)
+          .estimateGas({ from: that.metaAddress })
+        let gasLimit = Math.floor(estimatedGas * 1.5)
 
-      await payFactory.methods.pay(1)
-        .send({ from: that.metaAddress, gasLimit: gasLimit })
-        .on('transactionHash', async (hash) => {
-          console.log('hash console:', hash)
-          that.dialogFun('billing_tip')
-        })
-        .on('confirmation', function (confirmationNumber, receipt) {
-          // console.log('confirmationNumber console:', confirmationNumber, receipt)
-        })
-        .on('receipt', function (receipt) {
-          // receipt example
-          console.log('create receipt console:', receipt)
-        })
-        .on('error', function (error) {
-          if (error && error.message) that.$message.error(error.message)
-        })
-      that.payLoad = false
+        await payFactory.methods.pay(1)
+          .send({ from: that.metaAddress, gasLimit: gasLimit })
+          .on('transactionHash', async (hash) => {
+            console.log('hash console:', hash)
+            that.dialogFun('billing_tip')
+          })
+          .on('confirmation', function (confirmationNumber, receipt) {
+            // console.log('confirmationNumber console:', confirmationNumber, receipt)
+          })
+          .on('receipt', function (receipt) {
+            // receipt example
+            console.log('create receipt console:', receipt)
+          })
+          .on('error', function (error) {
+            if (error && error.message) that.$message.error(error.message)
+          })
+        that.payLoad = false
+      } catch (err) {
+        console.log('pay err', err)
+        that.payLoad = false
+      }
     }
   },
   mounted () {

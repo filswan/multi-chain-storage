@@ -1,17 +1,18 @@
 <template>
   <div class="wrapper">
-    <el-col :xs="8" :sm="8" :md="5" :lg="4" class="side" :class="{'slidarShow': collapseP&&bodyWidth}">
+    <!-- <el-col :xs="8" :sm="8" :md="5" :lg="4" class="side" :class="{'slidarShow': collapseP&&bodyWidth}">
       <v-sidebar></v-sidebar>
-    </el-col>
-    <el-col :xs="24" :sm="24" :md="19" :lg="20" class="content-box" id="content-box">
-      <v-head :meta="meta" @getMetamaskLogin="getMetamaskLogin" :netId="netId" :networkTip="networkTip" @getNetwork="getNetwork" @getNetId="changeNet" @getPopUps="getPopUps"></v-head>
+    </el-col> -->
+    <el-col :xs="24" :sm="24" :md="24" :lg="24" class="content-box" id="content-box">
+      <!-- <v-head :meta="meta" @getMetamaskLogin="getMetamaskLogin" :netId="netId" :networkTip="networkTip" @getNetwork="getNetwork" @getNetId="changeNet" @getPopUps="getPopUps"></v-head> -->
+      <v-head></v-head>
       <div id="headerMb" v-if="bodyWidth">
         <div class="headerMb" v-if="email">
           {{headertitle}}
         </div>
       </div>
       <div class="content" id="content_client">
-        <div class="content_body" :class="{'stats': $route.name == 'Stats' || $route.name == 'Space' || $route.name == 'Space_detail'}">
+        <div class="content_body mWidth width" :class="{'stats': $route.name == 'Stats' || $route.name == 'Space' || $route.name == 'Space_detail'}">
           <network-alert v-if="metaAddress&&networkTip" @changeNet="changeNet" @getNetwork="getNetwork"></network-alert>
           <transition name="move" mode="out-in">
             <keep-alive :include="tagsList">
@@ -19,12 +20,23 @@
             </keep-alive>
           </transition>
         </div>
-        <div class="fes-icon">
-          <div class="fes-icon-copy">
-            <span>© {{fullYear}} FilSwan</span>
-            <el-divider direction="vertical"></el-divider>
-            <a href="https://www.filswan.com/" target="_block">filswan.com</a>
-
+        <div class="fes-icon mWidth">
+          <div class="width">
+            <div class="fes-icon-logo">
+              <a :href="medium_link" target="_blank"><img :src="share_medium" alt=""></a>
+              <a :href="discord_link" target="_blank"><img :src="share_discord" alt=""></a>
+              <a :href="twitter_link" target="_blank"><img :src="share_twitter" alt=""></a>
+              <a :href="github_link" target="_blank"><img :src="share_github" alt=""></a>
+              <a :href="telegram_link" target="_blank"><img :src="share_telegram" alt=""></a>
+            </div>
+            <div class="fes-icon-copy">
+              <span>© {{fullYear}} FilSwan</span>
+              <el-divider direction="vertical"></el-divider>
+              <a href="https://www.filswan.com/" target="_block">filswan.com</a>
+            </div>
+            <div class="fes-market">
+              <a href="https://chn.lk/3DTWSjE" target="_blank"><img src="@/assets/images/landing/chainlink-badge-market-data.svg" alt="market data secured with chainlink"></a>
+            </div>
           </div>
         </div>
         <el-backtop target=".content"></el-backtop>
@@ -35,7 +47,8 @@
 </template>
 
 <script>
-import vHead from './Header.vue'
+// import vHead from './Header.vue'
+import vHead from './headHome.vue'
 import vSidebar from './Sidebar.vue'
 import popUps from './popups.vue'
 import networkAlert from '@/components/networkAlert.vue'
@@ -48,15 +61,16 @@ export default {
       collapseP: !!(this.$store.getters.collapseL === 'true' || this.$store.getters.collapseL === true),
       bodyWidth: document.body.clientWidth < 992,
       tabshow: localStorage.getItem('tabTask_name') === 'User_Profile',
-      share_img1: require('@/assets/images/landing/medium.png'),
-      share_img2: require('@/assets/images/landing/twitter.png'),
-      share_img3: require('@/assets/images/landing/github-fill.png'),
-      share_img5: require('@/assets/images/landing/facebook-fill.png'),
-      share_img7: require('@/assets/images/landing/slack.png'),
-      share_img8: require('@/assets/images/landing/youtube.png'),
-      share_img9: require('@/assets/images/landing/telegram.png'),
-      share_img10: require('@/assets/images/landing/discord.png'),
-      share_logo: require('@/assets/images/landing/logo_small.png'),
+      share_medium: require('@/assets/images/landing/medium.png'),
+      share_twitter: require('@/assets/images/landing/twitter.png'),
+      share_github: require('@/assets/images/landing/github-fill.png'),
+      share_telegram: require('@/assets/images/landing/telegram.png'),
+      share_discord: require('@/assets/images/landing/discord.png'),
+      medium_link: process.env.MEDIUM_LINK,
+      discord_link: process.env.DISCORD_LINK,
+      twitter_link: process.env.TWITTER_LINK,
+      github_link: process.env.GITHUB_LINK,
+      telegram_link: process.env.TELEGRAM_LINK,
       meta: false,
       netId: 0,
       networkTip: false,
@@ -167,6 +181,23 @@ export default {
   @media screen and (max-width: 1024px) {
     width: 20.48rem;
   }
+  .width {
+    display: flex;
+    flex-wrap: wrap;
+    width: calc(100% - 32px);
+    padding: 0 16px;
+    max-width: 2560px;
+    min-width: 300px;
+    margin: auto;
+    @media screen and (min-width: 1200px) {
+      width: calc(100% - 64px);
+      padding: 0 32px;
+    }
+    @media screen and (min-width: 1600px) {
+      width: calc(100% - 128px);
+      padding: 0 64px;
+    }
+  }
   .side {
     height: 100%;
     // transition: all 0.3s ease;
@@ -188,32 +219,42 @@ export default {
   }
   .content {
     position: relative;
-    height: calc(100% - 1.1rem);
-    overflow-y: scroll;
+    min-height: calc(100vh - 76px);
+    // overflow-y: scroll;
     // transition: all;
     // transition-duration: .3s;
-    &::-webkit-scrollbar {
-      width: 1px;
-      height: 1px;
-      background-color: #eee;
+    @media screen and (max-width: 999px) {
+      min-height: calc(100vh - 60px);
     }
+    // &::-webkit-scrollbar {
+    //   width: 1px;
+    //   height: 1px;
+    //   background-color: #eee;
+    // }
 
-    &::-webkit-scrollbar-track {
-      box-shadow: none;
-      -webkit-box-shadow: none;
-      border-radius: 10px;
-      background-color: #eee;
-    }
+    // &::-webkit-scrollbar-track {
+    //   box-shadow: none;
+    //   -webkit-box-shadow: none;
+    //   border-radius: 10px;
+    //   background-color: #eee;
+    // }
 
-    &::-webkit-scrollbar-thumb {
-      border-radius: 10px;
-      box-shadow: none;
-      -webkit-box-shadow: none;
-      background-color: #eee;
-    }
+    // &::-webkit-scrollbar-thumb {
+    //   border-radius: 10px;
+    //   box-shadow: none;
+    //   -webkit-box-shadow: none;
+    //   background-color: #eee;
+    // }
     .content_body {
       // position: relative;
-      min-height: calc(100% - 0.84rem);
+      min-height: calc(100vh - 0.84rem - 76px);
+      margin: auto;
+      @media screen and (max-width: 999px) {
+        min-height: calc(100vh - 0.84rem - 60px);
+      }
+      @media screen and (max-width: 441px) {
+        min-height: calc(100vh - 1.76rem - 60px);
+      }
       .el-alert /deep/ {
         position: absolute;
         left: 0;
@@ -268,13 +309,36 @@ export default {
       }
     }
     .fes-icon {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0;
+      margin: auto;
       background-color: #f0f0f0;
+      background-color: #23355f;
+      background-color: #409eff;
       z-index: 8;
+      @media screen and (max-width: 600px) {
+        padding: 0 0.3rem;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      @media screen and (max-width: 441px) {
+        padding: 0.15rem 0;
+      }
+      .width {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        @media screen and (max-width: 441px) {
+          flex-wrap: wrap;
+          justify-content: center;
+        }
+      }
       .fes-icon-logo {
         display: flex;
         justify-content: center;
         align-items: center;
-        padding: 10px 0;
         img {
           display: block;
           height: 20px;
@@ -289,19 +353,35 @@ export default {
         justify-content: center;
         align-items: center;
         padding: 0.3rem 0;
+        @media screen and (max-width: 441px) {
+          width: 100%;
+          padding: 0.1rem 0;
+        }
         span,
         a {
           font-size: 0.16rem;
-          color: #888;
+          color: #fff;
           line-height: 1.5;
         }
         a {
           &:hover {
-            color: #409eff;
+            text-decoration: underline;
           }
         }
         .el-divider--vertical /deep/ {
           height: 15px;
+        }
+      }
+      .fes-market {
+        display: flex;
+        justify-content: center;
+        img {
+          display: block;
+          height: 35px;
+          margin: 0;
+          @media screen and (min-width: 1800px) {
+            height: 45px;
+          }
         }
       }
     }

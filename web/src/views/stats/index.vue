@@ -608,7 +608,11 @@ export default {
   padding: 0.5rem 0;
   background-color: #fff;
   @media screen and (max-width: 992px) {
+    width: 90%;
     padding: 0.25rem 0;
+  }
+  @media screen and (max-width: 441px) {
+    width: 94%;
   }
   border-radius: 0.1rem;
   .moon {
@@ -627,6 +631,9 @@ export default {
       font-weight: 700;
       color: #02003b;
       line-height: 1.5;
+      @media screen and (max-width: 992px) {
+        font-size: 18px;
+      }
     }
     .main {
       font-size: 18px;
@@ -653,7 +660,7 @@ export default {
       //flex-wrap: wrap;
       //justify-content: center;
       padding: 0;
-      margin: 0.15rem auto;
+      margin: 0.15rem auto 1rem;
       @media screen and (max-width: 600px) {
         display: block;
       }
@@ -755,6 +762,12 @@ export default {
             cursor: pointer;
             @media screen and (max-width: 1600px) {
               height: 50px;
+            }
+            @media screen and (max-width: 992px) {
+              height: 45px;
+            }
+            @media screen and (max-width: 441px) {
+              height: 40px;
             }
             @media screen and (max-width: 1440px) {
               margin: 15px auto;

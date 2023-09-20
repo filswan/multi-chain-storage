@@ -16,22 +16,18 @@
         </div>
         <div class="fes-search">
           <el-table :data="toolData" stripe style="width: 100%" max-height="300" :empty-text="$t('deal.formNotData')" class="table_cell">
-            <el-table-column prop="api_key" :label="$t('my_profile.table_apiKey_th_02')"></el-table-column>
-            <el-table-column prop="token" :label="$t('my_profile.table_apiKey_th_03')" max-width="150">
-              <template>*******</template>
-            </el-table-column>
+            <el-table-column prop="apikey" :label="$t('my_profile.table_apiKey_th_02')"></el-table-column>
             <el-table-column prop="valid_days" :label="'Expiration (day)'">
               <template slot-scope="scope">
                 <div style="">
-                  {{calculateDiffTime(scope.row.valid_days, scope.row.create_at)}}
-                  <!-- ({{momentFun(scope.row.create_at,scope.row.valid_days)}}) -->
+                  {{calculateDiffTime(scope.row.valid_days, new Date(scope.row.created_at).getTime()/1000)}}
                 </div>
               </template>
             </el-table-column>
-            <el-table-column prop="create_at" :label="$t('my_profile.table_apiKey_th_04')">
+            <el-table-column prop="created_at" :label="$t('my_profile.table_apiKey_th_04')">
               <template slot-scope="scope">
                 <div style="">
-                  {{momentFun(scope.row.create_at)}}
+                  {{momentFun(new Date(scope.row.created_at).getTime()/1000)}}
                 </div>
               </template>
             </el-table-column>
@@ -59,28 +55,33 @@
                 <span>{{$t('billing.bill_btn_paid')}}</span>
               </a>
             </div>
+            <router-link :to="{name: 'home_entrance', query: { id: 'pricing' }}" target="_blank" class="billing_cont">
+              {{$t('billing.have_faq')}}
+            </router-link>
           </div>
         </div>
-        <el-row class="billing_style" :gutter="20">
-          <el-col :xs="24" :sm="12" :md="9" :lg="8">
-            <router-link :to="{path: '/billing'}" class="billing_cont">
-              <div class="icon el-icon-s-billing"></div>
-              <div class="desc">
-                <div class="desc_t">{{$t('billing.bill_cont1_title')}}</div>
-                <div class="desc_d">{{$t('billing.bill_cont1_desc')}}</div>
-              </div>
-            </router-link>
-          </el-col>
-          <el-col :xs="24" :sm="12" :md="9" :lg="8">
-            <router-link :to="{name: 'home_entrance', query: { id: 'pricing' }}" target="_blank" class="billing_cont">
-              <div class="icon el-icon-s-pricing"></div>
-              <div class="desc">
-                <div class="desc_t">{{$t('billing.bill_cont2_title')}}</div>
-                <div class="desc_d">{{$t('billing.bill_cont2_desc')}}</div>
-              </div>
-            </router-link>
-          </el-col>
-        </el-row>
+        <div class="fes-search">
+          <el-table :data="billingData" v-loading="billingLoad" stripe style="width: 100%" max-height="300" :empty-text="$t('deal.formNotData')" class="table_cell" @sort-change="sortChange" :default-sort="{prop: 'date', order: 'descending'}">
+            <el-table-column prop="tx_hash" :label="$t('billing.TRANSACTION')" min-width="150">
+              <template slot-scope="scope">
+                <div class="hot-cold-box">
+                  <div class="upload_form_right" @click="networkLink(scope.row.tx_hash, scope.row.chain_id)">
+                    <p>{{scope.row.tx_hash}}</p>
+                  </div>
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column prop="amount" :label="$t('billing.AMOUNT')" min-width="90"></el-table-column>
+            <el-table-column prop="chain_id" :label="$t('billing.chain_id')" min-width="90"></el-table-column>
+            <el-table-column prop="pay_time" :label="$t('billing.PAYMENTDATE')" min-width="120">
+              <template slot-scope="scope">
+                <div class="hot-cold-box">
+                  {{momentFun(scope.row.pay_time)}}
+                </div>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
       </div>
 
       <div>
@@ -131,12 +132,6 @@
         <p>{{apiCont.apiKey}}
           <span class="el-icon-document-copy" @click="copyLink(apiCont.apiKey, 1)"></span>
         </p>
-
-        <label>{{$t('my_profile.create_api_tips04')}}</label>
-        <p>
-          {{apiCont.access}}
-          <span class="el-icon-document-copy" @click="copyLink(apiCont.access, 1)"></span>
-        </p>
       </div>
     </el-dialog>
 
@@ -157,8 +152,10 @@ export default {
       listLoad: true,
       listTableLoad: false,
       createLoad: false,
+      billingLoad: false,
       toolData: [],
       domainData: [],
+      billingData: [],
       areaBody: {},
       dialogFormVisible: false,
       typeName: 'add_apikey',
@@ -173,6 +170,9 @@ export default {
   },
   components: { popUps },
   computed: {
+    languageMcs () {
+      return this.$store.state.app.languageMcs
+    },
     metaAddress () {
       return this.$store.getters.metaAddress
     },
@@ -186,6 +186,13 @@ export default {
     }
   },
   methods: {
+    networkLink (hash, chain_id) {
+      window.open(`${this.baseAddressURL}tx/${hash}`)
+    },
+    async sortChange (column) {
+      // this.billingLoad = true
+      // this.getListBuckets()
+    },
     calculateDiffTime (validDays, startTime) {
       if (String(validDays) === '0') return 'Forever'
       if (!parseInt(validDays)) return '-'
@@ -216,6 +223,9 @@ export default {
         case 'add_domain':
           that.createDomain(dialog, rows, day)
           break
+        case 'refresh':
+          that.refreshFun(dialog)
+          break
         default:
           if (rows) that.createKey(dialog, rows, day)
           else that.dialogFormVisible = dialog
@@ -230,7 +240,7 @@ export default {
       const params = {
         'valid_days': day
       }
-      const apiKeyRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/user/generate_api_key?${Qs.stringify(params)}`, 'get')
+      const apiKeyRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/apikey/create`, 'post', params)
       if (!apiKeyRes || apiKeyRes.status !== 'success') {
         that.$message.error(apiKeyRes.message ? apiKeyRes.message : 'Fail')
         that.createLoad = false
@@ -240,8 +250,7 @@ export default {
       that.createLoad = false
       that.dialogFormVisible = dialog
       that.apiCont = {
-        apiKey: apiKeyRes.data.apikey || '',
-        access: apiKeyRes.data.access_token || ''
+        apiKey: apiKeyRes.data.apikey || ''
       }
       that.apiTips = true
       that.getListBuckets()
@@ -251,14 +260,15 @@ export default {
       that.areaBody = row || {}
       that.changeTitle = title || ''
       that.dialogFormVisible = true
+      that.payLoad = false
       document.getElementById('content_client').scrollTop = 120
     },
     async deleteApiKey () {
       that.listTableLoad = true
       const params = {
-        'apikey': that.areaBody.api_key
+        'uuid': that.areaBody.uuid
       }
-      const deleteRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/user/delete_api_key?${Qs.stringify(params)}`, 'put')
+      const deleteRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/apikey/delete?${Qs.stringify(params)}`, 'get')
       if (!deleteRes || deleteRes.status !== 'success') {
         that.$message.error(deleteRes.status || 'Fail')
       }
@@ -269,17 +279,27 @@ export default {
     },
     async getListBuckets (name) {
       that.listLoad = true
-      const directoryRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/user/apikey`, 'get')
+      const directoryRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/apikey/get_list`, 'get')
       if (!directoryRes || directoryRes.status !== 'success') {
-        that.$message.error(directoryRes.message || 'Fail')
+        that.$message({
+          showClose: true,
+          message: directoryRes.message ? directoryRes.message : 'Fail',
+          type: 'error'
+        })
         that.toolData = []
-      } else that.toolData = directoryRes.data.apikey || []
+      } else that.toolData = directoryRes.data || []
 
       const domainRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/gateway/get_gateway`, 'get')
       if (!domainRes || domainRes.status !== 'success') {
-        that.$message.error(domainRes.message || 'Fail')
+        that.$message.error(domainRes.message ? domainRes.message : 'Fail')
         that.domainData = []
       } else that.domainData = domainRes.data || []
+
+      const billingRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/payment/get_payment_history`, 'get')
+      if (!billingRes || billingRes.status !== 'success') {
+        that.$message.error(billingRes.message ? billingRes.message : 'Fail')
+        that.billingData = []
+      } else that.billingData = billingRes.data || []
 
       that.listLoad = false
     },
@@ -334,8 +354,43 @@ export default {
         document.body.removeChild(txtArea)
       }
     },
+    async refreshFun (dialog) {
+      that.dialogFormVisible = dialog
+      that.payLoad = true
+      let paymentRes = await that.$commonFun.sendRequest(`${that.baseAPIURL}api/v2/payment/get_payment`, 'get')
+      if (!paymentRes || paymentRes.status !== 'success') return false
+      else {
+        that.$root.plan_id = paymentRes.data.plan_id
+        that.$root.max_storage = paymentRes.data.max_storage
+      }
+      that.payLoad = false
+    },
+    async getUnit (id) {
+      let name = ''
+      switch (id) {
+        case 97:
+          name = 'BSC TestNet'
+          break
+        case 137:
+          name = 'Polygon Mainnet'
+          break
+        case 80001:
+          name = 'Mumbai Testnet'
+          break
+      }
+      return ({
+        name
+      })
+    },
     async payPlan () {
       that.payLoad = true
+      const getID = await that.$commonFun.web3Init.eth.net.getId()
+      if (that.$root.chain_id !== getID) {
+        const { name } = await that.getUnit(Number(that.$root.chain_id))
+        that.$message.error(that.languageMcs === 'en' ? `Please switch to the network: ${name}` : `请切换到网络：${name}`)
+        that.payLoad = false
+        return false
+      }
       let tokenFactory = new that.$web3Init.eth.Contract(linkTokenAbi, that.$root.USDC_ADDRESS)
       let payObject = {
         from: that.metaAddress,
@@ -354,28 +409,34 @@ export default {
         })
     },
     async contractSend () {
-      let payFactory = new that.$web3Init.eth.Contract(payAbi, that.$root.PAYMENT_CONTRACT_ADDRESS)
-      let estimatedGas = await payFactory.methods
-        .pay(1)
-        .estimateGas({ from: that.metaAddress })
-      let gasLimit = Math.floor(estimatedGas * 1.5)
+      try {
+        let payFactory = new that.$web3Init.eth.Contract(payAbi, that.$root.PAYMENT_CONTRACT_ADDRESS)
+        let estimatedGas = await payFactory.methods
+          .pay(1)
+          .estimateGas({ from: that.metaAddress })
+        let gasLimit = Math.floor(estimatedGas * 1.5)
 
-      await payFactory.methods.pay(1)
-        .send({ from: that.metaAddress, gasLimit: gasLimit })
-        .on('transactionHash', async (hash) => {
-          console.log('hash console:', hash)
-        })
-        .on('confirmation', function (confirmationNumber, receipt) {
-          // console.log('confirmationNumber console:', confirmationNumber, receipt)
-        })
-        .on('receipt', function (receipt) {
-          // receipt example
-          console.log('create receipt console:', receipt)
-        })
-        .on('error', function (error) {
-          if (error && error.message) that.$message.error(error.message)
-        })
-      that.payLoad = false
+        await payFactory.methods.pay(1)
+          .send({ from: that.metaAddress, gasLimit: gasLimit })
+          .on('transactionHash', async (hash) => {
+            console.log('hash console:', hash)
+            that.dialogFun('billing_tip')
+          })
+          .on('confirmation', function (confirmationNumber, receipt) {
+            // console.log('confirmationNumber console:', confirmationNumber, receipt)
+          })
+          .on('receipt', function (receipt) {
+            // receipt example
+            console.log('create receipt console:', receipt)
+          })
+          .on('error', function (error) {
+            if (error && error.message) that.$message.error(error.message)
+          })
+        that.payLoad = false
+      } catch (err) {
+        console.log('pay err', err)
+        that.payLoad = false
+      }
     }
   },
   mounted () {
@@ -412,6 +473,30 @@ export default {
       }
       return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
       // return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i]
+    },
+    balanceMweiFilter (value) {
+      if (String(value) === '0') return 0
+      if (!value) return '-'
+      // if (!Number(value)) return 0;
+      // if (isNaN(value)) return value;
+      // 18 - 单位换算需要 / 1000000000000000000，浮点运算显示有bug
+      // value = Number(value)
+      if (String(value).length > 9) {
+        let v1 = String(value).substring(0, String(value).length - 9)
+        let v2 = String(value).substring(String(value).length - 9)
+        let v3 = String(v2).replace(/(0+)\b/gi, '')
+        if (v3) {
+          return v1 + '.' + v3
+        } else {
+          return v1
+        }
+      } else {
+        let v3 = ''
+        for (let i = 0; i < 9 - String(value).length; i++) {
+          v3 += '0'
+        }
+        return '0.' + String(v3 + value).replace(/(0+)\b/gi, '')
+      }
     }
   }
 }
@@ -614,11 +699,16 @@ export default {
 }
 .spaceStyle /deep/ {
   position: relative;
-  width: calc(100% - 0.6rem);
-  padding: 0 0 0.4rem;
-  margin: 0.3rem;
+  width: calc(100% - 1.6rem);
+  padding: 0 0.8rem 0.4rem;
+  margin: 0.3rem 0;
   background-color: #fff;
   border-radius: 0.1rem;
+  @media screen and (max-width: 600px) {
+    width: 100%;
+    padding: 0;
+    margin: 0.3rem 0;
+  }
   h4 {
     font-size: 0.22rem;
     font-weight: normal;
@@ -645,7 +735,7 @@ export default {
   .slideScroll {
     height: calc(100% - 0.6rem);
     min-height: 350px;
-    padding: 0.3rem;
+    padding: 0.3rem 0;
     .form_top {
       display: flex;
       align-items: center;
@@ -720,7 +810,6 @@ export default {
       .search_file {
         display: flex;
         align-items: center;
-        justify-content: space-between;
         width: 100%;
         margin: 0;
         p {
@@ -774,6 +863,17 @@ export default {
                 box-shadow: none;
               }
             }
+          }
+        }
+        .billing_cont {
+          margin-left: 0.15rem;
+          font-size: 14px;
+          color: #333;
+          @media screen and (max-width: 600px) {
+            font-size: 12px;
+          }
+          &:hover {
+            text-decoration: underline;
           }
         }
         .search_right {
@@ -964,13 +1064,13 @@ export default {
       padding: 0 5%;
       .p_label {
         padding: 0.15rem 0.3rem;
-        font-size: 0.27rem;
+        font-size: 0.25rem;
         color: #4f87ff;
         line-height: 1.2;
         border: dashed;
         border-radius: 0.1rem;
         @media screen and (max-width: 1600px) {
-          font-size: 0.25rem;
+          font-size: 0.23rem;
         }
       }
     }
@@ -1253,6 +1353,13 @@ export default {
                 align-items: center;
                 justify-content: center;
                 flex-wrap: wrap;
+                .upload_form_right {
+                  padding: 0 10px;
+                  text-align: left;
+                  &:hover {
+                    text-decoration: underline;
+                  }
+                }
                 .icon {
                   display: block;
                   width: 22px;
@@ -1413,6 +1520,7 @@ export default {
         align-items: center;
         cursor: pointer;
         color: #333;
+        font-size: 14px;
         .icon {
           position: relative;
           width: 0.7rem;

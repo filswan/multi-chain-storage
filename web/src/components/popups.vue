@@ -74,6 +74,18 @@
         </el-form>
       </div>
     </div>
+    <div class="fe-none" v-else-if="typeName === 'billing_tip'">
+      <div class="addBucket">
+        <div class="cont">
+          {{$t('billing.bill_tip')}}
+        </div>
+        <el-form ref="form">
+          <el-form-item>
+            <el-button type="primary" @click="closeDia('refresh')">{{$t('metaSpace.Close')}}</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+    </div>
     <div class="fe-none" v-else-if="typeName === 'detail'">
       <div class="addBucket" v-loading="backupLoad">
         <div class="head">
@@ -176,7 +188,12 @@
                 </ul>
               </el-popover>
             </div>
-            <div class="tip" v-else>-</div>
+            <div class="tip" v-else>
+              -
+              <el-popover v-if="areaBody.messageError" placement="top" popper-class="elPopTitle" width="200" trigger="hover" :content="areaBody.messageError">
+                <img slot="reference" src="@/assets/images/info.png" />
+              </el-popover>
+            </div>
           </el-form-item>
           <el-form-item :label="$t('metaSpace.detail_PieceCID')">
             <div class="tip" v-if="areaBody.miner_count">
@@ -1500,13 +1517,13 @@ export default {
     }
     .p {
       padding: 0.15rem 0.3rem;
-      font-size: 0.27rem;
+      font-size: 0.25rem;
       color: #4f87ff;
       line-height: 1.2;
       border: dashed;
       border-radius: 0.1rem;
       @media screen and (max-width: 1600px) {
-        font-size: 0.25rem;
+        font-size: 0.23rem;
       }
     }
     .addBucket {
@@ -3480,12 +3497,12 @@ export default {
   }
 }
 .slideAdd {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #cecece;
+  background-color: rgba(96, 96, 96, 0.5);
   border-radius: 0.1rem;
   z-index: 1;
 }

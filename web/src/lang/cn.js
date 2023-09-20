@@ -189,8 +189,8 @@ export default {
     Change_password: '修改密码',
     wrong_password: '密码错误',
     Reenter_new_password: '重新输入新密码',
-    apiKey_your_title: '您的API密钥',
-    apiKey_your_Domain: '您的自定义域',
+    apiKey_your_title: 'API密钥',
+    apiKey_your_Domain: '自定义域',
     apiKey_your_Domain_label: '域地址',
     apiKey_tips_01: 'API密钥提供对您的swan帐户的完全访问，因此请确保它们的安全。',
     apiKey_tips_02: '如何使用api密钥。',
@@ -489,6 +489,7 @@ export default {
     Connect_email_again: '没有收到任何电子邮件？再试一次。',
     Connect_email_jump: '单击此处跳转到页面。',
     Connect_StartFree: '入门',
+    Connect_Bucket: '返回Bucket存储',
     Connect_BuyNow: '立即购买',
     Connect_TutorialVideo: '教程视频',
     back_home: '返回主页',
@@ -659,6 +660,7 @@ export default {
     search_btn: '搜索',
     clear_btn: '清除',
     TRANSACTION: '交易哈希',
+    chain_id: '链ID',
     AMOUNT: '锁定金额',
     UNLOCKAMOUNT: '解锁金额',
     TOKEN: '代币',
@@ -689,7 +691,9 @@ export default {
     bill_cont1_title: '账单详情',
     bill_cont1_desc: '查看过去和当前的发票',
     bill_cont2_title: '定价',
-    bill_cont2_desc: '查看定价和常见问题解答'
+    bill_cont2_desc: '查看定价和常见问题解答',
+    have_faq: '常见问题?',
+    bill_tip: '事务处理可能会延迟。请在确认成功后刷新此页面。请不要重复付款，因为这可能会造成经济损失。'
   },
   network: {
     title: 'All Chains'
@@ -785,7 +789,10 @@ export default {
     pay_success_desc: '感谢您的支付。已添加桶信用。',
     try_again: '再试一次',
     Name_bucket: '命名此存储桶',
-    active_bucket: '你必须先激活你的存储桶'
+    active_bucket: '你必须先激活你的存储桶',
+    bucket_card_create: '创建您的第一个bucket',
+    bucket_plan: '看看我们的专业计划',
+    bucket_sdk: '试试我们的SDK'
   },
   apiKey: {
     day: '天',
@@ -797,7 +804,8 @@ export default {
   },
   comment: {
     Rate_Product: '评价我们的产品',
-    Tell_Comment: '告诉我们您的意见'
+    Tell_Comment: '告诉我们您的意见',
+    theme: '主题'
   },
   pricing: {
     'title_1': 'Choose the plan that works for you',

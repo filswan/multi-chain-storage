@@ -2,10 +2,33 @@
   <div class="spaceStyle" v-loading="listLoad">
     <div class="slideScroll" v-if="listBucketIndex">
       <div class="form_top">
+        <h4>{{$t('route.metaSpace')}}</h4>
         <div class="search_file">
           <div class="search_right">
             <el-input v-if="false" :placeholder="$t('metaSpace.search_bucket')" prefix-icon="el-icon-search" v-model="search" clearable @input="getListBuckets">
             </el-input>
+            <div class="left_progress">
+              <div class="need" v-if="languageMcs === 'en'">Need help? Join our
+                <a :href="discord_link" target="_blank">Discord</a>
+                or send an
+                <a href="mailto:team@filswan.com">Email</a> to us.
+              </div>
+              <div class="need" v-else>需要帮助吗？加入我们的
+                <a :href="discord_link" target="_blank">Discord</a>
+                或发送
+                <a href="mailto:team@filswan.com">电子邮件</a> 给我们。
+              </div>
+              <div class="progress">
+                <el-progress :percentage="(free_bucket/free_bucketAll)*100 || 0"></el-progress>
+                <span v-if="languageMcs === 'en'" class="tip">{{free_bucket | byteStorage}}GB of {{ $root.max_storage | byteStorage}}GB for Bucket storage</span>
+                <span v-else class="tip">目前使用量：{{free_bucket | byteStorage}}GB（Bucket储存空间配额：{{ $root.max_storage | byteStorage}}GB）</span>
+              </div>
+            </div>
+            <div class="createTask">
+              <router-link :to="{name: 'ApiKey'}">
+                <span>{{$t('billing.bill_btn_pay')}}</span>
+              </router-link>
+            </div>
           </div>
           <div class="createTask">
             <a @click="dialogFun('addNewBucket')">
@@ -17,11 +40,7 @@
       </div>
       <div class="fes-search">
         <div class="title">
-          {{$t('metaSpace.list_bucket')}} ({{listBucketActive}}/{{listBuckets.length>0?listBuckets.length:1}})
-
-          <el-popover placement="top" popper-class="elPopTitle" width="200" trigger="hover" :content="$t('metaSpace.list_bucket_tip')">
-            <img slot="reference" src="@/assets/images/info.png" />
-          </el-popover>
+          {{$t('metaSpace.list_bucket')}}
         </div>
         <el-table :data="listBuckets" stripe style="width: 100%" max-height="580" :empty-text="$t('deal.formNotData')">
           <el-table-column type="index" label="No." width="50"></el-table-column>
@@ -35,7 +54,7 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="subdomain" :label="$t('metaSpace.table_subdomain')">
+          <el-table-column prop="subdomain" :label="$t('metaSpace.table_subdomain')" min-width="120px">
             <template slot-scope="scope">
               <div class="hot-cold-box">
                 <el-select v-model="domain.value" placeholder=" ">
@@ -45,10 +64,10 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="size" :label="$t('metaSpace.table_space')">
+          <el-table-column prop="size" :label="$t('metaSpace.table_size')">
             <template slot-scope="scope">
               <div class="hot-cold-box">
-                <span>{{ scope.row.size | formatbytes }}/{{scope.row.max_size | formatbytes}}</span>
+                <span>{{ scope.row.size | formatbytes }}</span>
               </div>
             </template>
           </el-table-column>
@@ -84,8 +103,32 @@
 
     <div class="slideScroll" v-else>
       <div class="form_top">
+        <h4>{{$t('route.metaSpace')}}</h4>
         <div class="search_file">
-          <div class="search_right"></div>
+          <div class="search_right">
+            <div class="left_progress">
+              <div class="need" v-if="languageMcs === 'en'">Need help? Join our
+                <a :href="discord_link" target="_blank">Discord</a>
+                or send an
+                <a href="mailto:team@filswan.com">Email</a> to us.
+              </div>
+              <div class="need" v-else>需要帮助吗？加入我们的
+                <a :href="discord_link" target="_blank">Discord</a>
+                或发送
+                <a href="mailto:team@filswan.com">电子邮件</a> 给我们。
+              </div>
+              <div class="progress">
+                <el-progress :percentage="(free_bucket/free_bucketAll)*100 || 0"></el-progress>
+                <span v-if="languageMcs === 'en'" class="tip">{{free_bucket | byteStorage}}GB of {{ $root.max_storage | byteStorage}}GB for Bucket storage</span>
+                <span v-else class="tip">目前使用量：{{free_bucket | byteStorage}}GB（Bucket储存空间配额：{{ $root.max_storage | byteStorage}}GB）</span>
+              </div>
+            </div>
+            <div class="createTask">
+              <router-link :to="{name: 'ApiKey'}">
+                <span>{{$t('billing.bill_btn_pay')}}</span>
+              </router-link>
+            </div>
+          </div>
           <div class="createTask">
             <a @click="dialogFun('add')">
               <img src="@/assets/images/space/icon_01.png" alt="">
@@ -95,7 +138,27 @@
         </div>
       </div>
       <div class="fe-none">
-        <p class="p_label">{{$t('metaSpace.empty_prompt')}}</p>
+        <el-row :gutter="40">
+          <el-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8" v-for="(card, c) in bucket_card" :key="c">
+            <el-card @click.native="cardMethod(card.type)">
+              <div class="c-box">
+                <img v-for="(image, i) in card.elements" :key="i" :class="image.class" :src="image.images" />
+              </div>
+              <div class="c-images">
+                <img class="img" :src="card.images" />
+              </div>
+              <div class="c-wrap">
+                <div class="c-title">{{card.name}}</div>
+                <div class="c-icon-arrow">
+                  <svg width="100%" height="100%" viewBox="0 0 27 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M13.165 27.2947C20.4359 27.2947 26.33 21.3098 26.33 13.9271C26.33 6.54443 20.4359 0.55957 13.165 0.55957C5.89418 0.55957 0 6.54443 0 13.9271C0 21.3098 5.89418 27.2947 13.165 27.2947ZM11.9901 7.88025C11.5429 7.42623 10.818 7.42623 10.3708 7.88025C9.92369 8.33428 9.92369 9.0704 10.3708 9.52442L14.7836 14.005L10.3934 18.224C9.93414 18.6654 9.9142 19.4012 10.3489 19.8676C10.7836 20.3339 11.5082 20.3542 11.9675 19.9128L17.2125 14.8724L18.0672 14.0509L17.235 13.2059L11.9901 7.88025Z"
+                      fill="currentColor"></path>
+                  </svg>
+                </div>
+              </div>
+            </el-card>
+          </el-col>
+        </el-row>
       </div>
     </div>
 
@@ -127,11 +190,85 @@ export default {
       domain: {
         value: '',
         data: []
-      }
+      },
+      discord_link: process.env.DISCORD_LINK,
+      bucket_card: [
+        {
+          name: this.$t('metaSpace.bucket_card_create'),
+          type: 'create',
+          images: require('@/assets/images/space/animation/animate_1.png'),
+          elements: [
+            {
+              class: 'element element-left animate-left',
+              images: require('@/assets/images/space/animation/animate_1_1.png')
+            },
+            {
+              class: 'element element-right animate-star',
+              images: require('@/assets/images/space/animation/animate_1_2.png')
+            },
+            {
+              class: 'element element-right animate-star animate-delay1',
+              images: require('@/assets/images/space/animation/animate_1_3.png')
+            },
+            {
+              class: 'element element-right animate-star animate-delay2',
+              images: require('@/assets/images/space/animation/animate_1_4.png')
+            }
+          ]
+        },
+        {
+          name: this.$t('metaSpace.bucket_plan'),
+          type: 'pricing',
+          images: require('@/assets/images/space/animation/animate_2.png'),
+          elements: [
+            {
+              class: 'element element-left animate-top',
+              images: require('@/assets/images/space/animation/animate_2_1.png')
+            },
+            {
+              class: 'element element-right animate-left',
+              images: require('@/assets/images/space/animation/animate_2_2.png')
+            }
+          ]
+        },
+        {
+          name: this.$t('metaSpace.bucket_sdk'),
+          type: 'doc',
+          images: require('@/assets/images/space/animation/animate_3.png'),
+          elements: [
+            {
+              class: 'element element-left animate-arc',
+              images: require('@/assets/images/space/animation/animate_3_1.png')
+            },
+            {
+              class: 'element element-top animate-star',
+              images: require('@/assets/images/space/animation/animate_3_2.png')
+            },
+            {
+              class: 'element element-right animate-turn',
+              images: require('@/assets/images/space/animation/animate_3_3.png')
+            }
+          ]
+        }
+      ]
     }
   },
   components: { popUps },
   methods: {
+    cardMethod (type) {
+      console.log(type)
+      switch (type) {
+        case 'create':
+          that.dialogFun('add')
+          break
+        case 'pricing':
+          that.$router.push({ name: 'home_entrance', query: { id: 'pricing' } })
+          break
+        case 'doc':
+          window.open('https://docs.filswan.com/multi-chain-storage/overview', '_blank')
+          break
+      }
+    },
     async getDetail (row) {
       that.backupLoad = true
       that.dialogFun('detail', row)
@@ -335,11 +472,37 @@ export default {
       }
       return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
       // return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i]
+    },
+    byteStorage (limit) {
+      // 只转换成GB
+      if (limit <= 0) {
+        return '0'
+      } else if (limit <= 10737419) { // 10737419 ~= 0.01GB
+        return '0.01'
+      } else {
+        // return (limit/( 1024 * 1024 * 1024)).toPrecision(2)  //or 1000
+        let value = limit / (1024 * 1024 * 1024)
+        let v1 = String(value).split('.')
+        let v2 = v1[1] || ''
+        let v3 = String(v2).replace(/(0+)\b/gi, '')
+        if (v3) {
+          return v1[0] + '.' + v3.slice(0, 2)
+        } else {
+          return v1[0]
+        }
+      }
     }
   },
   computed: {
     languageMcs () {
       return this.$store.getters.languageMcs
+    },
+    free_bucket () {
+      let freeBucket = this.$store.getters.free_bucket < this.$store.getters.free_bucketAll ? this.$store.getters.free_bucket : this.$store.getters.free_bucketAll
+      return freeBucket
+    },
+    free_bucketAll () {
+      return this.$store.getters.free_bucketAll === 0 ? 34359738368 : this.$store.getters.free_bucketAll
     }
   }
 }
@@ -438,23 +601,36 @@ export default {
 }
 .spaceStyle /deep/ {
   position: relative;
-  width: calc(100% - 0.6rem);
-  padding: 0 0 0.4rem;
-  margin: 0.3rem;
+  width: calc(100% - 1.6rem);
+  padding: 0 0.8rem 0.4rem;
+  margin: 0.3rem 0;
   background-color: #fff;
   border-radius: 0.1rem;
+  @media screen and (max-width: 600px) {
+    width: 100%;
+    padding: 0;
+    margin: 0.3rem 0;
+  }
   .el-loading-mask {
     z-index: 5;
   }
   .slideScroll {
     height: calc(100% - 0.6rem);
     min-height: 350px;
-    padding: 0.3rem;
+    padding: 0.3rem 0;
     .form_top {
       display: flex;
       align-items: center;
       flex-wrap: wrap;
       margin: 0 auto 0.3rem;
+      h4 {
+        width: 100%;
+        margin: 0 0 0.3rem;
+        font-size: 0.22rem;
+        font-weight: normal;
+        color: #000;
+        line-height: 1.5;
+      }
       .title {
         width: 100%;
         margin: 0;
@@ -531,6 +707,7 @@ export default {
         display: flex;
         align-items: center;
         justify-content: space-between;
+        flex-wrap: wrap;
         width: 100%;
         margin: 0;
         p {
@@ -576,8 +753,11 @@ export default {
         .search_right {
           display: flex;
           align-items: center;
-          width: 100%;
-          margin-right: 0.9rem;
+          @media screen and (max-width: 600px) {
+            flex-wrap: wrap;
+            width: 100%;
+            margin-bottom: 0.2rem;
+          }
           .el-button {
             height: 0.3rem;
             padding: 0 0.15rem;
@@ -588,6 +768,51 @@ export default {
             border: 0;
             border-top-left-radius: 0;
             border-bottom-left-radius: 0;
+          }
+          .left_progress {
+            padding: 0 0.28rem 0 0;
+            @media screen and (max-width: 600px) {
+              width: 100%;
+              padding: 0 0 0.2rem;
+            }
+            .need {
+              font-size: 12px;
+              color: #000;
+              text-align: center;
+              line-height: 1.1;
+              @media screen and (min-width: 1800px) {
+                font-size: 14px;
+              }
+              @media screen and (max-width: 600px) {
+                text-align: left;
+              }
+              a {
+                color: inherit;
+                text-decoration: underline;
+              }
+            }
+            .progress {
+              margin: 0.1rem 0 0;
+              .el-progress {
+                font-size: 12px;
+                .el-progress-bar {
+                  padding-right: 0;
+                  margin: 0 0 5px 0;
+                }
+                .el-progress__text {
+                  display: none;
+                }
+              }
+              .tip {
+                display: block;
+                font-size: 12px;
+                line-height: 1.2;
+                color: rgb(179, 192, 231);
+                @media screen and (min-width: 1800px) {
+                  font-size: 14px;
+                }
+              }
+            }
           }
         }
         .el-input {
@@ -654,13 +879,191 @@ export default {
       padding: 0 5%;
       .p_label {
         padding: 0.15rem 0.3rem;
-        font-size: 0.27rem;
+        font-size: 0.25rem;
         color: #4f87ff;
         line-height: 1.2;
         border: dashed;
         border-radius: 0.1rem;
         @media screen and (max-width: 1600px) {
-          font-size: 0.25rem;
+          font-size: 0.23rem;
+        }
+      }
+      .el-row {
+        width: 100%;
+        margin: 0 auto;
+        .el-col {
+          margin-bottom: 0.3rem;
+          @media screen and (max-width: 600px) {
+            margin: 0.3rem 0;
+          }
+          .el-card {
+            position: relative;
+            height: 100%;
+            font-size: 0.23rem;
+            border-radius: 0.25rem;
+            border: 0;
+            box-shadow: 0 2px 17px rgba(0, 0, 0, 0.07);
+            cursor: pointer;
+            * {
+              cursor: inherit;
+            }
+            .c-box {
+              height: 25%;
+              min-height: 100px;
+              border-radius: 0.25rem;
+              position: absolute;
+              top: 0%;
+              bottom: auto;
+              left: 0%;
+              right: 0%;
+              opacity: 0.5;
+              .element {
+                position: absolute;
+                opacity: 0;
+              }
+              .element-top {
+                right: 30%;
+                bottom: 43%;
+                width: 0.2rem;
+              }
+              .element-right {
+                right: 14%;
+                bottom: 12%;
+                width: 0.7rem;
+              }
+              .element-left {
+                left: 14%;
+                bottom: 13%;
+                width: 0.5rem;
+              }
+              .animate-arc {
+                left: 7%;
+                width: 0.9rem;
+              }
+              .animate-turn {
+                bottom: 9%;
+                width: 0.4rem;
+              }
+            }
+            .c-images {
+              height: 10em;
+              max-height: 200px;
+              position: relative;
+              display: flex;
+              align-items: center;
+              top: -0.5em;
+              .img {
+                display: block;
+                width: 100%;
+                max-width: 130px;
+                max-height: 100%;
+                margin: 0.1rem auto 0;
+                // transform: rotate(15deg) translate(-20px, 0px);
+                @media screen and (max-width: 600px) {
+                  max-width: 110px;
+                  margin: 0 auto;
+                }
+              }
+            }
+            .c-wrap {
+              padding: 0 0 0.1rem;
+              margin: auto;
+              grid-row-gap: 10px;
+              text-align: center;
+              flex-direction: column;
+              justify-content: flex-start;
+              align-items: center;
+              display: flex;
+              .c-title {
+                font-size: 0.22rem;
+                font-weight: 700;
+                line-height: 0.35rem;
+              }
+              .c-icon-arrow {
+                color: rgb(28, 28, 28);
+                width: 36px;
+                height: 36px;
+                justify-content: center;
+                align-items: center;
+                display: flex;
+                transform: translate(4px, 1px);
+                @media screen and (max-width: 1680px) {
+                  width: 32px;
+                  height: 32px;
+                }
+                @media screen and (max-width: 1024px) {
+                  width: 27px;
+                  height: 27px;
+                }
+              }
+            }
+            &:hover {
+              .c-box {
+                opacity: 1;
+                .element {
+                  opacity: 1;
+                }
+                .animate-left {
+                  animation: floating-left 2s ease-in-out 2 forwards;
+                }
+                .animate-top {
+                  animation: floating-rotate 2s ease-in-out 2 forwards;
+                  animation-delay: 0.5s;
+                }
+                .animate-star {
+                  animation: floating-star 1s ease-in-out 1 forwards;
+                }
+                .animate-turn {
+                  animation: floating-turn 3s ease-in-out 1;
+                  // animation-direction: normal;
+                }
+                .element-left {
+                  animation-delay: 0.1s;
+                }
+                .animate-arc {
+                  animation: floating-arc 0.4s ease-in 1 forwards;
+                  animation-delay: 0.2s;
+                }
+                .animate-delay1 {
+                  animation-delay: 0.2s;
+                }
+                .animate-delay2 {
+                  animation-delay: 0.1s;
+                }
+              }
+              .c-images {
+                .img {
+                  animation: floating-up 3.5s ease-in-out 2;
+                }
+              }
+              .c-wrap {
+                .c-icon-arrow {
+                  color: #409eff;
+                }
+              }
+            }
+          }
+          &:nth-child(3n + 1) {
+            .el-card {
+              .c-box {
+                background-color: #5b85ff;
+              }
+            }
+          }
+          &:nth-child(3n + 2) {
+            .el-card {
+              .c-box {
+                background-color: #ffba60;
+              }
+            }
+          }
+          &:nth-child(3n + 3) {
+            .el-card {
+              .c-box {
+                background-color: #b689e4;
+              }
+            }
+          }
         }
       }
     }

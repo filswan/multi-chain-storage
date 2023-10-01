@@ -11,12 +11,12 @@
               <div class="need" v-if="languageMcs === 'en'">Need help? Join our
                 <a :href="discord_link" target="_blank">Discord</a>
                 or send an
-                <a href="mailto:team@filswan.com">Email</a> to us.
+                <a :href="`mailto:${email_link}`">Email</a> to us.
               </div>
               <div class="need" v-else>需要帮助吗？加入我们的
                 <a :href="discord_link" target="_blank">Discord</a>
                 或发送
-                <a href="mailto:team@filswan.com">电子邮件</a> 给我们。
+                <a :href="`mailto:${email_link}`">电子邮件</a> 给我们。
               </div>
               <div class="progress">
                 <el-progress :percentage="(free_bucket/free_bucketAll)*100 || 0"></el-progress>
@@ -110,12 +110,12 @@
               <div class="need" v-if="languageMcs === 'en'">Need help? Join our
                 <a :href="discord_link" target="_blank">Discord</a>
                 or send an
-                <a href="mailto:team@filswan.com">Email</a> to us.
+                <a :href="`mailto:${email_link}`">Email</a> to us.
               </div>
               <div class="need" v-else>需要帮助吗？加入我们的
                 <a :href="discord_link" target="_blank">Discord</a>
                 或发送
-                <a href="mailto:team@filswan.com">电子邮件</a> 给我们。
+                <a :href="`mailto:${email_link}`">电子邮件</a> 给我们。
               </div>
               <div class="progress">
                 <el-progress :percentage="(free_bucket/free_bucketAll)*100 || 0"></el-progress>
@@ -250,7 +250,8 @@ export default {
             }
           ]
         }
-      ]
+      ],
+      email_link: process.env.BASE_EMAIL
     }
   },
   components: { popUps },

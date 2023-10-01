@@ -3,7 +3,7 @@
     <div class="header_arera mWidth">
       <div class="header_left">
         <router-link :to="{name: 'Space'}" class="logoImg">
-          <img :src="logo" class="img" alt='FilSwan' />
+          <img :src="logo" class="img" alt='Swan' />
           <img class="beta" src="@/assets/images/landing/beta.png">
         </router-link>
       </div>
@@ -199,7 +199,7 @@ export default {
       switchWidth: 56,
       reverseSwitch: false,
       networkC: false,
-      prevType: true,
+      prevType: false,
       loadAccount: false,
       logo: require('@/assets/images/MCS_logo_2.png')
     }
@@ -724,7 +724,9 @@ export default {
     that.fn()
 
     document.addEventListener('visibilitychange', function () {
-      that.prevType = !document.hidden
+      if (document.visibilityState === 'hidden') that.prevType = false
+      else if (document.visibilityState === 'visible') that.prevType = true
+      else that.prevType = false
     })
   },
   filters: {

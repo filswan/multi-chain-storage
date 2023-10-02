@@ -318,7 +318,9 @@ export default {
     },
     fn () {
       document.addEventListener('visibilitychange', function () {
-        that.prevType = !document.hidden
+        if (document.visibilityState === 'hidden') that.prevType = false
+        else if (document.visibilityState === 'visible') that.prevType = true
+        else that.prevType = false
       })
       // networkChanged
       ethereum.on('chainChanged', async (accounts) => {

@@ -4,7 +4,7 @@
       <div class="header width">
         <div class="header_left">
           <div class="logoImg" @click="header_logo">
-            <img :src="logo" class="img" alt='FilSwan' />
+            <img :src="logo" class="img" alt='Swan' />
             <img class="beta" src="@/assets/images/landing/beta.png">
           </div>
           <router-link v-if="addrChild" :to="{name: 'Space'}" :class="{'meta-space pcShow':true, 'active': $route.name === 'Space'}">
@@ -211,7 +211,7 @@ export default {
       addrChild: '',
       width: document.body.clientWidth > 600 ? '450px' : '95%',
       copyClick: true,
-      prevType: true,
+      prevType: false,
       wrongVisible: false
     }
   },
@@ -400,7 +400,9 @@ export default {
     that.fn()
 
     document.addEventListener('visibilitychange', function () {
-      that.prevType = !document.hidden
+      if (document.visibilityState === 'hidden') that.prevType = false
+      else if (document.visibilityState === 'visible') that.prevType = true
+      else that.prevType = false
     })
   },
   filters: {

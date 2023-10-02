@@ -30,9 +30,9 @@
               <a :href="telegram_link" target="_blank"><img :src="share_telegram" alt=""></a>
             </div>
             <div class="fes-icon-copy">
-              <span>© {{fullYear}} FilSwan</span>
+              <span>© {{fullYear}} Swan</span>
               <el-divider direction="vertical"></el-divider>
-              <a href="https://www.filswan.com/" target="_block">filswan.com</a>
+              <a href="https://swanchain.io" target="_block">swanchain.io</a>
             </div>
             <div class="fes-market">
               <a href="https://chn.lk/3DTWSjE" target="_blank"><img src="@/assets/images/landing/chainlink-badge-market-data.svg" alt="market data secured with chainlink"></a>

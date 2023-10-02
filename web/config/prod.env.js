@@ -19,5 +19,5 @@ module.exports = {
   TWITTER_LINK: '"https://twitter.com/swan_chain"',
   GITHUB_LINK: '"https://github.com/filswan"',
   TELEGRAM_LINK: '"https://t.me/swan_chain/1"',
-  BASE_EMAIL: "'team@filswan.com'"
+  BASE_EMAIL: "'contact@swanchain.io'"
 }

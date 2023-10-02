@@ -14,7 +14,7 @@ module.exports = {
   BASE_ECO_API: '"http://192.168.88.216:5005/"',
   BASE_METASPACE: '"http://192.168.88.41:5212/"',
   BASE_ENV: 'false',
-  MEDIUM_LINK: '"https://filswan.medium.com/"',
+  MEDIUM_LINK: '"https://medium.com/@swanchain/"',
   DISCORD_LINK: '"https://discord.gg/7TTjw7cr"',
   TWITTER_LINK: '"https://twitter.com/swan_chain"',
   GITHUB_LINK: '"https://github.com/filswan"',

@@ -60,6 +60,11 @@
     <v-foot id="resources"></v-foot>
     <el-backtop target=".metamaskHome"></el-backtop>
     <network-alert v-if="metaAddress&&networkTip" @changeNet="changeNet" @getNetwork="getNetwork"></network-alert>
+    <el-alert v-if="!minBalance" type="warning" effect="dark" center show-icon>
+      <div slot="title" style="font-weight:500">
+        {{languageMcs === 'en' ? 'Access to Multi-Chain Storage requires a minimum wallet balance of 0.01 ETH or 10 MATIC.':'访问多链存储需要至少0.01 ETH或10 MATIC的钱包余额。'}}
+      </div>
+    </el-alert>
   </div>
 </template>
 
@@ -284,7 +289,7 @@ export default {
       }
     },
     signFun (s, jump) {
-      if (that.metaAddress) that.$router.push({ path: jump ? '/my_account' : '/my_buckets' })
+      if (that.metaAddress && that.mcsjwtToken) that.$router.push({ path: jump ? '/my_account' : '/my_buckets' })
       else {
         that.$commonFun.Init(async addr => {
           that.$store.dispatch('setMetaAddress', addr)
@@ -310,7 +315,11 @@ export default {
           that.$router.push({ path: jump ? '/my_account' : '/my_buckets' })
           // window.location.reload()
         }, 200)
-      } else that.loginLoad = false
+      } else {
+        that.$store.dispatch('setMetaAddress', '')
+        that.$store.dispatch('setMCSjwtToken', '')
+        that.loginLoad = false
+      }
     },
     getNetwork (dis) {
       that.networkTip = dis
@@ -322,6 +331,7 @@ export default {
         else if (document.visibilityState === 'visible') that.prevType = true
         else that.prevType = false
       })
+      if (typeof window.ethereum === 'undefined') return
       // networkChanged
       ethereum.on('chainChanged', async (accounts) => {
         if (!that.prevType || !that.metaAddress) return false
@@ -354,6 +364,9 @@ export default {
     },
     mcsjwtToken () {
       return this.$store.getters.mcsjwtToken
+    },
+    minBalance () {
+      return this.$store.getters.minBalance
     }
   },
   filters: {

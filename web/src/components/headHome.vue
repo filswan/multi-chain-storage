@@ -228,6 +228,9 @@ export default {
     },
     reverse () {
       return String(this.$store.getters.reverse) === '1'
+    },
+    mcsjwtToken () {
+      return this.$store.getters.mcsjwtToken
     }
   },
   watch: {

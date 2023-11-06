@@ -23,7 +23,8 @@ const app = {
     free_bucket: sessionStorage.getItem('free_bucket') || 0,
     free_bucketAll: sessionStorage.getItem('free_bucketAll') || 0,
     mcsjwtToken: sessionStorage.getItem('mcs_dev_jwtToken') || '',
-    mcsEmail: sessionStorage.getItem('mcs_bucket_email') || JSON.stringify({})
+    mcsEmail: sessionStorage.getItem('mcs_bucket_email') || JSON.stringify({}),
+    minBalance: sessionStorage.getItem('min_balance') || false
   },
   mutations: {
     TOGGLE_SIDEBAR: state => {
@@ -105,6 +106,10 @@ const app = {
     SET_MCSEMAIL: (state, mcsEmail) => {
       state.mcsEmail = mcsEmail
       sessionStorage.setItem('mcs_bucket_email', mcsEmail)
+    },
+    SET_MINBALANCE: (state, minBalance) => {
+      state.minBalance = minBalance
+      sessionStorage.setItem('min_balance', minBalance)
     }
   },
   actions: {
@@ -202,6 +207,11 @@ const app = {
       commit
     }, mcsEmail) {
       commit('SET_MCSEMAIL', mcsEmail)
+    },
+    setMinBalance ({
+      commit
+    }, minBalance) {
+      commit('SET_MINBALANCE', minBalance)
     }
   }
 }

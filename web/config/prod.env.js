@@ -13,6 +13,8 @@ module.exports = {
   BASE_POLYGON_ADDRESS: '"https://polygonscan.com/"',
   BASE_ECO_API: '"https://ecosystem-api.multichain.storage/"',
   BASE_METASPACE: '"https://meta-api.multichain.storage/"',
+  BASE_POLYGON_RPC: '"https://polygon-rpc.com"',
+  BASE_ETHEREUM_RPC: '"https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161"',
   BASE_ENV: 'true',
   MEDIUM_LINK: '"https://medium.com/@swanchain/"',
   DISCORD_LINK: '"https://discord.gg/7TTjw7cr"',

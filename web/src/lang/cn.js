@@ -474,7 +474,7 @@ export default {
     Connect_cont_Wallet: '连接钱包',
     Connect_cont_tip: '连接您的钱包地址以创建多链存储帐户。',
     Connect_text: '跨区块链分散Web3存储',
-    Connect_text_desc: '在一个位置轻松地将单个文件或Bucket存储上传到IPFS和Filecoin。获取您的CID，然后只需单击一次即可进入OpenSea。',
+    Connect_text_desc: '在一个位置轻松地将单个文件或Bucket存储上传到IPFS和Filecoin。',
     Connect_text_btn: '使用多链存储享受旅程',
     Connected: '已连接',
     Connect_form_label: '请在此处输入您的电子邮件地址',

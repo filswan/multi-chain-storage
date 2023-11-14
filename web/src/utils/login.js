@@ -7,6 +7,7 @@ import {
 } from 'element-ui'
 const ethereum = window.ethereum
 let lastTime = 0
+
 export async function login () {
   if (!store.getters.metaAddress || store.getters.metaAddress === undefined) {
     const accounts = await ethereum.request({
@@ -16,11 +17,19 @@ export async function login () {
   }
   const time = await throttle()
   if (!time) return false
+  const balance = await walletBalance()
+  if (!balance) {
+    Message({
+      showClose: true,
+      message: store.getters.languageMcs === 'en' ? 'You need to have minimal balance of 0.01 ETH or 10 MATIC to access MCS' : '您需要拥有0.01 ETH或10 MATIC的最低余额才能访问MCS',
+      type: 'error'
+    })
+    return
+  }
   const [status_, nonce] = await getNonce()
   if (status_ !== 'success') {
     Message.error(status_ || 'Fail')
     signOutFun()
-    return
   }
 
   const signature = await sign(nonce)
@@ -29,6 +38,25 @@ export async function login () {
   // const email = await emailSign(token)
   // console.log(email)
   return !!token
+}
+
+export async function walletBalance () {
+  const Web3 = require('web3')
+  const $web3Ethereum = new Web3(process.env.BASE_ETHEREUM_RPC)
+  const $web3Polygon = new Web3(process.env.BASE_POLYGON_RPC)
+  let balance = false
+  try {
+    const ethBalance = await $web3Ethereum.eth.getBalance(store.getters.metaAddress).then()
+    const polygonBalance = await $web3Polygon.eth.getBalance(store.getters.metaAddress).then()
+    const ethBalanceWei = $web3Ethereum.utils.fromWei(ethBalance, 'ether')
+    const polygonBalanceWei = $web3Ethereum.utils.fromWei(polygonBalance, 'ether')
+
+    balance = ethBalanceWei >= '0.01' || polygonBalanceWei >= '10'
+  } catch (err) {
+    balance = false
+  }
+  store.dispatch('setMinBalance', balance)
+  return balance
 }
 
 export async function throttle () {

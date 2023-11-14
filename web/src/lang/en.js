@@ -467,7 +467,7 @@ export default {
     Connect_cont_Wallet: 'Connect Wallet',
     Connect_cont_tip: 'Connect your wallet address to create a multichain.storage account.',
     Connect_text: 'Decentralize your Web3 storage across blockchains',
-    Connect_text_desc: 'Easily upload individual files or Bucket storage in one spot to both IPFS and Filecoin. Get your CID and then mint to OpenSea in just one click.',
+    Connect_text_desc: 'Easily upload individual files or Bucket storage in one spot to both IPFS and Filecoin. ',
     Connect_text_btn: 'Enjoy your journey with multichain.storage',
     Connected: 'Connected',
     Connect_form_label: 'Please enter your email address here',

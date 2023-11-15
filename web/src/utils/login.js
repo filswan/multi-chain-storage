@@ -17,16 +17,17 @@ export async function login () {
   }
   const time = await throttle()
   if (!time) return false
-  const balance = await walletBalance()
-  if (!balance) {
-    Message({
-      showClose: true,
-      message: store.getters.languageMcs === 'en' ? 'You need to have minimal balance of 0.01 ETH or 10 MATIC to access MCS' : '您需要拥有0.01 ETH或10 MATIC的最低余额才能访问MCS',
-      type: 'error'
-    })
-    return
-  }
+  // const balance = await walletBalance()
+  // if (!balance) {
+  //   Message({
+  //     showClose: true,
+  //     message: store.getters.languageMcs === 'en' ? 'You need to have minimal balance of 0.01 ETH or 10 MATIC to access MCS' : '您需要拥有0.01 ETH或10 MATIC的最低余额才能访问MCS',
+  //     type: 'error'
+  //   })
+  //   return
+  // }
   const [status_, nonce] = await getNonce()
+
   if (status_ !== 'success') {
     Message.error(status_ || 'Fail')
     signOutFun()
@@ -34,30 +35,32 @@ export async function login () {
 
   const signature = await sign(nonce)
   if (!signature) return false
+  console.log(signature)
   const token = await performSignin(signature, nonce)
+  console.log(token)
   // const email = await emailSign(token)
   // console.log(email)
   return !!token
 }
 
-export async function walletBalance () {
-  const Web3 = require('web3')
-  const $web3Ethereum = new Web3(process.env.BASE_ETHEREUM_RPC)
-  const $web3Polygon = new Web3(process.env.BASE_POLYGON_RPC)
-  let balance = false
-  try {
-    const ethBalance = await $web3Ethereum.eth.getBalance(store.getters.metaAddress).then()
-    const polygonBalance = await $web3Polygon.eth.getBalance(store.getters.metaAddress).then()
-    const ethBalanceWei = $web3Ethereum.utils.fromWei(ethBalance, 'ether')
-    const polygonBalanceWei = $web3Ethereum.utils.fromWei(polygonBalance, 'ether')
-
-    balance = ethBalanceWei >= '0.01' || polygonBalanceWei >= '10'
-  } catch (err) {
-    balance = false
-  }
-  store.dispatch('setMinBalance', balance)
-  return balance
-}
+// export async function walletBalance () {
+//   const Web3 = require('web3')
+//   const $web3Ethereum = new Web3(process.env.BASE_ETHEREUM_RPC)
+//   const $web3Polygon = new Web3(process.env.BASE_POLYGON_RPC)
+//   let balance = false
+//   try {
+//     const ethBalance = await $web3Ethereum.eth.getBalance(store.getters.metaAddress).then()
+//     const polygonBalance = await $web3Polygon.eth.getBalance(store.getters.metaAddress).then()
+//     const ethBalanceWei = $web3Ethereum.utils.fromWei(ethBalance, 'ether')
+//     const polygonBalanceWei = $web3Ethereum.utils.fromWei(polygonBalance, 'ether')
+//
+//     balance = ethBalanceWei >= '0.01' || polygonBalanceWei >= '10'
+//   } catch (err) {
+//     balance = false
+//   }
+//   store.dispatch('setMinBalance', balance)
+//   return balance
+// }
 
 export async function throttle () {
   // Prevent multiple signatures
@@ -67,16 +70,32 @@ export async function throttle () {
   return true
 }
 
-export async function sendPostRequest (apilink, jsonObject) {
+
+export async function sendPostRequest(apilink, jsonObject) {
   try {
-    const response = await axios.post(apilink, jsonObject)
-    return response.data
+    const response = await axios.post(apilink, jsonObject);
+    return response.data;  // 正常情况下返回响应数据
   } catch (err) {
-    console.error(err)
+    console.error(err);
     signOutFun()
+    // 检查 err.response 是否存在并提取有用的信息
+    if (err.response) {
+      // 返回错误响应的状态码和消息
+      return {
+        status: 'error',
+        message: err.response.data.message || 'Unknown error',
+        statusCode: err.response.status
+      };
+    } else {
+      // 如果没有错误响应，返回一个通用错误
+      return {
+        status: 'error',
+        message: 'Network or other error',
+        statusCode: 500  // 可以选择一个适当的状态码
+      };
+    }
   }
 }
-
 export async function getNonce () {
   const reqOpts = {
     'address': store.getters.metaAddress
@@ -118,6 +137,16 @@ export async function performSignin (sig, nonce) {
   }
   const baseAPIURL = await urlBase(netId)
   const response = await sendPostRequest(`${baseAPIURL}api/v2/user/wallet_login`, reqOpts)
+  if (response.message === 'invalid param value:insufficient balance') {
+    console.log('insufficient balance')
+    Message({
+      showClose: true,
+      message: store.getters.languageMcs === 'en' ? 'You need to have minimal balance of 0.01 ETH or 10 MATIC to access MCS' : '您需要拥有0.01 ETH或10 MATIC的最低余额才能访问MCS',
+      type: 'error'
+    })
+    signOutFun()
+    return null
+  }
   if (response.status === 'success') {
     const data = response.data
     store.dispatch('setMCSjwtToken', data)

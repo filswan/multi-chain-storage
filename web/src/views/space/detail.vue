@@ -89,7 +89,12 @@
               <el-table-column prop="pin_status" :label="$t('metaSpace.table_status')">
                 <template slot-scope="scope">
                   <div class="hot-cold-box">
-                    <span>{{ scope.row.pin_status||'-' }}</span>
+                    <div class="tips" style="white-space: nowrap;">
+                      <span>{{ scope.row.pin_status||'-' }}</span>
+                      <el-popover v-if="scope.row.pin_status === 'Pinned'" placement="top" popper-class="elPopTitle" width="200" trigger="hover" :content="$t('metaSpace.table_status_tip')">
+                        <img slot="reference" src="@/assets/images/info.png" />
+                      </el-popover>
+                    </div>
                   </div>
                 </template>
               </el-table-column>
@@ -137,7 +142,7 @@
               </div>
             </div>
             <div class="fe-none" v-if="listData.list&&listData.list.length<=0">
-              <p class="p_label">{{$t('metaSpace.empty_prompt_detail')}}</p>
+              <p class="p_label" @click="dialogFun('upload', $route.query.bucket_uuid)">{{$t('metaSpace.empty_prompt_detail')}}</p>
             </div>
           </el-col>
         </el-row>
@@ -835,22 +840,6 @@ export default {
                     left: 0;
                   }
                 }
-                .tips {
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
-                  img {
-                    display: block;
-                    width: 20px;
-                    height: 20px;
-                    margin: 0 0 0 5px;
-                    cursor: pointer;
-                    @media screen and (max-width: 1440px) {
-                      width: 17px;
-                      height: 17px;
-                    }
-                  }
-                }
                 .tipsWidth {
                   width: 110px;
                   @media screen and (max-width: 1600px) {
@@ -1028,6 +1017,26 @@ export default {
 
                 .scoreStyle:hover {
                   text-decoration: underline;
+                }
+              }
+            }
+
+            th,
+            td {
+              .tips {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                img {
+                  display: block;
+                  width: 20px;
+                  height: 20px;
+                  margin: 0 0 0 5px;
+                  cursor: pointer;
+                  @media screen and (max-width: 1440px) {
+                    width: 17px;
+                    height: 17px;
+                  }
                 }
               }
             }
@@ -1221,6 +1230,7 @@ export default {
         line-height: 1.2;
         border: dashed;
         border-radius: 0.1rem;
+        cursor: pointer;
         @media screen and (max-width: 1600px) {
           font-size: 0.23rem;
         }

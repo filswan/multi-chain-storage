@@ -738,6 +738,7 @@ export default {
     table_cid: 'CID',
     table_cid_tip: '文件或存储桶的内容ID',
     table_status: '状态',
+    table_status_tip: '您的数据被标记为保留在本地节点上，以确保不会自动删除。',
     table_backup_status: '备份状态',
     table_LastModified: '上次修改时间',
     table_action: '操作',

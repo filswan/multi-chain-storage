@@ -732,6 +732,7 @@ export default {
     table_cid: 'CID',
     table_cid_tip: 'The content ID for the file or bucket',
     table_status: 'Status',
+    table_status_tip: 'Your data is marked to be kept on the local node, ensuring it is not automatically deleted.',
     table_backup_status: 'Backup Status',
     table_LastModified: 'Last Modified',
     table_action: 'Actions',

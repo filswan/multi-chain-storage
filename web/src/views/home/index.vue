@@ -413,6 +413,7 @@ export default {
     left: 0;
     top: 0;
     z-index: 99;
+    padding: 3px 16px;
     .el-alert__icon {
       @media screen and (min-width: 1600px) {
         font-size: 20px;

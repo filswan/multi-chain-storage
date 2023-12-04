@@ -96,10 +96,10 @@
             {{areaBody.bucket_name}}
           </el-form-item>
           <el-form-item :label="$t('metaSpace.detail_DateCreated')">
-            <span class="color">{{momentFun(areaBody.created_at)}}</span>
+            <span>{{momentFun(areaBody.created_at)}}</span>
           </el-form-item>
           <el-form-item :label="$t('metaSpace.detail_LastModified')">
-            <span class="color">{{momentFun(areaBody.updated_at)}}</span>
+            <span>{{momentFun(areaBody.updated_at)}}</span>
           </el-form-item>
           <el-form-item :label="$t('metaSpace.detail_CurrentFiles')">
             {{areaBody.file_number}}
@@ -130,7 +130,7 @@
             </div>
           </el-form-item>
           <el-form-item :label="$t('metaSpace.detail_RemainingServiceDays')">
-            <span class="color">{{areaBody.remaining_service_days}}</span>
+            <span>{{areaBody.remaining_service_days}}</span>
           </el-form-item> -->
           <el-form-item>
             <el-button type="primary" @click="closeDia()">{{$t('metaSpace.Close')}}</el-button>
@@ -146,16 +146,16 @@
         </div>
         <el-form ref="form" class="demo-ruleForm">
           <el-form-item :label="$t('uploadFile.file_name')">
-            <span class="color">{{areaBody.name}}</span>
+            <span>{{areaBody.name}}</span>
           </el-form-item>
           <el-form-item :label="$t('metaSpace.ob_detail_ObjectName')">
-            <span class="color">{{areaBody.object_name}}</span>
+            <span>{{areaBody.object_name}}</span>
           </el-form-item>
           <el-form-item :label="$t('metaSpace.ob_detail_DateUploaded')">
-            <span class="color">{{momentFun(areaBody.created_at)}}</span>
+            <span>{{momentFun(areaBody.created_at)}}</span>
           </el-form-item>
           <el-form-item :label="$t('metaSpace.ob_detail_ObjectSize')">
-            <span class="color">{{areaBody.size | formatbytes}}</span>
+            <span>{{areaBody.size | formatbytes}}</span>
           </el-form-item>
           <el-form-item :label="$t('metaSpace.ob_detail_ObjectIPFSLink')">
             <!-- <a class="color ipfsStyle" @click="xhrequest(areaBody.ipfs_url, areaBody.name)"> -->
@@ -164,7 +164,7 @@
             </a>
           </el-form-item>
           <el-form-item :label="$t('metaSpace.ob_detail_ObjectCID')">
-            <span class="color">{{areaBody.payload_cid}}</span>
+            <span>{{areaBody.payload_cid}}</span>
           </el-form-item>
           <el-form-item></el-form-item>
           <el-form-item :label="$t('metaSpace.detail_BackupInfo')">
@@ -203,7 +203,7 @@
             <div class="tip" v-else>-</div>
           </el-form-item>
           <!-- <el-form-item :label="$t('metaSpace.detail_RemainingServiceDays')">
-            <span class="color">{{areaBody.remaining_service_days}}</span>
+            <span>{{areaBody.remaining_service_days}}</span>
           </el-form-item> -->
           <el-form-item>
             <el-button type="primary" @click="closeDia()">{{$t('metaSpace.Close')}}</el-button>
@@ -268,10 +268,10 @@
             {{areaBody.name}}
           </el-form-item>
           <el-form-item :label="$t('metaSpace.detail_DateCreated')">
-            <span class="color">{{momentFun(areaBody.created_at)}}</span>
+            <span>{{momentFun(areaBody.created_at)}}</span>
           </el-form-item>
           <el-form-item :label="$t('metaSpace.detail_LastModified')">
-            <span class="color">{{momentFun(areaBody.updated_at)}}</span>
+            <span>{{momentFun(areaBody.updated_at)}}</span>
           </el-form-item>
           <el-form-item :label="$t('metaSpace.detail_CurrentSize')">
             {{areaBody.size | formatbytes}}

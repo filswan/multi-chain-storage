@@ -76,7 +76,6 @@ import vPricing from '@/components/pricing.vue'
 import networkAlert from '@/components/networkAlert.vue'
 import CarouselContainer from '@/components/CarouselContainer.vue'
 let that
-const ethereum = window.ethereum
 export default {
   name: 'home',
   data () {
@@ -278,7 +277,7 @@ export default {
           break
       }
       try {
-        await ethereum.request({
+        await that.$providerInit.request({
           method: 'wallet_addEthereumChain',
           params: [text]
         })
@@ -333,7 +332,7 @@ export default {
       })
       if (typeof window.ethereum === 'undefined') return
       // networkChanged
-      ethereum.on('chainChanged', async (accounts) => {
+      that.$providerInit.on('chainChanged', async (accounts) => {
         if (!that.prevType || !that.metaAddress) return false
         let chainID = parseInt(accounts, 16)
         that.$store.dispatch('setMetaNetworkId', chainID)

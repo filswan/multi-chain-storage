@@ -40,7 +40,7 @@ export default {
     Upload_files: '上传文件',
     Tools: '工具',
     Stats: '统计',
-    copy: '© 2021 FilSwan Canada',
+    copy: '© 2021 Swan Canada',
     ScoreChange: '历史评分',
     ScoreChange_legend: '评分',
     PowerChange: '历史算力',
@@ -189,8 +189,8 @@ export default {
     Change_password: '修改密码',
     wrong_password: '密码错误',
     Reenter_new_password: '重新输入新密码',
-    apiKey_your_title: '您的API密钥',
-    apiKey_your_Domain: '您的自定义域',
+    apiKey_your_title: 'API密钥',
+    apiKey_your_Domain: '自定义域',
     apiKey_your_Domain_label: '域地址',
     apiKey_tips_01: 'API密钥提供对您的swan帐户的完全访问，因此请确保它们的安全。',
     apiKey_tips_02: '如何使用api密钥。',
@@ -208,7 +208,7 @@ export default {
     create_api_title01: '已成功创建API令牌',
     create_api_title02: '重要',
     create_api_tips: '名称不能为空！',
-    create_api_tips01: '此令牌是您访问Filswan平台服务的私人机密。',
+    create_api_tips01: '此令牌是您访问Swan平台服务的私人机密。',
     create_api_tips02: '密钥只显示一次。在继续之前，您需要把它复制到安全的地方。',
     create_api_tips03: '您的新API密钥是：',
     create_api_tips04: '您的新访问令牌是：',
@@ -489,6 +489,8 @@ export default {
     Connect_email_again: '没有收到任何电子邮件？再试一次。',
     Connect_email_jump: '单击此处跳转到页面。',
     Connect_StartFree: '入门',
+    Connect_Bucket: '返回Bucket存储',
+    Connect_BuyNow: '立即购买',
     Connect_TutorialVideo: '教程视频',
     back_home: '返回主页',
     Skip: '跳过',
@@ -500,7 +502,7 @@ export default {
     contract_id01: '合约ID',
     cid: 'CID',
     status: 'PIN状态',
-    status_tooltip: '文件或数据在FilSwan IPFS节点上的存储状态。',
+    status_tooltip: '文件或数据在Swan IPFS节点上的存储状态。',
     status_button_tooltip: '点击unpin后即不可修改。',
     file_name: '文件名称',
     file_name_tooltip: '请点击文件名以查阅更多交易详情和DAO签名详情。',
@@ -658,6 +660,7 @@ export default {
     search_btn: '搜索',
     clear_btn: '清除',
     TRANSACTION: '交易哈希',
+    chain_id: '链ID',
     AMOUNT: '锁定金额',
     UNLOCKAMOUNT: '解锁金额',
     TOKEN: '代币',
@@ -681,7 +684,16 @@ export default {
     end_date: '结束日期',
     time_to: '至',
     data_download: '导出',
-    data_export: '格式'
+    data_export: '格式',
+    bill_overview: '计费概述',
+    bill_btn_pay: '升级为付费计划',
+    bill_btn_paid: '您已成为付费用户',
+    bill_cont1_title: '账单详情',
+    bill_cont1_desc: '查看过去和当前的发票',
+    bill_cont2_title: '定价',
+    bill_cont2_desc: '查看定价和常见问题解答',
+    have_faq: '常见问题?',
+    bill_tip: '事务处理可能会延迟。请在确认成功后刷新此页面。请不要重复付款，因为这可能会造成经济损失。'
   },
   network: {
     title: 'All Chains'
@@ -777,7 +789,10 @@ export default {
     pay_success_desc: '感谢您的支付。已添加桶信用。',
     try_again: '再试一次',
     Name_bucket: '命名此存储桶',
-    active_bucket: '你必须先激活你的存储桶'
+    active_bucket: '你必须先激活你的存储桶',
+    bucket_card_create: '创建您的第一个bucket',
+    bucket_plan: '看看我们的专业计划',
+    bucket_sdk: '试试我们的SDK'
   },
   apiKey: {
     day: '天',
@@ -789,7 +804,8 @@ export default {
   },
   comment: {
     Rate_Product: '评价我们的产品',
-    Tell_Comment: '告诉我们您的意见'
+    Tell_Comment: '告诉我们您的意见',
+    theme: '主题'
   },
   pricing: {
     'title_1': 'Choose the plan that works for you',

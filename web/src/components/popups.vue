@@ -74,6 +74,18 @@
         </el-form>
       </div>
     </div>
+    <div class="fe-none" v-else-if="typeName === 'billing_tip'">
+      <div class="addBucket">
+        <div class="cont">
+          {{$t('billing.bill_tip')}}
+        </div>
+        <el-form ref="form">
+          <el-form-item>
+            <el-button type="primary" @click="closeDia('refresh')">{{$t('metaSpace.Close')}}</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+    </div>
     <div class="fe-none" v-else-if="typeName === 'detail'">
       <div class="addBucket" v-loading="backupLoad">
         <div class="head">
@@ -176,7 +188,12 @@
                 </ul>
               </el-popover>
             </div>
-            <div class="tip" v-else>-</div>
+            <div class="tip" v-else>
+              -
+              <el-popover v-if="areaBody.messageError" placement="top" popper-class="elPopTitle" width="200" trigger="hover" :content="areaBody.messageError">
+                <img slot="reference" src="@/assets/images/info.png" />
+              </el-popover>
+            </div>
           </el-form-item>
           <el-form-item :label="$t('metaSpace.detail_PieceCID')">
             <div class="tip" v-if="areaBody.miner_count">
@@ -451,41 +468,6 @@
       <div class="addBucket comingSoon">
         <i class="el-icon-circle-close close" @click="closeDia()"></i>
         <div class="soonImg"></div>
-      </div>
-    </div>
-    <div class="fe-none" v-else-if="typeName === 'emailLogin'">
-      <div class="addBucket loginEmail">
-        <div class="titleCont">
-          <div class="address">
-            <div class="address_left">
-              <img src="@/assets/images/metamask.png" class="resno" alt=""> {{ metaAddress | hiddAddress}}
-            </div>
-            <div class="address_right">
-              <div class="flex-shrink-0 w-2 h-2 rounded-full bg-primary"></div>
-              <div>{{$t('fs3Login.Connected')}}</div>
-            </div>
-          </div>
-        </div>
-        <div v-loading="emailLoad" class="ruleForm">
-          <div class="form_title">{{changeTitle?$t('fs3Login.Connect_form_label_change'):$t('fs3Login.Connect_form_label')}}</div>
-          <el-form :model="form" status-icon :rules="rulesEmail" ref="form" @submit.native.prevent>
-            <el-form-item prop="email">
-              <el-input v-model="form.email" placeholder="you@domain.com" ref="bucketEmailRef"></el-input>
-            </el-form-item>
-            <el-form-item prop="checkType" class="type">
-              <el-checkbox-group v-model="form.checkType">
-                <el-checkbox label="agreement" name="checkType">
-                  {{$t('fs3Login.Connect_checkbox')}}
-                  <a>{{$t('fs3Login.Connect_checkbox_1')}}</a>{{$t('fs3Login.Connect_checkbox_2')}}
-                </el-checkbox>
-              </el-checkbox-group>
-            </el-form-item>
-            <el-form-item>
-              <el-button type="primary" @click="submitEmail('form')">{{changeTitle?$t('fs3Login.Connect_form_btn_change'):$t('fs3Login.Connect_form_btn')}}</el-button>
-            </el-form-item>
-          </el-form>
-          <a href="javascript:;" @click="signInSkip" class="skip">{{$t('fs3Login.Skip')}}</a>
-        </div>
       </div>
     </div>
     <div class="fe-none" v-else-if="typeName === 'emailCheck'">
@@ -1225,42 +1207,6 @@ export default {
 
       console.log('loaded: ' + loaded, 'total: ', total, 'speed: ', that.uploadPrecentSpeed)
     },
-    submitEmail (formName) {
-      that.$refs[formName].validate(async valid => {
-        if (valid) {
-          that.emailLoad = true
-          try {
-            const params = {
-              'email': that.form.email
-            }
-            const emailRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v1/user/register_email`, 'post', params)
-            if (!emailRes || emailRes.status !== 'success') {
-              that.$message({
-                showClose: true,
-                message: emailRes.message || 'Fail',
-                type: 'error',
-                duration: 10000
-              })
-            } else {
-              that.$message({
-                showClose: true,
-                message: emailRes.data || 'Success',
-                type: 'success',
-                duration: 10000
-              })
-              that.typeName = 'emailCheck'
-              await that.$metaLogin.emailSign()
-            }
-          } catch (e) {
-            console.log(e)
-          }
-          that.emailLoad = false
-        } else {
-          console.log('error submit!!')
-          return false
-        }
-      })
-    },
     async signInSkip () {
       const data = JSON.parse(that.$store.getters.mcsEmail)
       data.apiStatus = false
@@ -1322,7 +1268,6 @@ export default {
     document.onkeydown = function (e) {
       if (e.keyCode === 13) {
         if (that.typeName === 'add' || that.typeName === 'add_apikey' || that.typeName === 'add_domain' || that.typeName === 'addNewBucket' || that.typeName === 'rename' || that.typeName === 'addSub') that.getDialogClose('form')
-        if (that.typeName === 'emailLogin') that.submitEmail('form')
       }
     }
   },
@@ -1572,13 +1517,13 @@ export default {
     }
     .p {
       padding: 0.15rem 0.3rem;
-      font-size: 0.27rem;
+      font-size: 0.25rem;
       color: #4f87ff;
       line-height: 1.2;
       border: dashed;
       border-radius: 0.1rem;
       @media screen and (max-width: 1600px) {
-        font-size: 0.25rem;
+        font-size: 0.23rem;
       }
     }
     .addBucket {
@@ -3552,12 +3497,12 @@ export default {
   }
 }
 .slideAdd {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #cecece;
+  background-color: rgba(96, 96, 96, 0.5);
   border-radius: 0.1rem;
   z-index: 1;
 }

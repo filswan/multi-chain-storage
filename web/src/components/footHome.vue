@@ -80,15 +80,16 @@ export default {
   .width {
     display: flex;
     flex-wrap: wrap;
-    width: 80%;
-    max-width: 1440px;
+    padding: 0 16px;
+    max-width: 2560px;
     min-width: 300px;
     margin: auto;
-    @media screen and (max-width: 1150px) {
-      width: 90%;
+    @media screen and (min-width: 1200px) {
+      padding: 0 32px;
     }
-    @media screen and (max-width: 999px) {
-      width: 94%;
+    @media screen and (min-width: 1600px) {
+      width: calc(100% - 128px);
+      padding: 0 64px;
     }
   }
   .imgLogo {
@@ -157,6 +158,9 @@ export default {
         background: #fff url(../assets/images/space/icon_17.png) no-repeat
           0.15rem center;
         background-size: 0.3rem;
+      }
+      &:hover {
+        box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.35);
       }
     }
   }

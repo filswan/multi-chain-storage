@@ -1,0 +1,175 @@
+[{
+  "inputs": [],
+  "stateMutability": "nonpayable",
+  "type": "constructor"
+}, {
+  "anonymous": false,
+  "inputs": [{
+    "indexed": true,
+    "internalType": "address",
+    "name": "user",
+    "type": "address"
+  }, {
+    "indexed": false,
+    "internalType": "uint256",
+    "name": "planId",
+    "type": "uint256"
+  }, {
+    "indexed": false,
+    "internalType": "uint256",
+    "name": "amount",
+    "type": "uint256"
+  }],
+  "name": "PaymentMade",
+  "type": "event"
+}, {
+  "inputs": [],
+  "name": "getPlans",
+  "outputs": [{
+    "internalType": "uint256[]",
+    "name": "",
+    "type": "uint256[]"
+  }, {
+    "internalType": "uint256[]",
+    "name": "",
+    "type": "uint256[]"
+  }, {
+    "internalType": "address[]",
+    "name": "",
+    "type": "address[]"
+  }],
+  "stateMutability": "view",
+  "type": "function"
+}, {
+  "inputs": [{
+    "internalType": "uint256",
+    "name": "",
+    "type": "uint256"
+  }],
+  "name": "isPlanExist",
+  "outputs": [{
+    "internalType": "bool",
+    "name": "",
+    "type": "bool"
+  }],
+  "stateMutability": "view",
+  "type": "function"
+}, {
+  "inputs": [],
+  "name": "owner",
+  "outputs": [{
+    "internalType": "address payable",
+    "name": "",
+    "type": "address"
+  }],
+  "stateMutability": "view",
+  "type": "function"
+}, {
+  "inputs": [{
+    "internalType": "uint256",
+    "name": "_planId",
+    "type": "uint256"
+  }],
+  "name": "pay",
+  "outputs": [],
+  "stateMutability": "nonpayable",
+  "type": "function"
+}, {
+  "inputs": [{
+    "internalType": "uint256",
+    "name": "",
+    "type": "uint256"
+  }],
+  "name": "planIds",
+  "outputs": [{
+    "internalType": "uint256",
+    "name": "",
+    "type": "uint256"
+  }],
+  "stateMutability": "view",
+  "type": "function"
+}, {
+  "inputs": [{
+    "internalType": "uint256",
+    "name": "",
+    "type": "uint256"
+  }],
+  "name": "plans",
+  "outputs": [{
+    "internalType": "uint256",
+    "name": "id",
+    "type": "uint256"
+  }, {
+    "internalType": "uint256",
+    "name": "price",
+    "type": "uint256"
+  }, {
+    "internalType": "contract IERC20",
+    "name": "token",
+    "type": "address"
+  }],
+  "stateMutability": "view",
+  "type": "function"
+}, {
+  "inputs": [{
+    "internalType": "uint256",
+    "name": "_planId",
+    "type": "uint256"
+  }, {
+    "internalType": "uint256",
+    "name": "_price",
+    "type": "uint256"
+  }, {
+    "internalType": "contract IERC20",
+    "name": "_token",
+    "type": "address"
+  }],
+  "name": "setPlan",
+  "outputs": [],
+  "stateMutability": "nonpayable",
+  "type": "function"
+}, {
+  "inputs": [{
+    "internalType": "address payable",
+    "name": "newOwner",
+    "type": "address"
+  }],
+  "name": "transferOwnership",
+  "outputs": [],
+  "stateMutability": "nonpayable",
+  "type": "function"
+}, {
+  "inputs": [{
+    "internalType": "uint256",
+    "name": "_planId",
+    "type": "uint256"
+  }, {
+    "internalType": "uint256",
+    "name": "_newPrice",
+    "type": "uint256"
+  }, {
+    "internalType": "contract IERC20",
+    "name": "_newToken",
+    "type": "address"
+  }],
+  "name": "updatePlan",
+  "outputs": [],
+  "stateMutability": "nonpayable",
+  "type": "function"
+}, {
+  "inputs": [],
+  "name": "withdraw",
+  "outputs": [],
+  "stateMutability": "nonpayable",
+  "type": "function"
+}, {
+  "inputs": [{
+    "internalType": "address",
+    "name": "tokenAddress",
+    "type": "address"
+  }],
+  "name": "withdrawToken",
+  "outputs": [],
+  "stateMutability": "nonpayable",
+  "type": "function"
+}]

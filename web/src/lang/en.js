@@ -11,7 +11,7 @@ export default {
     myAccount: 'Setting',
     Upload_files: 'Upload File',
     Search_file: 'Search File',
-    documentation: 'Documentation',
+    documentation: 'Document',
     metaSpace: 'Bucket Storage',
     About: 'About',
     Pricing: 'Pricing',
@@ -40,7 +40,7 @@ export default {
     Upload_files: 'UPLOAD FILE',
     Tools: 'TOOLS',
     Stats: 'STATISTICS',
-    copy: '© 2021 FilSwan Canada',
+    copy: '© 2021 Swan Canada',
     ScoreChange: 'Score Change',
     ScoreChange_legend: 'Score',
     PowerChange: 'Power Change',
@@ -189,8 +189,8 @@ export default {
     Change_password: 'Change Password',
     wrong_password: 'wrong password',
     Reenter_new_password: 'Reenter New Password',
-    apiKey_your_title: 'Your API keys',
-    apiKey_your_Domain: 'Your Custom Domain',
+    apiKey_your_title: 'API keys',
+    apiKey_your_Domain: 'Custom Domain',
     apiKey_your_Domain_label: 'Domain address',
     apiKey_tips_01: 'API keys provide full access to your swan account, so keep them safe.',
     apiKey_tips_02: 'How to use API key.',
@@ -208,7 +208,7 @@ export default {
     create_api_title01: 'API token successfully created',
     create_api_title02: 'Important',
     create_api_tips: 'Name cannot be null!',
-    create_api_tips01: 'This token is your private secret to access Filswan platform services.',
+    create_api_tips01: 'This token is your private secret to access Swan platform services.',
     create_api_tips02: "The secret key is only displayed once. You'll need to copy it somewhere safe before continuing.",
     create_api_tips03: 'Your new API Key is：',
     create_api_tips04: 'Your new Access Token is：',
@@ -482,6 +482,8 @@ export default {
     Connect_email_again: 'Didn’t recieve any email? Try again.',
     Connect_email_jump: 'Click here to jump to the page.',
     Connect_StartFree: 'Get Started',
+    Connect_Bucket: 'Back to Bucket Storage',
+    Connect_BuyNow: 'Buy Now',
     Connect_TutorialVideo: 'Tutorial Video',
     back_home: 'Back to Home Page',
     Skip: 'Skip',
@@ -493,7 +495,7 @@ export default {
     contract_id01: 'Contract ID',
     cid: 'CID',
     status: 'Pin Status',
-    status_tooltip: "Reports the status of a file or piece of data stored on FilSwan's IPFS nodes.",
+    status_tooltip: "Reports the status of a file or piece of data stored on Swan's IPFS nodes.",
     status_button_tooltip: "It's an irrevocable option after clicking unpin.",
     file_name: 'File Name',
     file_name_tooltip: 'Click on the file name to view more Deal Details and DAO Signature details.',
@@ -651,6 +653,7 @@ export default {
     search_btn: 'Search',
     clear_btn: 'Clear',
     TRANSACTION: 'Transaction',
+    chain_id: 'CHAIN ID',
     AMOUNT: 'Amount',
     UNLOCKAMOUNT: 'Unlock Amount',
     TOKEN: 'Token',
@@ -675,7 +678,16 @@ export default {
     end_date: 'End date',
     time_to: 'To',
     data_download: 'Download',
-    data_export: 'Export'
+    data_export: 'Export',
+    bill_overview: 'Billing Overview',
+    bill_btn_pay: 'Upgrade to paid plan',
+    bill_btn_paid: 'You have become a paid subscriber',
+    bill_cont1_title: 'Billing history',
+    bill_cont1_desc: 'View past and current invoices',
+    bill_cont2_title: 'Pricing',
+    bill_cont2_desc: 'View pricing and FAQs',
+    have_faq: 'Have question?',
+    bill_tip: 'There may be a delay in transaction processing. Please refresh this page after confirming the success. Please do not make duplicate payments, as it may result in financial loss.'
   },
   network: {
     title: 'All Chains'
@@ -771,7 +783,10 @@ export default {
     pay_success_desc: 'Thank you for your payment. Bucket credit added.',
     try_again: 'try again',
     Name_bucket: 'Name this bucket',
-    active_bucket: 'You have to active your bucket first'
+    active_bucket: 'You have to active your bucket first',
+    bucket_card_create: 'Create your first bucket',
+    bucket_plan: 'Take look our Pro plan',
+    bucket_sdk: 'Try our SDK'
   },
   apiKey: {
     day: 'days',
@@ -783,7 +798,8 @@ export default {
   },
   comment: {
     Rate_Product: 'Rate our product',
-    Tell_Comment: 'Tell us your comment'
+    Tell_Comment: 'Tell us your comment',
+    theme: 'Theme'
   },
   pricing: {
     'title_1': 'Choose the plan that works for you',

@@ -11,7 +11,7 @@
               <h1>{{$t('fs3Login.Connect_text')}}</h1>
               <h4>{{$t('fs3Login.Connect_text_desc')}}</h4>
               <el-button type="primary" v-loading="loginLoad" @click="signFun">
-                {{$t('fs3Login.Connect_StartFree')}}
+                {{metaAddress? $t('fs3Login.Connect_Bucket') : $t('fs3Login.Connect_StartFree')}}
               </el-button>
               <el-button type="primary" @click="goLink('https://www.youtube.com/watch?v=rgEP4_dhzoI')">
                 {{$t('fs3Login.Connect_TutorialVideo')}}
@@ -34,7 +34,7 @@
       <div class="msCont">
         <div class="width" id="about">
           <div class="title">
-            <i class="icon"></i> {{$t('metaSpace.home_title')}}
+            <i class="icon icon_title"></i> {{$t('metaSpace.home_title')}}
           </div>
           <el-row type="flex" class="row-bg" justify="space-between">
             <el-col :xs="24" :sm="11" :md="11" :lg="11" :xl="11" class="left">
@@ -52,35 +52,6 @@
               <p class="p">{{$t('metaSpace.home_Our_Features_cont01')}}</p>
               <p class="p">{{$t('metaSpace.home_Our_Features_cont02')}}</p>
               <p class="p">{{$t('metaSpace.home_Our_Features_cont03')}}</p>
-            </el-col>
-          </el-row>
-        </div>
-      </div>
-      <div class="pricing" v-if="false">
-        <div class="width" id="pricing">
-          <div class="title">
-            <i class="icon"></i> Pricing for Multichain.Storage
-            <el-button type="primary" v-loading="loginLoad" @click="signFun">
-              {{$t('fs3Login.Connect_StartFree')}}
-            </el-button>
-          </div>
-          <el-row type="flex" class="row-bg" justify="space-around">
-            <el-col :xs="24" :sm="11" :md="11" :lg="11" :xl="11" class="left">
-              <h1>Free</h1>
-              <p>One bucket (with 30GB storage) free</p>
-              <p>Pin to IPFS</p>
-              <p>Weekly backup to decentralize storage network (5 copies)</p>
-              <p>SDK/API technical support</p>
-            </el-col>
-            <el-col :xs="24" :sm="11" :md="11" :lg="11" :xl="11" class="left">
-              <h1>More Storage</h1>
-              <p>USDC 7.2 for each added bucket each year
-                <span>(30GB storage for each bucket)</span>
-              </p>
-              <p>33 Bucket storage for each wallet</p>
-              <p>Pin to IPFS</p>
-              <p>Weekly backup to decentralize storage network (5 copies)</p>
-              <p>SDK/API technical support</p>
             </el-col>
           </el-row>
         </div>
@@ -235,6 +206,7 @@ export default {
   watch: {
     $route: function (to, from) {
       if (to.query.id) that.getHome(to.query.id)
+      else that.moduleMenu = ''
     }
   },
   methods: {
@@ -311,27 +283,34 @@ export default {
         console.log(error)
       }
     },
-    signFun () {
-      that.$commonFun.Init(async addr => {
-        that.$store.dispatch('setMetaAddress', addr)
-        sessionStorage.setItem('login_path', addr)
-        const networkCont = {
-          name: that.networkID === 137 ? 'Polygon' : that.networkID === 80001 ? 'Mumbai' : that.networkID === 97 ? 'BSC' : 'Custom',
-          unit: 'USDC',
-          center_fail: false
-        }
-        that.$store.dispatch('setMetaNetworkInfo', networkCont)
-        that.loginLoad = true
-        that.signIn()
-      })
+    signFun (s, jump) {
+      if (that.metaAddress) that.$router.push({ path: jump ? '/my_account' : '/my_buckets' })
+      else {
+        that.$commonFun.Init(async addr => {
+          that.$store.dispatch('setMetaAddress', addr)
+          sessionStorage.setItem('login_path', addr)
+          const networkCont = {
+            name: that.networkID === 137 ? 'Polygon' : that.networkID === 80001 ? 'Mumbai' : that.networkID === 97 ? 'BSC' : 'Custom',
+            unit: 'USDC',
+            center_fail: false
+          }
+          that.$store.dispatch('setMetaNetworkInfo', networkCont)
+          that.loginLoad = true
+          that.signIn(jump)
+        })
+      }
     },
-    async signIn () {
+    async signIn (jump) {
       let status = await that.$metaLogin.netStatus(that.networkID)
       that.networkTip = !status
       if (!status) return false
       const lStatus = await that.$metaLogin.login()
-      if (lStatus) setTimeout(function () { window.location.reload() }, 200)
-      else that.loginLoad = false
+      if (lStatus) {
+        setTimeout(function () {
+          that.$router.push({ path: jump ? '/my_account' : '/my_buckets' })
+          // window.location.reload()
+        }, 200)
+      } else that.loginLoad = false
     },
     getNetwork (dis) {
       that.networkTip = dis
@@ -339,7 +318,9 @@ export default {
     },
     fn () {
       document.addEventListener('visibilitychange', function () {
-        that.prevType = !document.hidden
+        if (document.visibilityState === 'hidden') that.prevType = false
+        else if (document.visibilityState === 'visible') that.prevType = true
+        else that.prevType = false
       })
       // networkChanged
       ethereum.on('chainChanged', async (accounts) => {
@@ -355,7 +336,7 @@ export default {
   mounted () {
     that = this
     if (that.$route.query.id) that.getHome(that.$route.query.id)
-    that.isLogin()
+    // that.isLogin()
     that.fn()
   },
   computed: {
@@ -404,16 +385,16 @@ export default {
   font-family: "gilroy-regular";
   font-size: 16px;
   overflow-y: scroll;
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  &::-webkit-scrollbar {
-    width: 6px;
-    background: transparent;
-  }
-  &::-webkit-scrollbar-thumb {
-    background: #ccc;
-  }
+  // &::-webkit-scrollbar-track {
+  //   background: transparent;
+  // }
+  // &::-webkit-scrollbar {
+  //   width: 6px;
+  //   background: transparent;
+  // }
+  // &::-webkit-scrollbar-thumb {
+  //   background: #ccc;
+  // }
   .el-alert {
     position: fixed;
     left: 0;
@@ -476,11 +457,6 @@ export default {
       width: 94%;
     }
   }
-  .statsHome {
-    @media screen and (max-width: 992px) {
-      padding-top: 1rem;
-    }
-  }
   .loginBody {
     display: flex;
     flex-wrap: wrap;
@@ -501,7 +477,8 @@ export default {
         img {
           display: block;
           width: 100%;
-          margin: auto;
+          margin: 0 auto;
+          animation: floating 3.5s ease-in-out infinite;
         }
       }
       .left {
@@ -552,6 +529,7 @@ export default {
           white-space: normal;
           @media screen and (max-width: 600px) {
             font-size: 14px;
+            margin: 0 0 0.2rem;
           }
           .el-loading-mask {
             border-radius: 0.5rem;
@@ -605,7 +583,7 @@ export default {
   .msCont {
     padding: 1.7rem 0;
     @media screen and (max-width: 992px) {
-      padding: 1rem 0;
+      padding: 1rem 4%;
     }
     .title {
       display: flex;
@@ -629,10 +607,38 @@ export default {
       .icon_Introduction {
         background: url(../../assets/images/space/icon_12.png) no-repeat center;
         background-size: 100%;
+        animation: none;
       }
       .icon_Features {
         background: url(../../assets/images/space/icon_13.png) no-repeat center;
         background-size: 100%;
+      }
+      .icon_title {
+        animation: scale 2s ease-in-out infinite;
+      }
+
+      @keyframes scale {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(0.9);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      @-webkit-keyframes scale /* Safari and Chrome */ {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(0.9);
+        }
+        100% {
+          transform: scale(1);
+        }
       }
     }
     .el-row /deep/ {

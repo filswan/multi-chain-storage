@@ -204,7 +204,7 @@ export default {
         bucketDetail.ipfs_url = `https://${that.$route.query.domain}/ipfs/${row.payload_cid}${row.type === 2 ? '?filename=' + row.name : ''}`
 
         const backupRes = await that.$commonFun.sendRequest(`${process.env.BASE_PAYMENT_GATEWAY_API}api/v2/oss_file/get_backup_info?payload_cid=${row.payload_cid}`, 'get')
-        if (!backupRes || backupRes.status !== 'success') that.$message.error(backupRes ? backupRes.message : 'Fail')
+        if (!backupRes || backupRes.status !== 'success') bucketDetail.messageError = backupRes ? backupRes.message || '' : ''
         else {
           bucketDetail.storage_providers = backupRes.data.storage_providers || []
           bucketDetail.miner_count = backupRes.data.storage_providers ? backupRes.data.storage_providers.length : 0
@@ -515,6 +515,9 @@ export default {
         display: flex;
         align-items: center;
         flex-wrap: wrap;
+        @media screen and (max-width: 600px) {
+          width: 100%;
+        }
         @media screen and (max-width: 1440px) {
           font-size: 14px;
         }
@@ -1209,16 +1212,17 @@ export default {
       display: flex;
       justify-content: center;
       align-items: center;
+      height: 100%;
       padding: 0 5%;
       .p_label {
         padding: 0.15rem 0.3rem;
-        font-size: 0.27rem;
+        font-size: 0.25rem;
         color: #4f87ff;
         line-height: 1.2;
         border: dashed;
         border-radius: 0.1rem;
         @media screen and (max-width: 1600px) {
-          font-size: 0.25rem;
+          font-size: 0.23rem;
         }
       }
     }

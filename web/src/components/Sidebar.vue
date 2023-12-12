@@ -5,9 +5,11 @@
       <template>
         <template>
           <div class="fes-menu">
-            <div class="header_logo pcShow">
-              <div class="logo"><img src="@/assets/images/LOGO_MCS@2x.png"></div>
-              <img class="beta" src="@/assets/images/landing/beta.png">
+            <div class="header_logo pcShow" @click="sidebarLiIndex('Space', '20', '')">
+              <div class="logo">
+                <img class="img" src="@/assets/images/LOGO_MCS@2x.png">
+                <img class="beta" src="@/assets/images/landing/beta.png">
+              </div>
             </div>
             <div class="menu_list">
               <el-menu-item v-for="(item, i) in items" :key="i" :index="item.index" @click="sidebarLiIndex(item.name, item.index, item.type)">
@@ -38,17 +40,17 @@
             <div class="need" v-if="languageMcs === 'en'">Need help? Join our
               <a :href="discord_link" target="_blank">Discord</a>
               or send an
-              <a href="mailto:team@filswan.com">Email</a> to us.
+              <a :href="`mailto:${email_link}`">Email</a> to us.
             </div>
             <div class="need" v-else>需要帮助吗？加入我们的
               <a :href="discord_link" target="_blank">Discord</a>
               或发送
-              <a href="mailto:team@filswan.com">电子邮件</a> 给我们。
+              <a :href="`mailto:${email_link}`">电子邮件</a> 给我们。
             </div>
             <div class="progress">
               <el-progress :percentage="(free_bucket/free_bucketAll)*100 || 0"></el-progress>
-              <span v-if="languageMcs === 'en'" class="tip">{{free_bucket | byteStorage}}GB of 32GB for Bucket storage</span>
-              <span v-else class="tip">目前使用量：{{free_bucket | byteStorage}}GB（Bucket储存空间配额：32GB）</span>
+              <span v-if="languageMcs === 'en'" class="tip">{{free_bucket | byteStorage}}GB of {{ $root.max_storage | byteStorage}}GB for Bucket storage</span>
+              <span v-else class="tip">目前使用量：{{free_bucket | byteStorage}}GB（Bucket储存空间配额：{{ $root.max_storage | byteStorage}}GB）</span>
             </div>
             <!-- <div class="progress">
               <el-progress :percentage="(free_usage/free_quota_per_month)*100 || 0"></el-progress>
@@ -127,7 +129,8 @@ export default {
       telegram_link: process.env.TELEGRAM_LINK,
       rateValue: null,
       colors: { 5: '#e92721' },
-      iconClasses: ['icon-rate-face']
+      iconClasses: ['icon-rate-face'],
+      email_link: process.env.BASE_EMAIL
     }
   },
   computed: {
@@ -209,23 +212,13 @@ export default {
     },
     signOutFun () {
       let _this = this
-      let params = {}
-      axios.post(`${_this.baseAPIURL}api/v1/user/logout_for_metamask_signature`, params, {
-        headers: {
-          'Authorization': 'Bearer ' + _this.$store.getters.mcsjwtToken
-        }
-      }).then((response) => {
-        if (response.data.status !== 'success') _this.$message.error(response.data.message || 'Fail')
-        _this.$store.dispatch('setMetaAddress', '')
-        _this.$store.dispatch('setMCSjwtToken', '')
-        _this.$store.dispatch('setMetaNetworkId', 0)
-        _this.$store.dispatch('setMetaNetworkInfo', JSON.stringify({}))
-        sessionStorage.removeItem('login_path')
-        // _this.$router.push('/home')
-        setTimeout(function () { window.location.reload() }, 200)
-      }).catch(function (error) {
-        console.log(error.config)
-      })
+      _this.$store.dispatch('setMetaAddress', '')
+      _this.$store.dispatch('setMCSjwtToken', '')
+      _this.$store.dispatch('setMetaNetworkId', 0)
+      _this.$store.dispatch('setMetaNetworkInfo', JSON.stringify({}))
+      sessionStorage.removeItem('login_path')
+      // _this.$router.push('/home')
+      setTimeout(function () { window.location.reload() }, 200)
     },
     async getListBuckets (name) {
       let _this = this
@@ -322,20 +315,31 @@ export default {
     width: calc(100% - 0.3rem);
     padding: 0.41rem 0 0.62rem;
     background-color: #080b29;
+    cursor: pointer;
     // transition: width .3s;
     .logo {
-      width: 2rem;
-      img {
+      position: relative;
+      width: 1.5rem;
+      .img {
         display: block;
         width: 100%;
         height: auto;
       }
-    }
-    .beta {
-      position: absolute;
-      width: 60px;
-      right: 0;
-      top: 0.75rem;
+      .beta {
+        position: absolute;
+        width: 40px;
+        right: -0.2rem;
+        top: 0.3rem;
+        @media screen and (min-width: 1800px) {
+          width: 45px;
+        }
+        @media screen and (max-width: 1366px) {
+          right: -0.25rem;
+        }
+        @media screen and (max-width: 1280px) {
+          right: -0.3rem;
+        }
+      }
     }
     .header_btn {
       display: flex;

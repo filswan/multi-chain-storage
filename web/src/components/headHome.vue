@@ -200,7 +200,6 @@
 </template>
 <script>
 let that
-const ethereum = window.ethereum
 export default {
   data () {
     return {
@@ -381,14 +380,15 @@ export default {
       }
     },
     fn () {
-      ethereum.on('accountsChanged', function (account) {
+      if (typeof window.ethereum === 'undefined') return
+      that.$providerInit.on('accountsChanged', function (account) {
         // console.log('account header:', account[0]);  //Once the account is switched, it will be executed here
         if (that.prevType) that.signOutFun()
       })
-      ethereum.on('chainChanged', function (accounts) {
+      that.$providerInit.on('chainChanged', function (accounts) {
         if (that.prevType) that.signOutFun()
       })
-      ethereum.on('disconnect', (code, reason) => {
+      that.$providerInit.on('disconnect', (code, reason) => {
         // console.log(`Ethereum Provider connection closed: ${reason}. Code: ${code}`);
       })
     }

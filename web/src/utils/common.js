@@ -43,11 +43,12 @@ export async function timeout (delay) {
 }
 
 const Web3 = require('web3')
-const ethereum = window.ethereum
+const providerInit = window.ethereum && window.ethereum.providers ? window.ethereum.providers.find((provider) => provider.isMetaMask) : window.ethereum
+console.log(window.ethereum)
 let web3
 if (window.ethereum) {
-  web3 = new Web3(ethereum)
-  web3.setProvider(ethereum)
+  web3 = new Web3(providerInit)
+  web3.setProvider(providerInit)
 } else if (window.web3) {
   web3 = window.web3
   console.log('Injected web3 detected.')
@@ -68,7 +69,7 @@ export async function Init (callback) {
     alert('Consider installing MetaMask! ')
     window.open('https://metamask.io/download.html')
   } else {
-    ethereum
+    providerInit
       .request({
         method: 'eth_requestAccounts'
       })
@@ -78,7 +79,7 @@ export async function Init (callback) {
         }
         web3Init.eth.getAccounts().then(async webAccounts => {
           store.dispatch('setMetaAddress', webAccounts[0])
-          const chainId = await ethereum.request({
+          const chainId = await providerInit.request({
             method: 'eth_chainId'
           })
           store.dispatch('setMetaNetworkId', parseInt(chainId, 16))
@@ -86,7 +87,7 @@ export async function Init (callback) {
         })
           .catch(async () => {
             store.dispatch('setMetaAddress', accounts[0])
-            const chainId = await ethereum.request({
+            const chainId = await providerInit.request({
               method: 'eth_chainId'
             })
             store.dispatch('setMetaNetworkId', parseInt(chainId, 16))
@@ -110,5 +111,6 @@ export default {
   Init,
   sendRequest,
   timeout,
-  web3Init
+  web3Init,
+  providerInit
 }

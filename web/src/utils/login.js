@@ -5,39 +5,25 @@ import common from './common'
 import {
   Message
 } from 'element-ui'
-const ethereum = window.ethereum
 let lastTime = 0
 
 export async function login () {
   if (!store.getters.metaAddress || store.getters.metaAddress === undefined) {
-    const accounts = await ethereum.request({
+    const accounts = await common.providerInit.request({
       method: 'eth_requestAccounts'
     })
     store.dispatch('setMetaAddress', accounts[0])
   }
   const time = await throttle()
   if (!time) return false
-  // const balance = await walletBalance()
-  // if (!balance) {
-  //   Message({
-  //     showClose: true,
-  //     message: store.getters.languageMcs === 'en' ? 'You need to have minimal balance of 0.01 ETH or 10 MATIC to access MCS' : '您需要拥有0.01 ETH或10 MATIC的最低余额才能访问MCS',
-  //     type: 'error'
-  //   })
-  //   return
-  // }
   const [status_, nonce] = await getNonce()
-
   if (status_ !== 'success') {
     Message.error(status_ || 'Fail')
     signOutFun()
   }
-
   const signature = await sign(nonce)
   if (!signature) return false
-  console.log(signature)
   const token = await performSignin(signature, nonce)
-  console.log(token)
   // const email = await emailSign(token)
   // console.log(email)
   return !!token
@@ -70,29 +56,25 @@ export async function throttle () {
   return true
 }
 
-
-export async function sendPostRequest(apilink, jsonObject) {
+export async function sendPostRequest (apilink, jsonObject) {
   try {
-    const response = await axios.post(apilink, jsonObject);
-    return response.data;  // 正常情况下返回响应数据
+    const response = await axios.post(apilink, jsonObject)
+    return response.data
   } catch (err) {
-    console.error(err);
+    console.error(err)
     signOutFun()
-    // 检查 err.response 是否存在并提取有用的信息
     if (err.response) {
-      // 返回错误响应的状态码和消息
       return {
         status: 'error',
         message: err.response.data.message || 'Unknown error',
         statusCode: err.response.status
-      };
+      }
     } else {
-      // 如果没有错误响应，返回一个通用错误
       return {
         status: 'error',
         message: 'Network or other error',
-        statusCode: 500  // 可以选择一个适当的状态码
-      };
+        statusCode: 500 // 可以选择一个适当的状态码
+      }
     }
   }
 }
@@ -114,7 +96,7 @@ export async function sign (nonce) {
   store.dispatch('setMCSjwtToken', '')
   const buff = Buffer.from(nonce, 'utf-8')
   let signature = null
-  await ethereum.request({
+  await common.providerInit.request({
     method: 'personal_sign',
     params: [buff.toString('hex'), store.getters.metaAddress]
   }).then(sig => {

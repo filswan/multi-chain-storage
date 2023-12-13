@@ -161,7 +161,6 @@
 import networkChange from '@/components/networkChange'
 // import axios from 'axios'
 import erc20ContractJson from '@/utils/ERC20.json'
-const ethereum = window.ethereum
 let contractErc20
 let that
 export default {
@@ -324,7 +323,7 @@ export default {
             }
             break
         }
-        ethereum.request({
+        that.$providerInit.request({
           method: 'wallet_addEthereumChain',
           params: [
             text
@@ -445,7 +444,7 @@ export default {
     // Wallet address
     signFun (redirect) {
       if (!that.addrChild) {
-        ethereum
+        that.$providerInit
           .request(
             {
               'jsonrpc': '2.0',
@@ -474,7 +473,7 @@ export default {
         return false
       }
 
-      ethereum
+      that.$providerInit
         .request({ method: 'eth_chainId' })
         .then(async (chainId) => {
           let netId = parseInt(chainId, 16)
@@ -591,12 +590,13 @@ export default {
         })
     },
     fn () {
-      ethereum.on('accountsChanged', function (account) {
+      if (typeof window.ethereum === 'undefined') return
+      that.$providerInit.on('accountsChanged', function (account) {
         // console.log('account header:', account[0]);  //Once the account is switched, it will be executed here
         if (that.prevType) that.signOutFun()
       })
       // networkChanged
-      ethereum.on('chainChanged', function (accounts) {
+      that.$providerInit.on('chainChanged', function (accounts) {
         if (!that.prevType) return false
         that.$store.dispatch('setMCSjwtToken', '')
         that.$store.dispatch('setMetaNetworkId', parseInt(accounts, 16))
@@ -605,7 +605,7 @@ export default {
         if (that.$route.name === 'my_files_detail') that.$router.push({ path: '/my_files' })
       })
       // 监听metamask网络断开
-      ethereum.on('disconnect', (code, reason) => {
+      that.$providerInit.on('disconnect', (code, reason) => {
         // console.log(`Ethereum Provider connection closed: ${reason}. Code: ${code}`);
       })
     },
@@ -646,7 +646,7 @@ export default {
     contractPrice (netId) {
       try {
         if (netId !== 80001 && netId !== 97 && netId !== 137) {
-          ethereum
+          that.$providerInit
             .request(
               {
                 'jsonrpc': '2.0',

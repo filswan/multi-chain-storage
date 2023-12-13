@@ -97,7 +97,6 @@
 <script>
 import CarouselContainer from '@/components/CarouselContainer.vue'
 let that
-const ethereum = window.ethereum
 export default {
   name: 'login',
   data () {
@@ -314,7 +313,7 @@ export default {
           }
           break
       }
-      ethereum.request({
+      that.$providerInit.request({
         method: 'wallet_addEthereumChain',
         params: [
           text

@@ -1,5 +1,12 @@
 <template>
   <div class="metamaskHome">
+    <el-alert v-if="!minBalance && tipShow" type="warning" effect="dark" center show-icon>
+      <div slot="title" style="font-weight:500">
+        {{languageMcs === 'en' ? 'Access to Multi-Chain Storage requires a minimum wallet balance of 0.01 ETH or 10 MATIC.':'访问多链存储需要至少0.01 ETH或10 MATIC的钱包余额。'}}
+
+        <i class="el-icon-close" @click="tipShow = false"></i>
+      </div>
+    </el-alert>
     <v-head @getHome="getHome" @getLogin="signFun" :loginLoad="loginLoad"></v-head>
     <v-stats v-if="moduleMenu === 'stats'"></v-stats>
     <v-pricing v-else-if="moduleMenu === 'pricing'" @getLogin="signFun"></v-pricing>
@@ -60,11 +67,6 @@
     <v-foot id="resources"></v-foot>
     <el-backtop target=".metamaskHome"></el-backtop>
     <network-alert v-if="metaAddress&&networkTip" @changeNet="changeNet" @getNetwork="getNetwork"></network-alert>
-    <el-alert v-if="!minBalance" type="warning" effect="dark" center show-icon>
-      <div slot="title" style="font-weight:500">
-        {{languageMcs === 'en' ? 'Access to Multi-Chain Storage requires a minimum wallet balance of 0.01 ETH or 10 MATIC.':'访问多链存储需要至少0.01 ETH或10 MATIC的钱包余额。'}}
-      </div>
-    </el-alert>
   </div>
 </template>
 
@@ -201,7 +203,8 @@ export default {
       loginLoad: false,
       prevType: true,
       networkTip: false,
-      moduleMenu: ''
+      moduleMenu: '',
+      tipShow: true
     }
   },
   components: {
@@ -410,12 +413,13 @@ export default {
   // &::-webkit-scrollbar-thumb {
   //   background: #ccc;
   // }
-  .el-alert {
-    position: fixed;
+  .el-alert /deep/ {
+    // position: fixed;
     left: 0;
     top: 0;
     z-index: 99;
     padding: 3px 16px;
+    border-radius: 0;
     .el-alert__icon {
       @media screen and (min-width: 1600px) {
         font-size: 20px;
@@ -447,7 +451,11 @@ export default {
           color: #fff;
         }
       }
+      .el-alert__closebtn {
+        display: none;
+      }
       .el-icon-close {
+        cursor: pointer;
         @media screen and (min-width: 1600px) {
           font-size: 16px;
           line-height: 1.3;

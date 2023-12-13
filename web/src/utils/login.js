@@ -8,33 +8,28 @@ import {
 let lastTime = 0
 
 export async function login () {
+  console.log('login')
   if (!store.getters.metaAddress || store.getters.metaAddress === undefined) {
+    console.log('meta address undefined')
     const accounts = await common.providerInit.request({
       method: 'eth_requestAccounts'
     })
+    console.log('meta address', accounts)
     store.dispatch('setMetaAddress', accounts[0])
   }
   const time = await throttle()
   if (!time) return false
-  // const balance = await walletBalance()
-  // if (!balance) {
-  //   Message({
-  //     showClose: true,
-  //     message: store.getters.languageMcs === 'en' ? 'You need to have minimal balance of 0.01 ETH or 10 MATIC to access MCS' : '您需要拥有0.01 ETH或10 MATIC的最低余额才能访问MCS',
-  //     type: 'error'
-  //   })
-  //   return
-  // }
   const [status_, nonce] = await getNonce()
-
   if (status_ !== 'success') {
     Message.error(status_ || 'Fail')
     signOutFun()
   }
-
+  console.log('sign:')
   const signature = await sign(nonce)
   if (!signature) return false
+  console.log('signature:', signature)
   const token = await performSignin(signature, nonce)
+  console.log('token:', token)
   // const email = await emailSign(token)
   // console.log(email)
   return !!token
@@ -107,6 +102,8 @@ export async function sign (nonce) {
   store.dispatch('setMCSjwtToken', '')
   const buff = Buffer.from(nonce, 'utf-8')
   let signature = null
+  console.log('sign method:', store.getters.metaAddress)
+  console.log('sign method:', buff.toString('hex'))
   await common.providerInit.request({
     method: 'personal_sign',
     params: [buff.toString('hex'), store.getters.metaAddress]

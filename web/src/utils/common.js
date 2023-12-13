@@ -43,7 +43,9 @@ export async function timeout (delay) {
 }
 
 const Web3 = require('web3')
-const providerInit = window.ethereum ? window.ethereum.providers.find((provider) => provider.isMetaMask) : null
+const providerInit = window.ethereum && window.ethereum.providers ? window.ethereum.providers.find((provider) => provider.isMetaMask) : window.ethereum
+console.log(window.ethereum)
+if (window.ethereum) console.log(window.ethereum.providers)
 let web3
 if (window.ethereum) {
   web3 = new Web3(window.ethereum)
@@ -73,14 +75,17 @@ export async function Init (callback) {
         method: 'eth_requestAccounts'
       })
       .then((accounts) => {
+        console.log('accounts', accounts)
         if (!accounts) {
           return false
         }
         web3Init.eth.getAccounts().then(async webAccounts => {
+          console.log('webAccounts', webAccounts)
           store.dispatch('setMetaAddress', webAccounts[0])
           const chainId = await providerInit.request({
             method: 'eth_chainId'
           })
+          console.log('chainId', chainId)
           store.dispatch('setMetaNetworkId', parseInt(chainId, 16))
           callback(webAccounts[0])
         })

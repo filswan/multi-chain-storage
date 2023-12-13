@@ -8,13 +8,10 @@ import {
 let lastTime = 0
 
 export async function login () {
-  console.log('login')
   if (!store.getters.metaAddress || store.getters.metaAddress === undefined) {
-    console.log('meta address undefined')
     const accounts = await common.providerInit.request({
       method: 'eth_requestAccounts'
     })
-    console.log('meta address', accounts)
     store.dispatch('setMetaAddress', accounts[0])
   }
   const time = await throttle()
@@ -24,12 +21,9 @@ export async function login () {
     Message.error(status_ || 'Fail')
     signOutFun()
   }
-  console.log('sign:')
   const signature = await sign(nonce)
   if (!signature) return false
-  console.log('signature:', signature)
   const token = await performSignin(signature, nonce)
-  console.log('token:', token)
   // const email = await emailSign(token)
   // console.log(email)
   return !!token
@@ -102,8 +96,6 @@ export async function sign (nonce) {
   store.dispatch('setMCSjwtToken', '')
   const buff = Buffer.from(nonce, 'utf-8')
   let signature = null
-  console.log('sign method:', store.getters.metaAddress)
-  console.log('sign method:', buff.toString('hex'))
   await common.providerInit.request({
     method: 'personal_sign',
     params: [buff.toString('hex'), store.getters.metaAddress]

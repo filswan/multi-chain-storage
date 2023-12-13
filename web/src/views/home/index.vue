@@ -294,7 +294,6 @@ export default {
       if (that.metaAddress && that.mcsjwtToken) that.$router.push({ path: jump ? '/my_account' : '/my_buckets' })
       else {
         that.$commonFun.Init(async addr => {
-          console.log('addr', addr)
           that.$store.dispatch('setMetaAddress', addr)
           sessionStorage.setItem('login_path', addr)
           const networkCont = {
@@ -310,11 +309,9 @@ export default {
     },
     async signIn (jump) {
       let status = await that.$metaLogin.netStatus(that.networkID)
-      console.log('status', status)
       that.networkTip = !status
       if (!status) return false
       const lStatus = await that.$metaLogin.login()
-      console.log('lStatus', lStatus)
       if (lStatus) {
         setTimeout(function () {
           that.$router.push({ path: jump ? '/my_account' : '/my_buckets' })

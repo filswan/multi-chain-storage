@@ -84,7 +84,7 @@ export async function getNonce () {
   }
   const netId = Number(store.getters.networkID)
   const baseAPIURL = await urlBase(netId)
-  const response = await sendPostRequest(`${baseAPIURL}api/v2/user/wallet_register`, reqOpts)
+  const response = await sendPostRequest(`https://api.swanipfs.com/api/v2/user/wallet_register`, reqOpts)
   if (response.status === 'success') {
     const nonce = response.data
     return ['success', nonce]

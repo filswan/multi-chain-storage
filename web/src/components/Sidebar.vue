@@ -173,7 +173,7 @@ export default {
   },
   methods: {
     documentLink () {
-      window.open('https://docs.filswan.com/multi-chain-storage/overview', '_blank')
+      window.open('https://docs.swanchain.io/bulders/app-developer/store-and-retrieve-a-file-with-swan-storage', '_blank')
     },
     sidebarLiIndex (nameNow, index, typeNow) {
       let _this = this

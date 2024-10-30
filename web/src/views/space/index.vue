@@ -266,7 +266,7 @@ export default {
           that.$router.push({ name: 'home_entrance', query: { id: 'pricing' } })
           break
         case 'doc':
-          window.open('https://docs.filswan.com/multi-chain-storage/overview', '_blank')
+          window.open('https://docs.swanchain.io/bulders/app-developer/store-and-retrieve-a-file-with-swan-storage', '_blank')
           break
       }
     },

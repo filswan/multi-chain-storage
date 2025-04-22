@@ -697,12 +697,12 @@ export default {
     Developer_Quick_Start: 'Developer Quick Start',
     FAQ: 'FAQ',
     Get_Help: 'Get Help',
-    copy: ' MULTICHAIN.STORAGE. ALL RIGHTS RESERVED.'
+    copy: ' SWAN IPFS.STORAGE. ALL RIGHTS RESERVED.'
   },
   metaSpace: {
-    home_title: 'Multichain.Storage',
+    home_title: 'Swan IPFS.Storage',
     home_Introduction: 'Introduction',
-    home_Introduction_cont: 'Multichain.Storage is a smart-contract-based cross-chain storage gateway integrated with Oracle technology and the Filecoin networks. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks.',
+    home_Introduction_cont: 'Swan IPFS.Storage is a smart-contract-based cross-chain storage gateway integrated with Oracle technology and the Filecoin networks. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks.',
     home_Our_Features: 'Our Features',
     home_Our_Features_cont01: 'Drag and drop files to pin to IPFS and store on the Filecoin network at the same time',
     home_Our_Features_cont02: 'Fast retrieval globally by reliable edge network',
@@ -821,7 +821,7 @@ export default {
     'volume_p': "Our enterprise solutions and tailored plans are here to help you reach your goals. Contact us now via Discord and let's explore how we can unlock your storage potential together.",
     'volume_create': 'Gif of how to create a ticket in a discord',
     'question_title': 'Frequently asked questions',
-    'collapse_1_title': 'Does MultiChain Storage provide a free version?',
+    'collapse_1_title': 'Does Swan IPFS Storage provide a free version?',
     'collapse_1_desc': 'Yes, our free plan provides essential features and suits any individual to get started with decentralized storage',
     'collapse_2_title': 'How many buckets and folders can I create?',
     'collapse_2_desc': 'You can create unlimited buckets and folders as soon as you do not go over your storage capacity',

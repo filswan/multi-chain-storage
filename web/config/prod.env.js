@@ -17,7 +17,7 @@ module.exports = {
   BASE_ETHEREUM_RPC: '"https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161"',
   BASE_ENV: 'true',
   MEDIUM_LINK: '"https://medium.com/@swanchain/"',
-  DISCORD_LINK: '"https://discord.gg/Jd2BFSVCKw"',
+  DISCORD_LINK: '"https://discord.com/invite/2Fqbs9JhEg"',
   TWITTER_LINK: '"https://twitter.com/swan_chain"',
   GITHUB_LINK: '"https://github.com/filswan"',
   TELEGRAM_LINK: '"https://t.me/swan_chain/1"',

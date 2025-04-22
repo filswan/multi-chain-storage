@@ -3,7 +3,7 @@
     <div class="statsCont" v-loading="loading_ecosystem">
       <div :class="{'opacity': loading_ecosystem, 'stats': true}">
         <div class="title">
-          Multichain Storage Overview
+          Swan IPFS Storage Overview
         </div>
         <div class="main">
           <div v-for="(item, index) in MCS_Dataset" :key="index" class="info">

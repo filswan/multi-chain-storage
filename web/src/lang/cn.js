@@ -703,7 +703,7 @@ export default {
     Developer_Quick_Start: '开发人员快速入门',
     FAQ: '常见问题解答',
     Get_Help: '获取帮助',
-    copy: ' MULTICHAIN.STORAGE. ALL RIGHTS RESERVED.'
+    copy: ' SWAN IPFS.STORAGE. ALL RIGHTS RESERVED.'
   },
   metaSpace: {
     home_title: '多链存储',
@@ -827,7 +827,7 @@ export default {
     'volume_p': "Our enterprise solutions and tailored plans are here to help you reach your goals. Contact us now via Discord and let's explore how we can unlock your storage potential together.",
     'volume_create': 'Gif of how to create a ticket in a discord',
     'question_title': 'Frequently asked questions',
-    'collapse_1_title': 'Does MultiChain Storage provide a free version?',
+    'collapse_1_title': 'Does Swan IPFS Storage provide a free version?',
     'collapse_1_desc': 'Yes, our free plan provides essential features and suits any individual to get started with decentralized storage',
     'collapse_2_title': 'How many buckets and folders can I create?',
     'collapse_2_desc': 'You can create unlimited buckets and folders as soon as you do not go over your storage capacity',

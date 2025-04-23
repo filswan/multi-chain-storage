@@ -76,7 +76,7 @@ export default new VueRouter({
       //   meta: {
       //     metaInfo: {
       //       title: 'Onchain Storage',
-      //       description: 'Multi-Chain storage (MCS) is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks.'
+      //       description: 'Swan IPFS Storage is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks.'
       //     }
       //   }
       // },
@@ -96,7 +96,7 @@ export default new VueRouter({
       //   meta: {
       //     metaInfo: {
       //       title: 'Onchain Storage',
-      //       description: 'Multi-Chain storage (MCS) is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks.'
+      //       description: 'Swan IPFS Storage is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks.'
       //     }
       //   }
       // },
@@ -116,7 +116,7 @@ export default new VueRouter({
       //   meta: {
       //     metaInfo: {
       //       title: 'Onchain Storage',
-      //       description: 'Multi-Chain storage (MCS) is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks.'
+      //       description: 'Swan IPFS Storage is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks.'
       //     }
       //   }
       // },
@@ -136,7 +136,7 @@ export default new VueRouter({
         meta: {
           metaInfo: {
             title: 'Billing',
-            description: 'Multi-Chain storage (MCS) is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks.'
+            description: 'Swan IPFS Storage is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks.'
           }
         }
       },
@@ -156,7 +156,7 @@ export default new VueRouter({
         meta: {
           metaInfo: {
             title: 'Settings',
-            description: 'Multi-Chain storage (MCS) is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks.'
+            description: 'Swan IPFS Storage is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks.'
           }
         }
       },
@@ -176,7 +176,7 @@ export default new VueRouter({
         meta: {
           metaInfo: {
             title: 'Bucket Storage',
-            description: 'Multi-Chain storage (MCS) is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks.'
+            description: 'Swan IPFS Storage is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks.'
           }
         }
       },
@@ -196,7 +196,7 @@ export default new VueRouter({
         meta: {
           metaInfo: {
             title: 'Bucket Storage',
-            description: 'Multi-Chain storage (MCS) is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks.'
+            description: 'Swan IPFS Storage is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks.'
           }
         }
       },
@@ -216,7 +216,7 @@ export default new VueRouter({
         meta: {
           metaInfo: {
             title: 'My Account',
-            description: 'Multi-Chain storage (MCS) is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks.'
+            description: 'Swan IPFS Storage is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks.'
           }
         }
       },
@@ -226,7 +226,7 @@ export default new VueRouter({
         component: supplierAllBack,
         meta: {
           metaInfo: {
-            description: 'Multi-Chain storage (MCS) is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks.'
+            description: 'Swan IPFS Storage is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks.'
           }
         }
 
@@ -239,7 +239,7 @@ export default new VueRouter({
         meta: {
           metaInfo: {
             title: 'Login',
-            description: 'Multi-Chain storage (MCS) is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks.'
+            description: 'Swan IPFS Storage is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks.'
           }
         }
       },
@@ -251,7 +251,7 @@ export default new VueRouter({
         meta: {
           metaInfo: {
             title: 'Register',
-            description: 'Multi-Chain storage (MCS) is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks.'
+            description: 'Swan IPFS Storage is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks.'
           }
         }
       },
@@ -267,7 +267,7 @@ export default new VueRouter({
         meta: {
           metaInfo: {
             title: 'Forget',
-            description: 'Multi-Chain storage (MCS) is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks.'
+            description: 'Swan IPFS Storage is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks.'
           }
         }
       },
@@ -278,7 +278,7 @@ export default new VueRouter({
         meta: {
           metaInfo: {
             title: 'MailForget',
-            description: 'Multi-Chain storage (MCS) is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks.'
+            description: 'Swan IPFS Storage is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks.'
           }
         }
       },
@@ -289,7 +289,7 @@ export default new VueRouter({
         meta: {
           metaInfo: {
             title: 'MailResetPassword',
-            description: 'Multi-Chain storage (MCS) is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks.'
+            description: 'Swan IPFS Storage is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks.'
           }
         }
       },
@@ -300,7 +300,7 @@ export default new VueRouter({
         meta: {
           metaInfo: {
             title: 'MailForgetSuccess',
-            description: 'Multi-Chain storage (MCS) is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks.'
+            description: 'Swan IPFS Storage is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks.'
           }
         }
       },
@@ -311,7 +311,7 @@ export default new VueRouter({
         meta: {
           metaInfo: {
             title: 'Account Activation',
-            description: 'Multi-Chain storage (MCS) is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks.'
+            description: 'Swan IPFS Storage is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks.'
           }
         }
       }
@@ -324,7 +324,7 @@ export default new VueRouter({
     meta: {
       metaInfo: {
         title: 'Home',
-        description: 'Multi-Chain storage (MCS) is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks.'
+        description: 'Swan IPFS Storage is a smart-contract-based cross-chain storage gateway that is integrated with oracle technology. It accelerates the mass adoption of decentralized storage by bridging multiple blockchain networks.'
       }
     }
   },
